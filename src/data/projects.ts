@@ -1,0 +1,150 @@
+import { Project } from "@/types";
+
+export const projects: Project[] = [
+  {
+    slug: "colombo-heights-residences",
+    name: "Colombo Heights Residences",
+    developerSlug: "ceylon-urban-developments",
+    developerName: "Ceylon Urban Developments",
+    location: "Colombo 03",
+    district: "Colombo",
+    city: "Colombo",
+    province: "Western Province",
+    neighborhood: "Kollupitiya",
+    type: "Luxury Condominium",
+    status: "Now Selling",
+    launchDate: "2026-05-12",
+    completionYear: 2028,
+    constructionStatus: "Under Construction",
+    startingPriceLkr: 48000000,
+    priceRange: "Rs. 48M - Rs. 92M",
+    bedrooms: "2-3",
+    bathrooms: "2-3",
+    floorAreaRange: "980-1,920 sq.ft",
+    units: 164,
+    floors: 36,
+    parking: "2-level podium parking",
+    security: "24/7 managed security with access control",
+    ownership: "Condominium freehold",
+    paymentPlan: "20% booking, staged payments during construction, balance on completion",
+    summary:
+      "A high-rise residential tower in Colombo 03 with sea-facing units, rooftop leisure deck, and direct access to the city's key retail and business zones.",
+    description:
+      "Colombo Heights Residences introduces a design-led condominium address for buyers seeking a new premium apartment in central Colombo. The project combines efficient 2 and 3 bedroom layouts, refined finishes, and lifestyle amenities intended for full-time residents and investors alike.",
+    heroImage:
+      "https://images.unsplash.com/photo-1560185007-cde436f6a4d0?q=80&w=1800&auto=format&fit=crop",
+    gallery: [
+      { label: "Exterior", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1400&auto=format&fit=crop" },
+      { label: "Lobby", image: "https://images.unsplash.com/photo-1615874959474-d609969a20ed?q=80&w=1400&auto=format&fit=crop" },
+      { label: "Living Room", image: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?q=80&w=1400&auto=format&fit=crop" },
+      { label: "Bedroom", image: "https://images.unsplash.com/photo-1616594039964-3f896f5f4a27?q=80&w=1400&auto=format&fit=crop" },
+      { label: "Kitchen", image: "https://images.unsplash.com/photo-1556912167-f556f1f39fdf?q=80&w=1400&auto=format&fit=crop" },
+      { label: "Pool", image: "https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?q=80&w=1400&auto=format&fit=crop" },
+      { label: "Amenities", image: "https://images.unsplash.com/photo-1465804575741-338df8554e02?q=80&w=1400&auto=format&fit=crop" },
+      { label: "Rooftop", image: "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?q=80&w=1400&auto=format&fit=crop" },
+      { label: "Architectural Render", image: "https://images.unsplash.com/photo-1479839672679-a46483c0e7c8?q=80&w=1400&auto=format&fit=crop" }
+    ],
+    amenities: [
+      { name: "Pool", icon: "Waves" },
+      { name: "Gym", icon: "Dumbbell" },
+      { name: "Rooftop", icon: "Building2" },
+      { name: "Parking", icon: "Car" },
+      { name: "Security", icon: "ShieldCheck" },
+      { name: "CCTV", icon: "Camera" },
+      { name: "Garden", icon: "Trees" },
+      { name: "Children's Area", icon: "Baby" },
+      { name: "Clubhouse", icon: "Landmark" },
+      { name: "EV Charging", icon: "Zap" },
+      { name: "Concierge", icon: "Bell" }
+    ],
+    floorPlans: [
+      { id: "ch-1", planName: "Aster 2B", bedrooms: 2, bathrooms: 2, floorAreaSqFt: 980, startingPriceLkr: 48000000, image: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?q=80&w=1000&auto=format&fit=crop", availability: "Available" },
+      { id: "ch-2", planName: "Orchid 2B", bedrooms: 2, bathrooms: 2, floorAreaSqFt: 1120, startingPriceLkr: 56000000, image: "https://images.unsplash.com/photo-1484154218962-a197022b5858?q=80&w=1000&auto=format&fit=crop", availability: "Limited" },
+      { id: "ch-3", planName: "Lotus 3B", bedrooms: 3, bathrooms: 3, floorAreaSqFt: 1640, startingPriceLkr: 76000000, image: "https://images.unsplash.com/photo-1493666438817-866a91353ca9?q=80&w=1000&auto=format&fit=crop", availability: "Available" },
+      { id: "ch-4", planName: "Crown 3B", bedrooms: 3, bathrooms: 3, floorAreaSqFt: 1920, startingPriceLkr: 92000000, image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1000&auto=format&fit=crop", availability: "Limited" }
+    ],
+    nearby: [
+      { category: "Shopping", name: "Colombo City Centre", distanceKm: 2.4 },
+      { category: "Hospital", name: "Nawaloka Hospital", distanceKm: 1.1 },
+      { category: "School", name: "Ladies' College", distanceKm: 0.9 },
+      { category: "Restaurant", name: "Marine Drive Dining Mile", distanceKm: 0.7 },
+      { category: "Transport", name: "Kollupitiya Railway Station", distanceKm: 1.4 },
+      { category: "Landmark", name: "Galle Face Green", distanceKm: 2.2 }
+    ],
+    coordinates: { lat: 6.9119, lng: 79.8542 },
+    contact: { name: "Sales Team - Ceylon Urban", email: "sales@ceylonurban.lk", phone: "+94 11 245 8800" }
+  },
+  {
+    slug: "kandy-hills-residences",
+    name: "Kandy Hills Residences",
+    developerSlug: "serendib-property-group",
+    developerName: "Serendib Property Group",
+    location: "Kandy",
+    district: "Kandy",
+    city: "Kandy",
+    province: "Central Province",
+    neighborhood: "Asgiriya",
+    type: "Apartment Development",
+    status: "Coming Soon",
+    launchDate: "2027-02-01",
+    completionYear: 2029,
+    constructionStatus: "Pre-Construction",
+    startingPriceLkr: 22500000,
+    priceRange: "Rs. 22.5M - Rs. 45M",
+    bedrooms: "2-3",
+    bathrooms: "2",
+    floorAreaRange: "860-1,480 sq.ft",
+    units: 118,
+    floors: 18,
+    parking: "Basement and surface parking",
+    security: "Guarded entrance and digital visitor management",
+    ownership: "Condominium freehold",
+    paymentPlan: "15% booking, quarterly construction-linked instalments",
+    summary:
+      "A hillside apartment project in Kandy offering panoramic valley views, modern shared amenities, and commuter-friendly access to the city core.",
+    description:
+      "Kandy Hills Residences is a planned apartment community built for families and professionals who want a new home close to Kandy's schools, hospitals, and transport links. Homes are designed for cross ventilation, natural light, and efficient daily living.",
+    heroImage:
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=1800&auto=format&fit=crop",
+    gallery: [
+      { label: "Exterior", image: "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?q=80&w=1400&auto=format&fit=crop" },
+      { label: "Lobby", image: "https://images.unsplash.com/photo-1505691938895-1758d7feb511?q=80&w=1400&auto=format&fit=crop" },
+      { label: "Living Room", image: "https://images.unsplash.com/photo-1617098474202-0d0d7f60fdb5?q=80&w=1400&auto=format&fit=crop" },
+      { label: "Bedroom", image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?q=80&w=1400&auto=format&fit=crop" },
+      { label: "Kitchen", image: "https://images.unsplash.com/photo-1565538810643-b5bdb714032a?q=80&w=1400&auto=format&fit=crop" },
+      { label: "Pool", image: "https://images.unsplash.com/photo-1582719508461-905c673771fd?q=80&w=1400&auto=format&fit=crop" },
+      { label: "Amenities", image: "https://images.unsplash.com/photo-1628605248644-14dd04022da1?q=80&w=1400&auto=format&fit=crop" },
+      { label: "Rooftop", image: "https://images.unsplash.com/photo-1449844908441-8829872d2607?q=80&w=1400&auto=format&fit=crop" },
+      { label: "Architectural Render", image: "https://images.unsplash.com/photo-1460317442991-0ec209397118?q=80&w=1400&auto=format&fit=crop" }
+    ],
+    amenities: [
+      { name: "Pool", icon: "Waves" },
+      { name: "Gym", icon: "Dumbbell" },
+      { name: "Rooftop", icon: "Building2" },
+      { name: "Parking", icon: "Car" },
+      { name: "Security", icon: "ShieldCheck" },
+      { name: "CCTV", icon: "Camera" },
+      { name: "Garden", icon: "Trees" },
+      { name: "Children's Area", icon: "Baby" },
+      { name: "Clubhouse", icon: "Landmark" },
+      { name: "EV Charging", icon: "Zap" },
+      { name: "Concierge", icon: "Bell" }
+    ],
+    floorPlans: [
+      { id: "kh-1", planName: "Hillcrest 2B", bedrooms: 2, bathrooms: 2, floorAreaSqFt: 860, startingPriceLkr: 22500000, image: "https://images.unsplash.com/photo-1493809842364-78817add7ffb?q=80&w=1000&auto=format&fit=crop", availability: "Available" },
+      { id: "kh-2", planName: "Summit 2B", bedrooms: 2, bathrooms: 2, floorAreaSqFt: 990, startingPriceLkr: 26500000, image: "https://images.unsplash.com/photo-1493666438817-866a91353ca9?q=80&w=1000&auto=format&fit=crop", availability: "Available" },
+      { id: "kh-3", planName: "Vista 3B", bedrooms: 3, bathrooms: 2, floorAreaSqFt: 1280, startingPriceLkr: 34500000, image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1000&auto=format&fit=crop", availability: "Limited" },
+      { id: "kh-4", planName: "Grand Ridge 3B", bedrooms: 3, bathrooms: 2, floorAreaSqFt: 1480, startingPriceLkr: 45000000, image: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?q=80&w=1000&auto=format&fit=crop", availability: "Sold Out" }
+    ],
+    nearby: [
+      { category: "Shopping", name: "Kandy City Centre", distanceKm: 2.1 },
+      { category: "Hospital", name: "Kandy National Hospital", distanceKm: 1.3 },
+      { category: "School", name: "Trinity College", distanceKm: 1.0 },
+      { category: "Restaurant", name: "Lake Round Dining Strip", distanceKm: 1.8 },
+      { category: "Transport", name: "Kandy Railway Station", distanceKm: 2.4 },
+      { category: "Landmark", name: "Temple of the Tooth", distanceKm: 2.7 }
+    ],
+    coordinates: { lat: 7.2906, lng: 80.6337 },
+    contact: { name: "Project Desk - Serendib", email: "info@serendibproperty.lk", phone: "+94 81 223 9100" }
+  },
+];
