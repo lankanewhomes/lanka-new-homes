@@ -50,6 +50,33 @@ export type NearbyPlace = {
   distanceKm: number;
 };
 
+export type PricingHistoryEntry = {
+  date: string;
+  note: string;
+};
+
+export type ProjectStatLabel =
+  | "Listing status"
+  | "Building status"
+  | "Price CAD"
+  | "Price range"
+  | "Address"
+  | "Total units"
+  | "Total Units"
+  | "Floor plans"
+  | "Stories"
+  | "Floors"
+  | "Property type"
+  | "Beds"
+  | "Baths"
+  | "SqFt"
+  | "Road"
+  | "Area"
+  | "Electricity"
+  | "Tap water"
+  | "Per SqFt (Avg)"
+  | "Incentives";
+
 export type Developer = {
   slug: string;
   name: string;
@@ -70,16 +97,29 @@ export type Project = {
   name: string;
   developerSlug: string;
   developerName: string;
+  architectName?: string;
+  architectSlug?: string;
+  salesCompanyName?: string;
+  salesCompanySlug?: string;
+  interiorDesignerName?: string;
+  interiorDesignerSlug?: string;
   location: string;
   district: string;
   city: string;
   province: string;
   neighborhood: string;
+  neighborhoodSlug?: string;
+  road?: string;
+  area?: string;
+  electricity?: string;
+  tapWater?: string;
   type: string;
   status: ProjectStatus;
+  isFeatured?: boolean;
   launchDate: string;
   completionYear: number;
   constructionStatus: string;
+  constructionStarted?: string;
   startingPriceLkr: number;
   priceRange: string;
   bedrooms: string;
@@ -90,7 +130,19 @@ export type Project = {
   parking: string;
   security: string;
   ownership: string;
+  ceilingInfo?: string;
   paymentPlan: string;
+  availablePlanPrices?: string;
+  pricingComingSoon?: string;
+  averagePricePerSqft?: string;
+  monthlyMaintenancePerSqft?: string;
+  propertyTax?: string;
+  parkingCost?: string;
+  storageCost?: string;
+  coopFeeRealtors?: string;
+  pricingHistory?: PricingHistoryEntry[];
+  depositPaymentStructure?: string;
+  incentives?: string[];
   summary: string;
   description: string;
   heroImage: string;
@@ -98,6 +150,8 @@ export type Project = {
   videos?: { label: string; embedUrl?: string; thumbnail?: string }[];
   virtualTours?: { label: string; url: string }[];
   interactiveMapUrl?: string;
+  mobileVisibleStats?: ProjectStatLabel[];
+  desktopVisibleStats?: ProjectStatLabel[];
   amenities: Amenity[];
   floorPlans: FloorPlan[];
   nearby: NearbyPlace[];

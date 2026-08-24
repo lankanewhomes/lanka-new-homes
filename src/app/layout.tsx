@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Footer, Header } from "@/components/marketplace/components";
+import { BreadcrumbBar } from "@/components/layout/breadcrumb-bar";
 import { LanguageProvider } from "@/components/layout/language-provider";
 import { getSiteUrl } from "@/lib/seo";
 import "./globals.css";
@@ -32,5 +33,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
-  return <html lang="en" className="h-full antialiased"><body className="min-h-full" suppressHydrationWarning><LanguageProvider><Header /><main>{children}</main><Footer /></LanguageProvider></body></html>;
+  return <html lang="en" className="h-full antialiased"><body className="min-h-full" suppressHydrationWarning><LanguageProvider><Header /><BreadcrumbBar /><main>{children}</main><Footer /></LanguageProvider></body></html>;
 }

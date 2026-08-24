@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Plans & homes</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="plans-page">
+      <section class="plans-homes" aria-labelledby="plans-heading">
+        <header class="plans-header">
+          <h1 id="plans-heading">Plans &amp; homes</h1>
+
+          <div class="plans-controls">
+            <div class="tablist" role="tablist" aria-label="Plans and homes categories">
+              <button class="tab" role="tab" aria-selected="false" data-tab="all">All (11)</button>
+              <button class="tab is-active" role="tab" aria-selected="true" data-tab="floor-plans">Floor plans (11)</button>
+              <button class="tab" role="tab" aria-selected="false" data-tab="quick-move-ins">Quick move ins</button>
+            </div>
+
+            <div class="filter-wrap">
+              <button
+                type="button"
+                class="filter-button"
+                id="filterButton"
+                aria-haspopup="dialog"
+                aria-expanded="false"
+                aria-controls="filterPanel"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M4 6h16M7 12h10M10 18h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                </svg>
+                Filter &amp; sort
+              </button>
+
+              <div class="filter-panel" id="filterPanel" role="dialog" aria-label="Filter and sort options" hidden>
+                <p class="panel-title">Sample filters</p>
+                <label><input type="checkbox" checked /> For sale</label>
+                <label><input type="checkbox" /> 2+ bedrooms</label>
+                <label><input type="checkbox" /> 2+ bathrooms</label>
+                <hr />
+                <label for="sortSelect">Sort by</label>
+                <select id="sortSelect">
+                  <option>Most relevant</option>
+                  <option>Price: Low to high</option>
+                  <option>Price: High to low</option>
+                  <option>Newest</option>
+                </select>
+                <button type="button" class="panel-close" id="panelCloseButton">Close</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="chip-row" aria-label="Active filters">
+            <span class="chip" id="forSaleChip">
+              For sale
+              <button type="button" class="chip-remove" id="removeChipButton" aria-label="Remove For sale filter">&times;</button>
+            </span>
+          </div>
+        </header>
+
+        <div class="cards-grid" aria-live="polite">
+          <article class="property-card" aria-label="C7 floor plan listing">
+            <div class="image-wrap">
+              <div class="image-placeholder" role="img" aria-label="Floor plan image placeholder for C7">Floor plan preview</div>
+              <span class="sale-badge">FOR SALE</span>
+            </div>
+            <div class="card-body">
+              <h2>C7</h2>
+              <p class="price">From $680,667 CAD</p>
+              <p class="type">Condo - Suite</p>
+              <ul class="features" aria-label="C7 unit features">
+                <li>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16v7H4zM4 12V8h7v4M13 12V8h7v4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" /></svg>
+                  2 bd
+                </li>
+                <li>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 13h12v6H6zM7 10V8h10v2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" /></svg>
+                  2 ba
+                </li>
+                <li>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v14H5zM9 9h6v6H9z" fill="none" stroke="currentColor" stroke-width="1.6" /></svg>
+                  1,015 SqFt
+                </li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="property-card" aria-label="G7 floor plan listing">
+            <div class="image-wrap">
+              <div class="image-placeholder" role="img" aria-label="Floor plan image placeholder for G7">Floor plan preview</div>
+              <span class="sale-badge">FOR SALE</span>
+            </div>
+            <div class="card-body">
+              <h2>G7</h2>
+              <p class="price">From $1,178,217 CAD</p>
+              <p class="type">Condo - Suite</p>
+              <ul class="features" aria-label="G7 unit features">
+                <li>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16v7H4zM4 12V8h7v4M13 12V8h7v4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" /></svg>
+                  3 bd
+                </li>
+                <li>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 13h12v6H6zM7 10V8h10v2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" /></svg>
+                  2 ba
+                </li>
+                <li>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v14H5zM9 9h6v6H9z" fill="none" stroke="currentColor" stroke-width="1.6" /></svg>
+                  1,565 SqFt
+                </li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="property-card" aria-label="F8 floor plan listing">
+            <div class="image-wrap">
+              <div class="image-placeholder" role="img" aria-label="Floor plan image placeholder for F8">Floor plan preview</div>
+              <span class="sale-badge">FOR SALE</span>
+            </div>
+            <div class="card-body">
+              <h2>F8</h2>
+              <p class="price">From $925,900 CAD</p>
+              <p class="type">Condo - Suite</p>
+              <ul class="features" aria-label="F8 unit features">
+                <li>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16v7H4zM4 12V8h7v4M13 12V8h7v4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" /></svg>
+                  2 bd
+                </li>
+                <li>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 13h12v6H6zM7 10V8h10v2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" /></svg>
+                  2 ba
+                </li>
+                <li>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v14H5zM9 9h6v6H9z" fill="none" stroke="currentColor" stroke-width="1.6" /></svg>
+                  1,260 SqFt
+                </li>
+              </ul>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>

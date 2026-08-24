@@ -16,7 +16,7 @@ export default function DeveloperProjectsPage() {
   ];
   return (
     <div className="grid gap-4 lg:grid-cols-[220px_1fr]">
-      <DashboardSidebar links={[{ label: "Overview", href: "/developer/dashboard" }, { label: "Projects", href: "/developer/projects" }, { label: "Leads", href: "/developer/dashboard" }, { label: "Analytics", href: "/developer/dashboard" }, { label: "Profile", href: "/developer/dashboard" }, { label: "Settings", href: "/developer/dashboard" }]} />
+      <DashboardSidebar links={[{ label: "Overview", href: "/developer/dashboard" }, { label: "Projects", href: "/developer/projects" }, { label: "New Project", href: "/developer/projects/new" }, { label: "Create Builder Page", href: "/developer/builders/new" }, { label: "Leads", href: "/developer/dashboard" }, { label: "Analytics", href: "/developer/dashboard" }, { label: "Profile", href: "/developer/dashboard" }, { label: "Settings", href: "/developer/dashboard" }]} />
       <section className="space-y-4">
         <DashboardHeader title="Project Management" subtitle="Create and manage your development listings." />
         <DataTable columns={["Project", "Location", "Status", "Views", "Leads", "Updated", "Actions"]} rows={rows} />

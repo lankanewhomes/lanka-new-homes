@@ -27,7 +27,7 @@ export default function DeveloperDashboardPage() {
 
   return (
     <div className="grid gap-4 lg:grid-cols-[220px_1fr] lg:pt-8">
-      <DashboardSidebar links={[{ label: "Overview", href: "/developer/dashboard" }, { label: "Projects", href: "/developer/projects" }, { label: "Leads", href: "/developer/dashboard" }, { label: "Analytics", href: "/developer/dashboard" }, { label: "Profile", href: "/developer/dashboard" }, { label: "Settings", href: "/developer/dashboard" }]} />
+      <DashboardSidebar links={[{ label: "Overview", href: "/developer/dashboard" }, { label: "Projects", href: "/developer/projects" }, { label: "New Project", href: "/developer/projects/new" }, { label: "Create Builder Page", href: "/developer/builders/new" }, { label: "Leads", href: "/developer/dashboard" }, { label: "Analytics", href: "/developer/dashboard" }, { label: "Profile", href: "/developer/dashboard" }, { label: "Settings", href: "/developer/dashboard" }]} />
       <section className="space-y-4">
         <DashboardHeader title="Developer Dashboard" subtitle="Manage projects, leads, and publication status." />
         <div className="grid gap-3 md:grid-cols-3 lg:grid-cols-6">

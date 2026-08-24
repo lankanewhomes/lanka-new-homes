@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { DeveloperCard } from "@/components/marketplace/components";
-import { developers } from "@/data/developers";
+import { getAllDevelopers } from "@/lib/developer-store";
 
 export const metadata: Metadata = {
   title: "Developer Directory in Sri Lanka",
@@ -21,7 +21,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function DevelopersPage() {
+export default async function DevelopersPage() {
+  const developers = await getAllDevelopers();
+
   return (
     <div className="space-y-4">
       <h1 className="text-3xl font-semibold">Developer Directory</h1>

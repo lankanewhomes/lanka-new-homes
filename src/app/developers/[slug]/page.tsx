@@ -1,19 +1,20 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { DeveloperProfile, ProjectCard } from "@/components/marketplace/components";
-import { developers } from "@/data/developers";
+import { getAllDevelopers, getDeveloperBySlug } from "@/lib/developer-store";
 import { projects } from "@/data/projects";
 import { toAbsoluteUrl } from "@/lib/seo";
 
 type DeveloperProfilePageProps = { params: Promise<{ slug: string }> };
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const developers = await getAllDevelopers();
   return developers.map((developer) => ({ slug: developer.slug }));
 }
 
 export async function generateMetadata({ params }: DeveloperProfilePageProps): Promise<Metadata> {
   const { slug } = await params;
-  const developer = developers.find((d) => d.slug === slug);
+  const developer = await getDeveloperBySlug(slug);
 
   if (!developer) {
     return {
@@ -55,7 +56,7 @@ export async function generateMetadata({ params }: DeveloperProfilePageProps): P
 
 export default async function DeveloperProfilePage({ params }: DeveloperProfilePageProps) {
   const { slug } = await params;
-  const developer = developers.find((d) => d.slug === slug);
+  const developer = await getDeveloperBySlug(slug);
   if (!developer) return notFound();
 
   const currentProjects = projects.filter((p) => p.developerSlug === slug && p.status !== "Coming Soon");

@@ -165,6 +165,8 @@ export default function Home() {
 
   const t = copy[language];
 
+  const featuredProjects = useMemo(() => projects.filter((project) => project.isFeatured).slice(0, 4), []);
+
   const shelves = [
     { title: t.shelfTrending, projects: [projects[0], projects[1], projects[0], projects[1], projects[0], projects[1], projects[0]] },
     { title: t.shelfFeatured, projects: [projects[1], projects[0], projects[1], projects[0]] },
@@ -244,8 +246,8 @@ export default function Home() {
         <p className="featured-listings-subtitle">A curated set of standout homes selected by LankaLiving editors.</p>
         <div className="featured-listings-shell">
           <div className="home-card-grid featured-listings-grid">
-            {[...projects, ...projects].slice(0, 4).map((project, index) => (
-              <Link href={`/projects/${project.slug}`} className="home-project-card" key={`featured-${project.slug}-${index}`}>
+            {featuredProjects.map((project) => (
+              <Link href={`/projects/${project.slug}`} className="home-project-card" key={`featured-${project.slug}`}>
                 <div className="home-project-image-wrap">
                   <Image src={project.heroImage} alt={project.name} width={640} height={390} />
                 </div>

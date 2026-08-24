@@ -39,18 +39,14 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  --radius-xl: calc(var(--radius) + 4px);
 }
 
 :root {
   --font-ref-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --font-ref-serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, serif;
   --font-app: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -70,11 +66,11 @@
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
   --radius: 0.625rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
@@ -105,11 +101,11 @@
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);
@@ -127,11 +123,18 @@
     transition: none !important;
     scroll-behavior: auto !important;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   html {
     @apply font-sans;
+  }
+
+  input, select, textarea {
+    min-width: 0;
+    max-width: 100%;
   }
 }
 
@@ -143,6 +146,14 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
 .site-logo, .footer-logo { font-size: 27px; font-weight: 800; letter-spacing: -1.8px; color: #1d1d22; }.site-logo span { font-size: 34px; color: #f7bd19; }
 .site-header nav, .header-actions { display: flex; gap: 39px; align-items: center; font-size: 14px; font-weight: 550; }.site-header a:hover { text-decoration: underline; }
 .header-actions { gap: 14px; }.sign-up { padding: 11px 21px; background: #ffc62d; border: 1px solid #ffc62d; color: #24221e; }.mobile-menu { display: none; }
+.site-breadcrumb { border-top: 1px solid #ececec; border-bottom: 1px solid #ececec; background: #fff; }
+.site-breadcrumb-inner { width: min(1290px, calc(100% - 48px)); margin: 0 auto; }
+.site-breadcrumb ol { margin: 0; padding: 10px 0; list-style: none; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 12px; color: #60656f; }
+.site-breadcrumb li { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; }
+.site-breadcrumb a { color: #2f3746; text-decoration: none; }
+.site-breadcrumb a:hover { text-decoration: underline; }
+.site-breadcrumb-separator { color: #9ea5b2; }
+.site-breadcrumb [aria-current="page"] { color: #20242f; font-weight: 600; }
 .language-segmented { display: inline-flex; border: 1px solid #d8d8dd; border-radius: 4px; overflow: hidden; background: #fff; }
 .language-segmented button { border: 0; border-right: 1px solid #d8d8dd; background: #f8f8f9; color: #1f1f25; min-height: 34px; padding: 0 16px; font-size: 13px; font-weight: 600; }
 .language-segmented button:last-child { border-right: 0; }
@@ -1093,6 +1104,8 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   display: flex;
   gap: 8px;
   margin-top: 12px;
+  align-items: center;
+  padding-left: 34px;
 }
 
 .listing-hero-tags span {
@@ -1112,6 +1125,29 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   border-color: #e4e4e4;
   color: #444;
 }
+
+.listing-hero-save-pill {
+  display: none;
+  margin-left: auto;
+  min-height: 24px;
+  border: 1px solid #d8d8d8;
+  background: #fff;
+  color: #2c2c2c;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 9px;
+  font-size: 11px;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+}
+
+.listing-hero-mobile-ctas {
+  display: none;
+}
+
 
 .listing-hero-stats {
   margin-top: 18px;
@@ -1260,6 +1296,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
     gap: 13px;
   }
 
+
   .listing-hero-actions {
     width: 100%;
     justify-content: space-between;
@@ -1272,17 +1309,100 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
     font-size: 13px;
   }
 
+  .listing-hero-save-pill {
+    display: inline-flex;
+    min-height: 22px;
+    font-size: 10px;
+    padding: 0 8px;
+  }
+
+  .listing-hero-mobile-ctas {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 45;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    background: #fff;
+    padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+    pointer-events: none;
+    border-radius: 0;
+  }
+
+  .listing-hero-mobile-btn {
+    pointer-events: auto;
+    width: 100%;
+    min-height: 44px;
+    border: 1px solid #202020;
+    background: #202020;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 0 14px;
+  }
+
+  .listing-hero-mobile-btn-updates {
+    background: #fff;
+    color: #202020;
+  }
+
+  .listing-hero-mobile-btn-request {
+    background: #f8c92f;
+    border-color: #f8c92f;
+    color: #202020;
+  }
+
+  .listing-hero-actions {
+    display: none;
+  }
+
+  .listing-hero-panel {
+    padding-bottom: 64px;
+  }
+
+  .listing-hero-tags {
+    margin-top: 10px;
+    flex-wrap: wrap;
+    padding-left: 14px;
+  }
+
   .listing-hero-stats {
-    grid-template-columns: repeat(var(--stat-count, 10), minmax(104px, 1fr));
-    gap: 0;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
     padding-top: 18px;
     padding-bottom: 10px;
-    overflow-x: auto;
-    overflow-y: hidden;
+    overflow: visible;
+  }
+
+  .listing-hero-stats > div:not(.mobile-stat-visible) {
+    display: none;
+  }
+
+  .listing-hero-stats > div {
+    border-radius: 0;
+    min-height: 74px;
+    padding: 8px 6px;
+  }
+
+  .listing-hero-stats > div strong,
+  .listing-hero-stats > div .value-text {
+    font-size: 11px;
+  }
+
+  .listing-hero-stats > div + div {
+    border-left: 1px solid #f3f3f3;
   }
 
   .listing-hero-stats > div span {
-    font-size: 13px;
+    font-size: 11px;
     line-height: 1.2;
   }
 }
@@ -1522,6 +1642,100 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   }
 }
 
+.project-description-shell {
+  width: min(1220px, calc(100% - 56px));
+  margin: 40px auto 16px;
+  background: #fff;
+  padding: 20px 0;
+}
+
+.project-description-shell h2 {
+  margin: 0;
+  font-family: var(--font-ref-serif);
+  font-size: clamp(20px, 1.9vw, 26px);
+  line-height: 1.25;
+  font-weight: 400;
+  color: #1a1a1a;
+}
+
+.project-description-shell > p:last-child {
+  margin: 18px 0 0;
+  max-width: 760px;
+  font-size: 15px;
+  line-height: 1.65;
+  color: #222;
+}
+
+
+.project-narrative-shell {
+  width: min(1220px, calc(100% - 56px));
+  margin: 14px auto 42px;
+  background: #fff;
+  padding: 8px 0 24px;
+}
+
+  .project-narrative-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 52px;
+  }
+
+  .project-narrative-list,
+  .project-narrative-right {
+    border-top: 1px solid #e7e7e7;
+  }
+
+  .project-narrative-list p,
+  .project-narrative-right p {
+    margin: 0;
+    border-bottom: 1px solid #e7e7e7;
+    padding: 17px 0;
+    font-size: 14px;
+    line-height: 1.45;
+    color: #232323;
+  }
+
+  .project-narrative-list strong,
+  .project-narrative-right strong {
+    font-weight: 700;
+  }
+
+  @media (max-width: 980px) {
+    .project-description-shell {
+      width: calc(100% - 24px);
+      margin: 28px auto 12px;
+      padding: 16px 0;
+    }
+
+    .project-description-shell h2 {
+      font-size: 22px;
+    }
+
+    .project-description-shell > p:last-child {
+      margin: 14px 0 0;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .project-narrative-shell {
+      width: calc(100% - 24px);
+      margin: 10px auto 30px;
+      padding: 8px 0 16px;
+    }
+
+    .project-narrative-grid {
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+
+    .project-narrative-list p,
+    .project-narrative-right p {
+      padding: 12px 0;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+  }
+
 .trending-homes-section {
   margin: 0 calc(505px - 50vw) 76px;
   padding: 68px max(calc((100vw - 1010px)/2), 22px) 68px;
@@ -1549,12 +1763,768 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   line-height: 36px;
 }
 
+.plans-homes-shell {
+  width: min(1220px, calc(100% - 56px));
+  margin: 28px auto 56px;
+  background: #fff;
+}
+
+.plans-contact-banner {
+  border-radius: 0;
+  border: 1px solid #e8e1d6;
+  background: #f8f4ed;
+  padding: 22px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) auto;
+  align-items: center;
+  gap: 22px;
+}
+
+.plans-contact-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.plans-contact-banner h3 {
+  margin: 0;
+  font-family: var(--font-ref-serif);
+  font-size: clamp(26px, 2.5vw, 34px);
+  line-height: 1.12;
+  color: #1f1f1f;
+}
+
+.compact-sales-card {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.compact-sales-line {
+  margin: 6px 0 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #2f2f2f;
+}
+
+.compact-sales-line a {
+  color: #2f2f2f;
+  text-decoration: underline;
+}
+
+.plans-contact-meta {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+  width: 100%;
+}
+
+.plans-contact-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #2f2f2f;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.plans-contact-row svg {
+  color: #2f2f2f;
+  flex-shrink: 0;
+}
+
+.plans-contact-row a {
+  color: #2f2f2f;
+  text-decoration: none;
+}
+
+.plans-contact-note {
+  margin: 10px 0 0;
+  font-size: 15px;
+  line-height: 1.45;
+  color: #4a4338;
+  max-width: 52ch;
+}
+
+.plans-contact-note a {
+  color: #2f2f2f;
+  text-decoration: underline;
+}
+
+.plans-contact-directions {
+  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  color: #2f2f2f;
+  text-decoration: underline;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.plans-contact-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.plans-contact-actions button {
+  min-height: 42px;
+  padding: 0 20px;
+  border-radius: 0;
+  border: 1px solid #2f2f2f;
+  background: #fff;
+  color: #1f1f1f;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.plans-social-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.plans-social-link {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid #d7d4ce;
+  background: #fff;
+  color: #2f2f2f;
+}
+
+.plans-homes-head {
+  margin-top: 26px;
+}
+
+.plans-homes-head h2 {
+  margin: 0;
+  font-family: var(--font-ref-serif);
+  font-size: clamp(30px, 3vw, 42px);
+  line-height: 1.15;
+  color: #1e1e1e;
+}
+
+.plans-homes-toolbar {
+  margin-top: 14px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.plans-homes-tabs {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #e4e4e4;
+  width: min(760px, 100%);
+}
+
+.plans-homes-tabs button {
+  min-height: 42px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: #4d4d4d;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 0 15px;
+}
+
+.plans-homes-tabs button.active {
+  color: #1f1f1f;
+  border-bottom-color: #f4be1e;
+}
+
+.plans-filter-btn {
+  min-height: 40px;
+  border: 1px solid #8f8f8f;
+  border-radius: 0;
+  background: #fff;
+  color: #262626;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 14px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.plans-chip-row {
+  margin-top: 10px;
+}
+
+.plans-chip-row span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  border: 1px solid #d4d4d4;
+  border-radius: 0;
+  padding: 0 9px;
+  font-size: 12px;
+  color: #333;
+  background: #fff;
+}
+
+.plans-homes-grid {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px 18px;
+}
+
+.plans-home-card {
+  border: 1px solid #dce2ea;
+  border-radius: 0;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 8px 16px rgba(31, 44, 63, 0.06);
+}
+
+.plans-home-card figure {
+  margin: 0;
+  position: relative;
+}
+
+.plans-home-image {
+  width: 100%;
+  height: 210px;
+  object-fit: cover;
+  display: block;
+}
+
+.plans-status-pill {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  border-radius: 0;
+  background: #178a46;
+  color: #fff;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  font-weight: 700;
+  min-height: 20px;
+  padding: 0 7px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.plans-home-body {
+  padding: 11px 10px 10px;
+}
+
+.plans-home-body h4 {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.3;
+  color: #1f1f1f;
+}
+
+.plans-home-price {
+  margin: 6px 0 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: #1f1f1f;
+}
+
+.plans-home-type {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #4a4a4a;
+}
+
+.plans-home-facts {
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 12px;
+  color: #303030;
+}
+
+.plans-home-facts span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.plans-more-wrap {
+  margin-top: 14px;
+  display: flex;
+  justify-content: center;
+}
+
+.plans-more-btn {
+  min-height: 40px;
+  border: 1px solid #e3e3e3;
+  border-radius: 0;
+  background: #fff;
+  color: #2d2d2d;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.amenities-showcase-shell {
+  width: min(1220px, calc(100% - 56px));
+  margin: 14px auto 60px;
+  padding: 20px 0 24px;
+}
+
+.amenities-showcase-shell h2 {
+  margin: 0 0 16px;
+  font-family: var(--font-ref-serif);
+  font-size: 34px;
+  line-height: 1.1;
+  color: #202022;
+}
+
+.amenities-showcase-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.85fr) minmax(300px, 1fr);
+  gap: 26px;
+  align-items: stretch;
+}
+
+.amenities-showcase-image-wrap {
+  margin: 0;
+  min-height: 540px;
+  border: 1px solid #e7e7e7;
+  overflow: hidden;
+}
+
+.amenities-showcase-image {
+  width: 100%;
+  height: 100%;
+  min-height: 540px;
+  object-fit: cover;
+  display: block;
+}
+
+.amenities-showcase-list {
+  max-height: 540px;
+  overflow-y: auto;
+  padding-right: 6px;
+  display: grid;
+  gap: 10px;
+}
+
+.amenities-showcase-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.amenities-showcase-list::-webkit-scrollbar-thumb {
+  background: #d0d0d0;
+}
+
+.amenities-showcase-item {
+  border: 1px solid #dfdfdf;
+  background: #fff;
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  padding: 18px 16px;
+  text-align: left;
+  color: #292b31;
+}
+
+.amenities-showcase-item.active {
+  border-color: #f5be29;
+}
+
+.amenities-showcase-item-icon {
+  width: 34px;
+  height: 34px;
+  border: 1px solid #e3e3e3;
+  background: #f8f8f8;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 700;
+  color: #222;
+  line-height: 1;
+}
+
+.amenities-showcase-item-copy {
+  display: grid;
+  gap: 10px;
+}
+
+.amenities-showcase-item-copy strong {
+  font-size: 24px;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+.amenities-showcase-item-copy span {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #4a4c52;
+}
+
+.sales-center-shell {
+  width: min(1220px, calc(100% - 56px));
+  margin: 10px auto 56px;
+}
+
+.sales-alert-card {
+  position: relative;
+  width: 100%;
+  max-width: none;
+  border: 1px solid #e4eaf1;
+  background: #fff;
+  border-radius: 0;
+  box-shadow: 0 8px 20px rgba(15, 36, 58, 0.14);
+  overflow: hidden;
+}
+
+.sales-alert-center-label {
+  margin: 8px 0 0;
+  color: #1f1f1f;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.sales-alert-top {
+  background: #f4f6f8;
+  padding: 52px 42px 28px;
+}
+
+.sales-alert-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(160px, 1fr) minmax(180px, 1fr);
+  align-items: start;
+  gap: 36px;
+}
+
+.sales-alert-contact {
+  text-align: left;
+}
+
+.sales-alert-heading {
+  margin: 0;
+  color: #1f1f1f;
+  font-family: var(--font-ref-serif);
+  font-size: 28px;
+  line-height: 1.15;
+}
+
+.sales-alert-phone {
+  margin: 14px 0 0;
+  font-size: 16px;
+  line-height: 1.5;
+  font-weight: 600;
+  color: #1f1f1f;
+}
+
+.sales-alert-hours {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 0;
+  color: #1f1f1f;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.sales-alert-hours strong {
+  color: #1f1f1f;
+  font-weight: 700;
+}
+
+.sales-alert-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 22px;
+}
+
+.sales-alert-request {
+  margin-top: 22px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 24px;
+  border: 1px solid #f4be1e;
+  border-radius: 999px;
+  background: #f4be1e;
+  color: #1f1f1f;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.sales-alert-socials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.sales-alert-social {
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #d5dbe3;
+  border-radius: 999px;
+  background: #fff;
+  color: #1f1f1f;
+}
+
+.sales-alert-bottom {
+  padding: 14px 18px 16px;
+  text-align: center;
+  background: #fff;
+  border-top: 1px solid #f0f1f3;
+}
+
+.sales-alert-bottom p {
+  margin: 0;
+  color: #7a7f8a;
+  font-size: 12px;
+}
+
+.sales-alert-directions {
+  margin: 10px auto 0;
+  min-height: 38px;
+  border: 1px solid #dfe5ed;
+  background: #fff;
+  color: #2f4478;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 0 16px;
+  box-shadow: 0 2px 0 rgba(16, 24, 40, 0.06);
+}
+
+@media (max-width: 980px) {
+  .plans-homes-shell {
+    width: calc(100% - 24px);
+    margin: 18px auto 30px;
+  }
+
+  .plans-contact-banner {
+    grid-template-columns: 1fr;
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .plans-contact-actions {
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+
+  .plans-contact-banner h3 {
+    font-size: 32px;
+  }
+
+  .plans-contact-note {
+    font-size: 15px;
+  }
+
+  .plans-contact-actions button {
+    min-height: 40px;
+    font-size: 14px;
+  }
+
+  .plans-homes-head {
+    margin-top: 18px;
+  }
+
+  .plans-homes-head h2 {
+    font-size: 30px;
+  }
+
+  .plans-homes-toolbar {
+    margin-top: 10px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .plans-homes-tabs {
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .plans-homes-tabs button {
+    min-height: 40px;
+    padding: 0 14px;
+    font-size: 14px;
+  }
+
+  .plans-filter-btn {
+    width: fit-content;
+    min-height: 40px;
+    font-size: 14px;
+  }
+
+  .plans-chip-row span {
+    font-size: 13px;
+  }
+
+  .plans-homes-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .plans-home-image {
+    height: 190px;
+  }
+
+  .plans-home-body h4 {
+    font-size: 20px;
+  }
+
+  .plans-home-price {
+    font-size: 19px;
+  }
+
+  .plans-home-type {
+    font-size: 13px;
+  }
+
+  .plans-home-facts {
+    font-size: 12px;
+    gap: 8px;
+  }
+
+  .plans-more-btn {
+    min-height: 38px;
+    font-size: 13px;
+  }
+
+  .amenities-showcase-shell {
+    width: calc(100% - 24px);
+    margin: 10px auto 34px;
+    padding: 14px 0 18px;
+  }
+
+  .amenities-showcase-shell h2 {
+    margin-bottom: 12px;
+    font-size: 26px;
+  }
+
+  .amenities-showcase-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .amenities-showcase-image-wrap,
+  .amenities-showcase-image {
+    min-height: 270px;
+  }
+
+  .amenities-showcase-list {
+    max-height: 420px;
+    padding-right: 0;
+  }
+
+  .amenities-showcase-item {
+    grid-template-columns: 32px 1fr;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .amenities-showcase-item-icon {
+    width: 30px;
+    height: 30px;
+    font-size: 13px;
+  }
+
+  .amenities-showcase-item-copy {
+    gap: 6px;
+  }
+
+  .amenities-showcase-item-copy strong {
+    font-size: 20px;
+  }
+
+  .amenities-showcase-item-copy span {
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .sales-center-shell {
+    width: calc(100% - 24px);
+    margin: 8px auto 38px;
+  }
+
+  .sales-alert-card {
+    max-width: 100%;
+  }
+
+  .sales-alert-top {
+    padding: 42px 16px 16px;
+  }
+
+  .sales-alert-columns {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .sales-alert-contact {
+    text-align: center;
+  }
+
+  .sales-alert-hours {
+    align-items: center;
+  }
+
+  .sales-alert-phone {
+    font-size: 34px;
+  }
+
+  .sales-alert-note {
+    font-size: 12px;
+  }
+
+  .sales-alert-sub-note {
+    font-size: 11px;
+  }
+
+  .sales-alert-bottom {
+    padding: 12px;
+  }
+}
+
 .featured-listings-subtitle {
   margin: 8px 0 0;
   font-size: 14px;
   line-height: 22px;
   max-width: 540px;
   color: #566072;
+}
+
+#overview,
+#pricing,
+#plans-homes,
+#amenities {
+  scroll-margin-top: 146px;
 }
 
 .featured-listings-shell {

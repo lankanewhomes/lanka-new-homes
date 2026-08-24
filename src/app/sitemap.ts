@@ -1,10 +1,11 @@
 import type { MetadataRoute } from "next";
-import { developers } from "@/data/developers";
 import { projects } from "@/data/projects";
+import { getAllDevelopers } from "@/lib/developer-store";
 import { toAbsoluteUrl } from "@/lib/seo";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
+  const developers = await getAllDevelopers();
 
   const staticRoutes: MetadataRoute.Sitemap = [
     {

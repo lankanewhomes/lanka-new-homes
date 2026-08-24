@@ -2,9 +2,13 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { projects } from "@/data/projects";
 import {
+  AmenitiesShowcaseSection,
+  PlansAndHomesSection,
   PricingInformationLayout,
+  ProjectDescriptionSection,
   ProjectHero,
-  ProjectOverview,
+  ProjectNarrativeDetails,
+  SalesCenterSection,
 } from "@/components/marketplace/components";
 import { ProjectViewTracker } from "@/components/marketplace/view-tracker";
 import { toAbsoluteUrl } from "@/lib/seo";
@@ -100,10 +104,19 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
       <ProjectViewTracker projectSlug={project.slug} developerSlug={project.developerSlug} />
       <ProjectHero project={project} />
 
-      <section className="space-y-3">
-        <ProjectOverview project={project} />
-        <PricingInformationLayout />
+      <ProjectDescriptionSection project={project} />
+
+      <ProjectNarrativeDetails project={project} />
+
+      <section id="pricing" className="space-y-3">
+        <PricingInformationLayout project={project} />
       </section>
+
+      <SalesCenterSection project={project} />
+
+      <PlansAndHomesSection project={project} />
+
+      <AmenitiesShowcaseSection project={project} />
     </div>
   );
 }
