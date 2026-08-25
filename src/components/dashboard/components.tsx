@@ -3,6 +3,7 @@
 import { useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import type { Project } from "@/types";
 import { Button } from "@/components/ui/button";
 import { developers } from "@/data/developers";
 import {
@@ -24,6 +25,7 @@ type FloorPlanDraft = {
   startingPrice: string;
   averagePricePerSqft: string;
   image: string;
+  quickMoveIn: boolean;
 };
 
 type VirtualTourDraft = {
@@ -33,6 +35,11 @@ type VirtualTourDraft = {
 
 type MapImageDraft = {
   label: string;
+  image: string;
+};
+
+type AmenityDetails = {
+  description: string;
   image: string;
 };
 
@@ -196,8 +203,9 @@ export function BuilderProfileForm() {
   );
 }
 
-export function ProjectWizard() {
+export function ProjectWizard({ initialProject }: { initialProject?: Project } = {}) {
   const projectTypeOptions = [
+    "Private Residence",
     "Luxury Condominium",
     "Apartment Development",
     "Mixed-use Development",
@@ -276,60 +284,84 @@ export function ProjectWizard() {
     "Parking",
     "Completion year",
   ];
+  const floorPlanStatOptions = ["Status", "Price", "Address", "Project type", "Beds", "Baths", "SqFt", "Per SqFt (Avg)"];
   const maxVisibleStats = 10;
   const [step, setStep] = useState(0);
   const [publishMessage, setPublishMessage] = useState("");
   const [previewVisible, setPreviewVisible] = useState(false);
   const sectionRefs = useRef<Record<number, HTMLDivElement | null>>({});
-  const [projectType, setProjectType] = useState("");
-  const [projectStatus, setProjectStatus] = useState("");
-  const [moveInYear, setMoveInYear] = useState("");
-  const [constructionStarted, setConstructionStarted] = useState("");
-  const [estimatedCompletion, setEstimatedCompletion] = useState("");
-  const [province, setProvince] = useState("");
-  const [district, setDistrict] = useState("");
-  const [city, setCity] = useState("");
-  const [neighborhood, setNeighborhood] = useState("");
+  const [projectType, setProjectType] = useState(initialProject?.type ?? "");
+  const [projectStatus, setProjectStatus] = useState(initialProject?.status ?? "");
+  const [moveInYear, setMoveInYear] = useState(initialProject ? String(initialProject.completionYear) : "");
+  const [constructionStarted, setConstructionStarted] = useState(initialProject?.constructionStarted ?? "");
+  const [estimatedCompletion, setEstimatedCompletion] = useState(initialProject ? String(initialProject.completionYear) : "");
+  const [province, setProvince] = useState(initialProject?.province ?? "");
+  const [district, setDistrict] = useState(initialProject?.district ?? "");
+  const [city, setCity] = useState(initialProject?.city ?? "");
+  const [neighborhood, setNeighborhood] = useState(initialProject?.neighborhood ?? "");
 
-  const [startingPriceMin, setStartingPriceMin] = useState("");
-  const [startingPriceMax, setStartingPriceMax] = useState("");
+  const [startingPriceMin, setStartingPriceMin] = useState(initialProject ? String(initialProject.startingPriceLkr) : "");
+  const [startingPriceMax, setStartingPriceMax] = useState(initialProject ? String(initialProject.startingPriceLkr) : "");
   const [priceRangeMin, setPriceRangeMin] = useState("");
   const [priceRangeMax, setPriceRangeMax] = useState("");
   const [availableUnitPriceMin, setAvailableUnitPriceMin] = useState("");
   const [availableUnitPriceMax, setAvailableUnitPriceMax] = useState("");
-  const [pricePerSqft, setPricePerSqft] = useState("");
-  const [availablePlanPricesMin, setAvailablePlanPricesMin] = useState("");
+  const [pricePerSqft, setPricePerSqft] = useState(initialProject?.averagePricePerSqft ?? "");
+  const [availablePlanPricesMin, setAvailablePlanPricesMin] = useState(initialProject ? String(initialProject.startingPriceLkr) : "");
   const [availablePlanPricesMax, setAvailablePlanPricesMax] = useState("");
-  const [pricingComingSoon, setPricingComingSoon] = useState("");
-  const [averagePricePerSqft, setAveragePricePerSqft] = useState("");
-  const [monthlyMaintenancePerSqft, setMonthlyMaintenancePerSqft] = useState("");
-  const [propertyTax, setPropertyTax] = useState("");
-  const [parkingCost, setParkingCost] = useState("");
-  const [storageCost, setStorageCost] = useState("");
-  const [coopFeeRealtors, setCoopFeeRealtors] = useState("");
-  const [pricingHistoryDate, setPricingHistoryDate] = useState("");
-  const [pricingHistoryNote, setPricingHistoryNote] = useState("");
-  const [paymentStructure, setPaymentStructure] = useState("");
-  const [incentives, setIncentives] = useState<string[]>([]);
+  const [pricingComingSoon, setPricingComingSoon] = useState(initialProject?.pricingComingSoon ?? "");
+  const [averagePricePerSqft, setAveragePricePerSqft] = useState(initialProject?.averagePricePerSqft ?? "");
+  const [monthlyMaintenancePerSqft, setMonthlyMaintenancePerSqft] = useState(initialProject?.monthlyMaintenancePerSqft ?? "");
+  const [propertyTax, setPropertyTax] = useState(initialProject?.propertyTax ?? "");
+  const [parkingCost, setParkingCost] = useState(initialProject?.parkingCost ?? "");
+  const [storageCost, setStorageCost] = useState(initialProject?.storageCost ?? "");
+  const [coopFeeRealtors, setCoopFeeRealtors] = useState(initialProject?.coopFeeRealtors ?? "");
+  const [pricingHistoryDate, setPricingHistoryDate] = useState(initialProject?.pricingHistory?.[0]?.date ?? "");
+  const [pricingHistoryNote, setPricingHistoryNote] = useState(initialProject?.pricingHistory?.[0]?.note ?? "");
+  const [paymentPlanItems, setPaymentPlanItems] = useState<string[]>(initialProject?.paymentPlanItems ?? initialProject?.depositPaymentStructure?.split(";").map((item) => item.trim()) ?? ["", "", "", ""]);
+  const [incentives, setIncentives] = useState<string[]>(initialProject?.incentives ?? []);
 
-  const [bedMin, setBedMin] = useState("");
-  const [bedMax, setBedMax] = useState("");
-  const [bathMin, setBathMin] = useState("");
-  const [bathMax, setBathMax] = useState("");
-  const [sqftMin, setSqftMin] = useState("");
-  const [sqftMax, setSqftMax] = useState("");
+  const bedroomRange = initialProject?.bedrooms.split("-").map((value) => value.trim()) ?? [];
+  const bathroomRange = initialProject?.bathrooms.split("-").map((value) => value.trim()) ?? [];
+  const sqftRange = initialProject?.floorAreaRange.replace(/\s*sq\.ft/i, "").split("-").map((value) => value.replace(/,/g, "").trim()) ?? [];
+  const [bedMin, setBedMin] = useState(bedroomRange[0] ?? "");
+  const [bedMax, setBedMax] = useState(bedroomRange[1] ?? bedroomRange[0] ?? "");
+  const [bathMin, setBathMin] = useState(bathroomRange[0] ?? "");
+  const [bathMax, setBathMax] = useState(bathroomRange[1] ?? bathroomRange[0] ?? "");
+  const [sqftMin, setSqftMin] = useState(sqftRange[0] ?? "");
+  const [sqftMax, setSqftMax] = useState(sqftRange[1] ?? sqftRange[0] ?? "");
   const [floorPlans, setFloorPlans] = useState<FloorPlanDraft[]>([
-    { name: "", availability: "", status: "", beds: "", baths: "", sqft: "", interiorSize: "", balconySize: "", startingPrice: "", averagePricePerSqft: "", image: "" },
-    { name: "", availability: "", status: "", beds: "", baths: "", sqft: "", interiorSize: "", balconySize: "", startingPrice: "", averagePricePerSqft: "", image: "" },
+    ...(initialProject?.floorPlans.map((plan) => ({
+      name: plan.planName,
+      availability: plan.availability,
+      status: plan.availability === "Sold Out" ? "Sold" : "For sale",
+      beds: String(plan.bedrooms),
+      baths: String(plan.bathrooms),
+      sqft: String(plan.floorAreaSqFt),
+      interiorSize: "",
+      balconySize: "",
+      startingPrice: String(plan.startingPriceLkr),
+      averagePricePerSqft: "",
+      image: plan.image,
+      quickMoveIn: Boolean(plan.quickMoveIn),
+    })) ?? [
+      { name: "", availability: "", status: "", beds: "", baths: "", sqft: "", interiorSize: "", balconySize: "", startingPrice: "", averagePricePerSqft: "", image: "", quickMoveIn: false },
+      { name: "", availability: "", status: "", beds: "", baths: "", sqft: "", interiorSize: "", balconySize: "", startingPrice: "", averagePricePerSqft: "", image: "", quickMoveIn: false },
+    ]),
   ]);
-  const [videoUrl, setVideoUrl] = useState("");
+  const [videoUrl, setVideoUrl] = useState(initialProject?.videos?.[0]?.embedUrl ?? "");
   const [videoFile, setVideoFile] = useState("");
   const [blockPlanImages, setBlockPlanImages] = useState<MapImageDraft[]>([{ label: "", image: "" }]);
   const [roadMapImages, setRoadMapImages] = useState<MapImageDraft[]>([{ label: "", image: "" }]);
-  const [interactiveMapUrl, setInteractiveMapUrl] = useState("");
-  const [virtualTours, setVirtualTours] = useState<VirtualTourDraft[]>([]);
+  const [interactiveMapUrl, setInteractiveMapUrl] = useState(initialProject?.interactiveMapUrl ?? "");
+  const [virtualTours, setVirtualTours] = useState<VirtualTourDraft[]>(initialProject?.virtualTours ?? []);
+  const [brochureUrl, setBrochureUrl] = useState("");
+  const amenityOptions = ["Pool", "Gym", "Parking", "Security", "Padel Court", "Resident Lounge", "Private Elevator", "Utility Area", "Outdoor Kitchen", "Garden", "Children's Area", "Clubhouse", "EV Charging", "Concierge"];
+  const [amenities, setAmenities] = useState<string[]>(initialProject?.amenities.map((amenity) => amenity.name) ?? []);
+  const [amenityDetails, setAmenityDetails] = useState<Record<string, AmenityDetails>>(() => Object.fromEntries((initialProject?.amenities ?? []).map((amenity) => [amenity.name, { description: "", image: "" }])));
+  const [customAmenity, setCustomAmenity] = useState("");
 
-  const [visibleStats, setVisibleStats] = useState<string[]>([
+  const [visibleStats, setVisibleStats] = useState<string[]>(initialProject?.desktopVisibleStats ?? [
     "Price range",
     "Property type",
     "Beds",
@@ -337,10 +369,12 @@ export function ProjectWizard() {
     "SqFt",
     "Listing status",
   ]);
+  const [floorPlanVisibleStats, setFloorPlanVisibleStats] = useState<string[]>(initialProject?.floorPlanVisibleStats ?? floorPlanStatOptions);
 
-  const districtOptions = province ? (sriLankaDistrictsByProvince[province] ?? []) : [];
-  const cityOptions = district ? (sriLankaCitiesByDistrict[district] ?? []) : [];
-  const neighborhoodOptions = city ? (sriLankaNeighborhoodsByCity[city] ?? [city]) : [];
+  const uniqueOptions = (options: string[]) => [...new Set(options)];
+  const districtOptions = province ? uniqueOptions(sriLankaDistrictsByProvince[province] ?? []) : [];
+  const cityOptions = district ? uniqueOptions(sriLankaCitiesByDistrict[district] ?? []) : [];
+  const neighborhoodOptions = city ? uniqueOptions(sriLankaNeighborhoodsByCity[city] ?? [city]) : [];
 
   const toggleStat = (stat: string) => {
     setVisibleStats((current) => {
@@ -354,6 +388,10 @@ export function ProjectWizard() {
 
       return [...current, stat];
     });
+  };
+
+  const toggleFloorPlanStat = (stat: string) => {
+    setFloorPlanVisibleStats((current) => current.includes(stat) ? current.filter((value) => value !== stat) : [...current, stat]);
   };
 
   const getRangeError = (min: string, max: string, label: string) => {
@@ -404,14 +442,26 @@ export function ProjectWizard() {
     });
   };
 
-  const updateFloorPlan = (index: number, field: keyof FloorPlanDraft, value: string) => {
+  const updatePaymentPlanItem = (index: number, value: string) => {
+    setPaymentPlanItems((current) => current.map((item, itemIndex) => itemIndex === index ? value : item));
+  };
+
+  const addPaymentPlanItem = () => {
+    setPaymentPlanItems((current) => [...current, ""]);
+  };
+
+  const removePaymentPlanItem = (index: number) => {
+    setPaymentPlanItems((current) => current.length <= 1 ? current : current.filter((_, itemIndex) => itemIndex !== index));
+  };
+
+  const updateFloorPlan = (index: number, field: keyof FloorPlanDraft, value: string | boolean) => {
     setFloorPlans((current) => current.map((plan, planIndex) => (
       planIndex === index ? { ...plan, [field]: value } : plan
     )));
   };
 
   const addFloorPlan = () => {
-    setFloorPlans((current) => [...current, { name: "", availability: "", status: "", beds: "", baths: "", sqft: "", interiorSize: "", balconySize: "", startingPrice: "", averagePricePerSqft: "", image: "" }]);
+    setFloorPlans((current) => [...current, { name: "", availability: "", status: "", beds: "", baths: "", sqft: "", interiorSize: "", balconySize: "", startingPrice: "", averagePricePerSqft: "", image: "", quickMoveIn: false }]);
   };
 
   const addVirtualTour = () => {
@@ -451,6 +501,24 @@ export function ProjectWizard() {
     setter((current) => current.length === 1 ? current : current.filter((_, entryIndex) => entryIndex !== index));
   };
 
+  const toggleAmenity = (amenity: string) => {
+    setAmenities((current) => current.includes(amenity) ? current.filter((item) => item !== amenity) : [...current, amenity]);
+    setAmenityDetails((current) => current[amenity] ? current : { ...current, [amenity]: { description: "", image: "" } });
+  };
+
+  const addCustomAmenity = () => {
+    const value = customAmenity.trim();
+    if (value && !amenities.includes(value)) {
+      setAmenities((current) => [...current, value]);
+      setAmenityDetails((current) => ({ ...current, [value]: { description: "", image: "" } }));
+      setCustomAmenity("");
+    }
+  };
+
+  const updateAmenityDetail = (amenity: string, field: keyof AmenityDetails, value: string) => {
+    setAmenityDetails((current) => ({ ...current, [amenity]: { ...(current[amenity] ?? { description: "", image: "" }), [field]: value } }));
+  };
+
   const selectStep = (index: number) => {
     setStep(index);
     window.requestAnimationFrame(() => {
@@ -478,7 +546,7 @@ export function ProjectWizard() {
             <div ref={(element) => { sectionRefs.current[0] = element; }} className="md:col-span-2 border border-slate-200 bg-slate-50 p-3">
               <p className="text-sm font-medium text-stone-900">Project Information</p>
               <div className="mt-3 grid gap-3 md:grid-cols-2">
-                <input className="border border-stone-300 bg-white px-3 py-2 text-sm" placeholder="Project Name" />
+                <input defaultValue={initialProject?.name} className="border border-stone-300 bg-white px-3 py-2 text-sm" placeholder="Project Name" />
 
                 <label className="grid gap-1 text-xs text-stone-700">
                   <span>Project Type</span>
@@ -490,7 +558,7 @@ export function ProjectWizard() {
                   </select>
                 </label>
 
-                <textarea className="md:col-span-2 border border-stone-300 bg-white px-3 py-2 text-sm" rows={4} placeholder="Description" />
+                <textarea defaultValue={initialProject?.description} className="md:col-span-2 border border-stone-300 bg-white px-3 py-2 text-sm" rows={4} placeholder="Description" />
 
                 <label className="grid gap-1 text-xs text-stone-700">
                   <span>Listing Status</span>
@@ -530,7 +598,7 @@ export function ProjectWizard() {
             <div ref={(element) => { sectionRefs.current[1] = element; }} className="md:col-span-2 border border-emerald-200 bg-emerald-50 p-3">
               <p className="text-sm font-medium text-stone-900">Location</p>
               <div className="mt-3 grid gap-3 md:grid-cols-2">
-                <input className="border border-stone-300 bg-white px-3 py-2 text-sm" placeholder="Address" />
+                <input defaultValue={initialProject?.location} className="border border-stone-300 bg-white px-3 py-2 text-sm" placeholder="Address" />
 
                 <label className="grid gap-1 text-xs text-stone-700">
                   <span>Province</span>
@@ -646,7 +714,7 @@ export function ProjectWizard() {
               </div>
             </div>
 
-            <div ref={(element) => { sectionRefs.current[3] = element; }} className="md:col-span-2 border border-sky-200 bg-sky-50 p-3">
+            <div className="md:col-span-2 border border-sky-200 bg-sky-50 p-3">
               <p className="text-sm font-medium text-stone-900">Pricing and Fees</p>
               <p className="mt-1 text-xs text-stone-600">Manage available plan pricing, fees, payment structure, and incentives shown in the public pricing section.</p>
               <div className="mt-3 grid gap-3 md:grid-cols-2">
@@ -702,10 +770,16 @@ export function ProjectWizard() {
 
                 <div className="grid gap-3 border border-stone-200 bg-white p-3 md:col-span-2">
                   <p className="text-sm font-medium text-stone-900">Payment Structure</p>
-                  <label className="grid gap-1 text-xs text-stone-700">
-                    <span>Payment structure</span>
-                    <textarea value={paymentStructure} onChange={(event) => setPaymentStructure(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" rows={3} />
-                  </label>
+                  <div className="grid gap-2">
+                    <p className="text-xs text-stone-700">Payment structure</p>
+                    {paymentPlanItems.map((item, index) => (
+                      <div key={`payment-plan-item-${index}`} className="grid gap-2 md:grid-cols-[1fr_auto]">
+                        <input value={item} onChange={(event) => updatePaymentPlanItem(index, event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" placeholder={`Payment line ${index + 1}`} />
+                        {paymentPlanItems.length > 1 ? <Button type="button" variant="outline" className="h-10 px-3 text-xs" onClick={() => removePaymentPlanItem(index)}>Remove</Button> : null}
+                      </div>
+                    ))}
+                    <Button type="button" variant="outline" className="h-8 w-fit px-3 text-xs" onClick={addPaymentPlanItem}>Add payment line</Button>
+                  </div>
                   <div className="grid gap-3">
                     <label className="grid gap-1 text-xs text-stone-700">
                       <span>Pricing history date</span>
@@ -748,7 +822,7 @@ export function ProjectWizard() {
               </div>
             </div>
 
-            <div ref={(element) => { sectionRefs.current[6] = element; }} className="md:col-span-2 border border-cyan-200 bg-cyan-50 p-3">
+            <div ref={(element) => { sectionRefs.current[3] = element; }} className="md:col-span-2 border border-cyan-200 bg-cyan-50 p-3">
               <p className="text-sm font-medium text-stone-900">Apartment Details</p>
               <p className="mt-1 text-xs text-stone-600">Select ranges from dropdowns so values remain clean and consistent on listing cards.</p>
               <div className="mt-3 grid gap-3 md:grid-cols-2">
@@ -820,7 +894,7 @@ export function ProjectWizard() {
                   {sqftRangeError ? <span className="text-xs text-red-600">{sqftRangeError}</span> : null}
                 </label>
 
-                <input className="border border-stone-300 px-3 py-2 text-sm md:col-span-2" placeholder="Number of Units" />
+                <input defaultValue={initialProject ? String(initialProject.units) : undefined} className="border border-stone-300 px-3 py-2 text-sm md:col-span-2" placeholder="Number of Units" />
               </div>
             </div>
 
@@ -846,6 +920,10 @@ export function ProjectWizard() {
                         <option value="Sold">Sold</option>
                         <option value="Coming soon">Coming soon</option>
                       </select>
+                      <label className="flex items-center gap-2 border border-stone-200 bg-stone-50 px-3 py-2 text-sm md:col-span-2">
+                        <input type="checkbox" checked={plan.quickMoveIn} onChange={(event) => updateFloorPlan(index, "quickMoveIn", event.target.checked)} />
+                        <span>Show as Quick Move-In</span>
+                      </label>
                       <input type="number" min="0" step="1" value={plan.beds} onChange={(event) => updateFloorPlan(index, "beds", event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" placeholder="Beds" />
                       <input type="number" min="0" step="1" value={plan.baths} onChange={(event) => updateFloorPlan(index, "baths", event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" placeholder="Baths" />
                       <input type="number" min="0" step="1" value={plan.sqft} onChange={(event) => updateFloorPlan(index, "sqft", event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" placeholder="SqFt" />
@@ -874,11 +952,23 @@ export function ProjectWizard() {
                 ))}
               </div>
               <Button type="button" variant="outline" className="mt-3" onClick={addFloorPlan}>Add floor plan</Button>
+              <div className="mt-4 border border-purple-300 bg-purple-100 p-3">
+                <p className="text-sm font-medium text-stone-900">Floor plan icon info visibility</p>
+                <p className="mt-1 text-xs text-stone-600">Choose which filled floor-plan details appear as icons on the floor plan page.</p>
+                <div className="mt-3 grid gap-2 sm:grid-cols-2 md:grid-cols-3">
+                  {floorPlanStatOptions.map((stat) => (
+                    <label key={`floor-plan-stat-${stat}`} className="flex items-center gap-2 border border-stone-200 px-3 py-2 text-xs text-stone-700">
+                      <input type="checkbox" checked={floorPlanVisibleStats.includes(stat)} onChange={() => toggleFloorPlanStat(stat)} />
+                      <span>{stat}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
             </div>
 
-            <input className="border border-stone-300 px-3 py-2 text-sm" placeholder="Number of Floors" />
+            <input defaultValue={initialProject ? String(initialProject.floors) : undefined} className="border border-stone-300 px-3 py-2 text-sm" placeholder="Number of Floors" />
 
-            <div ref={(element) => { sectionRefs.current[4] = element; }} className="md:col-span-2 mt-2 border border-rose-200 bg-rose-50 p-3">
+            <div className="md:col-span-2 mt-2 border border-rose-200 bg-rose-50 p-3">
               <p className="text-sm font-medium text-stone-900">Connected Pages</p>
               <p className="mt-1 text-xs text-stone-600">Choose destination pages used on the public listing when users click these names.</p>
               <div className="mt-3 grid gap-3 md:grid-cols-2">
@@ -980,6 +1070,15 @@ export function ProjectWizard() {
                 <input value={interactiveMapUrl} onChange={(event) => setInteractiveMapUrl(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" placeholder="Interactive map embed URL" />
               </label>
 
+              <label className="grid gap-1 text-xs text-stone-700">
+                <span>Brochure URL</span>
+                <input value={brochureUrl} onChange={(event) => setBrochureUrl(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" placeholder="PDF brochure URL" />
+              </label>
+              <label className="grid gap-1 text-xs text-stone-700">
+                <span>Upload brochure PDF</span>
+                <input type="file" accept="application/pdf" onChange={(event) => setBrochureUrl(event.target.files?.[0] ? URL.createObjectURL(event.target.files[0]) : "")} className="border border-stone-300 bg-white px-3 py-2 text-sm file:mr-3 file:border-0 file:bg-stone-100 file:px-3 file:py-1 file:text-sm" />
+              </label>
+
               <div className="grid gap-2">
                 <div className="flex items-center justify-between gap-2">
                   <p className="text-xs font-medium text-stone-800">Virtual Tours</p>
@@ -994,6 +1093,29 @@ export function ProjectWizard() {
                 ))}
               </div>
             </div>
+          <div ref={(element) => { sectionRefs.current[4] = element; }} className="border border-purple-200 bg-purple-50 p-3">
+            <p className="text-sm font-medium text-stone-900">Amenities</p>
+            <p className="mt-1 text-xs text-stone-600">Select the amenities that should appear on the public listing.</p>
+            <div className="mt-3 grid gap-2 sm:grid-cols-2 md:grid-cols-3">
+              {amenityOptions.map((amenity) => <label key={amenity} className="flex items-center gap-2 border border-stone-200 bg-white px-3 py-2 text-sm"><input type="checkbox" checked={amenities.includes(amenity)} onChange={() => toggleAmenity(amenity)} />{amenity}</label>)}
+            </div>
+            <div className="mt-3 flex gap-2">
+              <input value={customAmenity} onChange={(event) => setCustomAmenity(event.target.value)} className="min-w-0 flex-1 border border-stone-300 bg-white px-3 py-2 text-sm" placeholder="Custom amenity" />
+              <Button type="button" variant="outline" onClick={addCustomAmenity}>Add amenity</Button>
+            </div>
+            {amenities.length ? <p className="mt-3 text-xs text-stone-700">Selected: {amenities.join(" | ")}</p> : null}
+            {amenities.map((amenity) => (
+              <div key={`amenity-details-${amenity}`} className="grid gap-2 border border-stone-200 bg-white p-3 md:grid-cols-2">
+                <p className="text-sm font-medium text-stone-900 md:col-span-2">{amenity}</p>
+                <textarea value={amenityDetails[amenity]?.description ?? ""} onChange={(event) => updateAmenityDetail(amenity, "description", event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" rows={3} placeholder={`${amenity} description`} />
+                <label className="grid gap-1 text-xs text-stone-700">
+                  <span>Upload amenity image</span>
+                  <input type="file" accept="image/*" onChange={(event) => updateAmenityDetail(amenity, "image", event.target.files?.[0] ? URL.createObjectURL(event.target.files[0]) : "")} className="border border-stone-300 bg-white px-3 py-2 text-sm file:mr-3 file:border-0 file:bg-stone-100 file:px-3 file:py-1 file:text-sm" />
+                  {amenityDetails[amenity]?.image ? <Image src={amenityDetails[amenity].image} alt={`${amenity} preview`} width={320} height={180} unoptimized className="h-24 w-full object-cover bg-stone-50" /> : null}
+                </label>
+              </div>
+            ))}
+          </div>
           </div>
           <div ref={(element) => { sectionRefs.current[7] = element; }} className="border border-indigo-200 bg-indigo-50 p-3">
             <p className="text-sm font-medium text-stone-900">Units</p>
@@ -1079,19 +1201,24 @@ export function ProjectWizard() {
               <p><strong>Storage Cost:</strong> {storageCost || "Not set"}</p>
               <p><strong>Co-op Fee Realtors:</strong> {coopFeeRealtors || "Not set"}</p>
               <p><strong>Pricing History:</strong> {(pricingHistoryDate && pricingHistoryNote) ? `${pricingHistoryDate} - ${pricingHistoryNote}` : "Not set"}</p>
-              <p><strong>Payment Structure:</strong> {paymentStructure || "Not set"}</p>
+              <p><strong>Payment Structure:</strong> {paymentPlanItems.filter((item) => item.trim()).length ? paymentPlanItems.filter((item) => item.trim()).join(" | ") : "Not set"}</p>
               <p><strong>Incentives Count:</strong> {incentives.filter((item) => item.trim()).length}</p>
             </div>
           </div>
           <div className="flex justify-between">
-            <Button variant="outline" onClick={() => selectStep(Math.max(0, step - 1))}>Back</Button>
-            <Button disabled={formHasErrors} title={formHasErrors ? "Fix range errors before continuing" : undefined} onClick={() => selectStep(Math.min(steps.length - 1, step + 1))}>Next</Button>
+            <Button type="button" variant="outline" onClick={() => selectStep(Math.max(0, step - 1))}>Back</Button>
+            {initialProject ? (
+              <Button type="button" disabled={formHasErrors} title={formHasErrors ? "Fix range errors before saving" : undefined} onClick={() => setPublishMessage("Project changes saved.")}>Save</Button>
+            ) : (
+              <Button type="button" disabled={formHasErrors} title={formHasErrors ? "Fix range errors before continuing" : undefined} onClick={() => selectStep(Math.min(steps.length - 1, step + 1))}>Next</Button>
+            )}
           </div>
+          {initialProject && publishMessage === "Project changes saved." ? <p className="text-right text-sm text-emerald-700">{publishMessage}</p> : null}
         </div>
 
-        <aside className="space-y-3 border border-stone-200 bg-white p-4 lg:sticky lg:top-4 lg:h-fit">
+        <aside className="space-y-3 border border-amber-300 bg-amber-100 p-4 lg:sticky lg:top-4 lg:h-fit">
           <div className="space-y-1">
-            <h3 className="text-sm font-semibold text-stone-900">Icon Info Visibility</h3>
+            <h3 className="text-sm font-semibold text-stone-900">Listing page icon info visibility</h3>
             <p className="text-xs text-stone-600">Choose which details appear in the listing icon stats. Maximum 10 items.</p>
           </div>
           <p className={`text-xs font-medium ${visibleStats.length === maxVisibleStats ? "text-amber-700" : "text-stone-600"}`}>

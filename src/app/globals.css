@@ -1106,6 +1106,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   margin-top: 12px;
   align-items: center;
   padding-left: 34px;
+  padding-right: 34px;
 }
 
 .listing-hero-tags span {
@@ -1154,6 +1155,8 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   border-top: 1px solid #f3f3f3;
   padding-top: 24px;
   padding-bottom: 14px;
+  padding-left: 34px;
+  padding-right: 34px;
   display: grid;
   grid-template-columns: repeat(var(--stat-count, 10), minmax(0, 1fr));
   gap: 0;
@@ -1364,8 +1367,26 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
     display: none;
   }
 
+  .listing-hero-panel-row {
+    position: relative;
+  }
+
+  .listing-hero-panel-row.is-floating {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    right: 0;
+    z-index: 40;
+    margin: 0;
+    padding: 10px 16px 0;
+    background: #fff;
+    border-top: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.12);
+  }
+
   .listing-hero-panel {
-    padding-bottom: 64px;
+    padding-bottom: 48px;
   }
 
   .listing-hero-tags {
@@ -1646,7 +1667,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   width: min(1220px, calc(100% - 56px));
   margin: 40px auto 16px;
   background: #fff;
-  padding: 20px 0;
+  padding: 20px 24px;
 }
 
 .project-description-shell h2 {
@@ -1671,7 +1692,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   width: min(1220px, calc(100% - 56px));
   margin: 14px auto 42px;
   background: #fff;
-  padding: 8px 0 24px;
+  padding: 8px 24px 24px;
 }
 
   .project-narrative-grid {
@@ -1704,7 +1725,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
     .project-description-shell {
       width: calc(100% - 24px);
       margin: 28px auto 12px;
-      padding: 16px 0;
+      padding: 16px 12px;
     }
 
     .project-description-shell h2 {
@@ -1767,6 +1788,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   width: min(1220px, calc(100% - 56px));
   margin: 28px auto 56px;
   background: #fff;
+  padding: 0 24px;
 }
 
 .plans-contact-banner {
@@ -1907,7 +1929,8 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 .plans-homes-head h2 {
   margin: 0;
   font-family: var(--font-ref-serif);
-  font-size: clamp(30px, 3vw, 42px);
+  font-size: clamp(20px, 1.9vw, 26px);
+  font-weight: 400;
   line-height: 1.15;
   color: #1e1e1e;
 }
@@ -1986,6 +2009,30 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   overflow: hidden;
   background: #fff;
   box-shadow: 0 8px 16px rgba(31, 44, 63, 0.06);
+}
+
+.floor-plan-card:hover,
+.plans-home-card:hover {
+  border-color: #8aa6b8;
+  box-shadow: 0 12px 24px rgba(31, 44, 63, 0.14);
+}
+
+.plans-more-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 46px;
+  padding: 12px 20px;
+  border: 1px solid #e0a900;
+  background: #ffc62d;
+  color: #24221e;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.plans-more-btn:hover {
+  background: #f2b900;
 }
 
 .plans-home-card figure {
@@ -2079,7 +2126,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 .amenities-showcase-shell {
   width: min(1220px, calc(100% - 56px));
   margin: 14px auto 60px;
-  padding: 20px 0 24px;
+  padding: 20px 24px 24px;
 }
 
 .amenities-showcase-shell h2 {
@@ -2324,6 +2371,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   .plans-homes-shell {
     width: calc(100% - 24px);
     margin: 18px auto 30px;
+    padding: 0 12px;
   }
 
   .plans-contact-banner {

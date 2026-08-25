@@ -18,7 +18,12 @@ export type Amenity = {
     | "Children's Area"
     | "Clubhouse"
     | "EV Charging"
-    | "Concierge";
+    | "Concierge"
+    | "Padel Court"
+    | "Resident Lounge"
+    | "Private Elevator"
+    | "Utility Area"
+    | "Outdoor Kitchen";
   icon: string;
 };
 
@@ -31,6 +36,7 @@ export type FloorPlan = {
   startingPriceLkr: number;
   image: string;
   availability: "Available" | "Limited" | "Sold Out";
+  quickMoveIn?: boolean;
 };
 
 export type Unit = {
@@ -132,6 +138,7 @@ export type Project = {
   ownership: string;
   ceilingInfo?: string;
   paymentPlan: string;
+  paymentPlanItems?: string[];
   availablePlanPrices?: string;
   pricingComingSoon?: string;
   averagePricePerSqft?: string;
@@ -147,11 +154,13 @@ export type Project = {
   description: string;
   heroImage: string;
   gallery: { label: string; image: string }[];
+  brochureUrl?: string;
   videos?: { label: string; embedUrl?: string; thumbnail?: string }[];
   virtualTours?: { label: string; url: string }[];
   interactiveMapUrl?: string;
   mobileVisibleStats?: ProjectStatLabel[];
   desktopVisibleStats?: ProjectStatLabel[];
+  floorPlanVisibleStats?: string[];
   amenities: Amenity[];
   floorPlans: FloorPlan[];
   nearby: NearbyPlace[];

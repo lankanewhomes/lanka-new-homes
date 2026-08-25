@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { CSSProperties, useEffect, useMemo, useState } from "react";
+import { CSSProperties, useEffect, useMemo, useRef, useState } from "react";
 import {
   Bath,
   BedDouble,
@@ -172,7 +172,7 @@ export function MapPlaceholder() {
 
 export function ProjectCard({ project }: { project: Project }) {
   return (
-    <article className="grid gap-3 border border-stone-200 bg-white p-3">
+    <article className="floor-plan-card grid gap-3 border border-stone-200 bg-white p-3">
       <Image src={project.heroImage} alt={project.name} width={900} height={500} className="h-48 w-full object-cover" />
       <div className="space-y-1">
         <h3 className="text-lg font-semibold text-stone-900">{project.name}</h3>
@@ -281,6 +281,8 @@ export function ProjectHero({ project }: { project: Project }) {
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [lightboxView, setLightboxView] = useState<"photos" | "map" | "preview">("photos");
   const [activeSection, setActiveSection] = useState("overview");
+  const [isSectionNavFloating, setIsSectionNavFloating] = useState(false);
+  const heroPanelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (activeMedia && !availableMedia.includes(activeMedia)) {
@@ -297,6 +299,16 @@ export function ProjectHero({ project }: { project: Project }) {
     window.addEventListener("hashchange", updateActiveSection);
 
     return () => window.removeEventListener("hashchange", updateActiveSection);
+  }, []);
+
+  useEffect(() => {
+    const updateFloatingNav = () => {
+      setIsSectionNavFloating((heroPanelRef.current?.getBoundingClientRect().bottom ?? 0) <= 64);
+    };
+
+    updateFloatingNav();
+    window.addEventListener("scroll", updateFloatingNav, { passive: true });
+    return () => window.removeEventListener("scroll", updateFloatingNav);
   }, []);
 
   const mapQuery = encodeURIComponent(`${project.name} ${project.location}`);
@@ -665,7 +677,7 @@ export function ProjectHero({ project }: { project: Project }) {
         </div>
       )}
 
-      <div className="listing-hero-panel">
+      <div ref={heroPanelRef} className="listing-hero-panel">
         <div className="listing-hero-title-wrap">
           <h1>{project.name}</h1>
           <p>
@@ -685,7 +697,7 @@ export function ProjectHero({ project }: { project: Project }) {
           </p>
         </div>
 
-        <div className="listing-hero-panel-row">
+        <div className={`listing-hero-panel-row${isSectionNavFloating ? " is-floating" : ""}`}>
           <nav aria-label="Project sections" className="listing-hero-nav">
             <a href="#overview" className={activeSection === "overview" ? "active" : undefined} onClick={() => setActiveSection("overview")}>Overview</a>
             <a href="#pricing" className={activeSection === "pricing" ? "active" : undefined} onClick={() => setActiveSection("pricing")}>Pricing</a>
@@ -781,6 +793,63 @@ export function FloorPlanCard({ floorPlan }: { floorPlan: FloorPlan }) {
       <p className="text-sm font-medium">From {formatLkr(floorPlan.startingPriceLkr)}</p>
       <StatusBadge status={floorPlan.availability} />
     </article>
+  );
+}
+
+export function FloorPlanListingTabs({ project, floorPlan }: { project: Project; floorPlan: FloorPlan }) {
+  const [activeTab, setActiveTab] = useState<"details" | "pricing" | "homes">("details");
+  const details = [
+    { icon: HousePlus, label: "Status", visibilityLabel: "Listing status", value: floorPlan.availability },
+    { icon: CircleDollarSign, label: "Price", visibilityLabel: "Price range", value: `From ${formatLkr(floorPlan.startingPriceLkr)}` },
+    { icon: MapPinned, label: "Address", visibilityLabel: "Address", value: project.location },
+    { icon: Building, label: "Project type", visibilityLabel: "Property type", value: project.type },
+    { icon: BedDouble, label: "Beds", visibilityLabel: "Beds", value: String(floorPlan.bedrooms) },
+    { icon: Bath, label: "Baths", visibilityLabel: "Baths", value: String(floorPlan.bathrooms) },
+    { icon: Square, label: "SqFt", visibilityLabel: "SqFt", value: `${floorPlan.floorAreaSqFt} sq.ft` },
+    ...(project.startingPriceLkr > 0 && floorPlan.floorAreaSqFt > 0
+      ? [{ icon: Ruler, label: "Per SqFt (Avg)", visibilityLabel: "Per SqFt (Avg)", value: compactLkr(Math.round(floorPlan.startingPriceLkr / floorPlan.floorAreaSqFt)) }]
+      : []),
+  ];
+  const enabledDetails = project.floorPlanVisibleStats?.length
+    ? new Set<string>(project.floorPlanVisibleStats)
+    : null;
+
+  return (
+    <section className="mx-auto w-full max-w-290 space-y-5 px-4 pb-8 sm:px-6 lg:px-8">
+      <header className="space-y-2">
+        <h1 className="text-3xl font-semibold">{floorPlan.planName}</h1>
+        <p className="text-sm text-stone-700">By <Link href={`/developers/${project.developerSlug}`} className="font-medium underline">{project.developerName}</Link> | {project.name}</p>
+        <p className="text-sm text-stone-600">{project.location} master planned community</p>
+      </header>
+      <div className="flex flex-wrap gap-2 border-b border-stone-200 pb-3" role="tablist" aria-label="Floor plan information">
+        {([["details", "Details"], ["pricing", "Pricing"], ["homes", "Available homes"]] as const).map(([value, label]) => (
+          <button key={value} type="button" role="tab" aria-selected={activeTab === value} onClick={() => setActiveTab(value)} className={`border px-4 py-2 text-sm ${activeTab === value ? "border-stone-900 bg-stone-900 text-white" : "border-stone-300 bg-white"}`}>
+            {label}
+          </button>
+        ))}
+      </div>
+      {activeTab === "details" ? (
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {details.filter(({ visibilityLabel }) => !enabledDetails || enabledDetails.has(visibilityLabel)).map(({ icon: Icon, label, value }) => (
+            <div key={label} className="flex items-start gap-3 border border-stone-200 bg-white p-4">
+              <Icon className="mt-0.5 h-5 w-5 shrink-0 text-stone-700" aria-hidden="true" />
+              <div><p className="text-xs uppercase tracking-wide text-stone-500">{label}</p><p className="mt-1 text-sm font-medium text-stone-900">{value}</p></div>
+            </div>
+          ))}
+        </div>
+      ) : null}
+      {activeTab === "pricing" ? <PricingInformationLayout project={project} /> : null}
+      {activeTab === "homes" ? (
+        <div className="grid gap-3 border border-stone-200 bg-white p-4">
+          <h2 className="text-xl font-semibold">Available homes</h2>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {project.floorPlans.filter((plan) => plan.availability !== "Sold Out").map((plan) => (
+              <div key={plan.id} className="border border-stone-200 p-3"><p className="font-medium">{plan.planName}</p><p className="mt-1 text-sm text-stone-600">{plan.bedrooms} Bed | {plan.bathrooms} Bath | {plan.floorAreaSqFt} sq.ft</p><p className="mt-1 text-sm">From {formatLkr(plan.startingPriceLkr)}</p><StatusBadge status={plan.availability} /></div>
+            ))}
+          </div>
+        </div>
+      ) : null}
+    </section>
   );
 }
 
@@ -917,6 +986,7 @@ export function PricingInformationLayout({ project }: { project: Project }) {
                   ))}
                 </div>
               </div>
+              {project.brochureUrl ? <Link href={project.brochureUrl} target="_blank" rel="noreferrer" className="inline-flex border border-stone-900 px-4 py-2 text-sm font-medium">View brochure</Link> : null}
             </div>
           </article>
 
@@ -926,7 +996,11 @@ export function PricingInformationLayout({ project }: { project: Project }) {
             <div className="mt-7 space-y-4 text-[15px] leading-7">
               <div>
                 <p className="font-semibold">Payment structure</p>
-                <p>{displayValue(project.depositPaymentStructure ?? project.paymentPlan)}</p>
+                <div className="space-y-1">
+                  {(project.paymentPlanItems?.length ? project.paymentPlanItems : [project.depositPaymentStructure ?? project.paymentPlan]).map((item, index) => (
+                    <p key={`${item}-${index}`}>{displayValue(item)}</p>
+                  ))}
+                </div>
               </div>
             </div>
           </article>
@@ -958,7 +1032,7 @@ export function PlansAndHomesSection({ project }: { project: Project }) {
   const [activeTab, setActiveTab] = useState<"all" | "floorPlans" | "quickMoveIns">("floorPlans");
 
   const quickMoveIns = useMemo(
-    () => project.floorPlans.filter((plan) => plan.availability === "Available" || plan.availability === "Limited"),
+    () => project.floorPlans.filter((plan) => plan.quickMoveIn),
     [project.floorPlans]
   );
 
@@ -993,7 +1067,7 @@ export function PlansAndHomesSection({ project }: { project: Project }) {
           >
             Floor plans ({project.floorPlans.length})
           </button>
-          <button
+          {quickMoveIns.length > 0 ? <button
             type="button"
             role="tab"
             className={activeTab === "quickMoveIns" ? "active" : undefined}
@@ -1001,7 +1075,7 @@ export function PlansAndHomesSection({ project }: { project: Project }) {
             onClick={() => setActiveTab("quickMoveIns")}
           >
             Quick move ins ({quickMoveIns.length})
-          </button>
+          </button> : null}
         </div>
 
         <button type="button" className="plans-filter-btn">
@@ -1036,9 +1110,10 @@ export function PlansAndHomesSection({ project }: { project: Project }) {
       </div>
 
       <div className="plans-more-wrap">
-        <button type="button" className="plans-more-btn">
-          Show all plans &amp; homes <span aria-hidden="true">+</span>
-        </button>
+        <Link href={`/projects/${project.slug}/floor-plans`} className="plans-more-btn">
+          <span>Show all plans &amp; homes</span>
+          <ChevronDown className="h-5 w-5" aria-hidden="true" />
+        </Link>
       </div>
     </section>
   );
@@ -1166,7 +1241,7 @@ export function ProjectDescriptionSection({ project }: { project: Project }) {
 
   return (
     <section id="overview" className="project-description-shell" aria-label="Project description">
-      <h2>The Narrative - Building A details</h2>
+      <h2>Overview</h2>
       <p>
         {project.description} {project.summary} {project.name} by {project.developerName} in {project.location} offers
         {" "}{article} {project.type.toLowerCase()} with {project.units} units across {project.floors} floors.

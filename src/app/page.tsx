@@ -168,8 +168,8 @@ export default function Home() {
   const featuredProjects = useMemo(() => projects.filter((project) => project.isFeatured).slice(0, 4), []);
 
   const shelves = [
-    { title: t.shelfTrending, projects: [projects[0], projects[1], projects[0], projects[1], projects[0], projects[1], projects[0]] },
-    { title: t.shelfFeatured, projects: [projects[1], projects[0], projects[1], projects[0]] },
+    { title: t.shelfTrending, projects },
+    { title: t.shelfFeatured, projects: featuredProjects },
   ];
 
   const featuredCityLinks = [

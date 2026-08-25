@@ -2,6 +2,20 @@ import { Developer } from "@/types";
 
 export const developers: Developer[] = [
   {
+    slug: "prime",
+    name: "Prime Lands",
+    logo: "/courtyard by prime/prime lands logo - builder.png",
+    description: "Prime Lands presents Courtyard by Prime, a private courtyard-centred residential community in Thalawathugoda.",
+    location: "No.75, D.S. Senanayake Mawatha, Borella, Colombo-08, Sri Lanka",
+    establishedYear: 1998,
+    yearsInBusiness: 28,
+    activeProjects: 1,
+    completedProjects: 0,
+    website: "",
+    email: "info@primelands.lk",
+    phone: "+94 112 699 822 | +94 112 030 890 | Hotline: 1322",
+  },
+  {
     slug: "ceylon-urban-developments",
     name: "Ceylon Urban Developments",
     logo: "https://images.unsplash.com/photo-1511478143399-c2a3d7f0eb57?q=80&w=300&auto=format&fit=crop",

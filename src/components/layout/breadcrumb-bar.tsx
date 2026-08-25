@@ -2,11 +2,27 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { projects } from "@/data/projects";
 
 function toTitleCase(segment: string): string {
   return decodeURIComponent(segment)
     .replace(/[-_]+/g, " ")
     .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function getSegmentLabel(segments: string[], index: number): string {
+  if (segments[index - 1] === "projects") {
+    return projects.find((project) => project.slug === segments[index])?.name ?? toTitleCase(segments[index]);
+  }
+
+  if (segments[index] === "floor-plans") return "Floor Plans";
+
+  if (segments[index - 1] === "floor-plans") {
+    const project = projects.find((item) => item.slug === segments[index - 3]);
+    return project?.floorPlans.find((plan) => plan.id === segments[index])?.planName ?? toTitleCase(segments[index]);
+  }
+
+  return toTitleCase(segments[index]);
 }
 
 export function BreadcrumbBar() {
@@ -36,9 +52,9 @@ export function BreadcrumbBar() {
                   /
                 </span>
                 {isLast ? (
-                  <span aria-current="page">{toTitleCase(segment)}</span>
+                  <span aria-current="page">{getSegmentLabel(segments, index)}</span>
                 ) : (
-                  <Link href={href}>{toTitleCase(segment)}</Link>
+                  <Link href={href}>{getSegmentLabel(segments, index)}</Link>
                 )}
               </li>
             );
