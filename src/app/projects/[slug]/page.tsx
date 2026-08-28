@@ -1,14 +1,19 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { projects } from "@/data/projects";
+import { getProjectBySlug } from "@/lib/project-store";
+import { getNeighborhoodBySlug } from "@/lib/neighborhood-store";
+import { getDeveloperBySlug } from "@/lib/developer-store";
 import {
   AmenitiesShowcaseSection,
+  ListingSidebarCard,
+  NeighborhoodSection,
   PlansAndHomesSection,
   PricingInformationLayout,
   ProjectDescriptionSection,
   ProjectHero,
   ProjectNarrativeDetails,
-  SalesCenterSection,
+  ProjectStatsChips,
 } from "@/components/marketplace/components";
 import { ProjectViewTracker } from "@/components/marketplace/view-tracker";
 import { toAbsoluteUrl } from "@/lib/seo";
@@ -21,7 +26,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: ProjectPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const project = projects.find((p) => p.slug === slug);
+  const project = await getProjectBySlug(slug);
 
   if (!project) {
     return {
@@ -63,8 +68,11 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
 
 export default async function ProjectDetailPage({ params }: ProjectPageProps) {
   const { slug } = await params;
-  const project = projects.find((p) => p.slug === slug);
+  const project = await getProjectBySlug(slug);
   if (!project) return notFound();
+
+  const neighborhood = project.neighborhoodSlug ? await getNeighborhoodBySlug(project.neighborhoodSlug) : undefined;
+  const developer = await getDeveloperBySlug(project.developerSlug);
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -102,21 +110,30 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       <ProjectViewTracker projectSlug={project.slug} developerSlug={project.developerSlug} />
-      <ProjectHero project={project} />
+      <ProjectHero project={project} backHref="/projects" backLabel="New Projects" />
 
-      <ProjectDescriptionSection project={project} />
+      <div className="listing-with-sidebar">
+        <div className="listing-with-sidebar-main space-y-8">
+          <ProjectDescriptionSection project={project} />
+          <ProjectStatsChips project={project} />
 
-      <ProjectNarrativeDetails project={project} />
+          <ProjectNarrativeDetails project={project} />
 
-      <section id="pricing" className="space-y-3">
-        <PricingInformationLayout project={project} />
-      </section>
+          <section id="pricing" className="space-y-3">
+            <PricingInformationLayout project={project} />
+          </section>
 
-      <SalesCenterSection project={project} />
+          <PlansAndHomesSection project={project} />
 
-      <PlansAndHomesSection project={project} />
+          <AmenitiesShowcaseSection project={project} />
 
-      <AmenitiesShowcaseSection project={project} />
+          <NeighborhoodSection project={project} neighborhoodPageExists={Boolean(neighborhood)} />
+        </div>
+
+        <aside className="listing-with-sidebar-aside">
+          <ListingSidebarCard project={project} developer={developer} />
+        </aside>
+      </div>
     </div>
   );
 }

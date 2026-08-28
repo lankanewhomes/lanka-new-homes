@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { projects } from "@/data/projects";
+import { getProjectBySlug } from "@/lib/project-store";
+import { getDeveloperBySlug } from "@/lib/developer-store";
 import {
-  AmenitiesShowcaseSection,
-  FloorPlanListingTabs,
   PlansAndHomesSection,
   PricingInformationLayout,
   ProjectDescriptionSection,
   ProjectHero,
   ProjectNarrativeDetails,
+  ProjectStatsChips,
   SalesCenterSection,
 } from "@/components/marketplace/components";
 
@@ -25,7 +26,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: FloorPlanPageProps): Promise<Metadata> {
   const { slug, floorPlanId } = await params;
-  const project = projects.find((item) => item.slug === slug);
+  const project = await getProjectBySlug(slug);
   const floorPlan = project?.floorPlans.find((item) => item.id === floorPlanId);
 
   if (!project || !floorPlan) {
@@ -47,23 +48,33 @@ export async function generateMetadata({ params }: FloorPlanPageProps): Promise<
 
 export default async function FloorPlanDetailPage({ params }: FloorPlanPageProps) {
   const { slug, floorPlanId } = await params;
-  const project = projects.find((item) => item.slug === slug);
+  const project = await getProjectBySlug(slug);
   const floorPlan = project?.floorPlans.find((item) => item.id === floorPlanId);
 
   if (!project || !floorPlan) return notFound();
 
+  const developer = await getDeveloperBySlug(project.developerSlug);
+
   return (
     <div className="space-y-8">
-      <ProjectHero project={project} />
-      <FloorPlanListingTabs project={project} floorPlan={floorPlan} />
-      <ProjectDescriptionSection project={project} />
+      <ProjectHero
+        project={project}
+        titleOverride={floorPlan.planName}
+        heroImageOverride={floorPlan.image}
+        floorPlan={floorPlan}
+        showAmenitiesAndNeighborhoodNav={false}
+        backHref={`/projects/${project.slug}`}
+        backLabel={project.name}
+        plansHomesNavLabel="Other floor plans"
+      />
+      <ProjectDescriptionSection project={project} headingOverride={`${floorPlan.planName} Details`} />
+      <ProjectStatsChips project={project} floorPlan={floorPlan} />
       <ProjectNarrativeDetails project={project} />
       <section id="pricing" className="space-y-3">
         <PricingInformationLayout project={project} />
       </section>
-      <SalesCenterSection project={project} />
-      <PlansAndHomesSection project={project} />
-      <AmenitiesShowcaseSection project={project} />
+      <SalesCenterSection project={project} developer={developer} />
+      <PlansAndHomesSection project={project} title="Other floor plans" excludeFloorPlanId={floorPlan.id} />
     </div>
   );
 }

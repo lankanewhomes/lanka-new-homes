@@ -1,11 +1,11 @@
 "use client";
 
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import type { Project } from "@/types";
+import type { Amenity, CoDeveloperEntry, Developer, FactIconKey, FactItem, FloorPlan, Neighborhood, Project } from "@/types";
 import { Button } from "@/components/ui/button";
-import { developers } from "@/data/developers";
+import { ICON_LABELS, ICON_OPTIONS } from "@/lib/fact-icons";
 import {
   sriLankaCitiesByDistrict,
   sriLankaDistrictsByProvince,
@@ -13,8 +13,184 @@ import {
   sriLankaProvinces,
 } from "@/data/sri-lanka-market-geo";
 
+function InfoTooltip({ text }: { text: string }) {
+  return (
+    <span className="field-tooltip" tabIndex={0}>
+      <span className="field-tooltip-icon">?</span>
+      <span className="field-tooltip-bubble">{text}</span>
+    </span>
+  );
+}
+
+function Field({ label, className, children }: { label: string; className?: string; children: ReactNode }) {
+  return (
+    <label className={`grid gap-1 text-xs text-stone-700 ${className ?? ""}`.trim()}>
+      <span>{label}</span>
+      {children}
+    </label>
+  );
+}
+
+function toWizardSlug(value: string) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
+function useDeveloperDirectory() {
+  const [developers, setDevelopers] = useState<Developer[]>([]);
+
+  useEffect(() => {
+    fetch("/api/developers")
+      .then((response) => response.json())
+      .then((data) => setDevelopers(Array.isArray(data?.developers) ? data.developers : []))
+      .catch(() => setDevelopers([]));
+  }, []);
+
+  return developers;
+}
+
+const weekDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"] as const;
+
+function buildInitialOfficeHours(existing: { day: string; open: boolean; from?: string; to?: string }[] | undefined) {
+  return weekDays.map((day) => {
+    const match = existing?.find((entry) => entry.day === day);
+    return {
+      day,
+      open: match?.open ?? false,
+      from: match?.from ?? "09:00",
+      to: match?.to ?? "17:00",
+    };
+  });
+}
+
+function CoDeveloperEditor({
+  coDevelopers,
+  setCoDevelopers,
+  developerOptions,
+  excludeSlug,
+}: {
+  coDevelopers: CoDeveloperEntry[];
+  setCoDevelopers: (updater: (current: CoDeveloperEntry[]) => CoDeveloperEntry[]) => void;
+  developerOptions: Developer[];
+  excludeSlug?: string;
+}) {
+  const [newName, setNewName] = useState("");
+
+  const destinationOptions = developerOptions.filter((developer) => developer.slug !== excludeSlug);
+
+  return (
+    <div className="mt-4 border-t border-stone-200 pt-4">
+      <p className="text-sm font-medium text-stone-900">Additional builders</p>
+      <p className="mt-1 text-xs text-stone-600">For projects with more than one developer. The primary developer is set by which developer dashboard this project belongs to.</p>
+
+      <div className="mt-3 grid gap-2">
+        {coDevelopers.map((entry, index) => (
+          <div key={`${entry.name}-${index}`} className="grid grid-cols-[1fr_auto] items-center gap-2 border border-stone-200 bg-white p-2">
+            <div className="grid gap-1 sm:grid-cols-2 sm:gap-2">
+              <span className="text-sm text-stone-800">{entry.name}</span>
+              <select
+                value={entry.href ?? ""}
+                onChange={(event) => {
+                  const href = event.target.value;
+                  setCoDevelopers((current) => current.map((item, i) => (i === index ? { ...item, href: href || undefined } : item)));
+                }}
+                className="border border-stone-300 bg-white px-2 py-1 text-xs"
+                aria-label={`Destination page for ${entry.name}`}
+              >
+                <option value="">No page selected</option>
+                {destinationOptions.map((developer) => (
+                  <option key={developer.slug} value={`/developers/${developer.slug}`}>{developer.name}</option>
+                ))}
+              </select>
+            </div>
+            <button
+              type="button"
+              onClick={() => setCoDevelopers((current) => current.filter((_, i) => i !== index))}
+              className="text-stone-500 hover:text-stone-900"
+              aria-label={`Remove ${entry.name}`}
+            >
+              ×
+            </button>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-2 flex gap-2">
+        <input
+          value={newName}
+          onChange={(event) => setNewName(event.target.value)}
+          className="border border-stone-300 bg-white px-3 py-2 text-sm"
+          placeholder="Builder name"
+        />
+        <button
+          type="button"
+          onClick={() => {
+            const trimmed = newName.trim();
+            if (!trimmed) return;
+            setCoDevelopers((current) => [...current, { name: trimmed }]);
+            setNewName("");
+          }}
+          className="border border-stone-300 bg-white px-3 py-2 text-sm"
+        >
+          Add builder
+        </button>
+      </div>
+    </div>
+  );
+}
+
+type OfficeHoursEntryState = { day: typeof weekDays[number]; open: boolean; from: string; to: string };
+
+function OfficeHoursEditor({
+  officeHours,
+  setOfficeHours,
+}: {
+  officeHours: OfficeHoursEntryState[];
+  setOfficeHours: (updater: (current: OfficeHoursEntryState[]) => OfficeHoursEntryState[]) => void;
+}) {
+  const updateOfficeHours = (day: string, changes: Partial<{ open: boolean; from: string; to: string }>) => {
+    setOfficeHours((current) => current.map((entry) => (entry.day === day ? { ...entry, ...changes } : entry)));
+  };
+
+  const applyHoursToAllDays = () => {
+    const monday = officeHours[0];
+    setOfficeHours((current) => current.map((entry) => ({ ...entry, open: monday.open, from: monday.from, to: monday.to })));
+  };
+
+  return (
+    <div className="mt-4 border border-stone-200 bg-white p-3">
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <p className="text-xs font-semibold text-stone-800">Hours of operation</p>
+          <p className="mt-1 text-xs text-stone-600">Turn a day on and set its hours. Shown on the Sales Center card, grouped by matching days.</p>
+        </div>
+        <Button type="button" variant="outline" className="h-8 shrink-0 px-3 text-xs" onClick={applyHoursToAllDays}>Copy Monday to all days</Button>
+      </div>
+      <div className="mt-3 grid gap-2">
+        {officeHours.map((entry) => (
+          <div key={entry.day} className="grid grid-cols-[110px_auto_1fr_auto_1fr] items-center gap-2 border border-stone-100 px-2 py-1.5">
+            <span className="text-xs font-medium text-stone-800">{entry.day}</span>
+            <label className="flex items-center gap-1.5 text-xs text-stone-700">
+              <input type="checkbox" checked={entry.open} onChange={(event) => updateOfficeHours(entry.day, { open: event.target.checked })} />
+              Open
+            </label>
+            <input type="time" disabled={!entry.open} value={entry.from} onChange={(event) => updateOfficeHours(entry.day, { from: event.target.value })} className="border border-stone-300 px-2 py-1.5 text-xs disabled:bg-stone-100 disabled:text-stone-400" />
+            <span className="text-center text-xs text-stone-500">to</span>
+            <input type="time" disabled={!entry.open} value={entry.to} onChange={(event) => updateOfficeHours(entry.day, { to: event.target.value })} className="border border-stone-300 px-2 py-1.5 text-xs disabled:bg-stone-100 disabled:text-stone-400" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 type FloorPlanDraft = {
   name: string;
+  planType: string;
   availability: string;
   status: string;
   beds: string;
@@ -22,10 +198,32 @@ type FloorPlanDraft = {
   sqft: string;
   interiorSize: string;
   balconySize: string;
+  basement: string;
+  garage: string;
+  parkingSpaces: string;
   startingPrice: string;
   averagePricePerSqft: string;
   image: string;
   quickMoveIn: boolean;
+};
+
+const emptyFloorPlanDraft: FloorPlanDraft = {
+  name: "",
+  planType: "",
+  availability: "",
+  status: "",
+  beds: "",
+  baths: "",
+  sqft: "",
+  interiorSize: "",
+  balconySize: "",
+  basement: "",
+  garage: "",
+  parkingSpaces: "",
+  startingPrice: "",
+  averagePricePerSqft: "",
+  image: "",
+  quickMoveIn: false,
 };
 
 type VirtualTourDraft = {
@@ -45,7 +243,7 @@ type AmenityDetails = {
 
 export function DashboardSidebar({ links }: { links: { label: string; href: string }[] }) {
   return (
-    <aside className="box-border min-w-0 w-full border-r border-stone-200 bg-white p-4">
+    <aside className="sticky top-6 box-border min-w-0 w-full self-start border-r border-stone-200 bg-white p-4">
       <nav className="grid gap-2 text-sm">
         {links.map((l) => <Link key={`${l.href}-${l.label}`} href={l.href} className="min-w-0 wrap-break-word border border-stone-200 px-3 py-2">{l.label}</Link>)}
       </nav>
@@ -113,18 +311,29 @@ export function ImageUploader() {
   );
 }
 
-export function BuilderProfileForm() {
-  const [name, setName] = useState("");
-  const [logo, setLogo] = useState("");
-  const [description, setDescription] = useState("");
-  const [location, setLocation] = useState("");
-  const [establishedYear, setEstablishedYear] = useState("");
-  const [yearsInBusiness, setYearsInBusiness] = useState("");
-  const [activeProjects, setActiveProjects] = useState("");
-  const [completedProjects, setCompletedProjects] = useState("");
-  const [website, setWebsite] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
+export function BuilderProfileForm({ initialDeveloper, redirectTo = "/admin/developers" }: { initialDeveloper?: Developer; redirectTo?: string } = {}) {
+  const isEditing = Boolean(initialDeveloper);
+  const [name, setName] = useState(initialDeveloper?.name ?? "");
+  const [logo, setLogo] = useState(initialDeveloper?.logo ?? "");
+  const [description, setDescription] = useState(initialDeveloper?.description ?? "");
+  const [location, setLocation] = useState(initialDeveloper?.location ?? "");
+  const [establishedYear, setEstablishedYear] = useState(initialDeveloper ? String(initialDeveloper.establishedYear) : "");
+  const [yearsInBusiness, setYearsInBusiness] = useState(initialDeveloper ? String(initialDeveloper.yearsInBusiness) : "");
+  const [activeProjects, setActiveProjects] = useState(initialDeveloper ? String(initialDeveloper.activeProjects) : "");
+  const [completedProjects, setCompletedProjects] = useState(initialDeveloper ? String(initialDeveloper.completedProjects) : "");
+  const [website, setWebsite] = useState(initialDeveloper?.website ?? "");
+  const [email, setEmail] = useState(initialDeveloper?.email ?? "");
+  const [phone, setPhone] = useState(initialDeveloper?.phone ?? "");
+  const [coDevelopers, setCoDevelopers] = useState<CoDeveloperEntry[]>(initialDeveloper?.coDevelopers ?? []);
+  const [officeHours, setOfficeHours] = useState(buildInitialOfficeHours(initialDeveloper?.officeHours));
+  const developerDirectory = useDeveloperDirectory();
+  const [facebookUrl, setFacebookUrl] = useState(initialDeveloper?.socialLinks?.facebook ?? "");
+  const [instagramUrl, setInstagramUrl] = useState(initialDeveloper?.socialLinks?.instagram ?? "");
+  const [linkedinUrl, setLinkedinUrl] = useState(initialDeveloper?.socialLinks?.linkedin ?? "");
+  const [twitterUrl, setTwitterUrl] = useState(initialDeveloper?.socialLinks?.twitter ?? "");
+  const [whatsappUrl, setWhatsappUrl] = useState(initialDeveloper?.socialLinks?.whatsapp ?? "");
+  const [youtubeUrl, setYoutubeUrl] = useState(initialDeveloper?.socialLinks?.youtube ?? "");
+  const [tiktokUrl, setTiktokUrl] = useState(initialDeveloper?.socialLinks?.tiktok ?? "");
   const [saving, setSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -133,85 +342,195 @@ export function BuilderProfileForm() {
     setSaving(true);
     setErrorMessage("");
 
+    const payload = {
+      name,
+      logo,
+      description,
+      location,
+      establishedYear: Number(establishedYear),
+      yearsInBusiness: Number(yearsInBusiness),
+      activeProjects: Number(activeProjects),
+      completedProjects: Number(completedProjects),
+      website,
+      email,
+      phone,
+      coDevelopers: coDevelopers.filter((entry) => entry.name.trim()),
+      officeHours: officeHours.map((entry) => ({ day: entry.day, open: entry.open, from: entry.open ? entry.from : undefined, to: entry.open ? entry.to : undefined })),
+      socialLinks: {
+        facebook: facebookUrl.trim() || undefined,
+        instagram: instagramUrl.trim() || undefined,
+        linkedin: linkedinUrl.trim() || undefined,
+        twitter: twitterUrl.trim() || undefined,
+        whatsapp: whatsappUrl.trim() || undefined,
+        youtube: youtubeUrl.trim() || undefined,
+        tiktok: tiktokUrl.trim() || undefined,
+      },
+    };
+
     try {
-      const response = await fetch("/api/developers", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          logo,
-          description,
-          location,
-          establishedYear: Number(establishedYear),
-          yearsInBusiness: Number(yearsInBusiness),
-          activeProjects: Number(activeProjects),
-          completedProjects: Number(completedProjects),
-          website,
-          email,
-          phone,
-        }),
-      });
+      const response = isEditing
+        ? await fetch(`/api/developers/${initialDeveloper!.slug}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          })
+        : await fetch("/api/developers", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
 
       const data = await response.json().catch(() => null);
+      const savedSlug = isEditing ? initialDeveloper!.slug : data?.slug;
 
-      if (!response.ok || !data?.slug) {
-        setErrorMessage(data?.error ?? "Unable to create builder profile page.");
+      if (!response.ok || !savedSlug) {
+        setErrorMessage(data?.error ?? `Unable to ${isEditing ? "save" : "create"} builder profile page.`);
         setSaving(false);
         return;
       }
 
-      window.location.href = `/developers/${data.slug}`;
+      window.location.href = isEditing ? redirectTo : redirectTo.replace("{slug}", savedSlug);
     } catch {
-      setErrorMessage("Unable to create builder profile page.");
+      setErrorMessage(`Unable to ${isEditing ? "save" : "create"} builder profile page.`);
       setSaving(false);
     }
   };
 
   return (
     <form onSubmit={onSubmit} className="space-y-4 border border-stone-200 bg-white p-4">
-      <div>
-        <h2 className="text-xl font-semibold">Create Builder Profile Page</h2>
-        <p className="mt-1 text-sm text-stone-600">Fill this once. After save, your public builder page is automatically generated.</p>
+      <div className="grid gap-3 md:grid-cols-2">
+        <Field label="Builder name"><input value={name} onChange={(event) => setName(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" placeholder="e.g. Prime Lands" required /></Field>
+        <Field label="Primary location"><input value={location} onChange={(event) => setLocation(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" placeholder="e.g. Colombo 03" required /></Field>
+
+        <Field label="Logo image URL" className="md:col-span-2"><input value={logo} onChange={(event) => setLogo(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" placeholder="https://..." required /></Field>
+        <Field label="Builder description" className="md:col-span-2"><textarea value={description} onChange={(event) => setDescription(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" rows={4} required /></Field>
+
+        <Field label="Website URL"><input value={website} onChange={(event) => setWebsite(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" placeholder="https://..." required /></Field>
+        <Field label="Email"><input value={email} onChange={(event) => setEmail(event.target.value)} type="email" className="border border-stone-300 px-3 py-2 text-sm" required /></Field>
+
+        <Field label="Phone"><input value={phone} onChange={(event) => setPhone(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" required /></Field>
+        <Field label="Established year"><input value={establishedYear} onChange={(event) => setEstablishedYear(event.target.value)} type="number" min="1900" step="1" className="border border-stone-300 px-3 py-2 text-sm" required /></Field>
+
+        <Field label="Years in business"><input value={yearsInBusiness} onChange={(event) => setYearsInBusiness(event.target.value)} type="number" min="0" step="1" className="border border-stone-300 px-3 py-2 text-sm" required /></Field>
+        <Field label="Active projects"><input value={activeProjects} onChange={(event) => setActiveProjects(event.target.value)} type="number" min="0" step="1" className="border border-stone-300 px-3 py-2 text-sm" required /></Field>
+
+        <Field label="Completed projects"><input value={completedProjects} onChange={(event) => setCompletedProjects(event.target.value)} type="number" min="0" step="1" className="border border-stone-300 px-3 py-2 text-sm" required /></Field>
       </div>
 
-      <div className="grid gap-3 md:grid-cols-2">
-        <input value={name} onChange={(event) => setName(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" placeholder="Builder name" required />
-        <input value={location} onChange={(event) => setLocation(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" placeholder="Primary location (e.g. Colombo 03)" required />
+      <div className="border border-rose-200 bg-rose-50 p-3">
+        <p className="text-sm font-medium text-stone-900">Connected Pages</p>
+        <p className="mt-1 text-xs text-stone-600">Choose destination pages used on the public listing when users click these names.</p>
+        <CoDeveloperEditor
+          coDevelopers={coDevelopers}
+          setCoDevelopers={setCoDevelopers}
+          developerOptions={developerDirectory}
+          excludeSlug={initialDeveloper?.slug}
+        />
+      </div>
 
-        <input value={logo} onChange={(event) => setLogo(event.target.value)} className="md:col-span-2 border border-stone-300 px-3 py-2 text-sm" placeholder="Logo image URL" required />
-        <textarea value={description} onChange={(event) => setDescription(event.target.value)} className="md:col-span-2 border border-stone-300 px-3 py-2 text-sm" rows={4} placeholder="Builder description" required />
+      <OfficeHoursEditor officeHours={officeHours} setOfficeHours={setOfficeHours} />
 
-        <input value={website} onChange={(event) => setWebsite(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" placeholder="Website URL" required />
-        <input value={email} onChange={(event) => setEmail(event.target.value)} type="email" className="border border-stone-300 px-3 py-2 text-sm" placeholder="Email" required />
-
-        <input value={phone} onChange={(event) => setPhone(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" placeholder="Phone" required />
-        <input value={establishedYear} onChange={(event) => setEstablishedYear(event.target.value)} type="number" min="1900" step="1" className="border border-stone-300 px-3 py-2 text-sm" placeholder="Established year" required />
-
-        <input value={yearsInBusiness} onChange={(event) => setYearsInBusiness(event.target.value)} type="number" min="0" step="1" className="border border-stone-300 px-3 py-2 text-sm" placeholder="Years in business" required />
-        <input value={activeProjects} onChange={(event) => setActiveProjects(event.target.value)} type="number" min="0" step="1" className="border border-stone-300 px-3 py-2 text-sm" placeholder="Active projects" required />
-
-        <input value={completedProjects} onChange={(event) => setCompletedProjects(event.target.value)} type="number" min="0" step="1" className="border border-stone-300 px-3 py-2 text-sm" placeholder="Completed projects" required />
+      <div className="border border-sky-200 bg-sky-50 p-3">
+        <p className="text-sm font-medium text-stone-900">Social networks</p>
+        <p className="mt-1 text-xs text-stone-600">Shown on the public builder page and anywhere this developer is listed. Leave blank to hide.</p>
+        <div className="mt-3 grid gap-3 md:grid-cols-2">
+          <Field label="Facebook URL"><input value={facebookUrl} onChange={(event) => setFacebookUrl(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" /></Field>
+          <Field label="Instagram URL"><input value={instagramUrl} onChange={(event) => setInstagramUrl(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" /></Field>
+          <Field label="LinkedIn URL"><input value={linkedinUrl} onChange={(event) => setLinkedinUrl(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" /></Field>
+          <Field label="Twitter / X URL"><input value={twitterUrl} onChange={(event) => setTwitterUrl(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" /></Field>
+          <Field label="WhatsApp link (wa.me/...)"><input value={whatsappUrl} onChange={(event) => setWhatsappUrl(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" /></Field>
+          <Field label="YouTube URL"><input value={youtubeUrl} onChange={(event) => setYoutubeUrl(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" /></Field>
+          <Field label="TikTok URL"><input value={tiktokUrl} onChange={(event) => setTiktokUrl(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" /></Field>
+        </div>
       </div>
 
       {errorMessage ? <p className="text-sm text-red-600">{errorMessage}</p> : null}
 
       <div className="flex items-center justify-between gap-3">
         <p className="text-xs text-stone-500">Template is applied automatically. You can refine visuals later.</p>
-        <Button type="submit" disabled={saving}>{saving ? "Creating page..." : "Create Builder Page"}</Button>
+        <Button type="submit" disabled={saving}>{saving ? "Saving..." : isEditing ? "Save Changes" : "Create Builder Page"}</Button>
       </div>
     </form>
   );
 }
 
-export function ProjectWizard({ initialProject }: { initialProject?: Project } = {}) {
+export function NeighborhoodForm({ initialNeighborhood }: { initialNeighborhood?: Neighborhood } = {}) {
+  const isEditing = Boolean(initialNeighborhood);
+  const [name, setName] = useState(initialNeighborhood?.name ?? "");
+  const [city, setCity] = useState(initialNeighborhood?.city ?? "");
+  const [province, setProvince] = useState(initialNeighborhood?.province ?? "");
+  const [description, setDescription] = useState(initialNeighborhood?.description ?? "");
+  const [heroImage, setHeroImage] = useState(initialNeighborhood?.heroImage ?? "");
+  const [saving, setSaving] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSaving(true);
+    setErrorMessage("");
+
+    const payload = { name, city, province, description, heroImage };
+
+    try {
+      const response = isEditing
+        ? await fetch(`/api/neighborhoods/${initialNeighborhood!.slug}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          })
+        : await fetch("/api/neighborhoods", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+
+      const data = await response.json().catch(() => null);
+      const savedSlug = isEditing ? initialNeighborhood!.slug : data?.slug;
+
+      if (!response.ok || !savedSlug) {
+        setErrorMessage(data?.error ?? `Unable to ${isEditing ? "save" : "create"} this neighborhood.`);
+        setSaving(false);
+        return;
+      }
+
+      window.location.href = "/admin/neighborhoods";
+    } catch {
+      setErrorMessage(`Unable to ${isEditing ? "save" : "create"} this neighborhood.`);
+      setSaving(false);
+    }
+  };
+
+  return (
+    <form onSubmit={onSubmit} className="space-y-4 border border-stone-200 bg-white p-4">
+      <div className="grid gap-3 md:grid-cols-2">
+        <Field label="Neighborhood name"><input value={name} onChange={(event) => setName(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" placeholder="e.g. Thalawathugoda" required /></Field>
+        <Field label="City"><input value={city} onChange={(event) => setCity(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" required /></Field>
+
+        <Field label="Province" className="md:col-span-2"><input value={province} onChange={(event) => setProvince(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" required /></Field>
+        <Field label="Hero image URL" className="md:col-span-2"><input value={heroImage} onChange={(event) => setHeroImage(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" placeholder="https://..." required /></Field>
+        <Field label="Description shown on the public neighborhood page" className="md:col-span-2"><textarea value={description} onChange={(event) => setDescription(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" rows={5} required /></Field>
+      </div>
+
+      {errorMessage ? <p className="text-sm text-red-600">{errorMessage}</p> : null}
+
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-xs text-stone-500">Project pages link here automatically once a matching neighborhood slug is set.</p>
+        <Button type="submit" disabled={saving}>{saving ? "Saving..." : isEditing ? "Save Changes" : "Create Neighborhood"}</Button>
+      </div>
+    </form>
+  );
+}
+
+export function ProjectWizard({ initialProject, developerSlug, developerName }: { initialProject?: Project; developerSlug?: string; developerName?: string } = {}) {
   const projectTypeOptions = [
+    "Condominium",
+    "Apartments",
+    "Villas",
+    "Mixed Use",
+    "Housing",
+    "Township Developments",
     "Private Residence",
-    "Luxury Condominium",
-    "Apartment Development",
-    "Mixed-use Development",
-    "Townhouse Community",
-    "Villa Community",
-    "Affordable Housing",
+    "Townhouse",
   ];
   const projectStatusOptions = [
     "Now Selling",
@@ -220,6 +539,18 @@ export function ProjectWizard({ initialProject }: { initialProject?: Project } =
     "Launching Soon",
     "Nearly Sold Out",
     "Nearly Complete",
+  ];
+  const ownershipOptions = [
+    "Freehold",
+    "Leasehold",
+    "Condominium",
+    "State Grant",
+    "State Lease",
+    "Permit Land",
+    "Co-Ownership",
+    "Joint Ownership",
+    "Company/Corporate Ownership",
+    "Other",
   ];
   const moveInYearOptions = [2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035];
   const bedroomOptions = [1, 2, 3, 4, 5];
@@ -230,24 +561,23 @@ export function ProjectWizard({ initialProject }: { initialProject?: Project } =
     { slug: "cityform-architects", label: "Cityform Architects" },
     { slug: "studio-grid-architecture", label: "Studio Grid Architecture" },
   ];
-  const salesCompanyPageOptions = [
+  const marketingCompanyPageOptions = [
     { slug: "", label: "No page selected" },
     { slug: "ora-creative-agency", label: "ORA Creative Agency" },
     { slug: "prime-sales-lanka", label: "Prime Sales Lanka" },
     { slug: "urban-home-marketing", label: "Urban Home Marketing" },
+  ];
+  const salesCompanyPageOptions = [
+    { slug: "", label: "No page selected" },
+    { slug: "prime-realty-sales", label: "Prime Realty Sales" },
+    { slug: "colombo-property-brokers", label: "Colombo Property Brokers" },
+    { slug: "island-homes-sales", label: "Island Homes Sales" },
   ];
   const interiorDesignerPageOptions = [
     { slug: "", label: "No page selected" },
     { slug: "pulsinelli", label: "Pulsinelli" },
     { slug: "atelier-habitat", label: "Atelier Habitat" },
     { slug: "spacecraft-interiors", label: "Spacecraft Interiors" },
-  ];
-  const neighborhoodPageOptions = [
-    { slug: "", label: "No page selected" },
-    { slug: "kollupitiya", label: "Kollupitiya" },
-    { slug: "asgiriya", label: "Asgiriya" },
-    { slug: "rajagiriya", label: "Rajagiriya" },
-    { slug: "dehiwala", label: "Dehiwala" },
   ];
   const steps = [
     "Project Information",
@@ -283,8 +613,14 @@ export function ProjectWizard({ initialProject }: { initialProject?: Project } =
     "Incentives",
     "Parking",
     "Completion year",
+    "Ownership",
+    "Ceilings",
+    "Neighborhood",
+    "Security",
+    "District",
+    "Sales started",
   ];
-  const floorPlanStatOptions = ["Status", "Price", "Address", "Project type", "Beds", "Baths", "SqFt", "Per SqFt (Avg)"];
+  const floorPlanStatOptions = ["Status", "Price", "Address", "Project type", "Plan type", "Beds", "Baths", "SqFt", "Ownership", "Interior size", "Basement", "Balcony", "Garage", "Parking", "Ceilings", "Security", "Neighborhood", "Building status", "Per SqFt (Avg)"];
   const maxVisibleStats = 10;
   const [step, setStep] = useState(0);
   const [publishMessage, setPublishMessage] = useState("");
@@ -292,6 +628,13 @@ export function ProjectWizard({ initialProject }: { initialProject?: Project } =
   const sectionRefs = useRef<Record<number, HTMLDivElement | null>>({});
   const [projectType, setProjectType] = useState(initialProject?.type ?? "");
   const [projectStatus, setProjectStatus] = useState(initialProject?.status ?? "");
+  const [ownership, setOwnership] = useState(initialProject?.ownership ?? "");
+  const parkingFeatureOptions = ["Driveway", "Garage", "Carport", "On-street", "Laneway/rear access", "Underground", "Surface/open", "Valet/stacked"];
+  const [parkingSpaces, setParkingSpaces] = useState("");
+  const [parkingFeatures, setParkingFeatures] = useState<string[]>([]);
+  const toggleParkingFeature = (feature: string) => {
+    setParkingFeatures((current) => (current.includes(feature) ? current.filter((item) => item !== feature) : [...current, feature]));
+  };
   const [moveInYear, setMoveInYear] = useState(initialProject ? String(initialProject.completionYear) : "");
   const [constructionStarted, setConstructionStarted] = useState(initialProject?.constructionStarted ?? "");
   const [estimatedCompletion, setEstimatedCompletion] = useState(initialProject ? String(initialProject.completionYear) : "");
@@ -320,6 +663,18 @@ export function ProjectWizard({ initialProject }: { initialProject?: Project } =
   const [pricingHistoryNote, setPricingHistoryNote] = useState(initialProject?.pricingHistory?.[0]?.note ?? "");
   const [paymentPlanItems, setPaymentPlanItems] = useState<string[]>(initialProject?.paymentPlanItems ?? initialProject?.depositPaymentStructure?.split(";").map((item) => item.trim()) ?? ["", "", "", ""]);
   const [incentives, setIncentives] = useState<string[]>(initialProject?.incentives ?? []);
+  const [isFeatured, setIsFeatured] = useState(initialProject?.isFeatured ?? false);
+  const [isMoveInNow, setIsMoveInNow] = useState(initialProject?.isMoveInNow ?? false);
+  const [coDevelopers, setCoDevelopers] = useState<CoDeveloperEntry[]>(initialProject?.coDevelopers ?? []);
+  const developerDirectory = useDeveloperDirectory();
+  const [architectSlug, setArchitectSlug] = useState(initialProject?.architectSlug ?? "");
+  const [marketingCompanySlug, setMarketingCompanySlug] = useState(initialProject?.marketingCompanySlug ?? "");
+  const [salesCompanySlug, setSalesCompanySlug] = useState(initialProject?.salesCompanySlug ?? "");
+  const [interiorDesignerSlug, setInteriorDesignerSlug] = useState(initialProject?.interiorDesignerSlug ?? "");
+  const [hotDealEnabled, setHotDealEnabled] = useState(initialProject?.hotDeal?.enabled ?? false);
+  const [hotDealBadge, setHotDealBadge] = useState(initialProject?.hotDeal?.badge ?? "Hot Deal");
+  const [hotDealTitle, setHotDealTitle] = useState(initialProject?.hotDeal?.title ?? "");
+  const [hotDealDescription, setHotDealDescription] = useState(initialProject?.hotDeal?.description ?? "");
 
   const bedroomRange = initialProject?.bedrooms.split("-").map((value) => value.trim()) ?? [];
   const bathroomRange = initialProject?.bathrooms.split("-").map((value) => value.trim()) ?? [];
@@ -333,20 +688,24 @@ export function ProjectWizard({ initialProject }: { initialProject?: Project } =
   const [floorPlans, setFloorPlans] = useState<FloorPlanDraft[]>([
     ...(initialProject?.floorPlans.map((plan) => ({
       name: plan.planName,
+      planType: plan.planType ?? "",
       availability: plan.availability,
       status: plan.availability === "Sold Out" ? "Sold" : "For sale",
       beds: String(plan.bedrooms),
       baths: String(plan.bathrooms),
       sqft: String(plan.floorAreaSqFt),
-      interiorSize: "",
-      balconySize: "",
+      interiorSize: plan.interiorSizeSqFt ? String(plan.interiorSizeSqFt) : "",
+      balconySize: plan.balconySizeSqFt ? String(plan.balconySizeSqFt) : "",
+      basement: plan.basement ?? "",
+      garage: plan.garage ?? "",
+      parkingSpaces: plan.parkingSpaces ? String(plan.parkingSpaces) : "",
       startingPrice: String(plan.startingPriceLkr),
       averagePricePerSqft: "",
       image: plan.image,
       quickMoveIn: Boolean(plan.quickMoveIn),
     })) ?? [
-      { name: "", availability: "", status: "", beds: "", baths: "", sqft: "", interiorSize: "", balconySize: "", startingPrice: "", averagePricePerSqft: "", image: "", quickMoveIn: false },
-      { name: "", availability: "", status: "", beds: "", baths: "", sqft: "", interiorSize: "", balconySize: "", startingPrice: "", averagePricePerSqft: "", image: "", quickMoveIn: false },
+      { ...emptyFloorPlanDraft },
+      { ...emptyFloorPlanDraft },
     ]),
   ]);
   const [videoUrl, setVideoUrl] = useState(initialProject?.videos?.[0]?.embedUrl ?? "");
@@ -370,6 +729,41 @@ export function ProjectWizard({ initialProject }: { initialProject?: Project } =
     "Listing status",
   ]);
   const [floorPlanVisibleStats, setFloorPlanVisibleStats] = useState<string[]>(initialProject?.floorPlanVisibleStats ?? floorPlanStatOptions);
+
+  const [factsGrid, setFactsGrid] = useState<FactItem[]>(initialProject?.factsGrid ?? []);
+  const addFactRow = () => setFactsGrid((rows) => [...rows, { key: `fact-${Date.now()}-${rows.length}`, label: "", value: "", icon: "building-2" }]);
+  const removeFactRow = (index: number) => setFactsGrid((rows) => rows.filter((_, i) => i !== index));
+  const updateFactRow = (index: number, patch: Partial<FactItem>) =>
+    setFactsGrid((rows) => rows.map((row, i) => (i === index ? { ...row, ...patch } : row)));
+
+  const nameRef = useRef<HTMLInputElement>(null);
+  const descriptionRef = useRef<HTMLTextAreaElement>(null);
+  const addressRef = useRef<HTMLInputElement>(null);
+  const unitsRef = useRef<HTMLInputElement>(null);
+  const floorsRef = useRef<HTMLInputElement>(null);
+  const contactNameRef = useRef<HTMLInputElement>(null);
+  const contactEmailRef = useRef<HTMLInputElement>(null);
+  const contactPhoneRef = useRef<HTMLInputElement>(null);
+
+  const [nearbyPlaces, setNearbyPlaces] = useState<{ category: string; name: string; distanceKm: string }[]>(
+    initialProject?.nearby.map((place) => ({ category: place.category, name: place.name, distanceKm: String(place.distanceKm) })) ?? []
+  );
+  const nearbyCategoryOptions = ["School", "Hospital", "Shopping", "Restaurant", "Transport", "Landmark"];
+
+  const addNearbyPlace = () => {
+    setNearbyPlaces((current) => [...current, { category: "Landmark", name: "", distanceKm: "" }]);
+  };
+
+  const updateNearbyPlace = (index: number, field: "category" | "name" | "distanceKm", value: string) => {
+    setNearbyPlaces((current) => current.map((place, placeIndex) => (placeIndex === index ? { ...place, [field]: value } : place)));
+  };
+
+  const removeNearbyPlace = (index: number) => {
+    setNearbyPlaces((current) => current.filter((_, placeIndex) => placeIndex !== index));
+  };
+
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
 
   const uniqueOptions = (options: string[]) => [...new Set(options)];
   const districtOptions = province ? uniqueOptions(sriLankaDistrictsByProvince[province] ?? []) : [];
@@ -461,7 +855,7 @@ export function ProjectWizard({ initialProject }: { initialProject?: Project } =
   };
 
   const addFloorPlan = () => {
-    setFloorPlans((current) => [...current, { name: "", availability: "", status: "", beds: "", baths: "", sqft: "", interiorSize: "", balconySize: "", startingPrice: "", averagePricePerSqft: "", image: "", quickMoveIn: false }]);
+    setFloorPlans((current) => [...current, { ...emptyFloorPlanDraft }]);
   };
 
   const addVirtualTour = () => {
@@ -526,9 +920,149 @@ export function ProjectWizard({ initialProject }: { initialProject?: Project } =
     });
   };
 
+  const buildPayload = (): Partial<Project> & { name: string; developerSlug: string; developerName: string } => {
+    const resolvedDeveloperSlug = developerSlug ?? initialProject?.developerSlug ?? "";
+    const resolvedDeveloperName = developerName ?? initialProject?.developerName ?? "";
+
+    const payload: Partial<Project> & { name: string; developerSlug: string; developerName: string } = {
+      name: nameRef.current?.value || initialProject?.name || "Untitled project",
+      developerSlug: resolvedDeveloperSlug,
+      developerName: resolvedDeveloperName,
+      description: descriptionRef.current?.value || initialProject?.description || "",
+      location: addressRef.current?.value || initialProject?.location || "",
+      type: projectType || initialProject?.type || "",
+      status: (projectStatus || initialProject?.status || "Now Selling") as Project["status"],
+      ownership: ownership || initialProject?.ownership || "",
+      isFeatured,
+      isMoveInNow,
+      coDevelopers: coDevelopers.filter((entry) => entry.name.trim()),
+      architectSlug: architectSlug || undefined,
+      architectName: architectSlug ? architectPageOptions.find((option) => option.slug === architectSlug)?.label : undefined,
+      marketingCompanySlug: marketingCompanySlug || undefined,
+      marketingCompanyName: marketingCompanySlug ? marketingCompanyPageOptions.find((option) => option.slug === marketingCompanySlug)?.label : undefined,
+      salesCompanySlug: salesCompanySlug || undefined,
+      salesCompanyName: salesCompanySlug ? salesCompanyPageOptions.find((option) => option.slug === salesCompanySlug)?.label : undefined,
+      interiorDesignerSlug: interiorDesignerSlug || undefined,
+      interiorDesignerName: interiorDesignerSlug ? interiorDesignerPageOptions.find((option) => option.slug === interiorDesignerSlug)?.label : undefined,
+      constructionStatus: initialProject?.constructionStatus ?? "",
+      constructionStarted: constructionStarted || undefined,
+      completionYear: Number(moveInYear || estimatedCompletion || initialProject?.completionYear || 0),
+      province,
+      district,
+      city,
+      neighborhood,
+      startingPriceLkr: Number(startingPriceMin || initialProject?.startingPriceLkr || 0),
+      priceRange: normalizedPriceRange !== "Not set" ? normalizedPriceRange : (initialProject?.priceRange ?? ""),
+      bedrooms: normalizedBedRange !== "Not set" ? normalizedBedRange : (initialProject?.bedrooms ?? ""),
+      bathrooms: normalizedBathRange !== "Not set" ? normalizedBathRange : (initialProject?.bathrooms ?? ""),
+      floorAreaRange: normalizedSqftRange !== "Not set" ? normalizedSqftRange : (initialProject?.floorAreaRange ?? ""),
+      units: Number(unitsRef.current?.value || initialProject?.units || 0),
+      floors: Number(floorsRef.current?.value || initialProject?.floors || 0),
+      parking: (parkingSpaces || parkingFeatures.length > 0)
+        ? `${parkingSpaces || "0"} space${parkingSpaces === "1" ? "" : "s"}${parkingFeatures.length > 0 ? ` (${parkingFeatures.join(", ")})` : ""}`
+        : initialProject?.parking || "",
+      averagePricePerSqft: averagePricePerSqft || undefined,
+      monthlyMaintenancePerSqft: monthlyMaintenancePerSqft || undefined,
+      propertyTax: propertyTax || undefined,
+      parkingCost: parkingCost || undefined,
+      storageCost: storageCost || undefined,
+      coopFeeRealtors: coopFeeRealtors || undefined,
+      availablePlanPrices: normalizedAvailablePlanPrices !== "Not set" ? normalizedAvailablePlanPrices : undefined,
+      pricingComingSoon: pricingComingSoon || undefined,
+      depositPaymentStructure: paymentPlanItems.filter((item) => item.trim()).join("; ") || undefined,
+      paymentPlanItems: paymentPlanItems.filter((item) => item.trim()),
+      pricingHistory: pricingHistoryDate && pricingHistoryNote ? [{ date: pricingHistoryDate, note: pricingHistoryNote }] : undefined,
+      incentives: incentives.filter((item) => item.trim()),
+      hotDeal: hotDealTitle.trim()
+        ? { enabled: hotDealEnabled, badge: hotDealBadge.trim() || "Hot Deal", title: hotDealTitle.trim(), description: hotDealDescription.trim() }
+        : undefined,
+      amenities: amenities.map((name) => ({ name: name as Amenity["name"], icon: name.toLowerCase().replace(/[^a-z0-9]+/g, "-") })),
+      floorPlans: floorPlans
+        .filter((plan) => plan.name.trim())
+        .map((plan, index) => ({
+          id: initialProject?.floorPlans[index]?.id ?? `${toWizardSlug(plan.name)}-${index}`,
+          planName: plan.name,
+          planType: plan.planType || undefined,
+          bedrooms: Number(plan.beds || 0),
+          bathrooms: Number(plan.baths || 0),
+          floorAreaSqFt: Number(plan.sqft || 0),
+          interiorSizeSqFt: plan.interiorSize ? Number(plan.interiorSize) : undefined,
+          balconySizeSqFt: plan.balconySize ? Number(plan.balconySize) : undefined,
+          basement: plan.basement || undefined,
+          garage: plan.garage || undefined,
+          parkingSpaces: plan.parkingSpaces ? Number(plan.parkingSpaces) : undefined,
+          startingPriceLkr: Number(plan.startingPrice || 0),
+          image: plan.image || initialProject?.floorPlans[index]?.image || "",
+          availability: (plan.availability || "Available") as FloorPlan["availability"],
+          quickMoveIn: plan.quickMoveIn,
+        })),
+      nearby: nearbyPlaces
+        .filter((place) => place.name.trim())
+        .map((place) => ({ category: place.category as Project["nearby"][number]["category"], name: place.name, distanceKm: Number(place.distanceKm || 0) })),
+      interactiveMapUrl: interactiveMapUrl || undefined,
+      virtualTours: virtualTours.filter((tour) => tour.label.trim() && tour.url.trim()),
+      videos: videoUrl ? [{ label: "Video", embedUrl: videoUrl }] : undefined,
+      contact: {
+        name: contactNameRef.current?.value || initialProject?.contact.name || "",
+        email: contactEmailRef.current?.value || initialProject?.contact.email || "",
+        phone: contactPhoneRef.current?.value || initialProject?.contact.phone || "",
+      },
+      desktopVisibleStats: visibleStats as Project["desktopVisibleStats"],
+      floorPlanVisibleStats,
+      factsGrid: factsGrid.filter((fact) => fact.label.trim() && fact.value.trim()),
+    };
+
+    return payload;
+  };
+
+  const handleSaveOrPublish = async (mode: "save" | "publish" = "save") => {
+    setSaving(true);
+    setSaveError("");
+    setPublishMessage("");
+
+    try {
+      const payload = buildPayload();
+
+      if (initialProject) {
+        const response = await fetch(`/api/projects/${initialProject.slug}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const data = await response.json().catch(() => null);
+        if (!response.ok) {
+          setSaveError(data?.error ?? "Unable to save changes.");
+          return;
+        }
+        setPublishMessage(mode === "publish" ? "Project published." : "Project changes saved.");
+      } else {
+        if (!payload.developerSlug) {
+          setSaveError("Missing developer context — open this wizard from a developer's Projects page.");
+          return;
+        }
+        const response = await fetch("/api/projects", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const data = await response.json().catch(() => null);
+        if (!response.ok || !data?.slug) {
+          setSaveError(data?.error ?? "Unable to publish this project.");
+          return;
+        }
+        window.location.href = `/projects/${data.slug}`;
+        return;
+      }
+    } catch {
+      setSaveError("Unable to save changes.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <section className="grid min-w-0 w-full gap-4 lg:grid-cols-[260px_minmax(0,1fr)]">
-      <aside className="border border-stone-200 bg-white p-3">
+      <aside className="border border-stone-200 bg-white p-3 lg:sticky lg:top-4 lg:h-fit lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto">
         <ol className="grid gap-2 text-sm">
           {steps.map((s, idx) => (
             <li key={s}>
@@ -546,7 +1080,7 @@ export function ProjectWizard({ initialProject }: { initialProject?: Project } =
             <div ref={(element) => { sectionRefs.current[0] = element; }} className="md:col-span-2 border border-slate-200 bg-slate-50 p-3">
               <p className="text-sm font-medium text-stone-900">Project Information</p>
               <div className="mt-3 grid gap-3 md:grid-cols-2">
-                <input defaultValue={initialProject?.name} className="border border-stone-300 bg-white px-3 py-2 text-sm" placeholder="Project Name" />
+                <Field label="Project Name"><input ref={nameRef} defaultValue={initialProject?.name} className="border border-stone-300 bg-white px-3 py-2 text-sm w-full" required /></Field>
 
                 <label className="grid gap-1 text-xs text-stone-700">
                   <span>Project Type</span>
@@ -558,7 +1092,17 @@ export function ProjectWizard({ initialProject }: { initialProject?: Project } =
                   </select>
                 </label>
 
-                <textarea defaultValue={initialProject?.description} className="md:col-span-2 border border-stone-300 bg-white px-3 py-2 text-sm" rows={4} placeholder="Description" />
+                <label className="grid gap-1 text-xs text-stone-700">
+                  <span>Ownership</span>
+                  <select value={ownership} onChange={(event) => setOwnership(event.target.value)} className="border border-stone-300 bg-white px-3 py-2 text-sm">
+                    <option value="">Select ownership type</option>
+                    {ownershipOptions.map((option) => (
+                      <option key={option} value={option}>{option}</option>
+                    ))}
+                  </select>
+                </label>
+
+                <Field label="Description" className="md:col-span-2"><textarea ref={descriptionRef} defaultValue={initialProject?.description} className="border border-stone-300 bg-white px-3 py-2 text-sm w-full" rows={4} required /></Field>
 
                 <label className="grid gap-1 text-xs text-stone-700">
                   <span>Listing Status</span>
@@ -595,10 +1139,28 @@ export function ProjectWizard({ initialProject }: { initialProject?: Project } =
               </div>
             </div>
 
+            <div className="md:col-span-2 border border-slate-200 bg-slate-50 p-3">
+              <p className="text-sm font-medium text-stone-900">Badges</p>
+              <p className="mt-1 text-xs text-stone-600">Shown as pills on the listing page and floor plan page.</p>
+              <div className="mt-3 flex flex-wrap gap-4 text-sm text-stone-800">
+                <label className="flex items-center gap-2">
+                  <input type="checkbox" checked={isMoveInNow} onChange={(event) => setIsMoveInNow(event.target.checked)} />
+                  Move-In Now
+                </label>
+                <label className="flex items-center gap-2">
+                  <input type="checkbox" checked={isFeatured} onChange={(event) => setIsFeatured(event.target.checked)} />
+                  Featured
+                </label>
+                <p className="text-xs text-stone-500">
+                  Quick Move-In is set per floor plan below, in the Plans &amp; Homes section.
+                </p>
+              </div>
+            </div>
+
             <div ref={(element) => { sectionRefs.current[1] = element; }} className="md:col-span-2 border border-emerald-200 bg-emerald-50 p-3">
               <p className="text-sm font-medium text-stone-900">Location</p>
               <div className="mt-3 grid gap-3 md:grid-cols-2">
-                <input defaultValue={initialProject?.location} className="border border-stone-300 bg-white px-3 py-2 text-sm" placeholder="Address" />
+                <Field label="Address"><input ref={addressRef} defaultValue={initialProject?.location} className="border border-stone-300 bg-white px-3 py-2 text-sm w-full" required /></Field>
 
                 <label className="grid gap-1 text-xs text-stone-700">
                   <span>Province</span>
@@ -671,6 +1233,27 @@ export function ProjectWizard({ initialProject }: { initialProject?: Project } =
                   </select>
                 </label>
               </div>
+
+              <div className="mt-4 border border-stone-200 bg-white p-3">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-xs font-semibold text-stone-800">Nearby places</p>
+                  <Button type="button" variant="outline" className="h-8 px-3 text-xs" onClick={addNearbyPlace}>Add place</Button>
+                </div>
+                <p className="mt-1 text-xs text-stone-600">Shown in the public Neighborhood section on this project's page.</p>
+                <div className="mt-3 grid gap-2">
+                  {nearbyPlaces.map((place, index) => (
+                    <div key={`nearby-${index}`} className="grid gap-2 md:grid-cols-[140px_1fr_110px_auto]">
+                      <select value={place.category} onChange={(event) => updateNearbyPlace(index, "category", event.target.value)} className="border border-stone-300 bg-white px-2 py-2 text-sm">
+                        {nearbyCategoryOptions.map((option) => <option key={option} value={option}>{option}</option>)}
+                      </select>
+                      <input value={place.name} onChange={(event) => updateNearbyPlace(index, "name", event.target.value)} className="border border-stone-300 px-2 py-2 text-sm" placeholder="Place name" />
+                      <input value={place.distanceKm} onChange={(event) => updateNearbyPlace(index, "distanceKm", event.target.value)} type="number" min="0" step="0.1" className="border border-stone-300 px-2 py-2 text-sm" placeholder="Distance (km)" />
+                      <Button type="button" variant="outline" className="h-9 px-3 text-xs" onClick={() => removeNearbyPlace(index)}>Remove</Button>
+                    </div>
+                  ))}
+                  {nearbyPlaces.length === 0 ? <p className="text-xs text-stone-500">No nearby places added yet.</p> : null}
+                </div>
+              </div>
             </div>
 
             <div ref={(element) => { sectionRefs.current[2] = element; }} className="md:col-span-2 border border-amber-200 bg-amber-50 p-3">
@@ -698,7 +1281,10 @@ export function ProjectWizard({ initialProject }: { initialProject?: Project } =
                 </label>
 
                 <label className="grid gap-1 text-xs text-stone-700">
-                  <span>Available Unit Price (LKR)</span>
+                  <span className="inline-flex items-center gap-1">
+                    Available Unit Price (LKR)
+                    <InfoTooltip text="Live pricing for unsold units only — excludes sold-out units from the range." />
+                  </span>
                   <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2">
                     <input type="number" min="0" step="1" value={availableUnitPriceMin} onChange={(event) => setAvailableUnitPriceMin(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" placeholder="Min" />
                     <span className="text-stone-500">to</span>
@@ -819,6 +1405,24 @@ export function ProjectWizard({ initialProject }: { initialProject?: Project } =
                     ))}
                   </div>
                 </div>
+
+                <div className="md:col-span-2 border border-stone-200 bg-white p-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-xs font-semibold text-stone-800">Hot deal banner</p>
+                      <p className="mt-1 text-xs text-stone-600">Shown below the nav on this project's page, plus a &quot;Hot Deal&quot; pill next to the status tags.</p>
+                    </div>
+                    <label className="flex shrink-0 items-center gap-2 border border-stone-300 bg-stone-50 px-3 py-2 text-xs font-medium text-stone-800">
+                      <input type="checkbox" checked={hotDealEnabled} onChange={(event) => setHotDealEnabled(event.target.checked)} />
+                      {hotDealEnabled ? "On" : "Off"}
+                    </label>
+                  </div>
+                  <div className="mt-3 grid gap-2 md:grid-cols-2">
+                    <Field label="Badge label"><input disabled={!hotDealEnabled} value={hotDealBadge} onChange={(event) => setHotDealBadge(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full disabled:bg-stone-100 disabled:text-stone-400" placeholder="e.g. Hot Deal" /></Field>
+                    <Field label="Title"><input disabled={!hotDealEnabled} value={hotDealTitle} onChange={(event) => setHotDealTitle(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full disabled:bg-stone-100 disabled:text-stone-400" placeholder="e.g. Summer Madness" /></Field>
+                    <Field label="Deal description" className="md:col-span-2"><textarea disabled={!hotDealEnabled} value={hotDealDescription} onChange={(event) => setHotDealDescription(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full disabled:bg-stone-100 disabled:text-stone-400" rows={3} /></Field>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -894,7 +1498,7 @@ export function ProjectWizard({ initialProject }: { initialProject?: Project } =
                   {sqftRangeError ? <span className="text-xs text-red-600">{sqftRangeError}</span> : null}
                 </label>
 
-                <input defaultValue={initialProject ? String(initialProject.units) : undefined} className="border border-stone-300 px-3 py-2 text-sm md:col-span-2" placeholder="Number of Units" />
+                <Field label="Number of Units" className="md:col-span-2"><input ref={unitsRef} defaultValue={initialProject ? String(initialProject.units) : undefined} type="number" min="0" step="1" className="border border-stone-300 px-3 py-2 text-sm w-full" /></Field>
               </div>
             </div>
 
@@ -906,31 +1510,72 @@ export function ProjectWizard({ initialProject }: { initialProject?: Project } =
                   <div key={`floor-plan-${index}`} className="border border-stone-200 bg-white p-3">
                     <p className="text-xs font-semibold text-stone-800">Floor Plan {index + 1}</p>
                     <div className="mt-2 grid gap-3 md:grid-cols-2">
-                      <input value={plan.name} onChange={(event) => updateFloorPlan(index, "name", event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" placeholder="Plan name" />
-                      <select value={plan.availability} onChange={(event) => updateFloorPlan(index, "availability", event.target.value)} className="border border-stone-300 bg-white px-3 py-2 text-sm">
-                        <option value="">Availability</option>
-                        <option value="Available">Available</option>
-                        <option value="Limited">Limited</option>
-                        <option value="Sold Out">Sold Out</option>
-                      </select>
-                      <select value={plan.status} onChange={(event) => updateFloorPlan(index, "status", event.target.value)} className="border border-stone-300 bg-white px-3 py-2 text-sm">
-                        <option value="">Status</option>
-                        <option value="For sale">For sale</option>
-                        <option value="Under construction">Under construction</option>
-                        <option value="Sold">Sold</option>
-                        <option value="Coming soon">Coming soon</option>
-                      </select>
+                      <Field label="Plan name"><input value={plan.name} onChange={(event) => updateFloorPlan(index, "name", event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" /></Field>
+                      <Field label="Plan type">
+                        <select value={plan.planType} onChange={(event) => updateFloorPlan(index, "planType", event.target.value)} className="border border-stone-300 bg-white px-3 py-2 text-sm w-full">
+                          <option value="">Select</option>
+                          <option value="Open Floor Plan">Open Floor Plan</option>
+                          <option value="Closed Floor Plan">Closed Floor Plan</option>
+                          <option value="Split-Level Floor Plan">Split-Level Floor Plan</option>
+                          <option value="Ranch Floor Plan">Ranch Floor Plan</option>
+                          <option value="Multi-Story Floor Plan">Multi-Story Floor Plan</option>
+                          <option value="Courtyard Floor Plan">Courtyard Floor Plan</option>
+                          <option value="Studio Floor Plan">Studio Floor Plan</option>
+                        </select>
+                      </Field>
+                      <Field label="Availability">
+                        <select value={plan.availability} onChange={(event) => updateFloorPlan(index, "availability", event.target.value)} className="border border-stone-300 bg-white px-3 py-2 text-sm w-full">
+                          <option value="">Select</option>
+                          <option value="Available">Available</option>
+                          <option value="Limited">Limited</option>
+                          <option value="Sold Out">Sold Out</option>
+                        </select>
+                      </Field>
+                      <Field label="Status">
+                        <select value={plan.status} onChange={(event) => updateFloorPlan(index, "status", event.target.value)} className="border border-stone-300 bg-white px-3 py-2 text-sm w-full">
+                          <option value="">Select</option>
+                          <option value="For sale">For sale</option>
+                          <option value="Under construction">Under construction</option>
+                          <option value="Sold">Sold</option>
+                          <option value="Coming soon">Coming soon</option>
+                        </select>
+                      </Field>
                       <label className="flex items-center gap-2 border border-stone-200 bg-stone-50 px-3 py-2 text-sm md:col-span-2">
                         <input type="checkbox" checked={plan.quickMoveIn} onChange={(event) => updateFloorPlan(index, "quickMoveIn", event.target.checked)} />
                         <span>Show as Quick Move-In</span>
                       </label>
-                      <input type="number" min="0" step="1" value={plan.beds} onChange={(event) => updateFloorPlan(index, "beds", event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" placeholder="Beds" />
-                      <input type="number" min="0" step="1" value={plan.baths} onChange={(event) => updateFloorPlan(index, "baths", event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" placeholder="Baths" />
-                      <input type="number" min="0" step="1" value={plan.sqft} onChange={(event) => updateFloorPlan(index, "sqft", event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" placeholder="SqFt" />
-                      <input type="number" min="0" step="1" value={plan.interiorSize} onChange={(event) => updateFloorPlan(index, "interiorSize", event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" placeholder="Interior size (sq ft)" />
-                      <input type="number" min="0" step="1" value={plan.balconySize} onChange={(event) => updateFloorPlan(index, "balconySize", event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" placeholder="Balcony size (sq ft)" />
-                      <input type="number" min="0" step="1" value={plan.startingPrice} onChange={(event) => updateFloorPlan(index, "startingPrice", event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" placeholder="Starting price (LKR)" />
-                      <input type="number" min="0" step="1" value={plan.averagePricePerSqft} onChange={(event) => updateFloorPlan(index, "averagePricePerSqft", event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" placeholder="Average price per SqFt (LKR)" />
+                      <Field label="Beds"><input type="number" min="0" step="1" value={plan.beds} onChange={(event) => updateFloorPlan(index, "beds", event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" /></Field>
+                      <Field label="Baths"><input type="number" min="0" step="1" value={plan.baths} onChange={(event) => updateFloorPlan(index, "baths", event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" /></Field>
+                      <Field label="SqFt"><input type="number" min="0" step="1" value={plan.sqft} onChange={(event) => updateFloorPlan(index, "sqft", event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" /></Field>
+                      <Field label="Interior size (sq ft)"><input type="number" min="0" step="1" value={plan.interiorSize} onChange={(event) => updateFloorPlan(index, "interiorSize", event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" /></Field>
+                      <Field label="Balcony size (sq ft)"><input type="number" min="0" step="1" value={plan.balconySize} onChange={(event) => updateFloorPlan(index, "balconySize", event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" /></Field>
+                      <Field label="Basement">
+                        <select value={plan.basement} onChange={(event) => updateFloorPlan(index, "basement", event.target.value)} className="border border-stone-300 bg-white px-3 py-2 text-sm w-full">
+                          <option value="">Select</option>
+                          <option value="None">None</option>
+                          <option value="Unfinished">Unfinished</option>
+                          <option value="Finished">Finished</option>
+                        </select>
+                      </Field>
+                      <Field label="Garage">
+                        <select value={plan.garage} onChange={(event) => updateFloorPlan(index, "garage", event.target.value)} className="border border-stone-300 bg-white px-3 py-2 text-sm w-full">
+                          <option value="">Select</option>
+                          <option value="None">None</option>
+                          <option value="Attached">Attached</option>
+                          <option value="Detached">Detached</option>
+                          <option value="Carport">Carport</option>
+                        </select>
+                      </Field>
+                      <Field label="Parking spaces">
+                        <select value={plan.parkingSpaces} onChange={(event) => updateFloorPlan(index, "parkingSpaces", event.target.value)} className="border border-stone-300 bg-white px-3 py-2 text-sm w-full">
+                          <option value="">Select</option>
+                          {[0, 1, 2, 3, 4, 5, 6].map((count) => (
+                            <option key={count} value={count}>{count}</option>
+                          ))}
+                        </select>
+                      </Field>
+                      <Field label="Starting price (LKR)"><input type="number" min="0" step="1" value={plan.startingPrice} onChange={(event) => updateFloorPlan(index, "startingPrice", event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" /></Field>
+                      <Field label="Average price per SqFt (LKR)"><input type="number" min="0" step="1" value={plan.averagePricePerSqft} onChange={(event) => updateFloorPlan(index, "averagePricePerSqft", event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" /></Field>
                       <label className="grid gap-1 text-xs text-stone-700 md:col-span-2">
                         <span>Upload floor plan image</span>
                         <input
@@ -945,7 +1590,7 @@ export function ProjectWizard({ initialProject }: { initialProject?: Project } =
                           className="border border-stone-300 bg-white px-3 py-2 text-sm file:mr-3 file:border-0 file:bg-stone-100 file:px-3 file:py-1 file:text-sm"
                         />
                       </label>
-                      <input value={plan.image} onChange={(event) => updateFloorPlan(index, "image", event.target.value)} className="border border-stone-300 px-3 py-2 text-sm md:col-span-2" placeholder="Floor plan image URL" />
+                      <Field label="Floor plan image URL" className="md:col-span-2"><input value={plan.image} onChange={(event) => updateFloorPlan(index, "image", event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" /></Field>
                       {plan.image ? <Image src={plan.image} alt={`Floor Plan ${index + 1} preview`} width={640} height={320} unoptimized className="h-32 w-full object-contain border border-stone-200 bg-stone-50 md:col-span-2" /> : null}
                     </div>
                   </div>
@@ -966,25 +1611,37 @@ export function ProjectWizard({ initialProject }: { initialProject?: Project } =
               </div>
             </div>
 
-            <input defaultValue={initialProject ? String(initialProject.floors) : undefined} className="border border-stone-300 px-3 py-2 text-sm" placeholder="Number of Floors" />
+            <Field label="Number of Floors"><input ref={floorsRef} defaultValue={initialProject ? String(initialProject.floors) : undefined} type="number" min="0" step="1" className="border border-stone-300 px-3 py-2 text-sm w-full" /></Field>
+
+            <div className="md:col-span-2 mt-2 grid gap-3 border border-stone-200 bg-white p-3">
+              <p className="text-sm font-medium text-stone-900">Parking</p>
+              <select value={parkingSpaces} onChange={(event) => setParkingSpaces(event.target.value)} className="border border-stone-300 bg-white px-3 py-2 text-sm">
+                <option value="">How many parking spaces?</option>
+                {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((count) => (
+                  <option key={count} value={count}>{count}</option>
+                ))}
+              </select>
+              <p className="text-xs text-stone-600">Parking type (select all that apply). EV charging is set under Amenities.</p>
+              <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-3">
+                {parkingFeatureOptions.map((feature) => (
+                  <label key={feature} className="flex items-center gap-2 border border-stone-200 px-3 py-2 text-xs text-stone-700">
+                    <input type="checkbox" checked={parkingFeatures.includes(feature)} onChange={() => toggleParkingFeature(feature)} />
+                    <span>{feature}</span>
+                  </label>
+                ))}
+              </div>
+              {initialProject?.parking && !parkingSpaces && parkingFeatures.length === 0 ? (
+                <p className="text-xs text-stone-500">Currently: {initialProject.parking}. Set the fields above to replace it.</p>
+              ) : null}
+            </div>
 
             <div className="md:col-span-2 mt-2 border border-rose-200 bg-rose-50 p-3">
               <p className="text-sm font-medium text-stone-900">Connected Pages</p>
               <p className="mt-1 text-xs text-stone-600">Choose destination pages used on the public listing when users click these names.</p>
               <div className="mt-3 grid gap-3 md:grid-cols-2">
                 <label className="grid gap-1 text-xs text-stone-700">
-                  <span>Builder page (Developer)</span>
-                  <select className="border border-stone-300 bg-white px-3 py-2 text-sm">
-                    <option value="">No page selected</option>
-                    {developers.map((developer) => (
-                      <option key={developer.slug} value={developer.slug}>{developer.name}</option>
-                    ))}
-                  </select>
-                </label>
-
-                <label className="grid gap-1 text-xs text-stone-700">
                   <span>Architect page</span>
-                  <select className="border border-stone-300 bg-white px-3 py-2 text-sm">
+                  <select value={architectSlug} onChange={(event) => setArchitectSlug(event.target.value)} className="border border-stone-300 bg-white px-3 py-2 text-sm">
                     {architectPageOptions.map((option) => (
                       <option key={option.slug || "architect-none"} value={option.slug}>{option.label}</option>
                     ))}
@@ -992,8 +1649,17 @@ export function ProjectWizard({ initialProject }: { initialProject?: Project } =
                 </label>
 
                 <label className="grid gap-1 text-xs text-stone-700">
+                  <span>Marketing company page</span>
+                  <select value={marketingCompanySlug} onChange={(event) => setMarketingCompanySlug(event.target.value)} className="border border-stone-300 bg-white px-3 py-2 text-sm">
+                    {marketingCompanyPageOptions.map((option) => (
+                      <option key={option.slug || "marketing-none"} value={option.slug}>{option.label}</option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="grid gap-1 text-xs text-stone-700">
                   <span>Sales company page</span>
-                  <select className="border border-stone-300 bg-white px-3 py-2 text-sm">
+                  <select value={salesCompanySlug} onChange={(event) => setSalesCompanySlug(event.target.value)} className="border border-stone-300 bg-white px-3 py-2 text-sm">
                     {salesCompanyPageOptions.map((option) => (
                       <option key={option.slug || "sales-none"} value={option.slug}>{option.label}</option>
                     ))}
@@ -1002,22 +1668,21 @@ export function ProjectWizard({ initialProject }: { initialProject?: Project } =
 
                 <label className="grid gap-1 text-xs text-stone-700">
                   <span>Interior designer page</span>
-                  <select className="border border-stone-300 bg-white px-3 py-2 text-sm">
+                  <select value={interiorDesignerSlug} onChange={(event) => setInteriorDesignerSlug(event.target.value)} className="border border-stone-300 bg-white px-3 py-2 text-sm">
                     {interiorDesignerPageOptions.map((option) => (
                       <option key={option.slug || "interior-none"} value={option.slug}>{option.label}</option>
                     ))}
                   </select>
                 </label>
-
-                <label className="grid gap-1 text-xs text-stone-700 md:col-span-2">
-                  <span>Neighborhood page</span>
-                  <select className="border border-stone-300 bg-white px-3 py-2 text-sm">
-                    {neighborhoodPageOptions.map((option) => (
-                      <option key={option.slug || "neighborhood-none"} value={option.slug}>{option.label}</option>
-                    ))}
-                  </select>
-                </label>
               </div>
+              <p className="mt-2 text-xs text-stone-500">The neighborhood page links automatically when this project&apos;s neighborhood name matches one created under Admin → Neighborhoods. The primary builder page is set by which developer dashboard this project belongs to — use Additional builders below for co-developers.</p>
+
+              <CoDeveloperEditor
+                coDevelopers={coDevelopers}
+                setCoDevelopers={setCoDevelopers}
+                developerOptions={developerDirectory}
+                excludeSlug={developerSlug ?? initialProject?.developerSlug ?? ""}
+              />
             </div>
           </div>
           <div ref={(element) => { sectionRefs.current[5] = element; }} className="border border-lime-200 bg-lime-50 p-3">
@@ -1028,7 +1693,7 @@ export function ProjectWizard({ initialProject }: { initialProject?: Project } =
               <p className="text-sm font-medium text-stone-900">Project Media</p>
               <label className="grid gap-1 text-xs text-stone-700">
                 <span>Video URL</span>
-                <input value={videoUrl} onChange={(event) => setVideoUrl(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" placeholder="YouTube or Vimeo embed URL" />
+                <Field label="Video URL"><input value={videoUrl} onChange={(event) => setVideoUrl(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" placeholder="YouTube or Vimeo embed URL" /></Field>
               </label>
               <label className="grid gap-1 text-xs text-stone-700">
                 <span>Upload video</span>
@@ -1067,12 +1732,12 @@ export function ProjectWizard({ initialProject }: { initialProject?: Project } =
 
               <label className="grid gap-1 text-xs text-stone-700">
                 <span>Interactive Map URL</span>
-                <input value={interactiveMapUrl} onChange={(event) => setInteractiveMapUrl(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" placeholder="Interactive map embed URL" />
+                <Field label="Interactive map embed URL"><input value={interactiveMapUrl} onChange={(event) => setInteractiveMapUrl(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" /></Field>
               </label>
 
               <label className="grid gap-1 text-xs text-stone-700">
                 <span>Brochure URL</span>
-                <input value={brochureUrl} onChange={(event) => setBrochureUrl(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" placeholder="PDF brochure URL" />
+                <Field label="PDF brochure URL"><input value={brochureUrl} onChange={(event) => setBrochureUrl(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" /></Field>
               </label>
               <label className="grid gap-1 text-xs text-stone-700">
                 <span>Upload brochure PDF</span>
@@ -1086,8 +1751,8 @@ export function ProjectWizard({ initialProject }: { initialProject?: Project } =
                 </div>
                 {virtualTours.map((tour, index) => (
                   <div key={`virtual-tour-${index}`} className="grid gap-2 md:grid-cols-[1fr_2fr_auto]">
-                    <input value={tour.label} onChange={(event) => updateVirtualTour(index, "label", event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" placeholder="Tour name" />
-                    <input value={tour.url} onChange={(event) => updateVirtualTour(index, "url", event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" placeholder="Virtual tour URL" />
+                    <Field label="Tour name"><input value={tour.label} onChange={(event) => updateVirtualTour(index, "label", event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" /></Field>
+                    <Field label="Virtual tour URL"><input value={tour.url} onChange={(event) => updateVirtualTour(index, "url", event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" /></Field>
                     <Button type="button" variant="outline" className="h-10 px-3 text-xs" onClick={() => removeVirtualTour(index)}>Remove</Button>
                   </div>
                 ))}
@@ -1121,7 +1786,7 @@ export function ProjectWizard({ initialProject }: { initialProject?: Project } =
             <p className="text-sm font-medium text-stone-900">Units</p>
             <p className="mt-1 text-xs text-stone-600">Add unit availability and pricing after the project details are complete.</p>
             <div className="mt-3 grid gap-3 md:grid-cols-2">
-              <input className="border border-stone-300 bg-white px-3 py-2 text-sm" placeholder="Unit number" />
+              <Field label="Unit number"><input className="border border-stone-300 bg-white px-3 py-2 text-sm w-full" /></Field>
               <select className="border border-stone-300 bg-white px-3 py-2 text-sm" defaultValue="">
                 <option value="">Select unit status</option>
                 <option value="Available">Available</option>
@@ -1134,18 +1799,18 @@ export function ProjectWizard({ initialProject }: { initialProject?: Project } =
             <p className="text-sm font-medium text-stone-900">Contact</p>
             <p className="mt-1 text-xs text-stone-600">Add the sales contact details shown to prospective buyers.</p>
             <div className="mt-3 grid gap-3 md:grid-cols-2">
-              <input className="border border-stone-300 bg-white px-3 py-2 text-sm" placeholder="Contact name" />
-              <input type="email" className="border border-stone-300 bg-white px-3 py-2 text-sm" placeholder="Email address" />
-              <input className="border border-stone-300 bg-white px-3 py-2 text-sm" placeholder="Phone number" />
-              <input className="border border-stone-300 bg-white px-3 py-2 text-sm" placeholder="Sales office hours" />
+              <Field label="Contact name"><input ref={contactNameRef} defaultValue={initialProject?.contact.name} className="border border-stone-300 bg-white px-3 py-2 text-sm w-full" /></Field>
+              <Field label="Email address"><input ref={contactEmailRef} defaultValue={initialProject?.contact.email} type="email" className="border border-stone-300 bg-white px-3 py-2 text-sm w-full" /></Field>
+              <Field label="Phone number" className="md:col-span-2"><input ref={contactPhoneRef} defaultValue={initialProject?.contact.phone} className="border border-stone-300 bg-white px-3 py-2 text-sm w-full" /></Field>
             </div>
+            <p className="mt-3 text-xs text-stone-500">Social links and hours of operation are set once on the developer&apos;s profile and shown on every one of their projects — edit them on the <Link href={`/admin/developers/${developerSlug ?? initialProject?.developerSlug ?? ""}/edit`} className="underline">developer page</Link>.</p>
           </div>
           <div ref={(element) => { sectionRefs.current[9] = element; }} className="border border-fuchsia-200 bg-fuchsia-50 p-3">
             <p className="text-sm font-medium text-stone-900">SEO</p>
             <p className="mt-1 text-xs text-stone-600">Set the search title and description for the public project page.</p>
             <div className="mt-3 grid gap-3">
-              <input className="border border-stone-300 bg-white px-3 py-2 text-sm" placeholder="SEO title" />
-              <textarea className="border border-stone-300 bg-white px-3 py-2 text-sm" rows={3} placeholder="SEO description" />
+              <Field label="SEO title"><input className="border border-stone-300 bg-white px-3 py-2 text-sm w-full" /></Field>
+              <Field label="SEO description"><textarea className="border border-stone-300 bg-white px-3 py-2 text-sm w-full" rows={3} /></Field>
             </div>
           </div>
           <div ref={(element) => { sectionRefs.current[10] = element; }} className="border border-violet-200 bg-violet-50 p-3">
@@ -1168,11 +1833,7 @@ export function ProjectWizard({ initialProject }: { initialProject?: Project } =
           </div>
           <div ref={(element) => { sectionRefs.current[11] = element; }} className="border border-orange-200 bg-orange-50 p-3">
             <p className="text-sm font-medium text-stone-900">Publish</p>
-            <p className="mt-1 text-xs text-stone-600">Publish this project when all required details have been reviewed.</p>
-            <div className="mt-3 flex items-center gap-3">
-              <Button type="button" disabled={formHasErrors} onClick={() => setPublishMessage("Project is ready to publish.")}>Publish project</Button>
-              {publishMessage ? <p className="text-xs text-emerald-700">{publishMessage}</p> : null}
-            </div>
+            <p className="mt-1 text-xs text-stone-600">Review the steps above, then use Save or Publish at the bottom of this page &mdash; both are available from any step.</p>
           </div>
           <div className="border border-stone-200 bg-stone-50 p-3 text-xs text-stone-700">
             <p className="font-medium text-stone-900">Live normalized preview</p>
@@ -1205,18 +1866,28 @@ export function ProjectWizard({ initialProject }: { initialProject?: Project } =
               <p><strong>Incentives Count:</strong> {incentives.filter((item) => item.trim()).length}</p>
             </div>
           </div>
-          <div className="flex justify-between">
-            <Button type="button" variant="outline" onClick={() => selectStep(Math.max(0, step - 1))}>Back</Button>
-            {initialProject ? (
-              <Button type="button" disabled={formHasErrors} title={formHasErrors ? "Fix range errors before saving" : undefined} onClick={() => setPublishMessage("Project changes saved.")}>Save</Button>
-            ) : (
-              <Button type="button" disabled={formHasErrors} title={formHasErrors ? "Fix range errors before continuing" : undefined} onClick={() => selectStep(Math.min(steps.length - 1, step + 1))}>Next</Button>
-            )}
+          <div className="sticky bottom-0 -mx-4 border-t border-stone-200 bg-white/95 px-4 py-3 backdrop-blur">
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              {initialProject ? (
+                <Button type="button" disabled={formHasErrors || saving} title={formHasErrors ? "Fix range errors before saving" : undefined} onClick={() => handleSaveOrPublish("save")}>{saving ? "Saving..." : "Save"}</Button>
+              ) : null}
+              <Button
+                type="button"
+                disabled={formHasErrors || saving}
+                title={formHasErrors ? "Fix range errors before publishing" : undefined}
+                onClick={() => handleSaveOrPublish("publish")}
+                className="bg-emerald-600 text-white hover:bg-emerald-700"
+              >
+                {saving ? "Publishing..." : "Publish"}
+              </Button>
+            </div>
+            {publishMessage ? <p className="text-right text-sm text-emerald-700">{publishMessage}</p> : null}
+            {saveError ? <p className="text-right text-sm text-red-600">{saveError}</p> : null}
           </div>
-          {initialProject && publishMessage === "Project changes saved." ? <p className="text-right text-sm text-emerald-700">{publishMessage}</p> : null}
         </div>
 
-        <aside className="space-y-3 border border-amber-300 bg-amber-100 p-4 lg:sticky lg:top-4 lg:h-fit">
+        <div className="space-y-4 lg:sticky lg:top-4 lg:h-fit">
+        <aside className="space-y-3 border border-amber-300 bg-amber-100 p-4">
           <div className="space-y-1">
             <h3 className="text-sm font-semibold text-stone-900">Listing page icon info visibility</h3>
             <p className="text-xs text-stone-600">Choose which details appear in the listing icon stats. Maximum 10 items.</p>
@@ -1224,32 +1895,81 @@ export function ProjectWizard({ initialProject }: { initialProject?: Project } =
           <p className={`text-xs font-medium ${visibleStats.length === maxVisibleStats ? "text-amber-700" : "text-stone-600"}`}>
             {visibleStats.length}/{maxVisibleStats} selected
           </p>
-          <ul className="grid gap-2">
+          <div className="grid grid-cols-3 gap-2">
             {statOptions.map((stat) => {
               const isChecked = visibleStats.includes(stat);
               const canSelect = isChecked || visibleStats.length < maxVisibleStats;
 
               return (
-                <li key={stat}>
-                  <button
-                    type="button"
-                    onClick={() => toggleStat(stat)}
-                    disabled={!canSelect}
-                    className={`flex w-full items-center justify-between border px-3 py-2 text-left text-sm ${isChecked ? "border-stone-900 bg-stone-900 text-white" : "border-stone-300 bg-white text-stone-900"} ${!canSelect ? "cursor-not-allowed opacity-50" : ""}`}
-                  >
-                    <span>{stat}</span>
-                    <span className="text-xs font-semibold">{isChecked ? "ON" : "OFF"}</span>
-                  </button>
-                </li>
+                <label
+                  key={stat}
+                  className={`flex items-center gap-1.5 border border-stone-200 bg-white px-2 py-2 text-xs text-stone-700 ${!canSelect ? "cursor-not-allowed opacity-50" : ""}`}
+                >
+                  <input type="checkbox" checked={isChecked} disabled={!canSelect} onChange={() => toggleStat(stat)} />
+                  <span>{stat}</span>
+                </label>
               );
             })}
-          </ul>
-          {visibleStats.length === maxVisibleStats ? <p className="text-xs text-amber-700">Maximum reached. Turn one item OFF to enable another.</p> : null}
-          <div className="border border-stone-200 bg-stone-50 p-3">
-            <p className="text-xs font-medium text-stone-700">Selected for icons</p>
-            <p className="mt-1 text-xs text-stone-600">{visibleStats.join(" • ")}</p>
           </div>
+          {visibleStats.length === maxVisibleStats ? <p className="text-xs text-amber-700">Maximum reached. Turn one item off to enable another.</p> : null}
         </aside>
+
+        <aside className="space-y-3 border border-stone-200 bg-white p-4">
+          <div className="space-y-1">
+            <h3 className="text-sm font-semibold text-stone-900">Property Facts grid</h3>
+            <p className="text-xs text-stone-600">
+              The row of icon facts shown right below the hero. Leave empty to use the automatic defaults built from
+              this project&apos;s other fields (Building, Built in, Residences, Stories, Bedrooms, Bathrooms, Size,
+              Parking, Ownership, Status).
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            {factsGrid.map((fact, index) => (
+              <div key={fact.key} className="grid grid-cols-[1fr_1fr_auto_auto] items-center gap-1.5 border border-stone-200 p-2">
+                <input
+                  type="text"
+                  placeholder="Label"
+                  value={fact.label}
+                  onChange={(event) => updateFactRow(index, { label: event.target.value })}
+                  className="min-w-0 border border-stone-200 px-2 py-1.5 text-xs"
+                />
+                <input
+                  type="text"
+                  placeholder="Value"
+                  value={fact.value}
+                  onChange={(event) => updateFactRow(index, { value: event.target.value })}
+                  className="min-w-0 border border-stone-200 px-2 py-1.5 text-xs"
+                />
+                <select
+                  value={fact.icon}
+                  onChange={(event) => updateFactRow(index, { icon: event.target.value as FactIconKey })}
+                  aria-label="Icon"
+                  className="border border-stone-200 px-1 py-1.5 text-xs"
+                >
+                  {ICON_OPTIONS.map((iconKey) => (
+                    <option key={iconKey} value={iconKey}>
+                      {ICON_LABELS[iconKey]}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={() => removeFactRow(index)}
+                  aria-label="Remove fact"
+                  className="border border-stone-200 px-2 py-1.5 text-xs text-stone-600 hover:bg-stone-50"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+
+          <button type="button" onClick={addFactRow} className="w-full border border-stone-300 py-2 text-xs font-medium text-stone-700 hover:bg-stone-50">
+            + Add fact
+          </button>
+        </aside>
+        </div>
         </div>
     </section>
   );

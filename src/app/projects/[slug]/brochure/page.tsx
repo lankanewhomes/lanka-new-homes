@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { projects } from "@/data/projects";
+import { getProjectBySlug } from "@/lib/project-store";
 
 export const metadata: Metadata = {
   title: "Courtyard by Prime Brochure",
@@ -12,7 +12,7 @@ type BrochurePageProps = { params: Promise<{ slug: string }> };
 
 export default async function BrochurePage({ params }: BrochurePageProps) {
   const { slug } = await params;
-  const project = projects.find((item) => item.slug === slug);
+  const project = await getProjectBySlug(slug);
   if (!project) return notFound();
 
   return (

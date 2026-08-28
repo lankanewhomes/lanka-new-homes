@@ -9,7 +9,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const result = trackProjectView({
+    const result = await trackProjectView({
       projectSlug: String(body.projectSlug),
       developerSlug: String(body.developerSlug),
       sessionId: String(body.sessionId),

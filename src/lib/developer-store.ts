@@ -1,9 +1,5 @@
-import { promises as fs } from "node:fs";
-import path from "node:path";
-import { developers as staticDevelopers } from "@/data/developers";
-import type { Developer } from "@/types";
-
-const customDevelopersPath = path.join(process.cwd(), "data", "custom-developers.json");
+import { supabaseAdmin } from "@/lib/supabase";
+import type { CoDeveloperEntry, Developer, OfficeHoursEntry } from "@/types";
 
 type CreateDeveloperInput = {
   name: string;
@@ -17,6 +13,14 @@ type CreateDeveloperInput = {
   website: string;
   email: string;
   phone: string;
+  coDevelopers?: CoDeveloperEntry[];
+  officeHours?: OfficeHoursEntry[];
+  socialLinks?: Developer["socialLinks"];
+};
+
+type DeveloperRow = {
+  slug: string;
+  data: Developer;
 };
 
 function toSlug(value: string) {
@@ -28,54 +32,40 @@ function toSlug(value: string) {
     .replace(/-+/g, "-");
 }
 
-async function readCustomDevelopers(): Promise<Developer[]> {
-  try {
-    const raw = await fs.readFile(customDevelopersPath, "utf8");
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? (parsed as Developer[]) : [];
-  } catch {
-    return [];
-  }
+function rowToDeveloper(row: DeveloperRow): Developer {
+  return { ...row.data, slug: row.slug };
 }
 
-async function writeCustomDevelopers(items: Developer[]) {
-  await fs.mkdir(path.dirname(customDevelopersPath), { recursive: true });
-  await fs.writeFile(customDevelopersPath, JSON.stringify(items, null, 2), "utf8");
-}
-
-function mergeDevelopers(customDevelopers: Developer[]) {
-  const bySlug = new Map<string, Developer>();
-
-  for (const developer of staticDevelopers) {
-    bySlug.set(developer.slug, developer);
-  }
-
-  for (const developer of customDevelopers) {
-    bySlug.set(developer.slug, developer);
-  }
-
-  return Array.from(bySlug.values());
+function developerToRow(developer: Developer) {
+  return {
+    slug: developer.slug,
+    name: developer.name,
+    location: developer.location,
+    data: developer,
+  };
 }
 
 export async function getAllDevelopers(): Promise<Developer[]> {
-  const customDevelopers = await readCustomDevelopers();
-  return mergeDevelopers(customDevelopers);
+  const { data, error } = await supabaseAdmin.from("developers").select("slug, data");
+  if (error) throw new Error(`Failed to load developers: ${error.message}`);
+  return (data ?? []).map((row) => rowToDeveloper(row as DeveloperRow));
 }
 
 export async function getDeveloperBySlug(slug: string): Promise<Developer | undefined> {
-  const allDevelopers = await getAllDevelopers();
-  return allDevelopers.find((developer) => developer.slug === slug);
+  const { data, error } = await supabaseAdmin.from("developers").select("slug, data").eq("slug", slug).maybeSingle();
+  if (error) throw new Error(`Failed to load developer ${slug}: ${error.message}`);
+  return data ? rowToDeveloper(data as DeveloperRow) : undefined;
 }
 
 export async function createDeveloper(input: CreateDeveloperInput): Promise<Developer> {
-  const customDevelopers = await readCustomDevelopers();
-  const allDevelopers = mergeDevelopers(customDevelopers);
+  const { data: existingSlugs, error: slugError } = await supabaseAdmin.from("developers").select("slug");
+  if (slugError) throw new Error(`Failed to check existing slugs: ${slugError.message}`);
+  const taken = new Set((existingSlugs ?? []).map((row) => row.slug as string));
 
   const baseSlug = toSlug(input.name) || "new-developer";
   let slug = baseSlug;
   let suffix = 2;
-
-  while (allDevelopers.some((developer) => developer.slug === slug)) {
+  while (taken.has(slug)) {
     slug = `${baseSlug}-${suffix}`;
     suffix += 1;
   }
@@ -93,10 +83,24 @@ export async function createDeveloper(input: CreateDeveloperInput): Promise<Deve
     website: input.website,
     email: input.email,
     phone: input.phone,
+    coDevelopers: input.coDevelopers ?? [],
+    officeHours: input.officeHours ?? [],
+    socialLinks: input.socialLinks ?? {},
   };
 
-  customDevelopers.push(developer);
-  await writeCustomDevelopers(customDevelopers);
+  const { error } = await supabaseAdmin.from("developers").insert(developerToRow(developer));
+  if (error) throw new Error(`Failed to create developer: ${error.message}`);
 
   return developer;
+}
+
+export async function updateDeveloper(slug: string, changes: Partial<Omit<Developer, "slug">>): Promise<Developer | undefined> {
+  const current = await getDeveloperBySlug(slug);
+  if (!current) return undefined;
+
+  const updated: Developer = { ...current, ...changes, slug };
+  const { error } = await supabaseAdmin.from("developers").update(developerToRow(updated)).eq("slug", slug);
+  if (error) throw new Error(`Failed to update developer ${slug}: ${error.message}`);
+
+  return updated;
 }

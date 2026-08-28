@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
-import { DataTable, DashboardHeader, DashboardSidebar, StatCard } from "@/components/dashboard/components";
+import Link from "next/link";
+import { DashboardHeader, DashboardSidebar, StatCard } from "@/components/dashboard/components";
+import { getAllDevelopers } from "@/lib/developer-store";
+import { getAllProjects } from "@/lib/project-store";
+import { formatLkr } from "@/lib/format";
 
 export const metadata: Metadata = {
   title: "Admin Dashboard",
@@ -9,43 +13,79 @@ export const metadata: Metadata = {
   },
 };
 
-export default function AdminPage() {
-  const projectRows = [
-    ["Colombo Heights Residences", "Ceylon Urban Developments", "Colombo 03", "Rs. 48,000,000", "Now Selling", "Pending", "2026-08-18", "Approve | Reject | Edit | Preview | Publish | Unpublish | Delete"],
-    ["Kandy Hills Residences", "Serendib Property Group", "Kandy", "Rs. 22,500,000", "Coming Soon", "Pending", "2026-08-19", "Approve | Reject | Edit | Preview | Publish | Unpublish | Delete"],
-  ];
-  const developerRows = [
-    ["Ceylon Urban Developments", "Ceylon Urban Developments", "1", "Approved", "2016-03-12", "View"],
-    ["Serendib Property Group", "Serendib Property Group", "1", "Approved", "2018-10-02", "View"],
-  ];
-  const leadRows = [
-    ["Dinithi Perera", "dinithi.p@email.com", "+94 77 555 1122", "Colombo Heights Residences", "Ceylon Urban Developments", "2026-08-15", "New"],
-    ["Nuwan Senanayake", "nuwan.s@email.com", "+94 71 421 4477", "Kandy Hills Residences", "Serendib Property Group", "2026-08-18", "Contacted"],
-  ];
-  const userRows = [
-    ["Dinithi Perera", "dinithi.p@email.com", "Buyer", "Active", "2026-08-01"],
-    ["Ceylon Urban Team", "sales@ceylonurban.lk", "Developer", "Active", "2026-07-15"],
-    ["Platform Admin", "admin@lankaliving.lk", "Admin", "Active", "2026-06-10"],
-  ];
+export default async function AdminPage() {
+  const [developers, projects] = await Promise.all([getAllDevelopers(), getAllProjects()]);
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[220px_1fr]">
-      <DashboardSidebar links={[{ label: "Overview", href: "/admin" }, { label: "Projects", href: "/admin" }, { label: "Developers", href: "/admin" }, { label: "Users", href: "/admin" }, { label: "Leads", href: "/admin" }, { label: "Articles", href: "/admin" }, { label: "Locations", href: "/admin" }, { label: "Settings", href: "/admin" }]} />
+    <div className="grid gap-4 px-4 pt-6 pb-16 lg:grid-cols-[220px_1fr] lg:px-6 lg:pt-8">
+      <DashboardSidebar links={[{ label: "Overview", href: "/admin" }, { label: "Developers", href: "/admin/developers" }, { label: "Neighborhoods", href: "/admin/neighborhoods" }, { label: "Homepage Hero", href: "/admin/hero-ads" }, { label: "Settings", href: "/admin" }]} />
       <section className="space-y-4">
-        <DashboardHeader title="Admin Dashboard" subtitle="Review, approve, and monitor marketplace operations." />
+        <DashboardHeader title="Admin Dashboard" subtitle="Review and edit marketplace listings." />
         <div className="grid gap-3 md:grid-cols-4 lg:grid-cols-7">
-          <StatCard label="Total Projects" value="2" />
-          <StatCard label="Published" value="1" />
-          <StatCard label="Pending" value="1" />
-          <StatCard label="Developers" value="2" />
-          <StatCard label="Users" value="3" />
-          <StatCard label="Leads" value="2" />
-          <StatCard label="Views" value="20,570" />
+          <StatCard label="Total Projects" value={String(projects.length)} />
+          <StatCard label="Developers" value={String(developers.length)} />
         </div>
-        <DataTable columns={["Project", "Developer", "Location", "Price", "Status", "Approval", "Submitted", "Actions"]} rows={projectRows} />
-        <DataTable columns={["Developer", "Company", "Projects", "Status", "Joined", "Actions"]} rows={developerRows} />
-        <DataTable columns={["Name", "Email", "Phone", "Project", "Developer", "Date", "Status"]} rows={leadRows} />
-        <DataTable columns={["Name", "Email", "Role", "Status", "Joined"]} rows={userRows} />
+
+        <div className="overflow-x-auto border border-stone-200 bg-white">
+          <table className="w-full min-w-190 text-sm">
+            <thead className="bg-stone-50">
+              <tr>
+                <th className="p-3 text-left">Project</th>
+                <th className="p-3 text-left">Developer</th>
+                <th className="p-3 text-left">Location</th>
+                <th className="p-3 text-left">Price</th>
+                <th className="p-3 text-left">Status</th>
+                <th className="p-3 text-left">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {projects.map((project) => (
+                <tr key={project.slug} className="border-t border-stone-100">
+                  <td className="p-3 font-medium text-stone-900">{project.name}</td>
+                  <td className="p-3">{project.developerName}</td>
+                  <td className="p-3">{project.location}</td>
+                  <td className="p-3">{formatLkr(project.startingPriceLkr)}</td>
+                  <td className="p-3">{project.status}</td>
+                  <td className="p-3">
+                    <div className="flex flex-wrap gap-3">
+                      <Link href={`/admin/developers/${project.developerSlug}/projects/${project.slug}/edit`} className="text-stone-900 underline">Edit</Link>
+                      <Link href={`/projects/${project.slug}`} className="text-stone-900 underline">View</Link>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="overflow-x-auto border border-stone-200 bg-white">
+          <table className="w-full min-w-190 text-sm">
+            <thead className="bg-stone-50">
+              <tr>
+                <th className="p-3 text-left">Developer</th>
+                <th className="p-3 text-left">Location</th>
+                <th className="p-3 text-left">Website</th>
+                <th className="p-3 text-left">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {developers.map((developer) => (
+                <tr key={developer.slug} className="border-t border-stone-100">
+                  <td className="p-3 font-medium text-stone-900">{developer.name}</td>
+                  <td className="p-3">{developer.location}</td>
+                  <td className="p-3">{developer.website ? <a href={developer.website} target="_blank" rel="noopener noreferrer" className="underline">{developer.website.replace(/^https?:\/\//, "")}</a> : <span className="text-stone-400">Not set</span>}</td>
+                  <td className="p-3">
+                    <div className="flex flex-wrap gap-3">
+                      <Link href={`/admin/developers/${developer.slug}/edit`} className="text-stone-900 underline">Edit</Link>
+                      <Link href={`/admin/developers/${developer.slug}/projects`} className="text-stone-900 underline">Projects</Link>
+                      <Link href={`/developers/${developer.slug}`} className="text-stone-900 underline">View</Link>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
     </div>
   );

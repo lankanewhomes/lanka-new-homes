@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { createDeveloper, getAllDevelopers } from "@/lib/developer-store";
+import { createSupabaseServerClient } from "@/lib/supabase-server";
+import { supabaseAdmin } from "@/lib/supabase";
 
 export async function GET() {
   const developers = await getAllDevelopers();
@@ -45,7 +47,26 @@ export async function POST(request: Request) {
     website: String(body.website),
     email: String(body.email),
     phone: String(body.phone),
+    coDevelopers: Array.isArray(body.coDevelopers) ? body.coDevelopers : undefined,
+    officeHours: Array.isArray(body.officeHours) ? body.officeHours : undefined,
+    socialLinks: body.socialLinks && typeof body.socialLinks === "object" ? body.socialLinks : undefined,
   });
+
+  // If a signed-in user submitted this (the /developers/register self-serve
+  // flow) and doesn't already manage a developer, link their account to the
+  // new developer profile so the dashboard scopes to them.
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    const { data: existingProfile } = await supabase.from("profiles").select("developer_slug").eq("id", user.id).single();
+    if (!existingProfile?.developer_slug) {
+      await supabaseAdmin.from("developers").update({ auth_user_id: user.id }).eq("slug", developer.slug);
+      await supabaseAdmin.from("profiles").update({ role: "developer", developer_slug: developer.slug }).eq("id", user.id);
+    }
+  }
 
   return NextResponse.json({ ok: true, developer, slug: developer.slug }, { status: 201 });
 }

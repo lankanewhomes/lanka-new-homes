@@ -18,7 +18,7 @@ export const developers: Developer[] = [
   {
     slug: "ceylon-urban-developments",
     name: "Ceylon Urban Developments",
-    logo: "https://images.unsplash.com/photo-1511478143399-c2a3d7f0eb57?q=80&w=300&auto=format&fit=crop",
+    logo: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=300&auto=format&fit=crop",
     description:
       "Ceylon Urban Developments builds premium high-rise residential projects in central Colombo, focused on design quality, lifestyle amenities, and long-term investment value.",
     location: "Colombo 03",

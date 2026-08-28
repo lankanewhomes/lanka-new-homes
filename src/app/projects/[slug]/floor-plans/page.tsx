@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { projects } from "@/data/projects";
-import { PlansAndHomesSection, ProjectHero } from "@/components/marketplace/components";
+import { getProjectBySlug } from "@/lib/project-store";
+import { PlansAndHomesSection, ProjectHero, ProjectStatsChips } from "@/components/marketplace/components";
 
 type FloorPlansPageProps = { params: Promise<{ slug: string }> };
 
@@ -11,7 +12,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: FloorPlansPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const project = projects.find((item) => item.slug === slug);
+  const project = await getProjectBySlug(slug);
   if (!project) return { title: "Floor Plans Not Found", robots: { index: false, follow: false } };
 
   return {
@@ -23,12 +24,13 @@ export async function generateMetadata({ params }: FloorPlansPageProps): Promise
 
 export default async function FloorPlansPage({ params }: FloorPlansPageProps) {
   const { slug } = await params;
-  const project = projects.find((item) => item.slug === slug);
+  const project = await getProjectBySlug(slug);
   if (!project) return notFound();
 
   return (
     <div className="space-y-8">
       <ProjectHero project={project} />
+      <ProjectStatsChips project={project} />
       <PlansAndHomesSection project={project} />
     </div>
   );

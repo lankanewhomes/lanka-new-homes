@@ -1,12 +1,10 @@
-import Database from "better-sqlite3";
-import fs from "node:fs";
-import path from "node:path";
+import { supabaseAdmin } from "@/lib/supabase";
 
 type LeadInput = {
   name: string;
   email: string;
   phone: string;
-  preferredContactMethod: "Email" | "Phone" | "WhatsApp";
+  preferredContactMethod: "Email" | "Phone" | "WhatsApp" | "Text";
   message: string;
   projectSlug: string;
   developerSlug: string;
@@ -18,128 +16,100 @@ type ViewInput = {
   sessionId: string;
 };
 
-const dataDir = path.join(process.cwd(), "data");
-const dbPath = path.join(dataDir, "tracking.sqlite");
-
-if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
-}
-
-const db = new Database(dbPath);
-
-db.pragma("journal_mode = WAL");
-
-db.exec(`
-  CREATE TABLE IF NOT EXISTS leads (
-    id TEXT PRIMARY KEY,
-    name TEXT NOT NULL,
-    email TEXT NOT NULL,
-    phone TEXT NOT NULL,
-    preferred_contact_method TEXT NOT NULL,
-    message TEXT NOT NULL,
-    project_slug TEXT NOT NULL,
-    developer_slug TEXT NOT NULL,
-    created_at TEXT NOT NULL
-  );
-
-  CREATE TABLE IF NOT EXISTS project_views (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    project_slug TEXT NOT NULL,
-    developer_slug TEXT NOT NULL,
-    session_id TEXT NOT NULL,
-    viewed_at TEXT NOT NULL
-  );
-
-  CREATE INDEX IF NOT EXISTS idx_leads_developer ON leads (developer_slug, created_at);
-  CREATE INDEX IF NOT EXISTS idx_views_developer ON project_views (developer_slug, viewed_at);
-  CREATE INDEX IF NOT EXISTS idx_views_project ON project_views (project_slug, viewed_at);
-`);
-
 const makeId = () =>
   `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 
-export function insertLead(input: LeadInput) {
-  const stmt = db.prepare(`
-    INSERT INTO leads (
-      id, name, email, phone, preferred_contact_method, message, project_slug, developer_slug, created_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `);
-
+export async function insertLead(input: LeadInput) {
   const id = makeId();
   const createdAt = new Date().toISOString();
 
-  stmt.run(
+  const { error } = await supabaseAdmin.from("leads").insert({
     id,
-    input.name.trim(),
-    input.email.trim().toLowerCase(),
-    input.phone.trim(),
-    input.preferredContactMethod,
-    input.message.trim(),
-    input.projectSlug,
-    input.developerSlug,
-    createdAt,
-  );
+    name: input.name.trim(),
+    email: input.email.trim().toLowerCase(),
+    phone: input.phone.trim(),
+    preferred_contact_method: input.preferredContactMethod,
+    message: input.message.trim(),
+    project_slug: input.projectSlug,
+    developer_slug: input.developerSlug,
+    created_at: createdAt,
+  });
+  if (error) throw new Error(`Failed to save lead: ${error.message}`);
 
   return { id, createdAt };
 }
 
-export function trackProjectView(input: ViewInput) {
+export async function trackProjectView(input: ViewInput) {
   const since = new Date(Date.now() - 30 * 60 * 1000).toISOString();
 
-  const existing = db
-    .prepare(
-      `SELECT id FROM project_views WHERE project_slug = ? AND session_id = ? AND viewed_at >= ? LIMIT 1`,
-    )
-    .get(input.projectSlug, input.sessionId, since) as { id: number } | undefined;
+  const { data: existing, error: readError } = await supabaseAdmin
+    .from("project_views")
+    .select("id")
+    .eq("project_slug", input.projectSlug)
+    .eq("session_id", input.sessionId)
+    .gte("viewed_at", since)
+    .limit(1)
+    .maybeSingle();
+  if (readError) throw new Error(`Failed to check existing view: ${readError.message}`);
 
   if (existing) {
     return { inserted: false };
   }
 
-  db.prepare(
-    `INSERT INTO project_views (project_slug, developer_slug, session_id, viewed_at) VALUES (?, ?, ?, ?)`,
-  ).run(input.projectSlug, input.developerSlug, input.sessionId, new Date().toISOString());
+  const { error } = await supabaseAdmin.from("project_views").insert({
+    project_slug: input.projectSlug,
+    developer_slug: input.developerSlug,
+    session_id: input.sessionId,
+    viewed_at: new Date().toISOString(),
+  });
+  if (error) throw new Error(`Failed to track view: ${error.message}`);
 
   return { inserted: true };
 }
 
-export function getDeveloperDashboardStats(developerSlug: string) {
-  const totalLeadsRow = db
-    .prepare(`SELECT COUNT(*) as total FROM leads WHERE developer_slug = ?`)
-    .get(developerSlug) as { total: number };
+export async function getDeveloperDashboardStats(developerSlug: string) {
+  const today = new Date().toISOString().slice(0, 10);
 
-  const totalViewsRow = db
-    .prepare(`SELECT COUNT(*) as total FROM project_views WHERE developer_slug = ?`)
-    .get(developerSlug) as { total: number };
+  const [totalLeads, totalViews, newLeadsToday] = await Promise.all([
+    supabaseAdmin.from("leads").select("id", { count: "exact", head: true }).eq("developer_slug", developerSlug),
+    supabaseAdmin.from("project_views").select("id", { count: "exact", head: true }).eq("developer_slug", developerSlug),
+    supabaseAdmin
+      .from("leads")
+      .select("id", { count: "exact", head: true })
+      .eq("developer_slug", developerSlug)
+      .gte("created_at", `${today}T00:00:00.000Z`)
+      .lt("created_at", `${today}T23:59:59.999Z`),
+  ]);
 
-  const newLeadsRow = db
-    .prepare(
-      `SELECT COUNT(*) as total FROM leads WHERE developer_slug = ? AND date(created_at) = date('now')`,
-    )
-    .get(developerSlug) as { total: number };
+  if (totalLeads.error) throw new Error(`Failed to load lead stats: ${totalLeads.error.message}`);
+  if (totalViews.error) throw new Error(`Failed to load view stats: ${totalViews.error.message}`);
+  if (newLeadsToday.error) throw new Error(`Failed to load today's lead stats: ${newLeadsToday.error.message}`);
 
   return {
-    totalLeads: totalLeadsRow?.total ?? 0,
-    totalViews: totalViewsRow?.total ?? 0,
-    newLeadsToday: newLeadsRow?.total ?? 0,
+    totalLeads: totalLeads.count ?? 0,
+    totalViews: totalViews.count ?? 0,
+    newLeadsToday: newLeadsToday.count ?? 0,
   };
 }
 
-export function getProjectPerformance(developerSlug: string) {
-  const viewRows = db
-    .prepare(
-      `SELECT project_slug as projectSlug, COUNT(*) as views FROM project_views WHERE developer_slug = ? GROUP BY project_slug`,
-    )
-    .all(developerSlug) as Array<{ projectSlug: string; views: number }>;
+export async function getProjectPerformance(developerSlug: string) {
+  const [viewsResult, leadsResult] = await Promise.all([
+    supabaseAdmin.from("project_views").select("project_slug").eq("developer_slug", developerSlug),
+    supabaseAdmin.from("leads").select("project_slug").eq("developer_slug", developerSlug),
+  ]);
 
-  const leadRows = db
-    .prepare(
-      `SELECT project_slug as projectSlug, COUNT(*) as leads FROM leads WHERE developer_slug = ? GROUP BY project_slug`,
-    )
-    .all(developerSlug) as Array<{ projectSlug: string; leads: number }>;
+  if (viewsResult.error) throw new Error(`Failed to load view performance: ${viewsResult.error.message}`);
+  if (leadsResult.error) throw new Error(`Failed to load lead performance: ${leadsResult.error.message}`);
 
-  const viewsMap = new Map(viewRows.map((row) => [row.projectSlug, row.views]));
-  const leadsMap = new Map(leadRows.map((row) => [row.projectSlug, row.leads]));
+  const viewsMap = new Map<string, number>();
+  for (const row of viewsResult.data ?? []) {
+    viewsMap.set(row.project_slug, (viewsMap.get(row.project_slug) ?? 0) + 1);
+  }
+
+  const leadsMap = new Map<string, number>();
+  for (const row of leadsResult.data ?? []) {
+    leadsMap.set(row.project_slug, (leadsMap.get(row.project_slug) ?? 0) + 1);
+  }
 
   return { viewsMap, leadsMap };
 }

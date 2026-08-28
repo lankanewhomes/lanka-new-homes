@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { projects } from "@/data/projects";
+import { getAllProjects } from "@/lib/project-store";
 import { FilterBar, MapPlaceholder, ProjectListItem, ResultsToolbar, SearchBar } from "@/components/marketplace/components";
 
 export const metadata: Metadata = {
@@ -21,7 +21,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function SearchPage() {
+export default async function SearchPage() {
+  const projects = await getAllProjects();
+
   return (
     <div className="space-y-4">
       <h1 className="text-3xl font-semibold">Search New Developments</h1>

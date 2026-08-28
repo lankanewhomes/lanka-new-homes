@@ -1,0 +1,23 @@
+import type { Metadata } from "next";
+import { AuthForm } from "@/components/auth/auth-form";
+
+export const metadata: Metadata = {
+  title: "Developer Login",
+  alternates: { canonical: "/developers/login" },
+  robots: { index: false, follow: true },
+};
+
+export default function DeveloperLoginPage() {
+  return (
+    <div className="static-page-shell">
+      <h1>Developer login</h1>
+      <p className="static-page-lede">Sign in to manage your projects, leads, and hero placements.</p>
+
+      <AuthForm mode="login" intent="developer" redirectTo="/developers/dashboard" onDeveloperRoleCheck />
+
+      <p className="static-page-note">
+        Don&apos;t have a developer account yet? <a href="/developers/register">Register your company</a>.
+      </p>
+    </div>
+  );
+}

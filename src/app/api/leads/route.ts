@@ -21,7 +21,7 @@ export async function POST(req: Request) {
       }
     }
 
-    const saved = insertLead({
+    const saved = await insertLead({
       name: body.name,
       email: body.email,
       phone: body.phone,

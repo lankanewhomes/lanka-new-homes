@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { DeveloperProfile, ProjectCard } from "@/components/marketplace/components";
+import { DeveloperProfileView } from "@/components/marketplace/developer-profile-view";
 import { getAllDevelopers, getDeveloperBySlug } from "@/lib/developer-store";
-import { projects } from "@/data/projects";
+import { getAllProjects } from "@/lib/project-store";
 import { toAbsoluteUrl } from "@/lib/seo";
 
 type DeveloperProfilePageProps = { params: Promise<{ slug: string }> };
@@ -59,12 +59,8 @@ export default async function DeveloperProfilePage({ params }: DeveloperProfileP
   const developer = await getDeveloperBySlug(slug);
   if (!developer) return notFound();
 
-  const currentProjects = projects.filter((p) => p.developerSlug === slug && p.status !== "Coming Soon");
-  const upcomingProjects = projects.filter((p) => p.developerSlug === slug && p.status === "Coming Soon");
-  const completedProjects = [
-    `${developer.name} Residences One`,
-    `${developer.name} Lakeside Tower`,
-  ];
+  const allProjects = await getAllProjects();
+  const developerProjects = allProjects.filter((p) => p.developerSlug === slug);
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -89,36 +85,12 @@ export default async function DeveloperProfilePage({ params }: DeveloperProfileP
   };
 
   return (
-    <div className="space-y-6">
+    <div className="developer-page">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      <DeveloperProfile developer={developer} />
-
-      <section className="space-y-3">
-        <h2 className="text-2xl font-semibold">Current Projects</h2>
-        <div className="grid gap-4 md:grid-cols-2">
-          {currentProjects.length ? currentProjects.map((p) => <ProjectCard key={p.slug} project={p} />) : <p className="text-sm text-stone-600">No current projects.</p>}
-        </div>
-      </section>
-
-      <section className="space-y-3">
-        <h2 className="text-2xl font-semibold">Upcoming Projects</h2>
-        <div className="grid gap-4 md:grid-cols-2">
-          {upcomingProjects.length ? upcomingProjects.map((p) => <ProjectCard key={p.slug} project={p} />) : <p className="text-sm text-stone-600">No upcoming projects.</p>}
-        </div>
-      </section>
-
-      <section className="space-y-3 border border-stone-200 bg-white p-4">
-        <h2 className="text-2xl font-semibold">Completed Projects</h2>
-        <ul className="list-disc pl-6 text-sm text-stone-700">{completedProjects.map((c) => <li key={c}>{c}</li>)}</ul>
-      </section>
-
-      <section className="space-y-3 border border-stone-200 bg-white p-4">
-        <h2 className="text-2xl font-semibold">About Developer</h2>
-        <p className="text-sm text-stone-700">{developer.description}</p>
-      </section>
+      <DeveloperProfileView developer={developer} projects={developerProjects} />
     </div>
   );
 }

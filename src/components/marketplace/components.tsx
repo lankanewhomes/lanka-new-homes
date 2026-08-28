@@ -2,7 +2,31 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { CSSProperties, useEffect, useMemo, useRef, useState } from "react";
+import { AccountMenu } from "@/components/auth/account-menu";
+import { useSavedListing } from "@/lib/use-saved-listing";
+import {
+  ApartmentIcon,
+  AreaIcon,
+  BathIcon,
+  BedIcon,
+  BlueprintIcon,
+  BoltIcon,
+  BuildingIcon,
+  CarIcon,
+  ClockIcon,
+  ConstructionIcon,
+  DropletIcon,
+  FloorsIcon,
+  GiftIcon,
+  LandmarkIcon,
+  PinIcon,
+  PriceTagIcon,
+  RoadIcon,
+  RulerIcon,
+  ShieldIcon,
+  StatusHouseIcon,
+} from "@/components/icons/stat-icons";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import {
   Bath,
   BedDouble,
@@ -17,31 +41,41 @@ import {
   CircleDollarSign,
   Clock3,
   Dumbbell,
-  Globe,
   Heart,
+  HeartPulse,
   Hammer,
   HousePlus,
   Landmark,
+  Compass,
+  Construction,
+  Droplet,
+  Gift,
+  Layers,
+  LayoutGrid,
+  LayoutPanelLeft,
+  Map as MapIcon,
   MapPinned,
   MapPin,
-  MessageCircle,
+  Navigation,
   Phone,
   Ruler,
   Search,
-  Send,
   Share2,
   ShieldCheck,
   Square,
   SlidersHorizontal,
   Trees,
+  Users,
+  Video,
   Waves,
+  Wifi,
   X,
   Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteLanguage, useLanguage } from "@/components/layout/language-provider";
 import { compactLkr, formatLkr } from "@/lib/format";
-import { Amenity, Article, Developer, FloorPlan, Lead, Location, Project, ProjectStatLabel, Unit } from "@/types";
+import { Amenity, Article, Developer, FloorPlan, Lead, Location, NearbyPlace, Project, ProjectStatLabel, Unit } from "@/types";
 
 const amenityIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   Pool: Waves,
@@ -65,6 +99,44 @@ function renderEntityLink(name: string, slug: string | undefined, basePath: stri
   return <Link href={`${basePath}/${slug}`} className={className}>{name}</Link>;
 }
 
+function FacebookIcon({ className }: { className?: string }) {
+  return <svg viewBox="0 0 24 24" className={className} fill="currentColor" aria-hidden="true"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H8v-2.9h2.4V9.8c0-2.4 1.4-3.7 3.6-3.7 1 0 2.1.2 2.1.2v2.3h-1.2c-1.2 0-1.6.7-1.6 1.5v1.8h2.7l-.4 2.9h-2.3v7A10 10 0 0 0 22 12Z" /></svg>;
+}
+
+function InstagramIcon({ className }: { className?: string }) {
+  return <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" /></svg>;
+}
+
+function WhatsappIcon({ className }: { className?: string }) {
+  return <svg viewBox="0 0 24 24" className={className} fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2Zm5.6 14.3c-.2.6-1.3 1.2-1.8 1.3-.5.1-1 .1-3.5-1s-4.1-3.4-4.2-3.5c-.1-.2-1-1.3-1-2.5s.6-1.8.9-2.1c.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5.2.5.7 1.7.7 1.8.1.2.1.3 0 .5-.1.2-.1.3-.3.5l-.4.5c-.1.2-.3.3-.1.6.2.3.9 1.4 1.9 2.3 1.3 1.1 2.3 1.5 2.6 1.6.3.1.5.1.7-.1.2-.2.8-.9 1-1.2.2-.3.4-.2.7-.1.3.1 1.7.8 2 1 .3.1.5.2.6.3.1.2.1.7-.1 1.3Z" /></svg>;
+}
+
+function YoutubeIcon({ className }: { className?: string }) {
+  return <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4" /><path d="m10 9 5 3-5 3Z" fill="currentColor" stroke="currentColor" strokeLinejoin="round" /></svg>;
+}
+
+function TiktokIcon({ className }: { className?: string }) {
+  return <svg viewBox="0 0 24 24" className={className} fill="currentColor" aria-hidden="true"><path d="M16.6 5.8a4.3 4.3 0 0 1-3-4.3h-3.2v14.6a2.6 2.6 0 1 1-2.6-2.6c.2 0 .5 0 .7.1V10.4a5.9 5.9 0 0 0-.7 0A5.9 5.9 0 1 0 13.6 16V9.2a7.4 7.4 0 0 0 4.3 1.4V7.4a4.3 4.3 0 0 1-1.3-1.6Z" /></svg>;
+}
+
+function LinkedinIcon({ className }: { className?: string }) {
+  return <svg viewBox="0 0 24 24" className={className} fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3V9Zm7 0h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.66 4.78 6.11V21h-4v-5.3c0-1.27-.02-2.9-1.77-2.9-1.77 0-2.04 1.38-2.04 2.8V21h-4V9Z" /></svg>;
+}
+
+function TwitterIcon({ className }: { className?: string }) {
+  return <svg viewBox="0 0 24 24" className={className} fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-7.6 8.7L23 22h-6.8l-5.3-6.9L4.9 22H1.8l8.1-9.3L1 2h7l4.8 6.3L18.9 2Zm-1.2 18h1.9L7.4 4H5.4l12.3 16Z" /></svg>;
+}
+
+export const SOCIAL_ICON: Record<string, React.ComponentType<{ className?: string }>> = {
+  facebook: FacebookIcon,
+  instagram: InstagramIcon,
+  whatsapp: WhatsappIcon,
+  youtube: YoutubeIcon,
+  tiktok: TiktokIcon,
+  linkedin: LinkedinIcon,
+  twitter: TwitterIcon,
+};
+
 function hasDisplayValue(value: unknown) {
   if (value === null || value === undefined) {
     return false;
@@ -81,14 +153,70 @@ function hasDisplayValue(value: unknown) {
   return true;
 }
 
+function isHotDealActive(project: Project) {
+  return Boolean(project.hotDeal?.enabled && hasDisplayValue(project.hotDeal?.title));
+}
+
+function hasQuickMoveIn(project: Project) {
+  return project.floorPlans.some((plan) => plan.quickMoveIn);
+}
+
+const DAY_ABBREVIATION: Record<string, string> = {
+  Monday: "Mon",
+  Tuesday: "Tue",
+  Wednesday: "Wed",
+  Thursday: "Thu",
+  Friday: "Fri",
+  Saturday: "Sat",
+  Sunday: "Sun",
+};
+
+function formatClockTime(value?: string) {
+  if (!value) return "";
+  const [hoursStr, minutesStr] = value.split(":");
+  const hours = Number(hoursStr);
+  if (Number.isNaN(hours)) return value;
+  const period = hours >= 12 ? "PM" : "AM";
+  const displayHour = hours % 12 === 0 ? 12 : hours % 12;
+  return `${displayHour}:${minutesStr ?? "00"} ${period}`;
+}
+
+type OfficeHourEntry = NonNullable<Developer["officeHours"]>[number];
+
+export function formatOfficeHours(officeHours: OfficeHourEntry[] | undefined) {
+  if (!officeHours || officeHours.length === 0) return [];
+
+  const dayOrder: OfficeHourEntry["day"][] = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+  const byDay = new Map(officeHours.map((entry) => [entry.day, entry]));
+  const ordered = dayOrder.map((day) => byDay.get(day)).filter((entry): entry is NonNullable<typeof entry> => Boolean(entry));
+
+  const lineFor = (entry: (typeof ordered)[number]) => (entry.open && entry.from && entry.to ? `${formatClockTime(entry.from)} - ${formatClockTime(entry.to)}` : "Closed");
+
+  const groups: { days: string[]; text: string }[] = [];
+  for (const entry of ordered) {
+    const text = lineFor(entry);
+    const last = groups[groups.length - 1];
+    if (last && last.text === text) {
+      last.days.push(entry.day);
+    } else {
+      groups.push({ days: [entry.day], text });
+    }
+  }
+
+  return groups.map((group) => ({
+    label: group.days.length > 1 ? `${DAY_ABBREVIATION[group.days[0]]} - ${DAY_ABBREVIATION[group.days[group.days.length - 1]]}` : DAY_ABBREVIATION[group.days[0]],
+    value: group.text,
+  }));
+}
+
 export function StatusBadge({ status }: { status: string }) {
   return <span className="rounded-sm border border-stone-300 bg-white px-2 py-1 text-xs font-medium text-stone-700">{status}</span>;
 }
 
-export function SaveButton() {
-  const [saved, setSaved] = useState(false);
+export function SaveButton({ projectSlug }: { projectSlug: string }) {
+  const { saved, toggle } = useSavedListing(projectSlug);
   return (
-    <Button variant="outline" className="rounded-sm" onClick={() => setSaved((v) => !v)}>
+    <Button variant="outline" className="rounded-sm" onClick={toggle}>
       <Heart className={`mr-2 h-4 w-4 ${saved ? "fill-current" : ""}`} />
       {saved ? "Saved" : "Save"}
     </Button>
@@ -172,8 +300,8 @@ export function MapPlaceholder() {
 
 export function ProjectCard({ project }: { project: Project }) {
   return (
-    <article className="floor-plan-card grid gap-3 border border-stone-200 bg-white p-3">
-      <Image src={project.heroImage} alt={project.name} width={900} height={500} className="h-48 w-full object-cover" />
+    <article className="grid gap-3 border border-stone-200 bg-white p-3">
+      <Image src={project.heroImage} alt={`${project.name} in ${project.location}`} width={900} height={500} className="h-48 w-full object-cover" />
       <div className="space-y-1">
         <h3 className="text-lg font-semibold text-stone-900">{project.name}</h3>
         <p className="text-sm text-stone-600">{project.developerName} • {project.location}</p>
@@ -190,7 +318,7 @@ export function ProjectCard({ project }: { project: Project }) {
 export function FeaturedProject({ project }: { project: Project }) {
   return (
     <article className="grid gap-4 border border-stone-200 bg-white p-4 md:grid-cols-2">
-      <Image src={project.heroImage} alt={project.name} width={1200} height={700} className="h-64 w-full object-cover md:h-full" />
+      <Image src={project.heroImage} alt={`${project.name} in ${project.location}`} width={1200} height={700} className="h-64 w-full object-cover md:h-full" />
       <div className="space-y-3">
         <StatusBadge status={project.status} />
         <h3 className="text-2xl font-semibold text-stone-900">{project.name}</h3>
@@ -211,22 +339,34 @@ export function FeaturedProject({ project }: { project: Project }) {
 export function ProjectListItem({ project }: { project: Project }) {
   return (
     <article className="grid gap-3 border border-stone-200 bg-white p-3 md:grid-cols-[280px_1fr]">
-      <Image src={project.heroImage} alt={project.name} width={600} height={350} className="h-44 w-full object-cover" />
+      <Image src={project.heroImage} alt={`${project.name} in ${project.location}`} width={600} height={350} className="h-44 w-full object-cover" />
       <div className="space-y-2">
         <div className="flex flex-wrap items-center gap-2 justify-between">
           <h3 className="text-xl font-semibold">{project.name}</h3>
           <StatusBadge status={project.status} />
         </div>
-        <p className="text-sm text-stone-600">{project.developerName} • {project.location}</p>
+        <p className="text-sm text-stone-600">
+          {project.developerName}
+          {(project.coDevelopers ?? []).filter((entry) => entry.name).map((entry) => `, ${entry.name}`).join("")}
+          {" "}• {project.location}
+        </p>
+        {(project.isFeatured || project.isMoveInNow || hasQuickMoveIn(project)) ? (
+          <div className="home-card-badge-row" aria-label="Listing badges">
+            {project.isMoveInNow ? <span className="badge-move-in-now">Move-In Now</span> : null}
+            {hasQuickMoveIn(project) ? <span className="badge-quick-move-in">Quick Move-In</span> : null}
+            {project.isFeatured ? <span className="badge-featured">Featured</span> : null}
+          </div>
+        ) : null}
         <p className="text-sm text-stone-700">{project.summary}</p>
         <div className="grid grid-cols-2 gap-2 text-sm text-stone-800 md:grid-cols-4">
           <span>From {formatLkr(project.startingPriceLkr)}</span>
           <span>{project.priceRange}</span>
           <span>{project.bedrooms} Beds</span>
           <span>{project.floorAreaRange}</span>
+          {hasDisplayValue(project.ownership) ? <span>{project.ownership}</span> : null}
         </div>
         <div className="flex gap-2">
-          <SaveButton />
+          <SaveButton projectSlug={project.slug} />
           <Link href={`/projects/${project.slug}`} className="inline-flex items-center border border-stone-900 px-3 py-2 text-sm">View project</Link>
         </div>
       </div>
@@ -234,7 +374,26 @@ export function ProjectListItem({ project }: { project: Project }) {
   );
 }
 
-export function ProjectHero({ project }: { project: Project }) {
+export function ProjectHero({
+  project,
+  titleOverride,
+  heroImageOverride,
+  floorPlan,
+  showAmenitiesAndNeighborhoodNav = true,
+  backHref,
+  backLabel,
+  plansHomesNavLabel = "Floor Plans",
+}: {
+  project: Project;
+  titleOverride?: string;
+  heroImageOverride?: string;
+  floorPlan?: FloorPlan;
+  showAmenitiesAndNeighborhoodNav?: boolean;
+  backHref?: string;
+  backLabel?: string;
+  plansHomesNavLabel?: string;
+}) {
+  const { saved: savedListing, toggle: toggleSaved } = useSavedListing(project.slug);
   const fallbackPhotoLabels = [
     "Exterior",
     "Living Room",
@@ -248,41 +407,51 @@ export function ProjectHero({ project }: { project: Project }) {
     "Rooftop",
   ];
 
-  const photoItems = [
-    { label: "Exterior", image: project.heroImage },
-    ...project.gallery.map((item, index) => ({
-      ...item,
-      label: item.label?.trim() || fallbackPhotoLabels[index % fallbackPhotoLabels.length],
-    })),
-  ];
+  const photoItems = heroImageOverride
+    ? [{ label: "Floor Plan", image: heroImageOverride }]
+    : [
+        { label: "Exterior", image: project.heroImage },
+        ...project.gallery.map((item, index) => ({
+          ...item,
+          label: item.label?.trim() || fallbackPhotoLabels[index % fallbackPhotoLabels.length],
+        })),
+      ];
   const [photoIndex, setPhotoIndex] = useState(0);
 
   const videoCount = project.videos?.length ?? 0;
   const virtualTourCount = project.virtualTours?.length ?? 0;
   const hasMap = project.coordinates?.lat != null && project.coordinates?.lng != null;
   const hasInteractiveMap = Boolean(project.interactiveMapUrl);
-  const blockPlanImage = project.gallery.find((item) => /block\s*plan|site\s*plan/i.test(item.label))?.image;
-  const hasBlockPlan = Boolean(blockPlanImage);
-  const hasRoadMap = hasMap;
+  // Floor plan count for the hero pill: prefer a gallery photo explicitly
+  // labeled as a block/site/floor plan, otherwise count the project's own
+  // Floor Plans data. The pill jumps to the "Floor Plans" section below
+  // rather than opening the lightbox — that section is the real browsing UI.
+  const hasGalleryFloorPlanImage = project.gallery.some((item) => /block\s*plan|site\s*plan|floor\s*plan/i.test(item.label));
+  const floorPlanCount = project.floorPlans.length > 0 ? project.floorPlans.length : (hasGalleryFloorPlanImage ? 1 : 0);
+  const hasBlockPlan = floorPlanCount > 0;
+  // Road Map is an uploaded gallery image (like Floor Plan), not the
+  // auto-generated Google Maps embed — admins submit it via the project's
+  // photo gallery with a "Road Map" label.
+  const roadMapImage = project.gallery.find((item) => /road\s*map/i.test(item.label))?.image;
+  const hasRoadMap = Boolean(roadMapImage);
+  const hasStreetView = hasMap;
 
+  // Photos/Map/Road Map/Street View/Floor Plan all open the lightbox (see
+  // the pills below); only these three still swap the hero's own inline
+  // media surface.
   const availableMedia = useMemo(() => {
-    const tabs: Array<"photos" | "videos" | "map" | "interactiveMap" | "virtualTours" | "blockPlan" | "roadMap"> = [];
-    if (photoItems.length > 0) tabs.push("photos");
+    const tabs: Array<"videos" | "interactiveMap" | "virtualTours"> = [];
     if (videoCount > 0) tabs.push("videos");
-    if (hasMap) tabs.push("map");
-    if (hasRoadMap) tabs.push("roadMap");
-    if (hasBlockPlan) tabs.push("blockPlan");
     if (hasInteractiveMap) tabs.push("interactiveMap");
     if (virtualTourCount > 0) tabs.push("virtualTours");
     return tabs;
-  }, [photoItems.length, videoCount, hasMap, hasRoadMap, hasBlockPlan, hasInteractiveMap, virtualTourCount]);
+  }, [videoCount, hasInteractiveMap, virtualTourCount]);
 
-  const [activeMedia, setActiveMedia] = useState<"photos" | "videos" | "map" | "interactiveMap" | "virtualTours" | "blockPlan" | "roadMap" | null>(null);
+  const [activeMedia, setActiveMedia] = useState<"videos" | "interactiveMap" | "virtualTours" | null>(null);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-  const [lightboxView, setLightboxView] = useState<"photos" | "map" | "preview">("photos");
+  const [lightboxView, setLightboxView] = useState<"photos" | "map" | "roadMap" | "streetView">("photos");
   const [activeSection, setActiveSection] = useState("overview");
-  const [isSectionNavFloating, setIsSectionNavFloating] = useState(false);
-  const heroPanelRef = useRef<HTMLDivElement>(null);
+  const [requestInfoOpen, setRequestInfoOpen] = useState(false);
 
   useEffect(() => {
     if (activeMedia && !availableMedia.includes(activeMedia)) {
@@ -301,19 +470,12 @@ export function ProjectHero({ project }: { project: Project }) {
     return () => window.removeEventListener("hashchange", updateActiveSection);
   }, []);
 
-  useEffect(() => {
-    const updateFloatingNav = () => {
-      setIsSectionNavFloating((heroPanelRef.current?.getBoundingClientRect().bottom ?? 0) <= 64);
-    };
-
-    updateFloatingNav();
-    window.addEventListener("scroll", updateFloatingNav, { passive: true });
-    return () => window.removeEventListener("scroll", updateFloatingNav);
-  }, []);
-
   const mapQuery = encodeURIComponent(`${project.name} ${project.location}`);
   const mapSrc = `https://www.google.com/maps?q=${mapQuery}&output=embed`;
   const interactiveMapSrc = project.interactiveMapUrl ?? mapSrc;
+  const streetViewSrc = hasMap
+    ? `https://www.google.com/maps?layer=c&cbll=${project.coordinates.lat},${project.coordinates.lng}&output=svembed`
+    : mapSrc;
 
   const activePhoto = photoItems[Math.max(0, Math.min(photoIndex, photoItems.length - 1))];
 
@@ -327,74 +489,154 @@ export function ProjectHero({ project }: { project: Project }) {
     setPhotoIndex((index) => (index + 1) % photoItems.length);
   };
 
-  const stats: { icon: React.ComponentType<{ className?: string }>; value: string; label: string; multiline?: boolean }[] = [
-    { icon: HousePlus, value: project.status, label: "Listing status" },
-    { icon: Hammer, value: project.constructionStatus, label: "Building status" },
-    ...(project.startingPriceLkr > 0 ? [{ icon: CircleDollarSign, value: `From ${formatLkr(project.startingPriceLkr)}`, label: "Price range" }] : []),
-    { icon: MapPinned, value: project.location, label: "Address" },
-    ...(project.units > 0 ? [{ icon: Building2, value: String(project.units), label: "Total Units" }] : []),
-    ...(project.floorPlans.length > 0 ? [{ icon: Building2, value: String(project.floorPlans.length), label: "Floor plans" }] : []),
-    ...(project.floors > 0 ? [{ icon: Building, value: String(project.floors), label: "Floors" }] : []),
-    { icon: Building, value: project.type.replace(" ", "\n"), label: "Property type", multiline: true },
-    { icon: BedDouble, value: project.bedrooms, label: "Beds" },
-    { icon: Bath, value: project.bathrooms, label: "Baths" },
-    { icon: Square, value: project.floorAreaRange, label: "SqFt" },
-    ...(project.incentives?.length ? [{ icon: CircleDollarSign, value: String(project.incentives.length), label: "Incentives" }] : []),
-    { icon: MapPin, value: project.road ?? "", label: "Road" },
-    { icon: MapPinned, value: project.area ?? "", label: "Area" },
-    { icon: Zap, value: project.electricity ?? "", label: "Electricity" },
-    { icon: Waves, value: project.tapWater ?? "", label: "Tap water" },
-    ...(project.startingPriceLkr > 0 && (project.floorPlans[0]?.floorAreaSqFt ?? 0) > 0
-      ? [{ icon: Ruler, value: compactLkr(Math.round(project.startingPriceLkr / Math.max(1, project.floorPlans[0]?.floorAreaSqFt ?? 1))), label: "Per SqFt (Avg)" }]
-      : []),
-  ]
-    .filter((item) => hasDisplayValue(item.value))
-    .filter((item) => {
-      if (!project.desktopVisibleStats?.length) {
-        return true;
-      }
-      const visibleLabels = new Set(project.desktopVisibleStats);
-      if (item.label === "Total Units") visibleLabels.add("Total units");
-      if (item.label === "Floors") visibleLabels.add("Stories");
-      return visibleLabels.has(item.label as ProjectStatLabel);
-    });
-
-  const shouldEmphasizeStat = (value: string) => /\d/.test(value);
-  const mobileVisibleLabels = new Set(
-    project.mobileVisibleStats?.length
-      ? project.mobileVisibleStats
-      : ["Price range", "Property type", "Beds", "Baths", "Floors", "SqFt"]
-  );
-
   return (
+    <>
+    <div className="listing-hero-sticky-bar">
+      <div className="listing-hero-panel-row">
+        <nav aria-label="Project sections" className="listing-hero-nav">
+          {backHref ? (
+            <Link href={backHref} className="listing-hero-nav-back">
+              <ChevronLeft className="h-3.5 w-3.5" aria-hidden="true" /> {backLabel ?? "Back"}
+            </Link>
+          ) : null}
+          <a href="#overview" className={activeSection === "overview" ? "active" : undefined} onClick={() => setActiveSection("overview")}>Overview</a>
+          <a href="#pricing" className={activeSection === "pricing" ? "active" : undefined} onClick={() => setActiveSection("pricing")}>Pricing</a>
+          <a href="#plans-homes" className={activeSection === "plans-homes" ? "active" : undefined} onClick={() => setActiveSection("plans-homes")}>{plansHomesNavLabel}</a>
+          {showAmenitiesAndNeighborhoodNav ? (
+            <>
+              <a href="#amenities" className={activeSection === "amenities" ? "active" : undefined} onClick={() => setActiveSection("amenities")}>Amenities</a>
+              <a href="#neighborhood" className={activeSection === "neighborhood" ? "active" : undefined} onClick={() => setActiveSection("neighborhood")}>Neighborhood</a>
+            </>
+          ) : null}
+        </nav>
+
+        <div className="listing-hero-actions">
+          <button type="button" className="action-link"><Bell className="h-4 w-4" aria-hidden="true" />Get updates</button>
+          <button type="button" className="action-link" onClick={toggleSaved}>
+            <Heart className="h-4 w-4" aria-hidden="true" fill={savedListing ? "currentColor" : "none"} />
+            {savedListing ? "Saved" : "Save"}
+          </button>
+          <button type="button" className="request-info-btn" onClick={() => setRequestInfoOpen(true)}>Request info</button>
+        </div>
+      </div>
+    </div>
+
     <section className="listing-hero">
       <div className="listing-hero-media">
-        {activeMedia === "photos" && (
-          <button
-            type="button"
-            className="listing-hero-image-trigger"
-            onClick={() => {
-              setLightboxView("photos");
-              setIsLightboxOpen(true);
-            }}
-            aria-label="Open photo gallery"
-          >
-            <Image src={activePhoto.image} alt={`${project.name} ${activePhoto.label}`} width={1700} height={780} className="listing-hero-image" priority />
-          </button>
-        )}
-
         {activeMedia === null && (
-          <button
-            type="button"
-            className="listing-hero-image-trigger"
-            onClick={() => {
-              setLightboxView("photos");
-              setIsLightboxOpen(true);
-            }}
-            aria-label="Open photo gallery"
-          >
-            <Image src={project.heroImage} alt={`${project.name} preview`} width={1700} height={780} className="listing-hero-image" priority />
-          </button>
+          <div className="listing-hero-grid">
+            <button
+              type="button"
+              className="listing-hero-grid-main"
+              onClick={() => {
+                setPhotoIndex(0);
+                setLightboxView("photos");
+                setIsLightboxOpen(true);
+              }}
+              aria-label="Open photo gallery"
+            >
+              <Image src={photoItems[0].image} alt={`${project.name} ${photoItems[0].label}`} width={1200} height={900} className="listing-hero-grid-main-image" priority />
+            </button>
+
+            {photoItems.length > 1 && (
+              <div className="listing-hero-grid-side">
+                {photoItems.slice(1, 3).map((item, index) => (
+                  <button
+                    key={item.image}
+                    type="button"
+                    className="listing-hero-grid-side-item"
+                    onClick={() => {
+                      setPhotoIndex(index + 1);
+                      setLightboxView("photos");
+                      setIsLightboxOpen(true);
+                    }}
+                    aria-label={`Open photo: ${item.label}`}
+                  >
+                    <Image src={item.image} alt={`${project.name} ${item.label}`} width={700} height={440} className="listing-hero-grid-side-image" />
+                  </button>
+                ))}
+              </div>
+            )}
+
+            <div className="listing-hero-grid-pills">
+              {photoItems.length > 0 && (
+                <button
+                  type="button"
+                  className="listing-hero-grid-pill"
+                  onClick={() => {
+                    setPhotoIndex(0);
+                    setLightboxView("photos");
+                    setIsLightboxOpen(true);
+                  }}
+                >
+                  <LayoutGrid className="h-4 w-4" aria-hidden="true" /> Photos {photoItems.length}
+                </button>
+              )}
+
+              {videoCount > 0 && (
+                <button type="button" className="listing-hero-grid-pill" onClick={() => setActiveMedia("videos")}>
+                  <Video className="h-4 w-4" aria-hidden="true" /> Videos {videoCount}
+                </button>
+              )}
+
+              {hasMap && (
+                <button
+                  type="button"
+                  className="listing-hero-grid-pill"
+                  onClick={() => {
+                    setLightboxView("map");
+                    setIsLightboxOpen(true);
+                  }}
+                >
+                  <MapIcon className="h-4 w-4" aria-hidden="true" /> Map
+                </button>
+              )}
+
+              {hasBlockPlan && (
+                <a href="#plans-homes" className="listing-hero-grid-pill" onClick={() => setActiveSection("plans-homes")}>
+                  <LayoutPanelLeft className="h-4 w-4" aria-hidden="true" /> Floor Plan {floorPlanCount}
+                </a>
+              )}
+
+              {hasRoadMap && (
+                <button
+                  type="button"
+                  className="listing-hero-grid-pill"
+                  onClick={() => {
+                    setLightboxView("roadMap");
+                    setIsLightboxOpen(true);
+                  }}
+                >
+                  <MapPinned className="h-4 w-4" aria-hidden="true" /> Road Map
+                </button>
+              )}
+
+              {hasStreetView && (
+                <button
+                  type="button"
+                  className="listing-hero-grid-pill"
+                  onClick={() => {
+                    setLightboxView("streetView");
+                    setIsLightboxOpen(true);
+                  }}
+                >
+                  <Navigation className="h-4 w-4" aria-hidden="true" /> Street View
+                </button>
+              )}
+
+              {hasInteractiveMap && (
+                <button type="button" className="listing-hero-grid-pill" onClick={() => setActiveMedia("interactiveMap")}>
+                  <Compass className="h-4 w-4" aria-hidden="true" /> Interactive map
+                </button>
+              )}
+
+              {virtualTourCount > 0 && (
+                <button type="button" className="listing-hero-grid-pill" onClick={() => setActiveMedia("virtualTours")}>
+                  <Camera className="h-4 w-4" aria-hidden="true" /> Virtual tours {virtualTourCount}
+                </button>
+              )}
+            </div>
+          </div>
         )}
 
         {activeMedia === "videos" && videoCount > 0 && (
@@ -419,32 +661,6 @@ export function ProjectHero({ project }: { project: Project }) {
           </div>
         )}
 
-        {activeMedia === "map" && hasMap && (
-          <iframe
-            className="listing-hero-map-frame"
-            title="Project map"
-            src={mapSrc}
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-          />
-        )}
-
-        {activeMedia === "roadMap" && hasRoadMap && (
-          <iframe
-            className="listing-hero-map-frame"
-            title="Road map"
-            src={mapSrc}
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-          />
-        )}
-
-        {activeMedia === "blockPlan" && hasBlockPlan && (
-          <div className="listing-hero-video-surface">
-            <Image src={blockPlanImage!} alt={`${project.name} block plan`} width={1700} height={780} className="listing-hero-image" priority />
-          </div>
-        )}
-
         {activeMedia === "interactiveMap" && hasInteractiveMap && (
           <iframe
             className="listing-hero-map-frame"
@@ -464,127 +680,44 @@ export function ProjectHero({ project }: { project: Project }) {
           </div>
         )}
 
-        <div className="listing-hero-rail-shell">
-          {activeMedia === "photos" && photoItems.length > 1 && (
-            <button type="button" className="media-arrow media-arrow-left" aria-label="Previous photo" onClick={handlePrevPhoto}>
-              <ChevronLeft className="h-4 w-4" aria-hidden="true" />
-            </button>
-          )}
-
-          <div className="listing-hero-rail" role="tablist" aria-label="Project media options">
-            <button
-              type="button"
-              role="tab"
-              className={activeMedia === "photos" ? "active" : undefined}
-              aria-selected={activeMedia === "photos"}
-              onClick={() => setActiveMedia("photos")}
-            >
-              <span className="tab-label">Photos {photoItems.length}</span>
-            </button>
-
-            <button
-              type="button"
-              role="tab"
-              className={`${activeMedia === "videos" ? "active" : ""} ${videoCount === 0 ? "is-muted" : ""}`.trim()}
-              aria-selected={activeMedia === "videos"}
-              onClick={() => setActiveMedia("videos")}
-              disabled={videoCount === 0}
-              aria-disabled={videoCount === 0}
-            >
-              <span className="tab-label">Videos {videoCount}</span>
-            </button>
-
-            <button
-              type="button"
-              role="tab"
-              className={`${activeMedia === "map" ? "active" : ""} ${!hasMap ? "is-muted" : ""}`.trim()}
-              aria-selected={activeMedia === "map"}
-              onClick={() => setActiveMedia("map")}
-              disabled={!hasMap}
-              aria-disabled={!hasMap}
-            >
-              <span className="tab-label">Map</span>
-            </button>
-
-            <button
-              type="button"
-              role="tab"
-              className={`${activeMedia === "blockPlan" ? "active" : ""} ${!hasBlockPlan ? "is-muted" : ""}`.trim()}
-              aria-selected={activeMedia === "blockPlan"}
-              onClick={() => setActiveMedia("blockPlan")}
-              disabled={!hasBlockPlan}
-              aria-disabled={!hasBlockPlan}
-            >
-              <span className="tab-label">Block Plan</span>
-            </button>
-
-            <button
-              type="button"
-              role="tab"
-              className={`${activeMedia === "roadMap" ? "active" : ""} ${!hasRoadMap ? "is-muted" : ""}`.trim()}
-              aria-selected={activeMedia === "roadMap"}
-              onClick={() => setActiveMedia("roadMap")}
-              disabled={!hasRoadMap}
-              aria-disabled={!hasRoadMap}
-            >
-              <span className="tab-label">Road Map</span>
-            </button>
-
-            <button
-              type="button"
-              role="tab"
-              className={`${activeMedia === "interactiveMap" ? "active" : ""} ${!hasInteractiveMap ? "is-muted" : ""}`.trim()}
-              aria-selected={activeMedia === "interactiveMap"}
-              onClick={() => setActiveMedia("interactiveMap")}
-              disabled={!hasInteractiveMap}
-              aria-disabled={!hasInteractiveMap}
-            >
-              <span className="tab-label">Interactive map</span>
-            </button>
-
-            <button
-              type="button"
-              role="tab"
-              className={`${activeMedia === "virtualTours" ? "active" : ""} ${virtualTourCount === 0 ? "is-muted" : ""}`.trim()}
-              aria-selected={activeMedia === "virtualTours"}
-              onClick={() => setActiveMedia("virtualTours")}
-              disabled={virtualTourCount === 0}
-              aria-disabled={virtualTourCount === 0}
-            >
-              <span className="tab-label">Virtual tours {virtualTourCount}</span>
-            </button>
-          </div>
-
-          {activeMedia === "photos" && photoItems.length > 1 && (
-            <button type="button" className="media-arrow media-arrow-right" aria-label="Next photo" onClick={handleNextPhoto}>
-              <ChevronRight className="h-4 w-4" aria-hidden="true" />
-            </button>
-          )}
-        </div>
+        {activeMedia !== null && (
+          <button type="button" className="listing-hero-media-back" onClick={() => setActiveMedia(null)}>
+            <ChevronLeft className="h-4 w-4" aria-hidden="true" /> Back to photos
+          </button>
+        )}
       </div>
 
       {isLightboxOpen && (
         <div className="listing-photo-lightbox" role="dialog" aria-modal="true" aria-label="Photo gallery">
           <div className="listing-photo-lightbox-topbar">
-            <div className="listing-photo-lightbox-meta">
-              <p className="primary-line">
-                <strong>{project.name}</strong>
-              </p>
-              <p className="secondary-line">{project.location}</p>
-            </div>
+            <div className="listing-photo-lightbox-toprow">
+              <div className="listing-photo-lightbox-meta">
+                <p className="primary-line">{project.name}</p>
+                <p className="secondary-line">{project.location}</p>
+              </div>
 
-            <div className="listing-photo-lightbox-actions">
-              <button type="button" className="contact-btn">Contact</button>
-              <button type="button" className="ghost-btn"><Heart className="h-4 w-4" aria-hidden="true" />Save</button>
-              <button type="button" className="ghost-btn"><Share2 className="h-4 w-4" aria-hidden="true" />Share</button>
-              <button
-                type="button"
-                className="listing-photo-lightbox-close"
-                onClick={() => setIsLightboxOpen(false)}
-                aria-label="Close photo gallery"
-              >
-                <X className="h-5 w-5" aria-hidden="true" />
-              </button>
+              <div className="listing-photo-lightbox-actions">
+                <button type="button" className="listing-photo-lightbox-action-btn">
+                  <Bell className="h-4 w-4" aria-hidden="true" />
+                  Get updates
+                </button>
+                <button type="button" className="listing-photo-lightbox-action-btn" onClick={toggleSaved}>
+                  <Heart className="h-4 w-4" aria-hidden="true" fill={savedListing ? "currentColor" : "none"} />
+                  {savedListing ? "Saved" : "Save"}
+                </button>
+                <button type="button" className="listing-photo-lightbox-action-btn">
+                  <Share2 className="h-4 w-4" aria-hidden="true" />
+                  Share
+                </button>
+                <button
+                  type="button"
+                  className="listing-photo-lightbox-close"
+                  onClick={() => setIsLightboxOpen(false)}
+                  aria-label="Close photo gallery"
+                >
+                  <X className="h-5 w-5" aria-hidden="true" />
+                </button>
+              </div>
             </div>
 
             <div className="listing-photo-lightbox-tabs" role="tablist" aria-label="Viewer options">
@@ -595,26 +728,41 @@ export function ProjectHero({ project }: { project: Project }) {
                 className={lightboxView === "photos" ? "active" : undefined}
                 onClick={() => setLightboxView("photos")}
               >
-                {photoItems.length} Photos
+                Photos <span className="listing-photo-lightbox-tab-count">{photoItems.length}</span>
               </button>
-              <button
-                type="button"
-                role="tab"
-                aria-selected={lightboxView === "map"}
-                className={lightboxView === "map" ? "active" : undefined}
-                onClick={() => setLightboxView("map")}
-              >
-                Map
-              </button>
-              <button
-                type="button"
-                role="tab"
-                aria-selected={lightboxView === "preview"}
-                className={lightboxView === "preview" ? "active" : undefined}
-                onClick={() => setLightboxView("preview")}
-              >
-                Preview
-              </button>
+              {hasMap && (
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={lightboxView === "map"}
+                  className={lightboxView === "map" ? "active" : undefined}
+                  onClick={() => setLightboxView("map")}
+                >
+                  Map
+                </button>
+              )}
+              {hasRoadMap && (
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={lightboxView === "roadMap"}
+                  className={lightboxView === "roadMap" ? "active" : undefined}
+                  onClick={() => setLightboxView("roadMap")}
+                >
+                  Road Map
+                </button>
+              )}
+              {hasStreetView && (
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={lightboxView === "streetView"}
+                  className={lightboxView === "streetView" ? "active" : undefined}
+                  onClick={() => setLightboxView("streetView")}
+                >
+                  Street View
+                </button>
+              )}
             </div>
           </div>
 
@@ -656,102 +804,312 @@ export function ProjectHero({ project }: { project: Project }) {
               />
             )}
 
-            {lightboxView === "preview" && (
-              <div className="listing-photo-lightbox-preview">
-                <div className="listing-photo-lightbox-media-wrap">
-                  <Image
-                    src={project.heroImage}
-                    alt={`${project.name} preview`}
-                    width={1920}
-                    height={1080}
-                    className="listing-photo-lightbox-image"
-                  />
-                  <div className="listing-photo-lightbox-caption-row">
-                    <div className="listing-photo-lightbox-caption">{activePhoto.label}</div>
-                  </div>
-                </div>
-                <span>Preview mode</span>
+            {lightboxView === "roadMap" && roadMapImage && (
+              <div className="listing-photo-lightbox-media-wrap">
+                <Image
+                  src={roadMapImage}
+                  alt={`${project.name} road map`}
+                  width={1920}
+                  height={1080}
+                  className="listing-photo-lightbox-image"
+                />
               </div>
             )}
+
+            {lightboxView === "streetView" && (
+              <iframe
+                className="listing-photo-lightbox-map"
+                title="Street view"
+                src={streetViewSrc}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            )}
+
           </div>
         </div>
       )}
 
-      <div ref={heroPanelRef} className="listing-hero-panel">
+      <div className="listing-hero-panel">
         <div className="listing-hero-title-wrap">
-          <h1>{project.name}</h1>
+          <h1>{titleOverride ?? project.name}</h1>
           <p>
             By <Link href={`/developers/${project.developerSlug}`}>{project.developerName}</Link>
-            {hasDisplayValue(project.neighborhood) ? (
+            {(project.coDevelopers ?? []).filter((entry) => entry.name).map((entry) => (
+              <span key={entry.name}>, {entry.href ? <Link href={entry.href}>{entry.name}</Link> : entry.name}</span>
+            ))}
+            {hasDisplayValue(project.city) ? (
               <>
                 <span> | </span>
-                <span>
-                  {project.neighborhoodSlug
-                    ? <Link href={`/neighborhoods/${project.neighborhoodSlug}`}>{project.neighborhood}</Link>
-                    : project.neighborhood}
-                  {" "}
-                  master planned community
-                </span>
+                <span>{project.city}</span>
               </>
             ) : null}
           </p>
         </div>
-
-        <div className={`listing-hero-panel-row${isSectionNavFloating ? " is-floating" : ""}`}>
-          <nav aria-label="Project sections" className="listing-hero-nav">
-            <a href="#overview" className={activeSection === "overview" ? "active" : undefined} onClick={() => setActiveSection("overview")}>Overview</a>
-            <a href="#pricing" className={activeSection === "pricing" ? "active" : undefined} onClick={() => setActiveSection("pricing")}>Pricing</a>
-            <a href="#plans-homes" className={activeSection === "plans-homes" ? "active" : undefined} onClick={() => setActiveSection("plans-homes")}>Plans & homes</a>
-            <a href="#amenities" className={activeSection === "amenities" ? "active" : undefined} onClick={() => setActiveSection("amenities")}>Amenities</a>
-          </nav>
-
-          <div className="listing-hero-actions">
-            <button type="button" className="action-link"><Bell className="h-4 w-4" aria-hidden="true" />Get updates</button>
-            <button type="button" className="action-link"><Heart className="h-4 w-4" aria-hidden="true" />Save</button>
-            <button type="button" className="request-info-btn">Request info</button>
-          </div>
-        </div>
       </div>
 
-      {(hasDisplayValue(project.status) || hasDisplayValue(project.completionYear)) ? (
+      {(hasDisplayValue(project.status) || hasDisplayValue(project.completionYear) || project.isFeatured || project.isMoveInNow || hasQuickMoveIn(project)) ? (
         <div className="listing-hero-tags" aria-label="Listing status tags">
-          {hasDisplayValue(project.status) ? <span>{project.status}</span> : null}
-          {hasDisplayValue(project.completionYear) ? <span>Move in {project.completionYear}</span> : null}
+          {hasDisplayValue(project.status) ? <span className="listing-hero-tag-status">{project.status}</span> : null}
+          {hasDisplayValue(project.completionYear) ? <span className="listing-hero-tag-move-in">Move in {project.completionYear}</span> : null}
+          {project.isMoveInNow ? <span className="listing-badge-pill badge-move-in-now">Move-In Now</span> : null}
+          {hasQuickMoveIn(project) ? <span className="listing-badge-pill badge-quick-move-in">Quick Move-In</span> : null}
+          {project.isFeatured ? <span className="listing-badge-pill badge-featured">Featured</span> : null}
         </div>
       ) : null}
+
+      {isHotDealActive(project) ? <HotDealCard hotDeal={project.hotDeal!} /> : null}
 
         <div className="listing-hero-mobile-ctas" aria-label="Mobile quick actions">
           <button type="button" className="listing-hero-mobile-btn listing-hero-mobile-btn-updates">
             <Bell className="h-4 w-4" aria-hidden="true" />
             Get updates
           </button>
-          <button type="button" className="listing-hero-mobile-btn listing-hero-mobile-btn-request">
+          <button type="button" className="listing-hero-mobile-btn listing-hero-mobile-btn-request" onClick={() => setRequestInfoOpen(true)}>
             Request info
           </button>
         </div>
 
-      <div
-        className="listing-hero-stats"
-        role="list"
-        aria-label="Project summary stats"
-        style={{ "--stat-count": stats.length } as CSSProperties}
-      >
-        {stats.map((item) => {
-          const Icon = item.icon;
-          return (
-            <div key={item.label} role="listitem" className={mobileVisibleLabels.has(item.label) ? "mobile-stat-visible" : undefined}>
-              <Icon className="h-6 w-6" aria-hidden="true" />
-              {shouldEmphasizeStat(item.value) ? (
-                <strong className={item.multiline ? "multiline" : undefined}>{item.value}</strong>
-              ) : (
-                <span className={`value-text ${item.multiline ? "multiline" : ""}`.trim()}>{item.value}</span>
-              )}
-              <span>{item.label}</span>
-            </div>
-          );
-        })}
-      </div>
     </section>
+
+    <RequestInfoDialog open={requestInfoOpen} onClose={() => setRequestInfoOpen(false)} project={project} />
+    </>
+  );
+}
+
+function HotDealCard({ hotDeal }: { hotDeal: NonNullable<Project["hotDeal"]> }) {
+  return (
+    <div className="hot-deal-banner">
+      <span className="hot-deal-banner-badge">{hotDeal.badge || "Hot Deal"}</span>
+      <span className="hot-deal-banner-title">{hotDeal.title}</span>
+      <span className="hot-deal-banner-desc">{hotDeal.description}</span>
+    </div>
+  );
+}
+
+export function ProjectStatsChips({ project, floorPlan }: { project: Project; floorPlan?: FloorPlan }) {
+  const stats: { value: string; label: string }[] = floorPlan
+    ? [
+        { value: floorPlan.availability, label: "Status" },
+        ...(floorPlan.startingPriceLkr > 0 ? [{ value: `From ${formatLkr(floorPlan.startingPriceLkr)}`, label: "Price" }] : []),
+        { value: project.location, label: "Address" },
+        { value: project.type, label: "Project type" },
+        ...(hasDisplayValue(floorPlan.planType) ? [{ value: floorPlan.planType ?? "", label: "Plan type" }] : []),
+        { value: String(floorPlan.bedrooms), label: "Beds" },
+        { value: String(floorPlan.bathrooms), label: "Baths" },
+        ...(floorPlan.floorAreaSqFt > 0 ? [{ value: `From ${floorPlan.floorAreaSqFt} SqFt`, label: "SqFt" }] : []),
+        ...(hasDisplayValue(project.ownership) ? [{ value: project.ownership, label: "Ownership" }] : []),
+        ...(floorPlan.interiorSizeSqFt ? [{ value: `From ${floorPlan.interiorSizeSqFt} SqFt`, label: "Interior size" }] : []),
+        ...(hasDisplayValue(floorPlan.basement) ? [{ value: floorPlan.basement ?? "", label: "Basement" }] : []),
+        ...(floorPlan.balconySizeSqFt ? [{ value: `${floorPlan.balconySizeSqFt} SqFt`, label: "Balcony" }] : []),
+        ...(hasDisplayValue(floorPlan.garage) ? [{ value: floorPlan.garage ?? "", label: "Garage" }] : []),
+        ...(floorPlan.parkingSpaces ? [{ value: String(floorPlan.parkingSpaces), label: "Parking" }] : []),
+        ...(hasDisplayValue(project.ceilingInfo) ? [{ value: project.ceilingInfo ?? "", label: "Ceilings" }] : []),
+        ...(hasDisplayValue(project.security) ? [{ value: project.security, label: "Security" }] : []),
+        ...(hasDisplayValue(project.neighborhood) ? [{ value: project.neighborhood, label: "Neighborhood" }] : []),
+        ...(hasDisplayValue(project.constructionStatus) ? [{ value: project.constructionStatus, label: "Building status" }] : []),
+        ...(floorPlan.startingPriceLkr > 0 && floorPlan.floorAreaSqFt > 0
+          ? [{ value: compactLkr(Math.round(floorPlan.startingPriceLkr / floorPlan.floorAreaSqFt)), label: "Per SqFt (Avg)" }]
+          : []),
+      ]
+        .filter((item) => hasDisplayValue(item.value))
+        .filter((item) => {
+          if (!project.floorPlanVisibleStats?.length) return true;
+          return project.floorPlanVisibleStats.includes(item.label);
+        })
+    : [
+        { value: project.status, label: "Listing status" },
+        { value: project.constructionStatus, label: "Building status" },
+        ...(project.startingPriceLkr > 0 ? [{ value: `From ${formatLkr(project.startingPriceLkr)}`, label: "Price range" }] : []),
+        { value: project.location, label: "Address" },
+        ...(project.units > 0 ? [{ value: String(project.units), label: "Total Units" }] : []),
+        ...(project.floors > 0 ? [{ value: String(project.floors), label: "Floors" }] : []),
+        ...(project.floorPlans.length > 0 ? [{ value: String(project.floorPlans.length), label: "Floor plans" }] : []),
+        { value: project.type, label: "Property type" },
+        { value: project.bedrooms, label: "Beds" },
+        { value: project.bathrooms, label: "Baths" },
+        { value: project.floorAreaRange, label: "SqFt" },
+        { value: project.road ?? "", label: "Road" },
+        { value: project.area ?? "", label: "Area" },
+        { value: project.electricity ?? "", label: "Electricity" },
+        { value: project.tapWater ?? "", label: "Tap water" },
+        ...(project.incentives?.length ? [{ value: String(project.incentives.length), label: "Incentives" }] : []),
+        ...(hasDisplayValue(project.parking) ? [{ value: project.parking, label: "Parking" }] : []),
+        ...(project.completionYear > 0 ? [{ value: String(project.completionYear), label: "Completion year" }] : []),
+        ...(hasDisplayValue(project.ownership) ? [{ value: project.ownership, label: "Ownership" }] : []),
+        ...(hasDisplayValue(project.ceilingInfo) ? [{ value: project.ceilingInfo ?? "", label: "Ceilings" }] : []),
+        ...(hasDisplayValue(project.neighborhood) ? [{ value: project.neighborhood, label: "Neighborhood" }] : []),
+        ...(hasDisplayValue(project.security) ? [{ value: project.security, label: "Security" }] : []),
+        ...(hasDisplayValue(project.district) ? [{ value: project.district, label: "District" }] : []),
+        ...(hasDisplayValue(project.launchDate) ? [{ value: new Date(project.launchDate).toLocaleDateString("en-US", { month: "short", year: "numeric" }), label: "Sales started" }] : []),
+        ...(project.startingPriceLkr > 0 && (project.floorPlans[0]?.floorAreaSqFt ?? 0) > 0
+          ? [{ value: compactLkr(Math.round(project.startingPriceLkr / Math.max(1, project.floorPlans[0]?.floorAreaSqFt ?? 1))), label: "Per SqFt (Avg)" }]
+          : []),
+      ]
+        .filter((item) => hasDisplayValue(item.value))
+        .filter((item) => {
+          if (!project.desktopVisibleStats?.length) return true;
+          return project.desktopVisibleStats.includes(item.label as ProjectStatLabel);
+        });
+
+  const mobileVisibleLabels = new Set(
+    project.mobileVisibleStats?.length
+      ? project.mobileVisibleStats
+      : ["Price range", "Property type", "Beds", "Baths", "Stories", "SqFt"]
+  );
+
+  if (!stats.length) return null;
+
+  return (
+    <div className="listing-hero-stats-chips" role="list" aria-label="Project summary stats">
+      {stats.map((item) => (
+        <div key={item.label} role="listitem" className={`listing-hero-stat-chip${mobileVisibleLabels.has(item.label) ? " mobile-stat-visible" : ""}`}>
+          <span className="listing-hero-stat-chip-value">{item.value}</span>
+          <span className="listing-hero-stat-chip-label">{item.label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function RequestInfoDialog({ open, onClose, project }: { open: boolean; onClose: () => void; project: Project }) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [message, setMessage] = useState("");
+  const [contactMethod, setContactMethod] = useState<"Phone" | "Text" | "Email">("Phone");
+  const [agreed, setAgreed] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const MESSAGE_MAX = 900;
+
+  useEffect(() => {
+    if (!open) return;
+    setSubmitted(false);
+    setErrorMessage("");
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
+  if (!open) return null;
+
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSubmitting(true);
+    setErrorMessage("");
+
+    try {
+      const response = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          email,
+          phone,
+          preferredContactMethod: contactMethod,
+          message: message.trim() || `Request info for ${project.name}`,
+          projectSlug: project.slug,
+          developerSlug: project.developerSlug,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        setErrorMessage(data?.error ?? "Unable to send your request. Please try again.");
+        return;
+      }
+
+      setSubmitted(true);
+    } catch {
+      setErrorMessage("Unable to send your request. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="request-info-overlay" role="dialog" aria-modal="true" aria-label="Contact us" onClick={onClose}>
+      <div className="request-info-dialog" onClick={(event) => event.stopPropagation()}>
+        <div className="request-info-topbar">
+          <p className="request-info-topbar-title">Contact Us</p>
+          <button type="button" className="request-info-close" aria-label="Close" onClick={onClose}><X className="h-5 w-5" /></button>
+        </div>
+
+        {submitted ? (
+          <div className="request-info-success">
+            <h2>Request sent</h2>
+            <p>Thanks, {name.split(" ")[0] || "there"} — the {project.name} sales team will reach out to you by {contactMethod.toLowerCase()} shortly.</p>
+            <Button type="button" onClick={onClose}>Close</Button>
+          </div>
+        ) : (
+          <form onSubmit={onSubmit} className="request-info-body">
+            <h2>Our Sales Team Has Answers.</h2>
+            <p className="request-info-required-note"><span className="request-info-star">*</span> Indicates a required field</p>
+
+            <label className="request-info-field">
+              <span>Name<span className="request-info-star">*</span></span>
+              <input value={name} onChange={(event) => setName(event.target.value)} required placeholder="Enter your name" />
+            </label>
+
+            <label className="request-info-field">
+              <span>Phone number<span className="request-info-star">*</span></span>
+              <input type="tel" value={phone} onChange={(event) => setPhone(event.target.value)} required placeholder="+94 7X XXX XXXX" />
+            </label>
+
+            <label className="request-info-field">
+              <span>Email<span className="request-info-star">*</span></span>
+              <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} required placeholder="Enter your email" />
+            </label>
+
+            <label className="request-info-field">
+              <span>Anything else we should know?</span>
+              <textarea
+                value={message}
+                onChange={(event) => setMessage(event.target.value.slice(0, MESSAGE_MAX))}
+                placeholder="Enter your message"
+                rows={4}
+              />
+              <span className="request-info-char-count">{MESSAGE_MAX - message.length} characters remaining</span>
+            </label>
+
+            <div className="request-info-field">
+              <span>How would you like to get in touch?<span className="request-info-star">*</span></span>
+              <div className="request-info-radio-row">
+                {(["Phone", "Text", "Email"] as const).map((method) => (
+                  <label key={method} className="request-info-radio">
+                    <input
+                      type="radio"
+                      name="contactMethod"
+                      checked={contactMethod === method}
+                      onChange={() => setContactMethod(method)}
+                    />
+                    {method}
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <label className="request-info-consent">
+              <input type="checkbox" checked={agreed} onChange={(event) => setAgreed(event.target.checked)} required />
+              <span>I agree to be contacted by LankaLiving agents via WhatsApp, SMS, Call, Email etc.</span>
+            </label>
+
+            {errorMessage ? <p className="request-info-error">{errorMessage}</p> : null}
+
+            <button type="submit" className="request-info-submit-big" disabled={submitting || !agreed}>
+              {submitting ? "Sending..." : "Submit Form"}
+            </button>
+          </form>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -761,8 +1119,7 @@ export function ProjectSummary({ project }: { project: Project }) {
     ["Bedrooms", project.bedrooms],
     ["Bathrooms", project.bathrooms],
     ["Floor Area", project.floorAreaRange],
-    ["Construction started", project.constructionStarted ?? "Not set"],
-    ["Estimated completion", String(project.completionYear)],
+    ["Completion", String(project.completionYear)],
     ["Units", String(project.units)],
     ["Floors", String(project.floors)],
     ["Status", project.status],
@@ -796,77 +1153,16 @@ export function FloorPlanCard({ floorPlan }: { floorPlan: FloorPlan }) {
   );
 }
 
-export function FloorPlanListingTabs({ project, floorPlan }: { project: Project; floorPlan: FloorPlan }) {
-  const [activeTab, setActiveTab] = useState<"details" | "pricing" | "homes">("details");
-  const details = [
-    { icon: HousePlus, label: "Status", visibilityLabel: "Listing status", value: floorPlan.availability },
-    { icon: CircleDollarSign, label: "Price", visibilityLabel: "Price range", value: `From ${formatLkr(floorPlan.startingPriceLkr)}` },
-    { icon: MapPinned, label: "Address", visibilityLabel: "Address", value: project.location },
-    { icon: Building, label: "Project type", visibilityLabel: "Property type", value: project.type },
-    { icon: BedDouble, label: "Beds", visibilityLabel: "Beds", value: String(floorPlan.bedrooms) },
-    { icon: Bath, label: "Baths", visibilityLabel: "Baths", value: String(floorPlan.bathrooms) },
-    { icon: Square, label: "SqFt", visibilityLabel: "SqFt", value: `${floorPlan.floorAreaSqFt} sq.ft` },
-    ...(project.startingPriceLkr > 0 && floorPlan.floorAreaSqFt > 0
-      ? [{ icon: Ruler, label: "Per SqFt (Avg)", visibilityLabel: "Per SqFt (Avg)", value: compactLkr(Math.round(floorPlan.startingPriceLkr / floorPlan.floorAreaSqFt)) }]
-      : []),
-  ];
-  const enabledDetails = project.floorPlanVisibleStats?.length
-    ? new Set<string>(project.floorPlanVisibleStats)
-    : null;
-
-  return (
-    <section className="mx-auto w-full max-w-290 space-y-5 px-4 pb-8 sm:px-6 lg:px-8">
-      <header className="space-y-2">
-        <h1 className="text-3xl font-semibold">{floorPlan.planName}</h1>
-        <p className="text-sm text-stone-700">By <Link href={`/developers/${project.developerSlug}`} className="font-medium underline">{project.developerName}</Link> | {project.name}</p>
-        <p className="text-sm text-stone-600">{project.location} master planned community</p>
-      </header>
-      <div className="flex flex-wrap gap-2 border-b border-stone-200 pb-3" role="tablist" aria-label="Floor plan information">
-        {([["details", "Details"], ["pricing", "Pricing"], ["homes", "Available homes"]] as const).map(([value, label]) => (
-          <button key={value} type="button" role="tab" aria-selected={activeTab === value} onClick={() => setActiveTab(value)} className={`border px-4 py-2 text-sm ${activeTab === value ? "border-stone-900 bg-stone-900 text-white" : "border-stone-300 bg-white"}`}>
-            {label}
-          </button>
-        ))}
-      </div>
-      {activeTab === "details" ? (
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {details.filter(({ visibilityLabel }) => !enabledDetails || enabledDetails.has(visibilityLabel)).map(({ icon: Icon, label, value }) => (
-            <div key={label} className="flex items-start gap-3 border border-stone-200 bg-white p-4">
-              <Icon className="mt-0.5 h-5 w-5 shrink-0 text-stone-700" aria-hidden="true" />
-              <div><p className="text-xs uppercase tracking-wide text-stone-500">{label}</p><p className="mt-1 text-sm font-medium text-stone-900">{value}</p></div>
-            </div>
-          ))}
-        </div>
-      ) : null}
-      {activeTab === "pricing" ? <PricingInformationLayout project={project} /> : null}
-      {activeTab === "homes" ? (
-        <div className="grid gap-3 border border-stone-200 bg-white p-4">
-          <h2 className="text-xl font-semibold">Available homes</h2>
-          <div className="grid gap-3 sm:grid-cols-2">
-            {project.floorPlans.filter((plan) => plan.availability !== "Sold Out").map((plan) => (
-              <div key={plan.id} className="border border-stone-200 p-3"><p className="font-medium">{plan.planName}</p><p className="mt-1 text-sm text-stone-600">{plan.bedrooms} Bed | {plan.bathrooms} Bath | {plan.floorAreaSqFt} sq.ft</p><p className="mt-1 text-sm">From {formatLkr(plan.startingPriceLkr)}</p><StatusBadge status={plan.availability} /></div>
-            ))}
-          </div>
-        </div>
-      ) : null}
-    </section>
-  );
-}
-
 export function FloorPlanBrowser({ floorPlans }: { floorPlans: FloorPlan[] }) {
-  const bedroomOptions = useMemo(() => [...new Set(floorPlans.map((floorPlan) => floorPlan.bedrooms))].sort((a, b) => a - b), [floorPlans]);
-  const [active, setActive] = useState<number | null>(bedroomOptions[0] ?? null);
-  const activeBedroom = active !== null && bedroomOptions.includes(active) ? active : bedroomOptions[0] ?? null;
-  const filtered = useMemo(() => activeBedroom === null ? floorPlans : floorPlans.filter((f) => f.bedrooms === activeBedroom), [floorPlans, activeBedroom]);
+  const [active, setActive] = useState<number>(1);
+  const tabs = [1, 2, 3, 4];
+  const filtered = useMemo(() => floorPlans.filter((f) => f.bedrooms === active), [floorPlans, active]);
   return (
     <section className="space-y-4">
-      <div className="flex items-center justify-between gap-3">
-        <h3 className="text-lg font-semibold">Floor Plans ({floorPlans.length})</h3>
-      </div>
       <div className="flex flex-wrap gap-2">
-        {bedroomOptions.map((bedroomCount) => (
-          <button key={bedroomCount} onClick={() => setActive(bedroomCount)} className={`border px-3 py-1 text-sm ${activeBedroom === bedroomCount ? "border-stone-900 bg-stone-900 text-white" : "border-stone-300"}`}>
-            {bedroomCount} Bedroom
+        {tabs.map((b) => (
+          <button key={b} onClick={() => setActive(b)} className={`border px-3 py-1 text-sm ${active === b ? "border-stone-900 bg-stone-900 text-white" : "border-stone-300"}`}>
+            {b} Bedroom
           </button>
         ))}
       </div>
@@ -914,15 +1210,33 @@ export function AmenityGrid({ amenities }: { amenities: Amenity[] }) {
 }
 
 export function PricingInformationLayout({ project }: { project: Project }) {
-  const displayValue = (value: string | undefined) => (hasDisplayValue(value) ? value : "-");
-  const pricingHistory = project.pricingHistory?.length
-    ? project.pricingHistory
-    : [{ date: "-", note: "-" }];
+  const pricingHistory = project.pricingHistory?.filter((entry) => hasDisplayValue(entry.date) || hasDisplayValue(entry.note)) ?? [];
   const incentives = project.incentives?.filter((item) => hasDisplayValue(item)) ?? [];
+  const depositStructure = project.depositPaymentStructure ?? project.paymentPlan;
+  const paymentLines = project.paymentPlanItems?.filter((item) => hasDisplayValue(item)).length
+    ? project.paymentPlanItems.filter((item) => hasDisplayValue(item))
+    : (depositStructure ?? "").split(";").map((item) => item.trim()).filter((item) => hasDisplayValue(item));
+
+  const pricingFields = [
+    { label: "Available plan prices", value: project.availablePlanPrices },
+    { label: "Pricing coming soon", value: project.pricingComingSoon },
+    { label: "Average price per sqft", value: project.averagePricePerSqft },
+    { label: "Monthly C.C./maint per sqft", value: project.monthlyMaintenancePerSqft },
+    { label: "Property tax", value: project.propertyTax },
+    { label: "Parking cost", value: project.parkingCost },
+    { label: "Storage cost", value: project.storageCost },
+    { label: "ⓘ Co-op fee realtors", value: project.coopFeeRealtors },
+  ].filter((field) => hasDisplayValue(field.value));
+
+  const hasPricingCard = pricingFields.length > 0 || pricingHistory.length > 0;
+  const hasDepositCard = paymentLines.length > 0;
+  const hasIncentivesCard = incentives.length > 0;
+
+  if (!hasPricingCard && !hasDepositCard && !hasIncentivesCard) return null;
 
   return (
     <section className="space-y-4">
-      <div className="relative mx-auto w-full max-w-290 overflow-hidden border border-[#d3f2de] bg-[#ecfcf1] px-6 py-8 sm:px-8 sm:py-10 lg:aspect-video lg:px-12 lg:py-12">
+      <div className="relative mx-auto w-full max-w-290 overflow-hidden border border-[#d3f2de] bg-[#ecfcf1] px-6 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-12">
         <div
           className="pointer-events-none absolute inset-0 opacity-45"
           aria-hidden="true"
@@ -942,109 +1256,206 @@ export function PricingInformationLayout({ project }: { project: Project }) {
         <div className="pointer-events-none absolute right-[15%] bottom-[13%] h-[23%] w-[26%] border border-[#bfe8cc]/70" aria-hidden="true" />
 
         <div className="relative z-10 grid gap-6 lg:grid-cols-3">
-          <article className="border border-[#b8e8c8] bg-white px-6 py-6 text-[#1f2321] shadow-[0_10px_28px_rgba(36,78,54,0.08)]">
-            <h3 className="text-[29px] font-semibold">Pricing and fees</h3>
+          {hasPricingCard ? (
+            <article className="border border-[#b8e8c8] bg-white px-6 py-6 text-[#1f2321] shadow-[0_10px_28px_rgba(36,78,54,0.08)]">
+              <h3 className="text-[29px] font-semibold">Pricing and fees</h3>
 
-            <div className="mt-7 space-y-4 text-[15px] leading-7">
-              <div>
-                <p className="font-semibold">Available plan prices</p>
-                <p>{displayValue(project.availablePlanPrices)}</p>
+              <div className="mt-7 space-y-4 text-[15px] leading-7">
+                {pricingFields.map((field) => (
+                  <div key={field.label}>
+                    <p className="font-semibold">{field.label}</p>
+                    <p>{field.value}</p>
+                  </div>
+                ))}
+                {pricingHistory.length > 0 ? (
+                  <div>
+                    <p className="font-semibold">Pricing history</p>
+                    <div className="space-y-2">
+                      {pricingHistory.map((entry) => (
+                        <p key={`${entry.date}-${entry.note}`}>{entry.date} - {entry.note}</p>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
               </div>
-              <div>
-                <p className="font-semibold">Pricing coming soon</p>
-                <p>{displayValue(project.pricingComingSoon)}</p>
-              </div>
-              <div>
-                <p className="font-semibold">Average price per sqft</p>
-                <p>{displayValue(project.averagePricePerSqft)}</p>
-              </div>
-              <div>
-                <p className="font-semibold">Monthly C.C./maint per sqft</p>
-                <p>{displayValue(project.monthlyMaintenancePerSqft)}</p>
-              </div>
-              <div>
-                <p className="font-semibold">Property tax</p>
-                <p>{displayValue(project.propertyTax)}</p>
-              </div>
-              <div>
-                <p className="font-semibold">Parking cost</p>
-                <p>{displayValue(project.parkingCost)}</p>
-              </div>
-              <div>
-                <p className="font-semibold">Storage cost</p>
-                <p>{displayValue(project.storageCost)}</p>
-              </div>
-              <div>
-                <p className="font-semibold">ⓘ Co-op fee realtors</p>
-                <p>{displayValue(project.coopFeeRealtors)}</p>
-              </div>
-              <div>
-                <p className="font-semibold">Pricing history</p>
-                <div className="space-y-2">
-                  {pricingHistory.map((entry) => (
-                    <p key={`${entry.date}-${entry.note}`}>{entry.date} - {entry.note}</p>
-                  ))}
-                </div>
-              </div>
-              {project.brochureUrl ? <Link href={project.brochureUrl} target="_blank" rel="noreferrer" className="inline-flex border border-stone-900 px-4 py-2 text-sm font-medium">View brochure</Link> : null}
-            </div>
-          </article>
+            </article>
+          ) : null}
 
-          <article className="border border-[#b8e8c8] bg-white px-6 py-6 text-[#1f2321] shadow-[0_10px_28px_rgba(36,78,54,0.08)]">
-            <h3 className="text-[29px] font-semibold">Deposit Structure</h3>
+          {hasDepositCard ? (
+            <article className="border border-[#b8e8c8] bg-white px-6 py-6 text-[#1f2321] shadow-[0_10px_28px_rgba(36,78,54,0.08)]">
+              <h3 className="text-[29px] font-semibold">Deposit Structure</h3>
 
-            <div className="mt-7 space-y-4 text-[15px] leading-7">
-              <div>
-                <p className="font-semibold">Payment structure</p>
-                <div className="space-y-1">
-                  {(project.paymentPlanItems?.length ? project.paymentPlanItems : [project.depositPaymentStructure ?? project.paymentPlan]).map((item, index) => (
-                    <p key={`${item}-${index}`}>{displayValue(item)}</p>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </article>
-
-          <article className="border border-[#b8e8c8] bg-white px-6 py-6 text-[#1f2321] shadow-[0_10px_28px_rgba(36,78,54,0.08)]">
-            <h3 className="text-[29px] font-semibold">Current Incentives</h3>
-
-            <div className="mt-7 space-y-4 text-[15px] leading-7">
-              {incentives.length ? incentives.map((incentive, index) => (
-                <div key={`${incentive}-${index}`}>
-                  <p className="font-semibold">Incentive {index + 1}</p>
-                  <p>{incentive}</p>
-                </div>
-              )) : (
+              <div className="mt-7 space-y-4 text-[15px] leading-7">
                 <div>
-                  <p className="font-semibold">Incentive 1</p>
-                  <p>-</p>
+                  <p className="font-semibold">Payment structure</p>
+                  <div className="space-y-1">
+                    {paymentLines.map((line, index) => <p key={`${line}-${index}`}>{line}</p>)}
+                  </div>
                 </div>
-              )}
-            </div>
-          </article>
+              </div>
+            </article>
+          ) : null}
+
+          {hasIncentivesCard ? (
+            <article className="border border-[#b8e8c8] bg-white px-6 py-6 text-[#1f2321] shadow-[0_10px_28px_rgba(36,78,54,0.08)]">
+              <h3 className="text-[29px] font-semibold">Current Incentives</h3>
+
+              <div className="mt-7 space-y-4 text-[15px] leading-7">
+                {incentives.map((incentive, index) => (
+                  <div key={`${incentive}-${index}`}>
+                    <p className="font-semibold">Incentive {index + 1}</p>
+                    <p>{incentive}</p>
+                  </div>
+                ))}
+              </div>
+            </article>
+          ) : null}
         </div>
       </div>
     </section>
   );
 }
 
-export function PlansAndHomesSection({ project }: { project: Project }) {
-  const [activeTab, setActiveTab] = useState<"all" | "floorPlans" | "quickMoveIns">("floorPlans");
+const UTILITY_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  Internet: Wifi,
+  Water: Droplet,
+  Electricity: Zap,
+  Security: ShieldCheck,
+  "Maintenance fee": CircleDollarSign,
+};
 
-  const quickMoveIns = useMemo(
-    () => project.floorPlans.filter((plan) => plan.quickMoveIn),
-    [project.floorPlans]
+function utilityIconFor(label: string) {
+  const match = Object.keys(UTILITY_ICONS).find((key) => label.toLowerCase().includes(key.toLowerCase()));
+  return match ? UTILITY_ICONS[match] : CircleDollarSign;
+}
+
+export function UtilitiesCostsSection({ project }: { project: Project }) {
+  const included = project.includedUtilities?.filter((item) => hasDisplayValue(item)) ?? [];
+
+  const paid = project.paidUtilities?.filter((item) => hasDisplayValue(item.label) && hasDisplayValue(item.value)).length
+    ? project.paidUtilities.filter((item) => hasDisplayValue(item.label) && hasDisplayValue(item.value))
+    : [
+        hasDisplayValue(project.monthlyMaintenancePerSqft) ? { label: "Maintenance fee", value: `${project.monthlyMaintenancePerSqft}/sqft/mo` } : null,
+        hasDisplayValue(project.propertyTax) ? { label: "Property tax", value: project.propertyTax! } : null,
+        hasDisplayValue(project.parkingCost) ? { label: "Parking", value: project.parkingCost! } : null,
+        hasDisplayValue(project.storageCost) ? { label: "Storage", value: project.storageCost! } : null,
+      ].filter((item): item is { label: string; value: string } => item !== null);
+
+  if (included.length === 0 && paid.length === 0) return null;
+
+  return (
+    <section className="utilities-costs-shell" aria-label="Utilities and monthly costs">
+      <h2>Utilities &amp; Monthly Costs</h2>
+
+      <div className="utilities-costs-grid">
+        {included.length > 0 ? (
+          <div className="utilities-costs-card">
+            <span className="utilities-costs-badge utilities-costs-badge-included">Included in Maintenance</span>
+            <div className="utilities-costs-rows">
+              {included.map((label) => {
+                const Icon = utilityIconFor(label);
+                return (
+                  <div key={label} className="utilities-costs-row">
+                    <span className="utilities-costs-icon"><Icon className="h-4 w-4" aria-hidden="true" /></span>
+                    <span className="utilities-costs-label">{label}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
+
+        {paid.length > 0 ? (
+          <div className="utilities-costs-card">
+            <span className="utilities-costs-badge utilities-costs-badge-paid">Paid Separately</span>
+            <div className="utilities-costs-rows">
+              {paid.map((item) => {
+                const Icon = utilityIconFor(item.label);
+                return (
+                  <div key={item.label} className="utilities-costs-row">
+                    <span className="utilities-costs-icon"><Icon className="h-4 w-4" aria-hidden="true" /></span>
+                    <span>
+                      <span className="utilities-costs-label">{item.label}</span>
+                      <span className="utilities-costs-value">{item.value}</span>
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
+      </div>
+    </section>
+  );
+}
+
+const PLAN_SORT_OPTIONS = [
+  { value: "default", label: "Featured" },
+  { value: "priceAsc", label: "Price: Low to high" },
+  { value: "priceDesc", label: "Price: High to low" },
+  { value: "bedsAsc", label: "Beds: Low to high" },
+  { value: "bedsDesc", label: "Beds: High to low" },
+] as const;
+
+type PlanSortValue = typeof PLAN_SORT_OPTIONS[number]["value"];
+
+export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFloorPlanId }: { project: Project; title?: string; excludeFloorPlanId?: string }) {
+  const [activeTab, setActiveTab] = useState<"all" | "floorPlans" | "quickMoveIns">("floorPlans");
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [availabilityFilter, setAvailabilityFilter] = useState<Set<string>>(new Set());
+  const [bedroomFilter, setBedroomFilter] = useState<Set<number>>(new Set());
+  const [sortBy, setSortBy] = useState<PlanSortValue>("default");
+
+  const floorPlans = useMemo(
+    () => (excludeFloorPlanId ? project.floorPlans.filter((plan) => plan.id !== excludeFloorPlanId) : project.floorPlans),
+    [project.floorPlans, excludeFloorPlanId]
   );
 
+  const quickMoveIns = useMemo(
+    () => floorPlans.filter((plan) => plan.quickMoveIn),
+    [floorPlans]
+  );
+
+  const availabilityOptions = useMemo(() => Array.from(new Set(floorPlans.map((plan) => plan.availability))), [floorPlans]);
+  const bedroomOptions = useMemo(() => Array.from(new Set(floorPlans.map((plan) => plan.bedrooms))).sort((a, b) => a - b), [floorPlans]);
+
+  const activeFilterCount = availabilityFilter.size + bedroomFilter.size + (sortBy !== "default" ? 1 : 0);
+
+  const toggleSetValue = <T,>(set: Set<T>, setter: (next: Set<T>) => void, value: T) => {
+    const next = new Set(set);
+    if (next.has(value)) next.delete(value);
+    else next.add(value);
+    setter(next);
+  };
+
+  const resetFilters = () => {
+    setAvailabilityFilter(new Set());
+    setBedroomFilter(new Set());
+    setSortBy("default");
+  };
+
   const visiblePlans = useMemo(() => {
-    if (activeTab === "quickMoveIns") return quickMoveIns;
-    return project.floorPlans;
-  }, [activeTab, project.floorPlans, quickMoveIns]);
+    const base = activeTab === "quickMoveIns" ? quickMoveIns : floorPlans;
+
+    const filtered = base.filter((plan) => {
+      if (availabilityFilter.size > 0 && !availabilityFilter.has(plan.availability)) return false;
+      if (bedroomFilter.size > 0 && !bedroomFilter.has(plan.bedrooms)) return false;
+      return true;
+    });
+
+    const sorted = [...filtered];
+    if (sortBy === "priceAsc") sorted.sort((a, b) => a.startingPriceLkr - b.startingPriceLkr);
+    else if (sortBy === "priceDesc") sorted.sort((a, b) => b.startingPriceLkr - a.startingPriceLkr);
+    else if (sortBy === "bedsAsc") sorted.sort((a, b) => a.bedrooms - b.bedrooms);
+    else if (sortBy === "bedsDesc") sorted.sort((a, b) => b.bedrooms - a.bedrooms);
+
+    return sorted;
+  }, [activeTab, floorPlans, quickMoveIns, availabilityFilter, bedroomFilter, sortBy]);
 
   return (
     <section id="plans-homes" className="plans-homes-shell" aria-label="Plans and homes">
       <div className="plans-homes-head">
-        <h2>Plans &amp; homes</h2>
+        <h2>{title}</h2>
       </div>
 
       <div className="plans-homes-toolbar">
@@ -1056,7 +1467,7 @@ export function PlansAndHomesSection({ project }: { project: Project }) {
             aria-selected={activeTab === "all"}
             onClick={() => setActiveTab("all")}
           >
-            All ({project.floorPlans.length})
+            All ({floorPlans.length})
           </button>
           <button
             type="button"
@@ -1065,9 +1476,9 @@ export function PlansAndHomesSection({ project }: { project: Project }) {
             aria-selected={activeTab === "floorPlans"}
             onClick={() => setActiveTab("floorPlans")}
           >
-            Floor plans ({project.floorPlans.length})
+            Floor plans ({floorPlans.length})
           </button>
-          {quickMoveIns.length > 0 ? <button
+          <button
             type="button"
             role="tab"
             className={activeTab === "quickMoveIns" ? "active" : undefined}
@@ -1075,45 +1486,99 @@ export function PlansAndHomesSection({ project }: { project: Project }) {
             onClick={() => setActiveTab("quickMoveIns")}
           >
             Quick move ins ({quickMoveIns.length})
-          </button> : null}
+          </button>
         </div>
 
-        <button type="button" className="plans-filter-btn">
-          <SlidersHorizontal className="h-4 w-4" aria-hidden="true" /> Filter &amp; sort
-        </button>
-      </div>
+        <div className="plans-filter-wrap">
+          <button type="button" className="plans-filter-btn" onClick={() => setFilterOpen(true)}>
+            <SlidersHorizontal className="h-4 w-4" aria-hidden="true" /> Filter &amp; sort{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
+          </button>
 
-      <div className="plans-chip-row" aria-label="Applied filters">
-        <span>For sale</span>
+          {filterOpen ? (
+            <div className="plans-filter-overlay" role="dialog" aria-modal="true" aria-label="Filter and sort" onClick={() => setFilterOpen(false)}>
+              <div className="plans-filter-panel" onClick={(event) => event.stopPropagation()}>
+                <div className="plans-filter-panel-head">
+                  <p>Filter &amp; sort</p>
+                  <button type="button" aria-label="Close" onClick={() => setFilterOpen(false)}><X className="h-4 w-4" /></button>
+                </div>
+
+                <div className="plans-filter-group">
+                  <p className="plans-filter-group-label">Sales status</p>
+                  <div className="plans-filter-options">
+                    {availabilityOptions.map((option) => (
+                      <label key={option} className="plans-filter-option">
+                        <input type="checkbox" checked={availabilityFilter.has(option)} onChange={() => toggleSetValue(availabilityFilter, setAvailabilityFilter, option)} />
+                        <span>{option}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="plans-filter-group">
+                  <p className="plans-filter-group-label">Beds</p>
+                  <div className="plans-filter-options">
+                    {bedroomOptions.map((option) => (
+                      <label key={option} className="plans-filter-option">
+                        <input type="checkbox" checked={bedroomFilter.has(option)} onChange={() => toggleSetValue(bedroomFilter, setBedroomFilter, option)} />
+                        <span>{option} bd</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="plans-filter-group">
+                  <p className="plans-filter-group-label">Sort by</p>
+                  <div className="plans-filter-options">
+                    {PLAN_SORT_OPTIONS.map((option) => (
+                      <label key={option.value} className="plans-filter-option">
+                        <input type="radio" name="plan-sort" checked={sortBy === option.value} onChange={() => setSortBy(option.value)} />
+                        <span>{option.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="plans-filter-panel-actions">
+                  <button type="button" className="plans-filter-reset" onClick={resetFilters}>Reset filters</button>
+                  <button type="button" className="plans-filter-apply" onClick={() => setFilterOpen(false)}>View results ({visiblePlans.length})</button>
+                </div>
+              </div>
+            </div>
+          ) : null}
+        </div>
       </div>
 
       <div className="plans-homes-grid">
         {visiblePlans.map((plan) => (
-          <article key={plan.id} className="plans-home-card">
+          <Link key={plan.id} href={`/projects/${project.slug}/floor-plans/${plan.id}`} className="plans-home-card">
             <figure>
               <Image src={plan.image} alt={plan.planName} width={960} height={620} className="plans-home-image" />
               <span className="plans-status-pill">For sale</span>
             </figure>
 
             <div className="plans-home-body">
+              {project.isFeatured ? (
+                <div className="plans-home-badge-row" aria-label="Floor plan badges">
+                  <span className="badge-featured">Featured</span>
+                </div>
+              ) : null}
               <h4>{plan.planName}</h4>
               <p className="plans-home-price">From {formatLkr(plan.startingPriceLkr)}</p>
-              <p className="plans-home-type">Condo - Suite</p>
+              <p className="plans-home-type">{plan.planType || project.type}</p>
               <div className="plans-home-facts">
                 <span><BedDouble className="h-3.5 w-3.5" aria-hidden="true" /> {plan.bedrooms} bd</span>
                 <span><Bath className="h-3.5 w-3.5" aria-hidden="true" /> {plan.bathrooms}</span>
                 <span><Square className="h-3.5 w-3.5" aria-hidden="true" /> From {plan.floorAreaSqFt} SqFt</span>
               </div>
             </div>
-          </article>
+          </Link>
         ))}
       </div>
 
       <div className="plans-more-wrap">
-        <Link href={`/projects/${project.slug}/floor-plans`} className="plans-more-btn">
-          <span>Show all plans &amp; homes</span>
-          <ChevronDown className="h-5 w-5" aria-hidden="true" />
-        </Link>
+        <button type="button" className="plans-more-btn">
+          Show all plans &amp; homes <span aria-hidden="true">+</span>
+        </button>
       </div>
     </section>
   );
@@ -1185,7 +1650,6 @@ export function AmenitiesShowcaseSection({ project }: { project: Project }) {
 
                 <span className="amenities-showcase-item-copy">
                   <strong>{amenity.name}</strong>
-                  <span>{amenity.description}</span>
                 </span>
               </button>
             );
@@ -1196,8 +1660,73 @@ export function AmenitiesShowcaseSection({ project }: { project: Project }) {
   );
 }
 
-export function SalesCenterSection({ project }: { project: Project }) {
-  const mailHref = `mailto:info@serendibproperty.lk?subject=${encodeURIComponent(`${project.name} sales inquiry`)}`;
+export function ListingSidebarCard({ project, developer }: { project: Project; developer?: Developer }) {
+  const [requestInfoOpen, setRequestInfoOpen] = useState(false);
+  const contactName = developer?.name ?? project.contact.name;
+  const phone = hasDisplayValue(project.contact?.phone) ? project.contact.phone : developer?.phone;
+  const address = hasDisplayValue(developer?.location) ? developer!.location : project.location;
+  const hoursLines = formatOfficeHours(developer?.officeHours);
+  const socialEntries = Object.entries(developer?.socialLinks ?? {}).filter(([, url]) => hasDisplayValue(url)) as [string, string][];
+
+  return (
+    <div className="listing-sidebar-card">
+      <Link href={developer ? `/developers/${developer.slug}` : `/projects/${project.slug}`} className="listing-sidebar-heading">
+        {contactName}
+      </Link>
+
+      {hasDisplayValue(address) ? (
+        <p className="listing-sidebar-info-address">
+          <MapPin className="h-4 w-4" aria-hidden="true" /> {address}
+        </p>
+      ) : null}
+
+      {hoursLines.length > 0 ? (
+        <div className="listing-sidebar-hours">
+          <span className="listing-sidebar-hours-title">Hours</span>
+          {hoursLines.map((line) => (
+            <div key={line.label} className="listing-sidebar-hours-row">
+              <span>{line.label}</span>
+              <span>{line.value}</span>
+            </div>
+          ))}
+        </div>
+      ) : null}
+
+      {socialEntries.length > 0 ? (
+        <div className="listing-sidebar-social-row" aria-label="Social media">
+          {socialEntries.map(([platform, url]) => {
+            const Icon = SOCIAL_ICON[platform];
+            if (!Icon) return null;
+            return (
+              <a key={platform} href={url} target="_blank" rel="noreferrer noopener" aria-label={`Visit us on ${platform}`} className="listing-sidebar-social-link">
+                <Icon className="h-4 w-4" />
+              </a>
+            );
+          })}
+        </div>
+      ) : null}
+
+      <button type="button" className="listing-sidebar-submit-btn" onClick={() => setRequestInfoOpen(true)}>
+        Request info
+      </button>
+
+      {phone ? (
+        <a href={`tel:${phone.replace(/[^+\d]/g, "")}`} className="listing-sidebar-call-line">
+          <Phone className="h-4 w-4" aria-hidden="true" /> Call us {phone}
+        </a>
+      ) : null}
+
+      <RequestInfoDialog open={requestInfoOpen} onClose={() => setRequestInfoOpen(false)} project={project} />
+    </div>
+  );
+}
+
+export function SalesCenterSection({ project, developer }: { project: Project; developer?: Developer }) {
+  const [requestInfoOpen, setRequestInfoOpen] = useState(false);
+
+  const socialEntries = Object.entries(developer?.socialLinks ?? {}).filter(([, url]) => hasDisplayValue(url)) as [string, string][];
+  const hoursLines = formatOfficeHours(developer?.officeHours);
+  const phone = hasDisplayValue(project.contact?.phone) ? project.contact.phone : "";
 
   return (
     <section className="sales-center-shell" aria-label="Sales center">
@@ -1205,43 +1734,62 @@ export function SalesCenterSection({ project }: { project: Project }) {
         <div className="sales-alert-top">
           <div className="sales-alert-columns">
             <div className="sales-alert-contact">
-              <h2 className="sales-alert-heading">{project.name}</h2>
+              {developer?.logo ? (
+                <div className="sales-alert-logo">
+                  <Image src={developer.logo} alt={developer.name} width={120} height={60} />
+                </div>
+              ) : null}
               <p className="sales-alert-center-label">Sales Center</p>
-              <p className="sales-alert-phone">+94 81 223 9100</p>
-              <a href={mailHref} className="sales-alert-request">Request info</a>
+              <h2 className="sales-alert-heading">{project.name}</h2>
+              {phone ? (
+                <p className="sales-alert-phone">
+                  <Phone className="h-4 w-4" aria-hidden="true" />
+                  {phone}
+                </p>
+              ) : null}
+              <button type="button" className="sales-alert-request" onClick={() => setRequestInfoOpen(true)}>Request info</button>
             </div>
 
-            <div className="sales-alert-hours" aria-label="Sales center hours">
-              <span>Hours</span>
-              <strong>Mon - Sun</strong>
-              <span>Closed</span>
-            </div>
+            {hoursLines.length > 0 ? (
+              <div className="sales-alert-hours" aria-label="Sales center hours">
+                <span>Hours</span>
+                {hoursLines.map((line) => (
+                  <div key={line.label} className="sales-alert-hours-row">
+                    <strong>{line.label}</strong>
+                    <span>{line.value}</span>
+                  </div>
+                ))}
+              </div>
+            ) : null}
 
-            <div className="sales-alert-socials" aria-label="Sales center social media">
-              <a href={mailHref} aria-label="Message sales" className="sales-alert-social">
-                <MessageCircle className="h-4 w-4" aria-hidden="true" />
-              </a>
-              <a href="https://serendibproperty.lk" target="_blank" rel="noreferrer" aria-label="Visit website" className="sales-alert-social">
-                <Globe className="h-4 w-4" aria-hidden="true" />
-              </a>
-              <a href={mailHref} aria-label="Send an inquiry" className="sales-alert-social">
-                <Send className="h-4 w-4" aria-hidden="true" />
-              </a>
-            </div>
+            {socialEntries.length > 0 ? (
+              <div className="sales-alert-socials" aria-label="Sales center social media">
+                {socialEntries.map(([platform, url]) => {
+                  const Icon = SOCIAL_ICON[platform];
+                  if (!Icon) return null;
+                  return (
+                    <a key={platform} href={url} target="_blank" rel="noreferrer noopener" aria-label={`Visit us on ${platform}`} className="sales-alert-social">
+                      <Icon className="h-4 w-4" />
+                    </a>
+                  );
+                })}
+              </div>
+            ) : null}
           </div>
         </div>
-
       </div>
+
+      <RequestInfoDialog open={requestInfoOpen} onClose={() => setRequestInfoOpen(false)} project={project} />
     </section>
   );
 }
 
-export function ProjectDescriptionSection({ project }: { project: Project }) {
+export function ProjectDescriptionSection({ project, headingOverride }: { project: Project; headingOverride?: string }) {
   const article = /^[aeiou]/i.test(project.type.trim()) ? "an" : "a";
 
   return (
     <section id="overview" className="project-description-shell" aria-label="Project description">
-      <h2>Overview</h2>
+      <h2>{headingOverride ?? "Overview"}</h2>
       <p>
         {project.description} {project.summary} {project.name} by {project.developerName} in {project.location} offers
         {" "}{article} {project.type.toLowerCase()} with {project.units} units across {project.floors} floors.
@@ -1249,6 +1797,7 @@ export function ProjectDescriptionSection({ project }: { project: Project }) {
     </section>
   );
 }
+
 
 export function ProjectNarrativeDetails({ project }: { project: Project }) {
   const launchDate = project.launchDate ? new Date(project.launchDate) : null;
@@ -1265,10 +1814,10 @@ export function ProjectNarrativeDetails({ project }: { project: Project }) {
       label: "Neighborhood",
       show: hasDisplayValue(project.neighborhood),
       value: project.neighborhoodSlug
-        ? renderEntityLink(project.neighborhood, project.neighborhoodSlug, "/neighborhoods")
-        : project.neighborhood,
+        ? renderEntityLink(project.neighborhood, project.neighborhoodSlug, "/neighborhoods", "overview-link")
+        : <span className="overview-link">{project.neighborhood}</span>,
     },
-    { label: "Building type", show: hasDisplayValue(project.type), value: project.type },
+    { label: "Building type", show: hasDisplayValue(project.type), value: <span className="overview-link">{project.type}</span> },
     { label: "Beds", show: hasDisplayValue(project.bedrooms), value: project.bedrooms },
     { label: "Baths", show: hasDisplayValue(project.bathrooms), value: project.bathrooms },
     { label: "Road", show: hasDisplayValue(project.road), value: project.road ?? "" },
@@ -1280,38 +1829,24 @@ export function ProjectNarrativeDetails({ project }: { project: Project }) {
     { label: "Sales started", show: hasDisplayValue(salesStarted), value: salesStarted },
     { label: "Construction status", show: hasDisplayValue(project.constructionStatus), value: project.constructionStatus },
     { label: "Construction started", show: hasDisplayValue(project.constructionStarted), value: project.constructionStarted ?? "" },
-    { label: "Estimated completion", show: hasDisplayValue(completionMonth), value: completionMonth },
+    { label: "Completed in", show: hasDisplayValue(completionMonth), value: completionMonth },
     { label: "Ceilings", show: hasDisplayValue(project.ceilingInfo), value: project.ceilingInfo ?? "" },
-    { label: "Builder", show: hasDisplayValue(project.developerName), value: renderEntityLink(project.developerName, project.developerSlug, "/developers") },
-    { label: "Architect", show: hasDisplayValue(project.architectName), value: renderEntityLink(project.architectName ?? "", project.architectSlug, "/architects") },
-    { label: "Marketing company", show: hasDisplayValue(project.salesCompanyName), value: renderEntityLink(project.salesCompanyName ?? "", project.salesCompanySlug, "/sales-companies") },
-    { label: "Interior designer", show: hasDisplayValue(project.interiorDesignerName), value: renderEntityLink(project.interiorDesignerName ?? "", project.interiorDesignerSlug, "/interior-designers") },
+    { label: "Developer", show: hasDisplayValue(project.developerName), value: renderEntityLink(project.developerName, project.developerSlug, "/developers", "overview-link") },
+    { label: "Architect", show: hasDisplayValue(project.architectName), value: renderEntityLink(project.architectName ?? "", project.architectSlug, "/architects", "overview-link") },
+    { label: "Marketing company", show: hasDisplayValue(project.marketingCompanyName), value: renderEntityLink(project.marketingCompanyName ?? "", project.marketingCompanySlug, "/marketing-companies", "overview-link") },
+    { label: "Sales company", show: hasDisplayValue(project.salesCompanyName), value: renderEntityLink(project.salesCompanyName ?? "", project.salesCompanySlug, "/sales-companies", "overview-link") },
+    { label: "Interior designer", show: hasDisplayValue(project.interiorDesignerName), value: renderEntityLink(project.interiorDesignerName ?? "", project.interiorDesignerSlug, "/interior-designers", "overview-link") },
   ].filter((row) => row.show);
-
-  const splitIndex = Math.ceil(detailRows.length / 2);
-  const leftRows = detailRows.slice(0, splitIndex);
-  const rightRows = detailRows.slice(splitIndex);
 
   return (
     <section className="project-narrative-shell" aria-label="Project details">
-      <div className="project-narrative-grid">
-        <div className="project-narrative-left">
-          <div className="project-narrative-list" role="list" aria-label="Narrative detail list">
-            {leftRows.map(({ label, value }) => (
-              <p key={label} role="listitem">
-                <strong>{label}:</strong> {value}
-              </p>
-            ))}
+      <div className="project-fact-grid" role="list" aria-label="Project fact list">
+        {detailRows.map(({ label, value }) => (
+          <div key={label} role="listitem" className="project-fact-item">
+            <span className="project-fact-label">{label}</span>
+            <span className="project-fact-value">{value}</span>
           </div>
-        </div>
-
-        <div className="project-narrative-right" role="list" aria-label="Project fact list">
-          {rightRows.map(({ label, value }) => (
-            <p key={label} role="listitem">
-              <strong>{label}:</strong> {value}
-            </p>
-          ))}
-        </div>
+        ))}
       </div>
     </section>
   );
@@ -1340,26 +1875,6 @@ export function DeveloperCard({ developer }: { developer: Developer }) {
       <p className="text-xs text-stone-600">{developer.activeProjects} active developments</p>
       <Link href={`/developers/${developer.slug}`} className="text-sm font-medium">View projects</Link>
     </article>
-  );
-}
-
-export function DeveloperProfile({ developer }: { developer: Developer }) {
-  return (
-    <section className="grid gap-4 border border-stone-200 bg-white p-4 md:grid-cols-[160px_1fr]">
-      <Image src={developer.logo} alt={developer.name} width={160} height={160} className="h-28 w-28 rounded-full object-cover" />
-      <div className="space-y-2">
-        <h1 className="text-3xl font-semibold">{developer.name}</h1>
-        <p className="text-sm text-stone-700">{developer.description}</p>
-        <div className="grid gap-2 text-sm md:grid-cols-3">
-          <span>Established: {developer.establishedYear}</span>
-          <span>Location: {developer.location}</span>
-          <span>Years in business: {developer.yearsInBusiness}</span>
-          <span>Website: {developer.website}</span>
-          <span>Email: {developer.email}</span>
-          <span>Phone: {developer.phone}</span>
-        </div>
-      </div>
-    </section>
   );
 }
 
@@ -1451,27 +1966,24 @@ export function LeadForm({ projectSlug, developerSlug }: { projectSlug: string; 
 export function Header() {
   const { language, setLanguage } = useLanguage();
 
-  const labels: Record<SiteLanguage, { homes: string; articles: string; pros: string; login: string; signup: string; menu: string }> = {
+  const labels: Record<SiteLanguage, { homes: string; company: string; login: string; signup: string; menu: string }> = {
     en: {
       homes: "New Homes for Sale",
-      articles: "Articles",
-      pros: "Professionals",
+      company: "Company",
       login: "Log in",
       signup: "Sign up",
       menu: "Menu",
     },
     ta: {
       homes: "விற்பனைக்கு புதிய வீடுகள்",
-      articles: "கட்டுரைகள்",
-      pros: "வல்லுநர்கள்",
+      company: "நிறுவனம்",
       login: "உள்நுழை",
       signup: "பதிவுபெறு",
       menu: "மெனு",
     },
     si: {
       homes: "විකිණීමට නව නිවාස",
-      articles: "ලිපි",
-      pros: "වෘත්තීය සේවකයින්",
+      company: "සමාගම",
       login: "පිවිසෙන්න",
       signup: "ලියාපදිංචි වන්න",
       menu: "මෙනුව",
@@ -1491,10 +2003,32 @@ export function Header() {
             <button type="button" className={language === "ta" ? "active" : undefined} onClick={() => setLanguage("ta")}>தமிழ்</button>
           </div>
         </div>
-        <nav><Link href="/projects">{text.homes}</Link><Link href="/">{text.articles}</Link><Link href="/developers">{text.pros}</Link></nav>
+        <nav>
+          <div className="nav-dropdown">
+            <Link href="/projects">{text.homes}</Link>
+            <div className="nav-dropdown-menu">
+              <Link href="/projects?type=Condominium">Condominium</Link>
+              <Link href="/projects?type=Apartments">Apartments</Link>
+              <Link href="/projects?type=Villas">Villas</Link>
+              <Link href="/projects?type=Mixed+Use">Mixed Use</Link>
+              <Link href="/projects?type=Housing">Housing</Link>
+              <Link href="/projects?type=Township+Developments">Township Developments</Link>
+              <Link href="/projects?type=Private+Residence">Private Residence</Link>
+              <Link href="/projects?type=Townhouse">Townhouse</Link>
+              <Link href="/projects">All new homes</Link>
+            </div>
+          </div>
+          <div className="nav-dropdown">
+            <span className="nav-dropdown-label">{text.company}</span>
+            <div className="nav-dropdown-menu">
+              <Link href="/about">About</Link>
+              <Link href="/contact">Contact</Link>
+              <Link href="/blog">Blog</Link>
+            </div>
+          </div>
+        </nav>
         <div className="header-actions">
-          <Link href="/">{text.login}</Link>
-          <Link href="/developer/projects/new" className="sign-up">{text.signup}</Link>
+          <AccountMenu loginLabel={text.login} signupLabel={text.signup} />
         </div>
         <button className="mobile-menu">{text.menu}</button>
       </div>
@@ -1503,7 +2037,50 @@ export function Header() {
 }
 
 export function Footer() {
-  return <footer className="site-footer"><div><p className="footer-logo">LankaLiving.</p><div className="footer-links"><Link href="/">About</Link><Link href="/">Careers</Link><Link href="/">Accessibility</Link><Link href="/">Terms & conditions</Link><Link href="/">Privacy policy</Link><Link href="/developer/dashboard">Builder backend</Link></div><p className="partner-sites">Partner sites<br /><span>New homes in Sri Lanka</span></p></div><p className="copyright">© 2026 LankaLiving</p></footer>;
+  return (
+    <footer className="site-footer">
+      <div className="footer-top">
+        <div className="footer-brand">
+          <p className="footer-logo">LankaLiving.</p>
+          <p className="partner-sites">Partner sites<br /><span>New homes in Sri Lanka</span></p>
+        </div>
+
+        <div className="footer-columns">
+          <div className="footer-column">
+            <p className="footer-column-title">For Developers</p>
+            <Link href="/developers/login">Developer Login</Link>
+            <Link href="/developers/register">Developer Register</Link>
+          </div>
+
+          <div className="footer-column">
+            <p className="footer-column-title">Company</p>
+            <Link href="/about">About</Link>
+            <Link href="/contact">Contact</Link>
+            <Link href="/blog">Blog</Link>
+          </div>
+
+          <div className="footer-column">
+            <p className="footer-column-title">Explore</p>
+            <Link href="/developers">Developers</Link>
+            <Link href="/projects">Projects</Link>
+            <Link href="/construction-companies">Construction Companies</Link>
+          </div>
+
+          <div className="footer-column">
+            <p className="footer-column-title">Legal</p>
+            <Link href="/privacy">Privacy Policy</Link>
+            <Link href="/terms">Terms of Service</Link>
+            <Link href="/sitemap">Sitemap</Link>
+          </div>
+        </div>
+      </div>
+
+      <div className="footer-bottom">
+        <p className="copyright">© 2026 LankaLiving</p>
+        <Link href="/admin" className="footer-admin-link">Admin</Link>
+      </div>
+    </footer>
+  );
 }
 
 export function ProjectOverview({ project }: { project: Project }) {
@@ -1563,8 +2140,13 @@ export function ProjectOverview({ project }: { project: Project }) {
           {hasDisplayValue(project.status) ? <p role="listitem"><strong>Listing status:</strong> {project.status}</p> : null}
           {hasDisplayValue(salesStarted) ? <p role="listitem"><strong>Sales started:</strong> {salesStarted}</p> : null}
           {hasDisplayValue(project.constructionStatus) ? <p role="listitem"><strong>Construction status:</strong> {project.constructionStatus}</p> : null}
-          {hasDisplayValue(project.completionYear) ? <p role="listitem"><strong>Estimated completion:</strong> {project.completionYear}</p> : null}
-          {hasDisplayValue(project.developerName) ? <p role="listitem"><strong>Builders:</strong> <Link href={`/developers/${project.developerSlug}`} className="overview-link">{project.developerName}</Link></p> : null}
+          {hasDisplayValue(project.completionYear) ? <p role="listitem"><strong>Completed in:</strong> {project.completionYear}</p> : null}
+          {hasDisplayValue(project.developerName) ? (
+            <p role="listitem">
+              <strong>Builders:</strong> <Link href={`/developers/${project.developerSlug}`} className="overview-link">{project.developerName}</Link>
+              {(project.coDevelopers ?? []).filter((entry) => entry.name).map((entry) => <span key={entry.name}>, {entry.name}</span>)}
+            </p>
+          ) : null}
           {hasDisplayValue(project.salesCompanyName) ? <p role="listitem"><strong>Sales company:</strong> {renderEntityLink(project.salesCompanyName ?? "", project.salesCompanySlug, "/sales-companies", "overview-link")}</p> : null}
           {hasDisplayValue(project.interiorDesignerName) ? <p role="listitem"><strong>Interior designer:</strong> {renderEntityLink(project.interiorDesignerName ?? "", project.interiorDesignerSlug, "/interior-designers", "overview-link")}</p> : null}
         </div>
@@ -1573,11 +2155,34 @@ export function ProjectOverview({ project }: { project: Project }) {
   );
 }
 
-export function NearbyList({ project }: { project: Project }) {
+export function NeighborhoodSection({ project, neighborhoodPageExists }: { project: Project; neighborhoodPageExists?: boolean }) {
+  if (!hasDisplayValue(project.neighborhood) && project.nearby.length === 0) return null;
+
+  const places = [...project.nearby].sort((a, b) => a.distanceKm - b.distanceKm);
+
   return (
-    <div className="grid gap-2 border border-stone-200 bg-white p-4 text-sm md:grid-cols-2">
-      {project.nearby.map((n) => <p key={n.name}>{n.name} - {n.distanceKm} km</p>)}
-    </div>
+    <section id="neighborhood" className="neighborhood-section-shell" aria-label="Neighborhood">
+      <h2>Neighborhood</h2>
+
+      {places.length > 0 ? (
+        <div className="neighborhood-section-list">
+          {places.map((place) => (
+            <div key={`${place.category}-${place.name}`} className="neighborhood-section-row">
+              <span className="neighborhood-section-place">{place.name}</span>
+              <span className="neighborhood-section-distance">
+                {place.distanceKm} {place.distanceKm === 1 ? "Mile" : "Miles"}
+              </span>
+            </div>
+          ))}
+        </div>
+      ) : null}
+
+      {neighborhoodPageExists && project.neighborhoodSlug ? (
+        <Link href={`/neighborhoods/${project.neighborhoodSlug}`} className="neighborhood-section-explore">
+          Explore {project.neighborhood} neighborhood
+        </Link>
+      ) : null}
+    </section>
   );
 }
 
@@ -1591,9 +2196,9 @@ export function LeadTable({ rows }: { rows: Lead[] }) {
 
 export function ResultsToolbar({ count }: { count: number }) {
   return (
-    <div className="flex flex-wrap items-center justify-between gap-2 border border-stone-200 bg-white p-3 text-sm">
-      <div className="flex items-center gap-2"><Search className="h-4 w-4" /><span>{count} new apartment projects</span></div>
-      <div className="flex items-center gap-2"><FilterChip label="Sort: Featured" /><FilterChip label="Map/List" /></div>
+    <div className="flex flex-wrap items-center gap-2 border border-stone-200 bg-white p-3 text-sm">
+      <Search className="h-4 w-4" aria-hidden="true" />
+      <span>{count} {count === 1 ? "PROJECT" : "PROJECTS"}</span>
     </div>
   );
 }

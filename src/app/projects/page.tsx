@@ -1,42 +1,40 @@
 import type { Metadata } from "next";
-import { projects } from "@/data/projects";
-import { FilterBar, MapPlaceholder, ProjectListItem, ResultsToolbar } from "@/components/marketplace/components";
+import { getAllProjects } from "@/lib/project-store";
+import { ProjectListingShell } from "@/components/marketplace/listing-shell";
 
 export const metadata: Metadata = {
-  title: "New Apartment Projects in Sri Lanka",
-  description: "Browse newly launched apartment and condominium projects across Sri Lanka, with pricing, locations, and developer details.",
+  title: "New Development Projects in Sri Lanka | New Condos & Apartments",
+  description: "Browse new condominium and apartment projects in Sri Lanka. Compare ongoing and new construction projects with pricing, locations, and developer details.",
   alternates: {
     canonical: "/projects",
   },
   openGraph: {
-    title: "New Apartment Projects in Sri Lanka",
-    description: "Browse newly launched apartment and condominium projects across Sri Lanka, with pricing, locations, and developer details.",
+    title: "New Development Projects in Sri Lanka",
+    description: "Browse new condominium and apartment projects in Sri Lanka. Compare ongoing and new construction projects with pricing, locations, and developer details.",
     url: "/projects",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "New Apartment Projects in Sri Lanka",
-    description: "Browse newly launched apartment and condominium projects across Sri Lanka, with pricing, locations, and developer details.",
+    title: "New Development Projects in Sri Lanka",
+    description: "Browse new condominium and apartment projects in Sri Lanka. Compare ongoing and new construction projects with pricing, locations, and developer details.",
   },
 };
 
-export default function ProjectsPage() {
+type ProjectsPageProps = { searchParams: Promise<{ type?: string }> };
+
+export default async function ProjectsPage({ searchParams }: ProjectsPageProps) {
+  const { type } = await searchParams;
+  const allProjects = await getAllProjects();
+  const projects = type ? allProjects.filter((project) => project.type === type) : allProjects;
+
   return (
-    <div className="grid gap-4 lg:grid-cols-[1.2fr_1fr]">
-      <section className="space-y-4">
-        <h1 className="text-3xl font-semibold">New Apartment Projects</h1>
-        <ResultsToolbar count={projects.length} />
-        <FilterBar />
-        <div className="grid gap-3">
-          {projects.map((project) => (
-            <ProjectListItem key={project.slug} project={project} />
-          ))}
-        </div>
-      </section>
-      <aside className="lg:sticky lg:top-24 lg:h-[calc(100vh-7rem)]">
-        <MapPlaceholder />
-      </aside>
-    </div>
+    <ProjectListingShell
+      breadcrumbs={[{ label: "Home", href: "/" }, { label: "New Projects" }]}
+      h1={type ? `New ${type} Projects in Sri Lanka` : "New Projects in Sri Lanka"}
+      intro="Browse new condominium, apartment, and housing projects in Sri Lanka. This is the full list of new development projects and ongoing projects across the island — use the category pages below to narrow down by location or property type."
+      projects={projects}
+      relatedPaths={["/projects/pre-construction", "/projects/colombo", "/projects/villas", "/projects/beachfront"]}
+    />
   );
 }

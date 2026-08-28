@@ -1,8 +1,10 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { projects } from "@/data/projects";
+import { projects as staticProjects } from "@/data/projects";
+import type { Project } from "@/types";
 
 function toTitleCase(segment: string): string {
   return decodeURIComponent(segment)
@@ -10,7 +12,11 @@ function toTitleCase(segment: string): string {
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
-function getSegmentLabel(segments: string[], index: number): string {
+function getSegmentLabel(segments: string[], index: number, projects: Project[]): string {
+  if (segments[index] === "projects" && segments[index - 1] === undefined) {
+    return "New Projects";
+  }
+
   if (segments[index - 1] === "projects") {
     return projects.find((project) => project.slug === segments[index])?.name ?? toTitleCase(segments[index]);
   }
@@ -18,7 +24,7 @@ function getSegmentLabel(segments: string[], index: number): string {
   if (segments[index] === "floor-plans") return "Floor Plans";
 
   if (segments[index - 1] === "floor-plans") {
-    const project = projects.find((item) => item.slug === segments[index - 3]);
+    const project = projects.find((item) => item.slug === segments[index - 2]);
     return project?.floorPlans.find((plan) => plan.id === segments[index])?.planName ?? toTitleCase(segments[index]);
   }
 
@@ -27,6 +33,16 @@ function getSegmentLabel(segments: string[], index: number): string {
 
 export function BreadcrumbBar() {
   const pathname = usePathname();
+  const [projects, setProjects] = useState<Project[]>(staticProjects);
+
+  useEffect(() => {
+    fetch("/api/projects")
+      .then((response) => response.json())
+      .then((data) => {
+        if (Array.isArray(data?.projects)) setProjects(data.projects);
+      })
+      .catch(() => {});
+  }, []);
 
   if (!pathname || pathname === "/") {
     return null;
@@ -52,9 +68,9 @@ export function BreadcrumbBar() {
                   /
                 </span>
                 {isLast ? (
-                  <span aria-current="page">{getSegmentLabel(segments, index)}</span>
+                  <span aria-current="page">{getSegmentLabel(segments, index, projects)}</span>
                 ) : (
-                  <Link href={href}>{getSegmentLabel(segments, index)}</Link>
+                  <Link href={href}>{getSegmentLabel(segments, index, projects)}</Link>
                 )}
               </li>
             );

@@ -1,0 +1,309 @@
+/* SaaS-dashboard-inspired: soft gray backdrop, white rounded cards with
+   soft shadow, tight sans type, color-coded pill tags, stat tiles, and
+   split-image cards for floor plans (photo + plan side by side, like a
+   deal card showing a property's floor plan + rendering together). */
+
+.page {
+  --lp-ink: #1a1a1a;
+  --lp-muted: #6b7280;
+  --lp-line: #e8e8e6;
+  --lp-bg: #f2f2f0;
+  --lp-gold: #ffc52d;
+  --lp-radius: 16px;
+  font-family: var(--font-ref-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
+  color: var(--lp-ink);
+  background: var(--lp-bg);
+  padding-bottom: 60px;
+}
+
+.previewBanner {
+  background: #1a1a1a;
+  color: #fff;
+  font-size: 13px;
+  text-align: center;
+  padding: 9px 16px;
+}
+
+.container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 24px 20px 0;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--lp-muted);
+  text-decoration: none;
+}
+
+.backLink:hover {
+  color: var(--lp-ink);
+}
+
+.card {
+  background: #fff;
+  border-radius: var(--lp-radius);
+  box-shadow: 0 1px 2px rgba(20, 20, 20, 0.04), 0 8px 24px rgba(20, 20, 20, 0.05);
+  border: 1px solid #efefec;
+}
+
+/* Header card: title, address, pills, price + CTA */
+
+.headerCard {
+  padding: 26px 28px;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.pillRow {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.pill {
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 5px 11px;
+  border-radius: 999px;
+}
+
+.pillStatus {
+  background: #ede9fe;
+  color: #6d28d9;
+}
+
+.pillType {
+  background: #fff4e0;
+  color: #b45309;
+}
+
+.title {
+  margin: 0 0 4px;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.address {
+  margin: 0;
+  font-size: 14px;
+  color: var(--lp-muted);
+}
+
+.priceBlock {
+  text-align: right;
+}
+
+.priceValue {
+  margin: 0 0 12px;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.requestButton {
+  min-height: 44px;
+  padding: 0 24px;
+  border-radius: 10px;
+  border: none;
+  background: var(--lp-ink);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.requestButton:hover {
+  background: #333;
+}
+
+@media (max-width: 620px) {
+  .headerCard {
+    flex-direction: column;
+  }
+  .priceBlock {
+    text-align: left;
+  }
+}
+
+/* Stat tiles — small rounded cards in a row, like the pipeline stat boxes */
+
+.statRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.statTile {
+  padding: 16px 18px;
+}
+
+.statLabel {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--lp-muted);
+  margin-bottom: 4px;
+}
+
+.statValue {
+  display: block;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+/* Section card wrapper */
+
+.section {
+  padding: 24px 28px;
+  margin-bottom: 16px;
+}
+
+.sectionTitle {
+  margin: 0 0 16px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.description {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #3a3a3a;
+  margin: 0;
+}
+
+/* Gallery */
+
+.galleryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.galleryItem {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.galleryImage {
+  object-fit: cover;
+}
+
+/* Floor plan cards — split image (plan + rendering) like a deal card */
+
+.planGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.planCard {
+  border: 1px solid var(--lp-line);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.planImages {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  height: 130px;
+}
+
+.planImageWrap {
+  position: relative;
+  background: #f4f4f2;
+}
+
+.planImage {
+  object-fit: cover;
+}
+
+.planBody {
+  padding: 14px 16px 16px;
+}
+
+.planTopRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.planName {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.planAvailability {
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.availAvailable {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.availLimited {
+  background: #fff4e0;
+  color: #b45309;
+}
+
+.availSold {
+  background: #f1f1ef;
+  color: #6b7280;
+}
+
+.planMetaRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12.5px;
+  color: var(--lp-muted);
+  padding: 6px 0;
+  border-top: 1px solid var(--lp-line);
+}
+
+.planMetaRow:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+
+.planPrice {
+  margin-top: 8px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* Amenities */
+
+.amenityRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.amenityPill {
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 7px 13px;
+  border-radius: 999px;
+  background: #f1f1ef;
+  color: #333;
+}
