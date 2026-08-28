@@ -46,8 +46,10 @@
 }
 
 :root {
-  --font-ref-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --font-app: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  /* Font trial (temporary — see comment in src/app/layout.tsx to revert):
+     Archivo standing in for Neue Haas Grotesk, with the original system stack as fallback. */
+  --font-ref-sans: var(--font-avenir-trial), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-app: var(--font-avenir-trial), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -1368,35 +1370,184 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   white-space: pre-line;
 }
 
-.listing-hero-stats-chips {
-  margin: 0;
-  padding: 0;
+.stats-contact-card {
+  position: relative;
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+  padding: 28px 24px;
+  width: min(1160px, 100%);
+  margin: 0 auto;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #e2e2e2;
+  box-shadow: 0 8px 24px rgba(16, 24, 40, 0.1);
+}
+
+.stats-contact-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(16, 24, 40, 0.05) 28px 29px),
+    repeating-linear-gradient(90deg, transparent 0 28px, rgba(16, 24, 40, 0.05) 28px 29px);
+  -webkit-mask-image: radial-gradient(ellipse 90% 100% at center, #000 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 90% 100% at center, #000 40%, transparent 100%);
+}
+
+.stats-contact-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.stats-contact-card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 4px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.stats-contact-card-logo {
+  flex-shrink: 0;
+  height: 64px;
+  width: auto;
+  max-width: 200px;
+  object-fit: contain;
+  background: #fff;
+  padding: 8px 12px;
+}
+
+.stats-contact-card-btn {
+  flex-shrink: 0;
+  white-space: nowrap;
+  padding: 0 20px;
+  min-height: 44px;
+  border-radius: 999px;
+  border: 1px solid #f47b36;
+  background: #f47b36;
+  color: #fff;
+  font-family: var(--font-ref-sans);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.stats-contact-card-btn:hover {
+  background: #e0692a;
+  border-color: #e0692a;
+}
+
+.stats-contact-card-name {
+  font-family: var(--font-ref-sans);
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e1e1e;
+  text-decoration: none;
+}
+
+.stats-contact-card-name:hover {
+  text-decoration: underline;
+}
+
+.stats-contact-card-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #4a4a4a;
+  text-decoration: none;
+  word-break: break-word;
+}
+
+.stats-contact-card-row:hover {
+  color: #1e1e1e;
+}
+
+.stats-contact-card-social {
+  display: flex;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+.stats-contact-card-social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid #d4d4d4;
+  color: #4a4a4a;
+  background: #fff;
+}
+
+.stats-contact-card-social-link:hover {
+  color: #1e1e1e;
+  border-color: #1e1e1e;
+}
+
+.listing-hero-stats-chips {
+  width: 1330px;
+  max-width: 100%;
+  margin: 24px auto 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(5, 250px);
+  justify-content: center;
+  gap: 20px;
+  border: none;
+  background: transparent;
 }
 
 .listing-hero-stat-chip {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 5px;
-  padding: 7px 14px;
-  border: 1px solid #e2e2e2;
-  border-radius: 999px;
-  background: #f7f7f5;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  width: 250px;
+  padding: 24px 16px;
+  background: #f3f2f0;
+  border-radius: 0;
+  box-shadow: 0 2px 6px rgba(16, 24, 40, 0.06);
+}
+
+.listing-hero-stat-chip-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: #3a3a3a;
+}
+
+.listing-hero-stat-chip-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.listing-hero-stat-chip-value,
+.listing-hero-stat-chip-label {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .listing-hero-stat-chip-value {
   font-family: var(--font-ref-sans);
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
   color: #1f1f1f;
 }
 
 .listing-hero-stat-chip-label {
   font-family: var(--font-ref-sans);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 400;
   color: #6b6b6b;
 }
@@ -1549,8 +1700,19 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
     height: 26px;
   }
 
+  .stats-contact-card {
+    max-width: 100%;
+  }
+
   .listing-hero-stats-chips {
+    width: 100%;
+    margin: 24px 0 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
+  }
+
+  .listing-hero-stat-chip {
+    width: auto;
   }
 
   .listing-hero-stat-chip:not(.mobile-stat-visible) {
@@ -1800,9 +1962,9 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 
 .project-description-shell {
   width: 100%;
-  margin: 8px 0 0;
+  margin: 0;
   background: #fff;
-  padding: 0;
+  padding: 28px 0 0;
 }
 
 .project-description-shell h2 {
@@ -1816,7 +1978,6 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 
 .project-description-shell > p:last-child {
   margin: 12px 0 0;
-  max-width: 72ch;
   font-size: 14.5px;
   line-height: 1.65;
   color: #3a3a3a;
@@ -1824,39 +1985,38 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 
 .project-narrative-shell {
   width: 100%;
-  margin: 22px 0 0;
+  margin: 0;
   background: #fff;
   padding: 0;
 }
 
-.project-fact-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  column-gap: 24px;
-  padding-bottom: 16px;
+.project-fact-sheet {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  border: 1px solid #f2f1ee;
+  font-family: var(--font-ref-sans);
 }
 
-.project-fact-item {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 12px 0;
-  border-top: 1px solid #ececec;
+.project-fact-sheet tr:nth-child(even) {
+  background: #fafaf9;
 }
 
-.project-fact-item:nth-child(-n+3) {
-  border-top: none;
+.project-fact-sheet td {
+  width: 50%;
+  border: 1px solid #f2f1ee;
+  padding: 16px 12px;
+  text-align: left;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #1f1f1f;
+  font-weight: 400;
 }
 
 .project-fact-label {
-  font-size: 12px;
-  color: #8a8a8a;
-}
-
-.project-fact-value {
+  color: #1E1D21;
   font-size: 14px;
-  font-weight: 600;
-  color: #1f1f1f;
+  font-weight: 500;
 }
 
 .utilities-costs-shell {
@@ -1970,17 +2130,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
       line-height: 1.6;
     }
 
-    .project-narrative-shell {
-      margin: 16px 0 0;
-    }
 
-    .project-fact-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .project-fact-item:nth-child(3) {
-      border-top: 1px solid #ececec;
-    }
   }
 
 .trending-homes-section {
@@ -2017,6 +2167,17 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 
 /* Two-column layout: main content + a sticky contact/tour sidebar that
    runs alongside the rest of the page (Overview through Neighborhood). */
+
+/* Single-column page content (no sidebar) — same width cap as
+   .listing-with-sidebar so pages without a sidebar card still align. */
+.project-page-content {
+  width: min(1290px, calc(100% - 48px));
+  margin: 0 auto;
+  padding-bottom: 56px;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
 
 .listing-with-sidebar {
   width: min(1290px, calc(100% - 48px));
@@ -2375,9 +2536,9 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 }
 
 .plans-homes-shell {
-  width: min(1220px, calc(100% - 56px));
-  margin: 28px auto 56px;
-  padding: 0 40px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
   background: #fff;
 }
 
@@ -2773,6 +2934,14 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   align-items: center;
 }
 
+.plans-status-pill-sold {
+  background: #c0392b;
+}
+
+.plans-status-pill-booked {
+  background: #b7791f;
+}
+
 .plans-home-body {
   padding: 11px 10px 10px;
 }
@@ -2974,9 +3143,122 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   gap: 7px;
 }
 
+.key-features-shell {
+  position: relative;
+  width: min(1160px, 100%);
+  margin: 0 auto;
+  overflow: hidden;
+  border: 1px solid #e5e5e4;
+  background: #f7f7f6;
+  padding: 32px;
+}
+
+.key-features-pattern {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.6;
+  background-image: repeating-linear-gradient(90deg, transparent 0 15px, rgba(120, 113, 108, 0.1) 15px 16px);
+  -webkit-mask-image: radial-gradient(ellipse 70% 80% at center, #000 45%, transparent 100%);
+  mask-image: radial-gradient(ellipse 70% 80% at center, #000 45%, transparent 100%);
+}
+
+.key-features-shell h2 {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 14px;
+  font-family: var(--font-ref-sans);
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.15;
+  color: #1e1e1e;
+}
+
+.key-features-list {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  border: 1px solid #e4e0d6;
+  border-top: none;
+  background: #fff;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.key-features-row {
+  border-top: 1px solid #e4e0d6;
+}
+
+.key-features-row-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px;
+  background: #fff;
+  color: #4a4a4a;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  text-align: left;
+  transition: background-color 0.15s ease;
+}
+
+.key-features-row-trigger:hover {
+  background: #f7f6f2;
+}
+
+.key-features-row-trigger span {
+  flex: 1;
+}
+
+.key-features-row.open .key-features-row-trigger {
+  background: #fdf3e0;
+  color: #92670c;
+  box-shadow: inset 3px 0 0 #f2d38a;
+}
+
+.key-features-row.open .key-features-row-trigger:hover {
+  background: #ececea;
+}
+
+.key-features-chevron {
+  transition: transform 0.15s ease;
+}
+
+.key-features-row.open .key-features-chevron {
+  transform: rotate(180deg);
+}
+
+.key-features-row-body {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px 24px;
+  padding: 20px 16px 24px 44px;
+  background: #fff;
+}
+
+.key-features-item {
+  font-size: 15px;
+  line-height: 1.5;
+  color: #3a3a3a;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.key-features-item-label {
+  font-weight: 500;
+  color: #2d2d2d;
+}
+
+.key-features-item:hover {
+  background: #f7f6f2;
+  color: #1e1e1e;
+}
+
 .amenities-showcase-shell {
-  width: min(1220px, calc(100% - 56px));
-  margin: 14px auto 60px;
+  width: 100%;
+  margin: 0;
   padding: 28px 40px 32px;
   background: linear-gradient(160deg, #faf8f3 0%, #f3ede0 100%);
   border: 1px solid #e8dfcd;
@@ -3253,11 +3535,6 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 }
 
 @media (max-width: 980px) {
-  .plans-homes-shell {
-    width: calc(100% - 24px);
-    margin: 18px auto 30px;
-    padding: 0 18px;
-  }
 
   .plans-contact-banner {
     grid-template-columns: 1fr;
@@ -3351,9 +3628,20 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
     font-size: 13px;
   }
 
+  .key-features-shell {
+    padding: 18px;
+  }
+
+  .key-features-shell h2 {
+    font-size: 26px;
+  }
+
+  .key-features-row-body {
+    grid-template-columns: 1fr;
+    padding-left: 16px;
+  }
+
   .amenities-showcase-shell {
-    width: calc(100% - 24px);
-    margin: 10px auto 34px;
     padding: 14px 18px 18px;
   }
 
@@ -4417,66 +4705,17 @@ a.developer-profile-press-title {
   }
 }
 
-.neighborhood-section-shell {
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  background: transparent;
-  border: none;
-}
-
-.neighborhood-section-shell h2 {
-  margin: 0 0 14px;
-  font-family: var(--font-ref-sans);
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 1.25;
-  color: #1a1a1a;
-}
-
-.neighborhood-section-list {
-  display: grid;
-}
-
-.neighborhood-section-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 12px 0;
-  border-top: 1px solid #ececec;
-}
-
-.neighborhood-section-row:first-child {
-  border-top: none;
-}
-
-.neighborhood-section-place {
-  font-size: 14px;
-  color: #1f1f1f;
-}
-
-.neighborhood-section-distance {
-  flex-shrink: 0;
-  font-size: 13px;
-  color: #8a8a8a;
-}
-
 .neighborhood-section-explore {
-  display: inline-flex;
-  align-items: center;
+  display: inline-block;
   margin-top: 18px;
-  padding: 10px 20px;
-  border-radius: 999px;
-  background: #f47b36;
-  font-size: 13px;
-  font-weight: 700;
-  color: #fff;
-  text-decoration: none;
+  font-size: 14px;
+  font-weight: 400;
+  color: #1e1e1e;
+  text-decoration: underline;
 }
 
 .neighborhood-section-explore:hover {
-  background: #e0692a;
+  color: #000;
 }
 
 .neighborhood-hero {
@@ -4532,6 +4771,8 @@ a.developer-profile-press-title {
 }
 
 .hot-deal-banner {
+  width: fit-content;
+  max-width: 100%;
   margin-top: 10px;
   margin-left: 40px;
   padding: 8px 18px;

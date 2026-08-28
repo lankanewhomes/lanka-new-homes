@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { projects } from "@/data/projects";
 import { getProjectBySlug } from "@/lib/project-store";
 import { getDeveloperBySlug } from "@/lib/developer-store";
+import { getUnitsByProjectSlug } from "@/lib/unit-store";
 import {
   PlansAndHomesSection,
   PricingInformationLayout,
@@ -11,6 +12,7 @@ import {
   ProjectNarrativeDetails,
   ProjectStatsChips,
   SalesCenterSection,
+  UnitAvailabilitySection,
 } from "@/components/marketplace/components";
 
 type FloorPlanPageProps = {
@@ -54,6 +56,8 @@ export default async function FloorPlanDetailPage({ params }: FloorPlanPageProps
   if (!project || !floorPlan) return notFound();
 
   const developer = await getDeveloperBySlug(project.developerSlug);
+  const units = await getUnitsByProjectSlug(project.slug);
+  const unitsOfThisType = units.filter((unit) => unit.apartmentType === floorPlan.planType);
 
   return (
     <div className="space-y-8">
@@ -74,7 +78,8 @@ export default async function FloorPlanDetailPage({ params }: FloorPlanPageProps
         <PricingInformationLayout project={project} />
       </section>
       <SalesCenterSection project={project} developer={developer} />
-      <PlansAndHomesSection project={project} title="Other floor plans" excludeFloorPlanId={floorPlan.id} />
+      <UnitAvailabilitySection units={unitsOfThisType} projectSlug={project.slug} title={`${floorPlan.planName} Units`} />
+      <PlansAndHomesSection project={project} title="Other floor plans" excludeFloorPlanId={floorPlan.id} units={units} />
     </div>
   );
 }

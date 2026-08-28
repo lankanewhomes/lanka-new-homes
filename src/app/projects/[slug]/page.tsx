@@ -4,9 +4,10 @@ import { projects } from "@/data/projects";
 import { getProjectBySlug } from "@/lib/project-store";
 import { getNeighborhoodBySlug } from "@/lib/neighborhood-store";
 import { getDeveloperBySlug } from "@/lib/developer-store";
+import { getUnitsByProjectSlug } from "@/lib/unit-store";
 import {
   AmenitiesShowcaseSection,
-  ListingSidebarCard,
+  KeyFeaturesSection,
   NeighborhoodSection,
   PlansAndHomesSection,
   PricingInformationLayout,
@@ -14,6 +15,7 @@ import {
   ProjectHero,
   ProjectNarrativeDetails,
   ProjectStatsChips,
+  StatsContactCard,
 } from "@/components/marketplace/components";
 import { ProjectViewTracker } from "@/components/marketplace/view-tracker";
 import { toAbsoluteUrl } from "@/lib/seo";
@@ -73,6 +75,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
 
   const neighborhood = project.neighborhoodSlug ? await getNeighborhoodBySlug(project.neighborhoodSlug) : undefined;
   const developer = await getDeveloperBySlug(project.developerSlug);
+  const units = await getUnitsByProjectSlug(project.slug);
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -112,27 +115,25 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
       <ProjectViewTracker projectSlug={project.slug} developerSlug={project.developerSlug} />
       <ProjectHero project={project} backHref="/projects" backLabel="New Projects" />
 
-      <div className="listing-with-sidebar">
-        <div className="listing-with-sidebar-main space-y-8">
-          <ProjectDescriptionSection project={project} />
-          <ProjectStatsChips project={project} />
+      <div className="project-page-content">
+        <ProjectStatsChips project={project} units={units} />
+        <ProjectDescriptionSection project={project} />
 
-          <ProjectNarrativeDetails project={project} />
+        <ProjectNarrativeDetails project={project} />
 
-          <section id="pricing" className="space-y-3">
-            <PricingInformationLayout project={project} />
-          </section>
+        <section id="pricing" className="space-y-3">
+          <PricingInformationLayout project={project} />
+        </section>
 
-          <PlansAndHomesSection project={project} />
+        <KeyFeaturesSection project={project} />
 
-          <AmenitiesShowcaseSection project={project} />
+        <AmenitiesShowcaseSection project={project} />
 
-          <NeighborhoodSection project={project} neighborhoodPageExists={Boolean(neighborhood)} />
-        </div>
+        <PlansAndHomesSection project={project} units={units} />
 
-        <aside className="listing-with-sidebar-aside">
-          <ListingSidebarCard project={project} developer={developer} />
-        </aside>
+        <NeighborhoodSection project={project} neighborhoodPageExists={Boolean(neighborhood)} />
+
+        <StatsContactCard project={project} developer={developer} />
       </div>
     </div>
   );

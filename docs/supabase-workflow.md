@@ -41,6 +41,7 @@ See `docs/supabase-schema.sql` for the full schema. Summary:
 | `construction_companies` | `ConstructionCompany` |
 | `leads` | contact form submissions (was `data/tracking.sqlite`) |
 | `project_views` | view-count analytics (was `data/tracking.sqlite`) |
+| `units` | `Unit` — per-project floor/unit inventory (fully columnar, no `data` jsonb; see `src/lib/unit-store.ts`) |
 
 Not migrated (static reference data, no admin editing): Sri Lanka
 provinces/districts/cities geo lookups.

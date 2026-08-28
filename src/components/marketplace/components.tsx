@@ -46,6 +46,7 @@ import {
   Hammer,
   HousePlus,
   Landmark,
+  Mail,
   Compass,
   Construction,
   Droplet,
@@ -65,6 +66,7 @@ import {
   Square,
   SlidersHorizontal,
   Trees,
+  UtensilsCrossed,
   Users,
   Video,
   Waves,
@@ -89,6 +91,11 @@ const amenityIcons: Record<string, React.ComponentType<{ className?: string }>> 
   Clubhouse: Landmark,
   "EV Charging": Zap,
   Concierge: Bell,
+  "Infinity Pool": Waves,
+  "Games Room": LayoutGrid,
+  "Sky Lounge": Building2,
+  "Retail Mall": Building,
+  Hotel: HousePlus,
 };
 
 function renderEntityLink(name: string, slug: string | undefined, basePath: string, className?: string) {
@@ -887,7 +894,54 @@ function HotDealCard({ hotDeal }: { hotDeal: NonNullable<Project["hotDeal"]> }) 
   );
 }
 
-export function ProjectStatsChips({ project, floorPlan }: { project: Project; floorPlan?: FloorPlan }) {
+const STAT_CHIP_ICON: Record<string, React.ComponentType<{ className?: string }>> = {
+  "Listing status": HousePlus,
+  "Building status": Construction,
+  "Move in": Clock3,
+  "Price range": CircleDollarSign,
+  "Price CAD": CircleDollarSign,
+  Address: MapPin,
+  "Total units": Building2,
+  "Total Units": Building2,
+  "Units sold": Layers,
+  "Units available": Compass,
+  "Floor plans": LayoutGrid,
+  Stories: Ruler,
+  Floors: Ruler,
+  "Property type": Building,
+  Beds: BedDouble,
+  Baths: Bath,
+  SqFt: Square,
+  Road: MapPinned,
+  Area: MapPin,
+  Electricity: Zap,
+  "Tap water": Droplet,
+  "Per SqFt (Avg)": CircleDollarSign,
+  Incentives: Gift,
+  Parking: Car,
+  "Carpark levels": Car,
+  "Avg unit price": CircleDollarSign,
+  "Avg floor area": Square,
+  Ownership: ShieldCheck,
+  Ceilings: Ruler,
+  Neighborhood: Compass,
+  Security: ShieldCheck,
+  District: MapPin,
+  "Sales started": Clock3,
+};
+
+export function ProjectStatsChips({ project, floorPlan, units = [] }: { project: Project; floorPlan?: FloorPlan; units?: Unit[] }) {
+  // Prefer real per-unit counts (the `units` table) when available; most
+  // projects only have floor-plan-level data, so fall back to counting
+  // floor plan types by their availability status.
+  const soldCount = units.length > 0
+    ? units.filter((unit) => unit.status === "Sold").length
+    : project.floorPlans.filter((plan) => plan.availability === "Sold Out").length;
+  const availableCount = units.length > 0
+    ? units.filter((unit) => unit.status === "Available").length
+    : project.floorPlans.filter((plan) => plan.availability === "Available").length;
+  const hasSoldAvailableData = units.length > 0 || project.floorPlans.length > 0;
+
   const stats: { value: string; label: string }[] = floorPlan
     ? [
         { value: floorPlan.availability, label: "Status" },
@@ -919,10 +973,13 @@ export function ProjectStatsChips({ project, floorPlan }: { project: Project; fl
         })
     : [
         { value: project.status, label: "Listing status" },
+        ...(project.completionYear > 0 ? [{ value: String(project.completionYear), label: "Move in" }] : []),
         { value: project.constructionStatus, label: "Building status" },
         ...(project.startingPriceLkr > 0 ? [{ value: `From ${formatLkr(project.startingPriceLkr)}`, label: "Price range" }] : []),
         { value: project.location, label: "Address" },
         ...(project.units > 0 ? [{ value: String(project.units), label: "Total Units" }] : []),
+        ...(hasSoldAvailableData ? [{ value: String(soldCount), label: "Units sold" }] : []),
+        ...(hasSoldAvailableData ? [{ value: String(availableCount), label: "Units available" }] : []),
         ...(project.floors > 0 ? [{ value: String(project.floors), label: "Floors" }] : []),
         ...(project.floorPlans.length > 0 ? [{ value: String(project.floorPlans.length), label: "Floor plans" }] : []),
         { value: project.type, label: "Property type" },
@@ -935,7 +992,9 @@ export function ProjectStatsChips({ project, floorPlan }: { project: Project; fl
         { value: project.tapWater ?? "", label: "Tap water" },
         ...(project.incentives?.length ? [{ value: String(project.incentives.length), label: "Incentives" }] : []),
         ...(hasDisplayValue(project.parking) ? [{ value: project.parking, label: "Parking" }] : []),
-        ...(project.completionYear > 0 ? [{ value: String(project.completionYear), label: "Completion year" }] : []),
+        ...(project.carparkLevels ? [{ value: String(project.carparkLevels), label: "Carpark levels" }] : []),
+        ...(project.averageUnitPriceLkr ? [{ value: formatLkr(project.averageUnitPriceLkr), label: "Avg unit price" }] : []),
+        ...(project.averageFloorAreaSqFt ? [{ value: `${project.averageFloorAreaSqFt} SqFt`, label: "Avg floor area" }] : []),
         ...(hasDisplayValue(project.ownership) ? [{ value: project.ownership, label: "Ownership" }] : []),
         ...(hasDisplayValue(project.ceilingInfo) ? [{ value: project.ceilingInfo ?? "", label: "Ceilings" }] : []),
         ...(hasDisplayValue(project.neighborhood) ? [{ value: project.neighborhood, label: "Neighborhood" }] : []),
@@ -950,7 +1009,8 @@ export function ProjectStatsChips({ project, floorPlan }: { project: Project; fl
         .filter((item) => {
           if (!project.desktopVisibleStats?.length) return true;
           return project.desktopVisibleStats.includes(item.label as ProjectStatLabel);
-        });
+        })
+        .slice(0, 10);
 
   const mobileVisibleLabels = new Set(
     project.mobileVisibleStats?.length
@@ -962,12 +1022,72 @@ export function ProjectStatsChips({ project, floorPlan }: { project: Project; fl
 
   return (
     <div className="listing-hero-stats-chips" role="list" aria-label="Project summary stats">
-      {stats.map((item) => (
-        <div key={item.label} role="listitem" className={`listing-hero-stat-chip${mobileVisibleLabels.has(item.label) ? " mobile-stat-visible" : ""}`}>
-          <span className="listing-hero-stat-chip-value">{item.value}</span>
-          <span className="listing-hero-stat-chip-label">{item.label}</span>
+      {stats.map((item) => {
+        const Icon = STAT_CHIP_ICON[item.label] ?? Building2;
+        return (
+          <div key={item.label} role="listitem" className={`listing-hero-stat-chip${mobileVisibleLabels.has(item.label) ? " mobile-stat-visible" : ""}`}>
+            <Icon className="listing-hero-stat-chip-icon" aria-hidden="true" />
+            <div className="listing-hero-stat-chip-content">
+              <span className="listing-hero-stat-chip-value">{item.value}</span>
+              <span className="listing-hero-stat-chip-label">{item.label}</span>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+export function StatsContactCard({ project, developer }: { project: Project; developer?: Developer }) {
+  const [requestInfoOpen, setRequestInfoOpen] = useState(false);
+  const name = developer?.name ?? project.developerName ?? project.contact.name;
+  const email = hasDisplayValue(project.contact?.email) ? project.contact.email : developer?.email;
+  const phone = hasDisplayValue(project.contact?.phone) ? project.contact.phone : developer?.phone;
+  const socialEntries = Object.entries(developer?.socialLinks ?? {}).filter(([, url]) => hasDisplayValue(url)) as [string, string][];
+
+  return (
+    <div className="stats-contact-card">
+      {developer?.logo ? (
+        <Image src={developer.logo} alt={name} width={140} height={70} className="stats-contact-card-logo" />
+      ) : null}
+
+      <div className="stats-contact-card-body">
+        <Link href={developer ? `/developers/${developer.slug}` : `/projects/${project.slug}`} className="stats-contact-card-name">
+          {name}
+        </Link>
+
+        {hasDisplayValue(email) ? (
+          <a href={`mailto:${email}`} className="stats-contact-card-row">
+            <Mail className="h-4 w-4" aria-hidden="true" /> {email}
+          </a>
+        ) : null}
+
+        {hasDisplayValue(phone) ? (
+          <a href={`tel:${phone}`} className="stats-contact-card-row">
+            <Phone className="h-4 w-4" aria-hidden="true" /> {phone}
+          </a>
+        ) : null}
+      </div>
+
+      {socialEntries.length > 0 ? (
+        <div className="stats-contact-card-social" aria-label="Social media">
+          {socialEntries.map(([platform, url]) => {
+            const Icon = SOCIAL_ICON[platform];
+            if (!Icon) return null;
+            return (
+              <a key={platform} href={url} target="_blank" rel="noreferrer noopener" aria-label={`Visit us on ${platform}`} className="stats-contact-card-social-link">
+                <Icon className="h-4 w-4" />
+              </a>
+            );
+          })}
         </div>
-      ))}
+      ) : null}
+
+      <button type="button" className="stats-contact-card-btn" onClick={() => setRequestInfoOpen(true)}>
+        Request info
+      </button>
+
+      <RequestInfoDialog open={requestInfoOpen} onClose={() => setRequestInfoOpen(false)} project={project} />
     </div>
   );
 }
@@ -1173,7 +1293,7 @@ export function FloorPlanBrowser({ floorPlans }: { floorPlans: FloorPlan[] }) {
   );
 }
 
-export function UnitTable({ units }: { units: Unit[] }) {
+export function UnitTable({ units, projectSlug }: { units: Unit[]; projectSlug?: string }) {
   return (
     <div className="overflow-x-auto border border-stone-200 bg-white">
       <table className="w-full min-w-175 text-sm">
@@ -1185,12 +1305,43 @@ export function UnitTable({ units }: { units: Unit[] }) {
         <tbody>
           {units.map((unit) => (
             <tr key={unit.id} className="border-t border-stone-100">
-              <td className="p-3">{unit.unitNumber}</td><td className="p-3">{unit.floor}</td><td className="p-3">{unit.apartmentType}</td><td className="p-3">{unit.areaSqFt} sq.ft</td><td className="p-3">{formatLkr(unit.priceLkr)}</td><td className="p-3"><StatusBadge status={unit.status} /></td>
+              <td className="p-3">
+                {projectSlug ? <Link href={`/projects/${projectSlug}/units/${unit.id}`} className="font-medium text-stone-900 underline">{unit.unitNumber}</Link> : unit.unitNumber}
+              </td>
+              <td className="p-3">{unit.floor}</td><td className="p-3">{unit.apartmentType}</td><td className="p-3">{unit.areaSqFt} sq.ft</td><td className="p-3">{formatLkr(unit.priceLkr)}</td><td className="p-3"><StatusBadge status={unit.status} /></td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
+  );
+}
+
+const UNIT_STATUS_ORDER: Unit["status"][] = ["Sold", "Available", "Booked", "Reserved"];
+
+export function UnitAvailabilitySection({ units, projectSlug, title = "Unit Availability" }: { units: Unit[]; projectSlug: string; title?: string }) {
+  const [statusFilter, setStatusFilter] = useState<"all" | Unit["status"]>("all");
+
+  if (!units.length) return null;
+
+  const counts = UNIT_STATUS_ORDER.map((status) => ({ status, count: units.filter((unit) => unit.status === status).length })).filter((entry) => entry.count > 0);
+  const visibleUnits = statusFilter === "all" ? units : units.filter((unit) => unit.status === statusFilter);
+
+  const tabClass = (active: boolean) => `border px-3 py-1.5 text-sm font-medium ${active ? "border-stone-900 bg-stone-900 text-white" : "border-stone-300 bg-white text-stone-700"}`;
+
+  return (
+    <section id="unit-availability" className="space-y-3" aria-label="Unit availability">
+      <h2 className="text-2xl font-normal text-stone-900">{title}</h2>
+
+      <div className="flex flex-wrap gap-2" role="tablist" aria-label="Filter units by status">
+        <button type="button" role="tab" aria-selected={statusFilter === "all"} className={tabClass(statusFilter === "all")} onClick={() => setStatusFilter("all")}>All ({units.length})</button>
+        {counts.map(({ status, count }) => (
+          <button key={status} type="button" role="tab" aria-selected={statusFilter === status} className={tabClass(statusFilter === status)} onClick={() => setStatusFilter(status)}>{status} ({count})</button>
+        ))}
+      </div>
+
+      <UnitTable units={visibleUnits} projectSlug={projectSlug} />
+    </section>
   );
 }
 
@@ -1236,28 +1387,28 @@ export function PricingInformationLayout({ project }: { project: Project }) {
 
   return (
     <section className="space-y-4">
-      <div className="relative mx-auto w-full max-w-290 overflow-hidden border border-[#d3f2de] bg-[#ecfcf1] px-6 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-12">
+      <div className="relative mx-auto w-full max-w-290 overflow-hidden border border-[#c9ddf5] bg-[#eef4fc] px-6 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-12">
         <div
           className="pointer-events-none absolute inset-0 opacity-45"
           aria-hidden="true"
           style={{
             backgroundImage: [
-              "repeating-linear-gradient(0deg, transparent 0 36px, rgba(78,161,115,0.16) 36px 37px)",
-              "repeating-linear-gradient(90deg, transparent 0 36px, rgba(78,161,115,0.16) 36px 37px)",
-              "linear-gradient(rgba(120,188,146,0.16) 1px, transparent 1px)",
-              "linear-gradient(90deg, rgba(120,188,146,0.16) 1px, transparent 1px)",
+              "repeating-linear-gradient(0deg, transparent 0 36px, rgba(78,120,161,0.16) 36px 37px)",
+              "repeating-linear-gradient(90deg, transparent 0 36px, rgba(78,120,161,0.16) 36px 37px)",
+              "linear-gradient(rgba(120,155,188,0.16) 1px, transparent 1px)",
+              "linear-gradient(90deg, rgba(120,155,188,0.16) 1px, transparent 1px)",
             ].join(","),
             backgroundSize: "100% 100%, 100% 100%, 112px 112px, 112px 112px",
           }}
         />
 
-        <div className="pointer-events-none absolute left-[6%] top-[10%] h-[22%] w-[24%] border border-[#bfe8cc]/70" aria-hidden="true" />
-        <div className="pointer-events-none absolute right-[7%] top-[12%] h-[18%] w-[20%] border border-[#bfe8cc]/70" aria-hidden="true" />
-        <div className="pointer-events-none absolute right-[15%] bottom-[13%] h-[23%] w-[26%] border border-[#bfe8cc]/70" aria-hidden="true" />
+        <div className="pointer-events-none absolute left-[6%] top-[10%] h-[22%] w-[24%] border border-[#bfd4ec]/70" aria-hidden="true" />
+        <div className="pointer-events-none absolute right-[7%] top-[12%] h-[18%] w-[20%] border border-[#bfd4ec]/70" aria-hidden="true" />
+        <div className="pointer-events-none absolute right-[15%] bottom-[13%] h-[23%] w-[26%] border border-[#bfd4ec]/70" aria-hidden="true" />
 
         <div className="relative z-10 grid gap-6 lg:grid-cols-3">
           {hasPricingCard ? (
-            <article className="border border-[#b8e8c8] bg-white px-6 py-6 text-[#1f2321] shadow-[0_10px_28px_rgba(36,78,54,0.08)]">
+            <article className="border border-[#c9ddf5] bg-white px-6 py-6 text-[#1f2321] shadow-[0_10px_28px_rgba(36,78,54,0.08)]">
               <h3 className="text-[29px] font-semibold">Pricing and fees</h3>
 
               <div className="mt-7 space-y-4 text-[15px] leading-7">
@@ -1282,7 +1433,7 @@ export function PricingInformationLayout({ project }: { project: Project }) {
           ) : null}
 
           {hasDepositCard ? (
-            <article className="border border-[#b8e8c8] bg-white px-6 py-6 text-[#1f2321] shadow-[0_10px_28px_rgba(36,78,54,0.08)]">
+            <article className="border border-[#c9ddf5] bg-white px-6 py-6 text-[#1f2321] shadow-[0_10px_28px_rgba(36,78,54,0.08)]">
               <h3 className="text-[29px] font-semibold">Deposit Structure</h3>
 
               <div className="mt-7 space-y-4 text-[15px] leading-7">
@@ -1297,7 +1448,7 @@ export function PricingInformationLayout({ project }: { project: Project }) {
           ) : null}
 
           {hasIncentivesCard ? (
-            <article className="border border-[#b8e8c8] bg-white px-6 py-6 text-[#1f2321] shadow-[0_10px_28px_rgba(36,78,54,0.08)]">
+            <article className="border border-[#c9ddf5] bg-white px-6 py-6 text-[#1f2321] shadow-[0_10px_28px_rgba(36,78,54,0.08)]">
               <h3 className="text-[29px] font-semibold">Current Incentives</h3>
 
               <div className="mt-7 space-y-4 text-[15px] leading-7">
@@ -1399,12 +1550,43 @@ const PLAN_SORT_OPTIONS = [
 
 type PlanSortValue = typeof PLAN_SORT_OPTIONS[number]["value"];
 
-export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFloorPlanId }: { project: Project; title?: string; excludeFloorPlanId?: string }) {
-  const [activeTab, setActiveTab] = useState<"all" | "floorPlans" | "quickMoveIns">("floorPlans");
+type CardStatus = "Available" | "Sold" | "Booked";
+
+export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFloorPlanId, units = [] }: { project: Project; title?: string; excludeFloorPlanId?: string; units?: Unit[] }) {
+  const [activeTab, setActiveTab] = useState<"all" | "floorPlans" | "quickMoveIns" | CardStatus>("floorPlans");
   const [filterOpen, setFilterOpen] = useState(false);
   const [availabilityFilter, setAvailabilityFilter] = useState<Set<string>>(new Set());
   const [bedroomFilter, setBedroomFilter] = useState<Set<number>>(new Set());
   const [sortBy, setSortBy] = useState<PlanSortValue>("default");
+
+  const floorRangeByPlanType = useMemo(() => {
+    const map = new Map<string, { min: number; max: number }>();
+    for (const unit of units) {
+      const current = map.get(unit.apartmentType);
+      if (!current) {
+        map.set(unit.apartmentType, { min: unit.floor, max: unit.floor });
+      } else {
+        current.min = Math.min(current.min, unit.floor);
+        current.max = Math.max(current.max, unit.floor);
+      }
+    }
+    return map;
+  }, [units]);
+
+  const cardBadgeByPlanType = useMemo(() => {
+    const map = new Map<string, "Sold" | "Booked" | null>();
+    for (const [planType, group] of Object.entries(
+      units.reduce<Record<string, Unit[]>>((acc, unit) => {
+        (acc[unit.apartmentType] ??= []).push(unit);
+        return acc;
+      }, {})
+    )) {
+      const hasAvailable = group.some((unit) => unit.status === "Available");
+      const hasBooked = group.some((unit) => unit.status === "Booked");
+      map.set(planType, hasAvailable ? null : hasBooked ? "Booked" : "Sold");
+    }
+    return map;
+  }, [units]);
 
   const floorPlans = useMemo(
     () => (excludeFloorPlanId ? project.floorPlans.filter((plan) => plan.id !== excludeFloorPlanId) : project.floorPlans),
@@ -1415,6 +1597,19 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
     () => floorPlans.filter((plan) => plan.quickMoveIn),
     [floorPlans]
   );
+
+  // Tabs group by each plan's overall card status (same rule as the "Sold"/
+  // "Booked" pill on the card) — "Sold" means every unit of that type is
+  // sold, not just "has some sold units" (nearly every type would qualify).
+  const statusTabs = useMemo(() => {
+    const counts: Record<"Available" | "Sold" | "Booked", number> = { Available: 0, Sold: 0, Booked: 0 };
+    for (const plan of floorPlans) {
+      if (!plan.planType || !cardBadgeByPlanType.has(plan.planType)) continue;
+      const status = cardBadgeByPlanType.get(plan.planType) ?? "Available";
+      counts[status] += 1;
+    }
+    return (["Available", "Sold", "Booked"] as const).map((status) => ({ status, count: counts[status] })).filter((entry) => entry.count > 0);
+  }, [floorPlans, cardBadgeByPlanType]);
 
   const availabilityOptions = useMemo(() => Array.from(new Set(floorPlans.map((plan) => plan.availability))), [floorPlans]);
   const bedroomOptions = useMemo(() => Array.from(new Set(floorPlans.map((plan) => plan.bedrooms))).sort((a, b) => a - b), [floorPlans]);
@@ -1435,7 +1630,11 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
   };
 
   const visiblePlans = useMemo(() => {
-    const base = activeTab === "quickMoveIns" ? quickMoveIns : floorPlans;
+    const base = activeTab === "quickMoveIns"
+      ? quickMoveIns
+      : (["Available", "Sold", "Booked"] as const).includes(activeTab as CardStatus)
+        ? floorPlans.filter((plan) => plan.planType && (cardBadgeByPlanType.get(plan.planType) ?? "Available") === activeTab)
+        : floorPlans;
 
     const filtered = base.filter((plan) => {
       if (availabilityFilter.size > 0 && !availabilityFilter.has(plan.availability)) return false;
@@ -1450,7 +1649,7 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
     else if (sortBy === "bedsDesc") sorted.sort((a, b) => b.bedrooms - a.bedrooms);
 
     return sorted;
-  }, [activeTab, floorPlans, quickMoveIns, availabilityFilter, bedroomFilter, sortBy]);
+  }, [activeTab, floorPlans, quickMoveIns, cardBadgeByPlanType, availabilityFilter, bedroomFilter, sortBy]);
 
   return (
     <section id="plans-homes" className="plans-homes-shell" aria-label="Plans and homes">
@@ -1478,6 +1677,18 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
           >
             Floor plans ({floorPlans.length})
           </button>
+          {statusTabs.map(({ status, count }) => (
+            <button
+              key={status}
+              type="button"
+              role="tab"
+              className={activeTab === status ? "active" : undefined}
+              aria-selected={activeTab === status}
+              onClick={() => setActiveTab(status)}
+            >
+              {status} ({count})
+            </button>
+          ))}
           <button
             type="button"
             role="tab"
@@ -1549,11 +1760,13 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
       </div>
 
       <div className="plans-homes-grid">
-        {visiblePlans.map((plan) => (
+        {visiblePlans.map((plan) => {
+          const badge = plan.planType ? cardBadgeByPlanType.get(plan.planType) : null;
+          return (
           <Link key={plan.id} href={`/projects/${project.slug}/floor-plans/${plan.id}`} className="plans-home-card">
             <figure>
               <Image src={plan.image} alt={plan.planName} width={960} height={620} className="plans-home-image" />
-              <span className="plans-status-pill">For sale</span>
+              <span className={`plans-status-pill${badge ? ` plans-status-pill-${badge.toLowerCase()}` : ""}`}>{badge ?? "For sale"}</span>
             </figure>
 
             <div className="plans-home-body">
@@ -1566,19 +1779,86 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
               <p className="plans-home-price">From {formatLkr(plan.startingPriceLkr)}</p>
               <p className="plans-home-type">{plan.planType || project.type}</p>
               <div className="plans-home-facts">
+                {plan.planType && floorRangeByPlanType.has(plan.planType) ? (
+                  <span>
+                    <Layers className="h-3.5 w-3.5" aria-hidden="true" />
+                    {(() => {
+                      const range = floorRangeByPlanType.get(plan.planType)!;
+                      return range.min === range.max ? `Floor ${range.min}` : `Floors ${range.min}-${range.max}`;
+                    })()}
+                  </span>
+                ) : null}
                 <span><BedDouble className="h-3.5 w-3.5" aria-hidden="true" /> {plan.bedrooms} bd</span>
                 <span><Bath className="h-3.5 w-3.5" aria-hidden="true" /> {plan.bathrooms}</span>
                 <span><Square className="h-3.5 w-3.5" aria-hidden="true" /> From {plan.floorAreaSqFt} SqFt</span>
               </div>
             </div>
           </Link>
-        ))}
+          );
+        })}
       </div>
 
       <div className="plans-more-wrap">
         <button type="button" className="plans-more-btn">
           Show all plans &amp; homes <span aria-hidden="true">+</span>
         </button>
+      </div>
+    </section>
+  );
+}
+
+const KEY_FEATURE_GROUPS: { key: "indoor" | "outdoor" | "other"; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
+  { key: "indoor", label: "Indoor features", icon: LayoutPanelLeft },
+  { key: "outdoor", label: "Outdoor features", icon: Trees },
+  { key: "other", label: "Other", icon: LayoutGrid },
+];
+
+export function KeyFeaturesSection({ project }: { project: Project }) {
+  const groups = KEY_FEATURE_GROUPS
+    .map((group) => ({ ...group, items: project.unitFeatures?.[group.key] ?? [] }))
+    .filter((group) => group.items.length > 0);
+
+  const [openKey, setOpenKey] = useState<string | null>(groups[0]?.key ?? null);
+
+  if (!groups.length) return null;
+
+  return (
+    <section id="key-features" className="key-features-shell" aria-label="Key features">
+      <div className="key-features-pattern" aria-hidden="true" />
+      <h2>Key Features</h2>
+
+      <div className="key-features-list">
+        {groups.map((group) => {
+          const isOpen = openKey === group.key;
+          const Icon = group.icon;
+          return (
+            <div key={group.key} className={`key-features-row ${isOpen ? "open" : ""}`}>
+              <button
+                type="button"
+                className="key-features-row-trigger"
+                aria-expanded={isOpen}
+                onClick={() => setOpenKey(isOpen ? null : group.key)}
+              >
+                <Icon className="h-6 w-6" aria-hidden="true" />
+                <span>{group.label}</span>
+                <ChevronDown className="key-features-chevron h-6 w-6" aria-hidden="true" />
+              </button>
+              {isOpen ? (
+                <div className="key-features-row-body">
+                  {group.items.map((item) => {
+                    const [label, ...rest] = item.split(": ");
+                    const value = rest.join(": ");
+                    return (
+                      <span key={item} className="key-features-item">
+                        {value ? <><span className="key-features-item-label">{label}:</span> {value}</> : item}
+                      </span>
+                    );
+                  })}
+                </div>
+              ) : null}
+            </div>
+          );
+        })}
       </div>
     </section>
   );
@@ -1817,7 +2097,7 @@ export function ProjectNarrativeDetails({ project }: { project: Project }) {
         ? renderEntityLink(project.neighborhood, project.neighborhoodSlug, "/neighborhoods", "overview-link")
         : <span className="overview-link">{project.neighborhood}</span>,
     },
-    { label: "Building type", show: hasDisplayValue(project.type), value: <span className="overview-link">{project.type}</span> },
+    { label: "Building type", show: hasDisplayValue(project.type), value: <Link href={`/projects?type=${encodeURIComponent(project.type)}`} className="overview-link">{project.type}</Link> },
     { label: "Beds", show: hasDisplayValue(project.bedrooms), value: project.bedrooms },
     { label: "Baths", show: hasDisplayValue(project.bathrooms), value: project.bathrooms },
     { label: "Road", show: hasDisplayValue(project.road), value: project.road ?? "" },
@@ -1838,16 +2118,26 @@ export function ProjectNarrativeDetails({ project }: { project: Project }) {
     { label: "Interior designer", show: hasDisplayValue(project.interiorDesignerName), value: renderEntityLink(project.interiorDesignerName ?? "", project.interiorDesignerSlug, "/interior-designers", "overview-link") },
   ].filter((row) => row.show);
 
+  const PER_ROW = 2;
+  const rowGroups: (typeof detailRows)[number][][] = [];
+  for (let i = 0; i < detailRows.length; i += PER_ROW) rowGroups.push(detailRows.slice(i, i + PER_ROW));
+
   return (
     <section className="project-narrative-shell" aria-label="Project details">
-      <div className="project-fact-grid" role="list" aria-label="Project fact list">
-        {detailRows.map(({ label, value }) => (
-          <div key={label} role="listitem" className="project-fact-item">
-            <span className="project-fact-label">{label}</span>
-            <span className="project-fact-value">{value}</span>
-          </div>
-        ))}
-      </div>
+      <table className="project-fact-sheet">
+        <tbody>
+          {rowGroups.map((group) => (
+            <tr key={group[0].label}>
+              {group.map(({ label, value }) => (
+                <td key={label}><span className="project-fact-label">{label}:</span> {value}</td>
+              ))}
+              {group.length < PER_ROW
+                ? Array.from({ length: PER_ROW - group.length }).map((_, index) => <td key={`pad-${index}`} aria-hidden="true" />)
+                : null}
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </section>
   );
 }
@@ -2155,25 +2445,65 @@ export function ProjectOverview({ project }: { project: Project }) {
   );
 }
 
-export function NeighborhoodSection({ project, neighborhoodPageExists }: { project: Project; neighborhoodPageExists?: boolean }) {
-  if (!hasDisplayValue(project.neighborhood) && project.nearby.length === 0) return null;
+const NEARBY_CATEGORY_ICON: Record<NearbyPlace["category"], React.ComponentType<{ className?: string }>> = {
+  School: Building2,
+  Hospital: HeartPulse,
+  Shopping: LayoutGrid,
+  Restaurant: UtensilsCrossed,
+  Transport: Navigation,
+  Landmark: Landmark,
+};
 
-  const places = [...project.nearby].sort((a, b) => a.distanceKm - b.distanceKm);
+const NEARBY_CATEGORY_ORDER: NearbyPlace["category"][] = ["School", "Hospital", "Shopping", "Restaurant", "Transport", "Landmark"];
+
+export function NeighborhoodSection({ project, neighborhoodPageExists }: { project: Project; neighborhoodPageExists?: boolean }) {
+  const groups = NEARBY_CATEGORY_ORDER
+    .map((category) => ({
+      key: category,
+      label: category,
+      icon: NEARBY_CATEGORY_ICON[category],
+      items: project.nearby.filter((place) => place.category === category).sort((a, b) => a.distanceKm - b.distanceKm),
+    }))
+    .filter((group) => group.items.length > 0);
+
+  const [openKey, setOpenKey] = useState<string | null>(groups[0]?.key ?? null);
+
+  if (!hasDisplayValue(project.neighborhood) && groups.length === 0) return null;
 
   return (
-    <section id="neighborhood" className="neighborhood-section-shell" aria-label="Neighborhood">
+    <section id="neighborhood" className="key-features-shell" aria-label="Neighborhood">
+      <div className="key-features-pattern" aria-hidden="true" />
       <h2>Neighborhood</h2>
 
-      {places.length > 0 ? (
-        <div className="neighborhood-section-list">
-          {places.map((place) => (
-            <div key={`${place.category}-${place.name}`} className="neighborhood-section-row">
-              <span className="neighborhood-section-place">{place.name}</span>
-              <span className="neighborhood-section-distance">
-                {place.distanceKm} {place.distanceKm === 1 ? "Mile" : "Miles"}
-              </span>
-            </div>
-          ))}
+      {groups.length > 0 ? (
+        <div className="key-features-list">
+          {groups.map((group) => {
+            const isOpen = openKey === group.key;
+            const Icon = group.icon;
+            return (
+              <div key={group.key} className={`key-features-row ${isOpen ? "open" : ""}`}>
+                <button
+                  type="button"
+                  className="key-features-row-trigger"
+                  aria-expanded={isOpen}
+                  onClick={() => setOpenKey(isOpen ? null : group.key)}
+                >
+                  <Icon className="h-6 w-6" aria-hidden="true" />
+                  <span>{group.label}</span>
+                  <ChevronDown className="key-features-chevron h-6 w-6" aria-hidden="true" />
+                </button>
+                {isOpen ? (
+                  <div className="key-features-row-body">
+                    {group.items.map((place) => (
+                      <span key={place.name} className="key-features-item">
+                        <span className="key-features-item-label">{place.name}:</span> {place.distanceKm} km
+                      </span>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+            );
+          })}
         </div>
       ) : null}
 

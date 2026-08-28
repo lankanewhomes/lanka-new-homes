@@ -26,6 +26,23 @@ plan (or anything with a similar "detail page with sub-sections" shape)
 should reuse this same nav pattern — back link unbold, active tab bold — via
 `ProjectHero`'s props rather than a new bespoke nav.
 
+## Unit availability section (project detail page)
+
+`UnitAvailabilitySection` (`src/components/marketplace/components.tsx`) shows
+per-unit floor/price/status inventory as a status-filtered table
+(`UnitTable`), fed by real `units` table rows (`getUnitsByProjectSlug`,
+`src/lib/unit-store.ts`). Only renders when a project has unit rows —
+projects without unit-level data (the majority, still using just
+`floorPlans`) are unaffected. Plain Tailwind utility classes, not custom
+`globals.css` — matches `UnitTable`'s existing minimal admin-table style
+rather than the more designed marketing sections around it. Status filter
+tabs only render for statuses actually present in the data (no empty
+"Reserved (0)" tab, etc.).
+
+**Convention going forward:** any project with real per-unit inventory
+(floor-by-floor availability, not just floor-plan types) should populate the
+`units` table and get this section for free — no per-project UI work needed.
+
 ## Plans & homes section (project detail page)
 
 `PlansAndHomesSection` (`src/components/marketplace/components.tsx`) renders

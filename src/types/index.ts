@@ -23,7 +23,12 @@ export type Amenity = {
     | "Resident Lounge"
     | "Private Elevator"
     | "Utility Area"
-    | "Outdoor Kitchen";
+    | "Outdoor Kitchen"
+    | "Infinity Pool"
+    | "Games Room"
+    | "Sky Lounge"
+    | "Retail Mall"
+    | "Hotel";
   icon: string;
 };
 
@@ -50,10 +55,15 @@ export type Unit = {
   projectSlug: string;
   unitNumber: string;
   floor: number;
+  /** Floor plan type code (e.g. "A-3"), matches a FloorPlan.planType on the same project. */
   apartmentType: string;
+  bedrooms: number;
   areaSqFt: number;
   priceLkr: number;
-  status: "Available" | "Reserved" | "Sold";
+  priceUsd?: number;
+  status: "Available" | "Reserved" | "Booked" | "Sold";
+  /** Original listing URL this unit was sourced from, if imported from a third-party site. Internal reference only — never rendered publicly. */
+  sourceUrl?: string;
 };
 
 export type NearbyPlace = {
@@ -82,12 +92,25 @@ export type ProjectStatLabel =
   | "Beds"
   | "Baths"
   | "SqFt"
+  | "Move in"
+  | "Units sold"
+  | "Units available"
   | "Road"
   | "Area"
   | "Electricity"
   | "Tap water"
   | "Per SqFt (Avg)"
-  | "Incentives";
+  | "Incentives"
+  | "Parking"
+  | "Carpark levels"
+  | "Avg unit price"
+  | "Avg floor area"
+  | "Ownership"
+  | "Ceilings"
+  | "Neighborhood"
+  | "Security"
+  | "District"
+  | "Sales started";
 
 // SEO overrides shared by Project, Developer, and Neighborhood. These live
 // entirely inside each entity's `data` jsonb column — no schema migration
@@ -206,6 +229,12 @@ export type Project = SeoFields & {
   floorAreaRange: string;
   units: number;
   floors: number;
+  /** Number of dedicated carpark floors/levels, when distinct from the residential floor count. */
+  carparkLevels?: number;
+  /** Average sale price across all units, when the source data provides a building-wide average distinct from startingPriceLkr (the lowest advertised price). */
+  averageUnitPriceLkr?: number;
+  /** Average unit floor area across the building, when the source data provides a building-wide average distinct from floorAreaRange. */
+  averageFloorAreaSqFt?: number;
   parking: string;
   security: string;
   ownership: string;
@@ -241,6 +270,12 @@ export type Project = SeoFields & {
   desktopVisibleStats?: ProjectStatLabel[];
   floorPlanVisibleStats?: string[];
   amenities: Amenity[];
+  /** In-unit finishes/features (e.g. "Hardwood floors", "Walk-in closets") — distinct from building-level Amenity entries. Free text within each group, no fixed vocabulary. Rendered as the "Key Features" accordion. */
+  unitFeatures?: {
+    indoor?: string[];
+    outdoor?: string[];
+    other?: string[];
+  };
   floorPlans: FloorPlan[];
   nearby: NearbyPlace[];
   hotDeal?: {

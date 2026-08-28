@@ -39,6 +39,32 @@ create index if not exists idx_projects_city on projects (city);
 create index if not exists idx_projects_district on projects (district);
 create index if not exists idx_projects_data_gin on projects using gin (data);
 
+-- Units (per-unit inventory: floor, type, price, size, sale status) --------
+-- (supabase/migrations/20260828120000_units_table.sql)
+-- Fully columnar (no `data` jsonb) — unlike projects/developers, this is
+-- structured tabular inventory data with no free-form marketing content, so
+-- every field is a real column from the start.
+
+create table if not exists units (
+  id text primary key,
+  project_slug text not null references projects(slug) on delete cascade,
+  unit_number text not null,
+  floor integer not null,
+  apartment_type text not null,
+  bedrooms integer not null default 0,
+  area_sq_ft numeric not null,
+  price_lkr numeric not null,
+  price_usd numeric,
+  status text not null default 'Available'
+    check (status in ('Available', 'Reserved', 'Booked', 'Sold')),
+  source_url text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists idx_units_project_slug on units (project_slug, floor);
+create index if not exists idx_units_status on units (project_slug, status);
+
 -- Developers ---------------------------------------------------------------
 
 create table if not exists developers (
@@ -152,6 +178,10 @@ drop trigger if exists trg_construction_companies_updated_at on construction_com
 create trigger trg_construction_companies_updated_at before update on construction_companies
   for each row execute function set_updated_at();
 
+drop trigger if exists trg_units_updated_at on units;
+create trigger trg_units_updated_at before update on units
+  for each row execute function set_updated_at();
+
 -- Auth: profiles, saved listings, developer account linking ----------------
 -- profiles.role: 'buyer' | 'developer'. developer_slug is set once a
 -- developer account is linked to a row in `developers` (via developers.auth_user_id).
@@ -246,6 +276,10 @@ create policy "hero_ads: public read" on hero_ads for select using (true);
 alter table construction_companies enable row level security;
 drop policy if exists "construction_companies: public read" on construction_companies;
 create policy "construction_companies: public read" on construction_companies for select using (true);
+
+alter table units enable row level security;
+drop policy if exists "units: public read" on units;
+create policy "units: public read" on units for select using (true);
 
 -- Leads and view analytics hold contact PII / raw analytics — RLS is
 -- enabled with zero policies, so the anon/authenticated roles get no access

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import type { Amenity, CoDeveloperEntry, Developer, FactIconKey, FactItem, FloorPlan, Neighborhood, Project } from "@/types";
+import type { Amenity, CoDeveloperEntry, Developer, FactIconKey, FactItem, FloorPlan, Neighborhood, Project, Unit } from "@/types";
 import { Button } from "@/components/ui/button";
 import { ICON_LABELS, ICON_OPTIONS } from "@/lib/fact-icons";
 import {
@@ -595,10 +595,13 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
   ];
   const statOptions = [
     "Listing status",
+    "Move in",
     "Building status",
     "Price range",
     "Address",
     "Total Units",
+    "Units sold",
+    "Units available",
     "Floor plans",
     "Floors",
     "Property type",
@@ -612,7 +615,9 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
     "Per SqFt (Avg)",
     "Incentives",
     "Parking",
-    "Completion year",
+    "Carpark levels",
+    "Avg unit price",
+    "Avg floor area",
     "Ownership",
     "Ceilings",
     "Neighborhood",
@@ -654,6 +659,9 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
   const [availablePlanPricesMax, setAvailablePlanPricesMax] = useState("");
   const [pricingComingSoon, setPricingComingSoon] = useState(initialProject?.pricingComingSoon ?? "");
   const [averagePricePerSqft, setAveragePricePerSqft] = useState(initialProject?.averagePricePerSqft ?? "");
+  const [averageUnitPriceLkr, setAverageUnitPriceLkr] = useState(initialProject?.averageUnitPriceLkr ? String(initialProject.averageUnitPriceLkr) : "");
+  const [carparkLevels, setCarparkLevels] = useState(initialProject?.carparkLevels ? String(initialProject.carparkLevels) : "");
+  const [averageFloorAreaSqFt, setAverageFloorAreaSqFt] = useState(initialProject?.averageFloorAreaSqFt ? String(initialProject.averageFloorAreaSqFt) : "");
   const [monthlyMaintenancePerSqft, setMonthlyMaintenancePerSqft] = useState(initialProject?.monthlyMaintenancePerSqft ?? "");
   const [propertyTax, setPropertyTax] = useState(initialProject?.propertyTax ?? "");
   const [parkingCost, setParkingCost] = useState(initialProject?.parkingCost ?? "");
@@ -715,10 +723,13 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
   const [interactiveMapUrl, setInteractiveMapUrl] = useState(initialProject?.interactiveMapUrl ?? "");
   const [virtualTours, setVirtualTours] = useState<VirtualTourDraft[]>(initialProject?.virtualTours ?? []);
   const [brochureUrl, setBrochureUrl] = useState("");
-  const amenityOptions = ["Pool", "Gym", "Parking", "Security", "Padel Court", "Resident Lounge", "Private Elevator", "Utility Area", "Outdoor Kitchen", "Garden", "Children's Area", "Clubhouse", "EV Charging", "Concierge"];
+  const amenityOptions = ["Pool", "Infinity Pool", "Gym", "Parking", "Security", "Padel Court", "Resident Lounge", "Private Elevator", "Utility Area", "Outdoor Kitchen", "Garden", "Children's Area", "Clubhouse", "EV Charging", "Concierge", "Games Room", "Sky Lounge", "Retail Mall", "Hotel"];
   const [amenities, setAmenities] = useState<string[]>(initialProject?.amenities.map((amenity) => amenity.name) ?? []);
   const [amenityDetails, setAmenityDetails] = useState<Record<string, AmenityDetails>>(() => Object.fromEntries((initialProject?.amenities ?? []).map((amenity) => [amenity.name, { description: "", image: "" }])));
   const [customAmenity, setCustomAmenity] = useState("");
+  const [indoorFeaturesText, setIndoorFeaturesText] = useState((initialProject?.unitFeatures?.indoor ?? []).join("\n"));
+  const [outdoorFeaturesText, setOutdoorFeaturesText] = useState((initialProject?.unitFeatures?.outdoor ?? []).join("\n"));
+  const [otherFeaturesText, setOtherFeaturesText] = useState((initialProject?.unitFeatures?.other ?? []).join("\n"));
 
   const [visibleStats, setVisibleStats] = useState<string[]>(initialProject?.desktopVisibleStats ?? [
     "Price range",
@@ -764,6 +775,50 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
 
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState("");
+
+  const emptyUnitDraft: Unit = { id: "", projectSlug: "", unitNumber: "", floor: 0, apartmentType: "", bedrooms: 0, areaSqFt: 0, priceLkr: 0, status: "Available" };
+  const [units, setUnits] = useState<Unit[]>([]);
+  const [unitsLoading, setUnitsLoading] = useState(false);
+  const [unitsSaving, setUnitsSaving] = useState(false);
+  const [unitsMessage, setUnitsMessage] = useState("");
+
+  useEffect(() => {
+    if (!initialProject) return;
+    setUnitsLoading(true);
+    fetch(`/api/projects/${initialProject.slug}/units`)
+      .then((response) => response.json())
+      .then((data) => setUnits(data.units ?? []))
+      .finally(() => setUnitsLoading(false));
+  }, [initialProject]);
+
+  const addUnitRow = () => setUnits((current) => [...current, { ...emptyUnitDraft }]);
+  const removeUnitRow = (index: number) => setUnits((current) => current.filter((_, i) => i !== index));
+  const updateUnitRow = (index: number, patch: Partial<Unit>) =>
+    setUnits((current) => current.map((unit, i) => (i === index ? { ...unit, ...patch } : unit)));
+
+  const saveUnits = async () => {
+    if (!initialProject) return;
+    setUnitsSaving(true);
+    setUnitsMessage("");
+    try {
+      const response = await fetch(`/api/projects/${initialProject.slug}/units`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ units }),
+      });
+      const data = await response.json().catch(() => null);
+      if (!response.ok) {
+        setUnitsMessage(data?.error ?? "Unable to save units.");
+        return;
+      }
+      setUnits(data.units ?? []);
+      setUnitsMessage("Units saved.");
+    } catch {
+      setUnitsMessage("Unable to save units.");
+    } finally {
+      setUnitsSaving(false);
+    }
+  };
 
   const uniqueOptions = (options: string[]) => [...new Set(options)];
   const districtOptions = province ? uniqueOptions(sriLankaDistrictsByProvince[province] ?? []) : [];
@@ -962,6 +1017,9 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
         ? `${parkingSpaces || "0"} space${parkingSpaces === "1" ? "" : "s"}${parkingFeatures.length > 0 ? ` (${parkingFeatures.join(", ")})` : ""}`
         : initialProject?.parking || "",
       averagePricePerSqft: averagePricePerSqft || undefined,
+      averageUnitPriceLkr: averageUnitPriceLkr ? Number(averageUnitPriceLkr) : undefined,
+      carparkLevels: carparkLevels ? Number(carparkLevels) : undefined,
+      averageFloorAreaSqFt: averageFloorAreaSqFt ? Number(averageFloorAreaSqFt) : undefined,
       monthlyMaintenancePerSqft: monthlyMaintenancePerSqft || undefined,
       propertyTax: propertyTax || undefined,
       parkingCost: parkingCost || undefined,
@@ -977,6 +1035,11 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
         ? { enabled: hotDealEnabled, badge: hotDealBadge.trim() || "Hot Deal", title: hotDealTitle.trim(), description: hotDealDescription.trim() }
         : undefined,
       amenities: amenities.map((name) => ({ name: name as Amenity["name"], icon: name.toLowerCase().replace(/[^a-z0-9]+/g, "-") })),
+      unitFeatures: {
+        indoor: indoorFeaturesText.split("\n").map((line) => line.trim()).filter(Boolean),
+        outdoor: outdoorFeaturesText.split("\n").map((line) => line.trim()).filter(Boolean),
+        other: otherFeaturesText.split("\n").map((line) => line.trim()).filter(Boolean),
+      },
       floorPlans: floorPlans
         .filter((plan) => plan.name.trim())
         .map((plan, index) => ({
@@ -1330,6 +1393,11 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
                 </label>
 
                 <label className="grid gap-1 text-xs text-stone-700">
+                  <span>Average unit price (LKR, optional — distinct from the starting/lowest price above)</span>
+                  <input type="number" min="0" step="1" value={averageUnitPriceLkr} onChange={(event) => setAverageUnitPriceLkr(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" />
+                </label>
+
+                <label className="grid gap-1 text-xs text-stone-700">
                   <span>Monthly C.C./maint per sqft</span>
                   <input value={monthlyMaintenancePerSqft} onChange={(event) => setMonthlyMaintenancePerSqft(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" />
                 </label>
@@ -1612,6 +1680,8 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
             </div>
 
             <Field label="Number of Floors"><input ref={floorsRef} defaultValue={initialProject ? String(initialProject.floors) : undefined} type="number" min="0" step="1" className="border border-stone-300 px-3 py-2 text-sm w-full" /></Field>
+            <Field label="Carpark levels (optional)"><input value={carparkLevels} onChange={(event) => setCarparkLevels(event.target.value)} type="number" min="0" step="1" className="border border-stone-300 px-3 py-2 text-sm w-full" /></Field>
+            <Field label="Average floor area, sq ft (optional)"><input value={averageFloorAreaSqFt} onChange={(event) => setAverageFloorAreaSqFt(event.target.value)} type="number" min="0" step="1" className="border border-stone-300 px-3 py-2 text-sm w-full" /></Field>
 
             <div className="md:col-span-2 mt-2 grid gap-3 border border-stone-200 bg-white p-3">
               <p className="text-sm font-medium text-stone-900">Parking</p>
@@ -1780,20 +1850,77 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
                 </label>
               </div>
             ))}
+            <div className="mt-3 grid gap-3 md:grid-cols-3">
+              <p className="text-xs font-medium text-stone-800 md:col-span-3">Key features (one per line, grouped for the "Key Features" accordion — distinct from building amenities above)</p>
+              <label className="grid gap-1 text-xs text-stone-700">
+                <span>Indoor features</span>
+                <textarea value={indoorFeaturesText} onChange={(event) => setIndoorFeaturesText(event.target.value)} className="border border-stone-300 bg-white px-3 py-2 text-sm" rows={4} />
+              </label>
+              <label className="grid gap-1 text-xs text-stone-700">
+                <span>Outdoor features</span>
+                <textarea value={outdoorFeaturesText} onChange={(event) => setOutdoorFeaturesText(event.target.value)} className="border border-stone-300 bg-white px-3 py-2 text-sm" rows={4} />
+              </label>
+              <label className="grid gap-1 text-xs text-stone-700">
+                <span>Other</span>
+                <textarea value={otherFeaturesText} onChange={(event) => setOtherFeaturesText(event.target.value)} className="border border-stone-300 bg-white px-3 py-2 text-sm" rows={4} />
+              </label>
+            </div>
           </div>
           </div>
           <div ref={(element) => { sectionRefs.current[7] = element; }} className="border border-indigo-200 bg-indigo-50 p-3">
             <p className="text-sm font-medium text-stone-900">Units</p>
-            <p className="mt-1 text-xs text-stone-600">Add unit availability and pricing after the project details are complete.</p>
-            <div className="mt-3 grid gap-3 md:grid-cols-2">
-              <Field label="Unit number"><input className="border border-stone-300 bg-white px-3 py-2 text-sm w-full" /></Field>
-              <select className="border border-stone-300 bg-white px-3 py-2 text-sm" defaultValue="">
-                <option value="">Select unit status</option>
-                <option value="Available">Available</option>
-                <option value="Reserved">Reserved</option>
-                <option value="Sold">Sold</option>
-              </select>
-            </div>
+            <p className="mt-1 text-xs text-stone-600">Per-unit floor availability and pricing, shown as a floor-by-floor table on the public project page. Saved separately from the rest of the wizard.</p>
+            {!initialProject ? (
+              <p className="mt-3 border border-dashed border-stone-300 bg-white p-3 text-xs text-stone-600">Save this project first (Publish below) — units need a project to attach to.</p>
+            ) : (
+              <>
+                <div className="mt-3 overflow-x-auto border border-stone-200 bg-white">
+                  <table className="w-full min-w-225 text-sm">
+                    <thead className="bg-stone-50 text-left">
+                      <tr>
+                        <th className="p-2">Unit #</th>
+                        <th className="p-2">Floor</th>
+                        <th className="p-2">Type</th>
+                        <th className="p-2">Beds</th>
+                        <th className="p-2">Sq Ft</th>
+                        <th className="p-2">Price (LKR)</th>
+                        <th className="p-2">Price (USD)</th>
+                        <th className="p-2">Status</th>
+                        <th className="p-2"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {units.map((unit, index) => (
+                        <tr key={`unit-row-${index}`} className="border-t border-stone-100">
+                          <td className="p-2"><input value={unit.unitNumber} onChange={(event) => updateUnitRow(index, { unitNumber: event.target.value })} className="w-24 border border-stone-300 px-2 py-1" /></td>
+                          <td className="p-2"><input type="number" value={unit.floor} onChange={(event) => updateUnitRow(index, { floor: Number(event.target.value) })} className="w-16 border border-stone-300 px-2 py-1" /></td>
+                          <td className="p-2"><input value={unit.apartmentType} onChange={(event) => updateUnitRow(index, { apartmentType: event.target.value })} className="w-20 border border-stone-300 px-2 py-1" /></td>
+                          <td className="p-2"><input type="number" value={unit.bedrooms} onChange={(event) => updateUnitRow(index, { bedrooms: Number(event.target.value) })} className="w-14 border border-stone-300 px-2 py-1" /></td>
+                          <td className="p-2"><input type="number" value={unit.areaSqFt} onChange={(event) => updateUnitRow(index, { areaSqFt: Number(event.target.value) })} className="w-20 border border-stone-300 px-2 py-1" /></td>
+                          <td className="p-2"><input type="number" value={unit.priceLkr} onChange={(event) => updateUnitRow(index, { priceLkr: Number(event.target.value) })} className="w-28 border border-stone-300 px-2 py-1" /></td>
+                          <td className="p-2"><input type="number" value={unit.priceUsd ?? ""} onChange={(event) => updateUnitRow(index, { priceUsd: event.target.value ? Number(event.target.value) : undefined })} className="w-24 border border-stone-300 px-2 py-1" /></td>
+                          <td className="p-2">
+                            <select value={unit.status} onChange={(event) => updateUnitRow(index, { status: event.target.value as Unit["status"] })} className="border border-stone-300 px-2 py-1">
+                              <option value="Available">Available</option>
+                              <option value="Reserved">Reserved</option>
+                              <option value="Booked">Booked</option>
+                              <option value="Sold">Sold</option>
+                            </select>
+                          </td>
+                          <td className="p-2"><Button type="button" variant="outline" className="h-8 px-2 text-xs" onClick={() => removeUnitRow(index)}>Remove</Button></td>
+                        </tr>
+                      ))}
+                      {units.length === 0 ? <tr><td colSpan={9} className="p-3 text-center text-xs text-stone-500">{unitsLoading ? "Loading units..." : "No units yet."}</td></tr> : null}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="mt-3 flex items-center gap-3">
+                  <Button type="button" variant="outline" onClick={addUnitRow}>Add unit</Button>
+                  <Button type="button" disabled={unitsSaving} onClick={saveUnits}>{unitsSaving ? "Saving..." : "Save units"}</Button>
+                  {unitsMessage ? <p className="text-xs text-stone-700">{unitsMessage}</p> : null}
+                </div>
+              </>
+            )}
           </div>
           <div ref={(element) => { sectionRefs.current[8] = element; }} className="border border-teal-200 bg-teal-50 p-3">
             <p className="text-sm font-medium text-stone-900">Contact</p>
