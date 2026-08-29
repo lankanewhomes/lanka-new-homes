@@ -1,4 +1,4 @@
-# Design Reference — LankaLiving
+# Design Reference — NewHomesSrilanka
 
 Living reference for UI conventions established across the site. Check here
 before building a new page or component so new work matches existing
@@ -291,6 +291,36 @@ hero/stats/description/contact shell rather than a new bespoke layout.
   `#c0392b`/`#fdeaec`, purple `#4338ca`/`#eef2ff`.
 - Serif is reserved for listing-page H1s only (Zolo-style pages); everything
   else uses the site's default sans stack.
+
+### Type scale
+
+Font: Archivo everywhere (`var(--font-ref-sans)`, set on `body`), standing in
+for the original Neue Haas Grotesk reference — new rules should reference
+`var(--font-ref-sans)` rather than a hardcoded font name.
+
+- **Body copy / links / list-item labels** ("View more cities", "Explore
+  {neighborhood} neighborhood", paragraph text): `14px` / `400` weight /
+  `20px` line-height. This is `body`'s own default (`src/app/globals.css`),
+  so most text inherits it for free — only re-declare it explicitly on an
+  element that needs to survive being nested inside something with a
+  different font-size (e.g. a link sitting inside a larger heading block).
+- **Small emphasized labels** (amenity names, stat-chip values, card
+  sub-headings): `14px`–`15px` / `600` weight.
+- **Muted meta/caption text** (stat-chip labels, hours-of-operation rows,
+  helper text under an image): `12px`–`13px` / `400` weight.
+- Never jump a label past ~15px on a narrower breakpoint just because
+  there's more vertical room — that was the bug in
+  `.amenities-showcase-item-copy strong` (15px desktop, mistakenly 20px on
+  mobile). A mobile override should only change a size when the *mobile*
+  layout specifically needs it (e.g. a hero H1 shrinking to fit), not as a
+  reflex — when in doubt, carry the desktop size over unchanged.
+
+**Convention going forward:** before sizing any new small label/link, check
+this scale first and reuse the closest existing value instead of picking a
+new one — and when two elements are meant to look identical (e.g. two
+"explore more" links in different sections), give them the *same CSS class*
+rather than duplicating the declaration, so a future edit to one style
+updates both automatically.
 
 ## Where things live
 

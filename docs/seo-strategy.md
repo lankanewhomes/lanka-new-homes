@@ -1,4 +1,4 @@
-# SEO Strategy — LankaLiving
+# SEO Strategy — NewHomesSrilanka
 
 This file is the source of truth for the site's SEO information architecture:
 which URL targets which keywords, and the tactics applied across those pages.

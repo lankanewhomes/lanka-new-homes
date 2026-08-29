@@ -11,7 +11,7 @@ type LanguageContextValue = {
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
-const STORAGE_KEY = "lankaliving-language";
+const STORAGE_KEY = "newhomessrilanka-language";
 
 const htmlLangMap: Record<SiteLanguage, string> = {
   en: "en",

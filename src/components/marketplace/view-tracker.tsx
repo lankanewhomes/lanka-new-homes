@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-const SESSION_KEY = "lankaliving-session-id";
+const SESSION_KEY = "newhomessrilanka-session-id";
 
 function getSessionId() {
   const existing = localStorage.getItem(SESSION_KEY);

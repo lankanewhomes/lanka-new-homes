@@ -120,7 +120,7 @@ export function AuthModalProvider({ children }: { children: RNode }) {
             </p>
 
             <p className="auth-modal-legal">
-              <strong>By clicking continue</strong> you agree to LankaLiving&apos;s <a href="/terms">Terms of Service</a> and{" "}
+              <strong>By clicking continue</strong> you agree to NewHomesSrilanka&apos;s <a href="/terms">Terms of Service</a> and{" "}
               <a href="/privacy">Privacy Policy</a>.
             </p>
           </div>

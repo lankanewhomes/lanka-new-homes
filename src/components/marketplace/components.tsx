@@ -26,7 +26,7 @@ import {
   ShieldIcon,
   StatusHouseIcon,
 } from "@/components/icons/stat-icons";
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { Fragment, FormEvent, useEffect, useMemo, useState } from "react";
 import {
   Bath,
   BedDouble,
@@ -342,6 +342,7 @@ export function ProjectHero({
   backHref,
   backLabel,
   plansHomesNavLabel = "Floor Plans",
+  amenitiesNavLabel = "Amenities",
   statusLabelOverride,
   extraBadges = [],
   roadMapImages = [],
@@ -357,6 +358,7 @@ export function ProjectHero({
   backHref?: string;
   backLabel?: string;
   plansHomesNavLabel?: string;
+  amenitiesNavLabel?: string;
   /** Shows this instead of `project.status` in the status pill — for pages
    * (like land) that adapt their own data onto the Project shape and need
    * to display their real status value rather than the mapped one. */
@@ -499,6 +501,133 @@ export function ProjectHero({
     setBlockPlanIndex((index) => (index + 1) % blockPlanImages.length);
   };
 
+  // Every quick-jump control on the hero (photos/videos/map/etc.) — shared
+  // by the hero's own pill row and the desktop floating bottom bar, so the
+  // two never drift out of sync. `render` takes the caller's className so
+  // each surface keeps its own pill styling.
+  const heroMediaPills: { key: string; show: boolean; render: (className: string) => React.ReactElement }[] = [
+    {
+      key: "photos",
+      show: photoItems.length > 0,
+      render: (className) => (
+        <button
+          type="button"
+          className={className}
+          onClick={() => {
+            setPhotoIndex(0);
+            setLightboxView("photos");
+            setIsLightboxOpen(true);
+          }}
+        >
+          <LayoutGrid className="h-4 w-4" aria-hidden="true" /> Photos {photoItems.length}
+        </button>
+      ),
+    },
+    {
+      key: "videos",
+      show: videoCount > 0,
+      render: (className) => (
+        <button type="button" className={className} onClick={() => setActiveMedia("videos")}>
+          <Video className="h-4 w-4" aria-hidden="true" /> Videos {videoCount}
+        </button>
+      ),
+    },
+    {
+      key: "map",
+      show: hasMap,
+      render: (className) => (
+        <button
+          type="button"
+          className={className}
+          onClick={() => {
+            setLightboxView("map");
+            setIsLightboxOpen(true);
+          }}
+        >
+          <MapIcon className="h-4 w-4" aria-hidden="true" /> Map
+        </button>
+      ),
+    },
+    {
+      key: "floor-plans",
+      show: hasBlockPlan,
+      render: (className) => (
+        <a href="#plans-homes" className={className} onClick={() => setActiveSection("plans-homes")}>
+          <LayoutPanelLeft className="h-4 w-4" aria-hidden="true" /> {plansHomesNavLabel} {floorPlanCount}
+        </a>
+      ),
+    },
+    {
+      key: "road-map",
+      show: hasRoadMap,
+      render: (className) => (
+        <button
+          type="button"
+          className={className}
+          onClick={() => {
+            setRoadMapIndex(0);
+            setLightboxView("roadMap");
+            setIsLightboxOpen(true);
+          }}
+        >
+          <MapPinned className="h-4 w-4" aria-hidden="true" /> Road Map{roadMapItems.length > 1 ? ` ${roadMapItems.length}` : ""}
+        </button>
+      ),
+    },
+    {
+      key: "block-plan",
+      show: hasBlockPlanImages,
+      render: (className) => (
+        <button
+          type="button"
+          className={className}
+          onClick={() => {
+            setBlockPlanIndex(0);
+            setLightboxView("blockPlan");
+            setIsLightboxOpen(true);
+          }}
+        >
+          <Layers className="h-4 w-4" aria-hidden="true" /> Block Plan{blockPlanImages.length > 1 ? ` ${blockPlanImages.length}` : ""}
+        </button>
+      ),
+    },
+    {
+      key: "street-view",
+      show: hasStreetView,
+      render: (className) => (
+        <button
+          type="button"
+          className={className}
+          onClick={() => {
+            setLightboxView("streetView");
+            setIsLightboxOpen(true);
+          }}
+        >
+          <Navigation className="h-4 w-4" aria-hidden="true" /> Street View
+        </button>
+      ),
+    },
+    {
+      key: "interactive-map",
+      show: hasInteractiveMap,
+      render: (className) => (
+        <button type="button" className={className} onClick={() => setActiveMedia("interactiveMap")}>
+          <Compass className="h-4 w-4" aria-hidden="true" /> Interactive map
+        </button>
+      ),
+    },
+    {
+      key: "virtual-tours",
+      show: virtualTourCount > 0,
+      render: (className) => (
+        <button type="button" className={className} onClick={() => setActiveMedia("virtualTours")}>
+          <Camera className="h-4 w-4" aria-hidden="true" /> Virtual tours {virtualTourCount}
+        </button>
+      ),
+    },
+  ];
+  const visibleHeroMediaPills = heroMediaPills.filter((pill) => pill.show);
+
   return (
     <>
     <div className="listing-hero-sticky-bar">
@@ -514,7 +643,7 @@ export function ProjectHero({
           <a href="#plans-homes" className={activeSection === "plans-homes" ? "active" : undefined} onClick={() => setActiveSection("plans-homes")}>{plansHomesNavLabel}</a>
           {showAmenitiesAndNeighborhoodNav ? (
             <>
-              <a href="#amenities" className={activeSection === "amenities" ? "active" : undefined} onClick={() => setActiveSection("amenities")}>Amenities</a>
+              <a href="#amenities" className={activeSection === "amenities" ? "active" : undefined} onClick={() => setActiveSection("amenities")}>{amenitiesNavLabel}</a>
               <a href="#neighborhood" className={activeSection === "neighborhood" ? "active" : undefined} onClick={() => setActiveSection("neighborhood")}>Neighborhood</a>
             </>
           ) : null}
@@ -569,97 +698,9 @@ export function ProjectHero({
             )}
 
             <div className="listing-hero-grid-pills">
-              {photoItems.length > 0 && (
-                <button
-                  type="button"
-                  className="listing-hero-grid-pill"
-                  onClick={() => {
-                    setPhotoIndex(0);
-                    setLightboxView("photos");
-                    setIsLightboxOpen(true);
-                  }}
-                >
-                  <LayoutGrid className="h-4 w-4" aria-hidden="true" /> Photos {photoItems.length}
-                </button>
-              )}
-
-              {videoCount > 0 && (
-                <button type="button" className="listing-hero-grid-pill" onClick={() => setActiveMedia("videos")}>
-                  <Video className="h-4 w-4" aria-hidden="true" /> Videos {videoCount}
-                </button>
-              )}
-
-              {hasMap && (
-                <button
-                  type="button"
-                  className="listing-hero-grid-pill"
-                  onClick={() => {
-                    setLightboxView("map");
-                    setIsLightboxOpen(true);
-                  }}
-                >
-                  <MapIcon className="h-4 w-4" aria-hidden="true" /> Map
-                </button>
-              )}
-
-              {hasBlockPlan && (
-                <a href="#plans-homes" className="listing-hero-grid-pill" onClick={() => setActiveSection("plans-homes")}>
-                  <LayoutPanelLeft className="h-4 w-4" aria-hidden="true" /> {plansHomesNavLabel} {floorPlanCount}
-                </a>
-              )}
-
-              {hasRoadMap && (
-                <button
-                  type="button"
-                  className="listing-hero-grid-pill"
-                  onClick={() => {
-                    setRoadMapIndex(0);
-                    setLightboxView("roadMap");
-                    setIsLightboxOpen(true);
-                  }}
-                >
-                  <MapPinned className="h-4 w-4" aria-hidden="true" /> Road Map{roadMapItems.length > 1 ? ` ${roadMapItems.length}` : ""}
-                </button>
-              )}
-
-              {hasBlockPlanImages && (
-                <button
-                  type="button"
-                  className="listing-hero-grid-pill"
-                  onClick={() => {
-                    setBlockPlanIndex(0);
-                    setLightboxView("blockPlan");
-                    setIsLightboxOpen(true);
-                  }}
-                >
-                  <Layers className="h-4 w-4" aria-hidden="true" /> Block Plan{blockPlanImages.length > 1 ? ` ${blockPlanImages.length}` : ""}
-                </button>
-              )}
-
-              {hasStreetView && (
-                <button
-                  type="button"
-                  className="listing-hero-grid-pill"
-                  onClick={() => {
-                    setLightboxView("streetView");
-                    setIsLightboxOpen(true);
-                  }}
-                >
-                  <Navigation className="h-4 w-4" aria-hidden="true" /> Street View
-                </button>
-              )}
-
-              {hasInteractiveMap && (
-                <button type="button" className="listing-hero-grid-pill" onClick={() => setActiveMedia("interactiveMap")}>
-                  <Compass className="h-4 w-4" aria-hidden="true" /> Interactive map
-                </button>
-              )}
-
-              {virtualTourCount > 0 && (
-                <button type="button" className="listing-hero-grid-pill" onClick={() => setActiveMedia("virtualTours")}>
-                  <Camera className="h-4 w-4" aria-hidden="true" /> Virtual tours {virtualTourCount}
-                </button>
-              )}
+              {visibleHeroMediaPills.map((pill) => (
+                <Fragment key={pill.key}>{pill.render("listing-hero-grid-pill")}</Fragment>
+              ))}
             </div>
           </div>
         )}
@@ -966,6 +1007,14 @@ export function ProjectHero({
             Request info
           </button>
         </div>
+
+        {visibleHeroMediaPills.length > 0 && (
+          <div className="listing-hero-desktop-sticky-ctas" aria-label="Quick jump">
+            {visibleHeroMediaPills.map((pill) => (
+              <Fragment key={pill.key}>{pill.render("listing-hero-desktop-sticky-btn")}</Fragment>
+            ))}
+          </div>
+        )}
 
     </section>
 
@@ -1340,7 +1389,7 @@ export function RequestInfoDialog({
 
             <label className="request-info-consent">
               <input type="checkbox" checked={agreed} onChange={(event) => setAgreed(event.target.checked)} required />
-              <span>I agree to be contacted by LankaLiving agents via WhatsApp, SMS, Call, Email etc.</span>
+              <span>I agree to be contacted by NewHomesSrilanka agents via WhatsApp, SMS, Call, Email etc.</span>
             </label>
 
             {errorMessage ? <p className="request-info-error">{errorMessage}</p> : null}
@@ -1620,7 +1669,8 @@ const PLAN_SORT_OPTIONS = [
 
 type PlanSortValue = typeof PLAN_SORT_OPTIONS[number]["value"];
 
-export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFloorPlanId, showQuickMoveIns = true }: { project: Project; title?: string; excludeFloorPlanId?: string; showQuickMoveIns?: boolean }) {
+export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFloorPlanId, showQuickMoveIns = true, planHrefBase }: { project: Project; title?: string; excludeFloorPlanId?: string; showQuickMoveIns?: boolean; planHrefBase?: string }) {
+  const hrefBase = planHrefBase ?? `/projects/${project.slug}/floor-plans`;
   const [activeTab, setActiveTab] = useState<"all" | "floorPlans" | "quickMoveIns">("floorPlans");
   const [filterOpen, setFilterOpen] = useState(false);
   const [availabilityFilter, setAvailabilityFilter] = useState<Set<string>>(new Set());
@@ -1773,7 +1823,7 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
 
       <div className="plans-homes-grid">
         {visiblePlans.map((plan) => (
-          <Link key={plan.id} href={`/projects/${project.slug}/floor-plans/${plan.id}`} className="plans-home-card">
+          <Link key={plan.id} href={`${hrefBase}/${plan.id}`} className="plans-home-card">
             <figure>
               <Image src={plan.image} alt={plan.planName} width={960} height={620} className="plans-home-image" />
               <span className="plans-status-pill">For sale</span>
@@ -2303,7 +2353,7 @@ export function Header() {
     <header className="site-header">
       <div className="site-header-inner">
         <div className="site-brand-group">
-          <Link href="/" className="site-logo">LankaLiving<span>.</span></Link>
+          <Link href="/" className="site-logo">NewHomesSrilanka<span>.</span></Link>
           <div className="language-segmented" role="group" aria-label="Language switcher">
             <button type="button" className={language === "en" ? "active" : undefined} onClick={() => setLanguage("en")}>EN</button>
             <button type="button" className={language === "si" ? "active" : undefined} onClick={() => setLanguage("si")}>සිංහල</button>
@@ -2349,7 +2399,7 @@ export function Footer() {
     <footer className="site-footer">
       <div className="footer-top">
         <div className="footer-brand">
-          <p className="footer-logo">LankaLiving.</p>
+          <p className="footer-logo">NewHomesSrilanka.</p>
           <p className="partner-sites">Partner sites<br /><span>New homes in Sri Lanka</span></p>
         </div>
 
@@ -2384,7 +2434,7 @@ export function Footer() {
       </div>
 
       <div className="footer-bottom">
-        <p className="copyright">© 2026 LankaLiving</p>
+        <p className="copyright">© 2026 NewHomesSrilanka</p>
         <Link href="/admin" className="footer-admin-link">Admin</Link>
       </div>
     </footer>

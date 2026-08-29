@@ -1,5 +1,5 @@
 // Custom line-icon set for the project detail hero stats — a distinct
-// LankaLiving icon language instead of generic lucide-react icons.
+// NewHomesSrilanka icon language instead of generic lucide-react icons.
 // Consistent style: 24x24 viewBox, 1.6 stroke, round caps/joins, no fill.
 
 type IconProps = { className?: string };

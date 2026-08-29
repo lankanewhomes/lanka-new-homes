@@ -1,4 +1,4 @@
--- LankaLiving / newhomesl — Supabase schema
+-- NewHomesSrilanka — Supabase schema
 -- Run this once in the Supabase SQL Editor (Project → SQL Editor → New query).
 -- Safe to re-run: every statement is idempotent (IF NOT EXISTS / CREATE OR REPLACE).
 --
