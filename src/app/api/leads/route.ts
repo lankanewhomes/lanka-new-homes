@@ -7,7 +7,6 @@ export async function POST(req: Request) {
 
     const required = [
       "name",
-      "email",
       "phone",
       "preferredContactMethod",
       "message",
@@ -21,14 +20,19 @@ export async function POST(req: Request) {
       }
     }
 
+    if (body.email !== undefined && typeof body.email !== "string") {
+      return NextResponse.json({ error: "Invalid email" }, { status: 400 });
+    }
+
     const saved = await insertLead({
       name: body.name,
-      email: body.email,
+      email: typeof body.email === "string" ? body.email : "",
       phone: body.phone,
       preferredContactMethod: body.preferredContactMethod,
       message: body.message,
       projectSlug: body.projectSlug,
       developerSlug: body.developerSlug,
+      marketingOptIn: typeof body.marketingOptIn === "boolean" ? body.marketingOptIn : undefined,
     });
 
     return NextResponse.json({ ok: true, id: saved.id, createdAt: saved.createdAt });

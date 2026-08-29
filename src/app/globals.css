@@ -317,9 +317,9 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
 
 .luxury-hero-two-panel {
   position: absolute;
-  bottom: 20px;
+  bottom: 0;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, 50%);
   z-index: 4;
   width: min(640px, calc(100% - 56px));
   background: linear-gradient(180deg, #fbfcfe 0%, #f6f9fd 100%);
@@ -344,6 +344,7 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
 }
 
 .luxury-hero-two-top-search {
+  min-height: 0;
   margin-top: 20px;
   margin-bottom: 22px;
   max-width: 620px;
@@ -351,7 +352,7 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
   gap: 0;
   box-shadow: none;
   border: 1px solid #dde2e8;
-  border-radius: 999px;
+  border-radius: 0;
   overflow: hidden;
 }
 
@@ -393,6 +394,23 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
 
 .luxury-hero-two-top-search .hero-search-submit:hover {
   background: #ff9a5c;
+}
+
+.hero-quick-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.hero-quick-link-pill {
+  padding: 6px 14px;
+  font-size: 12px;
+}
+
+.hero-quick-link-pill:hover {
+  border-color: #f47b36;
+  color: #f47b36;
 }
 
 @media (max-width: 980px) {
@@ -741,6 +759,25 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   border: 0;
   display: block;
   background: #dfe6ef;
+}
+
+.listing-hero-video-list {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+}
+
+.listing-hero-video-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border: 1px solid #e2e2e2;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #111111;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .listing-hero-media-back {
@@ -1407,7 +1444,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   flex-direction: column;
   align-items: flex-start;
   text-align: left;
-  gap: 4px;
+  gap: 10px;
   flex: 1 1 auto;
   min-width: 0;
 }
@@ -1470,19 +1507,26 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 
 .stats-contact-card-social {
   display: flex;
+  align-items: center;
   flex-shrink: 0;
   gap: 8px;
+  margin: 0 auto;
 }
 
 .stats-contact-card-social-link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 42px;
+  height: 42px;
   border: 1px solid #d4d4d4;
   color: #4a4a4a;
   background: #fff;
+}
+
+.stats-contact-card-social-link svg {
+  width: 20px;
+  height: 20px;
 }
 
 .stats-contact-card-social-link:hover {
@@ -2171,12 +2215,24 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 /* Single-column page content (no sidebar) — same width cap as
    .listing-with-sidebar so pages without a sidebar card still align. */
 .project-page-content {
-  width: min(1290px, calc(100% - 48px));
+  /* Matches .listing-hero-panel's effective rendered width exactly: that
+     panel is width:calc(100% - 80px) nested inside .listing-hero, which is
+     itself width:min(1290px, calc(100% - 48px)) — collapsing that nesting
+     into one viewport-relative formula gives min(1210px, 100% - 128px). */
+  width: min(1210px, calc(100% - 128px));
   margin: 0 auto;
   padding-bottom: 56px;
   display: flex;
   flex-direction: column;
   gap: 48px;
+}
+
+@media (max-width: 980px) {
+  /* Mirrors .listing-hero-panel at this breakpoint: (100% - 24px) from
+     .listing-hero, then another (100% - 14px) nested inside that. */
+  .project-page-content {
+    width: calc(100% - 38px);
+  }
 }
 
 .listing-with-sidebar {
@@ -3988,12 +4044,16 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 }
 
 .livabl-home .home-content {
-  padding-top: 24px;
+  /* Extra clearance for .luxury-hero-two-panel, which now straddles the
+     hero's bottom edge (transform: translate(-50%, 50%)) instead of sitting
+     fully inside it — this keeps its overlapping bottom half from covering
+     the Featured Listings heading. */
+  padding-top: 200px;
 }
 
 @media (max-width: 760px) {
   .livabl-home .home-content {
-    padding-top: 20px;
+    padding-top: 260px;
   }
 }
 
@@ -4585,6 +4645,30 @@ a.developer-profile-press-title {
   outline-offset: 1px;
 }
 
+.request-info-phone-row {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.request-info-phone-flag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  border: 1px solid #c8c8c8;
+  border-radius: 8px;
+  background: #f7f7f7;
+  color: #1f1f1f;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.request-info-phone-row input {
+  flex: 1;
+  min-width: 0;
+}
+
 .request-info-char-count {
   display: block;
   margin-top: 4px;
@@ -4707,7 +4791,7 @@ a.developer-profile-press-title {
 
 .neighborhood-section-explore {
   display: inline-block;
-  margin-top: 18px;
+  margin-top: 32px;
   font-size: 14px;
   font-weight: 400;
   color: #1e1e1e;

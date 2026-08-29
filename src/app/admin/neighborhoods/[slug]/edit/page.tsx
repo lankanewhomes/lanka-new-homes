@@ -20,7 +20,7 @@ export default async function EditNeighborhoodPage({ params }: EditNeighborhoodP
 
   return (
     <div className="grid gap-4 px-4 pt-6 pb-16 lg:grid-cols-[220px_1fr] lg:px-6 lg:pt-8">
-      <DashboardSidebar links={[{ label: "Overview", href: "/admin" }, { label: "Developers", href: "/admin/developers" }, { label: "Neighborhoods", href: "/admin/neighborhoods" }, { label: "Homepage Hero", href: "/admin/hero-ads" }, { label: "Users", href: "/admin" }, { label: "Leads", href: "/admin" }, { label: "Articles", href: "/admin" }, { label: "Locations", href: "/admin" }, { label: "Settings", href: "/admin" }]} />
+      <DashboardSidebar />
       <section className="space-y-4">
         <DashboardHeader title={`Edit ${neighborhood.name}`} subtitle="Update this neighborhood's public page." />
         <NeighborhoodForm initialNeighborhood={neighborhood} />

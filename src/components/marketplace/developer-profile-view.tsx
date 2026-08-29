@@ -5,8 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronDown, House, Star } from "lucide-react";
 import type { Developer, Project } from "@/types";
-import { formatLkr } from "@/lib/format";
-import { formatOfficeHours, SOCIAL_ICON } from "@/components/marketplace/components";
+import { formatLkr, formatOfficeHours } from "@/lib/format";
+import { SOCIAL_ICON } from "@/components/marketplace/components";
 
 type Tab = "projects" | "reviews" | "awards" | "press";
 

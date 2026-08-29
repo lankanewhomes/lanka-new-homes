@@ -3,16 +3,15 @@ import { notFound } from "next/navigation";
 import { projects } from "@/data/projects";
 import { getProjectBySlug } from "@/lib/project-store";
 import { getDeveloperBySlug } from "@/lib/developer-store";
-import { getUnitsByProjectSlug } from "@/lib/unit-store";
 import {
+  AmenitiesShowcaseSection,
   PlansAndHomesSection,
   PricingInformationLayout,
   ProjectDescriptionSection,
   ProjectHero,
   ProjectNarrativeDetails,
   ProjectStatsChips,
-  SalesCenterSection,
-  UnitAvailabilitySection,
+  StatsContactCard,
 } from "@/components/marketplace/components";
 
 type FloorPlanPageProps = {
@@ -56,8 +55,6 @@ export default async function FloorPlanDetailPage({ params }: FloorPlanPageProps
   if (!project || !floorPlan) return notFound();
 
   const developer = await getDeveloperBySlug(project.developerSlug);
-  const units = await getUnitsByProjectSlug(project.slug);
-  const unitsOfThisType = units.filter((unit) => unit.apartmentType === floorPlan.planType);
 
   return (
     <div className="space-y-8">
@@ -71,15 +68,23 @@ export default async function FloorPlanDetailPage({ params }: FloorPlanPageProps
         backLabel={project.name}
         plansHomesNavLabel="Other floor plans"
       />
-      <ProjectDescriptionSection project={project} headingOverride={`${floorPlan.planName} Details`} />
-      <ProjectStatsChips project={project} floorPlan={floorPlan} />
-      <ProjectNarrativeDetails project={project} />
-      <section id="pricing" className="space-y-3">
-        <PricingInformationLayout project={project} />
-      </section>
-      <SalesCenterSection project={project} developer={developer} />
-      <UnitAvailabilitySection units={unitsOfThisType} projectSlug={project.slug} title={`${floorPlan.planName} Units`} />
-      <PlansAndHomesSection project={project} title="Other floor plans" excludeFloorPlanId={floorPlan.id} units={units} />
+
+      <div className="project-page-content">
+        <ProjectStatsChips project={project} floorPlan={floorPlan} />
+        <ProjectDescriptionSection project={project} headingOverride={`${floorPlan.planName} Details`} />
+
+        <ProjectNarrativeDetails project={project} />
+
+        <section id="pricing" className="space-y-3">
+          <PricingInformationLayout project={project} />
+        </section>
+
+        <AmenitiesShowcaseSection amenities={project.amenities} gallery={project.gallery} heroImage={project.heroImage} />
+
+        <PlansAndHomesSection project={project} title="Other floor plans" excludeFloorPlanId={floorPlan.id} />
+
+        <StatsContactCard project={project} developer={developer} />
+      </div>
     </div>
   );
 }

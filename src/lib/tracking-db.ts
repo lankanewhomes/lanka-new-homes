@@ -8,6 +8,7 @@ type LeadInput = {
   message: string;
   projectSlug: string;
   developerSlug: string;
+  marketingOptIn?: boolean;
 };
 
 type ViewInput = {
@@ -32,6 +33,7 @@ export async function insertLead(input: LeadInput) {
     message: input.message.trim(),
     project_slug: input.projectSlug,
     developer_slug: input.developerSlug,
+    marketing_opt_in: input.marketingOptIn ?? false,
     created_at: createdAt,
   });
   if (error) throw new Error(`Failed to save lead: ${error.message}`);

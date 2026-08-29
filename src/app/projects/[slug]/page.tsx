@@ -4,7 +4,6 @@ import { projects } from "@/data/projects";
 import { getProjectBySlug } from "@/lib/project-store";
 import { getNeighborhoodBySlug } from "@/lib/neighborhood-store";
 import { getDeveloperBySlug } from "@/lib/developer-store";
-import { getUnitsByProjectSlug } from "@/lib/unit-store";
 import {
   AmenitiesShowcaseSection,
   KeyFeaturesSection,
@@ -75,7 +74,6 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
 
   const neighborhood = project.neighborhoodSlug ? await getNeighborhoodBySlug(project.neighborhoodSlug) : undefined;
   const developer = await getDeveloperBySlug(project.developerSlug);
-  const units = await getUnitsByProjectSlug(project.slug);
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -116,7 +114,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
       <ProjectHero project={project} backHref="/projects" backLabel="New Projects" />
 
       <div className="project-page-content">
-        <ProjectStatsChips project={project} units={units} />
+        <ProjectStatsChips project={project} />
         <ProjectDescriptionSection project={project} />
 
         <ProjectNarrativeDetails project={project} />
@@ -125,13 +123,13 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
           <PricingInformationLayout project={project} />
         </section>
 
-        <KeyFeaturesSection project={project} />
+        <KeyFeaturesSection unitFeatures={project.unitFeatures} />
 
-        <AmenitiesShowcaseSection project={project} />
+        <AmenitiesShowcaseSection amenities={project.amenities} gallery={project.gallery} heroImage={project.heroImage} />
 
-        <PlansAndHomesSection project={project} units={units} />
+        <PlansAndHomesSection project={project} />
 
-        <NeighborhoodSection project={project} neighborhoodPageExists={Boolean(neighborhood)} />
+        <NeighborhoodSection nearby={project.nearby} neighborhoodName={project.neighborhood} neighborhoodSlug={project.neighborhoodSlug} neighborhoodPageExists={Boolean(neighborhood)} />
 
         <StatsContactCard project={project} developer={developer} />
       </div>

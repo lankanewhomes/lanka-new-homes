@@ -17,7 +17,7 @@ export default async function AdminNeighborhoodsPage() {
 
   return (
     <div className="grid gap-4 px-4 pt-6 pb-16 lg:grid-cols-[220px_1fr] lg:px-6 lg:pt-8">
-      <DashboardSidebar links={[{ label: "Overview", href: "/admin" }, { label: "Developers", href: "/admin/developers" }, { label: "Neighborhoods", href: "/admin/neighborhoods" }, { label: "Homepage Hero", href: "/admin/hero-ads" }, { label: "Users", href: "/admin" }, { label: "Leads", href: "/admin" }, { label: "Articles", href: "/admin" }, { label: "Locations", href: "/admin" }, { label: "Settings", href: "/admin" }]} />
+      <DashboardSidebar />
       <section className="space-y-4">
         <div className="flex items-center justify-between gap-3">
           <DashboardHeader title="Neighborhoods" subtitle="Manage neighborhood pages. Projects link to these automatically when their neighborhood slug matches." />

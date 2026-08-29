@@ -39,32 +39,6 @@ create index if not exists idx_projects_city on projects (city);
 create index if not exists idx_projects_district on projects (district);
 create index if not exists idx_projects_data_gin on projects using gin (data);
 
--- Units (per-unit inventory: floor, type, price, size, sale status) --------
--- (supabase/migrations/20260828120000_units_table.sql)
--- Fully columnar (no `data` jsonb) — unlike projects/developers, this is
--- structured tabular inventory data with no free-form marketing content, so
--- every field is a real column from the start.
-
-create table if not exists units (
-  id text primary key,
-  project_slug text not null references projects(slug) on delete cascade,
-  unit_number text not null,
-  floor integer not null,
-  apartment_type text not null,
-  bedrooms integer not null default 0,
-  area_sq_ft numeric not null,
-  price_lkr numeric not null,
-  price_usd numeric,
-  status text not null default 'Available'
-    check (status in ('Available', 'Reserved', 'Booked', 'Sold')),
-  source_url text,
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
-);
-
-create index if not exists idx_units_project_slug on units (project_slug, floor);
-create index if not exists idx_units_status on units (project_slug, status);
-
 -- Developers ---------------------------------------------------------------
 
 create table if not exists developers (
@@ -106,7 +80,10 @@ create table if not exists hero_ads (
 create index if not exists idx_hero_ads_status on hero_ads (status);
 create index if not exists idx_hero_ads_developer_slug on hero_ads (developer_slug);
 
--- Construction companies ----------------------------------------------------
+-- Construction companies, and the lighter-weight partner directories linked
+-- from a project's "Connected Pages" section (marketing companies, sales
+-- companies, architects, interior designers). All share the same shape.
+-- (supabase/migrations/20260829120000_company_directories.sql)
 
 create table if not exists construction_companies (
   slug text primary key,
@@ -116,6 +93,66 @@ create table if not exists construction_companies (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+create table if not exists marketing_companies (
+  slug text primary key,
+  name text not null,
+  location text,
+  data jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists sales_companies (
+  slug text primary key,
+  name text not null,
+  location text,
+  data jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists architects (
+  slug text primary key,
+  name text not null,
+  location text,
+  data jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists interior_designers (
+  slug text primary key,
+  name text not null,
+  location text,
+  data jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+-- Lands (raw land parcels for sale — separate inventory type from projects) -
+-- (supabase/migrations/20260828200000_lands_table.sql)
+
+create table if not exists lands (
+  slug text primary key,
+  title text not null,
+  seller_type text not null check (seller_type in ('developer', 'construction_company', 'builder')),
+  seller_slug text,
+  seller_name text not null,
+  status text not null default 'Available' check (status in ('Available', 'Reserved', 'Sold')),
+  price_lkr numeric,
+  district text,
+  city text,
+  province text,
+  is_featured boolean not null default false,
+  data jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists idx_lands_status on lands (status);
+create index if not exists idx_lands_district on lands (district);
+create index if not exists idx_lands_seller on lands (seller_type, seller_slug);
 
 -- Leads (contact form submissions) ------------------------------------------
 
@@ -128,6 +165,7 @@ create table if not exists leads (
   message text not null,
   project_slug text not null,
   developer_slug text not null,
+  marketing_opt_in boolean not null default false,
   created_at timestamptz not null default now()
 );
 
@@ -178,8 +216,8 @@ drop trigger if exists trg_construction_companies_updated_at on construction_com
 create trigger trg_construction_companies_updated_at before update on construction_companies
   for each row execute function set_updated_at();
 
-drop trigger if exists trg_units_updated_at on units;
-create trigger trg_units_updated_at before update on units
+drop trigger if exists trg_lands_updated_at on lands;
+create trigger trg_lands_updated_at before update on lands
   for each row execute function set_updated_at();
 
 -- Auth: profiles, saved listings, developer account linking ----------------
@@ -277,9 +315,9 @@ alter table construction_companies enable row level security;
 drop policy if exists "construction_companies: public read" on construction_companies;
 create policy "construction_companies: public read" on construction_companies for select using (true);
 
-alter table units enable row level security;
-drop policy if exists "units: public read" on units;
-create policy "units: public read" on units for select using (true);
+alter table lands enable row level security;
+drop policy if exists "lands: public read" on lands;
+create policy "lands: public read" on lands for select using (true);
 
 -- Leads and view analytics hold contact PII / raw analytics — RLS is
 -- enabled with zero policies, so the anon/authenticated roles get no access

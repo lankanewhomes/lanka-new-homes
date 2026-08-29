@@ -4,10 +4,11 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronDown, ChevronLeft, ChevronRight, House, MapPin, Pause, Search } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, MapPin, Pause, Search } from "lucide-react";
 import { SiteLanguage, useLanguage } from "@/components/layout/language-provider";
-import { formatLkr } from "@/lib/format";
-import type { Developer, HeroAd, Project } from "@/types";
+import { ListingGridCard } from "@/components/marketplace/listing-page";
+import { allProjectCategories } from "@/lib/listing-categories";
+import type { HeroAd, Project } from "@/types";
 
 const colomboAreas = ["All", "Dehiwala", "Colombo 2", "Digana", "Colombo 3", "Colombo 9", "Piliyandala", "Hikkaduwa", "Athurugiriya", "Rajagiriya", "Battaramulla"];
 
@@ -85,24 +86,11 @@ function Shelf({ title, items, regularTitle = false, locations = false, promoCar
       <span className="location-chip-photo" aria-hidden="true"><Image src="https://images.unsplash.com/photo-1600607686527-6fb886090705?q=80&w=500&auto=format&fit=crop" alt="" width={96} height={42} /></span>
       <span className="location-chip-photo" aria-hidden="true"><Image src="https://images.unsplash.com/photo-1600047509782-20d39509f26d?q=80&w=500&auto=format&fit=crop" alt="" width={96} height={42} /></span>
     </div>}
-    <div className="home-card-grid">{visibleItems.map((project, index) => <Link href={`/projects/${project.slug}`} className="home-project-card" key={`${project.slug}-${index}`}>
-      <div className="home-project-image-wrap">
-        <Image src={project.heroImage} alt={`${project.name} in ${project.location}`} width={640} height={390} />
-      </div>
-      {(project.isFeatured || project.isMoveInNow || project.floorPlans.some((plan) => plan.quickMoveIn)) ? (
-        <div className="home-card-badge-row" aria-label="Listing badges">
-          {project.isMoveInNow ? <span className="badge-move-in-now">Move-In Now</span> : null}
-          {project.floorPlans.some((plan) => plan.quickMoveIn) ? <span className="badge-quick-move-in">Quick Move-In</span> : null}
-          {project.isFeatured ? <span className="badge-featured">Featured</span> : null}
-        </div>
-      ) : null}
-      <h3>{project.name}</h3><p>{project.status === "Coming Soon" ? "Register now" : `From ${formatLkr(project.startingPriceLkr)}`}</p>
-      <div className="home-card-meta"><small>{project.location}</small></div>
-    </Link>)}{promoCard ? <article className="home-exclusive-card"><p className="exclusive-eyebrow">{promoCard.eyebrow}</p><h3>{promoCard.title}</h3><p>{promoCard.body}</p><Link href="/search">{promoCard.cta}</Link></article> : null}</div>
+    <div className="home-card-grid">{visibleItems.map((project, index) => <ListingGridCard key={`${project.slug}-${index}`} project={project} />)}{promoCard ? <article className="home-exclusive-card"><p className="exclusive-eyebrow">{promoCard.eyebrow}</p><h3>{promoCard.title}</h3><p>{promoCard.body}</p><Link href="/search">{promoCard.cta}</Link></article> : null}</div>
   </section>;
 }
 
-export function HomeClient({ projects, developers }: { projects: Project[]; developers: Developer[] }) {
+export function HomeClient({ projects }: { projects: Project[] }) {
   const { language } = useLanguage();
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
@@ -166,8 +154,8 @@ export function HomeClient({ projects, developers }: { projects: Project[]; deve
       shelfTrending: "New homes trending across Sri Lanka",
       shelfFeatured: "Featured new home communities",
       shelfLaunching: "New communities launching soon",
-      heroTitle: "Building new home dreams",
-      heroSubtitle: "Find your new construction home",
+      heroTitle: "New homes for sale across Sri Lanka",
+      heroSubtitle: "Search new condos, apartments, and villas from Colombo to the coast — pricing, floor plans, and availability updated by every developer.",
       searchPlaceholder: "Search projects & developments",
       searchRegion: "All of Sri Lanka",
       searchButton: "Search",
@@ -186,8 +174,8 @@ export function HomeClient({ projects, developers }: { projects: Project[]; deve
       shelfTrending: "இலங்கை முழுவதும் பிரபலமான புதிய வீடுகள்",
       shelfFeatured: "சிறப்பு புதிய வீட்டு சமூகங்கள்",
       shelfLaunching: "விரைவில் தொடங்கும் புதிய சமூகங்கள்",
-      heroTitle: "Building new home dreams",
-      heroSubtitle: "Find your new construction home",
+      heroTitle: "New homes for sale across Sri Lanka",
+      heroSubtitle: "Search new condos, apartments, and villas from Colombo to the coast — pricing, floor plans, and availability updated by every developer.",
       searchPlaceholder: "திட்டங்கள் மற்றும் அபிவிருத்திகளைத் தேடுங்கள்",
       searchRegion: "இலங்கை முழுவதும்",
       searchButton: "தேடல்",
@@ -206,8 +194,8 @@ export function HomeClient({ projects, developers }: { projects: Project[]; deve
       shelfTrending: "ශ්‍රී ලංකාව පුරා ප්‍රවණ නව නිවාස",
       shelfFeatured: "විශේෂ නව නිවාස ප්‍රජාවන්",
       shelfLaunching: "ඉක්මනින් ආරම්භ වන නව ප්‍රජාවන්",
-      heroTitle: "Building new home dreams",
-      heroSubtitle: "Find your new construction home",
+      heroTitle: "New homes for sale across Sri Lanka",
+      heroSubtitle: "Search new condos, apartments, and villas from Colombo to the coast — pricing, floor plans, and availability updated by every developer.",
       searchPlaceholder: "ව්‍යාපෘති සහ සංවර්ධන සොයන්න",
       searchRegion: "ශ්‍රී ලංකාව පුරා",
       searchButton: "සොයන්න",
@@ -240,56 +228,30 @@ export function HomeClient({ projects, developers }: { projects: Project[]; deve
           {heroSlides.map((slide, index) => <div className="luxury-hero-two-slide" key={`${slide.src}-${index}`}><Link href={slide.href} className="luxury-hero-two-slide-link" aria-hidden={index !== heroSlide} tabIndex={index === heroSlide ? 0 : -1}><Image src={slide.src} alt={index === heroSlide ? slide.alt : ""} fill priority={index === 0} sizes="100vw" /></Link></div>)}
         </div>
         <div className="luxury-hero-two-overlay" />
-        <div className="luxury-hero-two-collection">The Spring &amp; Summer Collection</div>
         <button type="button" className="luxury-hero-two-arrow" aria-label="Previous slide" onClick={showPreviousHeroSlide}><ChevronLeft size={18} /></button>
         <button type="button" className="luxury-hero-two-arrow luxury-hero-two-arrow-right" aria-label="Next slide" onClick={showNextHeroSlide}><ChevronRight size={18} /></button>
         <div className="luxury-hero-two-pagination" aria-label="Slide pagination">{heroSlides.map((_, index) => <button key={index} type="button" className={index === heroSlide ? "active" : undefined} aria-label={`Show slide ${index + 1}`} aria-current={index === heroSlide} onClick={() => setHeroSlide(index)} />)}</div>
         <button type="button" className="luxury-hero-two-pause" aria-label={heroPaused ? "Play slideshow" : "Pause slideshow"} onClick={() => setHeroPaused((paused) => !paused)}>{heroPaused ? <ChevronRight size={16} /> : <Pause size={16} />}</button>
       </div>
       <div className="luxury-hero-two-panel">
-          <h1>Make yourself at home.</h1>
-          <p className="luxury-hero-two-subheading">Discover curated new developments and premium homes across Sri Lanka.</p>
+          <h1>{t.heroTitle}</h1>
+          <p className="luxury-hero-two-subheading">{t.heroSubtitle}</p>
           <form className="hero-search luxury-hero-two-top-search" onSubmit={submitSearch}>
             <label><input aria-label="Search homes" value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} placeholder={t.searchPlaceholder} /></label>
             <button type="button" className="hero-region-picker" aria-label="Select region"><MapPin size={17} /><span>{t.searchRegion}</span><ChevronDown size={16} /></button>
             <button type="submit" aria-label={t.searchButton} className="hero-search-submit"><Search size={19} /></button>
           </form>
+          <div className="hero-quick-links" aria-label="Browse by category">
+            {allProjectCategories.map((category) => (
+              <Link key={category.path} href={category.path} className="listing-filter-pill hero-quick-link-pill">
+                <span>{category.breadcrumbLabel}</span>
+              </Link>
+            ))}
+          </div>
       </div>
     </section>
 
     <main className="home-content">
-      <section className="featured-listings-section" aria-label="Featured listings">
-        <div className="featured-listings-head">
-          <h2>Featured listings</h2>
-        </div>
-        <p className="featured-listings-subtitle">A curated set of standout homes selected by LankaLiving editors.</p>
-        <div className="featured-listings-shell">
-          <div className="home-card-grid featured-listings-grid">
-            {featuredProjects.map((project) => (
-              <Link href={`/projects/${project.slug}`} className="home-project-card" key={`featured-${project.slug}`}>
-                <div className="home-project-image-wrap">
-                  <Image src={project.heroImage} alt={`${project.name} in ${project.location}`} width={640} height={390} />
-                  <span className="featured-listings-badge">Featured</span>
-                </div>
-                <div className="featured-listings-card-body">
-                  <h3>{project.name}</h3>
-                  <p className="featured-listings-card-price">{project.status === "Coming Soon" ? "Register now" : `From ${formatLkr(project.startingPriceLkr)}`}</p>
-                  <div className="home-card-meta"><MapPin size={13} /><small>{project.location}</small></div>
-                </div>
-              </Link>
-            ))}
-          </div>
-          <div className="featured-listings-footer">
-            <Link href="/search" className="featured-listings-button">View all listings</Link>
-          </div>
-        </div>
-      </section>
-
-      <section className="trending-homes-section">
-        <Shelf title={shelves[0].title} items={shelves[0].projects} regularTitle locations promoCard={{ eyebrow: t.trendingExclusiveEyebrow, title: t.trendingExclusiveTitle, body: t.trendingExclusiveBody, cta: t.trendingExclusiveCta }} />
-      </section>
-      <section className="builders-section"><div className="section-title"><House /><h2>Builders</h2><span className="orange-swoop">⌁</span></div><div className="shelf-heading"><h2>Top new construction builders</h2></div><div className="builder-grid">{developers.map((developer, index) => <Link href={`/developers/${developer.slug}`} key={developer.slug} className="builder-card"><Image src={developer.logo} alt={developer.name} width={210} height={130} /><h3>{developer.name}</h3><p>★★★★★ <small>{8 + index}</small></p></Link>)}</div></section>
-
       <section className="neighborhoods-section" aria-label="Find the city for you">
         <h2>Find the City For You</h2>
         <p className="neighborhoods-subtitle">The cities best suited to your lifestyle, and the agents who know them best.</p>
@@ -303,6 +265,27 @@ export function HomeClient({ projects, developers }: { projects: Project[]; deve
           ))}
         </div>
         <Link href="/search" className="neighborhoods-more-link">View more cities</Link>
+      </section>
+
+      <section className="featured-listings-section" aria-label="Featured listings">
+        <div className="featured-listings-head">
+          <h2>Featured listings</h2>
+        </div>
+        <p className="featured-listings-subtitle">A curated set of standout homes selected by LankaLiving editors.</p>
+        <div className="featured-listings-shell">
+          <div className="home-card-grid featured-listings-grid">
+            {featuredProjects.map((project) => (
+              <ListingGridCard key={`featured-${project.slug}`} project={project} />
+            ))}
+          </div>
+          <div className="featured-listings-footer">
+            <Link href="/search" className="featured-listings-button">View all listings</Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="trending-homes-section">
+        <Shelf title={shelves[0].title} items={shelves[0].projects} regularTitle locations promoCard={{ eyebrow: t.trendingExclusiveEyebrow, title: t.trendingExclusiveTitle, body: t.trendingExclusiveBody, cta: t.trendingExclusiveCta }} />
       </section>
     </main>
   </div>;

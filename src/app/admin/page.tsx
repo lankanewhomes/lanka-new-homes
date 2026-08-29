@@ -18,7 +18,7 @@ export default async function AdminPage() {
 
   return (
     <div className="grid gap-4 px-4 pt-6 pb-16 lg:grid-cols-[220px_1fr] lg:px-6 lg:pt-8">
-      <DashboardSidebar links={[{ label: "Overview", href: "/admin" }, { label: "Developers", href: "/admin/developers" }, { label: "Neighborhoods", href: "/admin/neighborhoods" }, { label: "Homepage Hero", href: "/admin/hero-ads" }, { label: "Settings", href: "/admin" }]} />
+      <DashboardSidebar />
       <section className="space-y-4">
         <DashboardHeader title="Admin Dashboard" subtitle="Review and edit marketplace listings." />
         <div className="grid gap-3 md:grid-cols-4 lg:grid-cols-7">

@@ -39,7 +39,7 @@ function statusPillLabel(project: Project) {
   return project.status;
 }
 
-function ListingGridCard({ project }: { project: Project }) {
+export function ListingGridCard({ project }: { project: Project }) {
   const { saved, toggle } = useSavedListing(project.slug);
   const hasPrice = project.startingPriceLkr > 0;
 

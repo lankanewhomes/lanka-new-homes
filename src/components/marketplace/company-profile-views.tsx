@@ -1,0 +1,126 @@
+"use client";
+
+import Image from "next/image";
+import Link from "next/link";
+import { House } from "lucide-react";
+import type { CompanyProfile, Project } from "@/types";
+import { formatLkr, formatOfficeHours } from "@/lib/format";
+import { SOCIAL_ICON } from "@/components/marketplace/components";
+
+export function CompanyProfileListView({
+  title,
+  intro,
+  entityLabel,
+  basePath,
+  companies,
+}: {
+  title: string;
+  intro: string;
+  entityLabel: string;
+  basePath: string;
+  companies: CompanyProfile[];
+}) {
+  return (
+    <div className="space-y-4">
+      <div className="listing-page-intro">
+        <h1>{title}</h1>
+        <p>{intro}</p>
+      </div>
+
+      <p className="text-sm font-medium text-stone-700">
+        {companies.length} {entityLabel.toLowerCase()}{companies.length === 1 ? "" : "s"}
+      </p>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        {companies.map((company) => (
+          <Link key={company.slug} href={`${basePath}/${company.slug}`} className="grid grid-cols-[80px_1fr] gap-3 border border-stone-200 bg-white p-4 transition-colors hover:border-stone-400">
+            <Image src={company.logo} alt={`${company.name} logo`} width={80} height={80} className="h-20 w-20 rounded-sm object-cover" />
+            <div className="space-y-1">
+              <h2 className="text-base font-semibold text-stone-900">{company.name}</h2>
+              <p className="text-sm text-stone-600">{company.location}</p>
+              <p className="text-sm text-stone-700">{company.description}</p>
+              {company.yearsInBusiness ? <p className="pt-1 text-xs text-stone-500">{company.yearsInBusiness} years in business</p> : null}
+            </div>
+          </Link>
+        ))}
+      </div>
+
+      {companies.length === 0 ? <p className="text-sm text-stone-500">No {entityLabel.toLowerCase()}s listed yet.</p> : null}
+    </div>
+  );
+}
+
+export function CompanyProfileDetailView({ company, entityLabel, projects }: { company: CompanyProfile; entityLabel: string; projects: Project[] }) {
+  const socialEntries = Object.entries(company.socialLinks ?? {}).filter(([, url]) => Boolean(url)) as [string, string][];
+  const formattedOfficeHours = formatOfficeHours(company.officeHours);
+
+  return (
+    <div className="developer-profile">
+      <aside className="developer-profile-sidebar">
+        <div className="developer-profile-logo">
+          <div className={company.logo.startsWith("/") ? "developer-profile-logo-chip" : undefined}>
+            <Image src={company.logo} alt={company.name} width={220} height={90} />
+          </div>
+        </div>
+        <h1>{company.name}</h1>
+        <p className="developer-profile-role">{entityLabel}</p>
+
+        <div className="developer-profile-contact">
+          <p>{company.location}</p>
+          {company.phone ? <p>{company.phone}</p> : null}
+          {company.website ? <a href={company.website} target="_blank" rel="noopener noreferrer">{company.website.replace(/^https?:\/\//, "")}</a> : null}
+        </div>
+
+        {socialEntries.length > 0 ? (
+          <div className="developer-profile-socials" aria-label="Social media">
+            {socialEntries.map(([platform, url]) => {
+              const Icon = SOCIAL_ICON[platform];
+              if (!Icon) return null;
+              return (
+                <a key={platform} href={url} target="_blank" rel="noreferrer noopener" aria-label={`Visit us on ${platform}`}>
+                  <Icon className="h-4 w-4" />
+                </a>
+              );
+            })}
+          </div>
+        ) : null}
+
+        {formattedOfficeHours.length > 0 ? (
+          <div className="developer-profile-hours">
+            <p className="developer-profile-hours-title">Hours</p>
+            {formattedOfficeHours.map((row) => (
+              <p key={row.label}>{row.label} <span>{row.value}</span></p>
+            ))}
+          </div>
+        ) : null}
+      </aside>
+
+      <div className="developer-profile-main">
+        <p className="text-sm text-stone-700">{company.description}</p>
+
+        <section className="developer-profile-communities mt-4">
+          <p className="developer-profile-hours-title">Connected projects</p>
+          {projects.length === 0 ? (
+            <p className="developer-empty-note">No projects link to {company.name} yet.</p>
+          ) : (
+            <div className="developer-profile-list">
+              {projects.map((project) => (
+                <Link href={`/projects/${project.slug}`} key={project.slug} className="developer-profile-row">
+                  <div className="developer-profile-row-image">
+                    {project.heroImage ? <Image src={project.heroImage} alt={project.name} width={150} height={110} /> : <House size={28} />}
+                  </div>
+                  <div className="developer-profile-row-body">
+                    <h3>{project.name}</h3>
+                    <p className="developer-profile-row-price">{project.status === "Coming Soon" ? "Register now" : `From ${formatLkr(project.startingPriceLkr)}`}</p>
+                    <p className="developer-profile-row-meta">{project.type} | {project.constructionStatus}</p>
+                    <p className="developer-profile-row-address">{project.location}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
+    </div>
+  );
+}

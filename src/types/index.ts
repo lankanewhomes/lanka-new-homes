@@ -28,8 +28,24 @@ export type Amenity = {
     | "Games Room"
     | "Sky Lounge"
     | "Retail Mall"
-    | "Hotel";
+    | "Hotel"
+    | "Gated Community"
+    | "Beachfront"
+    | "Sea View";
   icon: string;
+};
+
+export type KeyFeatureItem = {
+  field: string;
+  value: string;
+};
+
+export type KeyFeatureCategory = {
+  /** Slugified — "indoor"/"outdoor" for the two built-in categories, or a
+   * slug generated from the label for an admin-added custom category. */
+  key: string;
+  label: string;
+  items: KeyFeatureItem[];
 };
 
 export type FloorPlan = {
@@ -48,22 +64,6 @@ export type FloorPlan = {
   image: string;
   availability: "Available" | "Limited" | "Sold Out";
   quickMoveIn?: boolean;
-};
-
-export type Unit = {
-  id: string;
-  projectSlug: string;
-  unitNumber: string;
-  floor: number;
-  /** Floor plan type code (e.g. "A-3"), matches a FloorPlan.planType on the same project. */
-  apartmentType: string;
-  bedrooms: number;
-  areaSqFt: number;
-  priceLkr: number;
-  priceUsd?: number;
-  status: "Available" | "Reserved" | "Booked" | "Sold";
-  /** Original listing URL this unit was sourced from, if imported from a third-party site. Internal reference only — never rendered publicly. */
-  sourceUrl?: string;
 };
 
 export type NearbyPlace = {
@@ -138,15 +138,7 @@ export type Developer = SeoFields & {
   phone: string;
   coDevelopers?: CoDeveloperEntry[];
   officeHours?: OfficeHoursEntry[];
-  socialLinks?: {
-    facebook?: string;
-    instagram?: string;
-    linkedin?: string;
-    twitter?: string;
-    whatsapp?: string;
-    youtube?: string;
-    tiktok?: string;
-  };
+  socialLinks?: SocialLinks;
   awards?: { title: string; year?: string; issuer?: string }[];
   pressMentions?: { title: string; source: string; url?: string; date?: string }[];
   /** Indexed column `developers.verification_status`. NOT yet mirrored by
@@ -155,6 +147,16 @@ export type Developer = SeoFields & {
 };
 
 export type CoDeveloperEntry = { name: string; href?: string };
+
+export type SocialLinks = {
+  facebook?: string;
+  instagram?: string;
+  linkedin?: string;
+  twitter?: string;
+  whatsapp?: string;
+  youtube?: string;
+  tiktok?: string;
+};
 
 // Property Facts grid — admin-selectable icon per fact, whitelisted against
 // ICON_MAP (src/lib/fact-icons.ts) so only valid lucide-react icons can be
@@ -270,12 +272,14 @@ export type Project = SeoFields & {
   desktopVisibleStats?: ProjectStatLabel[];
   floorPlanVisibleStats?: string[];
   amenities: Amenity[];
-  /** In-unit finishes/features (e.g. "Hardwood floors", "Walk-in closets") — distinct from building-level Amenity entries. Free text within each group, no fixed vocabulary. Rendered as the "Key Features" accordion. */
-  unitFeatures?: {
-    indoor?: string[];
-    outdoor?: string[];
-    other?: string[];
-  };
+  /** In-unit finishes/features (e.g. Kitchen: "Pantry cabinets") — distinct from
+   * building-level Amenity entries. Grouped into categories (Indoor/Outdoor by
+   * default, plus any admin-added custom category); each item is a field/value
+   * pair, picked from a preset list or freely typed. Rendered as the "Key
+   * Features" accordion. Older projects may still hold the legacy
+   * `{ indoor?: string[]; outdoor?: string[]; other?: string[] }` shape in
+   * Supabase — both the wizard and the public section normalize it on read. */
+  unitFeatures?: KeyFeatureCategory[];
   floorPlans: FloorPlan[];
   nearby: NearbyPlace[];
   hotDeal?: {
@@ -303,6 +307,85 @@ export type Project = SeoFields & {
    * the existing propertyTax/parkingCost/storageCost/monthlyMaintenancePerSqft
    * fields when empty — see UtilitiesCostsSection. */
   paidUtilities?: { label: string; value: string }[];
+};
+
+// Land parcels — a separate inventory type from Project (new-construction
+// developments). Sold by the same seller pool (developers, construction
+// companies, or independent builders), but distinct fields: land is
+// measured in perches (Sri Lanka's standard unit), not floor area, and has
+// no floor plans/amenities/units.
+export type LandSellerType = "developer" | "construction_company" | "builder";
+
+export type Land = SeoFields & {
+  slug: string;
+  title: string;
+  sellerType: LandSellerType;
+  /** developers.slug or construction_companies.slug when sellerType links to
+   * a real profile page; omitted when sellerType is "builder" with no
+   * profile on the site (sellerName is the only identifier then). */
+  sellerSlug?: string;
+  sellerName: string;
+  location: string;
+  district: string;
+  city: string;
+  province: string;
+  landSizePerches: number;
+  landSizeAcres?: number;
+  priceLkr: number;
+  pricePerPerchLkrMin?: number;
+  pricePerPerchLkrMax?: number;
+  /** e.g. "Residential", "Commercial", "Agricultural", "Mixed" — free text, no fixed vocabulary yet. */
+  landUse: string;
+  /** Distinct from `landUse` (intended use) — e.g. "Bare Land", "Land with House", "Paddy Land", "Coconut Land". Free text, no fixed vocabulary yet. */
+  landType?: string;
+  /** e.g. "Rectangular", "Square", "Irregular", "L-Shaped". */
+  landShape?: string;
+  roadAccess?: string;
+  roadWidthFt?: number;
+  electricity?: string;
+  water?: string;
+  /** e.g. "Freehold - Sinhala Deed", "Freehold - Swarnabhoomi", "Torrens Title". */
+  titleType?: string;
+  /** e.g. "Approved survey plan", "Survey pending" — separate from `titleType` (ownership classification). */
+  surveyPlanStatus?: string;
+  /** Free-text payment plan lines, e.g. "40% down payment with 24 months interest-free plan". */
+  paymentPlanItems?: string[];
+  /** Marketing trust badges (e.g. "Easy Payment Plan", "Fast Legal Services", "Zero Documentation") — shown as small pills in the hero, distinct from `facilities` (physical parcel characteristics). */
+  badges?: string[];
+  /** Land's Amenities-equivalent — general parcel characteristics (e.g. "Wide Road", "Corner Plot"), not building amenities. Checkbox-selected in the wizard, no fixed vocabulary enforced at the type level. */
+  facilities?: string[];
+  /** Building-style amenities (Pool, Gym, Security, CCTV, Garden, etc.) — for land developments/gated communities that offer shared facilities. Reuses the same `Amenity` vocabulary as `Project.amenities` and the same `AmenitiesShowcaseSection` component. */
+  amenities?: Amenity[];
+  /** In-unit finishes/features, same shape and editor as `Project.unitFeatures` — applies when the land is sold with a planned/model home rather than as a bare parcel. */
+  unitFeatures?: KeyFeatureCategory[];
+  /** Individual plots/lots within this land development — the "Floor Plans" equivalent for a subdivided parcel. Omit when the listing is a single, unsubdivided parcel. */
+  plots?: LandPlot[];
+  status: "Available" | "Reserved" | "Sold";
+  isFeatured?: boolean;
+  summary: string;
+  description: string;
+  heroImage: string;
+  gallery: { label: string; image: string }[];
+  /** Site/subdivision layout diagrams — a separate slot from the general gallery so more than one can be entered without relying on label-text matching. */
+  blockPlanImages?: { label: string; image: string }[];
+  roadMapImages?: { label: string; image: string }[];
+  videos?: { label: string; url: string }[];
+  nearby: NearbyPlace[];
+  coordinates: { lat: number; lng: number };
+  contact: {
+    name: string;
+    email: string;
+    phone: string;
+  };
+};
+
+export type LandPlot = {
+  id: string;
+  name: string;
+  sizePerches: number;
+  priceLkr: number;
+  status: "Available" | "Reserved" | "Sold";
+  image?: string;
 };
 
 export type Lead = {
@@ -408,7 +491,31 @@ export type ConstructionCompany = {
   website?: string;
   email?: string;
   phone?: string;
+  socialLinks?: SocialLinks;
 };
+
+// Shared shape for the lightweight partner directories linked from a
+// project/land's "Connected Pages" — marketing companies, sales companies,
+// architects, interior designers. Distinct from Developer (who owns
+// projects) and ConstructionCompany (which has its own category directory).
+export type CompanyProfile = {
+  slug: string;
+  name: string;
+  logo: string;
+  description: string;
+  location: string;
+  yearsInBusiness?: number;
+  website?: string;
+  email?: string;
+  phone?: string;
+  officeHours?: OfficeHoursEntry[];
+  socialLinks?: SocialLinks;
+};
+
+export type MarketingCompany = CompanyProfile;
+export type SalesCompany = CompanyProfile;
+export type Architect = CompanyProfile;
+export type InteriorDesigner = CompanyProfile;
 
 export type HeroAdStatus = "pending" | "approved" | "rejected" | "archived";
 

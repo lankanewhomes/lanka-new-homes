@@ -235,6 +235,69 @@ needs a decision on how it coexists with the current `/projects/*`
 category system before building — see the note added to
 `docs/seo-strategy.md`.
 
+## Lands for sale (new inventory type — template built, no real content yet)
+
+User: *"I'll be adding lands for sale too... so the lands will be sold by
+the developers, also construction company, or the builders, or whatever it
+is. My website is just not new developments — I'm also gonna be selling
+lands too."*
+
+Built: a second listing type alongside `Project` — raw land parcels, sold by
+developers, construction companies, or independent builders.
+- Type: `Land` in `src/types/index.ts` (perches/acres, price, land use,
+  road/electricity/water, title/deed type, seller link).
+- Data: `lands` Supabase table (`docs/supabase-schema.sql`,
+  `src/lib/land-store.ts`), same jsonb-plus-indexed-columns pattern as
+  `projects`. Empty — no rows — until real listings are entered.
+- Admin: `LandWizard` (`src/components/dashboard/land-wizard.tsx`),
+  `/admin/lands` (list), `/admin/lands/new`, `/admin/lands/[slug]/edit` —
+  linked from every admin page's sidebar.
+- Public: `/land` (listing) and `/land/{slug}` (detail), linked from the
+  main site nav.
+- Keyword research captured in `docs/seo-strategy.md` under "Lands for
+  sale."
+
+User also asked to analyze a specific competitor listing
+(primelands.lk/land/PLATINUM-GROVE-BERUKATIYA) and pull its images/content
+for a new land listing page — flagged as a copyright concern (reusing
+another company's photos and marketing copy as this site's own listing).
+User chose to build the template now and fill in real content later, so no
+competitor content was copied — real facts (distances, terms) were used in
+original wording; a placeholder hero image stands in for the seller's own
+photos. First real listing (`grace-field-garden`, seller: Lanka Poolworks)
+has since been entered through the wizard.
+
+The land detail page (`/land/{slug}`) reuses the same shared components as
+`/projects/{slug}` (`ProjectHero`, `PricingInformationLayout`,
+`KeyFeaturesSection`, `AmenitiesShowcaseSection` titled "Facilities",
+`PlansAndHomesSection` titled "Plots") via a `landToProjectShape` adapter in
+`src/app/land/[slug]/page.tsx`, plus a custom stats-chip row and details
+table (no Beds/Baths — those don't apply to land). Block Plan, Road Map, and
+Video content (each supporting multiple entries, with upload-or-paste-URL
+inputs in the wizard) surface as pills in the shared hero media bar
+(`ProjectHero`'s `roadMapImages`/`blockPlanImages`/`videoLinks` props) next
+to Photos/Map/Plots, rather than as separate page sections — that's a
+land-only extension; Project pages keep their existing single-image
+gallery-label-matched Road Map behavior unless they pass the same props.
+
+## Partner directories (architects, marketing companies, sales companies, interior designers)
+
+A project's "Connected Pages" section (in `ProjectWizard`) lets an admin
+pick a real profile page for the project's architect, marketing company,
+sales company, and interior designer — shown on the public project page via
+`renderEntityLink`. These four previously pointed at hardcoded placeholder
+options; they're now backed by real admin-managed directories, built the
+same way as Construction Companies: `CompanyProfile` shape
+(`src/types/index.ts`), one Supabase table per type (`marketing_companies`,
+`sales_companies`, `architects`, `interior_designers` —
+`supabase/migrations/20260829120000_company_directories.sql`), admin CRUD
+under `/admin/{marketing-companies,sales-companies,architects,interior-designers}`,
+and public list/detail pages reusing
+`src/components/marketplace/company-profile-views.tsx`. The admin sidebar
+(`ADMIN_NAV_LINKS` in `src/components/dashboard/components.tsx`) now lists
+every section in one place instead of each `/admin/*` page carrying its own
+copy of the nav array.
+
 ## Sequencing
 
 Nothing above has been built as part of this note — this is a capture-only

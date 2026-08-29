@@ -25,6 +25,8 @@ Update this file whenever a new keyword group or page is added.
 | `/construction-companies/colombo` | Colombo-specific construction companies | new |
 | `/construction-companies/swimming-pools` | Pool construction companies | new |
 | `/construction-companies/consulting` | Construction consultants | new |
+| `/land` | Land parcel listings (separate from projects) | new, no listings yet |
+| `/land/{slug}` | Individual land listing detail page | new, no listings yet |
 
 Config for all of these lives in code, not hardcoded per page:
 - `/projects/*` — `src/lib/listing-categories.ts` (`projectCategories`)
@@ -59,7 +61,45 @@ and `/colombo/new-homes` a redirect — needs the user's call before
 implementing. Tracked in `docs/roadmap.md` under "City-based SEO URL
 structure".
 
+## Lands for sale
+
+A second inventory type alongside `Project` — raw land parcels, sold by
+developers, construction companies, and independent builders. `/land`
+(listing) and `/land/{slug}` (detail) exist (`src/app/land/`), backed by the
+`lands` Supabase table (`src/lib/land-store.ts`) and an admin wizard
+(`src/components/dashboard/land-wizard.tsx`, linked from every admin
+sidebar). Content is currently empty — a real `/land` sitemap/keyword push
+should wait until actual land listings are published (see `docs/roadmap.md`).
+
+Land keyword research (deduped from a raw export — see "Excluded" below for
+what was dropped and why):
+
+| Target phrase | Approx. monthly volume |
+|---|---|
+| Land for sale in Sri Lanka (+ "land sale sri lanka", "lands for sale sri lanka", "buy land(s) in sri lanka", "land sales sri lanka", and other word-order variants of the same phrase) | ~110 |
+| Land in Sri Lanka (shorter/generic form, no "for sale" or "buy") | ~50 |
+| Land in Colombo / lands in Colombo | ~70 |
+| Buying land in Sri Lanka (process-intent, not just "for sale") | ~70–110 |
+
+**Excluded from the mapping above:**
+- "Colombo's land crossword clue" / "Colombo's land crossword" — a crossword-puzzle
+  answer search, not real-estate intent; a keyword tool false-positive on the
+  "Colombo land" n-gram.
+- "Housing in Iceland for sale" — unrelated market (literally Iceland), almost
+  certainly keyword-tool noise from fuzzy-matching "land" substrings.
+- "Sherry land Negombo" / "Emerald land" — read as specific property/project
+  names in Negombo rather than generic search terms. Worth checking whether
+  these are real competing land developments once the land feature is being
+  scoped, but they don't map to a generic landing page the way the phrases
+  above do.
+
 ## Keyword-to-page mapping
+
+### /land
+Land for sale in Sri Lanka, Land for sale Sri Lanka, Land sale Sri Lanka,
+Lands for sale Sri Lanka, Buy land in Sri Lanka, Buy a land in Sri Lanka,
+Land sales Sri Lanka, Land in Sri Lanka, Land in Colombo, Lands in Colombo,
+Buying land in Sri Lanka
 
 ### /projects
 New condominium projects sri lanka, New apartment projects sri lanka, New

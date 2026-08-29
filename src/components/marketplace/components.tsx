@@ -76,8 +76,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteLanguage, useLanguage } from "@/components/layout/language-provider";
-import { compactLkr, formatLkr } from "@/lib/format";
-import { Amenity, Article, Developer, FloorPlan, Lead, Location, NearbyPlace, Project, ProjectStatLabel, Unit } from "@/types";
+import { compactLkr, formatLkr, formatOfficeHours } from "@/lib/format";
+import { Amenity, Article, Developer, FloorPlan, Lead, Location, NearbyPlace, Project, ProjectStatLabel } from "@/types";
 
 const amenityIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   Pool: Waves,
@@ -166,54 +166,6 @@ function isHotDealActive(project: Project) {
 
 function hasQuickMoveIn(project: Project) {
   return project.floorPlans.some((plan) => plan.quickMoveIn);
-}
-
-const DAY_ABBREVIATION: Record<string, string> = {
-  Monday: "Mon",
-  Tuesday: "Tue",
-  Wednesday: "Wed",
-  Thursday: "Thu",
-  Friday: "Fri",
-  Saturday: "Sat",
-  Sunday: "Sun",
-};
-
-function formatClockTime(value?: string) {
-  if (!value) return "";
-  const [hoursStr, minutesStr] = value.split(":");
-  const hours = Number(hoursStr);
-  if (Number.isNaN(hours)) return value;
-  const period = hours >= 12 ? "PM" : "AM";
-  const displayHour = hours % 12 === 0 ? 12 : hours % 12;
-  return `${displayHour}:${minutesStr ?? "00"} ${period}`;
-}
-
-type OfficeHourEntry = NonNullable<Developer["officeHours"]>[number];
-
-export function formatOfficeHours(officeHours: OfficeHourEntry[] | undefined) {
-  if (!officeHours || officeHours.length === 0) return [];
-
-  const dayOrder: OfficeHourEntry["day"][] = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-  const byDay = new Map(officeHours.map((entry) => [entry.day, entry]));
-  const ordered = dayOrder.map((day) => byDay.get(day)).filter((entry): entry is NonNullable<typeof entry> => Boolean(entry));
-
-  const lineFor = (entry: (typeof ordered)[number]) => (entry.open && entry.from && entry.to ? `${formatClockTime(entry.from)} - ${formatClockTime(entry.to)}` : "Closed");
-
-  const groups: { days: string[]; text: string }[] = [];
-  for (const entry of ordered) {
-    const text = lineFor(entry);
-    const last = groups[groups.length - 1];
-    if (last && last.text === text) {
-      last.days.push(entry.day);
-    } else {
-      groups.push({ days: [entry.day], text });
-    }
-  }
-
-  return groups.map((group) => ({
-    label: group.days.length > 1 ? `${DAY_ABBREVIATION[group.days[0]]} - ${DAY_ABBREVIATION[group.days[group.days.length - 1]]}` : DAY_ABBREVIATION[group.days[0]],
-    value: group.text,
-  }));
 }
 
 export function StatusBadge({ status }: { status: string }) {
@@ -390,6 +342,12 @@ export function ProjectHero({
   backHref,
   backLabel,
   plansHomesNavLabel = "Floor Plans",
+  statusLabelOverride,
+  extraBadges = [],
+  roadMapImages = [],
+  blockPlanImages = [],
+  videoLinks = [],
+  requestInfoVariant = "standard",
 }: {
   project: Project;
   titleOverride?: string;
@@ -399,6 +357,23 @@ export function ProjectHero({
   backHref?: string;
   backLabel?: string;
   plansHomesNavLabel?: string;
+  /** Shows this instead of `project.status` in the status pill — for pages
+   * (like land) that adapt their own data onto the Project shape and need
+   * to display their real status value rather than the mapped one. */
+  statusLabelOverride?: string;
+  /** Extra small pills rendered alongside Move-In-Now/Featured/etc. — for
+   * marketing trust badges (e.g. land's "Easy Payment Plan") that don't map
+   * to any existing Project boolean flag. */
+  extraBadges?: string[];
+  /** Land-only media that doesn't fit the Project shape: multiple road map
+   * images, multiple block plan images, and a list of video links (rather
+   * than the single gallery-label-matched road map image / single embed
+   * video that Project pages use). Ignored (default []) on Project pages. */
+  roadMapImages?: { label: string; image: string }[];
+  blockPlanImages?: { label: string; image: string }[];
+  videoLinks?: { label: string; url: string }[];
+  /** Forwarded to RequestInfoDialog — see its `variant` prop. */
+  requestInfoVariant?: "standard" | "inquiry";
 }) {
   const { saved: savedListing, toggle: toggleSaved } = useSavedListing(project.slug);
   const fallbackPhotoLabels = [
@@ -425,7 +400,8 @@ export function ProjectHero({
       ];
   const [photoIndex, setPhotoIndex] = useState(0);
 
-  const videoCount = project.videos?.length ?? 0;
+  const usingExtraVideos = !project.videos?.length && videoLinks.length > 0;
+  const videoCount = usingExtraVideos ? videoLinks.length : (project.videos?.length ?? 0);
   const virtualTourCount = project.virtualTours?.length ?? 0;
   const hasMap = project.coordinates?.lat != null && project.coordinates?.lng != null;
   const hasInteractiveMap = Boolean(project.interactiveMapUrl);
@@ -436,15 +412,22 @@ export function ProjectHero({
   const hasGalleryFloorPlanImage = project.gallery.some((item) => /block\s*plan|site\s*plan|floor\s*plan/i.test(item.label));
   const floorPlanCount = project.floorPlans.length > 0 ? project.floorPlans.length : (hasGalleryFloorPlanImage ? 1 : 0);
   const hasBlockPlan = floorPlanCount > 0;
-  // Road Map is an uploaded gallery image (like Floor Plan), not the
-  // auto-generated Google Maps embed — admins submit it via the project's
-  // photo gallery with a "Road Map" label.
+  // Road Map is normally a single uploaded gallery image (like Floor Plan),
+  // matched by label — but land pages pass roadMapImages directly since they
+  // support several road map uploads, not just one.
   const roadMapImage = project.gallery.find((item) => /road\s*map/i.test(item.label))?.image;
-  const hasRoadMap = Boolean(roadMapImage);
+  const roadMapItems = roadMapImages.length > 0 ? roadMapImages : (roadMapImage ? [{ label: "Road Map", image: roadMapImage }] : []);
+  const hasRoadMap = roadMapItems.length > 0;
+  const hasBlockPlanImages = blockPlanImages.length > 0;
   const hasStreetView = hasMap;
 
-  // Photos/Map/Road Map/Street View/Floor Plan all open the lightbox (see
-  // the pills below); only these three still swap the hero's own inline
+  const [roadMapIndex, setRoadMapIndex] = useState(0);
+  const [blockPlanIndex, setBlockPlanIndex] = useState(0);
+  const activeRoadMapItem = roadMapItems[Math.max(0, Math.min(roadMapIndex, roadMapItems.length - 1))];
+  const activeBlockPlanItem = blockPlanImages[Math.max(0, Math.min(blockPlanIndex, blockPlanImages.length - 1))];
+
+  // Photos/Map/Road Map/Street View/Block Plan/Floor Plan all open the
+  // lightbox (see the pills below); only these swap the hero's own inline
   // media surface.
   const availableMedia = useMemo(() => {
     const tabs: Array<"videos" | "interactiveMap" | "virtualTours"> = [];
@@ -456,7 +439,7 @@ export function ProjectHero({
 
   const [activeMedia, setActiveMedia] = useState<"videos" | "interactiveMap" | "virtualTours" | null>(null);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-  const [lightboxView, setLightboxView] = useState<"photos" | "map" | "roadMap" | "streetView">("photos");
+  const [lightboxView, setLightboxView] = useState<"photos" | "map" | "roadMap" | "blockPlan" | "streetView">("photos");
   const [activeSection, setActiveSection] = useState("overview");
   const [requestInfoOpen, setRequestInfoOpen] = useState(false);
 
@@ -494,6 +477,26 @@ export function ProjectHero({
   const handleNextPhoto = () => {
     if (!photoItems.length) return;
     setPhotoIndex((index) => (index + 1) % photoItems.length);
+  };
+
+  const handlePrevRoadMap = () => {
+    if (!roadMapItems.length) return;
+    setRoadMapIndex((index) => (index - 1 + roadMapItems.length) % roadMapItems.length);
+  };
+
+  const handleNextRoadMap = () => {
+    if (!roadMapItems.length) return;
+    setRoadMapIndex((index) => (index + 1) % roadMapItems.length);
+  };
+
+  const handlePrevBlockPlan = () => {
+    if (!blockPlanImages.length) return;
+    setBlockPlanIndex((index) => (index - 1 + blockPlanImages.length) % blockPlanImages.length);
+  };
+
+  const handleNextBlockPlan = () => {
+    if (!blockPlanImages.length) return;
+    setBlockPlanIndex((index) => (index + 1) % blockPlanImages.length);
   };
 
   return (
@@ -601,7 +604,7 @@ export function ProjectHero({
 
               {hasBlockPlan && (
                 <a href="#plans-homes" className="listing-hero-grid-pill" onClick={() => setActiveSection("plans-homes")}>
-                  <LayoutPanelLeft className="h-4 w-4" aria-hidden="true" /> Floor Plan {floorPlanCount}
+                  <LayoutPanelLeft className="h-4 w-4" aria-hidden="true" /> {plansHomesNavLabel} {floorPlanCount}
                 </a>
               )}
 
@@ -610,11 +613,26 @@ export function ProjectHero({
                   type="button"
                   className="listing-hero-grid-pill"
                   onClick={() => {
+                    setRoadMapIndex(0);
                     setLightboxView("roadMap");
                     setIsLightboxOpen(true);
                   }}
                 >
-                  <MapPinned className="h-4 w-4" aria-hidden="true" /> Road Map
+                  <MapPinned className="h-4 w-4" aria-hidden="true" /> Road Map{roadMapItems.length > 1 ? ` ${roadMapItems.length}` : ""}
+                </button>
+              )}
+
+              {hasBlockPlanImages && (
+                <button
+                  type="button"
+                  className="listing-hero-grid-pill"
+                  onClick={() => {
+                    setBlockPlanIndex(0);
+                    setLightboxView("blockPlan");
+                    setIsLightboxOpen(true);
+                  }}
+                >
+                  <Layers className="h-4 w-4" aria-hidden="true" /> Block Plan{blockPlanImages.length > 1 ? ` ${blockPlanImages.length}` : ""}
                 </button>
               )}
 
@@ -646,7 +664,21 @@ export function ProjectHero({
           </div>
         )}
 
-        {activeMedia === "videos" && videoCount > 0 && (
+        {activeMedia === "videos" && videoCount > 0 && usingExtraVideos && (
+          <div className="listing-hero-video-surface listing-hero-video-list">
+            {videoLinks.map((video, index) =>
+              /\.(mp4|webm|mov)(\?|$)/i.test(video.url) || video.url.startsWith("blob:") ? (
+                <video key={`${video.url}-${index}`} src={video.url} controls className="listing-hero-map-frame" />
+              ) : (
+                <a key={`${video.url}-${index}`} href={video.url} target="_blank" rel="noopener noreferrer" className="listing-hero-video-link">
+                  <Video className="h-4 w-4" aria-hidden="true" /> {video.label || `Video ${index + 1}`}
+                </a>
+              )
+            )}
+          </div>
+        )}
+
+        {activeMedia === "videos" && videoCount > 0 && !usingExtraVideos && (
           <div className="listing-hero-video-surface">
             {project.videos?.[0]?.embedUrl ? (
               <iframe
@@ -759,6 +791,17 @@ export function ProjectHero({
                   Road Map
                 </button>
               )}
+              {hasBlockPlanImages && (
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={lightboxView === "blockPlan"}
+                  className={lightboxView === "blockPlan" ? "active" : undefined}
+                  onClick={() => setLightboxView("blockPlan")}
+                >
+                  Block Plan
+                </button>
+              )}
               {hasStreetView && (
                 <button
                   type="button"
@@ -811,16 +854,62 @@ export function ProjectHero({
               />
             )}
 
-            {lightboxView === "roadMap" && roadMapImage && (
-              <div className="listing-photo-lightbox-media-wrap">
-                <Image
-                  src={roadMapImage}
-                  alt={`${project.name} road map`}
-                  width={1920}
-                  height={1080}
-                  className="listing-photo-lightbox-image"
-                />
-              </div>
+            {lightboxView === "roadMap" && activeRoadMapItem && (
+              <>
+                {roadMapItems.length > 1 && (
+                  <button type="button" className="listing-photo-lightbox-arrow left" onClick={handlePrevRoadMap} aria-label="Previous road map">
+                    <ChevronLeft className="h-5 w-5" aria-hidden="true" />
+                  </button>
+                )}
+                <div className="listing-photo-lightbox-media-wrap">
+                  <Image
+                    src={activeRoadMapItem.image}
+                    alt={`${project.name} ${activeRoadMapItem.label || "road map"}`}
+                    width={1920}
+                    height={1080}
+                    className="listing-photo-lightbox-image"
+                  />
+                  {activeRoadMapItem.label ? (
+                    <div className="listing-photo-lightbox-caption-row">
+                      <div className="listing-photo-lightbox-caption">{activeRoadMapItem.label}</div>
+                    </div>
+                  ) : null}
+                </div>
+                {roadMapItems.length > 1 && (
+                  <button type="button" className="listing-photo-lightbox-arrow right" onClick={handleNextRoadMap} aria-label="Next road map">
+                    <ChevronRight className="h-5 w-5" aria-hidden="true" />
+                  </button>
+                )}
+              </>
+            )}
+
+            {lightboxView === "blockPlan" && activeBlockPlanItem && (
+              <>
+                {blockPlanImages.length > 1 && (
+                  <button type="button" className="listing-photo-lightbox-arrow left" onClick={handlePrevBlockPlan} aria-label="Previous block plan">
+                    <ChevronLeft className="h-5 w-5" aria-hidden="true" />
+                  </button>
+                )}
+                <div className="listing-photo-lightbox-media-wrap">
+                  <Image
+                    src={activeBlockPlanItem.image}
+                    alt={`${project.name} ${activeBlockPlanItem.label || "block plan"}`}
+                    width={1920}
+                    height={1080}
+                    className="listing-photo-lightbox-image"
+                  />
+                  {activeBlockPlanItem.label ? (
+                    <div className="listing-photo-lightbox-caption-row">
+                      <div className="listing-photo-lightbox-caption">{activeBlockPlanItem.label}</div>
+                    </div>
+                  ) : null}
+                </div>
+                {blockPlanImages.length > 1 && (
+                  <button type="button" className="listing-photo-lightbox-arrow right" onClick={handleNextBlockPlan} aria-label="Next block plan">
+                    <ChevronRight className="h-5 w-5" aria-hidden="true" />
+                  </button>
+                )}
+              </>
             )}
 
             {lightboxView === "streetView" && (
@@ -855,13 +944,14 @@ export function ProjectHero({
         </div>
       </div>
 
-      {(hasDisplayValue(project.status) || hasDisplayValue(project.completionYear) || project.isFeatured || project.isMoveInNow || hasQuickMoveIn(project)) ? (
+      {(hasDisplayValue(project.status) || hasDisplayValue(project.completionYear) || project.isFeatured || project.isMoveInNow || hasQuickMoveIn(project) || extraBadges.length > 0) ? (
         <div className="listing-hero-tags" aria-label="Listing status tags">
-          {hasDisplayValue(project.status) ? <span className="listing-hero-tag-status">{project.status}</span> : null}
+          {hasDisplayValue(project.status) ? <span className="listing-hero-tag-status">{statusLabelOverride ?? project.status}</span> : null}
           {hasDisplayValue(project.completionYear) ? <span className="listing-hero-tag-move-in">Move in {project.completionYear}</span> : null}
           {project.isMoveInNow ? <span className="listing-badge-pill badge-move-in-now">Move-In Now</span> : null}
           {hasQuickMoveIn(project) ? <span className="listing-badge-pill badge-quick-move-in">Quick Move-In</span> : null}
           {project.isFeatured ? <span className="listing-badge-pill badge-featured">Featured</span> : null}
+          {extraBadges.map((badge) => <span key={badge} className="listing-badge-pill badge-featured">{badge}</span>)}
         </div>
       ) : null}
 
@@ -879,7 +969,7 @@ export function ProjectHero({
 
     </section>
 
-    <RequestInfoDialog open={requestInfoOpen} onClose={() => setRequestInfoOpen(false)} project={project} />
+    <RequestInfoDialog open={requestInfoOpen} onClose={() => setRequestInfoOpen(false)} project={project} variant={requestInfoVariant} />
     </>
   );
 }
@@ -930,17 +1020,10 @@ const STAT_CHIP_ICON: Record<string, React.ComponentType<{ className?: string }>
   "Sales started": Clock3,
 };
 
-export function ProjectStatsChips({ project, floorPlan, units = [] }: { project: Project; floorPlan?: FloorPlan; units?: Unit[] }) {
-  // Prefer real per-unit counts (the `units` table) when available; most
-  // projects only have floor-plan-level data, so fall back to counting
-  // floor plan types by their availability status.
-  const soldCount = units.length > 0
-    ? units.filter((unit) => unit.status === "Sold").length
-    : project.floorPlans.filter((plan) => plan.availability === "Sold Out").length;
-  const availableCount = units.length > 0
-    ? units.filter((unit) => unit.status === "Available").length
-    : project.floorPlans.filter((plan) => plan.availability === "Available").length;
-  const hasSoldAvailableData = units.length > 0 || project.floorPlans.length > 0;
+export function ProjectStatsChips({ project, floorPlan }: { project: Project; floorPlan?: FloorPlan }) {
+  const soldCount = project.floorPlans.filter((plan) => plan.availability === "Sold Out").length;
+  const availableCount = project.floorPlans.filter((plan) => plan.availability === "Available").length;
+  const hasSoldAvailableData = project.floorPlans.length > 0;
 
   const stats: { value: string; label: string }[] = floorPlan
     ? [
@@ -1038,7 +1121,7 @@ export function ProjectStatsChips({ project, floorPlan, units = [] }: { project:
   );
 }
 
-export function StatsContactCard({ project, developer }: { project: Project; developer?: Developer }) {
+export function StatsContactCard({ project, developer, requestInfoVariant = "standard" }: { project: Project; developer?: Developer; requestInfoVariant?: "standard" | "inquiry" }) {
   const [requestInfoOpen, setRequestInfoOpen] = useState(false);
   const name = developer?.name ?? project.developerName ?? project.contact.name;
   const email = hasDisplayValue(project.contact?.email) ? project.contact.email : developer?.email;
@@ -1087,22 +1170,37 @@ export function StatsContactCard({ project, developer }: { project: Project; dev
         Request info
       </button>
 
-      <RequestInfoDialog open={requestInfoOpen} onClose={() => setRequestInfoOpen(false)} project={project} />
+      <RequestInfoDialog open={requestInfoOpen} onClose={() => setRequestInfoOpen(false)} project={project} variant={requestInfoVariant} />
     </div>
   );
 }
 
-export function RequestInfoDialog({ open, onClose, project }: { open: boolean; onClose: () => void; project: Project }) {
+export function RequestInfoDialog({
+  open,
+  onClose,
+  project,
+  variant = "standard",
+}: {
+  open: boolean;
+  onClose: () => void;
+  project: Project;
+  /** "inquiry" swaps in the "Send us your inquiry" layout (Name/Email/Contact
+   * Number/Message field order, a marketing opt-in checkbox) used on the
+   * land detail page — everywhere else keeps the original layout. */
+  variant?: "standard" | "inquiry";
+}) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
   const [contactMethod, setContactMethod] = useState<"Phone" | "Text" | "Email">("Phone");
   const [agreed, setAgreed] = useState(false);
+  const [keepPosted, setKeepPosted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const MESSAGE_MAX = 900;
+  const isInquiry = variant === "inquiry";
 
   useEffect(() => {
     if (!open) return;
@@ -1137,6 +1235,7 @@ export function RequestInfoDialog({ open, onClose, project }: { open: boolean; o
           message: message.trim() || `Request info for ${project.name}`,
           projectSlug: project.slug,
           developerSlug: project.developerSlug,
+          marketingOptIn: keepPosted,
         }),
       });
 
@@ -1158,7 +1257,7 @@ export function RequestInfoDialog({ open, onClose, project }: { open: boolean; o
     <div className="request-info-overlay" role="dialog" aria-modal="true" aria-label="Contact us" onClick={onClose}>
       <div className="request-info-dialog" onClick={(event) => event.stopPropagation()}>
         <div className="request-info-topbar">
-          <p className="request-info-topbar-title">Contact Us</p>
+          <p className="request-info-topbar-title">{isInquiry ? "Send us your inquiry" : "Contact Us"}</p>
           <button type="button" className="request-info-close" aria-label="Close" onClick={onClose}><X className="h-5 w-5" /></button>
         </div>
 
@@ -1170,26 +1269,42 @@ export function RequestInfoDialog({ open, onClose, project }: { open: boolean; o
           </div>
         ) : (
           <form onSubmit={onSubmit} className="request-info-body">
-            <h2>Our Sales Team Has Answers.</h2>
+            <h2>{isInquiry ? "Want to find out more?" : "Our Sales Team Has Answers."}</h2>
             <p className="request-info-required-note"><span className="request-info-star">*</span> Indicates a required field</p>
 
             <label className="request-info-field">
-              <span>Name<span className="request-info-star">*</span></span>
+              <span>{isInquiry ? "Your Name" : "Name"}<span className="request-info-star">*</span></span>
               <input value={name} onChange={(event) => setName(event.target.value)} required placeholder="Enter your name" />
             </label>
 
-            <label className="request-info-field">
-              <span>Phone number<span className="request-info-star">*</span></span>
-              <input type="tel" value={phone} onChange={(event) => setPhone(event.target.value)} required placeholder="+94 7X XXX XXXX" />
-            </label>
+            {isInquiry ? (
+              <label className="request-info-field">
+                <span>Email Address</span>
+                <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="Enter your email" />
+              </label>
+            ) : null}
 
             <label className="request-info-field">
-              <span>Email<span className="request-info-star">*</span></span>
-              <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} required placeholder="Enter your email" />
+              <span>{isInquiry ? "Contact Number" : "Phone number"}<span className="request-info-star">*</span></span>
+              {isInquiry ? (
+                <div className="request-info-phone-row">
+                  <span className="request-info-phone-flag" aria-hidden="true">🇱🇰 +94</span>
+                  <input type="tel" value={phone} onChange={(event) => setPhone(event.target.value)} required placeholder="7X XXX XXXX" />
+                </div>
+              ) : (
+                <input type="tel" value={phone} onChange={(event) => setPhone(event.target.value)} required placeholder="+94 7X XXX XXXX" />
+              )}
             </label>
 
+            {!isInquiry ? (
+              <label className="request-info-field">
+                <span>Email<span className="request-info-star">*</span></span>
+                <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} required placeholder="Enter your email" />
+              </label>
+            ) : null}
+
             <label className="request-info-field">
-              <span>Anything else we should know?</span>
+              <span>{isInquiry ? "Message" : "Anything else we should know?"}</span>
               <textarea
                 value={message}
                 onChange={(event) => setMessage(event.target.value.slice(0, MESSAGE_MAX))}
@@ -1216,6 +1331,13 @@ export function RequestInfoDialog({ open, onClose, project }: { open: boolean; o
               </div>
             </div>
 
+            {isInquiry ? (
+              <label className="request-info-consent">
+                <input type="checkbox" checked={keepPosted} onChange={(event) => setKeepPosted(event.target.checked)} />
+                <span>Yes, keep me posted on new launches, property digest and partner offers.</span>
+              </label>
+            ) : null}
+
             <label className="request-info-consent">
               <input type="checkbox" checked={agreed} onChange={(event) => setAgreed(event.target.checked)} required />
               <span>I agree to be contacted by LankaLiving agents via WhatsApp, SMS, Call, Email etc.</span>
@@ -1224,7 +1346,7 @@ export function RequestInfoDialog({ open, onClose, project }: { open: boolean; o
             {errorMessage ? <p className="request-info-error">{errorMessage}</p> : null}
 
             <button type="submit" className="request-info-submit-big" disabled={submitting || !agreed}>
-              {submitting ? "Sending..." : "Submit Form"}
+              {submitting ? "Sending..." : isInquiry ? "Send" : "Submit Form"}
             </button>
           </form>
         )}
@@ -1289,58 +1411,6 @@ export function FloorPlanBrowser({ floorPlans }: { floorPlans: FloorPlan[] }) {
       <div className="grid gap-4 md:grid-cols-3">
         {filtered.length ? filtered.map((f) => <FloorPlanCard key={f.id} floorPlan={f} />) : <p className="text-sm text-stone-600">No floor plans in this category.</p>}
       </div>
-    </section>
-  );
-}
-
-export function UnitTable({ units, projectSlug }: { units: Unit[]; projectSlug?: string }) {
-  return (
-    <div className="overflow-x-auto border border-stone-200 bg-white">
-      <table className="w-full min-w-175 text-sm">
-        <thead className="bg-stone-50 text-left">
-          <tr>
-            <th className="p-3">Unit</th><th className="p-3">Floor</th><th className="p-3">Type</th><th className="p-3">Area</th><th className="p-3">Price</th><th className="p-3">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {units.map((unit) => (
-            <tr key={unit.id} className="border-t border-stone-100">
-              <td className="p-3">
-                {projectSlug ? <Link href={`/projects/${projectSlug}/units/${unit.id}`} className="font-medium text-stone-900 underline">{unit.unitNumber}</Link> : unit.unitNumber}
-              </td>
-              <td className="p-3">{unit.floor}</td><td className="p-3">{unit.apartmentType}</td><td className="p-3">{unit.areaSqFt} sq.ft</td><td className="p-3">{formatLkr(unit.priceLkr)}</td><td className="p-3"><StatusBadge status={unit.status} /></td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-const UNIT_STATUS_ORDER: Unit["status"][] = ["Sold", "Available", "Booked", "Reserved"];
-
-export function UnitAvailabilitySection({ units, projectSlug, title = "Unit Availability" }: { units: Unit[]; projectSlug: string; title?: string }) {
-  const [statusFilter, setStatusFilter] = useState<"all" | Unit["status"]>("all");
-
-  if (!units.length) return null;
-
-  const counts = UNIT_STATUS_ORDER.map((status) => ({ status, count: units.filter((unit) => unit.status === status).length })).filter((entry) => entry.count > 0);
-  const visibleUnits = statusFilter === "all" ? units : units.filter((unit) => unit.status === statusFilter);
-
-  const tabClass = (active: boolean) => `border px-3 py-1.5 text-sm font-medium ${active ? "border-stone-900 bg-stone-900 text-white" : "border-stone-300 bg-white text-stone-700"}`;
-
-  return (
-    <section id="unit-availability" className="space-y-3" aria-label="Unit availability">
-      <h2 className="text-2xl font-normal text-stone-900">{title}</h2>
-
-      <div className="flex flex-wrap gap-2" role="tablist" aria-label="Filter units by status">
-        <button type="button" role="tab" aria-selected={statusFilter === "all"} className={tabClass(statusFilter === "all")} onClick={() => setStatusFilter("all")}>All ({units.length})</button>
-        {counts.map(({ status, count }) => (
-          <button key={status} type="button" role="tab" aria-selected={statusFilter === status} className={tabClass(statusFilter === status)} onClick={() => setStatusFilter(status)}>{status} ({count})</button>
-        ))}
-      </div>
-
-      <UnitTable units={visibleUnits} projectSlug={projectSlug} />
     </section>
   );
 }
@@ -1550,43 +1620,12 @@ const PLAN_SORT_OPTIONS = [
 
 type PlanSortValue = typeof PLAN_SORT_OPTIONS[number]["value"];
 
-type CardStatus = "Available" | "Sold" | "Booked";
-
-export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFloorPlanId, units = [] }: { project: Project; title?: string; excludeFloorPlanId?: string; units?: Unit[] }) {
-  const [activeTab, setActiveTab] = useState<"all" | "floorPlans" | "quickMoveIns" | CardStatus>("floorPlans");
+export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFloorPlanId, showQuickMoveIns = true }: { project: Project; title?: string; excludeFloorPlanId?: string; showQuickMoveIns?: boolean }) {
+  const [activeTab, setActiveTab] = useState<"all" | "floorPlans" | "quickMoveIns">("floorPlans");
   const [filterOpen, setFilterOpen] = useState(false);
   const [availabilityFilter, setAvailabilityFilter] = useState<Set<string>>(new Set());
   const [bedroomFilter, setBedroomFilter] = useState<Set<number>>(new Set());
   const [sortBy, setSortBy] = useState<PlanSortValue>("default");
-
-  const floorRangeByPlanType = useMemo(() => {
-    const map = new Map<string, { min: number; max: number }>();
-    for (const unit of units) {
-      const current = map.get(unit.apartmentType);
-      if (!current) {
-        map.set(unit.apartmentType, { min: unit.floor, max: unit.floor });
-      } else {
-        current.min = Math.min(current.min, unit.floor);
-        current.max = Math.max(current.max, unit.floor);
-      }
-    }
-    return map;
-  }, [units]);
-
-  const cardBadgeByPlanType = useMemo(() => {
-    const map = new Map<string, "Sold" | "Booked" | null>();
-    for (const [planType, group] of Object.entries(
-      units.reduce<Record<string, Unit[]>>((acc, unit) => {
-        (acc[unit.apartmentType] ??= []).push(unit);
-        return acc;
-      }, {})
-    )) {
-      const hasAvailable = group.some((unit) => unit.status === "Available");
-      const hasBooked = group.some((unit) => unit.status === "Booked");
-      map.set(planType, hasAvailable ? null : hasBooked ? "Booked" : "Sold");
-    }
-    return map;
-  }, [units]);
 
   const floorPlans = useMemo(
     () => (excludeFloorPlanId ? project.floorPlans.filter((plan) => plan.id !== excludeFloorPlanId) : project.floorPlans),
@@ -1597,19 +1636,6 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
     () => floorPlans.filter((plan) => plan.quickMoveIn),
     [floorPlans]
   );
-
-  // Tabs group by each plan's overall card status (same rule as the "Sold"/
-  // "Booked" pill on the card) — "Sold" means every unit of that type is
-  // sold, not just "has some sold units" (nearly every type would qualify).
-  const statusTabs = useMemo(() => {
-    const counts: Record<"Available" | "Sold" | "Booked", number> = { Available: 0, Sold: 0, Booked: 0 };
-    for (const plan of floorPlans) {
-      if (!plan.planType || !cardBadgeByPlanType.has(plan.planType)) continue;
-      const status = cardBadgeByPlanType.get(plan.planType) ?? "Available";
-      counts[status] += 1;
-    }
-    return (["Available", "Sold", "Booked"] as const).map((status) => ({ status, count: counts[status] })).filter((entry) => entry.count > 0);
-  }, [floorPlans, cardBadgeByPlanType]);
 
   const availabilityOptions = useMemo(() => Array.from(new Set(floorPlans.map((plan) => plan.availability))), [floorPlans]);
   const bedroomOptions = useMemo(() => Array.from(new Set(floorPlans.map((plan) => plan.bedrooms))).sort((a, b) => a - b), [floorPlans]);
@@ -1630,11 +1656,7 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
   };
 
   const visiblePlans = useMemo(() => {
-    const base = activeTab === "quickMoveIns"
-      ? quickMoveIns
-      : (["Available", "Sold", "Booked"] as const).includes(activeTab as CardStatus)
-        ? floorPlans.filter((plan) => plan.planType && (cardBadgeByPlanType.get(plan.planType) ?? "Available") === activeTab)
-        : floorPlans;
+    const base = activeTab === "quickMoveIns" ? quickMoveIns : floorPlans;
 
     const filtered = base.filter((plan) => {
       if (availabilityFilter.size > 0 && !availabilityFilter.has(plan.availability)) return false;
@@ -1649,7 +1671,7 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
     else if (sortBy === "bedsDesc") sorted.sort((a, b) => b.bedrooms - a.bedrooms);
 
     return sorted;
-  }, [activeTab, floorPlans, quickMoveIns, cardBadgeByPlanType, availabilityFilter, bedroomFilter, sortBy]);
+  }, [activeTab, floorPlans, quickMoveIns, availabilityFilter, bedroomFilter, sortBy]);
 
   return (
     <section id="plans-homes" className="plans-homes-shell" aria-label="Plans and homes">
@@ -1675,29 +1697,19 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
             aria-selected={activeTab === "floorPlans"}
             onClick={() => setActiveTab("floorPlans")}
           >
-            Floor plans ({floorPlans.length})
+            {title} ({floorPlans.length})
           </button>
-          {statusTabs.map(({ status, count }) => (
+          {showQuickMoveIns ? (
             <button
-              key={status}
               type="button"
               role="tab"
-              className={activeTab === status ? "active" : undefined}
-              aria-selected={activeTab === status}
-              onClick={() => setActiveTab(status)}
+              className={activeTab === "quickMoveIns" ? "active" : undefined}
+              aria-selected={activeTab === "quickMoveIns"}
+              onClick={() => setActiveTab("quickMoveIns")}
             >
-              {status} ({count})
+              Quick move ins ({quickMoveIns.length})
             </button>
-          ))}
-          <button
-            type="button"
-            role="tab"
-            className={activeTab === "quickMoveIns" ? "active" : undefined}
-            aria-selected={activeTab === "quickMoveIns"}
-            onClick={() => setActiveTab("quickMoveIns")}
-          >
-            Quick move ins ({quickMoveIns.length})
-          </button>
+          ) : null}
         </div>
 
         <div className="plans-filter-wrap">
@@ -1760,18 +1772,16 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
       </div>
 
       <div className="plans-homes-grid">
-        {visiblePlans.map((plan) => {
-          const badge = plan.planType ? cardBadgeByPlanType.get(plan.planType) : null;
-          return (
+        {visiblePlans.map((plan) => (
           <Link key={plan.id} href={`/projects/${project.slug}/floor-plans/${plan.id}`} className="plans-home-card">
             <figure>
               <Image src={plan.image} alt={plan.planName} width={960} height={620} className="plans-home-image" />
-              <span className={`plans-status-pill${badge ? ` plans-status-pill-${badge.toLowerCase()}` : ""}`}>{badge ?? "For sale"}</span>
+              <span className="plans-status-pill">For sale</span>
             </figure>
 
             <div className="plans-home-body">
               {project.isFeatured ? (
-                <div className="plans-home-badge-row" aria-label="Floor plan badges">
+                <div className="plans-home-badge-row" aria-label={`${title} badges`}>
                   <span className="badge-featured">Featured</span>
                 </div>
               ) : null}
@@ -1779,23 +1789,13 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
               <p className="plans-home-price">From {formatLkr(plan.startingPriceLkr)}</p>
               <p className="plans-home-type">{plan.planType || project.type}</p>
               <div className="plans-home-facts">
-                {plan.planType && floorRangeByPlanType.has(plan.planType) ? (
-                  <span>
-                    <Layers className="h-3.5 w-3.5" aria-hidden="true" />
-                    {(() => {
-                      const range = floorRangeByPlanType.get(plan.planType)!;
-                      return range.min === range.max ? `Floor ${range.min}` : `Floors ${range.min}-${range.max}`;
-                    })()}
-                  </span>
-                ) : null}
                 <span><BedDouble className="h-3.5 w-3.5" aria-hidden="true" /> {plan.bedrooms} bd</span>
                 <span><Bath className="h-3.5 w-3.5" aria-hidden="true" /> {plan.bathrooms}</span>
                 <span><Square className="h-3.5 w-3.5" aria-hidden="true" /> From {plan.floorAreaSqFt} SqFt</span>
               </div>
             </div>
           </Link>
-          );
-        })}
+        ))}
       </div>
 
       <div className="plans-more-wrap">
@@ -1807,16 +1807,34 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
   );
 }
 
-const KEY_FEATURE_GROUPS: { key: "indoor" | "outdoor" | "other"; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
-  { key: "indoor", label: "Indoor features", icon: LayoutPanelLeft },
-  { key: "outdoor", label: "Outdoor features", icon: Trees },
-  { key: "other", label: "Other", icon: LayoutGrid },
-];
+const KEY_FEATURE_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  indoor: LayoutPanelLeft,
+  outdoor: Trees,
+};
 
-export function KeyFeaturesSection({ project }: { project: Project }) {
-  const groups = KEY_FEATURE_GROUPS
-    .map((group) => ({ ...group, items: project.unitFeatures?.[group.key] ?? [] }))
-    .filter((group) => group.items.length > 0);
+/** Accepts either the current `KeyFeatureCategory[]` shape or the legacy
+ * `{ indoor?: string[]; outdoor?: string[]; other?: string[] }` shape still
+ * held by projects saved before the Key Features redesign — Supabase jsonb
+ * has no schema to enforce the newer type at read time. */
+function normalizeUnitFeaturesForDisplay(raw: unknown): { key: string; label: string; items: { field: string; value: string }[] }[] {
+  if (!raw) return [];
+  if (Array.isArray(raw)) return raw as { key: string; label: string; items: { field: string; value: string }[] }[];
+
+  const legacy = raw as { indoor?: string[]; outdoor?: string[]; other?: string[] };
+  const parseLines = (lines?: string[]) =>
+    (lines ?? []).map((line) => {
+      const sepIndex = line.indexOf(": ");
+      return sepIndex === -1 ? { field: "", value: line } : { field: line.slice(0, sepIndex), value: line.slice(sepIndex + 2) };
+    });
+  return [
+    { key: "indoor", label: "Indoor Features", items: parseLines(legacy.indoor) },
+    { key: "outdoor", label: "Outdoor Features", items: parseLines(legacy.outdoor) },
+    { key: "other", label: "Other", items: parseLines(legacy.other) },
+  ];
+}
+
+export function KeyFeaturesSection({ unitFeatures }: { unitFeatures: unknown }) {
+  const groups = normalizeUnitFeaturesForDisplay(unitFeatures).filter((group) => group.items.length > 0);
 
   const [openKey, setOpenKey] = useState<string | null>(groups[0]?.key ?? null);
 
@@ -1830,7 +1848,7 @@ export function KeyFeaturesSection({ project }: { project: Project }) {
       <div className="key-features-list">
         {groups.map((group) => {
           const isOpen = openKey === group.key;
-          const Icon = group.icon;
+          const Icon = KEY_FEATURE_ICONS[group.key] ?? LayoutGrid;
           return (
             <div key={group.key} className={`key-features-row ${isOpen ? "open" : ""}`}>
               <button
@@ -1845,15 +1863,11 @@ export function KeyFeaturesSection({ project }: { project: Project }) {
               </button>
               {isOpen ? (
                 <div className="key-features-row-body">
-                  {group.items.map((item) => {
-                    const [label, ...rest] = item.split(": ");
-                    const value = rest.join(": ");
-                    return (
-                      <span key={item} className="key-features-item">
-                        {value ? <><span className="key-features-item-label">{label}:</span> {value}</> : item}
-                      </span>
-                    );
-                  })}
+                  {group.items.map((item, index) => (
+                    <span key={`${item.field}-${item.value}-${index}`} className="key-features-item">
+                      {item.field ? <><span className="key-features-item-label">{item.field}:</span> {item.value}</> : item.value}
+                    </span>
+                  ))}
                 </div>
               ) : null}
             </div>
@@ -1864,7 +1878,7 @@ export function KeyFeaturesSection({ project }: { project: Project }) {
   );
 }
 
-export function AmenitiesShowcaseSection({ project }: { project: Project }) {
+export function AmenitiesShowcaseSection({ amenities, gallery, heroImage, title = "Amenities" }: { amenities: Amenity[]; gallery: { label: string; image: string }[]; heroImage: string; title?: string }) {
   const amenityItems = useMemo(() => {
     const fallbackDescriptions: Record<string, string> = {
       Pool: "Resort-style pool areas create a calming retreat for daily relaxation and weekend gatherings.",
@@ -1878,18 +1892,21 @@ export function AmenitiesShowcaseSection({ project }: { project: Project }) {
       Clubhouse: "A private clubhouse supports social events, meetings, and shared community experiences.",
       "EV Charging": "Future-ready charging points support electric vehicle ownership within the community.",
       Concierge: "Concierge assistance helps coordinate everyday resident requests and guest arrivals.",
+      "Gated Community": "Controlled gated access with dedicated entry points adds an extra layer of security and privacy.",
+      Beachfront: "Direct beachfront access puts the shoreline right at the edge of the property.",
+      "Sea View": "Open sea views add lasting value and a standout setting for the parcel.",
     };
 
-    return project.amenities.slice(0, 8).map((amenity) => {
-      const imageMatch = project.gallery.find((item) => item.label.toLowerCase().includes(amenity.name.toLowerCase()));
+    return amenities.slice(0, 8).map((amenity) => {
+      const imageMatch = gallery.find((item) => item.label.toLowerCase().includes(amenity.name.toLowerCase()));
 
       return {
         name: amenity.name,
         description: fallbackDescriptions[amenity.name] ?? "Thoughtfully planned amenity spaces enhance comfort and support modern urban living.",
-        image: imageMatch?.image ?? project.heroImage,
+        image: imageMatch?.image ?? heroImage,
       };
     });
-  }, [project.amenities, project.gallery, project.heroImage]);
+  }, [amenities, gallery, heroImage]);
 
   const [activeAmenityIndex, setActiveAmenityIndex] = useState(0);
   const activeAmenity = amenityItems[Math.max(0, Math.min(activeAmenityIndex, amenityItems.length - 1))];
@@ -1899,8 +1916,8 @@ export function AmenitiesShowcaseSection({ project }: { project: Project }) {
   }
 
   return (
-    <section id="amenities" className="amenities-showcase-shell" aria-label="Amenities">
-      <h2>Amenities</h2>
+    <section id="amenities" className="amenities-showcase-shell" aria-label={title}>
+      <h2>{title}</h2>
 
       <div className="amenities-showcase-grid">
         <figure className="amenities-showcase-image-wrap">
@@ -2308,6 +2325,7 @@ export function Header() {
               <Link href="/projects">All new homes</Link>
             </div>
           </div>
+          <Link href="/land">Land</Link>
           <div className="nav-dropdown">
             <span className="nav-dropdown-label">{text.company}</span>
             <div className="nav-dropdown-menu">
@@ -2456,19 +2474,19 @@ const NEARBY_CATEGORY_ICON: Record<NearbyPlace["category"], React.ComponentType<
 
 const NEARBY_CATEGORY_ORDER: NearbyPlace["category"][] = ["School", "Hospital", "Shopping", "Restaurant", "Transport", "Landmark"];
 
-export function NeighborhoodSection({ project, neighborhoodPageExists }: { project: Project; neighborhoodPageExists?: boolean }) {
+export function NeighborhoodSection({ nearby, neighborhoodName, neighborhoodSlug, neighborhoodPageExists }: { nearby: NearbyPlace[]; neighborhoodName?: string; neighborhoodSlug?: string; neighborhoodPageExists?: boolean }) {
   const groups = NEARBY_CATEGORY_ORDER
     .map((category) => ({
       key: category,
       label: category,
       icon: NEARBY_CATEGORY_ICON[category],
-      items: project.nearby.filter((place) => place.category === category).sort((a, b) => a.distanceKm - b.distanceKm),
+      items: nearby.filter((place) => place.category === category).sort((a, b) => a.distanceKm - b.distanceKm),
     }))
     .filter((group) => group.items.length > 0);
 
   const [openKey, setOpenKey] = useState<string | null>(groups[0]?.key ?? null);
 
-  if (!hasDisplayValue(project.neighborhood) && groups.length === 0) return null;
+  if (!hasDisplayValue(neighborhoodName) && groups.length === 0) return null;
 
   return (
     <section id="neighborhood" className="key-features-shell" aria-label="Neighborhood">
@@ -2507,9 +2525,9 @@ export function NeighborhoodSection({ project, neighborhoodPageExists }: { proje
         </div>
       ) : null}
 
-      {neighborhoodPageExists && project.neighborhoodSlug ? (
-        <Link href={`/neighborhoods/${project.neighborhoodSlug}`} className="neighborhood-section-explore">
-          Explore {project.neighborhood} neighborhood
+      {neighborhoodPageExists && neighborhoodSlug ? (
+        <Link href={`/neighborhoods/${neighborhoodSlug}`} className="neighborhood-section-explore">
+          Explore {neighborhoodName} neighborhood
         </Link>
       ) : null}
     </section>

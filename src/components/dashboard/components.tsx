@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import type { Amenity, CoDeveloperEntry, Developer, FactIconKey, FactItem, FloorPlan, Neighborhood, Project, Unit } from "@/types";
+import type { Amenity, CoDeveloperEntry, CompanyProfile, Developer, FactIconKey, FactItem, FloorPlan, KeyFeatureCategory, KeyFeatureItem, Neighborhood, Project } from "@/types";
 import { Button } from "@/components/ui/button";
 import { ICON_LABELS, ICON_OPTIONS } from "@/lib/fact-icons";
 import {
@@ -22,7 +22,7 @@ function InfoTooltip({ text }: { text: string }) {
   );
 }
 
-function Field({ label, className, children }: { label: string; className?: string; children: ReactNode }) {
+export function Field({ label, className, children }: { label: string; className?: string; children: ReactNode }) {
   return (
     <label className={`grid gap-1 text-xs text-stone-700 ${className ?? ""}`.trim()}>
       <span>{label}</span>
@@ -53,9 +53,29 @@ function useDeveloperDirectory() {
   return developers;
 }
 
-const weekDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"] as const;
+// Backs the "Connected Pages" dropdowns (architect, marketing company, sales
+// company, interior designer) in the project wizard with real admin-managed
+// directories instead of hardcoded placeholder options.
+function useCompanyProfileDirectory(apiPath: string) {
+  const [companies, setCompanies] = useState<CompanyProfile[]>([]);
 
-function buildInitialOfficeHours(existing: { day: string; open: boolean; from?: string; to?: string }[] | undefined) {
+  useEffect(() => {
+    fetch(apiPath)
+      .then((response) => response.json())
+      .then((data) => setCompanies(Array.isArray(data?.companies) ? data.companies : []))
+      .catch(() => setCompanies([]));
+  }, [apiPath]);
+
+  return companies;
+}
+
+function toPageOptions(companies: CompanyProfile[]) {
+  return [{ slug: "", label: "No page selected" }, ...companies.map((company) => ({ slug: company.slug, label: company.name }))];
+}
+
+export const weekDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"] as const;
+
+export function buildInitialOfficeHours(existing: { day: string; open: boolean; from?: string; to?: string }[] | undefined) {
   return weekDays.map((day) => {
     const match = existing?.find((entry) => entry.day === day);
     return {
@@ -143,9 +163,9 @@ function CoDeveloperEditor({
   );
 }
 
-type OfficeHoursEntryState = { day: typeof weekDays[number]; open: boolean; from: string; to: string };
+export type OfficeHoursEntryState = { day: typeof weekDays[number]; open: boolean; from: string; to: string };
 
-function OfficeHoursEditor({
+export function OfficeHoursEditor({
   officeHours,
   setOfficeHours,
 }: {
@@ -241,7 +261,92 @@ type AmenityDetails = {
   image: string;
 };
 
-export function DashboardSidebar({ links }: { links: { label: string; href: string }[] }) {
+// Preset field -> common value options, sourced from standard MLS/condo
+// listing feature-sheet conventions (kitchen/bath fixtures, flooring, climate
+// control, security, connectivity) — admins can still type a custom field
+// name or value when nothing here fits.
+export const INDOOR_FEATURE_PRESETS: Record<string, string[]> = {
+  Kitchen: ["Pantry cabinets", "Granite/quartz countertops", "Kitchen island", "Open-concept kitchen", "Breakfast bar", "Top-of-the-line kitchen"],
+  Storage: ["Built-in wardrobes", "Walk-in closets", "Additional storage room", "Under-stair storage"],
+  Bathroom: ["Premium fixtures", "Double vanity", "Rainshower head", "Separate shower and tub", "Heated floors"],
+  Windows: ["Double-glazed glass", "Floor-to-ceiling windows", "Tinted/UV-protected glass", "Sliding windows"],
+  Climate: ["Air conditioning", "Central air conditioning", "Ceiling fans", "Split-unit AC"],
+  Lighting: ["Fixtures included", "Recessed lighting", "Natural light / large windows", "Smart lighting"],
+  Security: ["Video phone", "24-hour security", "CCTV surveillance", "Keyless entry", "Gated access"],
+  Connectivity: ["Internet access", "Fiber-optic ready", "Cable TV pre-wired", "Smart home ready"],
+  Laundry: ["Complete in-unit", "Washer/dryer hookup", "Shared laundry room"],
+  Appliances: ["Stainless steel appliances", "Built-in oven", "Dishwasher included", "Refrigerator included", "Top-of-the-line kitchen"],
+  Flooring: ["Hardwood", "Tile", "Luxury vinyl", "Marble", "Carpet in bedrooms"],
+  Ceiling: ["High ceilings", "Standard ceiling height"],
+};
+
+export const OUTDOOR_FEATURE_PRESETS: Record<string, string[]> = {
+  Balcony: ["Private balcony", "Wraparound balcony", "Juliet balcony"],
+  View: ["City view", "Ocean/sea view", "Garden view", "Mountain view"],
+  Parking: ["Covered parking", "Private garage", "Visitor parking", "EV charging"],
+  "Outdoor space": ["Private garden", "Rooftop terrace", "Shared courtyard", "Patio"],
+  Landscaping: ["Landscaped grounds", "Water feature"],
+};
+
+export function featurePresetsForCategory(categoryKey: string): Record<string, string[]> {
+  if (categoryKey === "indoor") return INDOOR_FEATURE_PRESETS;
+  if (categoryKey === "outdoor") return OUTDOOR_FEATURE_PRESETS;
+  return {};
+}
+
+export function toFeatureCategorySlug(label: string) {
+  return label.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
+
+/** Accepts either the current `KeyFeatureCategory[]` shape or the legacy
+ * `{ indoor?: string[]; outdoor?: string[]; other?: string[] }` shape so
+ * existing projects don't lose their saved features when reopened. */
+export function normalizeUnitFeatures(raw: unknown): KeyFeatureCategory[] {
+  const parseLines = (lines?: string[]): KeyFeatureItem[] =>
+    (lines ?? []).map((line) => {
+      const sepIndex = line.indexOf(": ");
+      return sepIndex === -1 ? { field: "", value: line } : { field: line.slice(0, sepIndex), value: line.slice(sepIndex + 2) };
+    });
+
+  let categories: KeyFeatureCategory[];
+  if (Array.isArray(raw)) {
+    categories = raw as KeyFeatureCategory[];
+  } else {
+    const legacy = (raw ?? {}) as { indoor?: string[]; outdoor?: string[]; other?: string[] };
+    categories = [
+      { key: "indoor", label: "Indoor Features", items: parseLines(legacy.indoor) },
+      { key: "outdoor", label: "Outdoor Features", items: parseLines(legacy.outdoor) },
+    ];
+    if (legacy.other?.length) categories.push({ key: "other", label: "Other", items: parseLines(legacy.other) });
+  }
+
+  if (!categories.some((category) => category.key === "indoor")) categories.unshift({ key: "indoor", label: "Indoor Features", items: [] });
+  if (!categories.some((category) => category.key === "outdoor")) categories.splice(1, 0, { key: "outdoor", label: "Outdoor Features", items: [] });
+  return categories;
+}
+
+// Single source of truth for the admin sidebar — every /admin/* page renders
+// this same list so a new section only needs to be added here once.
+export const ADMIN_NAV_LINKS: { label: string; href: string }[] = [
+  { label: "Overview", href: "/admin" },
+  { label: "Projects", href: "/admin" },
+  { label: "Developers", href: "/admin/developers" },
+  { label: "Construction Companies", href: "/admin/construction-companies" },
+  { label: "Marketing Companies", href: "/admin/marketing-companies" },
+  { label: "Sales Companies", href: "/admin/sales-companies" },
+  { label: "Architects", href: "/admin/architects" },
+  { label: "Interior Designers", href: "/admin/interior-designers" },
+  { label: "Neighborhoods", href: "/admin/neighborhoods" },
+  { label: "Land", href: "/admin/lands" },
+  { label: "Homepage Hero", href: "/admin/hero-ads" },
+  { label: "Users", href: "/admin" },
+  { label: "Leads", href: "/admin" },
+  { label: "Articles", href: "/admin" },
+  { label: "Locations", href: "/admin" },
+  { label: "Settings", href: "/admin" },
+];
+
+export function DashboardSidebar({ links = ADMIN_NAV_LINKS }: { links?: { label: string; href: string }[] }) {
   return (
     <aside className="sticky top-6 box-border min-w-0 w-full self-start border-r border-stone-200 bg-white p-4">
       <nav className="grid gap-2 text-sm">
@@ -555,39 +660,20 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
   const moveInYearOptions = [2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035];
   const bedroomOptions = [1, 2, 3, 4, 5];
   const bathroomOptions = [1, 2, 3, 4, 5];
-  const architectPageOptions = [
-    { slug: "", label: "No page selected" },
-    { slug: "kirkor-architect-and-planners", label: "Kirkor Architect and Planners" },
-    { slug: "cityform-architects", label: "Cityform Architects" },
-    { slug: "studio-grid-architecture", label: "Studio Grid Architecture" },
-  ];
-  const marketingCompanyPageOptions = [
-    { slug: "", label: "No page selected" },
-    { slug: "ora-creative-agency", label: "ORA Creative Agency" },
-    { slug: "prime-sales-lanka", label: "Prime Sales Lanka" },
-    { slug: "urban-home-marketing", label: "Urban Home Marketing" },
-  ];
-  const salesCompanyPageOptions = [
-    { slug: "", label: "No page selected" },
-    { slug: "prime-realty-sales", label: "Prime Realty Sales" },
-    { slug: "colombo-property-brokers", label: "Colombo Property Brokers" },
-    { slug: "island-homes-sales", label: "Island Homes Sales" },
-  ];
-  const interiorDesignerPageOptions = [
-    { slug: "", label: "No page selected" },
-    { slug: "pulsinelli", label: "Pulsinelli" },
-    { slug: "atelier-habitat", label: "Atelier Habitat" },
-    { slug: "spacecraft-interiors", label: "Spacecraft Interiors" },
-  ];
+  const architectPageOptions = toPageOptions(useCompanyProfileDirectory("/api/architects"));
+  const marketingCompanyPageOptions = toPageOptions(useCompanyProfileDirectory("/api/marketing-companies"));
+  const salesCompanyPageOptions = toPageOptions(useCompanyProfileDirectory("/api/sales-companies"));
+  const interiorDesignerPageOptions = toPageOptions(useCompanyProfileDirectory("/api/interior-designers"));
   const steps = [
     "Project Information",
     "Location",
     "Pricing",
     "Apartment Details",
     "Amenities",
+    "Key Features",
     "Gallery",
     "Floor Plans",
-    "Units",
+    "Neighborhood",
     "Contact",
     "SEO",
     "Preview",
@@ -727,9 +813,53 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
   const [amenities, setAmenities] = useState<string[]>(initialProject?.amenities.map((amenity) => amenity.name) ?? []);
   const [amenityDetails, setAmenityDetails] = useState<Record<string, AmenityDetails>>(() => Object.fromEntries((initialProject?.amenities ?? []).map((amenity) => [amenity.name, { description: "", image: "" }])));
   const [customAmenity, setCustomAmenity] = useState("");
-  const [indoorFeaturesText, setIndoorFeaturesText] = useState((initialProject?.unitFeatures?.indoor ?? []).join("\n"));
-  const [outdoorFeaturesText, setOutdoorFeaturesText] = useState((initialProject?.unitFeatures?.outdoor ?? []).join("\n"));
-  const [otherFeaturesText, setOtherFeaturesText] = useState((initialProject?.unitFeatures?.other ?? []).join("\n"));
+  const [featureCategories, setFeatureCategories] = useState<KeyFeatureCategory[]>(() => normalizeUnitFeatures(initialProject?.unitFeatures));
+  const [activeFeatureCategoryIndex, setActiveFeatureCategoryIndex] = useState(0);
+  const [newFeatureCategoryName, setNewFeatureCategoryName] = useState("");
+
+  const addFeatureCategory = () => {
+    const label = newFeatureCategoryName.trim();
+    if (!label) return;
+    const key = toFeatureCategorySlug(label) || `category-${featureCategories.length}`;
+    setFeatureCategories((current) => [...current, { key, label, items: [] }]);
+    setActiveFeatureCategoryIndex(featureCategories.length);
+    setNewFeatureCategoryName("");
+  };
+
+  const removeFeatureCategory = (categoryIndex: number) => {
+    setFeatureCategories((current) => current.filter((_, index) => index !== categoryIndex));
+    setActiveFeatureCategoryIndex((current) => Math.max(0, Math.min(current, featureCategories.length - 2)));
+  };
+
+  const addFeatureItem = (categoryIndex: number) => {
+    setFeatureCategories((current) =>
+      current.map((category, index) => {
+        if (index !== categoryIndex) return category;
+        const presetFields = Object.keys(featurePresetsForCategory(category.key));
+        const usedFields = new Set(category.items.map((item) => item.field));
+        const nextField = presetFields.find((field) => !usedFields.has(field)) ?? "";
+        return { ...category, items: [...category.items, { field: nextField, value: "" }] };
+      })
+    );
+  };
+
+  const updateFeatureItem = (categoryIndex: number, itemIndex: number, patch: Partial<KeyFeatureItem>) => {
+    setFeatureCategories((current) =>
+      current.map((category, index) =>
+        index !== categoryIndex
+          ? category
+          : { ...category, items: category.items.map((item, i) => (i === itemIndex ? { ...item, ...patch } : item)) }
+      )
+    );
+  };
+
+  const removeFeatureItem = (categoryIndex: number, itemIndex: number) => {
+    setFeatureCategories((current) =>
+      current.map((category, index) =>
+        index !== categoryIndex ? category : { ...category, items: category.items.filter((_, i) => i !== itemIndex) }
+      )
+    );
+  };
 
   const [visibleStats, setVisibleStats] = useState<string[]>(initialProject?.desktopVisibleStats ?? [
     "Price range",
@@ -775,50 +905,6 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
 
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState("");
-
-  const emptyUnitDraft: Unit = { id: "", projectSlug: "", unitNumber: "", floor: 0, apartmentType: "", bedrooms: 0, areaSqFt: 0, priceLkr: 0, status: "Available" };
-  const [units, setUnits] = useState<Unit[]>([]);
-  const [unitsLoading, setUnitsLoading] = useState(false);
-  const [unitsSaving, setUnitsSaving] = useState(false);
-  const [unitsMessage, setUnitsMessage] = useState("");
-
-  useEffect(() => {
-    if (!initialProject) return;
-    setUnitsLoading(true);
-    fetch(`/api/projects/${initialProject.slug}/units`)
-      .then((response) => response.json())
-      .then((data) => setUnits(data.units ?? []))
-      .finally(() => setUnitsLoading(false));
-  }, [initialProject]);
-
-  const addUnitRow = () => setUnits((current) => [...current, { ...emptyUnitDraft }]);
-  const removeUnitRow = (index: number) => setUnits((current) => current.filter((_, i) => i !== index));
-  const updateUnitRow = (index: number, patch: Partial<Unit>) =>
-    setUnits((current) => current.map((unit, i) => (i === index ? { ...unit, ...patch } : unit)));
-
-  const saveUnits = async () => {
-    if (!initialProject) return;
-    setUnitsSaving(true);
-    setUnitsMessage("");
-    try {
-      const response = await fetch(`/api/projects/${initialProject.slug}/units`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ units }),
-      });
-      const data = await response.json().catch(() => null);
-      if (!response.ok) {
-        setUnitsMessage(data?.error ?? "Unable to save units.");
-        return;
-      }
-      setUnits(data.units ?? []);
-      setUnitsMessage("Units saved.");
-    } catch {
-      setUnitsMessage("Unable to save units.");
-    } finally {
-      setUnitsSaving(false);
-    }
-  };
 
   const uniqueOptions = (options: string[]) => [...new Set(options)];
   const districtOptions = province ? uniqueOptions(sriLankaDistrictsByProvince[province] ?? []) : [];
@@ -975,6 +1061,11 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
     });
   };
 
+  // Each step's content stays mounted (so uncontrolled/ref-backed fields on
+  // other steps don't lose their in-progress value when hidden) but only the
+  // active step is visible — clicking a step shows only that step's fields.
+  const stepVisible = (index: number) => (step === index ? "" : "hidden");
+
   const buildPayload = (): Partial<Project> & { name: string; developerSlug: string; developerName: string } => {
     const resolvedDeveloperSlug = developerSlug ?? initialProject?.developerSlug ?? "";
     const resolvedDeveloperName = developerName ?? initialProject?.developerName ?? "";
@@ -1035,11 +1126,9 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
         ? { enabled: hotDealEnabled, badge: hotDealBadge.trim() || "Hot Deal", title: hotDealTitle.trim(), description: hotDealDescription.trim() }
         : undefined,
       amenities: amenities.map((name) => ({ name: name as Amenity["name"], icon: name.toLowerCase().replace(/[^a-z0-9]+/g, "-") })),
-      unitFeatures: {
-        indoor: indoorFeaturesText.split("\n").map((line) => line.trim()).filter(Boolean),
-        outdoor: outdoorFeaturesText.split("\n").map((line) => line.trim()).filter(Boolean),
-        other: otherFeaturesText.split("\n").map((line) => line.trim()).filter(Boolean),
-      },
+      unitFeatures: featureCategories
+        .map((category) => ({ ...category, items: category.items.filter((item) => item.field.trim() || item.value.trim()) }))
+        .filter((category) => category.items.length > 0),
       floorPlans: floorPlans
         .filter((plan) => plan.name.trim())
         .map((plan, index) => ({
@@ -1113,7 +1202,7 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
           setSaveError(data?.error ?? "Unable to publish this project.");
           return;
         }
-        window.location.href = `/projects/${data.slug}`;
+        window.location.assign(`/projects/${data.slug}`);
         return;
       }
     } catch {
@@ -1140,7 +1229,7 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
         <div className="box-border min-w-0 w-full space-y-4 border border-stone-200 bg-white p-4">
           <h2 className="text-xl font-semibold">{steps[step]}</h2>
           <div className="grid gap-3 md:grid-cols-2">
-            <div ref={(element) => { sectionRefs.current[0] = element; }} className="md:col-span-2 border border-slate-200 bg-slate-50 p-3">
+            <div ref={(element) => { sectionRefs.current[0] = element; }} className={`md:col-span-2 border border-slate-200 bg-slate-50 p-3 ${stepVisible(0)}`}>
               <p className="text-sm font-medium text-stone-900">Project Information</p>
               <div className="mt-3 grid gap-3 md:grid-cols-2">
                 <Field label="Project Name"><input ref={nameRef} defaultValue={initialProject?.name} className="border border-stone-300 bg-white px-3 py-2 text-sm w-full" required /></Field>
@@ -1178,7 +1267,10 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
                 </label>
 
                 <label className="grid gap-1 text-xs text-stone-700">
-                  <span>Move-in Year</span>
+                  <span className="inline-flex items-center gap-1">
+                    Move-in Year
+                    <InfoTooltip text="Shows a 'Move in {year}' badge on the public listing page and search cards." />
+                  </span>
                   <select value={moveInYear} onChange={(event) => setMoveInYear(event.target.value)} className="border border-stone-300 bg-white px-3 py-2 text-sm">
                     <option value="">Select move-in year</option>
                     {moveInYearOptions.map((option) => (
@@ -1202,7 +1294,7 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
               </div>
             </div>
 
-            <div className="md:col-span-2 border border-slate-200 bg-slate-50 p-3">
+            <div className={`md:col-span-2 border border-slate-200 bg-slate-50 p-3 ${stepVisible(0)}`}>
               <p className="text-sm font-medium text-stone-900">Badges</p>
               <p className="mt-1 text-xs text-stone-600">Shown as pills on the listing page and floor plan page.</p>
               <div className="mt-3 flex flex-wrap gap-4 text-sm text-stone-800">
@@ -1220,7 +1312,7 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
               </div>
             </div>
 
-            <div ref={(element) => { sectionRefs.current[1] = element; }} className="md:col-span-2 border border-emerald-200 bg-emerald-50 p-3">
+            <div ref={(element) => { sectionRefs.current[1] = element; }} className={`md:col-span-2 border border-emerald-200 bg-emerald-50 p-3 ${stepVisible(1)}`}>
               <p className="text-sm font-medium text-stone-900">Location</p>
               <div className="mt-3 grid gap-3 md:grid-cols-2">
                 <Field label="Address"><input ref={addressRef} defaultValue={initialProject?.location} className="border border-stone-300 bg-white px-3 py-2 text-sm w-full" required /></Field>
@@ -1296,30 +1388,9 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
                   </select>
                 </label>
               </div>
-
-              <div className="mt-4 border border-stone-200 bg-white p-3">
-                <div className="flex items-center justify-between gap-2">
-                  <p className="text-xs font-semibold text-stone-800">Nearby places</p>
-                  <Button type="button" variant="outline" className="h-8 px-3 text-xs" onClick={addNearbyPlace}>Add place</Button>
-                </div>
-                <p className="mt-1 text-xs text-stone-600">Shown in the public Neighborhood section on this project's page.</p>
-                <div className="mt-3 grid gap-2">
-                  {nearbyPlaces.map((place, index) => (
-                    <div key={`nearby-${index}`} className="grid gap-2 md:grid-cols-[140px_1fr_110px_auto]">
-                      <select value={place.category} onChange={(event) => updateNearbyPlace(index, "category", event.target.value)} className="border border-stone-300 bg-white px-2 py-2 text-sm">
-                        {nearbyCategoryOptions.map((option) => <option key={option} value={option}>{option}</option>)}
-                      </select>
-                      <input value={place.name} onChange={(event) => updateNearbyPlace(index, "name", event.target.value)} className="border border-stone-300 px-2 py-2 text-sm" placeholder="Place name" />
-                      <input value={place.distanceKm} onChange={(event) => updateNearbyPlace(index, "distanceKm", event.target.value)} type="number" min="0" step="0.1" className="border border-stone-300 px-2 py-2 text-sm" placeholder="Distance (km)" />
-                      <Button type="button" variant="outline" className="h-9 px-3 text-xs" onClick={() => removeNearbyPlace(index)}>Remove</Button>
-                    </div>
-                  ))}
-                  {nearbyPlaces.length === 0 ? <p className="text-xs text-stone-500">No nearby places added yet.</p> : null}
-                </div>
-              </div>
             </div>
 
-            <div ref={(element) => { sectionRefs.current[2] = element; }} className="md:col-span-2 border border-amber-200 bg-amber-50 p-3">
+            <div ref={(element) => { sectionRefs.current[2] = element; }} className={`md:col-span-2 border border-amber-200 bg-amber-50 p-3 ${stepVisible(2)}`}>
               <p className="text-sm font-medium text-stone-900">Pricing</p>
               <p className="mt-1 text-xs text-stone-600">Use min and max values only. This keeps all listings consistently formatted.</p>
               <div className="mt-3 grid gap-3 md:grid-cols-2">
@@ -1334,7 +1405,10 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
                 </label>
 
                 <label className="grid gap-1 text-xs text-stone-700">
-                  <span>Price Range (LKR)</span>
+                  <span className="inline-flex items-center gap-1">
+                    Price Range (LKR)
+                    <InfoTooltip text="Sets the 'Price range' stat shown on the public listing (e.g. Rs. 80M-150M) — separate from the single 'Starting Price' used for 'From Rs. X' pricing elsewhere on the site." />
+                  </span>
                   <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2">
                     <input type="number" min="0" step="1" value={priceRangeMin} onChange={(event) => setPriceRangeMin(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" placeholder="Min" />
                     <span className="text-stone-500">to</span>
@@ -1363,12 +1437,15 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
               </div>
             </div>
 
-            <div className="md:col-span-2 border border-sky-200 bg-sky-50 p-3">
+            <div className={`md:col-span-2 border border-sky-200 bg-sky-50 p-3 ${stepVisible(2)}`}>
               <p className="text-sm font-medium text-stone-900">Pricing and Fees</p>
               <p className="mt-1 text-xs text-stone-600">Manage available plan pricing, fees, payment structure, and incentives shown in the public pricing section.</p>
               <div className="mt-3 grid gap-3 md:grid-cols-2">
                 <label className="grid gap-1 text-xs text-stone-700">
-                  <span>Available plan prices</span>
+                  <span className="inline-flex items-center gap-1">
+                    Available plan prices
+                    <InfoTooltip text="Shown as its own 'Available plan prices' line in the public Pricing and Fees card — a separate display range from Price Range/Starting Price above." />
+                  </span>
                   <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2">
                     <label className="grid min-w-0 gap-1 text-xs text-stone-600">
                       <span>From</span>
@@ -1494,7 +1571,7 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
               </div>
             </div>
 
-            <div ref={(element) => { sectionRefs.current[3] = element; }} className="md:col-span-2 border border-cyan-200 bg-cyan-50 p-3">
+            <div ref={(element) => { sectionRefs.current[3] = element; }} className={`md:col-span-2 border border-cyan-200 bg-cyan-50 p-3 ${stepVisible(3)}`}>
               <p className="text-sm font-medium text-stone-900">Apartment Details</p>
               <p className="mt-1 text-xs text-stone-600">Select ranges from dropdowns so values remain clean and consistent on listing cards.</p>
               <div className="mt-3 grid gap-3 md:grid-cols-2">
@@ -1570,7 +1647,7 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
               </div>
             </div>
 
-            <div className="md:col-span-2 border border-yellow-200 bg-yellow-50 p-3">
+            <div ref={(element) => { sectionRefs.current[7] = element; }} className={`md:col-span-2 border border-yellow-200 bg-yellow-50 p-3 ${stepVisible(7)}`}>
               <p className="text-sm font-medium text-stone-900">Floor Plan Info</p>
               <p className="mt-1 text-xs text-stone-600">Add at least two floor plans with core details for listing cards.</p>
               <div className="mt-3 grid gap-3">
@@ -1679,18 +1756,48 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
               </div>
             </div>
 
-            <Field label="Number of Floors"><input ref={floorsRef} defaultValue={initialProject ? String(initialProject.floors) : undefined} type="number" min="0" step="1" className="border border-stone-300 px-3 py-2 text-sm w-full" /></Field>
-            <Field label="Carpark levels (optional)"><input value={carparkLevels} onChange={(event) => setCarparkLevels(event.target.value)} type="number" min="0" step="1" className="border border-stone-300 px-3 py-2 text-sm w-full" /></Field>
-            <Field label="Average floor area, sq ft (optional)"><input value={averageFloorAreaSqFt} onChange={(event) => setAverageFloorAreaSqFt(event.target.value)} type="number" min="0" step="1" className="border border-stone-300 px-3 py-2 text-sm w-full" /></Field>
+            <div ref={(element) => { sectionRefs.current[8] = element; }} className={`md:col-span-2 border border-indigo-200 bg-indigo-50 p-3 ${stepVisible(8)}`}>
+              <p className="text-sm font-medium text-stone-900">Neighborhood</p>
+              <p className="mt-1 text-xs text-stone-600">Nearby places shown in the public Neighborhood accordion on this project&apos;s page, grouped by category.</p>
+              <p className="mt-2 text-xs text-stone-500">Neighborhood name: <strong className="text-stone-800">{neighborhood || "Not set"}</strong> — set the Province/District/City/Neighborhood dropdowns on the Location step to change it.</p>
 
-            <div className="md:col-span-2 mt-2 grid gap-3 border border-stone-200 bg-white p-3">
+              <div className="mt-3 border border-stone-200 bg-white p-3">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-xs font-semibold text-stone-800">Nearby places</p>
+                  <Button type="button" variant="outline" className="h-8 px-3 text-xs" onClick={addNearbyPlace}>Add place</Button>
+                </div>
+                <div className="mt-3 grid gap-2">
+                  {nearbyPlaces.map((place, index) => (
+                    <div key={`nearby-${index}`} className="grid gap-2 md:grid-cols-[140px_1fr_110px_auto]">
+                      <select value={place.category} onChange={(event) => updateNearbyPlace(index, "category", event.target.value)} className="border border-stone-300 bg-white px-2 py-2 text-sm">
+                        {nearbyCategoryOptions.map((option) => <option key={option} value={option}>{option}</option>)}
+                      </select>
+                      <input value={place.name} onChange={(event) => updateNearbyPlace(index, "name", event.target.value)} className="border border-stone-300 px-2 py-2 text-sm" placeholder="Place name" />
+                      <input value={place.distanceKm} onChange={(event) => updateNearbyPlace(index, "distanceKm", event.target.value)} type="number" min="0" step="0.1" className="border border-stone-300 px-2 py-2 text-sm" placeholder="Distance (km)" />
+                      <Button type="button" variant="outline" className="h-9 px-3 text-xs" onClick={() => removeNearbyPlace(index)}>Remove</Button>
+                    </div>
+                  ))}
+                  {nearbyPlaces.length === 0 ? <p className="text-xs text-stone-500">No nearby places added yet.</p> : null}
+                </div>
+              </div>
+            </div>
+
+            <div className={`md:col-span-2 grid gap-3 border border-cyan-200 bg-cyan-50 p-3 md:grid-cols-3 ${stepVisible(3)}`}>
+              <Field label="Number of Floors"><input ref={floorsRef} defaultValue={initialProject ? String(initialProject.floors) : undefined} type="number" min="0" step="1" className="border border-stone-300 bg-white px-3 py-2 text-sm w-full" /></Field>
+              <Field label="Carpark levels (optional)"><input value={carparkLevels} onChange={(event) => setCarparkLevels(event.target.value)} type="number" min="0" step="1" className="border border-stone-300 bg-white px-3 py-2 text-sm w-full" /></Field>
+              <Field label="Average floor area, sq ft (optional)"><input value={averageFloorAreaSqFt} onChange={(event) => setAverageFloorAreaSqFt(event.target.value)} type="number" min="0" step="1" className="border border-stone-300 bg-white px-3 py-2 text-sm w-full" /></Field>
+            </div>
+
+            <div className={`md:col-span-2 mt-2 grid gap-3 border border-cyan-200 bg-cyan-50 p-3 ${stepVisible(3)}`}>
               <p className="text-sm font-medium text-stone-900">Parking</p>
-              <select value={parkingSpaces} onChange={(event) => setParkingSpaces(event.target.value)} className="border border-stone-300 bg-white px-3 py-2 text-sm">
-                <option value="">How many parking spaces?</option>
-                {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((count) => (
-                  <option key={count} value={count}>{count}</option>
-                ))}
-              </select>
+              <Field label="How many parking spaces?">
+                <select value={parkingSpaces} onChange={(event) => setParkingSpaces(event.target.value)} className="border border-stone-300 bg-white px-3 py-2 text-sm w-full">
+                  <option value="">Select</option>
+                  {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((count) => (
+                    <option key={count} value={count}>{count}</option>
+                  ))}
+                </select>
+              </Field>
               <p className="text-xs text-stone-600">Parking type (select all that apply). EV charging is set under Amenities.</p>
               <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-3">
                 {parkingFeatureOptions.map((feature) => (
@@ -1705,7 +1812,7 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
               ) : null}
             </div>
 
-            <div className="md:col-span-2 mt-2 border border-rose-200 bg-rose-50 p-3">
+            <div className={`md:col-span-2 mt-2 border border-rose-200 bg-rose-50 p-3 ${stepVisible(0)}`}>
               <p className="text-sm font-medium text-stone-900">Connected Pages</p>
               <p className="mt-1 text-xs text-stone-600">Choose destination pages used on the public listing when users click these names.</p>
               <div className="mt-3 grid gap-3 md:grid-cols-2">
@@ -1755,7 +1862,7 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
               />
             </div>
           </div>
-          <div ref={(element) => { sectionRefs.current[5] = element; }} className="border border-lime-200 bg-lime-50 p-3">
+          <div ref={(element) => { sectionRefs.current[6] = element; }} className={`border border-lime-200 bg-lime-50 p-3 ${stepVisible(6)}`}>
             <p className="text-sm font-medium text-stone-900">Gallery</p>
             <p className="mt-1 text-xs text-stone-600">Manage the images shown on the public project page.</p>
             <div className="mt-3"><ImageUploader /></div>
@@ -1828,7 +1935,8 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
                 ))}
               </div>
             </div>
-          <div ref={(element) => { sectionRefs.current[4] = element; }} className="border border-purple-200 bg-purple-50 p-3">
+          </div>
+          <div ref={(element) => { sectionRefs.current[4] = element; }} className={`border border-purple-200 bg-purple-50 p-3 ${stepVisible(4)}`}>
             <p className="text-sm font-medium text-stone-900">Amenities</p>
             <p className="mt-1 text-xs text-stone-600">Select the amenities that should appear on the public listing.</p>
             <div className="mt-3 grid gap-2 sm:grid-cols-2 md:grid-cols-3">
@@ -1850,79 +1958,98 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
                 </label>
               </div>
             ))}
-            <div className="mt-3 grid gap-3 md:grid-cols-3">
-              <p className="text-xs font-medium text-stone-800 md:col-span-3">Key features (one per line, grouped for the "Key Features" accordion — distinct from building amenities above)</p>
-              <label className="grid gap-1 text-xs text-stone-700">
-                <span>Indoor features</span>
-                <textarea value={indoorFeaturesText} onChange={(event) => setIndoorFeaturesText(event.target.value)} className="border border-stone-300 bg-white px-3 py-2 text-sm" rows={4} />
-              </label>
-              <label className="grid gap-1 text-xs text-stone-700">
-                <span>Outdoor features</span>
-                <textarea value={outdoorFeaturesText} onChange={(event) => setOutdoorFeaturesText(event.target.value)} className="border border-stone-300 bg-white px-3 py-2 text-sm" rows={4} />
-              </label>
-              <label className="grid gap-1 text-xs text-stone-700">
-                <span>Other</span>
-                <textarea value={otherFeaturesText} onChange={(event) => setOtherFeaturesText(event.target.value)} className="border border-stone-300 bg-white px-3 py-2 text-sm" rows={4} />
-              </label>
+          </div>
+          <div ref={(element) => { sectionRefs.current[5] = element; }} className={`border border-pink-200 bg-pink-50 p-3 ${stepVisible(5)}`}>
+            <p className="text-sm font-medium text-stone-900">Key Features</p>
+            <p className="mt-1 text-xs text-stone-600">Grouped for the public &quot;Key Features&quot; accordion — distinct from building amenities above. Indoor and Outdoor are built in; add more categories as needed.</p>
+            <div className="mt-3 flex flex-col gap-3 sm:flex-row">
+              <div className="flex shrink-0 flex-col gap-2 sm:w-48">
+                <div className="flex flex-row flex-wrap gap-2 sm:flex-col" role="tablist" aria-label="Key feature category">
+                  {featureCategories.map((category, categoryIndex) => {
+                    const active = activeFeatureCategoryIndex === categoryIndex;
+                    return (
+                      <div key={category.key} className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          role="tab"
+                          aria-selected={active}
+                          onClick={() => setActiveFeatureCategoryIndex(categoryIndex)}
+                          className={`min-w-0 flex-1 border px-3 py-2 text-left text-sm font-medium ${active ? "border-stone-900 bg-stone-900 text-white" : "border-stone-300 bg-white text-stone-700"}`}
+                        >
+                          {category.label} ({category.items.filter((item) => item.field.trim() || item.value.trim()).length})
+                        </button>
+                        {category.key !== "indoor" && category.key !== "outdoor" ? (
+                          <button type="button" aria-label={`Remove ${category.label} category`} onClick={() => removeFeatureCategory(categoryIndex)} className="border border-stone-300 bg-white px-2 py-2 text-xs text-stone-500">✕</button>
+                        ) : null}
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="flex gap-2">
+                  <input value={newFeatureCategoryName} onChange={(event) => setNewFeatureCategoryName(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); addFeatureCategory(); } }} placeholder="New category name" className="min-w-0 flex-1 border border-stone-300 bg-white px-2 py-1.5 text-xs" />
+                  <Button type="button" variant="outline" className="h-8 shrink-0 px-2 text-xs" onClick={addFeatureCategory}>Add</Button>
+                </div>
+              </div>
+
+              <div className="min-w-0 flex-1 space-y-2">
+                {featureCategories[activeFeatureCategoryIndex]?.items.map((item, itemIndex) => {
+                  const category = featureCategories[activeFeatureCategoryIndex];
+                  const presets = featurePresetsForCategory(category.key);
+                  const presetFieldNames = Object.keys(presets);
+                  const isKnownField = presetFieldNames.includes(item.field);
+                  const valueOptions = isKnownField ? presets[item.field] : [];
+                  const isKnownValue = valueOptions.includes(item.value);
+
+                  return (
+                    <div key={itemIndex} className="grid gap-2 border border-stone-200 bg-white p-2 md:grid-cols-[1fr_1fr_auto]">
+                      <div className="grid gap-1">
+                        {presetFieldNames.length > 0 ? (
+                          <select
+                            value={isKnownField ? item.field : "__custom__"}
+                            onChange={(event) => {
+                              const next = event.target.value;
+                              updateFeatureItem(activeFeatureCategoryIndex, itemIndex, next === "__custom__" ? { field: "" } : { field: next, value: "" });
+                            }}
+                            className="border border-stone-300 bg-white px-2 py-2 text-sm"
+                          >
+                            <option value="__custom__">Custom field…</option>
+                            {presetFieldNames.map((name) => <option key={name} value={name}>{name}</option>)}
+                          </select>
+                        ) : null}
+                        {presetFieldNames.length === 0 || !isKnownField ? (
+                          <input value={item.field} onChange={(event) => updateFeatureItem(activeFeatureCategoryIndex, itemIndex, { field: event.target.value })} placeholder="Field name (e.g. Kitchen)" className="border border-stone-300 px-2 py-2 text-sm" />
+                        ) : null}
+                      </div>
+
+                      <div className="grid gap-1">
+                        {isKnownField && valueOptions.length > 0 ? (
+                          <select
+                            value={isKnownValue ? item.value : "__custom__"}
+                            onChange={(event) => {
+                              const next = event.target.value;
+                              updateFeatureItem(activeFeatureCategoryIndex, itemIndex, { value: next === "__custom__" ? "" : next });
+                            }}
+                            className="border border-stone-300 bg-white px-2 py-2 text-sm"
+                          >
+                            <option value="__custom__">Custom value…</option>
+                            {valueOptions.map((option) => <option key={option} value={option}>{option}</option>)}
+                          </select>
+                        ) : null}
+                        {!(isKnownField && valueOptions.length > 0) || !isKnownValue ? (
+                          <input value={item.value} onChange={(event) => updateFeatureItem(activeFeatureCategoryIndex, itemIndex, { value: event.target.value })} placeholder="Value (e.g. Pantry cabinets)" className="border border-stone-300 px-2 py-2 text-sm" />
+                        ) : null}
+                      </div>
+
+                      <Button type="button" variant="outline" className="h-9 self-start px-3 text-xs" onClick={() => removeFeatureItem(activeFeatureCategoryIndex, itemIndex)}>Remove</Button>
+                    </div>
+                  );
+                })}
+                {!featureCategories[activeFeatureCategoryIndex]?.items.length ? <p className="text-xs text-stone-500">No features added to this category yet.</p> : null}
+                <Button type="button" variant="outline" className="h-8 px-3 text-xs" onClick={() => addFeatureItem(activeFeatureCategoryIndex)}>Add feature</Button>
+              </div>
             </div>
           </div>
-          </div>
-          <div ref={(element) => { sectionRefs.current[7] = element; }} className="border border-indigo-200 bg-indigo-50 p-3">
-            <p className="text-sm font-medium text-stone-900">Units</p>
-            <p className="mt-1 text-xs text-stone-600">Per-unit floor availability and pricing, shown as a floor-by-floor table on the public project page. Saved separately from the rest of the wizard.</p>
-            {!initialProject ? (
-              <p className="mt-3 border border-dashed border-stone-300 bg-white p-3 text-xs text-stone-600">Save this project first (Publish below) — units need a project to attach to.</p>
-            ) : (
-              <>
-                <div className="mt-3 overflow-x-auto border border-stone-200 bg-white">
-                  <table className="w-full min-w-225 text-sm">
-                    <thead className="bg-stone-50 text-left">
-                      <tr>
-                        <th className="p-2">Unit #</th>
-                        <th className="p-2">Floor</th>
-                        <th className="p-2">Type</th>
-                        <th className="p-2">Beds</th>
-                        <th className="p-2">Sq Ft</th>
-                        <th className="p-2">Price (LKR)</th>
-                        <th className="p-2">Price (USD)</th>
-                        <th className="p-2">Status</th>
-                        <th className="p-2"></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {units.map((unit, index) => (
-                        <tr key={`unit-row-${index}`} className="border-t border-stone-100">
-                          <td className="p-2"><input value={unit.unitNumber} onChange={(event) => updateUnitRow(index, { unitNumber: event.target.value })} className="w-24 border border-stone-300 px-2 py-1" /></td>
-                          <td className="p-2"><input type="number" value={unit.floor} onChange={(event) => updateUnitRow(index, { floor: Number(event.target.value) })} className="w-16 border border-stone-300 px-2 py-1" /></td>
-                          <td className="p-2"><input value={unit.apartmentType} onChange={(event) => updateUnitRow(index, { apartmentType: event.target.value })} className="w-20 border border-stone-300 px-2 py-1" /></td>
-                          <td className="p-2"><input type="number" value={unit.bedrooms} onChange={(event) => updateUnitRow(index, { bedrooms: Number(event.target.value) })} className="w-14 border border-stone-300 px-2 py-1" /></td>
-                          <td className="p-2"><input type="number" value={unit.areaSqFt} onChange={(event) => updateUnitRow(index, { areaSqFt: Number(event.target.value) })} className="w-20 border border-stone-300 px-2 py-1" /></td>
-                          <td className="p-2"><input type="number" value={unit.priceLkr} onChange={(event) => updateUnitRow(index, { priceLkr: Number(event.target.value) })} className="w-28 border border-stone-300 px-2 py-1" /></td>
-                          <td className="p-2"><input type="number" value={unit.priceUsd ?? ""} onChange={(event) => updateUnitRow(index, { priceUsd: event.target.value ? Number(event.target.value) : undefined })} className="w-24 border border-stone-300 px-2 py-1" /></td>
-                          <td className="p-2">
-                            <select value={unit.status} onChange={(event) => updateUnitRow(index, { status: event.target.value as Unit["status"] })} className="border border-stone-300 px-2 py-1">
-                              <option value="Available">Available</option>
-                              <option value="Reserved">Reserved</option>
-                              <option value="Booked">Booked</option>
-                              <option value="Sold">Sold</option>
-                            </select>
-                          </td>
-                          <td className="p-2"><Button type="button" variant="outline" className="h-8 px-2 text-xs" onClick={() => removeUnitRow(index)}>Remove</Button></td>
-                        </tr>
-                      ))}
-                      {units.length === 0 ? <tr><td colSpan={9} className="p-3 text-center text-xs text-stone-500">{unitsLoading ? "Loading units..." : "No units yet."}</td></tr> : null}
-                    </tbody>
-                  </table>
-                </div>
-                <div className="mt-3 flex items-center gap-3">
-                  <Button type="button" variant="outline" onClick={addUnitRow}>Add unit</Button>
-                  <Button type="button" disabled={unitsSaving} onClick={saveUnits}>{unitsSaving ? "Saving..." : "Save units"}</Button>
-                  {unitsMessage ? <p className="text-xs text-stone-700">{unitsMessage}</p> : null}
-                </div>
-              </>
-            )}
-          </div>
-          <div ref={(element) => { sectionRefs.current[8] = element; }} className="border border-teal-200 bg-teal-50 p-3">
+          <div ref={(element) => { sectionRefs.current[9] = element; }} className={`border border-teal-200 bg-teal-50 p-3 ${stepVisible(9)}`}>
             <p className="text-sm font-medium text-stone-900">Contact</p>
             <p className="mt-1 text-xs text-stone-600">Add the sales contact details shown to prospective buyers.</p>
             <div className="mt-3 grid gap-3 md:grid-cols-2">
@@ -1932,7 +2059,7 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
             </div>
             <p className="mt-3 text-xs text-stone-500">Social links and hours of operation are set once on the developer&apos;s profile and shown on every one of their projects — edit them on the <Link href={`/admin/developers/${developerSlug ?? initialProject?.developerSlug ?? ""}/edit`} className="underline">developer page</Link>.</p>
           </div>
-          <div ref={(element) => { sectionRefs.current[9] = element; }} className="border border-fuchsia-200 bg-fuchsia-50 p-3">
+          <div ref={(element) => { sectionRefs.current[10] = element; }} className={`border border-fuchsia-200 bg-fuchsia-50 p-3 ${stepVisible(10)}`}>
             <p className="text-sm font-medium text-stone-900">SEO</p>
             <p className="mt-1 text-xs text-stone-600">Set the search title and description for the public project page.</p>
             <div className="mt-3 grid gap-3">
@@ -1940,7 +2067,7 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
               <Field label="SEO description"><textarea className="border border-stone-300 bg-white px-3 py-2 text-sm w-full" rows={3} /></Field>
             </div>
           </div>
-          <div ref={(element) => { sectionRefs.current[10] = element; }} className="border border-violet-200 bg-violet-50 p-3">
+          <div ref={(element) => { sectionRefs.current[11] = element; }} className={`border border-violet-200 bg-violet-50 p-3 ${stepVisible(11)}`}>
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-sm font-medium text-stone-900">Preview</p>
@@ -1958,7 +2085,7 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
               </div>
             ) : null}
           </div>
-          <div ref={(element) => { sectionRefs.current[11] = element; }} className="border border-orange-200 bg-orange-50 p-3">
+          <div ref={(element) => { sectionRefs.current[12] = element; }} className={`border border-orange-200 bg-orange-50 p-3 ${stepVisible(12)}`}>
             <p className="text-sm font-medium text-stone-900">Publish</p>
             <p className="mt-1 text-xs text-stone-600">Review the steps above, then use Save or Publish at the bottom of this page &mdash; both are available from any step.</p>
           </div>

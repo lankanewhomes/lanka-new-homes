@@ -1,11 +1,25 @@
-// One-time: inserts Colombo City Centre Residencies (project + 2 developers +
-// 175 unit rows) into Supabase. Run with: npx tsx scripts/insert-colombo-city-centre.ts
-// Safe to re-run: createDeveloper/createProject check for existing slugs first,
-// and replaceUnitsForProject fully replaces the unit set each run.
+// One-time: inserts Colombo City Centre Residencies (project + 2 developers)
+// into Supabase. Run with: npx tsx scripts/insert-colombo-city-centre.ts
+// Safe to re-run: createDeveloper/createProject check for existing slugs first.
+//
+// The per-unit CSV below is retained only to derive each floor plan type's
+// starting availability (buildFloorPlans) — the app no longer has a `units`
+// table, so unit rows are not written to Supabase.
 
 import path from "node:path";
 import { config } from "dotenv";
-import type { Amenity, FloorPlan, NearbyPlace, Project, Unit } from "../src/types";
+import type { Amenity, FloorPlan, KeyFeatureCategory, NearbyPlace, Project } from "../src/types";
+
+type SeedUnit = {
+  unitNumber: string;
+  floor: number;
+  apartmentType: string;
+  bedrooms: number;
+  areaSqFt: number;
+  priceLkr: number;
+  priceUsd: number;
+  status: "Available" | "Reserved" | "Booked" | "Sold";
+};
 
 config({ path: path.join(process.cwd(), ".env.local") });
 
@@ -238,16 +252,14 @@ const CSV = `
 18,E-7,Sold,15/18/36/2118
 `.trim();
 
-function buildUnits(): Unit[] {
+function buildUnits(): SeedUnit[] {
   const rows = CSV.split("\n").map((line) => line.trim()).filter(Boolean);
   return rows.map((line) => {
-    const [floorStr, unitType, status, pathSuffix] = line.split(",");
+    const [floorStr, unitType, status] = line.split(",");
     const spec = UNIT_TYPES[unitType];
     if (!spec) throw new Error(`Unknown unit type ${unitType}`);
     const floor = Number(floorStr);
     return {
-      id: `ccc-${floor}-${unitType.toLowerCase()}`,
-      projectSlug: "colombo-city-centre-residencies",
       unitNumber: `${floor}-${unitType}`,
       floor,
       apartmentType: unitType,
@@ -255,13 +267,12 @@ function buildUnits(): Unit[] {
       areaSqFt: spec.sqft,
       priceLkr: spec.priceLkr,
       priceUsd: spec.priceUsd,
-      status: status as Unit["status"],
-      sourceUrl: `https://gloveh.com/home/propertyDetails/${pathSuffix}`,
+      status: status as SeedUnit["status"],
     };
   });
 }
 
-function availabilityForType(units: Unit[], unitType: string): FloorPlan["availability"] {
+function availabilityForType(units: SeedUnit[], unitType: string): FloorPlan["availability"] {
   const ofType = units.filter((unit) => unit.apartmentType === unitType);
   const available = ofType.filter((unit) => unit.status === "Available").length;
   if (available === 0) return "Sold Out";
@@ -269,7 +280,7 @@ function availabilityForType(units: Unit[], unitType: string): FloorPlan["availa
   return "Available";
 }
 
-function buildFloorPlans(units: Unit[]): FloorPlan[] {
+function buildFloorPlans(units: SeedUnit[]): FloorPlan[] {
   return Object.entries(UNIT_TYPES).map(([code, spec]) => ({
     id: `ccc-${code.toLowerCase()}`,
     planName: `Type ${code} (${spec.bedrooms}BR)`,
@@ -287,24 +298,31 @@ const AMENITIES: Amenity["name"][] = ["Infinity Pool", "Games Room", "Gym", "Sky
 
 // "Label: Value" pairs, rendered as flat text (not pill badges) in the Key
 // Features accordion — each maps 1:1 to a fact given in the brief.
-const UNIT_FEATURES = {
-  indoor: [
-    "Kitchen: Pantry cabinets",
-    "Storage: Built-in wardrobes",
-    "Bathroom: Premium fixtures",
-    "Windows: Double-glazed glass",
-    "Climate: Air conditioning",
-    "Lighting: Fixtures included",
-    "Security: Video phone",
-    "Connectivity: Internet access",
-    "Laundry: Complete in-unit",
-    "Storage: Walk-in closets",
-    "Appliances: Top-of-the-line kitchen",
-    "Flooring: Hardwood",
-  ],
-  outdoor: ["Balcony: Terrace included"],
-  other: [] as string[],
-};
+const UNIT_FEATURES: KeyFeatureCategory[] = [
+  {
+    key: "indoor",
+    label: "Indoor Features",
+    items: [
+      { field: "Kitchen", value: "Pantry cabinets" },
+      { field: "Storage", value: "Built-in wardrobes" },
+      { field: "Bathroom", value: "Premium fixtures" },
+      { field: "Windows", value: "Double-glazed glass" },
+      { field: "Climate", value: "Air conditioning" },
+      { field: "Lighting", value: "Fixtures included" },
+      { field: "Security", value: "Video phone" },
+      { field: "Connectivity", value: "Internet access" },
+      { field: "Laundry", value: "Complete in-unit" },
+      { field: "Storage", value: "Walk-in closets" },
+      { field: "Appliances", value: "Top-of-the-line kitchen" },
+      { field: "Flooring", value: "Hardwood" },
+    ],
+  },
+  {
+    key: "outdoor",
+    label: "Outdoor Features",
+    items: [{ field: "Balcony", value: "Terrace included" }],
+  },
+];
 
 const NEARBY: NearbyPlace[] = [
   { category: "Landmark", name: "Cinnamon Grand Hotel", distanceKm: 1 },
@@ -383,7 +401,6 @@ async function main() {
   const developerStore = await import("../src/lib/developer-store");
   const neighborhoodStore = await import("../src/lib/neighborhood-store");
   const { createProject, getProjectBySlug, updateProject } = await import("../src/lib/project-store");
-  const { replaceUnitsForProject } = await import("../src/lib/unit-store");
 
   const nextStoryGroup = await ensureDeveloper(developerStore, { slug: "next-story-group", name: "NEXT Story Group", location: "Singapore" });
   await ensureDeveloper(developerStore, { slug: "abans-group", name: "Abans Group", location: "Colombo, Sri Lanka" });
@@ -454,15 +471,6 @@ async function main() {
     const created = await createProject(projectInput);
     console.log(`Created project ${created?.slug}`);
   }
-
-  const savedUnits = await replaceUnitsForProject("colombo-city-centre-residencies", units);
-  console.log(`Saved ${savedUnits.length} units.`);
-
-  const byStatus = savedUnits.reduce<Record<string, number>>((acc, unit) => {
-    acc[unit.status] = (acc[unit.status] ?? 0) + 1;
-    return acc;
-  }, {});
-  console.log("Status breakdown:", byStatus);
 }
 
 main().catch((error) => {

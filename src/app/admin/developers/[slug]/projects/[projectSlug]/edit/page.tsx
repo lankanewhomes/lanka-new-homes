@@ -22,7 +22,7 @@ export default async function AdminEditProjectPage({ params }: EditProjectPagePr
 
   return (
     <div className="grid gap-4 px-4 pt-6 pb-16 lg:grid-cols-[220px_1fr] lg:px-6 lg:pt-8">
-      <DashboardSidebar links={[{ label: "Overview", href: "/admin" }, { label: "Developers", href: "/admin/developers" }, { label: "Neighborhoods", href: "/admin/neighborhoods" }, { label: `${developer.name} projects`, href: `/admin/developers/${slug}/projects` }, { label: "Homepage Hero", href: "/admin/hero-ads" }, { label: "Settings", href: "/admin" }]} />
+      <DashboardSidebar />
       <section className="space-y-4">
         <DashboardHeader title={`Edit ${project.name}`} subtitle="Update this project's details, including neighborhood and nearby places." />
         <ProjectWizard initialProject={project} developerSlug={developer.slug} developerName={developer.name} />

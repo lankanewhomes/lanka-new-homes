@@ -39,9 +39,13 @@ See `docs/supabase-schema.sql` for the full schema. Summary:
 | `neighborhoods` | `Neighborhood` |
 | `hero_ads` | `HeroAd` |
 | `construction_companies` | `ConstructionCompany` |
+| `marketing_companies` | `MarketingCompany` — linked from a project's Connected Pages |
+| `sales_companies` | `SalesCompany` — linked from a project's Connected Pages |
+| `architects` | `Architect` — linked from a project's Connected Pages |
+| `interior_designers` | `InteriorDesigner` — linked from a project's Connected Pages |
+| `lands` | `Land` — land parcels for sale, separate from `projects` (see `src/lib/land-store.ts`) |
 | `leads` | contact form submissions (was `data/tracking.sqlite`) |
 | `project_views` | view-count analytics (was `data/tracking.sqlite`) |
-| `units` | `Unit` — per-project floor/unit inventory (fully columnar, no `data` jsonb; see `src/lib/unit-store.ts`) |
 
 Not migrated (static reference data, no admin editing): Sri Lanka
 provinces/districts/cities geo lookups.
