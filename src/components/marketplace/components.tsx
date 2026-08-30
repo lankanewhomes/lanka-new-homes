@@ -537,7 +537,7 @@ export function ProjectHero({
             setIsLightboxOpen(true);
           }}
         >
-          <LayoutGrid className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> Photos <span className="listing-hero-quickjump-count">{photoItems.length}</span>
+          <LayoutGrid className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">Photos <span className="listing-hero-quickjump-count">{photoItems.length}</span></span>
         </button>
       ),
     },
@@ -554,7 +554,7 @@ export function ProjectHero({
             setIsLightboxOpen(true);
           }}
         >
-          <Video className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> Videos <span className="listing-hero-quickjump-count">{videoCount}</span>
+          <Video className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">Videos <span className="listing-hero-quickjump-count">{videoCount}</span></span>
         </button>
       ),
     },
@@ -571,7 +571,7 @@ export function ProjectHero({
             setIsLightboxOpen(true);
           }}
         >
-          <MapIcon className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> Map
+          <MapIcon className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">Map</span>
         </button>
       ),
     },
@@ -580,7 +580,7 @@ export function ProjectHero({
       show: hasBlockPlan,
       render: (className) => (
         <a href="#plans-homes" className={className} onClick={() => setActiveSection("plans-homes")}>
-          <LayoutPanelLeft className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> {plansHomesNavLabel} <span className="listing-hero-quickjump-count">{floorPlanCount}</span>
+          <LayoutPanelLeft className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">{plansHomesNavLabel} <span className="listing-hero-quickjump-count">{floorPlanCount}</span></span>
         </a>
       ),
     },
@@ -598,7 +598,7 @@ export function ProjectHero({
             setIsLightboxOpen(true);
           }}
         >
-          <MapPinned className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> Road Map{roadMapItems.length > 1 ? <span className="listing-hero-quickjump-count">{roadMapItems.length}</span> : null}
+          <MapPinned className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">Road Map{roadMapItems.length > 1 ? <span className="listing-hero-quickjump-count">{roadMapItems.length}</span> : null}</span>
         </button>
       ),
     },
@@ -616,7 +616,7 @@ export function ProjectHero({
             setIsLightboxOpen(true);
           }}
         >
-          <Layers className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> Block Plan{blockPlanImages.length > 1 ? <span className="listing-hero-quickjump-count">{blockPlanImages.length}</span> : null}
+          <Layers className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">Block Plan{blockPlanImages.length > 1 ? <span className="listing-hero-quickjump-count">{blockPlanImages.length}</span> : null}</span>
         </button>
       ),
     },
@@ -633,7 +633,7 @@ export function ProjectHero({
             setIsLightboxOpen(true);
           }}
         >
-          <Navigation className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> Street View
+          <Navigation className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">Street View</span>
         </button>
       ),
     },
@@ -642,7 +642,7 @@ export function ProjectHero({
       show: hasInteractiveMap,
       render: (className) => (
         <button type="button" className={className} onClick={() => setActiveMedia("interactiveMap")}>
-          <Compass className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> Interactive map
+          <Compass className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">Interactive map</span>
         </button>
       ),
     },
@@ -651,7 +651,7 @@ export function ProjectHero({
       show: virtualTourCount > 0,
       render: (className) => (
         <button type="button" className={className} onClick={() => setActiveMedia("virtualTours")}>
-          <Camera className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> Virtual tours {virtualTourCount}
+          <Camera className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">Virtual tours <span className="listing-hero-quickjump-count">{virtualTourCount}</span></span>
         </button>
       ),
     },

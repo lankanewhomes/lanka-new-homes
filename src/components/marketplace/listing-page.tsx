@@ -185,6 +185,12 @@ export function ListingPageBody({
           ) : null}
         </label>
 
+        <button type="button" className="listing-region-picker" aria-label="Select region">
+          <MapPin className="h-4 w-4" aria-hidden="true" />
+          <span>All of Sri Lanka</span>
+          <ChevronDown className="h-4 w-4" aria-hidden="true" />
+        </button>
+
         <div className={`listing-filter-pills-center${mobileFiltersOpen ? " is-open" : ""}`}>
           {filterGroups.map((group) => (
             <label key={group.label} className="listing-filter-pill">

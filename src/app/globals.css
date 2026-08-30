@@ -142,6 +142,14 @@
    site or its strokeWidth prop. */
 svg.lucide { stroke-width: 1.5; }
 
+/* Site-wide font convention: browsers give form controls their own UA font
+   stack (usually a system-ui font) instead of inheriting from the page —
+   every <input>/<button>/<select>/<textarea> on the site needs this or it
+   silently renders off-brand no matter what font-family is set on body or
+   any ancestor. One rule here covers every current and future instance
+   instead of re-declaring font-family on each individual form control. */
+input, button, select, textarea { font-family: inherit; }
+
 /* Homepage inspired by the supplied Livabl reference */
 body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-size: 14px; line-height: 20px; }
 .site-header { height: 82px; display: flex; align-items: center; background: #fff; position: relative; z-index: 10; }
@@ -1173,7 +1181,32 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
     padding-right: 12px;
     margin-right: 12px;
   }
+}
 
+@media (max-width: 640px) {
+  /* Below ~640px, the title/address column and the 4 action buttons
+     (Get updates / Save / Share / close) no longer fit side by side —
+     shrinking their fonts (the 980px block above) wasn't enough, both
+     sides were still wrapping into a cramped narrow column. Stack them:
+     title+address gets the full width on its own row, then every action
+     button gets its own full-width row below with normal spacing. */
+  .listing-photo-lightbox-toprow {
+    flex-wrap: wrap;
+  }
+
+  .listing-photo-lightbox-meta {
+    flex: 1 1 100%;
+  }
+
+  .listing-photo-lightbox-actions {
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    margin-top: 10px;
+  }
+}
+
+@media (max-width: 980px) {
   .listing-photo-lightbox-arrow {
     width: 38px;
     height: 38px;
@@ -1498,7 +1531,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
     border-top: 1px solid #e0e0e0;
     box-shadow: 0 -4px 12px rgba(15, 23, 42, 0.06);
     background: #fff;
-    padding: 12px 8px calc(12px + env(safe-area-inset-bottom));
+    padding: 18px 8px calc(18px + env(safe-area-inset-bottom));
   }
 
   .listing-hero-quickjump-bar::-webkit-scrollbar {
@@ -1533,14 +1566,25 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
     font-weight: 700;
   }
 
-  /* Its own line, at a fixed size — keeps the count in the same position
-     relative to the label across every tab that has one, instead of
-     drifting depending on where the label text happens to wrap. */
-  .listing-hero-quickjump-count {
+  /* The button's only text-side flex child (icon is the other) — wrapping
+     the label + count together in one element, rather than letting the
+     count span be a sibling flex item of its own, matters here: any
+     direct child of a flex container is auto-"blockified" onto its own
+     line regardless of its own display value, which is what was forcing
+     the count onto a separate line even without display: block anywhere
+     on it. Inside this wrapper, normal inline flow governs the label and
+     count, so they share one line unless is-compact says otherwise. */
+  .listing-hero-quickjump-label {
     display: block;
+  }
+
+  /* Stays inline beside the label ("Photos 29") when there's room for
+     every tab on one line — only drops to its own line under is-compact
+     below, where two-word labels are already wrapping and a trailing
+     inline count would sit unevenly from tab to tab. */
+  .listing-hero-quickjump-count {
     font-size: 10px;
     font-weight: 500;
-    line-height: 1;
   }
 
   /* Only kicks in with the full set of 7 tabs (see the is-compact class
@@ -1553,6 +1597,11 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
     min-width: 0;
     padding: 0 4px;
     white-space: normal;
+  }
+
+  .listing-hero-quickjump-bar.is-compact .listing-hero-quickjump-count {
+    display: block;
+    line-height: 1;
   }
 }
 
@@ -3237,14 +3286,15 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 
 .plans-home-body h4 {
   margin: 0;
-  font-size: 18px;
+  font-size: 15px;
+  font-weight: 600;
   line-height: 1.3;
   color: #1f1f1f;
 }
 
 .plans-home-price {
   margin: 6px 0 0;
-  font-size: 17px;
+  font-size: 14px;
   font-weight: 600;
   color: #1f1f1f;
 }
@@ -3470,7 +3520,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   border: 1px solid #e4e0d6;
   border-top: none;
   background: #fff;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-ref-sans);
 }
 
 .key-features-row {
@@ -3485,7 +3535,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   padding: 16px;
   background: #fff;
   color: #4a4a4a;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-ref-sans);
   font-size: 15px;
   font-weight: 400;
   text-align: left;
@@ -3643,7 +3693,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 .amenities-showcase-item-copy strong {
   font-size: 15px;
   line-height: 1.4;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .sales-center-shell {
@@ -3899,13 +3949,6 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
     height: 190px;
   }
 
-  .plans-home-body h4 {
-    font-size: 20px;
-  }
-
-  .plans-home-price {
-    font-size: 19px;
-  }
 
   .plans-home-type {
     font-size: 13px;
@@ -4204,7 +4247,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 }
 
 .home-project-card h3 {
-  font-family: -apple-system, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  font-family: var(--font-ref-sans);
   font-weight: 500;
   font-style: normal;
   font-size: 16px;
@@ -4225,7 +4268,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 }
 
 .home-card-meta small {
-  font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+  font-family: var(--font-ref-sans);
   font-weight: 400;
   font-style: normal;
   font-size: 12px;
@@ -5706,12 +5749,9 @@ a.developer-profile-press-title {
 }
 
 .listing-content-shade {
-  background: #f5f5f4;
   /* No right padding — .listing-map-pane bleeds all the way to the
      viewport edge on the right (see its margin-right below), so padding
-     here would leave an unwanted gap between the map and the true edge.
-     No bottom padding either — the map (the tallest column) should end
-     exactly where the grey background ends, with no visible strip below. */
+     here would leave an unwanted gap between the map and the true edge. */
   padding: 28px 0 0 28px;
 }
 
@@ -5792,6 +5832,26 @@ a.developer-profile-press-title {
 .listing-search-clear:hover {
   border-color: #b8b8b8;
   color: #1f1f1f;
+}
+
+.listing-region-picker {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 52px;
+  padding: 0 14px;
+  border: 1px solid #d8d8d8;
+  border-radius: 0;
+  background: #fff;
+  color: #1f1f1f;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.listing-region-picker:hover {
+  border-color: #b8b8b8;
 }
 
 .listing-search-input-wrap input {

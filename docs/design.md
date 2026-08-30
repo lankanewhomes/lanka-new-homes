@@ -357,8 +357,10 @@ for the original Neue Haas Grotesk reference — new rules should reference
   so most text inherits it for free — only re-declare it explicitly on an
   element that needs to survive being nested inside something with a
   different font-size (e.g. a link sitting inside a larger heading block).
-- **Small emphasized labels** (amenity names, stat-chip values, card
-  sub-headings): `14px`–`15px` / `600` weight.
+- **Small emphasized labels** (stat-chip values, card sub-headings):
+  `14px`–`15px` / `600` weight. Amenity names specifically are the same
+  size but `400` weight (not bold) — `.amenities-showcase-item-copy
+  strong`, despite the tag.
 - **Muted meta/caption text** (stat-chip labels, hours-of-operation rows,
   helper text under an image): `12px`–`13px` / `400` weight.
 - Never jump a label past ~15px on a narrower breakpoint just because
