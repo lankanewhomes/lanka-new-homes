@@ -51,7 +51,7 @@ function pinSizeClass(count: number) {
   return "sm";
 }
 
-export function MapPane({ projects }: { projects: Project[] }) {
+export function MapPane({ projects, basePath = "/projects" }: { projects: Project[]; basePath?: string }) {
   const [zoom, setZoom] = useState(1);
   const [boundaryOn, setBoundaryOn] = useState(true);
   const [activeClusterIndex, setActiveClusterIndex] = useState<number | null>(null);
@@ -139,7 +139,7 @@ export function MapPane({ projects }: { projects: Project[] }) {
           <div className="listing-map-popup-body">
             <p className="listing-map-popup-name">{popupProject.name}</p>
             <p className="listing-map-popup-price">From {formatLkr(popupProject.startingPriceLkr)}</p>
-            <Link href={`/projects/${popupProject.slug}`} className="listing-map-popup-link">View Project</Link>
+            <Link href={`${basePath}/${popupProject.slug}`} className="listing-map-popup-link">View Project</Link>
           </div>
         </div>
       ) : null}

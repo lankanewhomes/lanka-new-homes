@@ -90,7 +90,7 @@ export default async function LandPlotDetailPage({ params }: PlotPageProps) {
 
         <AmenitiesShowcaseSection amenities={project.amenities} gallery={project.gallery} heroImage={project.heroImage} title="Facilities" />
 
-        <PlansAndHomesSection project={project} title="Other plots" excludeFloorPlanId={plot.id} showQuickMoveIns={false} planHrefBase={`/land/${land.slug}/plots`} />
+        <PlansAndHomesSection project={project} title="Other plots" excludeFloorPlanId={plot.id} showQuickMoveIns={false} showBedBath={false} planHrefBase={`/land/${land.slug}/plots`} />
 
         <StatsContactCard project={project} developer={developer} requestInfoVariant="inquiry" />
       </div>

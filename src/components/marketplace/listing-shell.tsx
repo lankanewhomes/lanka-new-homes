@@ -24,14 +24,22 @@ export function ProjectListingShell({
   intro,
   projects,
   relatedPaths,
+  basePath = "/projects",
+  eyebrow = "communities",
+  filterGroups,
+  emptyStateText,
 }: {
   breadcrumbs: BreadcrumbEntry[];
   h1: string;
   intro: string;
   projects: Project[];
   relatedPaths: string[];
+  basePath?: string;
+  eyebrow?: string;
+  filterGroups?: { label: string; options: string[] }[];
+  emptyStateText?: string;
 }) {
-  const itemListJsonLd = buildItemListJsonLd(projects.map((project) => ({ name: project.name, url: `/projects/${project.slug}` })));
+  const itemListJsonLd = buildItemListJsonLd(projects.map((project) => ({ name: project.name, url: `${basePath}/${project.slug}` })));
   const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbs);
 
   return (
@@ -39,7 +47,7 @@ export function ProjectListingShell({
       <script {...jsonLdScriptProps(itemListJsonLd)} />
       <script {...jsonLdScriptProps(breadcrumbJsonLd)} />
 
-      <ListingPageBody projects={projects} h1={h1} eyebrow="communities" intro={intro} />
+      <ListingPageBody projects={projects} h1={h1} eyebrow={eyebrow} intro={intro} basePath={basePath} filterGroups={filterGroups} emptyStateText={emptyStateText} />
 
       {relatedPaths.length > 0 ? (
         <nav className="listing-related-links" aria-label="Related pages">

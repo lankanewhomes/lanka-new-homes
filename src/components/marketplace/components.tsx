@@ -1014,15 +1014,20 @@ export function ProjectHero({
           </button>
         </div>
 
-        {visibleHeroMediaPills.length > 0 && (
-          <div className="listing-hero-desktop-sticky-ctas" aria-label="Quick jump">
-            {visibleHeroMediaPills.map((pill) => (
-              <Fragment key={pill.key}>{pill.render("listing-hero-desktop-sticky-btn")}</Fragment>
-            ))}
-          </div>
-        )}
-
     </section>
+
+    {/* Rendered as a sibling of .listing-hero (not nested inside it) so its
+        containing block spans the rest of the page — position: sticky is
+        bounded by its nearest containing block, so nested inside the short
+        hero section it would scroll away with the section instead of
+        staying pinned through the rest of the page on mobile. */}
+    {visibleHeroMediaPills.length > 0 && (
+      <div className="listing-hero-quickjump-bar" aria-label="Quick jump">
+        {visibleHeroMediaPills.map((pill) => (
+          <Fragment key={pill.key}>{pill.render("listing-hero-quickjump-btn")}</Fragment>
+        ))}
+      </div>
+    )}
 
     <RequestInfoDialog open={requestInfoOpen} onClose={() => setRequestInfoOpen(false)} project={project} variant={requestInfoVariant} />
     </>
@@ -1675,7 +1680,7 @@ const PLAN_SORT_OPTIONS = [
 
 type PlanSortValue = typeof PLAN_SORT_OPTIONS[number]["value"];
 
-export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFloorPlanId, showQuickMoveIns = true, planHrefBase }: { project: Project; title?: string; excludeFloorPlanId?: string; showQuickMoveIns?: boolean; planHrefBase?: string }) {
+export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFloorPlanId, showQuickMoveIns = true, planHrefBase, showBedBath = true }: { project: Project; title?: string; excludeFloorPlanId?: string; showQuickMoveIns?: boolean; planHrefBase?: string; showBedBath?: boolean }) {
   const hrefBase = planHrefBase ?? `/projects/${project.slug}/floor-plans`;
   const [activeTab, setActiveTab] = useState<"all" | "floorPlans" | "quickMoveIns">("floorPlans");
   const [filterOpen, setFilterOpen] = useState(false);
@@ -1832,7 +1837,11 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
           <Link key={plan.id} href={`${hrefBase}/${plan.id}`} className="plans-home-card">
             <figure>
               <Image src={plan.image} alt={plan.planName} width={960} height={620} className="plans-home-image" />
-              <span className="plans-status-pill">For sale</span>
+              <span
+                className={`plans-status-pill${plan.availability === "Sold Out" ? " plans-status-pill-sold" : plan.availability === "Limited" ? " plans-status-pill-booked" : ""}`}
+              >
+                {plan.availability}
+              </span>
             </figure>
 
             <div className="plans-home-body">
@@ -1845,8 +1854,12 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
               <p className="plans-home-price">From {formatLkr(plan.startingPriceLkr)}</p>
               <p className="plans-home-type">{plan.planType || project.type}</p>
               <div className="plans-home-facts">
-                <span><BedDouble className="h-3.5 w-3.5" aria-hidden="true" /> {plan.bedrooms} bd</span>
-                <span><Bath className="h-3.5 w-3.5" aria-hidden="true" /> {plan.bathrooms}</span>
+                {showBedBath ? (
+                  <>
+                    <span><BedDouble className="h-3.5 w-3.5" aria-hidden="true" /> {plan.bedrooms} bd</span>
+                    <span><Bath className="h-3.5 w-3.5" aria-hidden="true" /> {plan.bathrooms}</span>
+                  </>
+                ) : null}
                 <span><Square className="h-3.5 w-3.5" aria-hidden="true" /> From {plan.floorAreaSqFt} SqFt</span>
               </div>
             </div>

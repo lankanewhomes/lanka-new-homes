@@ -166,7 +166,7 @@ export default async function LandDetailPage({ params }: LandPageProps) {
           </section>
         ) : null}
 
-        <PlansAndHomesSection project={project} title="Plots" showQuickMoveIns={false} planHrefBase={`/land/${land.slug}/plots`} />
+        <PlansAndHomesSection project={project} title="Plots" showQuickMoveIns={false} showBedBath={false} planHrefBase={`/land/${land.slug}/plots`} />
 
         <section id="pricing" className="space-y-3">
           <PricingInformationLayout project={project} />

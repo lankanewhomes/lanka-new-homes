@@ -39,13 +39,14 @@ function statusPillLabel(project: Project) {
   return project.status;
 }
 
-export function ListingGridCard({ project }: { project: Project }) {
+export function ListingGridCard({ project, basePath = "/projects" }: { project: Project; basePath?: string }) {
   const { saved, toggle } = useSavedListing(project.slug);
   const hasPrice = project.startingPriceLkr > 0;
+  const href = `${basePath}/${project.slug}`;
 
   return (
     <article className="listing-grid-card">
-      <Link href={`/projects/${project.slug}`} className="listing-grid-card-media">
+      <Link href={href} className="listing-grid-card-media">
         <Image
           src={project.heroImage}
           alt={`${project.name} in ${project.location}`}
@@ -69,7 +70,7 @@ export function ListingGridCard({ project }: { project: Project }) {
       </Link>
 
       <div className="listing-grid-card-body">
-        <Link href={`/projects/${project.slug}`} className="listing-grid-card-name">{project.name}</Link>
+        <Link href={href} className="listing-grid-card-name">{project.name}</Link>
         <p className="listing-grid-card-price">{hasPrice ? `From ${formatLkr(project.startingPriceLkr)}` : project.status}</p>
         <p className="listing-grid-card-developer">{project.type} by {project.developerName}</p>
         <p className="listing-grid-card-address">{project.location}</p>
@@ -91,7 +92,23 @@ export function ListingGridCard({ project }: { project: Project }) {
   );
 }
 
-export function ListingPageBody({ projects, h1, eyebrow, intro }: { projects: Project[]; h1: string; eyebrow: string; intro: string }) {
+export function ListingPageBody({
+  projects,
+  h1,
+  eyebrow,
+  intro,
+  basePath = "/projects",
+  filterGroups = FILTER_GROUPS,
+  emptyStateText = "No projects match this page yet — check back soon, or browse all new projects in Sri Lanka.",
+}: {
+  projects: Project[];
+  h1: string;
+  eyebrow: string;
+  intro: string;
+  basePath?: string;
+  filterGroups?: { label: string; options: string[] }[];
+  emptyStateText?: string;
+}) {
   const [sortBy, setSortBy] = useState<SortValue>("featured");
   const [viewMode, setViewMode] = useState<ViewMode>("split");
 
@@ -106,7 +123,7 @@ export function ListingPageBody({ projects, h1, eyebrow, intro }: { projects: Pr
   return (
     <div className="listing-page">
       <div className="listing-filter-bar" role="group" aria-label="Search filters">
-        {FILTER_GROUPS.map((group) => (
+        {filterGroups.map((group) => (
           <label key={group.label} className="listing-filter-pill">
             <span>{group.options[0]}</span>
             <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
@@ -157,11 +174,11 @@ export function ListingPageBody({ projects, h1, eyebrow, intro }: { projects: Pr
           {sortedProjects.length > 0 ? (
             <div className="listing-grid">
               {sortedProjects.map((project) => (
-                <ListingGridCard key={project.slug} project={project} />
+                <ListingGridCard key={project.slug} project={project} basePath={basePath} />
               ))}
             </div>
           ) : (
-            <p className="listing-empty-state">No projects match this page yet — check back soon, or browse all new projects in Sri Lanka.</p>
+            <p className="listing-empty-state">{emptyStateText}</p>
           )}
         </div>
         <div className="listing-map-pane">
@@ -173,7 +190,7 @@ export function ListingPageBody({ projects, h1, eyebrow, intro }: { projects: Pr
           >
             {viewMode === "map" ? "›" : "‹"}
           </button>
-          <LazyMapPane projects={sortedProjects} />
+          <LazyMapPane projects={sortedProjects} basePath={basePath} />
         </div>
       </div>
     </div>

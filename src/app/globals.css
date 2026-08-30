@@ -710,6 +710,13 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 }
 
 @media (max-width: 760px) {
+  /* Section-tab nav (back link + Overview/Pricing/Floor Plans/Amenities/
+     Neighborhood) is replaced on mobile by the floating quick-jump bar
+     (.listing-hero-quickjump-bar) — no room for a second nav row. */
+  .listing-hero-sticky-bar {
+    display: none;
+  }
+
   /* Full-bleed hero photo on mobile — the @media (max-width: 980px) block
      below overrides .listing-hero to width: calc(100% - 24px), a 12px
      gutter on each side (margin: auto carried over from the base rule),
@@ -1393,46 +1400,84 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   display: none;
 }
 
-.listing-hero-desktop-sticky-ctas {
-  display: none;
+/* Floating quick-jump bar mirroring the hero's own pill row (Photos/Videos/
+   Map/Floor Plans/Street View/etc, see heroMediaPills) — shown on every
+   screen size so it stays reachable while scrolled away from the hero.
+   On mobile it sits just above .listing-hero-mobile-ctas (Get updates /
+   Request info), not on top of it. */
+.listing-hero-quickjump-bar {
+  position: fixed;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  z-index: 45;
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  background: #f0f0ef;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.16);
 }
 
-@media (min-width: 761px) {
-  .listing-hero-desktop-sticky-ctas {
-    position: fixed;
-    left: 50%;
-    bottom: 20px;
-    transform: translateX(-50%);
-    z-index: 45;
-    display: flex;
-    gap: 8px;
-    padding: 8px;
-    background: #f0f0ef;
-    border-radius: 999px;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.16);
-  }
+.listing-hero-quickjump-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 0;
+  background: transparent;
+  color: #1f1f1f;
+  font-family: var(--font-ref-sans);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+}
 
-  .listing-hero-desktop-sticky-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    min-height: 40px;
-    padding: 0 18px;
-    border-radius: 999px;
+.listing-hero-quickjump-btn:hover {
+  background: #f47b36;
+  color: #fff;
+}
+
+@media (max-width: 760px) {
+  /* On mobile the pills bar isn't a floating action button — it becomes a
+     sticky bar that scrolls with the page and pins to the top once its
+     normal position (right after the hero title/tags) would scroll past
+     the top edge, taking over the role of the (hidden-on-mobile)
+     .listing-hero-sticky-bar tab row. */
+  .listing-hero-quickjump-bar {
+    position: sticky;
+    top: 0;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    transform: none;
+    width: 100%;
+    margin: 0 0 12px;
+    max-width: none;
+    overflow-x: auto;
+    scrollbar-width: none;
+    justify-content: flex-start;
+    border-radius: 0;
     border: 0;
-    background: transparent;
-    color: #1f1f1f;
-    font-family: var(--font-ref-sans);
-    font-size: 13px;
-    font-weight: 500;
-    text-decoration: none;
-    white-space: nowrap;
+    border-bottom: 1px solid #e0e0e0;
+    box-shadow: none;
+    background: #fafaf9;
+    padding: 8px 8px 8px 12px;
   }
 
-  .listing-hero-desktop-sticky-btn:hover {
-    background: #f47b36;
-    color: #fff;
+  .listing-hero-quickjump-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .listing-hero-quickjump-btn {
+    flex-shrink: 0;
+    min-height: 34px;
+    padding: 0 12px;
+    font-size: 12px;
   }
 }
 
