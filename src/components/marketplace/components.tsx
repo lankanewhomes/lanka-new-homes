@@ -537,7 +537,7 @@ export function ProjectHero({
             setIsLightboxOpen(true);
           }}
         >
-          <LayoutGrid className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> Photos {photoItems.length}
+          <LayoutGrid className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> Photos <span className="listing-hero-quickjump-count">{photoItems.length}</span>
         </button>
       ),
     },
@@ -554,7 +554,7 @@ export function ProjectHero({
             setIsLightboxOpen(true);
           }}
         >
-          <Video className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> Videos {videoCount}
+          <Video className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> Videos <span className="listing-hero-quickjump-count">{videoCount}</span>
         </button>
       ),
     },
@@ -580,7 +580,7 @@ export function ProjectHero({
       show: hasBlockPlan,
       render: (className) => (
         <a href="#plans-homes" className={className} onClick={() => setActiveSection("plans-homes")}>
-          <LayoutPanelLeft className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> {plansHomesNavLabel} {floorPlanCount}
+          <LayoutPanelLeft className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> {plansHomesNavLabel} <span className="listing-hero-quickjump-count">{floorPlanCount}</span>
         </a>
       ),
     },
@@ -598,7 +598,7 @@ export function ProjectHero({
             setIsLightboxOpen(true);
           }}
         >
-          <MapPinned className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> Road Map{roadMapItems.length > 1 ? ` ${roadMapItems.length}` : ""}
+          <MapPinned className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> Road Map{roadMapItems.length > 1 ? <span className="listing-hero-quickjump-count">{roadMapItems.length}</span> : null}
         </button>
       ),
     },
@@ -616,7 +616,7 @@ export function ProjectHero({
             setIsLightboxOpen(true);
           }}
         >
-          <Layers className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> Block Plan{blockPlanImages.length > 1 ? ` ${blockPlanImages.length}` : ""}
+          <Layers className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> Block Plan{blockPlanImages.length > 1 ? <span className="listing-hero-quickjump-count">{blockPlanImages.length}</span> : null}
         </button>
       ),
     },
