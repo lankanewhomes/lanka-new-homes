@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { ArrowUpDown, ChevronDown, ChevronLeft, ChevronRight, Heart, List, Map as MapIcon, MapPin, Search } from "lucide-react";
+import { ArrowUpDown, ChevronDown, ChevronLeft, ChevronRight, Heart, List, Map as MapIcon, MapPin, Search, SlidersHorizontal, X } from "lucide-react";
 import { formatLkr } from "@/lib/format";
 import { useSavedListing } from "@/lib/use-saved-listing";
 import type { Project } from "@/types";
@@ -140,6 +140,7 @@ export function ListingPageBody({
   const [viewMode, setViewMode] = useState<ViewMode>("split");
   const [selectedArea, setSelectedArea] = useState<MapAreaSelection>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   // A typed location search takes priority over a map-cluster selection —
   // both drive the same "There are N {noun} for sale in {label}" heading
@@ -174,10 +175,17 @@ export function ListingPageBody({
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
           />
-          <Search className="h-4 w-4" aria-hidden="true" />
+          <span className="listing-search-icon-btn">
+            <Search className="h-4 w-4" aria-hidden="true" />
+          </span>
+          {searchQuery ? (
+            <button type="button" className="listing-search-clear" aria-label="Clear search" onClick={() => setSearchQuery("")}>
+              <X className="h-4 w-4" aria-hidden="true" />
+            </button>
+          ) : null}
         </label>
 
-        <div className="listing-filter-pills-center">
+        <div className={`listing-filter-pills-center${mobileFiltersOpen ? " is-open" : ""}`}>
           {filterGroups.map((group) => (
             <label key={group.label} className="listing-filter-pill">
               <span>{group.options[0]}</span>
@@ -206,26 +214,48 @@ export function ListingPageBody({
 
       <div className="listing-content-shade">
         <div className="listing-header-row">
-          <div>
-            <label className="listing-sort-pill">
-              <ArrowUpDown className="h-3.5 w-3.5" aria-hidden="true" />
-              <span>{sortLabel}</span>
-              <select value={sortBy} onChange={(event) => setSortBy(event.target.value as SortValue)} aria-label="Sort projects">
-                {SORT_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>{option.label}</option>
-                ))}
-              </select>
-            </label>
+          <label className="listing-sort-pill">
+            <ArrowUpDown className="h-3.5 w-3.5" aria-hidden="true" />
+            <span>{sortLabel}</span>
+            <select value={sortBy} onChange={(event) => setSortBy(event.target.value as SortValue)} aria-label="Sort projects">
+              {SORT_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>{option.label}</option>
+              ))}
+            </select>
+          </label>
 
-            {activeSelection ? (
-              <h1 className="listing-header-h1 listing-header-h1-dynamic">
-                There {sortedProjects.length === 1 ? "is" : "are"} {sortedProjects.length} {sortedProjects.length === 1 ? (singularEyebrow ?? eyebrow) : eyebrow} for sale in {activeSelection.label}
-              </h1>
-            ) : (
-              <h1 className="listing-header-h1">{h1}</h1>
-            )}
+          {/* Mobile-only compact toolbar — replaces the sprawling filter
+              pill row + List/Map text toggle with two icon buttons once
+              the search bar wraps to a single column. */}
+          <div className="listing-mobile-actions">
+            <button
+              type="button"
+              className="listing-mobile-icon-btn"
+              aria-label={viewMode === "map" ? "Show list" : "Show map"}
+              aria-pressed={viewMode === "map"}
+              onClick={() => setViewMode((v) => (v === "map" ? "split" : "map"))}
+            >
+              <MapIcon className="h-4 w-4" aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              className="listing-mobile-icon-btn"
+              aria-label="Filters"
+              aria-expanded={mobileFiltersOpen}
+              onClick={() => setMobileFiltersOpen((v) => !v)}
+            >
+              <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
+            </button>
           </div>
         </div>
+
+        {activeSelection ? (
+          <h1 className="listing-header-h1 listing-header-h1-dynamic">
+            There {sortedProjects.length === 1 ? "is" : "are"} {sortedProjects.length} {sortedProjects.length === 1 ? (singularEyebrow ?? eyebrow) : eyebrow} for sale in {activeSelection.label}
+          </h1>
+        ) : (
+          <h1 className="listing-header-h1">{h1}</h1>
+        )}
 
         <div className="listing-columns" data-view={viewMode}>
           <div className="listing-list-pane">

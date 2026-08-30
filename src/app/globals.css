@@ -5697,6 +5697,7 @@ a.developer-profile-press-title {
 }
 
 .listing-search-input-wrap {
+  position: relative;
   flex: 1 1 320px;
   max-width: 460px;
   min-width: 220px;
@@ -5706,7 +5707,7 @@ a.developer-profile-press-title {
   gap: 10px;
   border: 1px solid #d8d8d8;
   border-radius: 0;
-  padding: 0 16px;
+  padding: 0 52px 0 16px;
   background: #fff;
   color: #9a9284;
 }
@@ -5714,6 +5715,36 @@ a.developer-profile-press-title {
 .listing-search-input-wrap:focus-within {
   border-color: #f47b36;
   color: #6b6355;
+}
+
+.listing-search-icon-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f47b36;
+  color: #fff;
+}
+
+.listing-search-clear {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  border: 1px solid #d8d8d8;
+  color: #6b6355;
+}
+
+.listing-search-clear:hover {
+  border-color: #b8b8b8;
+  color: #1f1f1f;
 }
 
 .listing-search-input-wrap input {
@@ -5729,6 +5760,33 @@ a.developer-profile-press-title {
   color: #9a9284;
 }
 
+/* Mobile-only compact toolbar (Map / Filters icon buttons) — sits next to
+   the sort pill in .listing-header-row, hidden on desktop where the full
+   filter pill row + List/Map text toggle are already visible in the
+   search bar above. */
+.listing-mobile-actions {
+  display: none;
+}
+
+.listing-mobile-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #d8d8d8;
+  border-radius: 999px;
+  background: #fff;
+  color: #1f1f1f;
+}
+
+.listing-mobile-icon-btn[aria-pressed="true"],
+.listing-mobile-icon-btn[aria-expanded="true"] {
+  background: #1f1f1f;
+  border-color: #1f1f1f;
+  color: #fff;
+}
+
 @media (max-width: 760px) {
   .listing-search-bar {
     flex-direction: column;
@@ -5736,13 +5794,52 @@ a.developer-profile-press-title {
   }
 
   .listing-search-bar .listing-view-toggle {
-    margin-left: 0;
+    /* Replaced by the Map icon button in .listing-mobile-actions on mobile. */
+    display: none;
   }
 
   .listing-search-input-wrap {
     width: 100%;
     max-width: none;
     flex: none;
+    padding: 0 16px;
+  }
+
+  /* On desktop the search icon sits as a filled button on the right edge
+     (see .listing-search-icon-btn above); on mobile it's a plain glyph on
+     the left, ahead of the input text, matching the reference layout. */
+  .listing-search-icon-btn {
+    order: -1;
+    position: static;
+    width: auto;
+    height: auto;
+    background: transparent;
+    color: #6b6355;
+  }
+
+  .listing-filter-pills-center {
+    display: none;
+  }
+
+  .listing-filter-pills-center.is-open {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .listing-filter-pills-center.is-open .listing-filter-pill,
+  .listing-filter-pills-center.is-open .listing-filter-pill-more {
+    flex: 1 1 calc(50% - 5px);
+  }
+
+  .listing-mobile-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .listing-header-row {
+    align-items: center;
   }
 }
 
