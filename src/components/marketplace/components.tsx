@@ -2427,7 +2427,16 @@ export function Header() {
               <Link href="/projects">All new homes</Link>
             </div>
           </div>
-          <Link href="/land">Land</Link>
+          <div className="nav-dropdown">
+            <Link href="/land">Land</Link>
+            <div className="nav-dropdown-menu">
+              <Link href="/land?landUse=Residential">Residential</Link>
+              <Link href="/land?landUse=Commercial">Commercial</Link>
+              <Link href="/land?landUse=Agricultural">Agricultural</Link>
+              <Link href="/land?landUse=Mixed+Use">Mixed Use</Link>
+              <Link href="/land">All land</Link>
+            </div>
+          </div>
           <div className="nav-dropdown">
             <span className="nav-dropdown-label">{text.company}</span>
             <div className="nav-dropdown-menu">

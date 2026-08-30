@@ -28,14 +28,18 @@ const LAND_FILTER_GROUPS = [
   { label: "Status", options: ["Any", "Available", "Reserved", "Sold"] },
 ];
 
-export default async function LandListingPage() {
+type LandListingPageProps = { searchParams: Promise<{ landUse?: string }> };
+
+export default async function LandListingPage({ searchParams }: LandListingPageProps) {
+  const { landUse } = await searchParams;
   const lands = await getAllLands();
-  const projects = lands.map(landToProjectShape);
+  const allProjects = lands.map(landToProjectShape);
+  const projects = landUse ? allProjects.filter((project) => project.type === landUse) : allProjects;
 
   return (
     <ProjectListingShell
       breadcrumbs={[{ label: "Home", href: "/" }, { label: "Land" }]}
-      h1="Land for Sale in Sri Lanka"
+      h1={landUse ? `${landUse} land for sale in Sri Lanka` : "Land for Sale in Sri Lanka"}
       intro="Raw land parcels for sale across Sri Lanka, listed by developers, construction companies, and independent builders — separate from new-construction projects."
       projects={projects}
       relatedPaths={[]}
