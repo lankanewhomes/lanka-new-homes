@@ -1510,15 +1510,22 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
     flex-direction: column;
     justify-content: center;
     gap: 3px;
-    flex-shrink: 0;
+    /* Grows to its natural (unwrapped) label width when there's room for
+       every tab; shrinks — wrapping a two-word label like "Road Map" onto
+       two lines — only once there are enough tabs that they'd otherwise
+       overflow. min-width is a floor so a shrunk button never gets smaller
+       than a comfortable tap target. */
+    flex: 1 1 auto;
+    min-width: 44px;
     min-height: 52px;
-    padding: 6px 14px 0;
+    padding: 6px 6px 0;
     border-radius: 0;
     border-bottom: 2px solid transparent;
     background: transparent;
     color: #6b7280;
     font-size: 11px;
     font-weight: 600;
+    text-align: center;
   }
 
   .listing-hero-quickjump-btn.is-active {
