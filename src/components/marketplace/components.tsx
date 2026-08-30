@@ -26,7 +26,7 @@ import {
   ShieldIcon,
   StatusHouseIcon,
 } from "@/components/icons/stat-icons";
-import { Fragment, FormEvent, useEffect, useMemo, useState } from "react";
+import { Fragment, FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import {
   Bath,
   BedDouble,
@@ -443,12 +443,26 @@ export function ProjectHero({
   const [lightboxView, setLightboxView] = useState<"photos" | "videos" | "map" | "roadMap" | "blockPlan" | "streetView">("photos");
   const [activeSection, setActiveSection] = useState("overview");
   const [requestInfoOpen, setRequestInfoOpen] = useState(false);
+  const titlePanelRef = useRef<HTMLDivElement>(null);
+  const [scrolledPastTitle, setScrolledPastTitle] = useState(false);
 
   useEffect(() => {
     if (activeMedia && !availableMedia.includes(activeMedia)) {
       setActiveMedia(null);
     }
   }, [activeMedia, availableMedia]);
+
+  // Mobile-only: the quick-jump pills bar is hidden until the visitor has
+  // scrolled past the title (see .listing-hero-quickjump-bar), rather than
+  // always occupying space in the page flow — desktop's floating bottom
+  // pill is unaffected by this and always visible.
+  useEffect(() => {
+    const target = titlePanelRef.current;
+    if (!target) return;
+    const observer = new IntersectionObserver(([entry]) => setScrolledPastTitle(!entry.isIntersecting), { threshold: 0 });
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const updateActiveSection = () => {
@@ -973,7 +987,7 @@ export function ProjectHero({
         </div>
       )}
 
-      <div className="listing-hero-panel">
+      <div className="listing-hero-panel" ref={titlePanelRef}>
         <div className="listing-hero-title-wrap">
           <h1>{titleOverride ?? project.name}</h1>
           <p>
@@ -1022,7 +1036,7 @@ export function ProjectHero({
         hero section it would scroll away with the section instead of
         staying pinned through the rest of the page on mobile. */}
     {visibleHeroMediaPills.length > 0 && (
-      <div className="listing-hero-quickjump-bar" aria-label="Quick jump">
+      <div className={`listing-hero-quickjump-bar${scrolledPastTitle ? " is-visible" : ""}`} aria-label="Quick jump">
         {visibleHeroMediaPills.map((pill) => (
           <Fragment key={pill.key}>{pill.render("listing-hero-quickjump-btn")}</Fragment>
         ))}
@@ -2372,7 +2386,10 @@ export function Header() {
     <header className="site-header">
       <div className="site-header-inner">
         <div className="site-brand-group">
-          <Link href="/" className="site-logo">NewHomesSrilanka<span>.</span></Link>
+          <Link href="/" className="site-logo">
+            <span className="site-logo-line">NewHomes</span>
+            <span className="site-logo-line">SriLanka<span className="site-logo-dot">.</span></span>
+          </Link>
           <div className="language-segmented" role="group" aria-label="Language switcher">
             <button type="button" className={language === "en" ? "active" : undefined} onClick={() => setLanguage("en")}>EN</button>
             <button type="button" className={language === "si" ? "active" : undefined} onClick={() => setLanguage("si")}>සිංහල</button>

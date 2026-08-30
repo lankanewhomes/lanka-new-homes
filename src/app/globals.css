@@ -135,12 +135,22 @@
   }
 }
 
+/* Site-wide icon convention: Lucide's default stroke-width (2) reads too
+   bold against this site's otherwise light/thin type — every lucide-react
+   icon carries a base "lucide" class (see Icon.mjs), so overriding it here
+   covers every icon usage, present and future, without touching each call
+   site or its strokeWidth prop. */
+svg.lucide { stroke-width: 1.5; }
+
 /* Homepage inspired by the supplied Livabl reference */
 body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-size: 14px; line-height: 20px; }
 .site-header { height: 82px; display: flex; align-items: center; background: #fff; position: relative; z-index: 10; }
 .site-header-inner { width: min(1290px, calc(100% - 48px)); margin: auto; display: flex; align-items: center; justify-content: space-between; }
 .site-brand-group { display: flex; align-items: center; gap: 14px; }
-.site-logo, .footer-logo { font-size: 27px; font-weight: 800; letter-spacing: -1.8px; color: #1d1d22; }.site-logo span { font-size: 34px; color: #f7bd19; }
+.site-logo, .footer-logo { font-size: 27px; font-weight: 800; letter-spacing: -1.8px; color: #1d1d22; }
+.site-logo { display: flex; flex-direction: column; line-height: 1.02; font-size: 20px; }
+.site-logo-line { display: block; }
+.site-logo-dot { color: #1d1d22; }
 .site-header nav, .header-actions { display: flex; gap: 39px; align-items: center; font-size: 14px; font-weight: 550; }.site-header a:hover { text-decoration: underline; }
 .header-actions { gap: 14px; }.sign-up { padding: 11px 21px; background: #f47b36; border: 1px solid #f47b36; color: #24221e; }.mobile-menu { display: none; }
 .header-link-button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
@@ -148,6 +158,7 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
 .sign-up.header-link-button:hover { text-decoration: none; }
 .site-breadcrumb { border-top: 1px solid #ececec; border-bottom: 1px solid #ececec; background: #fff; }
 .site-breadcrumb-inner { width: min(1290px, calc(100% - 48px)); margin: 0 auto; }
+.site-breadcrumb-inner-wide { width: min(1760px, calc(100% - 48px)); }
 .site-breadcrumb ol { margin: 0; padding: 10px 0; list-style: none; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 12px; color: #60656f; }
 .site-breadcrumb li { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; }
 .site-breadcrumb a { color: #2f3746; text-decoration: none; }
@@ -336,11 +347,29 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
   letter-spacing: 0.3px;
 }
 
+.luxury-hero-two-panel h1 {
+  font-family: var(--font-ref-sans);
+  font-size: 32px;
+  line-height: 40px;
+  font-weight: 400;
+}
+
 .luxury-hero-two-subheading {
+  font-family: var(--font-ref-sans);
   margin: 10px 0 0;
   font-size: 14px;
   line-height: 22px;
   color: #5f6876;
+}
+
+/* <input>/<button> don't inherit font-family from ancestors by default
+   (browser UA stylesheets give form controls their own font stack), so the
+   hero panel's own font-family: var(--font-ref-sans) doesn't reach these —
+   set it explicitly on each. */
+.luxury-hero-two-top-search input,
+.luxury-hero-two-top-search .hero-region-picker,
+.hero-quick-link-pill {
+  font-family: var(--font-ref-sans);
 }
 
 .luxury-hero-two-top-search {
@@ -1444,19 +1473,21 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 
 @media (max-width: 760px) {
   /* On mobile the pills bar isn't a floating action button — it becomes a
-     sticky bar that scrolls with the page and pins to the top once its
-     normal position (right after the hero title/tags) would scroll past
-     the top edge, taking over the role of the (hidden-on-mobile)
-     .listing-hero-sticky-bar tab row. */
+     fixed top bar that takes over the role of the (hidden-on-mobile)
+     .listing-hero-sticky-bar tab row, but only once the visitor has
+     scrolled past the title (the .is-visible class, toggled by an
+     IntersectionObserver watching .listing-hero-panel in ProjectHero) —
+     it does not occupy space in the page flow before that, unlike plain
+     position: sticky which is always present at its normal position. */
   .listing-hero-quickjump-bar {
-    position: sticky;
+    position: fixed;
     top: 0;
-    left: auto;
-    right: auto;
+    left: 0;
+    right: 0;
     bottom: auto;
     transform: none;
     width: 100%;
-    margin: 0 0 12px;
+    margin: 0;
     max-width: none;
     overflow-x: auto;
     scrollbar-width: none;
@@ -1465,8 +1496,18 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
     border: 0;
     border-bottom: 1px solid #e0e0e0;
     box-shadow: none;
-    background: #fafaf9;
+    background: #f0f0ef;
     padding: 8px 8px 8px 12px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+  }
+
+  .listing-hero-quickjump-bar.is-visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
   }
 
   .listing-hero-quickjump-bar::-webkit-scrollbar {
@@ -2159,10 +2200,10 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 .project-description-shell h2 {
   margin: 0;
   font-family: var(--font-ref-sans);
-  font-size: clamp(19px, 1.7vw, 22px);
-  line-height: 1.25;
+  font-size: 40px;
+  line-height: 1.1;
   font-weight: 700;
-  color: #1a1a1a;
+  color: #1f1f1f;
 }
 
 .project-description-shell > p:last-child {
@@ -2310,7 +2351,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
     }
 
     .project-description-shell h2 {
-      font-size: 20px;
+      font-size: 30px;
     }
 
     .project-description-shell > p:last-child {
@@ -2881,10 +2922,10 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 .plans-homes-head h2 {
   margin: 0;
   font-family: var(--font-ref-sans);
-  font-size: 32px;
-  font-weight: 400;
-  line-height: 1.15;
-  color: #1e1e1e;
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #1f1f1f;
 }
 
 .plans-homes-toolbar {
@@ -3369,10 +3410,10 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   z-index: 1;
   margin: 0 0 14px;
   font-family: var(--font-ref-sans);
-  font-size: 32px;
-  font-weight: 400;
-  line-height: 1.15;
-  color: #1e1e1e;
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #1f1f1f;
 }
 
 .key-features-list {
@@ -3473,10 +3514,10 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 .amenities-showcase-shell h2 {
   margin: 0 0 16px;
   font-family: var(--font-ref-sans);
-  font-size: 32px;
-  font-weight: 400;
-  line-height: 1.15;
-  color: #202022;
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #1f1f1f;
 }
 
 .amenities-showcase-grid {
@@ -3770,7 +3811,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   }
 
   .plans-homes-head h2 {
-    font-size: 26px;
+    font-size: 30px;
   }
 
   .plans-homes-toolbar {
@@ -3838,7 +3879,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   }
 
   .key-features-shell h2 {
-    font-size: 26px;
+    font-size: 30px;
   }
 
   .key-features-row-body {
@@ -3852,7 +3893,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 
   .amenities-showcase-shell h2 {
     margin-bottom: 12px;
-    font-size: 26px;
+    font-size: 30px;
   }
 
   .amenities-showcase-grid {
@@ -4025,7 +4066,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
     margin-top: 24px;
   }
   .featured-listings-head h2 {
-    font-size: 26px;
+    font-size: 30px;
     line-height: 32px;
   }
 }
@@ -5603,10 +5644,106 @@ a.developer-profile-press-title {
 
 /* Category listing pages (/projects/*, guides, construction-companies) */
 
+.listing-page-shell {
+  /* Exposed as a custom property (not just used inline) so the map pane's
+     full-bleed margin below can reference the same value — custom
+     properties inherit down through the DOM, but a %-based margin
+     wouldn't: CSS Grid resolves percentage margins on a grid item against
+     that item's own grid-area width, not the grid container, so a plain
+     calc(50% - 50vw) trick silently computes against the map's ~45% track
+     instead of the full shell. Using a length (vw/px), not a percentage,
+     sidesteps that grid-specific quirk entirely. */
+  --shell-width: min(1760px, calc(100vw - 48px));
+  width: var(--shell-width);
+  margin: 22px auto 0;
+}
+
+.listing-content-shade {
+  background: #f5f5f4;
+  /* No right padding — .listing-map-pane bleeds all the way to the
+     viewport edge on the right (see its margin-right below), so padding
+     here would leave an unwanted gap between the map and the true edge.
+     No bottom padding either — the map (the tallest column) should end
+     exactly where the grey background ends, with no visible strip below. */
+  padding: 28px 0 0 28px;
+}
+
 .listing-page {
   display: flex;
   flex-direction: column;
   gap: 18px;
+}
+
+/* Search bar — address search + filter pills */
+
+.listing-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.listing-search-bar .listing-view-toggle {
+  margin-left: auto;
+}
+
+.listing-filter-pills-center {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.listing-search-input-wrap {
+  flex: 1 1 320px;
+  max-width: 460px;
+  min-width: 220px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #d8d8d8;
+  border-radius: 0;
+  padding: 0 16px;
+  background: #fff;
+  color: #9a9284;
+}
+
+.listing-search-input-wrap:focus-within {
+  border-color: #f47b36;
+  color: #6b6355;
+}
+
+.listing-search-input-wrap input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  font-size: 14px;
+  color: #1f1f1f;
+}
+
+.listing-search-input-wrap input::placeholder {
+  color: #9a9284;
+}
+
+@media (max-width: 760px) {
+  .listing-search-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .listing-search-bar .listing-view-toggle {
+    margin-left: 0;
+  }
+
+  .listing-search-input-wrap {
+    width: 100%;
+    max-width: none;
+    flex: none;
+  }
 }
 
 /* Filter bar — pill dropdowns + right-aligned actions */
@@ -5623,10 +5760,11 @@ a.developer-profile-press-title {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  height: 52px;
   border: 1px solid #d8d8d8;
-  border-radius: 999px;
+  border-radius: 0;
   background: #fff;
-  padding: 9px 14px;
+  padding: 0 16px;
   font-size: 13px;
   font-weight: 500;
   color: #1f1f1f;
@@ -5645,9 +5783,11 @@ a.developer-profile-press-title {
 }
 
 .listing-filter-pill-more {
+  height: 52px;
   border: 1px solid #d8d8d8;
-  border-radius: 999px;
+  border-radius: 0;
   background: #fff;
+  padding: 0 16px;
 }
 
 .listing-filter-bar-actions {
@@ -5662,7 +5802,7 @@ a.developer-profile-press-title {
   align-items: center;
   gap: 8px;
   border: 1px solid #d8d8d8;
-  border-radius: 999px;
+  border-radius: 0;
   background: #fff;
   padding: 9px 16px;
   font-size: 13px;
@@ -5680,8 +5820,10 @@ a.developer-profile-press-title {
 .listing-view-toggle button {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  padding: 9px 16px;
+  height: 52px;
+  padding: 0 16px;
   font-size: 13px;
   font-weight: 600;
   background: #fff;
@@ -5720,11 +5862,17 @@ a.developer-profile-press-title {
 }
 
 .listing-header-h1 {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-ref-sans);
   font-size: 32px;
   font-weight: 400;
-  color: #1f1f1f;
-  line-height: 1.2;
+  color: #202022;
+  line-height: 40px;
+  padding-bottom: 16px;
+}
+
+.listing-header-h1-dynamic {
+  font-size: 20px;
+  line-height: 28px;
 }
 
 .listing-header-intro {
@@ -5735,30 +5883,41 @@ a.developer-profile-press-title {
   max-width: 70ch;
 }
 
-.listing-sort-select {
-  display: flex;
+.listing-sort-pill {
+  position: relative;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: #4a4a4a;
-  flex-shrink: 0;
+  gap: 6px;
+  border: 1px solid #e8e8e6;
+  border-radius: 999px;
+  background: #f5f5f3;
+  padding: 7px 14px 7px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f1f1f;
+  cursor: pointer;
+  margin-bottom: 10px;
 }
 
-.listing-sort-select select {
-  border: 1px solid #d8d8d8;
-  border-radius: 6px;
-  background: #fff;
-  padding: 9px 10px;
-  font-size: 13px;
-  color: #1f1f1f;
-  min-width: 170px;
+.listing-sort-pill:hover {
+  border-color: #d8d8d8;
+}
+
+.listing-sort-pill select {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
 }
 
 /* List + map columns */
 
 .listing-columns {
   display: grid;
-  grid-template-columns: 55% 45%;
+  /* fr units divide the space left over after the gap is subtracted —
+     raw percentages (55% 45%) sum to 100% of the container on their own,
+     so adding a 16px gap on top overflowed the grid by exactly 16px. */
+  grid-template-columns: 11fr 9fr;
   gap: 16px;
   align-items: start;
 }
@@ -5797,6 +5956,13 @@ a.developer-profile-press-title {
 .listing-map-pane {
   position: sticky;
   top: 90px;
+  /* Break out of the centered .listing-page-shell container on the right
+     only, so the map runs flush to the actual viewport edge while the list
+     column keeps the page's normal side padding. --shell-width is set on
+     .listing-page-shell and inherits down to here; using it (a length)
+     rather than a bare % avoids CSS Grid resolving the percentage against
+     this item's own ~45% grid-area instead of the full shell width. */
+  margin-right: calc((100vw - var(--shell-width)) / -2);
 }
 
 /* Project card grid */
@@ -5822,6 +5988,15 @@ a.developer-profile-press-title {
 .listing-grid-card {
   display: flex;
   flex-direction: column;
+  height: 100%;
+  background: #fff;
+  border-radius: 6px;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.listing-grid-card:hover {
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1);
+  transform: translateY(-2px);
 }
 
 .listing-grid-card-media {
@@ -5852,28 +6027,10 @@ a.developer-profile-press-title {
   border-radius: 3px;
 }
 
-.listing-grid-card-save {
-  position: absolute;
-  right: 8px;
-  top: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.9);
-  color: #1f1f1f;
-}
-
-.listing-grid-card-save.saved {
-  color: #d94f4f;
-}
-
 .listing-grid-card-featured {
   position: absolute;
   right: 8px;
-  bottom: 8px;
+  top: 8px;
   background: rgba(20, 20, 20, 0.75);
   color: #fff;
   font-size: 10px;
@@ -5884,7 +6041,50 @@ a.developer-profile-press-title {
   border-radius: 3px;
 }
 
+.listing-grid-card-carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #1f1f1f;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.listing-grid-card:hover .listing-grid-card-carousel-arrow {
+  opacity: 1;
+}
+
+.listing-grid-card-carousel-arrow.left {
+  left: 8px;
+}
+
+.listing-grid-card-carousel-arrow.right {
+  right: 8px;
+}
+
+.listing-grid-card-counter {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  background: rgba(20, 20, 20, 0.7);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 3px;
+}
+
 .listing-grid-card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
   padding-top: 10px;
 }
 
@@ -5895,41 +6095,65 @@ a.developer-profile-press-title {
   color: #1f1f1f;
 }
 
-.listing-grid-card-price {
-  margin-top: 2px;
-  font-size: 14px;
-  color: #1f1f1f;
-}
-
-.listing-grid-card-developer {
-  margin-top: 2px;
-  font-size: 13px;
+.listing-grid-card-facts-line {
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
   color: #6b6355;
 }
 
 .listing-grid-card-address {
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
   font-size: 13px;
   color: #6b6355;
 }
 
-.listing-grid-card-ownership {
-  margin-top: 2px;
+.listing-grid-card-agency {
+  margin-top: 6px;
   font-size: 12px;
   color: #9a9284;
 }
 
-.listing-grid-card-facts {
+.listing-grid-card-bottom-row {
+  margin-top: auto;
+  padding-top: 10px;
   display: flex;
-  gap: 14px;
-  margin-top: 6px;
-  font-size: 12px;
-  color: #4a4a4a;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 }
 
-.listing-grid-card-facts span {
-  display: inline-flex;
+.listing-grid-card-price {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1f1f1f;
+}
+
+.listing-grid-card-save {
+  display: flex;
   align-items: center;
-  gap: 4px;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  border: 1px solid #e0e0e0;
+  color: #6b6355;
+}
+
+.listing-grid-card-save:hover {
+  border-color: #d94f4f;
+  color: #d94f4f;
+}
+
+.listing-grid-card-save.saved {
+  border-color: #d94f4f;
+  color: #d94f4f;
 }
 
 .listing-grid-card-facts-empty {
@@ -5955,7 +6179,7 @@ a.developer-profile-press-title {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 520px;
+  min-height: calc(100vh - 170px);
   border: 1px solid #e4e4e4;
   background: #eef4ea;
   color: #9a9284;
@@ -5964,80 +6188,197 @@ a.developer-profile-press-title {
 
 .listing-map {
   position: relative;
-  min-height: 520px;
+  min-height: calc(100vh - 170px);
   border: 1px solid #e4e4e4;
   background: #d9ecd4;
-  overflow: hidden;
+  overflow: visible;
 }
 
-.listing-map-canvas {
-  position: relative;
-  height: 520px;
-  transform: scale(var(--map-zoom, 1));
-  transform-origin: center;
-  transition: transform 0.15s ease;
+.listing-maplibre-map {
+  height: calc(100vh - 170px);
 }
 
-.listing-map-boundary {
-  position: absolute;
-  inset: 0;
+.listing-maplibre-map .maplibregl-map {
   width: 100%;
   height: 100%;
+  font-family: var(--font-ref-sans);
+  /* MapLibre's own CSS sets overflow: hidden here by default, which clips
+     the ProjectPopup card whenever it's taller than the space below its
+     anchor point — let the popup escape the map's own bounding box. */
+  overflow: visible;
 }
 
-.listing-map-boundary polygon {
-  fill: #f2ead9;
-  stroke: #1a2b4c;
-  stroke-width: 0.6;
-  vector-effect: non-scaling-stroke;
-}
-
-.listing-map-remove-boundary {
-  position: absolute;
-  left: 12px;
-  top: 12px;
-  z-index: 2;
-  border-radius: 999px;
-  border: 1px solid #d8d8d8;
-  background: #fff;
-  padding: 8px 14px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #1f1f1f;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-}
-
-.listing-map-pin {
-  position: absolute;
-  transform: translate(-50%, -50%);
+/* Custom marker replacing the default MapLibre pin — matches the site's
+   pill/badge visual language instead of a generic teardrop. */
+.listing-map-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
   border-radius: 999px;
   border: 2px solid #fff;
-  background: #2451c9;
+  background: #f47b36;
   color: #fff;
-  font-weight: 700;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.18);
-}
-
-.listing-map-pin-sm {
-  width: 26px;
-  height: 26px;
-  font-size: 11px;
-}
-
-.listing-map-pin-md {
-  width: 34px;
-  height: 34px;
   font-size: 12px;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
 }
 
-.listing-map-pin-lg {
-  width: 44px;
-  height: 44px;
-  font-size: 14px;
+.listing-map-marker.active {
+  background: #c85f24;
 }
 
-.listing-map-pin.active {
-  background: #16327a;
+/* Dark card popup (.custom-popup passed as the Popup's className prop) —
+   strips MapLibre's default white bubble/tip chrome so ProjectPopup's own
+   markup fully controls the look. */
+.listing-maplibre-map .maplibregl-popup.custom-popup {
+  z-index: 30;
+}
+
+.listing-maplibre-map .maplibregl-popup.custom-popup .maplibregl-popup-content {
+  padding: 0;
+  border-radius: 0;
+  overflow: hidden;
+  background: transparent;
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.35);
+  font-family: var(--font-ref-sans);
+}
+
+.listing-maplibre-map .maplibregl-popup.custom-popup .maplibregl-popup-tip {
+  display: none;
+}
+
+.project-popup {
+  display: block;
+  width: 210px;
+  background: #14161a;
+  color: #f3f1ec;
+}
+
+.project-popup:hover {
+  color: #f3f1ec;
+}
+
+.project-popup-media {
+  position: relative;
+  height: 130px;
+}
+
+.project-popup-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.project-popup-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+  color: #fff;
+}
+
+.project-popup-close:hover {
+  background: rgba(0, 0, 0, 0.65);
+}
+
+.project-popup-credit {
+  position: absolute;
+  right: 8px;
+  bottom: 6px;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.project-popup-body {
+  padding: 10px 12px;
+}
+
+.project-popup-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.project-popup-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.25;
+}
+
+.project-popup-badge {
+  flex-shrink: 0;
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 3px 6px;
+  border-radius: 0;
+  white-space: nowrap;
+}
+
+/* Same palette as .listing-hero-tags (Featured = gold, general status =
+   green) so the popup badge reads consistently with the rest of the site. */
+.project-popup-badge-featured {
+  background: #fdf3e0;
+  border: 1px solid #f2d38a;
+  color: #92670c;
+}
+
+.project-popup-badge-status {
+  background: #e8f4e8;
+  border: 1px solid #cfe6cf;
+  color: #1a6b2f;
+}
+
+.project-popup-meta {
+  margin-top: 3px;
+  font-size: 10px;
+  color: #a8a29a;
+}
+
+.project-popup-facts {
+  margin-top: 2px;
+  font-size: 10px;
+  color: #a8a29a;
+}
+
+.project-popup-tag {
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #e0b357;
+}
+
+.project-popup-divider {
+  margin: 8px 0 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.project-popup-view-link {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
 }
 
 .listing-map-empty {
@@ -6050,29 +6391,6 @@ a.developer-profile-press-title {
   font-size: 13px;
   padding: 20px;
   text-align: center;
-}
-
-.listing-map-controls {
-  position: absolute;
-  right: 12px;
-  top: 12px;
-  display: flex;
-  flex-direction: column;
-  border-radius: 6px;
-  overflow: hidden;
-  border: 1px solid #d8d8d8;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-}
-
-.listing-map-controls button {
-  background: #fff;
-  padding: 8px;
-  color: #1f1f1f;
-  border-bottom: 1px solid #e4e4e4;
-}
-
-.listing-map-controls button:last-child {
-  border-bottom: none;
 }
 
 .listing-map-collapse {
@@ -6089,84 +6407,6 @@ a.developer-profile-press-title {
   color: #1f1f1f;
   font-size: 14px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.12);
-}
-
-.listing-map-popup,
-.listing-map-cluster-list {
-  position: absolute;
-  left: 12px;
-  bottom: 12px;
-  width: 220px;
-  border-radius: 6px;
-  border: 1px solid #d8d8d8;
-  background: #fff;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.16);
-}
-
-.listing-map-cluster-list {
-  padding: 10px 12px;
-  max-height: 220px;
-  overflow-y: auto;
-}
-
-.listing-map-cluster-list-title {
-  font-size: 12px;
-  font-weight: 700;
-  color: #1f1f1f;
-  margin-bottom: 6px;
-}
-
-.listing-map-cluster-list ul {
-  display: grid;
-  gap: 4px;
-}
-
-.listing-map-cluster-list button {
-  font-size: 12px;
-  color: #2451c9;
-  text-align: left;
-  text-decoration: underline;
-}
-
-.listing-map-popup-image {
-  display: block;
-  width: 100%;
-  height: 120px;
-  object-fit: cover;
-}
-
-.listing-map-popup-body {
-  padding: 8px 10px;
-}
-
-.listing-map-popup-name {
-  font-size: 13px;
-  font-weight: 700;
-  color: #1f1f1f;
-}
-
-.listing-map-popup-price {
-  font-size: 12px;
-  color: #6b6355;
-  margin-top: 2px;
-}
-
-.listing-map-popup-link {
-  display: inline-block;
-  margin-top: 6px;
-  font-size: 12px;
-  font-weight: 700;
-  text-decoration: underline;
-  color: #1f1f1f;
-}
-
-.listing-map-popup-close {
-  position: absolute;
-  right: 6px;
-  top: 6px;
-  font-size: 16px;
-  line-height: 1;
-  color: #6b6355;
 }
 
 /* Related links */

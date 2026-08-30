@@ -97,24 +97,66 @@ Built from `src/lib/listing-categories.ts` (config) +
 ItemList JSON-LD, related links) + `listing-page.tsx` (client: filter bar,
 sort, list/map toggle) + `map-pane.tsx` (lazy-loaded map visual).
 
-- **Filter bar**: pill-shaped dropdowns (For sale / Home type / Any price /
-  0+ beds / Construction status / More), white background, rounded-full,
-  1px border.
-- **Header row**: small uppercase eyebrow ("N COMMUNITIES") above a serif
-  H1 (`font-family: Georgia, "Times New Roman", serif`), sort dropdown
-  right-aligned on the same row, intro paragraph below the H1.
-- **Cards**: `.listing-grid-card` — vertical card, status pill top-left on
-  the image (dark translucent), save heart top-right, "Featured" tag
-  bottom-right of the image, then name / price / "{type} by {developer}" /
-  address / beds+sqft icon row below.
-- **Layout**: 55% list / 45% map split by default; a List/Map toggle button
-  pair swaps to full-width list or full-width map (CSS-driven, both panes
-  stay mounted so content is always in the server HTML — never remove the
-  list from the DOM for a "map view").
-- **Map**: visual layer only (no real map SDK wired in — no Mapbox/Google
-  Maps key configured). Green background, cream boundary polygon, navy
-  boundary stroke, blue circular pins sized by cluster count. Always
-  `next/dynamic(..., { ssr: false })` so it never blocks LCP.
+- **Search + filter bar**: one row — address search input (icon on the
+  right), filter pills (For sale / Home type / Any price / 0+ beds /
+  Construction status / More) centered in the middle, List/Map toggle
+  pinned right. Search input, filter pills, and the List/Map toggle all
+  share the same `52px` control height. Filter pills, the search input, and
+  the sort pill are square (`border-radius: 0`) — the List/Map toggle is the
+  one deliberate exception and stays a rounded pill (`border-radius: 999px`).
+- **Sort control**: `.listing-sort-pill` — a small rounded pill
+  (`↕ Recommended`, `ArrowUpDown` icon) sitting above the H1, not a
+  right-aligned "Sort:" dropdown.
+- **Header**: H1 uses `var(--font-ref-sans)` (Archivo) — not serif. Default
+  page H1 (e.g. "New projects in Sri Lanka") is `32px` / `400` weight /
+  `40px` line-height / `#202022`. When a map cluster or the search box
+  narrows results, the H1 swaps to a smaller dynamic sentence
+  (`.listing-header-h1-dynamic`, "There are N communities for sale in
+  {place}") at `20px` / `28px` line-height. No eyebrow line, no intro
+  paragraph under the H1 on this page type.
+- **Page background**: `.listing-content-shade` — everything from the
+  sort pill down through the card grid and map sits on a light grey panel
+  (`#f5f5f4`), giving white cards visible contrast. No padding on the right
+  edge of this panel (the map bleeds past it — see below); no padding on
+  the bottom either, so the panel's bottom edge lands exactly on the map's
+  bottom edge instead of leaving a grey strip under it.
+- **Cards**: `.listing-grid-card` — vertical card, white background,
+  status pill top-left on the image (dark translucent), save heart in the
+  bottom row (not absolutely positioned over the image), "Featured" tag
+  top-right of the image, then name / facts line / address / "Listed by
+  {developer}" / price + save button below.
+- **Layout**: list/map split via `grid-template-columns: 11fr 9fr` (not raw
+  `55% 45%` — percentage columns plus a `gap` overflow the grid container by
+  the gap width; `fr` units divide space left over *after* the gap).
+  `align-items: start`. A List/Map toggle button pair swaps to full-width
+  list or full-width map (CSS-driven, both panes stay mounted so content is
+  always in the server HTML — never remove the list from the DOM for a "map
+  view").
+- **Page container width**: this page type uses a wider container
+  (`--shell-width: min(1760px, calc(100vw - 48px))`, set on
+  `.listing-page-shell`) than the sitewide header/breadcrumb bar
+  (`min(1290px, calc(100% - 48px))`). Since the breadcrumb bar is a global
+  component shared by every route, it gets a route-scoped
+  `.site-breadcrumb-inner-wide` modifier (applied in `breadcrumb-bar.tsx`
+  when the pathname starts with `/projects` or `/land`) so it still lines
+  up with the wider content below instead of the sitewide width.
+- **Map**: real map — MapLibre GL (`maplibre-gl` + `react-map-gl/maplibre`)
+  against OpenFreeMap vector tiles (`https://tiles.openfreemap.org/styles/liberty`),
+  not a decorative visual layer. Always `next/dynamic(..., { ssr: false })`
+  so it never blocks LCP. The map pane bleeds past the page container to the
+  actual viewport's right edge (`margin-right` computed from a
+  `--shell-width` custom property in length units, not a bare `%` — CSS
+  Grid resolves percentage margins on a grid item against that item's own
+  grid-area, not the grid container, so a plain `calc(50% - 50vw)` silently
+  computes against the map's own ~45%-wide track instead of the full page).
+  maplibre-gl's worker needs to be self-hosted (`setWorkerUrl` in
+  `map-pane.tsx` pointing at `public/maplibre-gl-worker.mjs` +
+  `public/maplibre-gl-shared.mjs`, re-copied from `node_modules/maplibre-gl/dist/`
+  on any version bump) — Next's webpack config breaks the worker's default
+  bundler-relative URL. Custom marker pins (`#f47b36` / active `#c85f24`),
+  and a dark popup card (`ProjectPopup.tsx`, its own file) on click —
+  `maplibregl.Popup` with `closeButton:false, maxWidth:'none'`, MapLibre's
+  own tip/tail hidden via CSS.
 
 **Convention going forward:** a new directory/listing-style page (more
 project categories, more construction-company categories, anything with a
@@ -289,8 +331,10 @@ hero/stats/description/contact shell rather than a new bespoke layout.
   main site's palette; don't introduce it into new work.
 - Pill palette: green `#1a6b2f`/`#e8f4e8`, blue `#1a53a3`/`#e8f1fd`, red
   `#c0392b`/`#fdeaec`, purple `#4338ca`/`#eef2ff`.
-- Serif is reserved for listing-page H1s only (Zolo-style pages); everything
-  else uses the site's default sans stack.
+- No serif anywhere on the site — every heading, including listing-page
+  H1s, uses the site's default sans stack (`var(--font-ref-sans)`, Archivo).
+  A leftover `font-family: Georgia, "Times New Roman", serif` on a listing
+  H1 is a bug, not a variant to preserve.
 
 ### Type scale
 
@@ -298,6 +342,15 @@ Font: Archivo everywhere (`var(--font-ref-sans)`, set on `body`), standing in
 for the original Neue Haas Grotesk reference — new rules should reference
 `var(--font-ref-sans)` rather than a hardcoded font name.
 
+- **Major section headings** (a page's own H1 inside a hero/intro panel —
+  "Find the City For You", the project detail "Overview" heading,
+  "Amenities", "Key Features", "Plans & Homes", the homepage's featured
+  listings head): `40px` / `700` weight / `1.1` line-height / `#1f1f1f`.
+  `30px` on mobile (`max-width: 760px`) — every one of these sections
+  should carry this exact mobile size too, not its own one-off value.
+  These are two different roles that both currently use an `<h2>` or
+  `<h1>` tag depending on the section — match by role (does this heading
+  introduce a whole content block on the page?), not by tag name.
 - **Body copy / links / list-item labels** ("View more cities", "Explore
   {neighborhood} neighborhood", paragraph text): `14px` / `400` weight /
   `20px` line-height. This is `body`'s own default (`src/app/globals.css`),

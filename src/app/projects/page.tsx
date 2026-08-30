@@ -34,7 +34,7 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
   return (
     <ProjectListingShell
       breadcrumbs={[{ label: "Home", href: "/" }, { label: "New Projects" }]}
-      h1={type ? `New ${type} Projects in Sri Lanka` : "New Projects in Sri Lanka"}
+      h1={type ? `New ${type} projects in Sri Lanka` : "New projects in Sri Lanka"}
       intro="Browse new condominium, apartment, and housing projects in Sri Lanka. This is the full list of new development projects and ongoing projects across the island — use the category pages below to narrow down by location or property type."
       projects={projects}
       relatedPaths={["/projects/pre-construction", "/projects/colombo", "/projects/villas", "/projects/beachfront"]}

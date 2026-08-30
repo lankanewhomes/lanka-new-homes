@@ -645,6 +645,16 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
     "Nearly Sold Out",
     "Nearly Complete",
   ];
+  // Separate from projectStatusOptions (the listing-status badge) — this
+  // drives the "Building status" stat chip. Free text in the data model,
+  // but a preset dropdown keeps entries consistent across projects.
+  const constructionStatusOptions = [
+    "Ongoing",
+    "Under Construction",
+    "Nearly Complete",
+    "Completed",
+    "Not Started",
+  ];
   const ownershipOptions = [
     "Freehold",
     "Leasehold",
@@ -728,6 +738,7 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
   };
   const [moveInYear, setMoveInYear] = useState(initialProject ? String(initialProject.completionYear) : "");
   const [constructionStarted, setConstructionStarted] = useState(initialProject?.constructionStarted ?? "");
+  const [constructionStatus, setConstructionStatus] = useState(initialProject?.constructionStatus ?? "");
   const [estimatedCompletion, setEstimatedCompletion] = useState(initialProject ? String(initialProject.completionYear) : "");
   const [province, setProvince] = useState(initialProject?.province ?? "");
   const [district, setDistrict] = useState(initialProject?.district ?? "");
@@ -1090,7 +1101,7 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
       salesCompanyName: salesCompanySlug ? salesCompanyPageOptions.find((option) => option.slug === salesCompanySlug)?.label : undefined,
       interiorDesignerSlug: interiorDesignerSlug || undefined,
       interiorDesignerName: interiorDesignerSlug ? interiorDesignerPageOptions.find((option) => option.slug === interiorDesignerSlug)?.label : undefined,
-      constructionStatus: initialProject?.constructionStatus ?? "",
+      constructionStatus,
       constructionStarted: constructionStarted || undefined,
       completionYear: Number(moveInYear || estimatedCompletion || initialProject?.completionYear || 0),
       province,
@@ -1277,6 +1288,22 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
                       <option key={option} value={String(option)}>{option}</option>
                     ))}
                   </select>
+                </label>
+
+                <label className="grid gap-1 text-xs text-stone-700">
+                  <span>Construction Status</span>
+                  <input
+                    list="construction-status-options"
+                    value={constructionStatus}
+                    onChange={(event) => setConstructionStatus(event.target.value)}
+                    className="border border-stone-300 bg-white px-3 py-2 text-sm"
+                    placeholder="e.g. Ongoing"
+                  />
+                  <datalist id="construction-status-options">
+                    {constructionStatusOptions.map((option) => (
+                      <option key={option} value={option} />
+                    ))}
+                  </datalist>
                 </label>
 
                 <label className="grid gap-1 text-xs text-stone-700">

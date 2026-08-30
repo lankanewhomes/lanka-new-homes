@@ -41,6 +41,7 @@ export default async function LandListingPage() {
       relatedPaths={[]}
       basePath="/land"
       eyebrow="land listings"
+      singularEyebrow="land listing"
       filterGroups={LAND_FILTER_GROUPS}
       emptyStateText="No land listings yet — check back soon."
     />

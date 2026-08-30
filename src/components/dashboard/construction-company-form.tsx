@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
 import type { ConstructionCompany, ConstructionCompanyCategory } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/dashboard/components";
+import { uploadLogo } from "@/lib/upload-logo";
 
 const categoryOptions: { value: ConstructionCompanyCategory; label: string }[] = [
   { value: "general", label: "General construction" },
@@ -18,7 +19,11 @@ export function ConstructionCompanyForm({ initialCompany }: { initialCompany?: C
   const [logo, setLogo] = useState(initialCompany?.logo ?? "");
   const [description, setDescription] = useState(initialCompany?.description ?? "");
   const [location, setLocation] = useState(initialCompany?.location ?? "");
-  const [categories, setCategories] = useState<ConstructionCompanyCategory[]>(initialCompany?.categories ?? []);
+  // No UI to edit this anymore (the Categories section was removed) — new
+  // companies default to every category so they still show up across all
+  // /construction-companies/* directory pages; existing companies keep
+  // whatever categories they already had.
+  const [categories] = useState<ConstructionCompanyCategory[]>(initialCompany?.categories ?? categoryOptions.map((option) => option.value));
   const [yearsInBusiness, setYearsInBusiness] = useState(initialCompany?.yearsInBusiness ? String(initialCompany.yearsInBusiness) : "");
   const [website, setWebsite] = useState(initialCompany?.website ?? "");
   const [email, setEmail] = useState(initialCompany?.email ?? "");
@@ -31,10 +36,24 @@ export function ConstructionCompanyForm({ initialCompany }: { initialCompany?: C
   const [youtubeUrl, setYoutubeUrl] = useState(initialCompany?.socialLinks?.youtube ?? "");
   const [tiktokUrl, setTiktokUrl] = useState(initialCompany?.socialLinks?.tiktok ?? "");
   const [saving, setSaving] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const toggleCategory = (category: ConstructionCompanyCategory) =>
-    setCategories((current) => (current.includes(category) ? current.filter((item) => item !== category) : [...current, category]));
+  const onLogoFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+
+    setUploadingLogo(true);
+    setErrorMessage("");
+    try {
+      setLogo(await uploadLogo(file));
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "Unable to upload logo.");
+    } finally {
+      setUploadingLogo(false);
+    }
+  };
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -97,7 +116,19 @@ export function ConstructionCompanyForm({ initialCompany }: { initialCompany?: C
         <Field label="Company name"><input value={name} onChange={(event) => setName(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" placeholder="e.g. Lanka Poolworks" required /></Field>
         <Field label="Location"><input value={location} onChange={(event) => setLocation(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" placeholder="e.g. Colombo 05" required /></Field>
 
-        <Field label="Logo image URL" className="md:col-span-2"><input value={logo} onChange={(event) => setLogo(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" placeholder="https://..." required /></Field>
+        <Field label="Logo" className="md:col-span-2">
+          <div className="flex items-center gap-3">
+            {logo ? <img src={logo} alt="Logo preview" className="h-12 w-12 shrink-0 border border-stone-200 bg-white object-contain" /> : null}
+            <input value={logo} onChange={(event) => setLogo(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" placeholder="https://..." required />
+          </div>
+          <div className="mt-2 flex items-center gap-2">
+            <label className="cursor-pointer border border-stone-300 bg-stone-50 px-3 py-1.5 text-xs font-medium text-stone-700 hover:bg-stone-100">
+              {uploadingLogo ? "Uploading..." : "Upload logo"}
+              <input type="file" accept="image/*" className="hidden" onChange={onLogoFileChange} disabled={uploadingLogo} />
+            </label>
+            <span className="text-xs text-stone-500">PNG, JPG, or SVG — or paste a URL above</span>
+          </div>
+        </Field>
         <Field label="Description" className="md:col-span-2"><textarea value={description} onChange={(event) => setDescription(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" rows={4} required /></Field>
 
         <Field label="Website URL"><input value={website} onChange={(event) => setWebsite(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" placeholder="https://..." /></Field>
@@ -105,19 +136,6 @@ export function ConstructionCompanyForm({ initialCompany }: { initialCompany?: C
 
         <Field label="Phone"><input value={phone} onChange={(event) => setPhone(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" /></Field>
         <Field label="Years in business (optional)"><input value={yearsInBusiness} onChange={(event) => setYearsInBusiness(event.target.value)} type="number" min="0" step="1" className="border border-stone-300 px-3 py-2 text-sm" /></Field>
-      </div>
-
-      <div className="border border-stone-200 bg-stone-50 p-3">
-        <p className="text-sm font-medium text-stone-900">Categories</p>
-        <p className="mt-1 text-xs text-stone-600">Controls which /construction-companies/* directory pages this company appears on.</p>
-        <div className="mt-3 grid gap-2 sm:grid-cols-2 md:grid-cols-4">
-          {categoryOptions.map((option) => (
-            <label key={option.value} className="flex items-center gap-2 border border-stone-200 bg-white px-3 py-2 text-sm">
-              <input type="checkbox" checked={categories.includes(option.value)} onChange={() => toggleCategory(option.value)} />
-              {option.label}
-            </label>
-          ))}
-        </div>
       </div>
 
       <div className="border border-sky-200 bg-sky-50 p-3">

@@ -49,10 +49,15 @@ export function BreadcrumbBar() {
   }
 
   const segments = pathname.split("/").filter(Boolean);
+  // The listing pages (/projects, /land) use a wider content container
+  // (--shell-width in globals.css) than the rest of the site — match the
+  // breadcrumb's inset to it here so "Home / ..." lines up with the search
+  // bar/cards below instead of the sitewide 1290px width.
+  const isWideListing = pathname.startsWith("/projects") || pathname.startsWith("/land");
 
   return (
     <nav className="site-breadcrumb" aria-label="Breadcrumb">
-      <div className="site-breadcrumb-inner">
+      <div className={`site-breadcrumb-inner${isWideListing ? " site-breadcrumb-inner-wide" : ""}`}>
         <ol>
           <li>
             <Link href="/">Home</Link>

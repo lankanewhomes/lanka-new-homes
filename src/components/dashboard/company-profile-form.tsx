@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
 import type { CompanyProfile } from "@/types";
 import { Button } from "@/components/ui/button";
 import { buildInitialOfficeHours, Field, OfficeHoursEditor } from "@/components/dashboard/components";
+import { uploadLogo } from "@/lib/upload-logo";
 
 export type CompanyProfileFormKind = {
   apiBase: string;
@@ -31,7 +32,24 @@ export function CompanyProfileForm({ kind, initialCompany }: { kind: CompanyProf
   const [youtubeUrl, setYoutubeUrl] = useState(initialCompany?.socialLinks?.youtube ?? "");
   const [tiktokUrl, setTiktokUrl] = useState(initialCompany?.socialLinks?.tiktok ?? "");
   const [saving, setSaving] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
+  const onLogoFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+
+    setUploadingLogo(true);
+    setErrorMessage("");
+    try {
+      setLogo(await uploadLogo(file));
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "Unable to upload logo.");
+    } finally {
+      setUploadingLogo(false);
+    }
+  };
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -94,7 +112,19 @@ export function CompanyProfileForm({ kind, initialCompany }: { kind: CompanyProf
         <Field label={`${kind.entityLabel} name`}><input value={name} onChange={(event) => setName(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" placeholder={kind.namePlaceholder} required /></Field>
         <Field label="Location"><input value={location} onChange={(event) => setLocation(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" placeholder="e.g. Colombo 05" required /></Field>
 
-        <Field label="Logo image URL" className="md:col-span-2"><input value={logo} onChange={(event) => setLogo(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" placeholder="https://..." required /></Field>
+        <Field label="Logo" className="md:col-span-2">
+          <div className="flex items-center gap-3">
+            {logo ? <img src={logo} alt="Logo preview" className="h-12 w-12 shrink-0 border border-stone-200 bg-white object-contain" /> : null}
+            <input value={logo} onChange={(event) => setLogo(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" placeholder="https://..." required />
+          </div>
+          <div className="mt-2 flex items-center gap-2">
+            <label className="cursor-pointer border border-stone-300 bg-stone-50 px-3 py-1.5 text-xs font-medium text-stone-700 hover:bg-stone-100">
+              {uploadingLogo ? "Uploading..." : "Upload logo"}
+              <input type="file" accept="image/*" className="hidden" onChange={onLogoFileChange} disabled={uploadingLogo} />
+            </label>
+            <span className="text-xs text-stone-500">PNG, JPG, or SVG — or paste a URL above</span>
+          </div>
+        </Field>
         <Field label="Description" className="md:col-span-2"><textarea value={description} onChange={(event) => setDescription(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" rows={4} required /></Field>
 
         <Field label="Website URL"><input value={website} onChange={(event) => setWebsite(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" placeholder="https://..." /></Field>
