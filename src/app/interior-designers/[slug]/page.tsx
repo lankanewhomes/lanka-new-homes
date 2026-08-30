@@ -4,6 +4,10 @@ import { getAllInteriorDesigners, getInteriorDesignerBySlug } from "@/lib/interi
 import { getAllProjects } from "@/lib/project-store";
 import { CompanyProfileDetailView } from "@/components/marketplace/company-profile-views";
 
+// Regenerate at most once a minute so admin edits (e.g. status changes)
+// show up without waiting for the next deploy.
+export const revalidate = 60;
+
 type InteriorDesignerPageProps = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {

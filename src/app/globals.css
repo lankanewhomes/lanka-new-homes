@@ -760,6 +760,10 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   .listing-hero-image {
     height: 320px;
   }
+
+  .listing-hero-video-list {
+    min-height: 320px;
+  }
 }
 
 .listing-hero-video-surface {
@@ -800,6 +804,10 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   display: grid;
   gap: 12px;
   padding: 16px;
+  min-height: 560px;
+  place-content: center;
+  place-items: center;
+  background: #f7f6f2;
 }
 
 .listing-hero-video-link {
@@ -1641,6 +1649,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   width: 20px;
   height: 20px;
   color: #3a3a3a;
+  stroke-width: 1.5;
 }
 
 .listing-hero-stat-chip-content {
@@ -1681,6 +1690,10 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 
   .listing-hero-image {
     height: 260px;
+  }
+
+  .listing-hero-video-list {
+    min-height: 260px;
   }
 
   .listing-hero-map-frame {
@@ -3344,6 +3357,10 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   font-weight: 400;
   text-align: left;
   transition: background-color 0.15s ease;
+}
+
+.key-features-row-trigger svg {
+  stroke-width: 1.5;
 }
 
 .key-features-row-trigger:hover {

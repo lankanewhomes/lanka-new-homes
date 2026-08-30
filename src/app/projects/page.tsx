@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { getAllProjects } from "@/lib/project-store";
 import { ProjectListingShell } from "@/components/marketplace/listing-shell";
 
+// Regenerate at most once a minute so admin edits show up without waiting for the next deploy.
+export const revalidate = 60;
+
 export const metadata: Metadata = {
   title: "New Development Projects in Sri Lanka | New Condos & Apartments",
   description: "Browse new condominium and apartment projects in Sri Lanka. Compare ongoing and new construction projects with pricing, locations, and developer details.",

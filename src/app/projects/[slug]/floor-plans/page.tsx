@@ -4,6 +4,10 @@ import { projects } from "@/data/projects";
 import { getProjectBySlug } from "@/lib/project-store";
 import { PlansAndHomesSection, ProjectHero, ProjectStatsChips } from "@/components/marketplace/components";
 
+// Regenerate at most once a minute so admin edits (e.g. status changes)
+// show up without waiting for the next deploy.
+export const revalidate = 60;
+
 type FloorPlansPageProps = { params: Promise<{ slug: string }> };
 
 export function generateStaticParams() {

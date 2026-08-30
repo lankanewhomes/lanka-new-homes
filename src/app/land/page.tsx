@@ -5,6 +5,9 @@ import { MapPin, Ruler } from "lucide-react";
 import { getAllLands } from "@/lib/land-store";
 import { formatLkr } from "@/lib/format";
 
+// Regenerate at most once a minute so admin edits show up without waiting for the next deploy.
+export const revalidate = 60;
+
 export const metadata: Metadata = {
   title: "Land for Sale in Sri Lanka",
   description: "Browse land parcels for sale across Sri Lanka, listed by developers, construction companies, and builders — pricing, size, and location for every plot.",

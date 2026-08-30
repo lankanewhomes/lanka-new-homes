@@ -14,6 +14,10 @@ import {
   StatsContactCard,
 } from "@/components/marketplace/components";
 
+// Regenerate at most once a minute so admin edits (e.g. status changes)
+// show up without waiting for the next deploy.
+export const revalidate = 60;
+
 type FloorPlanPageProps = {
   params: Promise<{ slug: string; floorPlanId: string }>;
 };

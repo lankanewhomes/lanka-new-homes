@@ -4,6 +4,10 @@ import { getAllArchitects, getArchitectBySlug } from "@/lib/architect-store";
 import { getAllProjects } from "@/lib/project-store";
 import { CompanyProfileDetailView } from "@/components/marketplace/company-profile-views";
 
+// Regenerate at most once a minute so admin edits (e.g. status changes)
+// show up without waiting for the next deploy.
+export const revalidate = 60;
+
 type ArchitectPageProps = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {

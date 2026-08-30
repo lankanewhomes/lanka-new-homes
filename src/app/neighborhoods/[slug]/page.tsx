@@ -8,6 +8,10 @@ import { getAllProjects } from "@/lib/project-store";
 import { formatLkr } from "@/lib/format";
 import { toAbsoluteUrl } from "@/lib/seo";
 
+// Regenerate at most once a minute so admin edits (e.g. status changes)
+// show up without waiting for the next deploy.
+export const revalidate = 60;
+
 type NeighborhoodPageProps = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {

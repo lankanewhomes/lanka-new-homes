@@ -18,6 +18,10 @@ import {
 } from "@/components/marketplace/components";
 import type { Developer } from "@/types";
 
+// Regenerate at most once a minute so admin edits (e.g. status changes)
+// show up without waiting for the next deploy.
+export const revalidate = 60;
+
 type LandPageProps = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: LandPageProps): Promise<Metadata> {

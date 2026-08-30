@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { getAllMarketingCompanies } from "@/lib/marketing-company-store";
 import { CompanyProfileListView } from "@/components/marketplace/company-profile-views";
 
+// Regenerate at most once a minute so admin edits show up without waiting for the next deploy.
+export const revalidate = 60;
+
 export const metadata: Metadata = {
   title: "Marketing Companies in Sri Lanka | Directory",
   description: "Browse marketing companies working with new home developments in Sri Lanka.",

@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { DeveloperCard } from "@/components/marketplace/components";
 import { getAllDevelopers } from "@/lib/developer-store";
 
+// Regenerate at most once a minute so admin edits show up without waiting for the next deploy.
+export const revalidate = 60;
+
 export const metadata: Metadata = {
   title: "Developer Directory in Sri Lanka",
   description: "Explore real estate developers building new apartment projects in Sri Lanka and compare their active and completed developments.",

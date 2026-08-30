@@ -428,20 +428,19 @@ export function ProjectHero({
   const activeRoadMapItem = roadMapItems[Math.max(0, Math.min(roadMapIndex, roadMapItems.length - 1))];
   const activeBlockPlanItem = blockPlanImages[Math.max(0, Math.min(blockPlanIndex, blockPlanImages.length - 1))];
 
-  // Photos/Map/Road Map/Street View/Block Plan/Floor Plan all open the
-  // lightbox (see the pills below); only these swap the hero's own inline
-  // media surface.
+  // Photos/Videos/Map/Road Map/Street View/Block Plan/Floor Plan all open
+  // the lightbox (see the pills below); only these two swap the hero's own
+  // inline media surface.
   const availableMedia = useMemo(() => {
-    const tabs: Array<"videos" | "interactiveMap" | "virtualTours"> = [];
-    if (videoCount > 0) tabs.push("videos");
+    const tabs: Array<"interactiveMap" | "virtualTours"> = [];
     if (hasInteractiveMap) tabs.push("interactiveMap");
     if (virtualTourCount > 0) tabs.push("virtualTours");
     return tabs;
-  }, [videoCount, hasInteractiveMap, virtualTourCount]);
+  }, [hasInteractiveMap, virtualTourCount]);
 
-  const [activeMedia, setActiveMedia] = useState<"videos" | "interactiveMap" | "virtualTours" | null>(null);
+  const [activeMedia, setActiveMedia] = useState<"interactiveMap" | "virtualTours" | null>(null);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-  const [lightboxView, setLightboxView] = useState<"photos" | "map" | "roadMap" | "blockPlan" | "streetView">("photos");
+  const [lightboxView, setLightboxView] = useState<"photos" | "videos" | "map" | "roadMap" | "blockPlan" | "streetView">("photos");
   const [activeSection, setActiveSection] = useState("overview");
   const [requestInfoOpen, setRequestInfoOpen] = useState(false);
 
@@ -519,7 +518,7 @@ export function ProjectHero({
             setIsLightboxOpen(true);
           }}
         >
-          <LayoutGrid className="h-4 w-4" aria-hidden="true" /> Photos {photoItems.length}
+          <LayoutGrid className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> Photos {photoItems.length}
         </button>
       ),
     },
@@ -527,8 +526,15 @@ export function ProjectHero({
       key: "videos",
       show: videoCount > 0,
       render: (className) => (
-        <button type="button" className={className} onClick={() => setActiveMedia("videos")}>
-          <Video className="h-4 w-4" aria-hidden="true" /> Videos {videoCount}
+        <button
+          type="button"
+          className={className}
+          onClick={() => {
+            setLightboxView("videos");
+            setIsLightboxOpen(true);
+          }}
+        >
+          <Video className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> Videos {videoCount}
         </button>
       ),
     },
@@ -544,7 +550,7 @@ export function ProjectHero({
             setIsLightboxOpen(true);
           }}
         >
-          <MapIcon className="h-4 w-4" aria-hidden="true" /> Map
+          <MapIcon className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> Map
         </button>
       ),
     },
@@ -553,7 +559,7 @@ export function ProjectHero({
       show: hasBlockPlan,
       render: (className) => (
         <a href="#plans-homes" className={className} onClick={() => setActiveSection("plans-homes")}>
-          <LayoutPanelLeft className="h-4 w-4" aria-hidden="true" /> {plansHomesNavLabel} {floorPlanCount}
+          <LayoutPanelLeft className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> {plansHomesNavLabel} {floorPlanCount}
         </a>
       ),
     },
@@ -570,7 +576,7 @@ export function ProjectHero({
             setIsLightboxOpen(true);
           }}
         >
-          <MapPinned className="h-4 w-4" aria-hidden="true" /> Road Map{roadMapItems.length > 1 ? ` ${roadMapItems.length}` : ""}
+          <MapPinned className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> Road Map{roadMapItems.length > 1 ? ` ${roadMapItems.length}` : ""}
         </button>
       ),
     },
@@ -587,7 +593,7 @@ export function ProjectHero({
             setIsLightboxOpen(true);
           }}
         >
-          <Layers className="h-4 w-4" aria-hidden="true" /> Block Plan{blockPlanImages.length > 1 ? ` ${blockPlanImages.length}` : ""}
+          <Layers className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> Block Plan{blockPlanImages.length > 1 ? ` ${blockPlanImages.length}` : ""}
         </button>
       ),
     },
@@ -603,7 +609,7 @@ export function ProjectHero({
             setIsLightboxOpen(true);
           }}
         >
-          <Navigation className="h-4 w-4" aria-hidden="true" /> Street View
+          <Navigation className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> Street View
         </button>
       ),
     },
@@ -612,7 +618,7 @@ export function ProjectHero({
       show: hasInteractiveMap,
       render: (className) => (
         <button type="button" className={className} onClick={() => setActiveMedia("interactiveMap")}>
-          <Compass className="h-4 w-4" aria-hidden="true" /> Interactive map
+          <Compass className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> Interactive map
         </button>
       ),
     },
@@ -621,7 +627,7 @@ export function ProjectHero({
       show: virtualTourCount > 0,
       render: (className) => (
         <button type="button" className={className} onClick={() => setActiveMedia("virtualTours")}>
-          <Camera className="h-4 w-4" aria-hidden="true" /> Virtual tours {virtualTourCount}
+          <Camera className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> Virtual tours {virtualTourCount}
         </button>
       ),
     },
@@ -705,42 +711,6 @@ export function ProjectHero({
           </div>
         )}
 
-        {activeMedia === "videos" && videoCount > 0 && usingExtraVideos && (
-          <div className="listing-hero-video-surface listing-hero-video-list">
-            {videoLinks.map((video, index) =>
-              /\.(mp4|webm|mov)(\?|$)/i.test(video.url) || video.url.startsWith("blob:") ? (
-                <video key={`${video.url}-${index}`} src={video.url} controls className="listing-hero-map-frame" />
-              ) : (
-                <a key={`${video.url}-${index}`} href={video.url} target="_blank" rel="noopener noreferrer" className="listing-hero-video-link">
-                  <Video className="h-4 w-4" aria-hidden="true" /> {video.label || `Video ${index + 1}`}
-                </a>
-              )
-            )}
-          </div>
-        )}
-
-        {activeMedia === "videos" && videoCount > 0 && !usingExtraVideos && (
-          <div className="listing-hero-video-surface">
-            {project.videos?.[0]?.embedUrl ? (
-              <iframe
-                className="listing-hero-map-frame"
-                title={`${project.name} video`}
-                src={project.videos[0].embedUrl}
-                loading="lazy"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            ) : (
-              <>
-                <Image src={project.heroImage} alt={`${project.name} video preview`} width={1700} height={780} className="listing-hero-image" priority />
-                <div className="listing-hero-video-overlay" aria-label="Video preview">
-                  <span>Video preview</span>
-                </div>
-              </>
-            )}
-          </div>
-        )}
-
         {activeMedia === "interactiveMap" && hasInteractiveMap && (
           <iframe
             className="listing-hero-map-frame"
@@ -810,6 +780,17 @@ export function ProjectHero({
               >
                 Photos <span className="listing-photo-lightbox-tab-count">{photoItems.length}</span>
               </button>
+              {videoCount > 0 && (
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={lightboxView === "videos"}
+                  className={lightboxView === "videos" ? "active" : undefined}
+                  onClick={() => setLightboxView("videos")}
+                >
+                  Videos <span className="listing-photo-lightbox-tab-count">{videoCount}</span>
+                </button>
+              )}
               {hasMap && (
                 <button
                   type="button"
@@ -883,6 +864,31 @@ export function ProjectHero({
                   </button>
                 )}
               </>
+            )}
+
+            {lightboxView === "videos" && (
+              usingExtraVideos ? (
+                <div className="listing-hero-video-list listing-photo-lightbox-video-list">
+                  {videoLinks.map((video, index) =>
+                    /\.(mp4|webm|mov)(\?|$)/i.test(video.url) || video.url.startsWith("blob:") ? (
+                      <video key={`${video.url}-${index}`} src={video.url} controls className="listing-hero-map-frame" />
+                    ) : (
+                      <a key={`${video.url}-${index}`} href={video.url} target="_blank" rel="noopener noreferrer" className="listing-hero-video-link">
+                        <Video className="h-4 w-4" aria-hidden="true" /> {video.label || `Video ${index + 1}`}
+                      </a>
+                    )
+                  )}
+                </div>
+              ) : project.videos?.[0]?.embedUrl ? (
+                <iframe
+                  className="listing-photo-lightbox-map"
+                  title={`${project.name} video`}
+                  src={project.videos[0].embedUrl}
+                  loading="lazy"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              ) : null
             )}
 
             {lightboxView === "map" && (
