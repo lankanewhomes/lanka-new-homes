@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { getAllProjects } from "@/lib/project-store";
-import { FilterBar, MapPlaceholder, ProjectListItem, ResultsToolbar, SearchBar } from "@/components/marketplace/components";
+import { ProjectListingShell } from "@/components/marketplace/listing-shell";
+
+// Regenerate at most once a minute so admin edits show up without waiting for the next deploy.
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Search New Developments in Sri Lanka",
@@ -25,23 +28,13 @@ export default async function SearchPage() {
   const projects = await getAllProjects();
 
   return (
-    <div className="space-y-4">
-      <h1 className="text-3xl font-semibold">Search New Developments</h1>
-      <SearchBar />
-      <div className="grid gap-4 lg:grid-cols-[1.2fr_1fr]">
-        <section className="space-y-4">
-          <ResultsToolbar count={projects.length} />
-          <FilterBar />
-          <div className="grid gap-3">
-            {projects.map((project) => (
-              <ProjectListItem key={project.slug} project={project} />
-            ))}
-          </div>
-        </section>
-        <aside className="lg:sticky lg:top-24 lg:h-[calc(100vh-7rem)]">
-          <MapPlaceholder />
-        </aside>
-      </div>
-    </div>
+    <ProjectListingShell
+      breadcrumbs={[{ label: "Home", href: "/" }, { label: "Search" }]}
+      h1="Search new developments in Sri Lanka"
+      intro="Search new condominium, apartment, and housing projects in Sri Lanka by location, price, and availability — use the search bar and filters below to narrow the results."
+      projects={projects}
+      basePath="/projects"
+      relatedPaths={["/projects/pre-construction", "/projects/colombo", "/projects/villas", "/projects/beachfront"]}
+    />
   );
 }

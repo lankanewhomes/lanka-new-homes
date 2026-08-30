@@ -33,6 +33,14 @@ export function MapPane({ projects, basePath = "/projects", onSelectArea }: { pr
   const mapRef = useRef<MapRef | null>(null);
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
+  // "load" fires once the style JSON is parsed, but the actual vector tiles
+  // for the current view are still streaming in at that point — rendering
+  // the map immediately on "load" exposed the style's raw background color
+  // (a flat cream/grey) as a visible flash wherever tiles hadn't painted
+  // yet. "idle" fires once the map has nothing left to render for the
+  // current view, so gating the loading overlay on it instead means the
+  // overlay only lifts once the map is actually visually complete.
+  const [mapIdle, setMapIdle] = useState(false);
 
   const pinnedProjects = useMemo(
     () => projects.filter((project) => project.coordinates?.lat != null && project.coordinates?.lng != null),
@@ -82,6 +90,7 @@ export function MapPane({ projects, basePath = "/projects", onSelectArea }: { pr
         mapStyle={MAP_STYLE}
         style={{ width: "100%", height: "100%" }}
         onLoad={() => setMapLoaded(true)}
+        onIdle={() => setMapIdle(true)}
       >
         <NavigationControl position="top-left" showCompass={false} />
 
@@ -128,6 +137,7 @@ export function MapPane({ projects, basePath = "/projects", onSelectArea }: { pr
       </Map>
 
       {pinnedProjects.length === 0 ? <p className="listing-map-empty">No pins to show yet for this area.</p> : null}
+      <div className={`listing-map-tile-overlay${mapIdle ? " is-hidden" : ""}`} aria-hidden="true" />
     </div>
   );
 }

@@ -6194,6 +6194,24 @@ a.developer-profile-press-title {
   overflow: visible;
 }
 
+/* Covers the map style's raw background color while vector tiles for the
+   current view are still streaming in — without this, that flat cream
+   background shows through as a blank/grey gap until tiles finish
+   painting. Removed once MapLibre fires "idle" (nothing left to render). */
+.listing-map-tile-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: #eef4ea;
+  opacity: 1;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.listing-map-tile-overlay.is-hidden {
+  opacity: 0;
+}
+
 .listing-maplibre-map {
   height: calc(100vh - 170px);
 }
