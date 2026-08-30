@@ -345,12 +345,12 @@ for the original Neue Haas Grotesk reference — new rules should reference
 - **Major section headings** (a page's own H1 inside a hero/intro panel —
   "Find the City For You", the project detail "Overview" heading,
   "Amenities", "Key Features", "Plans & Homes", the homepage's featured
-  listings head): `40px` / `700` weight / `1.1` line-height / `#1f1f1f`.
-  `30px` on mobile (`max-width: 760px`) — every one of these sections
-  should carry this exact mobile size too, not its own one-off value.
-  These are two different roles that both currently use an `<h2>` or
-  `<h1>` tag depending on the section — match by role (does this heading
-  introduce a whole content block on the page?), not by tag name.
+  listings head): `32px` / `400` weight (not bold) / `1.15` line-height /
+  `#1f1f1f`. `26px` on mobile (`max-width: 760px`) — every one of these
+  sections should carry this exact mobile size too, not its own one-off
+  value. These are two different roles that both currently use an `<h2>`
+  or `<h1>` tag depending on the section — match by role (does this
+  heading introduce a whole content block on the page?), not by tag name.
 - **Body copy / links / list-item labels** ("View more cities", "Explore
   {neighborhood} neighborhood", paragraph text): `14px` / `400` weight /
   `20px` line-height. This is `body`'s own default (`src/app/globals.css`),

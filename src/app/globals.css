@@ -1432,8 +1432,11 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 /* Floating quick-jump bar mirroring the hero's own pill row (Photos/Videos/
    Map/Floor Plans/Street View/etc, see heroMediaPills) — shown on every
    screen size so it stays reachable while scrolled away from the hero.
-   On mobile it sits just above .listing-hero-mobile-ctas (Get updates /
-   Request info), not on top of it. */
+   Desktop: a centered floating pill bar at the bottom. Mobile: a full-width
+   underline-tab bar fixed to the bottom of the viewport (see the
+   max-width: 760px override below) — the Get updates / Request info
+   buttons (.listing-hero-mobile-ctas) are fixed to the top instead, so the
+   two never compete for the same edge. */
 .listing-hero-quickjump-bar {
   position: fixed;
   left: 50%;
@@ -1472,42 +1475,31 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 }
 
 @media (max-width: 760px) {
-  /* On mobile the pills bar isn't a floating action button — it becomes a
-     fixed top bar that takes over the role of the (hidden-on-mobile)
-     .listing-hero-sticky-bar tab row, but only once the visitor has
-     scrolled past the title (the .is-visible class, toggled by an
-     IntersectionObserver watching .listing-hero-panel in ProjectHero) —
-     it does not occupy space in the page flow before that, unlike plain
-     position: sticky which is always present at its normal position. */
+  /* On mobile the pills bar isn't a floating action button — it becomes an
+     underline-tab bar fixed to the bottom of the viewport, taking over the
+     role of the (hidden-on-mobile) .listing-hero-sticky-bar tab row.
+     Always visible (unlike .listing-hero-mobile-ctas at the top, this has
+     nothing above it to overlap, so it doesn't need scroll-gating). */
   .listing-hero-quickjump-bar {
     position: fixed;
-    top: 0;
+    top: auto;
+    bottom: 0;
     left: 0;
     right: 0;
-    bottom: auto;
     transform: none;
+    z-index: 45;
     width: 100%;
     margin: 0;
     max-width: none;
     overflow-x: auto;
     scrollbar-width: none;
-    justify-content: flex-start;
+    justify-content: space-evenly;
     border-radius: 0;
     border: 0;
-    border-bottom: 1px solid #e0e0e0;
-    box-shadow: none;
-    background: #f0f0ef;
-    padding: 8px 8px 8px 12px;
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transition: opacity 0.15s ease;
-  }
-
-  .listing-hero-quickjump-bar.is-visible {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
+    border-top: 1px solid #e0e0e0;
+    box-shadow: 0 -4px 12px rgba(15, 23, 42, 0.06);
+    background: #fff;
+    padding: 0 8px calc(0px + env(safe-area-inset-bottom));
   }
 
   .listing-hero-quickjump-bar::-webkit-scrollbar {
@@ -1515,10 +1507,24 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   }
 
   .listing-hero-quickjump-btn {
+    flex-direction: column;
+    justify-content: center;
+    gap: 3px;
     flex-shrink: 0;
-    min-height: 34px;
-    padding: 0 12px;
-    font-size: 12px;
+    min-height: 52px;
+    padding: 6px 14px 0;
+    border-radius: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    color: #6b7280;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .listing-hero-quickjump-btn.is-active {
+    color: #1f1f1f;
+    border-bottom-color: #f47b36;
+    font-weight: 700;
   }
 }
 
@@ -1850,21 +1856,30 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
     position: fixed;
     left: 0;
     right: 0;
-    bottom: 0;
+    top: 0;
     z-index: 45;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
     background: #fff;
-    padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
-    pointer-events: none;
+    padding: calc(10px + env(safe-area-inset-top)) 12px 10px;
+    border: 0;
+    border-bottom: 1px solid #e5e7eb;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
     border-radius: 0;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+  }
+
+  .listing-hero-mobile-ctas.is-visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
   }
 
   .listing-hero-mobile-btn {
-    pointer-events: auto;
     width: 100%;
     min-height: 44px;
     border: 1px solid #202020;
@@ -1885,9 +1900,9 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   }
 
   .listing-hero-mobile-btn-request {
-    background: #f8c92f;
-    border-color: #f8c92f;
-    color: #202020;
+    background: #f47b36;
+    border-color: #f47b36;
+    color: #fff;
   }
 
   .listing-hero-actions {
@@ -1898,6 +1913,10 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
     margin-top: 10px;
     flex-wrap: wrap;
     padding-left: 14px;
+  }
+
+  .listing-hero-tags span {
+    padding: 6px 9px;
   }
 
   .listing-hero-stats {
@@ -2200,9 +2219,9 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 .project-description-shell h2 {
   margin: 0;
   font-family: var(--font-ref-sans);
-  font-size: 40px;
-  line-height: 1.1;
-  font-weight: 700;
+  font-size: 32px;
+  line-height: 1.15;
+  font-weight: 400;
   color: #1f1f1f;
 }
 
@@ -2351,7 +2370,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
     }
 
     .project-description-shell h2 {
-      font-size: 30px;
+      font-size: 26px;
     }
 
     .project-description-shell > p:last-child {
@@ -2389,9 +2408,9 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 .featured-listings-head h2 {
   margin: 0;
   font-family: var(--font-ref-sans);
-  font-weight: 700;
-  font-size: 40px;
-  line-height: 1.1;
+  font-weight: 400;
+  font-size: 32px;
+  line-height: 1.15;
   color: #1f1f1f;
 }
 
@@ -2922,9 +2941,9 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 .plans-homes-head h2 {
   margin: 0;
   font-family: var(--font-ref-sans);
-  font-size: 40px;
-  font-weight: 700;
-  line-height: 1.1;
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.15;
   color: #1f1f1f;
 }
 
@@ -3410,9 +3429,9 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   z-index: 1;
   margin: 0 0 14px;
   font-family: var(--font-ref-sans);
-  font-size: 40px;
-  font-weight: 700;
-  line-height: 1.1;
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.15;
   color: #1f1f1f;
 }
 
@@ -3514,9 +3533,9 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 .amenities-showcase-shell h2 {
   margin: 0 0 16px;
   font-family: var(--font-ref-sans);
-  font-size: 40px;
-  font-weight: 700;
-  line-height: 1.1;
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.15;
   color: #1f1f1f;
 }
 
@@ -3811,7 +3830,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   }
 
   .plans-homes-head h2 {
-    font-size: 30px;
+    font-size: 26px;
   }
 
   .plans-homes-toolbar {
@@ -3879,7 +3898,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   }
 
   .key-features-shell h2 {
-    font-size: 30px;
+    font-size: 26px;
   }
 
   .key-features-row-body {
@@ -3893,7 +3912,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 
   .amenities-showcase-shell h2 {
     margin-bottom: 12px;
-    font-size: 30px;
+    font-size: 26px;
   }
 
   .amenities-showcase-grid {
@@ -4066,7 +4085,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
     margin-top: 24px;
   }
   .featured-listings-head h2 {
-    font-size: 30px;
+    font-size: 26px;
     line-height: 32px;
   }
 }
@@ -4257,9 +4276,9 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 
 .neighborhoods-section h2 {
   font-family: var(--font-ref-sans);
-  font-size: 40px;
-  line-height: 1.1;
-  font-weight: 700;
+  font-size: 32px;
+  line-height: 1.15;
+  font-weight: 400;
   color: #1f1f1f;
   margin: 0;
 }
@@ -4322,7 +4341,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   }
 
   .neighborhoods-section h2 {
-    font-size: 30px;
+    font-size: 26px;
   }
 
   .neighborhoods-grid {

@@ -452,10 +452,14 @@ export function ProjectHero({
     }
   }, [activeMedia, availableMedia]);
 
-  // Mobile-only: the quick-jump pills bar is hidden until the visitor has
-  // scrolled past the title (see .listing-hero-quickjump-bar), rather than
-  // always occupying space in the page flow — desktop's floating bottom
-  // pill is unaffected by this and always visible.
+  // Mobile-only: the top action bar (Get updates / Request info) is fixed,
+  // not sticky — it's rendered inside .listing-hero, a short section, and
+  // position: sticky is bounded by its nearest containing block, so it
+  // would scroll away with that section instead of staying pinned through
+  // the rest of the page. Gate its visibility on having scrolled past the
+  // title instead, so it doesn't overlap the site header at the top of the
+  // page before that. The bottom quick-jump tab bar doesn't need this —
+  // nothing else occupies the bottom of the viewport for it to overlap.
   useEffect(() => {
     const target = titlePanelRef.current;
     if (!target) return;
@@ -518,10 +522,11 @@ export function ProjectHero({
   // by the hero's own pill row and the desktop floating bottom bar, so the
   // two never drift out of sync. `render` takes the caller's className so
   // each surface keeps its own pill styling.
-  const heroMediaPills: { key: string; show: boolean; render: (className: string) => React.ReactElement }[] = [
+  const heroMediaPills: { key: string; show: boolean; lightboxKey?: typeof lightboxView; render: (className: string) => React.ReactElement }[] = [
     {
       key: "photos",
       show: photoItems.length > 0,
+      lightboxKey: "photos",
       render: (className) => (
         <button
           type="button"
@@ -539,6 +544,7 @@ export function ProjectHero({
     {
       key: "videos",
       show: videoCount > 0,
+      lightboxKey: "videos",
       render: (className) => (
         <button
           type="button"
@@ -555,6 +561,7 @@ export function ProjectHero({
     {
       key: "map",
       show: hasMap,
+      lightboxKey: "map",
       render: (className) => (
         <button
           type="button"
@@ -580,6 +587,7 @@ export function ProjectHero({
     {
       key: "road-map",
       show: hasRoadMap,
+      lightboxKey: "roadMap",
       render: (className) => (
         <button
           type="button"
@@ -597,6 +605,7 @@ export function ProjectHero({
     {
       key: "block-plan",
       show: hasBlockPlanImages,
+      lightboxKey: "blockPlan",
       render: (className) => (
         <button
           type="button"
@@ -614,6 +623,7 @@ export function ProjectHero({
     {
       key: "street-view",
       show: hasStreetView,
+      lightboxKey: "streetView",
       render: (className) => (
         <button
           type="button"
@@ -1018,7 +1028,7 @@ export function ProjectHero({
 
       {isHotDealActive(project) ? <HotDealCard hotDeal={project.hotDeal!} /> : null}
 
-        <div className="listing-hero-mobile-ctas" aria-label="Mobile quick actions">
+        <div className={`listing-hero-mobile-ctas${scrolledPastTitle ? " is-visible" : ""}`} aria-label="Mobile quick actions">
           <button type="button" className="listing-hero-mobile-btn listing-hero-mobile-btn-updates">
             <Bell className="h-4 w-4" aria-hidden="true" />
             Get updates
@@ -1036,9 +1046,11 @@ export function ProjectHero({
         hero section it would scroll away with the section instead of
         staying pinned through the rest of the page on mobile. */}
     {visibleHeroMediaPills.length > 0 && (
-      <div className={`listing-hero-quickjump-bar${scrolledPastTitle ? " is-visible" : ""}`} aria-label="Quick jump">
+      <div className="listing-hero-quickjump-bar" aria-label="Quick jump">
         {visibleHeroMediaPills.map((pill) => (
-          <Fragment key={pill.key}>{pill.render("listing-hero-quickjump-btn")}</Fragment>
+          <Fragment key={pill.key}>
+            {pill.render(`listing-hero-quickjump-btn${pill.lightboxKey && pill.lightboxKey === lightboxView ? " is-active" : ""}`)}
+          </Fragment>
         ))}
       </div>
     )}
