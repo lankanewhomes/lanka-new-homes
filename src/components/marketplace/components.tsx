@@ -1046,7 +1046,11 @@ export function ProjectHero({
         hero section it would scroll away with the section instead of
         staying pinned through the rest of the page on mobile. */}
     {visibleHeroMediaPills.length > 0 && (
-      <div className="listing-hero-quickjump-bar" aria-label="Quick jump">
+      // Mobile only: two-word labels ("Road Map", "Block Plan", "Floor
+      // Plans", "Street View") stack onto two lines — but only once there
+      // are enough tabs (the full set of 7) that they need the room; with
+      // fewer tabs every label stays on its natural single line.
+      <div className={`listing-hero-quickjump-bar${visibleHeroMediaPills.length >= 7 ? " is-compact" : ""}`} aria-label="Quick jump">
         {visibleHeroMediaPills.map((pill) => (
           <Fragment key={pill.key}>
             {pill.render(`listing-hero-quickjump-btn${pill.lightboxKey && pill.lightboxKey === lightboxView ? " is-active" : ""}`)}

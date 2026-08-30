@@ -1510,15 +1510,9 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
     flex-direction: column;
     justify-content: center;
     gap: 3px;
-    /* Grows to its natural (unwrapped) label width when there's room for
-       every tab; shrinks — wrapping a two-word label like "Road Map" onto
-       two lines — only once there are enough tabs that they'd otherwise
-       overflow. min-width is a floor so a shrunk button never gets smaller
-       than a comfortable tap target. */
-    flex: 1 1 auto;
-    min-width: 44px;
+    flex: 0 0 auto;
     min-height: 52px;
-    padding: 6px 6px 0;
+    padding: 6px 12px 0;
     border-radius: 0;
     border-bottom: 2px solid transparent;
     background: transparent;
@@ -1526,12 +1520,25 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
     font-size: 11px;
     font-weight: 600;
     text-align: center;
+    white-space: nowrap;
   }
 
   .listing-hero-quickjump-btn.is-active {
     color: #1f1f1f;
     border-bottom-color: #f47b36;
     font-weight: 700;
+  }
+
+  /* Only kicks in with the full set of 7 tabs (see the is-compact class
+     applied in ProjectHero) — every two-word label ("Road Map", "Block
+     Plan", "Floor Plans", "Street View") stacks onto two lines together,
+     rather than leaving it to organic flex-shrink math that could wrap
+     some labels but not others. */
+  .listing-hero-quickjump-bar.is-compact .listing-hero-quickjump-btn {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 6px 4px 0;
+    white-space: normal;
   }
 }
 
