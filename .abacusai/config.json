@@ -3,7 +3,9 @@
     "allow": [
       "Bash(tree *)",
       "Bash(grep *)",
-      "Bash(python3 *)"
+      "Bash(python3 *)",
+      "Bash(git push https://github.com/lankanewhomes/lanka-new-homes.git *)",
+      "Bash(git push lankanewhomes *)"
     ]
   }
 }
