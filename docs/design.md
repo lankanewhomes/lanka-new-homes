@@ -1,9 +1,21 @@
-# Design Reference — NewHomesSrilanka
+# Design Reference — LankaNewHomes
 
 Living reference for UI conventions established across the site. Check here
 before building a new page or component so new work matches existing
 patterns without the user having to repeat instructions. Update this file
 whenever a new convention is set or an existing one changes.
+
+## Brand / logo
+
+Site brand is "LankaNewHomes" (contact: lankanewhomes@gmail.com, canonical
+domain: lankanewhomes.com — set as `FALLBACK_SITE_URL` in `src/lib/seo.ts`).
+Logo is an
+image asset at `public/logo.svg` (orange house-badge icon + wordmark),
+rendered via `next/image` in the Header (`.site-logo-img`, dark wordmark) and
+Footer (`.footer-logo-img`, inverted to white via CSS `filter` for the dark
+footer background) in `src/components/marketplace/components.tsx`. Replace
+`public/logo.svg` directly to change the mark; both header/footer pull from
+the same file.
 
 ## Section navigation bar (project / floor plan pages)
 
@@ -97,16 +109,21 @@ Built from `src/lib/listing-categories.ts` (config) +
 ItemList JSON-LD, related links) + `listing-page.tsx` (client: filter bar,
 sort, list/map toggle) + `map-pane.tsx` (lazy-loaded map visual).
 
-- **Search + filter bar**: one row — address search input (icon on the
-  right), filter pills (For sale / Home type / Any price / 0+ beds /
-  Construction status / More) centered in the middle, List/Map toggle
-  pinned right. Search input, filter pills, and the List/Map toggle all
-  share the same `52px` control height. Filter pills, the search input, and
-  the sort pill are square (`border-radius: 0`) — the List/Map toggle is the
-  one deliberate exception and stays a rounded pill (`border-radius: 999px`).
+- **Search + filter bar**: one row — region picker ("All of Sri Lanka")
+  first, then the address search input (icon on the right), then filter
+  pills (For sale / Home type / Any price / 0+ beds / Construction status /
+  More) centered in the middle, List/Map toggle pinned right. Region picker,
+  search input, filter pills, and the List/Map toggle all share the same
+  `52px` control height. Filter pills, the search input, and the sort pill
+  are square (`border-radius: 0`) — the List/Map toggle is the one
+  deliberate exception and stays a rounded pill (`border-radius: 999px`).
 - **Sort control**: `.listing-sort-pill` — a small rounded pill
   (`↕ Recommended`, `ArrowUpDown` icon) sitting above the H1, not a
-  right-aligned "Sort:" dropdown.
+  right-aligned "Sort:" dropdown. In full map view (`viewMode === "map"`)
+  the sort pill and the H1 are hidden (`.listing-content-shade[data-view="map"]`
+  in globals.css) — there's no list to sort or label, so the map fills that
+  space instead. The mobile Map/Filters icon buttons live in the same row
+  and stay visible in map view; only the sort pill and H1 are dropped.
 - **Header**: H1 uses `var(--font-ref-sans)` (Archivo) — not serif. Default
   page H1 (e.g. "New projects in Sri Lanka") is `32px` / `400` weight /
   `40px` line-height / `#202022`. When a map cluster or the search box
@@ -163,6 +180,81 @@ project categories, more construction-company categories, anything with a
 "filterable list of cards + intro copy" shape) should reuse this same shell
 — add a config entry to the relevant `*-categories.ts` file and a thin
 `page.tsx`, not a new one-off layout.
+
+## Map sidebar (list+map pages)
+
+A Google-Maps-style fixed left icon rail, `MapSidebar`
+(`src/components/marketplace/map-sidebar.tsx`), mounted directly inside
+`ListingPageBody` (`listing-page.tsx`) — so it appears on all 11 routes
+that share that component (`/projects`, `/land`, `/search`, and the 8
+`/projects/*` category pages), not just `/projects`. Desktop-only
+(`@media (min-width: 900px)`, the same breakpoint `.listing-columns`
+already collapses at); mobile gets `display: none` and is otherwise
+untouched. Both states stay always-mounted — same "CSS-driven visibility,
+never remove from the DOM" philosophy as the List/Map toggle above.
+
+- **Rail** (`.map-sidebar-rail`, 72px wide, `#f5f5f4` background,
+  `#d8d8d8` right border): hamburger (opens a real site-nav drawer — the
+  header's own mobile "Menu" button is dead placeholder markup with no
+  drawer, so this is the first working implementation of that pattern) →
+  Search / Saved / Recents / Alerts / Compare icon buttons (icon + small
+  label, active state inverts to a dark pill like
+  `.listing-mobile-icon-btn`) → quick-filter shortcuts to
+  `/projects/colombo`, `/projects/beachfront`, `/projects/branded-residences`,
+  `/projects/pre-construction` (fixed global shortcuts on every one of the
+  11 pages, not contextual to the current page) → a scrollable recently
+  viewed thumbnails list → a bottom-pinned "Neighborhoods" link (to
+  `/sitemap`, the closest existing "browse all neighborhoods" entry point
+  — there's no dedicated public neighborhoods index page).
+- **Panels** (`.map-sidebar-panel`, 320px, slides out to the right of the
+  rail): mirror image of the existing right-anchored
+  `.request-info-dialog`/`.plans-filter-panel` treatment — shadow cast
+  right (`box-shadow: 12px 0 40px rgba(10,15,23,0.2)`) and
+  `translateX(-100%) → 0` instead of those panels' `-12px`/`100% → 0`.
+  Rounded-square `border-radius: 8px` thumbnails for these compact rows —
+  a new convention distinct from the 14px plan-row / 0px filter-pill /
+  999px pill radii already in use elsewhere.
+- **Search panel** is intentionally visual-only — it mirrors the top
+  filter bar's controls but isn't wired to any filtering logic, matching
+  the top bar's own current (unwired) behavior.
+- **Saved** and **Alerts** are gated by `useCurrentUser()`; signed-out
+  state prompts via `useAuthModal()` (the same in-page modal the header's
+  Log in/Sign up buttons use), never a `/login` route redirect.
+- **Alerts** is real CRUD against `saved_searches` (added owner-scoped RLS
+  in `supabase/migrations/20260831120000_saved_searches_rls.sql` — that
+  table previously had zero policies). `is_active` is repurposed as the
+  "email notifications" flag; no email actually sends (no provider/cron
+  infra exists in this repo) — the toggle just persists for a future task.
+- **Recents** reads `project_views` (anonymous, session-scoped, no direct
+  client access) via a new `/api/recent-views` route using the
+  service-role client, joined by the same `newhomessrilanka-session-id`
+  localStorage key `view-tracker.tsx` already writes.
+- **Compare** is entirely new and client-only: `useCompare()`
+  (`src/lib/use-compare.ts`) stores up to 4 `{slug, basePath}` pairs in
+  localStorage (a custom `window` event keeps every mounted instance —
+  rail badge, panel, every card's toggle button — in sync within the same
+  tab, since the native `storage` event only fires in *other* tabs). The
+  "add to compare" button lives on the shared `ListingGridCard`, which
+  also renders on `/land` — land parcels live in a separate `lands` table,
+  so a new `/api/compare` route resolves slugs against both `projects` and
+  `lands` (via `landToProjectShape`) and tags each result with its origin.
+- **z-index 60** for the rail/panel — below `.auth-modal-backdrop`'s 300
+  (the highest in the app), and nothing else on these 11 routes uses
+  `position: fixed`.
+- **Layout offset**: reserving 72px on the left required three separate
+  fixes, because `.listing-page-shell`/`.listing-map-pane` compute their
+  width off raw `100vw` (not a parent-relative `%`), while
+  `.site-header-inner`/`.site-breadcrumb-inner` are `%`-relative:
+  - `.listing-page-shell`'s `--shell-width` and `.listing-map-pane`'s
+    bleed margin both get the 72px subtracted directly in their `calc()`
+    (a parent padding wouldn't reach a `100vw`-based formula).
+  - `.site-header`/`.site-breadcrumb` just get `padding-left: 72px`
+    (gated by `mapSidebarRoutes` from `listing-categories.ts` — an exact
+    path match, not the broader `.startsWith()` prefix check
+    `site-breadcrumb-inner-wide` uses, since that would incorrectly also
+    match detail pages like `/projects/[slug]` where the rail never
+    renders) — their inner bars are already `%`-relative, so parent
+    padding alone re-centers them correctly.
 
 ## Homepage (`src/components/marketplace/home-client.tsx`)
 
@@ -391,6 +483,10 @@ updates both automatically.
   `src/components/marketplace/listing-shell.tsx`,
   `src/components/marketplace/listing-page.tsx`,
   `src/components/marketplace/map-pane.tsx`.
+- Map sidebar: `src/components/marketplace/map-sidebar.tsx`,
+  `src/lib/use-compare.ts`, `src/lib/use-saved-searches.ts`,
+  `src/lib/use-recent-views.ts`, `src/app/api/recent-views/route.ts`,
+  `src/app/api/compare/route.ts`.
 - Admin/developer dashboard pages all share one wrapper pattern
   (`grid gap-4 px-4 pt-6 pb-16 lg:grid-cols-[220px_1fr] lg:px-6 lg:pt-8` +
   `DashboardSidebar` + `DashboardHeader`) — keep new admin pages consistent

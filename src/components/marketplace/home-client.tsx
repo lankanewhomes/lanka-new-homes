@@ -92,7 +92,7 @@ export function HomeClient({ projects }: { projects: Project[] }) {
       communities: "Communities",
       viewAll: "View all",
       adLabel: "Advertisement",
-      adTitle: "Showcase your new development on NewHomesSrilanka",
+      adTitle: "Showcase your new development on LankaNewHomes",
       adText: "Reach active Sri Lankan buyers searching for newly launched communities.",
       adCta: "Promote your listing",
     },
@@ -106,7 +106,7 @@ export function HomeClient({ projects }: { projects: Project[] }) {
       communities: "சமூகங்கள்",
       viewAll: "அனைத்தையும் காண்க",
       adLabel: "விளம்பரம்",
-      adTitle: "NewHomesSrilanka இல் உங்கள் புதிய திட்டத்தை முன்னிறுத்துங்கள்",
+      adTitle: "LankaNewHomes இல் உங்கள் புதிய திட்டத்தை முன்னிறுத்துங்கள்",
       adText: "புதிய சமூகங்களை தேடும் செயலில் உள்ள இலங்கை வாங்குபவர்களை அடையுங்கள்.",
       adCta: "உங்கள் பட்டியலை விளம்பரப்படுத்து",
     },
@@ -120,7 +120,7 @@ export function HomeClient({ projects }: { projects: Project[] }) {
       communities: "ප්‍රජාවන්",
       viewAll: "සියල්ල බලන්න",
       adLabel: "ප්‍රචාරණය",
-      adTitle: "NewHomesSrilanka තුළ ඔබගේ නව සංවර්ධනය ප්‍රදර්ශනය කරන්න",
+      adTitle: "LankaNewHomes තුළ ඔබගේ නව සංවර්ධනය ප්‍රදර්ශනය කරන්න",
       adText: "නව ප්‍රජාවන් සොයන ක්‍රියාශීලී ශ්‍රී ලාංකික මිලදී ගන්නන් වෙත ළඟා වන්න.",
       adCta: "ඔබගේ ලැයිස්තුගත කිරීම ප්‍රවර්ධනය කරන්න",
     },
@@ -179,7 +179,7 @@ export function HomeClient({ projects }: { projects: Project[] }) {
         <div className="featured-listings-head">
           <h2>Featured listings</h2>
         </div>
-        <p className="featured-listings-subtitle">A curated set of standout homes selected by NewHomesSrilanka editors.</p>
+        <p className="featured-listings-subtitle">A curated set of standout homes selected by LankaNewHomes editors.</p>
         <div className="featured-listings-shell">
           <div className="home-card-grid featured-listings-grid">
             {featuredProjects.map((project) => (

@@ -69,6 +69,27 @@ export async function trackProjectView(input: ViewInput) {
   return { inserted: true };
 }
 
+export async function getRecentSessionViews(sessionId: string, limit: number): Promise<string[]> {
+  const { data, error } = await supabaseAdmin
+    .from("project_views")
+    .select("project_slug")
+    .eq("session_id", sessionId)
+    .eq("event_type", "view")
+    .order("viewed_at", { ascending: false })
+    .limit(50);
+  if (error) throw new Error(`Failed to load recent views: ${error.message}`);
+
+  const slugs: string[] = [];
+  const seen = new Set<string>();
+  for (const row of data ?? []) {
+    if (seen.has(row.project_slug)) continue;
+    seen.add(row.project_slug);
+    slugs.push(row.project_slug);
+    if (slugs.length >= limit) break;
+  }
+  return slugs;
+}
+
 export async function getDeveloperDashboardStats(developerSlug: string) {
   const today = new Date().toISOString().slice(0, 10);
 

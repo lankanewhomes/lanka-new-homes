@@ -155,15 +155,16 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
 .site-header { height: 82px; display: flex; align-items: center; background: #fff; position: relative; z-index: 10; }
 .site-header-inner { width: min(1290px, calc(100% - 48px)); margin: auto; display: flex; align-items: center; justify-content: space-between; }
 .site-brand-group { display: flex; align-items: center; gap: 14px; }
-.site-logo, .footer-logo { font-size: 27px; font-weight: 800; letter-spacing: -1.8px; color: #1d1d22; }
-.site-logo { display: flex; flex-direction: column; line-height: 1.02; font-size: 20px; }
-.site-logo-line { display: block; }
-.site-logo-dot { color: #1d1d22; }
+.site-logo { display: flex; align-items: center; }
+.site-logo-img { height: 32px; width: auto; }
+.footer-logo-img { height: 32px; width: auto; filter: brightness(0) invert(1); }
 .site-header nav, .header-actions { display: flex; gap: 39px; align-items: center; font-size: 14px; font-weight: 550; }.site-header a:hover { text-decoration: underline; }
 .header-actions { gap: 14px; }.sign-up { padding: 11px 21px; background: #f47b36; border: 1px solid #f47b36; color: #24221e; }.mobile-menu { display: none; }
 .header-link-button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
 .header-link-button:hover { text-decoration: underline; }
 .sign-up.header-link-button:hover { text-decoration: none; }
+.log-in.header-link-button { padding: 11px 21px; border: 1px solid #24221e; background: none; }
+.log-in.header-link-button:hover { text-decoration: none; background: #24221e; color: #fff; }
 .site-breadcrumb { border-top: 1px solid #ececec; border-bottom: 1px solid #ececec; background: #fff; }
 .site-breadcrumb-inner { width: min(1290px, calc(100% - 48px)); margin: 0 auto; }
 .site-breadcrumb-inner-wide { width: min(1760px, calc(100% - 48px)); }
@@ -573,7 +574,7 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
 .trust-panel { margin: 42px calc(505px - 50vw) 105px; background: #d5eef2; padding: 70px max(calc((100vw - 1010px)/2), 22px); display: flex; align-items: center; gap: 100px; }.trust-panel > div:last-child { max-width: 410px; }.trust-panel strong { display: block; font-size: 27px; margin-top: 31px; }.trust-graphic { width: 250px; height: 210px; position: relative; display: grid; place-items: center; }.trust-graphic > svg { position: absolute; top: 8px; right: 30px; width: 50px; height: 50px; stroke-width: 1.4; }.trust-building { width: 130px; height: 150px; border: 4px solid #202028; display: flex; align-items: flex-end; gap: 8px; padding: 13px; }.trust-building i { width: 28px; height: 50px; background: #202028; display: block; }.trust-building i:nth-child(2) { height: 90px; }.trust-building i:nth-child(3) { height: 28px; }
 .article-section { padding: 72px 0 105px; }.article-section .community-intro { margin-bottom: 50px; }.feature-articles { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }.feature-articles img { width: 100%; height: 236px; object-fit: cover; background: #d5eef2; }.feature-articles h3 { margin-top: 19px; }.article-section article span { display: inline-block; margin-top: 17px; padding: 5px 11px; border: 1px solid #e2e2e2; border-radius: 20px; color: #666; font-size: 11px; }.article-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 65px; }.article-grid img { width: 100%; height: 150px; object-fit: cover; }.article-grid h3 { margin-top: 15px; }
 .more-section { margin: 82px calc(505px - 50vw) 0; padding: 74px max(calc((100vw - 1010px)/2), 22px) 10px; background: #FAF8F3; border-top: 1px solid #e7decc; }.more-section .home-shelf { margin-bottom: 50px; }.more-section .community-intro { margin-bottom: 54px; }.builders-section { padding: 105px 0; }.builders-section > .section-title { margin-bottom: 54px; }.builder-grid { gap: 25px; }.builder-card { border: 1px solid #e8e8e8; padding: 18px 11px 14px; color: #29282c; }.builder-card img { height: 98px; width: 100%; object-fit: contain; }.builder-card h3 { font-size: 13px; font-weight: 700; margin-top: 14px; }.builder-card p { color: #ffbc00; font-size: 17px; margin-top: 5px; }.builder-card small { color: #555; font-size: 12px; }
-.location-links { background: #faf8f3; padding: 73px 24px 82px; }.location-links > div { max-width: 1290px; margin: auto; }.location-links h2 { font-size: 25px; margin-bottom: 25px; }.link-columns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 19px 65px; max-width: 1000px; }.link-columns a { font-size: 14px; }.location-links button { background: none; border: 0; display: flex; align-items: center; gap: 9px; text-decoration: underline; margin: 27px 0 55px; font-size: 14px; }.site-footer { background: #202024; color: #fff; min-height: 245px; padding: 45px max(25px, calc((100vw - 1500px)/2)); display: flex; justify-content: space-between; position: relative; }.footer-logo { color: #fff; font-size: 27px; }.footer-links { display: flex; flex-wrap: wrap; gap: 42px 80px; margin-top: 27px; font-size: 13px; }.partner-sites { margin-top: 33px; font-size: 13px; }.partner-sites span { line-height: 2.1; }.copyright { align-self: flex-end; font-size: 12px; color: #bbb; }
+.location-links { background: #faf8f3; padding: 73px 24px 82px; }.location-links > div { max-width: 1290px; margin: auto; }.location-links h2 { font-size: 25px; margin-bottom: 25px; }.link-columns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 19px 65px; max-width: 1000px; }.link-columns a { font-size: 14px; }.location-links button { background: none; border: 0; display: flex; align-items: center; gap: 9px; text-decoration: underline; margin: 27px 0 55px; font-size: 14px; }.site-footer { background: #202024; color: #fff; min-height: 245px; padding: 45px max(25px, calc((100vw - 1500px)/2)); display: flex; justify-content: space-between; position: relative; }.footer-links { display: flex; flex-wrap: wrap; gap: 42px 80px; margin-top: 27px; font-size: 13px; }.partner-sites { margin-top: 33px; font-size: 13px; }.partner-sites span { line-height: 2.1; }.copyright { align-self: flex-end; font-size: 12px; color: #bbb; }
 .location-links .show-more-cities { font-weight: 500; }
 .location-links .show-more-cities .rotate { transform: rotate(180deg); }
 @media (max-width: 760px) { .site-header { height: 64px; }.site-header-inner { width: calc(100% - 32px); }.site-header nav, .header-actions { display: none; }.mobile-menu { display: block; }.site-brand-group { gap: 10px; }.language-segmented button { min-height: 32px; padding: 0 10px; font-size: 12px; }.home-hero { height: 430px; }.hero-content { padding: 105px 18px 0; }.hero-search { min-height: 0; flex-direction: column; padding: 9px; }.hero-region-picker { width: 100%; justify-content: space-between; min-height: 46px; }.hero-search label { width: 100%; height: 46px; }.hero-search a { width: 100%; height: 45px; justify-content: center; }.home-content { padding: 68px 18px 0; }.section-title h2 { font-size: 31px; }.community-intro { margin-bottom: 42px; }.featured-communities-block { margin: -68px -18px 64px; padding: 52px 18px 20px; }.villa-developments-block { margin: 0 -18px 64px; padding: 44px 18px 2px; }.home-card-grid, .builder-grid { grid-template-columns: repeat(2, 1fr); gap: 22px 15px; }.home-project-card img { height: 115px; }.home-exclusive-card { padding: 10px 10px 12px; }.home-exclusive-card h3 { font-size: 20px; max-width: 170px; }.home-shelf { margin-bottom: 65px; }.shelf-heading h2 { font-size: 23px; }.home-ad-banner { margin: -12px 0 52px; padding: 16px; }.home-ad-banner .ad-body { display: grid; gap: 10px; }.home-ad-banner a { margin-left: 0; width: fit-content; }.trust-panel { margin: 20px -18px 67px; padding: 48px 28px; gap: 28px; flex-direction: column; align-items: flex-start; }.trust-graphic { transform: scale(.82); transform-origin: left top; height: 165px; }.trust-panel p { font-size: 25px; }.feature-articles, .article-grid { grid-template-columns: 1fr; }.feature-articles h3 { font-size: 25px; }.article-grid { margin-top: 45px; }.article-grid img { height: 190px; }.more-section { margin: 60px -18px 0; padding: 56px 18px 6px; }.link-columns { grid-template-columns: 1fr 1fr; gap: 18px; }.site-footer { min-height: 300px; display: block; }.footer-links { gap: 19px 35px; }.copyright { margin-top: 40px; }.orange-swoop { display: none; } }
@@ -1849,6 +1850,10 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   font-size: 12px;
   font-weight: 400;
   color: #6b6b6b;
+}
+
+.land-stats-chips .listing-hero-stat-chip-value {
+  font-weight: 400;
 }
 
 @media (max-width: 980px) {
@@ -4838,7 +4843,7 @@ a.developer-profile-press-title {
   margin: 0;
   font-family: var(--font-ref-sans);
   font-size: 20px;
-  font-weight: 700;
+  font-weight: 400;
   color: #1f1f1f;
 }
 
@@ -4858,6 +4863,30 @@ a.developer-profile-press-title {
   background: #e0692a;
 }
 
+.request-info-listing {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 24px;
+  border-bottom: 1px solid #ececec;
+}
+
+.request-info-listing-image {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.request-info-listing-title {
+  margin: 0;
+  font-family: var(--font-ref-sans);
+  font-size: 14px;
+  font-weight: 400;
+  color: #1f1f1f;
+}
+
 .request-info-body {
   padding: 20px 24px 24px;
 }
@@ -4866,7 +4895,7 @@ a.developer-profile-press-title {
   margin: 0 0 16px;
   text-align: left;
   font-family: var(--font-ref-sans);
-  font-weight: 600;
+  font-weight: 400;
   font-size: 17px;
   line-height: 1.3;
   color: #4a4a4a;
@@ -4875,7 +4904,7 @@ a.developer-profile-press-title {
 .request-info-required-note {
   margin: 0 0 14px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 400;
   color: #c0392b;
 }
 
@@ -4893,7 +4922,7 @@ a.developer-profile-press-title {
   display: block;
   margin-bottom: 6px;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 400;
   color: #1f1f1f;
 }
 
@@ -4937,7 +4966,7 @@ a.developer-profile-press-title {
   background: #f7f7f7;
   color: #1f1f1f;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 400;
   white-space: nowrap;
 }
 
@@ -5745,14 +5774,18 @@ a.developer-profile-press-title {
      sidesteps that grid-specific quirk entirely. */
   --shell-width: min(1760px, calc(100vw - 48px));
   width: var(--shell-width);
-  margin: 22px auto 0;
+  margin: 10px auto 0;
 }
 
 .listing-content-shade {
   /* No right padding — .listing-map-pane bleeds all the way to the
      viewport edge on the right (see its margin-right below), so padding
-     here would leave an unwanted gap between the map and the true edge. */
-  padding: 28px 0 0 28px;
+     here would leave an unwanted gap between the map and the true edge.
+     No left padding either — the sort pill/heading/card grid line up flush
+     with the breadcrumb bar above and .listing-page-shell's own left edge,
+     now that the top search bar no longer has anything sitting at that
+     same inset (its filter/search controls moved into the map sidebar). */
+  padding: 12px 0 0 0;
 }
 
 .listing-page {
@@ -5768,10 +5801,6 @@ a.developer-profile-press-title {
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
-}
-
-.listing-search-bar .listing-view-toggle {
-  margin-left: auto;
 }
 
 .listing-filter-pills-center {
@@ -5867,41 +5896,13 @@ a.developer-profile-press-title {
   color: #9a9284;
 }
 
-/* Mobile-only compact toolbar (Map / Filters icon buttons) — sits next to
-   the sort pill in .listing-header-row, hidden on desktop where the full
-   filter pill row + List/Map text toggle are already visible in the
-   search bar above. */
-.listing-mobile-actions {
-  display: none;
-}
-
-.listing-mobile-icon-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border: 1px solid #d8d8d8;
-  border-radius: 999px;
-  background: #fff;
-  color: #1f1f1f;
-}
-
-.listing-mobile-icon-btn[aria-pressed="true"],
-.listing-mobile-icon-btn[aria-expanded="true"] {
-  background: #1f1f1f;
-  border-color: #1f1f1f;
-  color: #fff;
-}
-
 @media (max-width: 760px) {
   .listing-search-bar {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .listing-search-bar .listing-view-toggle {
-    /* Replaced by the Map icon button in .listing-mobile-actions on mobile. */
+  .listing-view-toggle-label {
     display: none;
   }
 
@@ -5939,14 +5940,8 @@ a.developer-profile-press-title {
     flex: 1 1 calc(50% - 5px);
   }
 
-  .listing-mobile-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
   .listing-header-row {
-    align-items: center;
+    align-items: flex-start;
   }
 }
 
@@ -6026,8 +6021,8 @@ a.developer-profile-press-title {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  height: 52px;
-  padding: 0 16px;
+  height: 38px;
+  padding: 0 14px;
   font-size: 13px;
   font-weight: 600;
   background: #fff;
@@ -6047,36 +6042,58 @@ a.developer-profile-press-title {
 
 .listing-header-row {
   display: flex;
-  align-items: flex-end;
+  flex-direction: row;
+  align-items: center;
   justify-content: space-between;
-  gap: 16px;
   flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding-bottom: 26px;
+  border-bottom: 1px solid #e5e2dc;
 }
 
 .listing-header-eyebrow {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #6b6355;
-  margin-bottom: 6px;
+  color: #f47b36;
+}
+
+.listing-header-row-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
 .listing-header-h1 {
   font-family: var(--font-ref-sans);
-  font-size: 32px;
+  font-size: 18px;
   font-weight: 400;
   color: #202022;
-  line-height: 40px;
-  padding-bottom: 16px;
+  line-height: 26px;
+  padding-bottom: 0;
 }
 
 .listing-header-h1-dynamic {
-  font-size: 20px;
-  line-height: 28px;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+/* Full map view has no list below to sort or label, so the sort pill and
+   heading just push the map down for no reason — drop them and let the
+   map take that space. Leave .listing-view-toggle (still needed to switch
+   back out of map view) alone. */
+.listing-content-shade[data-view="map"] .listing-sort-pill,
+.listing-content-shade[data-view="map"] .listing-header-h1 {
+  display: none;
+}
+
+.listing-content-shade[data-view="map"] {
+  padding-top: 0;
 }
 
 .listing-header-intro {
@@ -6092,19 +6109,23 @@ a.developer-profile-press-title {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  border: 1px solid #e8e8e6;
-  border-radius: 999px;
-  background: #f5f5f3;
-  padding: 7px 14px 7px 12px;
+  border: 1px solid #d8d8d8;
+  border-radius: 0;
+  background: #fff;
+  padding: 8px 14px;
   font-size: 14px;
   font-weight: 500;
   color: #1f1f1f;
   cursor: pointer;
-  margin-bottom: 10px;
 }
 
 .listing-sort-pill:hover {
-  border-color: #d8d8d8;
+  border-color: #b8b8b8;
+}
+
+.listing-sort-pill-label {
+  color: #6b6355;
+  font-weight: 400;
 }
 
 .listing-sort-pill select {
@@ -6134,6 +6155,15 @@ a.developer-profile-press-title {
   display: none;
 }
 
+/* Full list view has no sticky map to keep pace with, so the list shouldn't
+   be trapped in its own short internally-scrolling box (that made it look
+   like only a couple of cards existed until you scrolled inside it) — let
+   it flow with the page instead, same as any normal listing page. */
+.listing-columns[data-view="list"] .listing-list-pane {
+  max-height: none;
+  overflow-y: visible;
+}
+
 .listing-columns[data-view="map"] {
   grid-template-columns: 1fr;
 }
@@ -6152,7 +6182,7 @@ a.developer-profile-press-title {
 }
 
 .listing-list-pane {
-  max-height: calc(100vh - 220px);
+  max-height: calc(100vh - 140px);
   overflow-y: auto;
   padding-right: 4px;
 }
@@ -6169,12 +6199,440 @@ a.developer-profile-press-title {
   margin-right: calc((100vw - var(--shell-width)) / -2);
 }
 
+/* Map sidebar — Google-Maps-style left icon rail (desktop only) on every
+   list+map listing page (ListingPageBody: /projects, /land, /search, and
+   the /projects/* category pages). Always mounted (mobile just hides it via
+   display:none), matching this page type's existing philosophy of keeping
+   both list and map in the DOM and toggling visibility with CSS rather than
+   conditionally rendering per viewport. */
+
+.map-sidebar {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .map-sidebar {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 60; /* below .auth-modal-backdrop's 300 (highest in the app); nothing else on these routes uses position: fixed */
+  }
+
+  /* Reserve the rail's 72px on the left. Both formulas below use raw 100vw
+     (not a %-relative width), so a parent padding/margin can't shrink them
+     the way it does for .site-header/.site-breadcrumb further down this
+     file — the 72px has to be subtracted from the calc() itself. */
+  .listing-page-shell {
+    --shell-width: min(1760px, calc(100vw - 120px));
+    margin-left: calc(72px + (100vw - 72px - var(--shell-width)) / 2);
+    margin-right: auto;
+  }
+
+  .listing-map-pane {
+    margin-right: calc((100vw - 72px - var(--shell-width)) / -2);
+  }
+
+  .site-header--rail-offset,
+  .site-breadcrumb--rail-offset {
+    padding-left: 72px;
+  }
+}
+
+.map-sidebar-rail {
+  width: 72px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 16px 0;
+  background: #f5f5f4;
+  border-right: 1px solid #d8d8d8;
+  overflow: hidden;
+}
+
+.map-sidebar-divider {
+  width: 40px;
+  height: 1px;
+  background: #d8d8d8;
+  margin: 8px 0;
+  flex-shrink: 0;
+}
+
+.map-sidebar-icon-btn {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 60px;
+  min-height: 44px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: #1f1f1f;
+  font-size: 10px;
+  font-weight: 500;
+  text-align: center;
+  text-decoration: none;
+  padding: 4px 2px;
+}
+
+.map-sidebar-icon-btn:hover {
+  background: #ececea;
+}
+
+.map-sidebar-icon-btn[aria-pressed="true"] {
+  background: #1f1f1f;
+  color: #fff;
+}
+
+.map-sidebar-badge {
+  position: absolute;
+  top: 0;
+  right: 4px;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 3px;
+  border-radius: 999px;
+  background: #f47b36;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.map-sidebar-spacer {
+  flex: 1;
+  min-height: 0;
+}
+
+@keyframes mapSidebarSlideIn {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+.map-sidebar-panel {
+  position: absolute;
+  left: 72px;
+  top: 0;
+  height: 100%;
+  width: 320px;
+  max-width: calc(100vw - 72px);
+  background: #fff;
+  overflow-y: auto;
+  /* Mirror of .request-info-dialog's right-anchored slide/shadow — shadow
+     cast right and slide from the left since this panel is left-anchored. */
+  box-shadow: 12px 0 40px rgba(10, 15, 23, 0.2);
+  animation: mapSidebarSlideIn 0.2s ease-out;
+}
+
+.map-sidebar-panel-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid #e0e0e0;
+  color: #6b6355;
+  background: #fff;
+}
+
+.map-sidebar-panel-body {
+  padding: 20px;
+}
+
+.map-sidebar-panel-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1f1f1f;
+  margin: 0 0 16px;
+  padding-right: 28px;
+}
+
+.map-sidebar-panel-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.map-sidebar-panel-title-row button {
+  font-size: 12px;
+  color: #6b6355;
+  text-decoration: underline;
+}
+
+.map-sidebar-empty {
+  font-size: 13px;
+  color: #6b6355;
+  line-height: 1.5;
+}
+
+.map-sidebar-note {
+  font-size: 11px;
+  color: #6b6355;
+  line-height: 1.5;
+  margin: -8px 0 12px;
+}
+
+.map-sidebar-cta {
+  margin-top: 12px;
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: #1f1f1f;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.map-sidebar-nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.map-sidebar-nav-account {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #ececea;
+}
+
+.map-sidebar-nav-account button,
+.map-sidebar-nav-account a {
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid #d8d8d8;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.map-sidebar-region-picker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 44px;
+  padding: 0 12px;
+  border: 1px solid #d8d8d8;
+  margin-bottom: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #1f1f1f;
+}
+
+.map-sidebar-region-picker span {
+  flex: 1;
+  text-align: left;
+}
+
+.map-sidebar-search-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 0 0 12px;
+  border: 1px solid #d8d8d8;
+  margin-bottom: 14px;
+  color: #6b6355;
+}
+
+.map-sidebar-search-input input {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  color: #1f1f1f;
+}
+
+.map-sidebar-search-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  background: #f47b36;
+  color: #fff;
+}
+
+.map-sidebar-filter-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  height: 40px;
+  font-size: 13px;
+  border-bottom: 1px solid #f0f0ef;
+}
+
+.map-sidebar-filter-row select {
+  font-size: 13px;
+  color: #6b6355;
+  text-align: right;
+}
+
+.map-sidebar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0ef;
+}
+
+.map-sidebar-row-thumb img,
+.map-sidebar-row-thumb-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.map-sidebar-row-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.map-sidebar-row-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1f1f1f;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-sidebar-row-subtext {
+  font-size: 12px;
+  color: #6b6355;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-sidebar-row-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  color: #6b6355;
+}
+
+.map-sidebar-row-remove:hover {
+  color: #d94f4f;
+}
+
+.map-sidebar-create-alert {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.map-sidebar-create-alert input {
+  flex: 1;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid #d8d8d8;
+  font-size: 13px;
+}
+
+.map-sidebar-create-alert button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: #1f1f1f;
+  color: #fff;
+}
+
+.map-sidebar-alert-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0ef;
+}
+
+.map-sidebar-alert-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-sidebar-alert-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #6b6355;
+  white-space: nowrap;
+}
+
+.map-sidebar-alert-row > button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  color: #6b6355;
+}
+
+.map-sidebar-alert-row > button:hover {
+  color: #d94f4f;
+}
+
+.map-sidebar-compare-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0ef;
+}
+
 /* Project card grid */
 
 .listing-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px 16px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 40px 16px;
+}
+
+@media (max-width: 1400px) {
+  .listing-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 @media (max-width: 1100px) {
@@ -6198,10 +6656,7 @@ a.developer-profile-press-title {
   transition: box-shadow 0.15s ease, transform 0.15s ease;
 }
 
-.listing-grid-card:hover {
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1);
-  transform: translateY(-2px);
-}
+
 
 .listing-grid-card-media {
   position: relative;
@@ -6215,25 +6670,16 @@ a.developer-profile-press-title {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.25s ease;
+}
+
+.listing-grid-card-media:hover .listing-grid-card-image {
+  transform: scale(1.05);
 }
 
 .listing-grid-card-status {
   position: absolute;
   left: 8px;
-  top: 8px;
-  background: rgba(20, 20, 20, 0.75);
-  color: #fff;
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  padding: 4px 8px;
-  border-radius: 3px;
-}
-
-.listing-grid-card-featured {
-  position: absolute;
-  right: 8px;
   top: 8px;
   background: rgba(20, 20, 20, 0.75);
   color: #fff;
@@ -6261,7 +6707,7 @@ a.developer-profile-press-title {
   transition: opacity 0.15s ease;
 }
 
-.listing-grid-card:hover .listing-grid-card-carousel-arrow {
+.listing-grid-card-media:hover .listing-grid-card-carousel-arrow {
   opacity: 1;
 }
 
@@ -6290,55 +6736,93 @@ a.developer-profile-press-title {
   flex-direction: column;
   flex: 1;
   padding-top: 10px;
+  font-family: var(--font-ref-sans);
 }
 
 .listing-grid-card-name {
   display: block;
-  font-size: 16px;
-  font-weight: 700;
-  color: #1f1f1f;
+  padding-top: 6px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 18px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 20px;
+  letter-spacing: normal;
+  color: #303030;
 }
 
-.listing-grid-card-facts-line {
-  margin-top: 4px;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: #6b6355;
-}
-
-.listing-grid-card-address {
-  margin-top: 2px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 13px;
-  color: #6b6355;
+.listing-grid-card-price {
+  margin-top: 14px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 14px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 20px;
+  letter-spacing: normal;
+  color: #303030;
 }
 
 .listing-grid-card-agency {
   margin-top: 6px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   font-size: 12px;
-  color: #9a9284;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 20px;
+  letter-spacing: normal;
+  color: #303030;
 }
 
-.listing-grid-card-bottom-row {
-  margin-top: auto;
-  padding-top: 10px;
+.listing-grid-card-address {
+  margin-top: -2px;
+  padding-bottom: 8px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 12px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 20px;
+  letter-spacing: normal;
+  color: #303030;
+}
+
+.listing-grid-card-facts-row {
+  margin-top: 8px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px;
+  justify-content: flex-start;
+  gap: 8px;
 }
 
-.listing-grid-card-price {
-  font-size: 15px;
-  font-weight: 700;
-  color: #1f1f1f;
+.listing-grid-card-fact {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 20px;
+  letter-spacing: normal;
+  color: #303030;
+}
+
+.listing-grid-card-fact-divider {
+  font-size: 12px;
+  font-weight: 400;
+  color: #d8d2c6;
 }
 
 .listing-grid-card-save {
+  position: absolute;
+  right: 8px;
+  top: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -6346,25 +6830,39 @@ a.developer-profile-press-title {
   height: 32px;
   flex-shrink: 0;
   border-radius: 999px;
-  border: 1px solid #e0e0e0;
-  color: #6b6355;
+  border: none;
+  background: rgba(255, 255, 255, 0.92);
+  color: #303030;
 }
 
 .listing-grid-card-save:hover {
-  border-color: #d94f4f;
   color: #d94f4f;
 }
 
 .listing-grid-card-save.saved {
-  border-color: #d94f4f;
   color: #d94f4f;
 }
 
 .listing-grid-card-facts-empty {
   margin-top: 6px;
   font-size: 12px;
-  color: #9a9284;
-  font-style: italic;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 20px;
+  color: #303030;
+}
+
+/* Split view (map showing alongside the list) — the list pane is only
+   ~55% of the shell width, so the full list view's 5-across grid would
+   render tiny, squashed cards. Use the same vertical card style, just at
+   3 columns instead. */
+.listing-columns[data-view="split"] .listing-list-pane .listing-grid {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 48px 12px;
+}
+
+.listing-columns[data-view="split"] .listing-list-pane .listing-grid-card:nth-child(-n+3) {
+  padding-top: 16px;
 }
 
 .listing-empty-state {
@@ -6383,7 +6881,7 @@ a.developer-profile-press-title {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: calc(100vh - 170px);
+  min-height: calc(100vh - 90px);
   border: 1px solid #e4e4e4;
   background: #eef4ea;
   color: #9a9284;
@@ -6392,7 +6890,7 @@ a.developer-profile-press-title {
 
 .listing-map {
   position: relative;
-  min-height: calc(100vh - 170px);
+  min-height: calc(100vh - 90px);
   border: 1px solid #e4e4e4;
   background: #d9ecd4;
   overflow: visible;
@@ -6417,7 +6915,7 @@ a.developer-profile-press-title {
 }
 
 .listing-maplibre-map {
-  height: calc(100vh - 170px);
+  height: calc(100vh - 90px);
 }
 
 .listing-maplibre-map .maplibregl-map {
@@ -6472,20 +6970,25 @@ a.developer-profile-press-title {
   display: none;
 }
 
+/* Mirrors .listing-grid-card's look (white card, status pill on the
+   image, plain-regular text in #303030) so the map pin popup reads as
+   the same card design as the listing grid, just sized for the popup's
+   fixed 210px width. */
 .project-popup {
   display: block;
   width: 210px;
-  background: #14161a;
-  color: #f3f1ec;
+  background: #fff;
+  color: #303030;
 }
 
 .project-popup:hover {
-  color: #f3f1ec;
+  color: #303030;
 }
 
 .project-popup-media {
   position: relative;
-  height: 130px;
+  height: 158px;
+  overflow: hidden;
 }
 
 .project-popup-image {
@@ -6495,112 +6998,118 @@ a.developer-profile-press-title {
   object-fit: cover;
 }
 
+.project-popup-status {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  background: rgba(20, 20, 20, 0.75);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 4px 8px;
+}
+
 .project-popup-close {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 8px;
+  right: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border-radius: 999px;
-  background: rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(4px);
-  color: #fff;
+  border: none;
+  background: rgba(255, 255, 255, 0.92);
+  color: #303030;
 }
 
 .project-popup-close:hover {
-  background: rgba(0, 0, 0, 0.65);
-}
-
-.project-popup-credit {
-  position: absolute;
-  right: 8px;
-  bottom: 6px;
-  font-size: 9px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: rgba(255, 255, 255, 0.85);
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  color: #d94f4f;
 }
 
 .project-popup-body {
-  padding: 10px 12px;
+  padding: 10px 12px 12px;
 }
 
-.project-popup-title-row {
+.project-popup-name {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 14px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 20px;
+  letter-spacing: normal;
+  color: #303030;
+}
+
+.project-popup-price {
+  margin-top: 6px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 12px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 20px;
+  letter-spacing: normal;
+  color: #303030;
+}
+
+.project-popup-agency {
+  margin-top: 4px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 11px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 16px;
+  letter-spacing: normal;
+  color: #303030;
+}
+
+.project-popup-address {
+  margin-top: -1px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 11px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 16px;
+  letter-spacing: normal;
+  color: #303030;
+}
+
+.project-popup-facts-row {
+  margin-top: 6px;
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
+  align-items: center;
+  justify-content: flex-start;
   gap: 6px;
 }
 
-.project-popup-title {
-  font-size: 13px;
-  font-weight: 700;
-  color: #fff;
-  line-height: 1.25;
-}
-
-.project-popup-badge {
-  flex-shrink: 0;
-  font-size: 8px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  padding: 3px 6px;
-  border-radius: 0;
-  white-space: nowrap;
-}
-
-/* Same palette as .listing-hero-tags (Featured = gold, general status =
-   green) so the popup badge reads consistently with the rest of the site. */
-.project-popup-badge-featured {
-  background: #fdf3e0;
-  border: 1px solid #f2d38a;
-  color: #92670c;
-}
-
-.project-popup-badge-status {
-  background: #e8f4e8;
-  border: 1px solid #cfe6cf;
-  color: #1a6b2f;
-}
-
-.project-popup-meta {
-  margin-top: 3px;
-  font-size: 10px;
-  color: #a8a29a;
-}
-
-.project-popup-facts {
-  margin-top: 2px;
-  font-size: 10px;
-  color: #a8a29a;
-}
-
-.project-popup-tag {
-  margin-top: 5px;
+.project-popup-fact {
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 10px;
-  font-weight: 600;
-  color: #e0b357;
-}
-
-.project-popup-divider {
-  margin: 8px 0 6px;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-.project-popup-view-link {
-  display: block;
   font-size: 11px;
-  font-weight: 700;
-  color: #fff;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 16px;
+  letter-spacing: normal;
+  color: #303030;
+}
+
+.project-popup-fact-divider {
+  font-size: 11px;
+  font-weight: 400;
+  color: #d8d2c6;
 }
 
 .listing-map-empty {

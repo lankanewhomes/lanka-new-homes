@@ -367,6 +367,18 @@ create trigger trg_saved_searches_updated_at before update on saved_searches
   for each row execute function set_updated_at();
 alter table saved_searches enable row level security;
 
+-- Owner-scoped RLS (supabase/migrations/20260831120000_saved_searches_rls.sql)
+-- — buyer-owned data like saved_listings, not staff-only like leads.
+drop policy if exists "saved_searches: read own" on saved_searches;
+create policy "saved_searches: read own" on saved_searches for select using (auth.uid() = user_id);
+drop policy if exists "saved_searches: insert own" on saved_searches;
+create policy "saved_searches: insert own" on saved_searches for insert with check (auth.uid() = user_id);
+drop policy if exists "saved_searches: update own" on saved_searches;
+create policy "saved_searches: update own" on saved_searches for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
+drop policy if exists "saved_searches: delete own" on saved_searches;
+create policy "saved_searches: delete own" on saved_searches for delete using (auth.uid() = user_id);
+comment on column saved_searches.is_active is 'Alerts panel "email notifications" on/off flag. No email is sent yet — this only persists the toggle state for a future notification job.';
+
 -- Developer team members -----------------------------------------------------
 -- (supabase/migrations/20260827120400_developer_members.sql)
 

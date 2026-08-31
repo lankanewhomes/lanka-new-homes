@@ -2,9 +2,9 @@
 
 import { useEffect } from "react";
 
-const SESSION_KEY = "newhomessrilanka-session-id";
+export const SESSION_KEY = "newhomessrilanka-session-id";
 
-function getSessionId() {
+export function getSessionId() {
   const existing = localStorage.getItem(SESSION_KEY);
   if (existing) return existing;
   const id = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;

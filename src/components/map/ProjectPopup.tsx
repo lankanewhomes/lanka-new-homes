@@ -2,29 +2,25 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { X } from "lucide-react";
+import { BedDouble, Ruler, X } from "lucide-react";
 import { formatLkr } from "@/lib/format";
 import type { Project } from "@/types";
 
-function badgeInfo(project: Project) {
-  if (project.status === "Coming Soon" || project.status === "Launching Soon") return { label: "Pre-Construction", tone: "status" as const };
-  return { label: project.status, tone: "status" as const };
+function statusPillLabel(project: Project) {
+  if (project.status === "Coming Soon" || project.status === "Launching Soon") return "Preconstruction";
+  if (project.isMoveInNow) return "Move In Now";
+  if (project.completionYear) return `Move In ${project.completionYear}`;
+  return project.status;
 }
 
 export function ProjectPopup({ project, basePath, onClose }: { project: Project; basePath: string; onClose: () => void }) {
-  const photoLabel = project.gallery?.[0]?.label || "Exterior";
-  const isNewListing = Boolean(project.isMoveInNow || project.isFeatured);
-  const badge = badgeInfo(project);
-  const meta = [project.location, project.startingPriceLkr > 0 ? formatLkr(project.startingPriceLkr) : project.status].filter(Boolean).join(" · ");
-  const facts = [
-    project.bedrooms && project.bedrooms !== "-" ? `${project.bedrooms} bd` : null,
-    project.floorAreaRange && project.floorAreaRange !== "-" ? `${project.floorAreaRange} SqFt` : null,
-  ].filter(Boolean).join(" · ");
+  const hasPrice = project.startingPriceLkr > 0;
 
   return (
     <Link href={`${basePath}/${project.slug}`} className="project-popup">
       <div className="project-popup-media">
-        <Image src={project.heroImage} alt={project.name} width={210} height={130} className="project-popup-image" />
+        <Image src={project.heroImage} alt={project.name} width={210} height={158} className="project-popup-image" />
+        <span className="project-popup-status">{statusPillLabel(project)}</span>
         <button
           type="button"
           className="project-popup-close"
@@ -37,23 +33,25 @@ export function ProjectPopup({ project, basePath, onClose }: { project: Project;
         >
           <X className="h-4 w-4" aria-hidden="true" />
         </button>
-        <span className="project-popup-credit">PHOTO · {photoLabel}</span>
       </div>
 
       <div className="project-popup-body">
-        <div className="project-popup-title-row">
-          <p className="project-popup-title">{project.name}</p>
-          <span className={`project-popup-badge project-popup-badge-${badge.tone}`}>{badge.label}</span>
+        <p className="project-popup-name">{project.name}</p>
+        <p className="project-popup-price">{hasPrice ? `From ${formatLkr(project.startingPriceLkr)}` : project.status}</p>
+        <p className="project-popup-agency">{project.developerName}</p>
+        <p className="project-popup-address">{project.location}</p>
+
+        <div className="project-popup-facts-row">
+          <span className="project-popup-fact">
+            <BedDouble className="h-3.5 w-3.5" aria-hidden="true" />
+            {project.bedrooms && project.bedrooms !== "-" ? `${project.bedrooms} bd` : "—"}
+          </span>
+          <span className="project-popup-fact-divider">|</span>
+          <span className="project-popup-fact">
+            <Ruler className="h-3.5 w-3.5" aria-hidden="true" />
+            {project.floorAreaRange && project.floorAreaRange !== "-" ? `${project.floorAreaRange} SqFt` : "—"}
+          </span>
         </div>
-
-        <p className="project-popup-meta">{meta}</p>
-        {facts ? <p className="project-popup-facts">{facts}</p> : null}
-
-        {isNewListing ? <p className="project-popup-tag">New listing</p> : null}
-
-        <div className="project-popup-divider" />
-
-        <span className="project-popup-view-link">View listing →</span>
       </div>
     </Link>
   );

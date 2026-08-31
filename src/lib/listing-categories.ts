@@ -118,6 +118,13 @@ export const projectCategories: Record<string, ProjectCategory> = {
 
 export const allProjectCategories = Object.values(projectCategories);
 
+// Every route that renders ListingPageBody (list+map view) — used to gate
+// the map sidebar's rail-width offset on the header/breadcrumb, which
+// otherwise render on every page on the site, not just these. Exact match
+// only: a prefix check would also match detail pages like /projects/[slug]
+// or /land/[slug], which never render the rail.
+export const mapSidebarRoutes: string[] = ["/projects", "/land", "/search", ...allProjectCategories.map((category) => category.path)];
+
 export function buildCategoryMetadata(category: ProjectCategory): Metadata {
   return {
     title: category.metaTitle,

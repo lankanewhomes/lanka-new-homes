@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { projects as staticProjects } from "@/data/projects";
+import { mapSidebarRoutes } from "@/lib/listing-categories";
 import type { Project } from "@/types";
 
 function toTitleCase(segment: string): string {
@@ -54,9 +55,13 @@ export function BreadcrumbBar() {
   // match the breadcrumb's inset to it here so "Home / ..." lines up with
   // the search bar/cards below instead of the sitewide 1290px width.
   const isWideListing = pathname.startsWith("/projects") || pathname.startsWith("/land") || pathname.startsWith("/search");
+  // Exact match only (unlike isWideListing's prefix check above) — the map
+  // sidebar rail only renders on these routes, never on detail pages like
+  // /projects/[slug] that isWideListing also matches.
+  const hasRail = mapSidebarRoutes.includes(pathname);
 
   return (
-    <nav className="site-breadcrumb" aria-label="Breadcrumb">
+    <nav className={`site-breadcrumb${hasRail ? " site-breadcrumb--rail-offset" : ""}`} aria-label="Breadcrumb">
       <div className={`site-breadcrumb-inner${isWideListing ? " site-breadcrumb-inner-wide" : ""}`}>
         <ol>
           <li>

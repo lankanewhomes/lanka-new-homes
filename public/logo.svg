@@ -1,0 +1,5 @@
+<svg width="220" height="40" viewBox="0 0 220 40" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="LankaNewHomes">
+  <rect x="0" y="2" width="36" height="36" rx="9" fill="#f47b36"/>
+  <path d="M18 9L8 17.5V30.5C8 31.0523 8.44772 31.5 9 31.5H14.5C15.0523 31.5 15.5 31.0523 15.5 30.5V23.5C15.5 22.9477 15.9477 22.5 16.5 22.5H19.5C20.0523 22.5 20.5 22.9477 20.5 23.5V30.5C20.5 31.0523 20.9477 31.5 21.5 31.5H27C27.5523 31.5 28 31.0523 28 30.5V17.5L18 9Z" fill="#fff"/>
+  <text x="46" y="26" font-family="Arial, Helvetica, sans-serif" font-size="19" font-weight="800" letter-spacing="-0.7" fill="#1d1d22">Lanka<tspan fill="#f47b36">New</tspan>Homes</text>
+</svg>

@@ -127,7 +127,7 @@ export default async function LandDetailPage({ params }: LandPageProps) {
       />
 
       <div className="project-page-content">
-        <div className="listing-hero-stats-chips" role="list" aria-label="Land summary stats">
+        <div className="listing-hero-stats-chips land-stats-chips" role="list" aria-label="Land summary stats">
           {stats.map((stat) => {
             const Icon = stat.icon;
             return (

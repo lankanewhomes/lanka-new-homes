@@ -21,20 +21,20 @@ const bodyFont = Archivo({ subsets: ["latin"], weight: ["400", "500", "600", "70
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "NewHomesSrilanka | New Homes in Sri Lanka",
-    template: "%s | NewHomesSrilanka",
+    default: "LankaNewHomes | New Homes in Sri Lanka",
+    template: "%s | LankaNewHomes",
   },
   description: "Discover new homes and apartment communities across Sri Lanka.",
   openGraph: {
     type: "website",
     url: "/",
-    siteName: "NewHomesSrilanka",
-    title: "NewHomesSrilanka | New Homes in Sri Lanka",
+    siteName: "LankaNewHomes",
+    title: "LankaNewHomes | New Homes in Sri Lanka",
     description: "Discover new homes and apartment communities across Sri Lanka.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "NewHomesSrilanka | New Homes in Sri Lanka",
+    title: "LankaNewHomes | New Homes in Sri Lanka",
     description: "Discover new homes and apartment communities across Sri Lanka.",
   },
   robots: {

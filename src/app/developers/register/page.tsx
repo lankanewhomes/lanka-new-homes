@@ -6,7 +6,7 @@ import { getCurrentProfile } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Developer Registration",
-  description: "Register your development company on NewHomesSrilanka and publish your project listings.",
+  description: "Register your development company on LankaNewHomes and publish your project listings.",
   alternates: { canonical: "/developers/register" },
 };
 

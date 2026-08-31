@@ -2,8 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { AccountMenu } from "@/components/auth/account-menu";
 import { useSavedListing } from "@/lib/use-saved-listing";
+import { mapSidebarRoutes } from "@/lib/listing-categories";
 import {
   ApartmentIcon,
   AreaIcon,
@@ -1351,6 +1353,11 @@ export function RequestInfoDialog({
           <button type="button" className="request-info-close" aria-label="Close" onClick={onClose}><X className="h-5 w-5" /></button>
         </div>
 
+        <div className="request-info-listing">
+          <Image src={project.heroImage} alt={project.name} width={64} height={64} className="request-info-listing-image" />
+          <p className="request-info-listing-title">{project.name}</p>
+        </div>
+
         {submitted ? (
           <div className="request-info-success">
             <h2>Request sent</h2>
@@ -1430,7 +1437,7 @@ export function RequestInfoDialog({
 
             <label className="request-info-consent">
               <input type="checkbox" checked={agreed} onChange={(event) => setAgreed(event.target.checked)} required />
-              <span>I agree to be contacted by NewHomesSrilanka agents via WhatsApp, SMS, Call, Email etc.</span>
+              <span>I agree to be contacted by LankaNewHomes agents via WhatsApp, SMS, Call, Email etc.</span>
             </label>
 
             {errorMessage ? <p className="request-info-error">{errorMessage}</p> : null}
@@ -1712,7 +1719,7 @@ type PlanSortValue = typeof PLAN_SORT_OPTIONS[number]["value"];
 
 export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFloorPlanId, showQuickMoveIns = true, planHrefBase, showBedBath = true }: { project: Project; title?: string; excludeFloorPlanId?: string; showQuickMoveIns?: boolean; planHrefBase?: string; showBedBath?: boolean }) {
   const hrefBase = planHrefBase ?? `/projects/${project.slug}/floor-plans`;
-  const [activeTab, setActiveTab] = useState<"all" | "floorPlans" | "quickMoveIns">("floorPlans");
+  const [activeTab, setActiveTab] = useState<string>("all");
   const [filterOpen, setFilterOpen] = useState(false);
   const [availabilityFilter, setAvailabilityFilter] = useState<Set<string>>(new Set());
   const [bedroomFilter, setBedroomFilter] = useState<Set<number>>(new Set());
@@ -1747,7 +1754,11 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
   };
 
   const visiblePlans = useMemo(() => {
-    const base = activeTab === "quickMoveIns" ? quickMoveIns : floorPlans;
+    const base = activeTab === "quickMoveIns"
+      ? quickMoveIns
+      : activeTab === "all"
+        ? floorPlans
+        : floorPlans.filter((plan) => plan.availability === activeTab);
 
     const filtered = base.filter((plan) => {
       if (availabilityFilter.size > 0 && !availabilityFilter.has(plan.availability)) return false;
@@ -1781,15 +1792,18 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
           >
             All ({floorPlans.length})
           </button>
-          <button
-            type="button"
-            role="tab"
-            className={activeTab === "floorPlans" ? "active" : undefined}
-            aria-selected={activeTab === "floorPlans"}
-            onClick={() => setActiveTab("floorPlans")}
-          >
-            {title} ({floorPlans.length})
-          </button>
+          {availabilityOptions.map((option) => (
+            <button
+              key={option}
+              type="button"
+              role="tab"
+              className={activeTab === option ? "active" : undefined}
+              aria-selected={activeTab === option}
+              onClick={() => setActiveTab(option)}
+            >
+              {option} ({floorPlans.filter((plan) => plan.availability === option).length})
+            </button>
+          ))}
           {showQuickMoveIns ? (
             <button
               type="button"
@@ -2371,6 +2385,8 @@ export function LeadForm({ projectSlug, developerSlug }: { projectSlug: string; 
 
 export function Header() {
   const { language, setLanguage } = useLanguage();
+  const pathname = usePathname();
+  const hasRail = pathname ? mapSidebarRoutes.includes(pathname) : false;
 
   const labels: Record<SiteLanguage, { homes: string; company: string; login: string; signup: string; menu: string }> = {
     en: {
@@ -2399,12 +2415,11 @@ export function Header() {
   const text = labels[language];
 
   return (
-    <header className="site-header">
+    <header className={`site-header${hasRail ? " site-header--rail-offset" : ""}`}>
       <div className="site-header-inner">
         <div className="site-brand-group">
           <Link href="/" className="site-logo">
-            <span className="site-logo-line">NewHomes</span>
-            <span className="site-logo-line">SriLanka<span className="site-logo-dot">.</span></span>
+            <Image src="/logo.svg" alt="LankaNewHomes" width={220} height={40} className="site-logo-img" priority />
           </Link>
           <div className="language-segmented" role="group" aria-label="Language switcher">
             <button type="button" className={language === "en" ? "active" : undefined} onClick={() => setLanguage("en")}>EN</button>
@@ -2460,7 +2475,7 @@ export function Footer() {
     <footer className="site-footer">
       <div className="footer-top">
         <div className="footer-brand">
-          <p className="footer-logo">NewHomesSrilanka.</p>
+          <Image src="/logo.svg" alt="LankaNewHomes" width={220} height={40} className="footer-logo-img" />
           <p className="partner-sites">Partner sites<br /><span>New homes in Sri Lanka</span></p>
         </div>
 
@@ -2495,7 +2510,7 @@ export function Footer() {
       </div>
 
       <div className="footer-bottom">
-        <p className="copyright">© 2026 NewHomesSrilanka</p>
+        <p className="copyright">© 2026 LankaNewHomes</p>
         <Link href="/admin" className="footer-admin-link">Admin</Link>
       </div>
     </footer>

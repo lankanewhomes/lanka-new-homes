@@ -1,4 +1,4 @@
-const FALLBACK_SITE_URL = "https://lankaliving.lk";
+const FALLBACK_SITE_URL = "https://lankanewhomes.com";
 
 function normalizeBaseUrl(url: string): string {
   const trimmed = url.trim();

@@ -18,7 +18,7 @@ export function AccountMenu({ loginLabel, signupLabel }: { loginLabel: string; s
   if (!user) {
     return (
       <>
-        <button type="button" className="header-link-button" onClick={() => openAuthModal({ mode: "login" })}>
+        <button type="button" className="log-in header-link-button" onClick={() => openAuthModal({ mode: "login" })}>
           {loginLabel}
         </button>
         <button type="button" className="sign-up header-link-button" onClick={() => openAuthModal({ mode: "signup" })}>
