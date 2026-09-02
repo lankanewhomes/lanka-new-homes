@@ -51,8 +51,11 @@ async function logEvent(
   if (!projectId) return
   await req.payload.create({
     collection: 'analytics',
-    // The doc fields these ids come from aren't precisely typed this deep
-    // in a generic hook — cast rather than force callers to narrow first.
+    // relatedId() returns string | number generically (it also covers
+    // adapters/relations where that's meaningful) — this Postgres setup's
+    // ids are always numeric, but narrowing the shared helper isn't worth
+    // it here.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data: { project: projectId, event_type, user: userId ?? undefined } as any,
     overrideAccess: true,
     req,

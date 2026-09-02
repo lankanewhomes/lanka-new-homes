@@ -60,6 +60,10 @@ async function main() {
       depth: 0,
       overrideAccess: true,
     })
+    // `Row` is a plain local shape (broader `featured_page: string` etc.)
+    // rather than Payload's generated literal-union type — fine for a
+    // one-off seed script.
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     if (existing.docs[0]) {
       await payload.update({ collection: 'placement-pricing', id: existing.docs[0].id, data: row as any, overrideAccess: true })
       updated += 1
@@ -67,6 +71,7 @@ async function main() {
       await payload.create({ collection: 'placement-pricing', data: row as any, overrideAccess: true })
       created += 1
     }
+    /* eslint-enable @typescript-eslint/no-explicit-any */
   }
   console.log(`Placement pricing seeded: ${created} created, ${updated} updated.`)
   process.exit(0)

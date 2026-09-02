@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -16,7 +17,7 @@ export default function ContactPage() {
       <p>Email <a href="mailto:lankanewhomes@gmail.com">lankanewhomes@gmail.com</a> and we&apos;ll get back to you within one business day.</p>
 
       <h2>Developer partnerships</h2>
-      <p>Interested in listing your projects or advertising on the homepage? Email <a href="mailto:lankanewhomes@gmail.com">lankanewhomes@gmail.com</a> or <a href="/developers/register">register as a developer</a>.</p>
+      <p>Interested in listing your projects or advertising on the homepage? Email <a href="mailto:lankanewhomes@gmail.com">lankanewhomes@gmail.com</a> or <Link href="/developers/register">register as a developer</Link>.</p>
 
       <h2>Office</h2>
       <p>Colombo, Sri Lanka</p>

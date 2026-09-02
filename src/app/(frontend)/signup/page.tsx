@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { AuthForm } from "@/components/auth/auth-form";
 
 export const metadata: Metadata = {
@@ -17,7 +18,7 @@ export default function SignupPage() {
 
       <p className="static-page-note">
         Already have an account? <a href="/login">Log in</a>. Registering a development company?{" "}
-        <a href="/developers/register">Developer registration</a>.
+        <Link href="/developers/register">Developer registration</Link>.
       </p>
     </div>
   );

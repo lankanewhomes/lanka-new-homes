@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { AuthForm } from "@/components/auth/auth-form";
 
 export const metadata: Metadata = {
@@ -16,7 +17,7 @@ export default function DeveloperLoginPage() {
       <AuthForm mode="login" intent="developer" redirectTo="/developers/dashboard" onDeveloperRoleCheck />
 
       <p className="static-page-note">
-        Don&apos;t have a developer account yet? <a href="/developers/register">Register your company</a>.
+        Don&apos;t have a developer account yet? <Link href="/developers/register">Register your company</Link>.
       </p>
     </div>
   );

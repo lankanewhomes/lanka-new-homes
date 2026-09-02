@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { BuilderProfileForm } from "@/components/dashboard/components";
 import { AuthForm } from "@/components/auth/auth-form";
@@ -27,7 +28,7 @@ export default async function DeveloperRegisterPage() {
         </p>
         <AuthForm mode="signup" intent="developer" redirectTo="/developers/register" />
         <p className="static-page-note">
-          Already have a developer account? <a href="/developers/login">Log in</a> instead.
+          Already have a developer account? <Link href="/developers/login">Log in</Link> instead.
         </p>
       </div>
     );

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentProfile } from "@/lib/auth";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
@@ -32,7 +33,7 @@ export default async function SavedListingsPage() {
 
       {projects.length === 0 ? (
         <p style={{ marginTop: 24 }}>
-          You haven&apos;t saved any listings yet. <a href="/projects">Browse new homes</a> and tap the heart icon to save one.
+          You haven&apos;t saved any listings yet. <Link href="/projects">Browse new homes</Link> and tap the heart icon to save one.
         </p>
       ) : (
         <div className="mt-6 space-y-4">

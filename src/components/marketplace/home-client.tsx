@@ -50,6 +50,7 @@ export function HomeClient({ projects }: { projects: Project[] }) {
   ), [heroAds]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setHeroSlide((current) => (current >= heroSlides.length ? 0 : current));
   }, [heroSlides.length]);
 

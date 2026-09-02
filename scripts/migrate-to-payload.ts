@@ -92,9 +92,13 @@ async function upsertDirectory(
       overrideAccess: true,
     })
     const fields = { slug: row.slug, name: row.data.name, ...buildFields(row.data) }
+    // `collection` is a runtime variable here, not a literal, so Payload
+    // can't narrow `data` to a specific collection's generated type.
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     const doc = existing.docs[0]
       ? await payload.update({ collection, id: existing.docs[0].id, data: fields as any, overrideAccess: true, depth: 0 })
       : await payload.create({ collection, data: fields as any, overrideAccess: true, depth: 0 })
+    /* eslint-enable @typescript-eslint/no-explicit-any */
     map.set(row.slug, doc.id)
   }
   console.log(`${collection}: ${map.size} migrated`)
@@ -104,7 +108,7 @@ async function upsertDirectory(
 async function main() {
   const payload = await getPayload({ config: payloadConfig })
 
-  const constructionCompanies = await upsertDirectory(payload, 'construction-companies', await fetchRows('construction_companies'), (d) => ({
+  await upsertDirectory(payload, 'construction-companies', await fetchRows('construction_companies'), (d) => ({
     logo: d.logo,
     description: d.description,
     contact_email: d.email,
@@ -206,11 +210,15 @@ async function main() {
       depth: 0,
       overrideAccess: true,
     })
+    // `fields` is assembled dynamically and doesn't structurally match
+    // Payload's generated Project data type exactly.
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     if (existing.docs[0]) {
       await payload.update({ collection: 'projects', id: existing.docs[0].id, data: fields as any, overrideAccess: true, depth: 0 })
     } else {
       await payload.create({ collection: 'projects', data: fields as any, overrideAccess: true, depth: 0 })
     }
+    /* eslint-enable @typescript-eslint/no-explicit-any */
     migratedProjects += 1
   }
   console.log(`projects: ${migratedProjects} migrated${skippedProjects ? `, ${skippedProjects} skipped (no matching developer)` : ''}`)

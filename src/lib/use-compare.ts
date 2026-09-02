@@ -33,6 +33,7 @@ export function useCompare() {
   const [entries, setEntries] = useState<CompareEntry[]>([]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setEntries(readEntries());
     const sync = () => setEntries(readEntries());
     window.addEventListener(UPDATE_EVENT, sync);

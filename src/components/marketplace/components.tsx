@@ -460,6 +460,7 @@ export function ProjectHero({
 
   useEffect(() => {
     if (activeMedia && !availableMedia.includes(activeMedia)) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setActiveMedia(null);
     }
   }, [activeMedia, availableMedia]);
@@ -1318,6 +1319,7 @@ export function RequestInfoDialog({
 
   useEffect(() => {
     if (!open) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSubmitted(false);
     setErrorMessage("");
   }, [open]);

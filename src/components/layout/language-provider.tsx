@@ -25,6 +25,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY) as SiteLanguage | null;
     if (saved === "en" || saved === "ta" || saved === "si") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLanguageState(saved);
       document.documentElement.lang = htmlLangMap[saved];
       return;

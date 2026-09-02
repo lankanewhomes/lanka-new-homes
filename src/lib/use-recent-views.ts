@@ -14,6 +14,7 @@ export function useRecentViews() {
     // matches anything in project_views.
     const sessionId = localStorage.getItem(SESSION_KEY);
     if (!sessionId) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLoading(false);
       return;
     }
