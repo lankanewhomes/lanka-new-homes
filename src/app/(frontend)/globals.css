@@ -152,7 +152,7 @@ input, button, select, textarea { font-family: inherit; }
 
 /* Homepage inspired by the supplied Livabl reference */
 body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-size: 14px; line-height: 20px; }
-.site-header { height: 82px; display: flex; align-items: center; background: #fff; position: relative; z-index: 10; }
+.site-header { height: 82px; display: flex; align-items: center; background: #fff; position: relative; z-index: 90; }
 .site-header-inner { width: min(1290px, calc(100% - 48px)); margin: auto; display: flex; align-items: center; justify-content: space-between; }
 .site-brand-group { display: flex; align-items: center; gap: 14px; }
 .site-logo { display: flex; align-items: center; }
