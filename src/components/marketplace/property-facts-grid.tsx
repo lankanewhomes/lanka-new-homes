@@ -1,4 +1,3 @@
-import { ICON_MAP } from "@/lib/fact-icons";
 import type { FactItem, Project } from "@/types";
 
 function hasValue(value: unknown): value is string {
@@ -9,16 +8,16 @@ function hasValue(value: unknown): value is string {
 // factsGrid yet. Any row whose source field is empty is dropped.
 function defaultFacts(project: Project): FactItem[] {
   const candidates: (FactItem | null)[] = [
-    hasValue(project.type) ? { key: "building", label: "Building", value: project.type, icon: "building-2" } : null,
-    project.completionYear > 0 ? { key: "builtIn", label: "Built in", value: String(project.completionYear), icon: "wrench" } : null,
-    project.units > 0 ? { key: "residences", label: "Residences", value: String(project.units), icon: "layout-grid" } : null,
-    project.floors > 0 ? { key: "stories", label: "Stories", value: String(project.floors), icon: "footprints" } : null,
-    hasValue(project.bedrooms) ? { key: "bedrooms", label: "Bedrooms", value: project.bedrooms, icon: "bed-double" } : null,
-    hasValue(project.bathrooms) ? { key: "bathrooms", label: "Bathrooms", value: project.bathrooms, icon: "bath" } : null,
-    hasValue(project.floorAreaRange) ? { key: "size", label: "Size", value: project.floorAreaRange, icon: "ruler" } : null,
-    hasValue(project.parking) ? { key: "parking", label: "Parking", value: project.parking, icon: "parking-circle" } : null,
-    hasValue(project.ownership) ? { key: "ownership", label: "Ownership", value: project.ownership, icon: "file-text" } : null,
-    hasValue(project.constructionStatus) ? { key: "status", label: "Status", value: project.constructionStatus, icon: "hard-hat" } : null,
+    hasValue(project.type) ? { key: "building", label: "Building", value: project.type } : null,
+    project.completionYear > 0 ? { key: "builtIn", label: "Built in", value: String(project.completionYear) } : null,
+    project.units > 0 ? { key: "residences", label: "Residences", value: String(project.units) } : null,
+    project.floors > 0 ? { key: "stories", label: "Stories", value: String(project.floors) } : null,
+    hasValue(project.bedrooms) ? { key: "bedrooms", label: "Bedrooms", value: project.bedrooms } : null,
+    hasValue(project.bathrooms) ? { key: "bathrooms", label: "Bathrooms", value: project.bathrooms } : null,
+    hasValue(project.floorAreaRange) ? { key: "size", label: "Size", value: project.floorAreaRange } : null,
+    hasValue(project.parking) ? { key: "parking", label: "Parking", value: project.parking } : null,
+    hasValue(project.ownership) ? { key: "ownership", label: "Ownership", value: project.ownership } : null,
+    hasValue(project.constructionStatus) ? { key: "status", label: "Status", value: project.constructionStatus } : null,
   ];
   return candidates.filter((fact): fact is FactItem => fact !== null);
 }
@@ -35,7 +34,6 @@ export function PropertyFactsGrid({ project }: { project: Project }) {
       aria-label="Property facts"
     >
       {facts.map((fact, index) => {
-        const Icon = ICON_MAP[fact.icon];
         const mobileDivider = index >= 2;
         const desktopDivider = index >= 5;
 
@@ -44,16 +42,13 @@ export function PropertyFactsGrid({ project }: { project: Project }) {
             key={fact.key}
             role="listitem"
             className={[
-              "flex items-center gap-2 sm:gap-2.5",
+              "flex flex-col gap-1",
               mobileDivider ? "border-t border-gray-200 pt-4" : "",
               desktopDivider ? "sm:border-t sm:border-gray-200 sm:pt-6" : "sm:border-t-0 sm:pt-0",
             ].join(" ")}
           >
-            {Icon ? <Icon className="h-10 w-10 shrink-0 text-gray-400" strokeWidth={1.5} aria-hidden="true" /> : null}
-            <div className="flex flex-col gap-1">
-              <span className="text-[13px] font-normal text-gray-500">{fact.label}</span>
-              <span className="text-[15px] font-medium text-[#1A1A1A] tabular-nums">{fact.value}</span>
-            </div>
+            <span className="text-[13px] font-normal text-gray-500">{fact.label}</span>
+            <span className="text-[15px] font-medium text-[#1A1A1A] tabular-nums">{fact.value}</span>
           </div>
         );
       })}

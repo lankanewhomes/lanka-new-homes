@@ -1,5 +1,6 @@
 import type { CollectionAfterChangeHook, CollectionConfig, Field } from 'payload'
 import { adminOnly, publicRead } from './access'
+import cities from '../data/cities.json'
 
 // A closed dropdown plus a separate "(Other)" text field for anything not
 // in the preset list — same escape-hatch idea as coDevelopers next to
@@ -45,6 +46,15 @@ export const DISTRICT_OPTIONS = [
   'Monaragala', 'Ratnapura', 'Kegalle',
 ]
 
+// Every Sri Lankan city/town, from the same src/data/cities.json the
+// frontend's district->city picker already uses — plus the district names
+// themselves (cities.json is ward/neighborhood-granular, e.g. "Colombo 1"
+// through "Colombo 15", and doesn't separately list the plain district
+// capital name most listings actually use) — sorted, deduplicated.
+export const CITY_OPTIONS: string[] = Array.from(
+  new Set([...DISTRICT_OPTIONS, ...(cities as { name_en: string }[]).map((c) => c.name_en)]),
+).sort()
+
 export const OWNERSHIP_OPTIONS = ['Freehold', 'Leasehold', 'Condominium']
 
 export const CONSTRUCTION_STATUS_OPTIONS = [
@@ -54,6 +64,15 @@ export const CONSTRUCTION_STATUS_OPTIONS = [
 export const TAP_WATER_OPTIONS = ['Available', 'Metered', 'Not Available', 'Well Water']
 
 export const ELECTRICITY_OPTIONS = ['Available', '3-Phase Available', 'Metered', 'Not Available', 'Solar']
+
+export const PLAN_TYPE_OPTIONS = [
+  'Open Floor Plan', 'Closed Floor Plan', 'Studio Floor Plan', 'Multi-Story Floor Plan',
+  'Split-Level Floor Plan', 'Loft', 'Duplex', 'Penthouse',
+]
+
+export const BASEMENT_OPTIONS = ['None', 'Unfinished', 'Finished', 'Walkout', 'Partial']
+
+export const GARAGE_OPTIONS = ['None', 'Attached', 'Detached', 'Carport', 'Underground']
 
 // Matches the plural forms already used by src/lib/listing-categories.ts's
 // filter logic (project.type === "Apartments" / "Villas").
@@ -126,10 +145,7 @@ export const AMENITY_NAME_OPTIONS = [
 export const amenitiesField: Field = {
   name: 'amenities',
   type: 'array',
-  fields: [
-    { name: 'name', type: 'select', options: AMENITY_NAME_OPTIONS, required: true },
-    { name: 'icon', type: 'text' },
-  ],
+  fields: [{ name: 'name', type: 'select', options: AMENITY_NAME_OPTIONS, required: true }],
 }
 
 // Common feature names for Key Feature items (Kitchen -> "Pantry cabinets",
@@ -137,29 +153,96 @@ export const amenitiesField: Field = {
 // indoor-leaning, second row outdoor-leaning, but either can be used under
 // either category.
 export const KEY_FEATURE_FIELD_OPTIONS = [
-  'Kitchen', 'Bathroom', 'Windows', 'Climate', 'Lighting', 'Security',
-  'Connectivity', 'Laundry', 'Storage', 'Appliances', 'Flooring',
+  'Bathroom', 'Kitchen', 'Living Areas', 'Bedrooms & Closets',
+  'Flooring & Finishes', 'Heating, Cooling & Systems', 'Smart Home & Security',
+  'Storage & Utility', 'Additional Spaces',
   'Balcony', 'Garden', 'Pool', 'Parking', 'Outdoor Kitchen', 'View', 'Landscaping',
 ]
 
+// Common answers for each Key Feature field above — one shared flat list
+// rather than a value list scoped per field, same escape-hatch pattern as
+// everything else here via selectWithOther's "(Other)" fallback.
+export const KEY_FEATURE_VALUE_OPTIONS = [
+  // Bathroom
+  'Walk-in shower with glass enclosure', 'Soaking tub / freestanding bathtub',
+  'Double vanity with quartz/granite countertop', 'Heated flooring', 'Rainfall showerhead',
+  'Built-in medicine cabinet with mirror', 'Recessed/LED lighting', 'Exhaust fan with humidity sensor',
+  'Bidet or bidet attachment', 'Towel warmer', 'Linen closet / built-in storage',
+  'Non-slip tile flooring', 'Water-efficient toilet (dual-flush)', 'Frameless glass shower doors',
+  'Ensuite access from primary bedroom',
+  // Kitchen
+  'Gourmet kitchen with island', 'Stainless steel appliances', 'Granite/quartz countertops',
+  'Walk-in pantry', 'Custom cabinetry', 'Wine cellar / wet bar',
+  // Living Areas
+  'Open-concept living/dining/kitchen layout', 'Gas fireplace', 'Crown moulding / trim work',
+  '9-10 ft ceilings', 'Large windows / natural light', 'Skylights',
+  // Bedrooms & Closets
+  'Walk-in closets',
+  // Flooring & Finishes
+  'Hardwood/laminate/vinyl plank flooring', 'Pot lights / recessed lighting',
+  // Heating, Cooling & Systems
+  'Central air conditioning', 'Forced-air heating', 'Central vacuum system',
+  // Smart Home & Security
+  'Smart home features (thermostat, lighting, locks)', 'Built-in speakers / wired for sound',
+  'Security system / cameras', 'Video phone', 'CCTV', '24-hour security guard', 'Gated entry', 'Alarm system',
+  // Storage & Utility
+  'Laundry room (main/upper floor)',
+  // Additional Spaces
+  'Finished basement', 'Home office / den', 'Elevator (multi-storey)',
+  // Balcony
+  'Terrace included', 'Private balcony', 'Wraparound balcony',
+  // Garden
+  'Private garden', 'Landscaped garden', 'Rooftop garden',
+  // Pool
+  'Private pool', 'Shared pool access', 'Plunge pool',
+  // Parking
+  'Covered parking', 'Private garage', 'Visitor parking',
+  // Outdoor Kitchen
+  'Built-in BBQ', 'Outdoor dining area', 'Covered patio kitchen',
+  // View
+  'Sea view', 'City view', 'Garden view', 'Mountain view',
+  // Landscaping
+  'Professionally landscaped', 'Native plants', 'Irrigation system',
+]
+
+const KEY_FEATURE_CATEGORY_LABELS: Record<string, string> = {
+  indoor: 'Indoor Features',
+  outdoor: 'Outdoor Features',
+}
+
 // Same KeyFeatureCategory shape used by Project.unitFeatures and
-// Land.unitFeatures. `key` drives the section icon ("indoor"/"outdoor" get
-// a matching icon on the frontend; anything else falls back to a generic
-// one) — `label` is the separate, freely-editable category name shown to
-// visitors, so a custom category can still be named clearly.
+// Land.unitFeatures. `key` drives both the section icon ("indoor"/"outdoor"
+// get a matching icon on the frontend; anything else falls back to a
+// generic one) and the visitor-facing label, auto-derived below so there's
+// nothing to re-type — pick indoor/outdoor (or type a custom category in
+// the "(Other)" field) and the label follows automatically.
 export const unitFeaturesField: Field = {
   name: 'unitFeatures',
   type: 'array',
   label: 'Key Features',
   fields: [
     ...selectWithOther('key', 'Category', ['indoor', 'outdoor']),
-    { name: 'label', type: 'text', required: true, label: 'Category Name' },
+    {
+      name: 'label',
+      type: 'text',
+      label: 'Category Name',
+      admin: { hidden: true },
+      hooks: {
+        beforeChange: [
+          ({ siblingData }) => {
+            const other = typeof siblingData.key_other === 'string' ? siblingData.key_other.trim() : ''
+            if (other) return other
+            return KEY_FEATURE_CATEGORY_LABELS[siblingData.key as string] ?? siblingData.key ?? ''
+          },
+        ],
+      },
+    },
     {
       name: 'items',
       type: 'array',
       fields: [
         ...selectWithOther('field', 'Feature', KEY_FEATURE_FIELD_OPTIONS),
-        { name: 'value', type: 'text', required: true },
+        ...selectWithOther('value', 'Value', KEY_FEATURE_VALUE_OPTIONS),
       ],
     },
   ],

@@ -158,31 +158,12 @@ export type SocialLinks = {
   tiktok?: string;
 };
 
-// Property Facts grid — admin-selectable icon per fact, whitelisted against
-// ICON_MAP (src/lib/fact-icons.ts) so only valid lucide-react icons can be
-// stored. Lives in Project.factsGrid inside the `data` jsonb column.
-export type FactIconKey =
-  | "building-2"
-  | "wrench"
-  | "layout-grid"
-  | "footprints"
-  | "bed-double"
-  | "bath"
-  | "ruler"
-  | "parking-circle"
-  | "file-text"
-  | "hard-hat"
-  | "dollar-sign"
-  | "calendar"
-  | "shield"
-  | "warehouse"
-  | "paw-print";
-
+// Property Facts grid — plain label/value rows, no icon. Lives in
+// Project.factsGrid inside the `data` jsonb column.
 export type FactItem = {
   key: string;
   label: string;
   value: string;
-  icon: FactIconKey;
 };
 
 export type OfficeHoursEntry = {

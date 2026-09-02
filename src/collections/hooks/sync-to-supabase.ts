@@ -45,13 +45,54 @@ async function resolveSlugList(req: PayloadRequest, collection: string, values: 
 
 // A select+"(Other)" text pair (see shared-fields.ts's selectWithOther) ->
 // one effective plain value, matching what the legacy (pre-Payload) fields
-// always expected.
+// always expected. The two fields are independent (no dropdown "Other"
+// sentinel value) — whichever one was actually filled in wins, with the
+// free-text "(Other)" field taking priority since it's only ever filled in
+// when the dropdown didn't have the right option.
 function resolveOther(value: unknown, other: unknown): string | undefined {
-  if (value === 'other') return (other as string) || undefined
+  const otherStr = typeof other === 'string' ? other.trim() : ''
+  if (otherStr) return otherStr
   return (value as string) || undefined
 }
 
 type AnyDoc = Record<string, unknown>
+
+// floorPlans' planType/basement/garage are each selectWithOther pairs (see
+// Projects.ts) — collapse each down to a flat value the frontend's
+// FloorPlan type expects.
+function resolveFloorPlans(raw: unknown): AnyDoc[] {
+  if (!Array.isArray(raw)) return []
+  return raw.map((plan) => {
+    const p = { ...(plan as AnyDoc) }
+    p.planType = resolveOther(p.planType, p.planType_other)
+    p.basement = resolveOther(p.basement, p.basement_other)
+    p.garage = resolveOther(p.garage, p.garage_other)
+    delete p.planType_other
+    delete p.basement_other
+    delete p.garage_other
+    return p
+  })
+}
+
+// unitFeatures' key/field/value are each selectWithOther pairs (see
+// shared-fields.ts's unitFeaturesField) — collapse every pair down to the
+// flat {key, label, items: [{field, value}]} shape the frontend's
+// normalizeUnitFeaturesForDisplay expects, same idea as resolveOther above
+// but applied through the nested array.
+function resolveUnitFeatures(raw: unknown): AnyDoc[] {
+  if (!Array.isArray(raw)) return []
+  return raw.map((group) => {
+    const g = group as AnyDoc
+    return {
+      key: resolveOther(g.key, g.key_other) ?? '',
+      label: g.label,
+      items: (Array.isArray(g.items) ? (g.items as AnyDoc[]) : []).map((item) => ({
+        field: resolveOther(item.field, item.field_other) ?? '',
+        value: resolveOther(item.value, item.value_other) ?? '',
+      })),
+    }
+  })
+}
 
 export const syncProjectToSupabase: CollectionAfterChangeHook = async ({ doc, req }) => {
   const d = doc as AnyDoc
@@ -91,12 +132,15 @@ export const syncProjectToSupabase: CollectionAfterChangeHook = async ({ doc, re
       neighborhood: neighborhoodRel.name ?? d.neighborhood_other ?? '',
       neighborhoodSlug: neighborhoodRel.slug,
       district: resolveOther(d.district, d.district_other) ?? '',
+      city: resolveOther(d.city, d.city_other) ?? '',
       province: resolveOther(d.province, d.province_other) ?? '',
       ownership: resolveOther(d.ownership, d.ownership_other),
       constructionStatus: resolveOther(d.constructionStatus, d.constructionStatus_other),
       electricity: resolveOther(d.electricity, d.electricity_other),
       tapWater: resolveOther(d.tapWater, d.tapWater_other),
       type: resolveOther(d.type, d.type_other) ?? '',
+      unitFeatures: resolveUnitFeatures(d.unitFeatures),
+      floorPlans: resolveFloorPlans(d.floorPlans),
       isFeatured: Boolean(d.featured),
       additionalDeveloperSlugs,
       additionalBuilderSlugs,

@@ -379,6 +379,7 @@ export function ProjectHero({
   requestInfoVariant?: "standard" | "inquiry";
 }) {
   const { saved: savedListing, toggle: toggleSaved } = useSavedListing(project.slug);
+  const hasKeyFeatures = normalizeUnitFeaturesForDisplay(project.unitFeatures).some((group) => group.items.length > 0);
   const fallbackPhotoLabels = [
     "Exterior",
     "Living Room",
@@ -692,6 +693,9 @@ export function ProjectHero({
           ) : null}
           <a href="#overview" className={activeSection === "overview" ? "active" : undefined} onClick={() => setActiveSection("overview")}>Overview</a>
           <a href="#pricing" className={activeSection === "pricing" ? "active" : undefined} onClick={() => setActiveSection("pricing")}>Pricing</a>
+          {hasKeyFeatures ? (
+            <a href="#key-features" className={activeSection === "key-features" ? "active" : undefined} onClick={() => setActiveSection("key-features")}>Key Features</a>
+          ) : null}
           <a href="#plans-homes" className={activeSection === "plans-homes" ? "active" : undefined} onClick={() => setActiveSection("plans-homes")}>{plansHomesNavLabel}</a>
           {showAmenitiesAndNeighborhoodNav ? (
             <>

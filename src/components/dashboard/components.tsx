@@ -3,9 +3,8 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import type { Amenity, CoDeveloperEntry, CompanyProfile, Developer, FactIconKey, FactItem, FloorPlan, KeyFeatureCategory, KeyFeatureItem, Neighborhood, Project } from "@/types";
+import type { Amenity, CoDeveloperEntry, CompanyProfile, Developer, FactItem, FloorPlan, KeyFeatureCategory, KeyFeatureItem, Neighborhood, Project } from "@/types";
 import { Button } from "@/components/ui/button";
-import { ICON_LABELS, ICON_OPTIONS } from "@/lib/fact-icons";
 import {
   sriLankaCitiesByDistrict,
   sriLankaDistrictsByProvince,
@@ -883,7 +882,7 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
   const [floorPlanVisibleStats, setFloorPlanVisibleStats] = useState<string[]>(initialProject?.floorPlanVisibleStats ?? floorPlanStatOptions);
 
   const [factsGrid, setFactsGrid] = useState<FactItem[]>(initialProject?.factsGrid ?? []);
-  const addFactRow = () => setFactsGrid((rows) => [...rows, { key: `fact-${Date.now()}-${rows.length}`, label: "", value: "", icon: "building-2" }]);
+  const addFactRow = () => setFactsGrid((rows) => [...rows, { key: `fact-${Date.now()}-${rows.length}`, label: "", value: "" }]);
   const removeFactRow = (index: number) => setFactsGrid((rows) => rows.filter((_, i) => i !== index));
   const updateFactRow = (index: number, patch: Partial<FactItem>) =>
     setFactsGrid((rows) => rows.map((row, i) => (i === index ? { ...row, ...patch } : row)));
@@ -2207,7 +2206,7 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
 
           <div className="space-y-2">
             {factsGrid.map((fact, index) => (
-              <div key={fact.key} className="grid grid-cols-[1fr_1fr_auto_auto] items-center gap-1.5 border border-stone-200 p-2">
+              <div key={fact.key} className="grid grid-cols-[1fr_1fr_auto] items-center gap-1.5 border border-stone-200 p-2">
                 <input
                   type="text"
                   placeholder="Label"
@@ -2222,18 +2221,6 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
                   onChange={(event) => updateFactRow(index, { value: event.target.value })}
                   className="min-w-0 border border-stone-200 px-2 py-1.5 text-xs"
                 />
-                <select
-                  value={fact.icon}
-                  onChange={(event) => updateFactRow(index, { icon: event.target.value as FactIconKey })}
-                  aria-label="Icon"
-                  className="border border-stone-200 px-1 py-1.5 text-xs"
-                >
-                  {ICON_OPTIONS.map((iconKey) => (
-                    <option key={iconKey} value={iconKey}>
-                      {ICON_LABELS[iconKey]}
-                    </option>
-                  ))}
-                </select>
                 <button
                   type="button"
                   onClick={() => removeFactRow(index)}

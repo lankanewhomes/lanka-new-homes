@@ -2,11 +2,16 @@ import type { CollectionConfig } from 'payload'
 import { adminOnly, publicRead } from './access'
 import {
   amenitiesField,
+  CITY_OPTIONS,
   contactField,
   coordinatesField,
+  DISTRICT_OPTIONS,
+  ELECTRICITY_OPTIONS,
   galleryLikeField,
   nearbyField,
+  PROVINCE_OPTIONS,
   seoFields,
+  selectWithOther,
   unitFeaturesField,
 } from './shared-fields'
 
@@ -54,9 +59,9 @@ export const Lands: CollectionConfig = {
             },
             { name: 'sellerName', type: 'text', required: true, admin: { description: 'Always shown; the only identifier when sellerType is "builder".' } },
             { name: 'location', type: 'text' },
-            { name: 'district', type: 'text', index: true },
-            { name: 'city', type: 'text', index: true },
-            { name: 'province', type: 'text' },
+            ...selectWithOther('district', 'District', DISTRICT_OPTIONS),
+            ...selectWithOther('city', 'City', CITY_OPTIONS),
+            ...selectWithOther('province', 'Province', PROVINCE_OPTIONS),
             { name: 'status', type: 'select', required: true, defaultValue: 'Available', options: ['Available', 'Reserved', 'Sold'], index: true },
             { name: 'isFeatured', type: 'checkbox', defaultValue: false },
           ],
@@ -74,7 +79,7 @@ export const Lands: CollectionConfig = {
             { name: 'landShape', type: 'text', admin: { description: 'e.g. Rectangular, Square, Irregular, L-Shaped' } },
             { name: 'roadAccess', type: 'text' },
             { name: 'roadWidthFt', type: 'number' },
-            { name: 'electricity', type: 'text' },
+            ...selectWithOther('electricity', 'Electricity', ELECTRICITY_OPTIONS),
             { name: 'water', type: 'text' },
             { name: 'titleType', type: 'text', admin: { description: 'e.g. Freehold - Sinhala Deed, Freehold - Swarnabhoomi, Torrens Title' } },
             { name: 'surveyPlanStatus', type: 'text' },

@@ -15,7 +15,9 @@ import {
   ProjectNarrativeDetails,
   ProjectStatsChips,
   StatsContactCard,
+  UtilitiesCostsSection,
 } from "@/components/marketplace/components";
+import { PropertyFactsGrid } from "@/components/marketplace/property-facts-grid";
 import { ProjectViewTracker } from "@/components/marketplace/view-tracker";
 import { toAbsoluteUrl } from "@/lib/seo";
 
@@ -126,6 +128,10 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
         <section id="pricing" className="space-y-3">
           <PricingInformationLayout project={project} />
         </section>
+
+        <PropertyFactsGrid project={project} />
+
+        <UtilitiesCostsSection project={project} />
 
         <KeyFeaturesSection unitFeatures={project.unitFeatures} />
 
