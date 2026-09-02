@@ -368,15 +368,16 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
   z-index: 2;
 }
 
-.luxury-hero-two-pagination span {
+.luxury-hero-two-pagination button {
   width: 8px;
   height: 8px;
+  padding: 0;
   border-radius: 999px;
   background: #ffffff80;
   border: 1px solid #ffffffb5;
 }
 
-.luxury-hero-two-pagination span.active {
+.luxury-hero-two-pagination button.active {
   background: #fff;
 }
 
@@ -612,6 +613,93 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
     min-height: 48px;
   }
 }
+
+/* Mobile hero: the panel moves out of the absolute overlay into normal
+   flow below the image (Zillow-style "clean photo, then headline+search
+   underneath" layout) instead of the desktop's blurred card sitting on
+   top of the photo. Region picker is dropped from the search row (no
+   Location/Smart mode toggle on this site) — the row becomes a single
+   rounded pill, search icon on the left via flex `order` so the DOM
+   (and tab order / submit behavior) doesn't change. */
+@media (max-width: 760px) {
+  .luxury-hero-two-media {
+    height: 340px;
+    border-radius: 0 0 18px 18px;
+  }
+
+  .luxury-hero-two-panel {
+    position: static;
+    transform: none;
+    left: auto;
+    bottom: auto;
+    width: auto;
+    margin-top: 22px;
+    background: none;
+    border: 0;
+    backdrop-filter: none;
+    box-shadow: none;
+    padding: 0 4px;
+    text-align: left;
+  }
+
+  .luxury-hero-two-panel h1 {
+    font-size: 30px;
+    line-height: 1.15;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .luxury-hero-two-subheading {
+    margin-left: 0;
+    text-align: left;
+  }
+
+  .luxury-hero-two-top-search {
+    margin-top: 18px;
+    min-height: 56px;
+    border: 1px solid #e4e2db;
+    border-radius: 999px;
+    background: #fff;
+  }
+
+  .luxury-hero-two-top-search .hero-region-picker {
+    display: none;
+  }
+
+  .luxury-hero-two-top-search label {
+    padding: 0 20px 0 4px;
+  }
+
+  .luxury-hero-two-top-search .hero-search-submit {
+    order: -1;
+    min-height: 56px;
+    width: 52px;
+    background: transparent;
+    color: #6b6f76;
+  }
+
+  .luxury-hero-two-top-search .hero-search-submit:hover {
+    background: transparent;
+    color: #24221e;
+  }
+
+  .hero-quick-links {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .hero-quick-links::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hero-quick-link-pill {
+    flex: none;
+  }
+}
+
 .home-content { max-width: 1010px; margin: 0 auto; padding: 100px 22px 0; }.community-intro { display: flex; align-items: center; justify-content: space-between; margin-bottom: 54px; }.community-intro > a { text-transform: uppercase; color: #29282e; font-weight: 700; font-size: 12px; text-decoration: underline; }.section-title { display: flex; align-items: center; position: relative; gap: 13px; }.section-title svg { width: 35px; height: 35px; stroke-width: 1.25; }.section-title h2 { font-size: 35px; }.orange-swoop { color: #f47b36; font-size: 52px; line-height: 1; transform: rotate(-22deg); position: absolute; right: -53px; bottom: -17px; font-family: var(--font-ref-sans); }
 .featured-communities-block { margin: -100px calc(505px - 50vw) 84px; padding: 72px max(calc((100vw - 1010px)/2), 34px) 34px; background: #FAFAFA; border-top: 1px solid #e8dfcd; border-bottom: 1px solid #e8dfcd; }
 .featured-communities-block .home-shelf { margin-bottom: 0; }

@@ -167,10 +167,8 @@ export function HomeClient({ projects }: { projects: Project[] }) {
 
     <main className="home-content">
       <section className="neighborhoods-section" aria-label="Find the city for you">
-        <span className="section-kicker">Best city match</span>
         <h2>Find the City For You</h2>
         <p className="neighborhoods-subtitle">The cities best suited to your lifestyle, and the agents who know them best.</p>
-        <h3 className="neighborhoods-subhead">New developments in Colombo</h3>
         <div className="neighborhoods-grid">
           {neighborhoods.map((neighborhood) => (
             <Link href="/search" className="neighborhood-card" key={neighborhood.name}>
