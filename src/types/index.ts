@@ -60,6 +60,7 @@ export type FloorPlan = {
   basement?: string;
   garage?: string;
   parkingSpaces?: number;
+  parkingType?: string;
   startingPriceLkr: number;
   image: string;
   availability: "Available" | "Limited" | "Sold Out";
@@ -219,6 +220,8 @@ export type Project = SeoFields & {
   /** Average unit floor area across the building, when the source data provides a building-wide average distinct from floorAreaRange. */
   averageFloorAreaSqFt?: number;
   parking: string;
+  parkingCount?: number;
+  parkingType?: string;
   security: string;
   ownership: string;
   ceilingInfo?: string;

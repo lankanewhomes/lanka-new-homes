@@ -67,9 +67,11 @@ function resolveFloorPlans(raw: unknown): AnyDoc[] {
     p.planType = resolveOther(p.planType, p.planType_other)
     p.basement = resolveOther(p.basement, p.basement_other)
     p.garage = resolveOther(p.garage, p.garage_other)
+    p.parkingType = resolveOther(p.parkingType, p.parkingType_other)
     delete p.planType_other
     delete p.basement_other
     delete p.garage_other
+    delete p.parkingType_other
     return p
   })
 }
@@ -136,6 +138,8 @@ export const syncProjectToSupabase: CollectionAfterChangeHook = async ({ doc, re
       province: resolveOther(d.province, d.province_other) ?? '',
       ownership: resolveOther(d.ownership, d.ownership_other),
       constructionStatus: resolveOther(d.constructionStatus, d.constructionStatus_other),
+      security: resolveOther(d.security, d.security_other),
+      parkingType: resolveOther(d.parkingType, d.parkingType_other),
       electricity: resolveOther(d.electricity, d.electricity_other),
       tapWater: resolveOther(d.tapWater, d.tapWater_other),
       type: resolveOther(d.type, d.type_other) ?? '',

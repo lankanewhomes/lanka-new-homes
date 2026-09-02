@@ -2502,6 +2502,11 @@ export interface Project {
    * Custom value, used when Type above doesn't have the right option.
    */
   type_other?: string | null;
+  ownership?: ('Freehold' | 'Leasehold' | 'Condominium') | null;
+  /**
+   * Custom value, used when Ownership above doesn't have the right option.
+   */
+  ownership_other?: string | null;
   status?:
     | ('Now Selling' | 'Coming Soon' | 'Under Construction' | 'Launching Soon' | 'Nearly Sold Out' | 'Nearly Complete')
     | null;
@@ -2570,28 +2575,11 @@ export interface Project {
     | null;
   startingPriceLkr?: number | null;
   priceRange?: string | null;
-  bedrooms?: string | null;
-  bathrooms?: string | null;
-  floorAreaRange?: string | null;
-  units?: number | null;
-  floors?: number | null;
-  carparkLevels?: number | null;
   averageUnitPriceLkr?: number | null;
-  averageFloorAreaSqFt?: number | null;
-  parking?: string | null;
-  security?: string | null;
-  ownership?: ('Freehold' | 'Leasehold' | 'Condominium') | null;
-  /**
-   * Custom value, used when Ownership above doesn't have the right option.
-   */
-  ownership_other?: string | null;
-  ceilingInfo?: string | null;
   paymentPlan?: string | null;
   paymentPlanItems?: string[] | null;
   availablePlanPrices?: string | null;
   pricingComingSoon?: string | null;
-  averagePricePerSqft?: string | null;
-  monthlyMaintenancePerSqft?: string | null;
   propertyTax?: string | null;
   parkingCost?: string | null;
   storageCost?: string | null;
@@ -2605,6 +2593,46 @@ export interface Project {
         id?: string | null;
       }[]
     | null;
+  bedrooms?: string | null;
+  bathrooms?: string | null;
+  floorAreaRange?: string | null;
+  averageFloorAreaSqFt?: number | null;
+  units?: number | null;
+  floors?: number | null;
+  carparkLevels?: number | null;
+  parkingCount?: number | null;
+  parkingType?:
+    | ('Indoor' | 'Outdoor' | 'Covered' | 'Underground' | 'Garage' | 'Driveway' | 'Street' | 'Assigned' | 'Visitor')
+    | null;
+  /**
+   * Custom value, used when Parking Type above doesn't have the right option.
+   */
+  parkingType_other?: string | null;
+  /**
+   * Free-text description, e.g. "Laneway/rear access, Driveway" — shown alongside Parking Count/Type above.
+   */
+  parking?: string | null;
+  security?:
+    | (
+        | '24/7 Security Guard'
+        | 'CCTV Surveillance'
+        | 'Gated Entry'
+        | 'Access Control System'
+        | 'Intercom / Video Phone'
+        | 'Alarm System'
+        | 'Perimeter Fencing'
+        | 'Security Patrol'
+        | 'Biometric Access'
+        | 'Visitor Management System'
+      )
+    | null;
+  /**
+   * Custom value, used when Security above doesn't have the right option.
+   */
+  security_other?: string | null;
+  ceilingInfo?: string | null;
+  averagePricePerSqft?: string | null;
+  monthlyMaintenancePerSqft?: string | null;
   summary?: string | null;
   description?: string | null;
   /**
@@ -2914,6 +2942,23 @@ export interface Project {
          */
         garage_other?: string | null;
         parkingSpaces?: number | null;
+        parkingType?:
+          | (
+              | 'Indoor'
+              | 'Outdoor'
+              | 'Covered'
+              | 'Underground'
+              | 'Garage'
+              | 'Driveway'
+              | 'Street'
+              | 'Assigned'
+              | 'Visitor'
+            )
+          | null;
+        /**
+         * Custom value, used when Parking Type above doesn't have the right option.
+         */
+        parkingType_other?: string | null;
         startingPriceLkr: number;
         /**
          * Image URL
@@ -6173,6 +6218,8 @@ export interface ProjectsSelect<T extends boolean = true> {
   tapWater_other?: T;
   type?: T;
   type_other?: T;
+  ownership?: T;
+  ownership_other?: T;
   status?: T;
   featured?: T;
   isMoveInNow?: T;
@@ -6214,25 +6261,11 @@ export interface ProjectsSelect<T extends boolean = true> {
       };
   startingPriceLkr?: T;
   priceRange?: T;
-  bedrooms?: T;
-  bathrooms?: T;
-  floorAreaRange?: T;
-  units?: T;
-  floors?: T;
-  carparkLevels?: T;
   averageUnitPriceLkr?: T;
-  averageFloorAreaSqFt?: T;
-  parking?: T;
-  security?: T;
-  ownership?: T;
-  ownership_other?: T;
-  ceilingInfo?: T;
   paymentPlan?: T;
   paymentPlanItems?: T;
   availablePlanPrices?: T;
   pricingComingSoon?: T;
-  averagePricePerSqft?: T;
-  monthlyMaintenancePerSqft?: T;
   propertyTax?: T;
   parkingCost?: T;
   storageCost?: T;
@@ -6246,6 +6279,22 @@ export interface ProjectsSelect<T extends boolean = true> {
         note?: T;
         id?: T;
       };
+  bedrooms?: T;
+  bathrooms?: T;
+  floorAreaRange?: T;
+  averageFloorAreaSqFt?: T;
+  units?: T;
+  floors?: T;
+  carparkLevels?: T;
+  parkingCount?: T;
+  parkingType?: T;
+  parkingType_other?: T;
+  parking?: T;
+  security?: T;
+  security_other?: T;
+  ceilingInfo?: T;
+  averagePricePerSqft?: T;
+  monthlyMaintenancePerSqft?: T;
   summary?: T;
   description?: T;
   heroImage?: T;
@@ -6330,6 +6379,8 @@ export interface ProjectsSelect<T extends boolean = true> {
         garage?: T;
         garage_other?: T;
         parkingSpaces?: T;
+        parkingType?: T;
+        parkingType_other?: T;
         startingPriceLkr?: T;
         image?: T;
         availability?: T;

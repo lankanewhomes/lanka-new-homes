@@ -74,6 +74,16 @@ export const BASEMENT_OPTIONS = ['None', 'Unfinished', 'Finished', 'Walkout', 'P
 
 export const GARAGE_OPTIONS = ['None', 'Attached', 'Detached', 'Carport', 'Underground']
 
+export const PARKING_TYPE_OPTIONS = [
+  'Indoor', 'Outdoor', 'Covered', 'Underground', 'Garage', 'Driveway', 'Street', 'Assigned', 'Visitor',
+]
+
+export const SECURITY_OPTIONS = [
+  '24/7 Security Guard', 'CCTV Surveillance', 'Gated Entry', 'Access Control System',
+  'Intercom / Video Phone', 'Alarm System', 'Perimeter Fencing', 'Security Patrol',
+  'Biometric Access', 'Visitor Management System',
+]
+
 // Matches the plural forms already used by src/lib/listing-categories.ts's
 // filter logic (project.type === "Apartments" / "Villas").
 export const PROJECT_TYPE_OPTIONS = [
