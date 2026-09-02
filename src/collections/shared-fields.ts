@@ -299,7 +299,7 @@ export function galleryLikeField(name: string, label?: string): Field {
     label,
     fields: [
       { name: 'label', type: 'text' },
-      { name: 'image', type: 'text', required: true, admin: { description: 'Image URL' } },
+      { name: 'image', type: 'text', required: true, admin: { description: 'Image URL — or upload a file in Media and paste its URL here.' } },
     ],
   }
 }
@@ -313,7 +313,7 @@ export const seoFields: Field = {
   fields: [
     { name: 'seoTitle', type: 'text' },
     { name: 'seoDescription', type: 'textarea' },
-    { name: 'ogImage', type: 'text', admin: { description: 'Image URL' } },
+    { name: 'ogImage', type: 'text', admin: { description: 'Image URL — or upload a file in Media and paste its URL here.' } },
     { name: 'canonicalUrl', type: 'text' },
     { name: 'noIndex', type: 'checkbox', defaultValue: false },
   ],
@@ -327,7 +327,7 @@ export function companyProfileFields(extra: Field[] = []): Field[] {
   return [
     { name: 'slug', type: 'text', required: true, unique: true, index: true },
     { name: 'name', type: 'text', required: true },
-    { name: 'logo', type: 'text', admin: { description: 'Logo image URL' } },
+    { name: 'logo', type: 'text', admin: { description: 'Logo image URL — or upload a file in Media and paste its URL here.' } },
     { name: 'description', type: 'textarea' },
     { name: 'contact_email', type: 'email', label: 'Contact Email' },
     { name: 'contact_phone', type: 'text', label: 'Contact Phone' },

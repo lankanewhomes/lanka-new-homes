@@ -220,16 +220,16 @@ export const Projects: CollectionConfig = {
           fields: [
             { name: 'summary', type: 'textarea' },
             { name: 'description', type: 'textarea' },
-            { name: 'heroImage', type: 'text', admin: { description: 'Image URL' } },
+            { name: 'heroImage', type: 'text', admin: { description: 'Image URL — or upload a file in Media and paste its URL here.' } },
             galleryField,
-            { name: 'brochureUrl', type: 'text' },
+            { name: 'brochureUrl', type: 'text', label: 'Brochure URL', admin: { description: 'PDF URL — or upload a file in Media and paste its URL here.' } },
             {
               name: 'videos',
               type: 'array',
               fields: [
                 { name: 'label', type: 'text' },
-                { name: 'embedUrl', type: 'text' },
-                { name: 'thumbnail', type: 'text' },
+                { name: 'embedUrl', type: 'text', label: 'Embed URL', admin: { description: 'YouTube/Vimeo link — or upload a video file in Media and paste its URL here.' } },
+                { name: 'thumbnail', type: 'text', admin: { description: 'Image URL — or upload a file in Media and paste its URL here.' } },
               ],
             },
             {
@@ -237,10 +237,10 @@ export const Projects: CollectionConfig = {
               type: 'array',
               fields: [
                 { name: 'label', type: 'text' },
-                { name: 'url', type: 'text', required: true },
+                { name: 'url', type: 'text', required: true, admin: { description: 'Matterport/embed link — or upload a file in Media and paste its URL here.' } },
               ],
             },
-            { name: 'interactiveMapUrl', type: 'text' },
+            { name: 'interactiveMapUrl', type: 'text', admin: { description: 'Embed link (e.g. Google My Maps) — or upload a file in Media and paste its URL here.' } },
             {
               // Same access level as floorPlanVisibleStats (Floor Plans
               // tab) — developer/builder-editable, not admin-only.
@@ -306,7 +306,7 @@ export const Projects: CollectionConfig = {
                 { name: 'parkingSpaces', type: 'number' },
                 ...selectWithOther('parkingType', 'Parking Type', PARKING_TYPE_OPTIONS),
                 { name: 'startingPriceLkr', type: 'number', required: true },
-                { name: 'image', type: 'text', admin: { description: 'Image URL' } },
+                { name: 'image', type: 'text', admin: { description: 'Image URL — or upload a file in Media and paste its URL here.' } },
                 {
                   name: 'availability',
                   type: 'select',

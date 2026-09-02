@@ -23,7 +23,7 @@ export const SiteSettings: GlobalConfig = {
       fields: [
         { name: 'defaultTitle', type: 'text', label: 'Default Title' },
         { name: 'defaultDescription', type: 'textarea', label: 'Default Description' },
-        { name: 'defaultOgImage', type: 'text', label: 'Default OG Image', admin: { description: 'Image URL' } },
+        { name: 'defaultOgImage', type: 'text', label: 'Default OG Image', admin: { description: 'Image URL — or upload a file in Media and paste its URL here.' } },
       ],
     },
   ],

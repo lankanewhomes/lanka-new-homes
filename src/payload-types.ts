@@ -85,6 +85,7 @@ export interface Config {
     'placement-pricing': PlacementPricing;
     'team-members': TeamMember;
     articles: Article;
+    media: Media;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -118,6 +119,7 @@ export interface Config {
     'placement-pricing': PlacementPricingSelect<false> | PlacementPricingSelect<true>;
     'team-members': TeamMembersSelect<false> | TeamMembersSelect<true>;
     articles: ArticlesSelect<false> | ArticlesSelect<true>;
+    media: MediaSelect<false> | MediaSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -198,7 +200,7 @@ export interface Developer {
   slug: string;
   name: string;
   /**
-   * Logo image URL
+   * Logo image URL — or upload a file in Media and paste its URL here.
    */
   logo?: string | null;
   description?: string | null;
@@ -236,7 +238,7 @@ export interface Developer {
     seoTitle?: string | null;
     seoDescription?: string | null;
     /**
-     * Image URL
+     * Image URL — or upload a file in Media and paste its URL here.
      */
     ogImage?: string | null;
     canonicalUrl?: string | null;
@@ -2636,24 +2638,33 @@ export interface Project {
   summary?: string | null;
   description?: string | null;
   /**
-   * Image URL
+   * Image URL — or upload a file in Media and paste its URL here.
    */
   heroImage?: string | null;
   gallery?:
     | {
         label?: string | null;
         /**
-         * Image URL
+         * Image URL — or upload a file in Media and paste its URL here.
          */
         image: string;
         id?: string | null;
       }[]
     | null;
+  /**
+   * PDF URL — or upload a file in Media and paste its URL here.
+   */
   brochureUrl?: string | null;
   videos?:
     | {
         label?: string | null;
+        /**
+         * YouTube/Vimeo link — or upload a video file in Media and paste its URL here.
+         */
         embedUrl?: string | null;
+        /**
+         * Image URL — or upload a file in Media and paste its URL here.
+         */
         thumbnail?: string | null;
         id?: string | null;
       }[]
@@ -2661,10 +2672,16 @@ export interface Project {
   virtualTours?:
     | {
         label?: string | null;
+        /**
+         * Matterport/embed link — or upload a file in Media and paste its URL here.
+         */
         url: string;
         id?: string | null;
       }[]
     | null;
+  /**
+   * Embed link (e.g. Google My Maps) — or upload a file in Media and paste its URL here.
+   */
   interactiveMapUrl?: string | null;
   /**
    * Which detail chips show in the listing icon stats on mobile. Maximum 10.
@@ -2961,7 +2978,7 @@ export interface Project {
         parkingType_other?: string | null;
         startingPriceLkr: number;
         /**
-         * Image URL
+         * Image URL — or upload a file in Media and paste its URL here.
          */
         image?: string | null;
         availability?: ('Available' | 'Limited' | 'Sold Out') | null;
@@ -3083,7 +3100,7 @@ export interface Project {
     seoTitle?: string | null;
     seoDescription?: string | null;
     /**
-     * Image URL
+     * Image URL — or upload a file in Media and paste its URL here.
      */
     ogImage?: string | null;
     canonicalUrl?: string | null;
@@ -3108,7 +3125,7 @@ export interface Architect {
   slug: string;
   name: string;
   /**
-   * Logo image URL
+   * Logo image URL — or upload a file in Media and paste its URL here.
    */
   logo?: string | null;
   description?: string | null;
@@ -3127,7 +3144,7 @@ export interface MarketingCompany {
   slug: string;
   name: string;
   /**
-   * Logo image URL
+   * Logo image URL — or upload a file in Media and paste its URL here.
    */
   logo?: string | null;
   description?: string | null;
@@ -3146,7 +3163,7 @@ export interface SalesCompany {
   slug: string;
   name: string;
   /**
-   * Logo image URL
+   * Logo image URL — or upload a file in Media and paste its URL here.
    */
   logo?: string | null;
   description?: string | null;
@@ -3165,7 +3182,7 @@ export interface InteriorDesigner {
   slug: string;
   name: string;
   /**
-   * Logo image URL
+   * Logo image URL — or upload a file in Media and paste its URL here.
    */
   logo?: string | null;
   description?: string | null;
@@ -3187,14 +3204,14 @@ export interface Neighborhood {
   province?: string | null;
   description?: string | null;
   /**
-   * Image URL
+   * Image URL — or upload a file in Media and paste its URL here.
    */
   heroImage?: string | null;
   seo?: {
     seoTitle?: string | null;
     seoDescription?: string | null;
     /**
-     * Image URL
+     * Image URL — or upload a file in Media and paste its URL here.
      */
     ogImage?: string | null;
     canonicalUrl?: string | null;
@@ -3212,7 +3229,7 @@ export interface ConstructionCompany {
   slug: string;
   name: string;
   /**
-   * Logo image URL
+   * Logo image URL — or upload a file in Media and paste its URL here.
    */
   logo?: string | null;
   description?: string | null;
@@ -5594,14 +5611,14 @@ export interface Land {
   summary?: string | null;
   description?: string | null;
   /**
-   * Image URL
+   * Image URL — or upload a file in Media and paste its URL here.
    */
   heroImage?: string | null;
   gallery?:
     | {
         label?: string | null;
         /**
-         * Image URL
+         * Image URL — or upload a file in Media and paste its URL here.
          */
         image: string;
         id?: string | null;
@@ -5611,7 +5628,7 @@ export interface Land {
     | {
         label?: string | null;
         /**
-         * Image URL
+         * Image URL — or upload a file in Media and paste its URL here.
          */
         image: string;
         id?: string | null;
@@ -5621,7 +5638,7 @@ export interface Land {
     | {
         label?: string | null;
         /**
-         * Image URL
+         * Image URL — or upload a file in Media and paste its URL here.
          */
         image: string;
         id?: string | null;
@@ -5630,6 +5647,9 @@ export interface Land {
   videos?:
     | {
         label?: string | null;
+        /**
+         * YouTube/Vimeo link — or upload a video file in Media and paste its URL here.
+         */
         url: string;
         id?: string | null;
       }[]
@@ -5797,7 +5817,7 @@ export interface Land {
         priceLkr: number;
         status: 'Available' | 'Reserved' | 'Sold';
         /**
-         * Image URL
+         * Image URL — or upload a file in Media and paste its URL here.
          */
         image?: string | null;
         id?: string | null;
@@ -5824,7 +5844,7 @@ export interface Land {
     seoTitle?: string | null;
     seoDescription?: string | null;
     /**
-     * Image URL
+     * Image URL — or upload a file in Media and paste its URL here.
      */
     ogImage?: string | null;
     canonicalUrl?: string | null;
@@ -5840,7 +5860,7 @@ export interface Land {
 export interface HeroSlide {
   id: number;
   /**
-   * Image URL
+   * Image URL — or upload a file in Media and paste its URL here.
    */
   image: string;
   link?: string | null;
@@ -5963,7 +5983,7 @@ export interface Article {
    */
   readTime?: string | null;
   /**
-   * Image URL
+   * Image URL — or upload a file in Media and paste its URL here.
    */
   image?: string | null;
   author?: string | null;
@@ -5985,6 +6005,28 @@ export interface Article {
   } | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: number;
+  /**
+   * Describes the file for accessibility/SEO — required for images.
+   */
+  alt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -6081,6 +6123,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'articles';
         value: number | Article;
+      } | null)
+    | ({
+        relationTo: 'media';
+        value: number | Media;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -6803,6 +6849,24 @@ export interface ArticlesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media_select".
+ */
+export interface MediaSelect<T extends boolean = true> {
+  alt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
@@ -6863,7 +6927,7 @@ export interface SiteSetting {
     defaultTitle?: string | null;
     defaultDescription?: string | null;
     /**
-     * Image URL
+     * Image URL — or upload a file in Media and paste its URL here.
      */
     defaultOgImage?: string | null;
   };

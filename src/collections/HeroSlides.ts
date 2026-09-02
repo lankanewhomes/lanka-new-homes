@@ -29,7 +29,7 @@ export const HeroSlides: CollectionConfig = {
     ],
   },
   fields: [
-    { name: 'image', type: 'text', required: true, admin: { description: 'Image URL' } },
+    { name: 'image', type: 'text', required: true, admin: { description: 'Image URL — or upload a file in Media and paste its URL here.' } },
     { name: 'link', type: 'text' },
     { name: 'page_target', type: 'text', label: 'Page Target', admin: { description: 'e.g. homepage, colombo, luxury' } },
     { name: 'display_order', type: 'number', label: 'Display Order', defaultValue: 0 },

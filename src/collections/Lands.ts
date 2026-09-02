@@ -91,7 +91,7 @@ export const Lands: CollectionConfig = {
           fields: [
             { name: 'summary', type: 'textarea' },
             { name: 'description', type: 'textarea' },
-            { name: 'heroImage', type: 'text', admin: { description: 'Image URL' } },
+            { name: 'heroImage', type: 'text', admin: { description: 'Image URL — or upload a file in Media and paste its URL here.' } },
             galleryLikeField('gallery'),
             galleryLikeField('blockPlanImages', 'Block Plan Images'),
             galleryLikeField('roadMapImages', 'Road Map Images'),
@@ -100,7 +100,7 @@ export const Lands: CollectionConfig = {
               type: 'array',
               fields: [
                 { name: 'label', type: 'text' },
-                { name: 'url', type: 'text', required: true },
+                { name: 'url', type: 'text', required: true, admin: { description: 'YouTube/Vimeo link — or upload a video file in Media and paste its URL here.' } },
               ],
             },
             { name: 'badges', type: 'text', hasMany: true, admin: { description: 'Marketing trust badges, e.g. "Easy Payment Plan"' } },
@@ -126,7 +126,7 @@ export const Lands: CollectionConfig = {
                 { name: 'sizePerches', type: 'number', required: true },
                 { name: 'priceLkr', type: 'number', required: true },
                 { name: 'status', type: 'select', required: true, defaultValue: 'Available', options: ['Available', 'Reserved', 'Sold'] },
-                { name: 'image', type: 'text', admin: { description: 'Image URL' } },
+                { name: 'image', type: 'text', admin: { description: 'Image URL — or upload a file in Media and paste its URL here.' } },
               ],
             },
             nearbyField,

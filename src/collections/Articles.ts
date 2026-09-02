@@ -27,7 +27,7 @@ export const Articles: CollectionConfig = {
       options: ['Buying Guide', 'Market Insight', 'Finance'],
     },
     { name: 'readTime', type: 'text', label: 'Read Time', admin: { description: 'e.g. "5 min read"' } },
-    { name: 'image', type: 'text', admin: { description: 'Image URL' } },
+    { name: 'image', type: 'text', admin: { description: 'Image URL — or upload a file in Media and paste its URL here.' } },
     { name: 'author', type: 'text' },
     { name: 'publishedDate', type: 'date', label: 'Published Date' },
     { name: 'content', type: 'richText' },

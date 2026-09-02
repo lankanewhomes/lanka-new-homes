@@ -19,7 +19,7 @@ export const Neighborhoods: CollectionConfig = {
     { name: 'city', type: 'text' },
     { name: 'province', type: 'text' },
     { name: 'description', type: 'textarea' },
-    { name: 'heroImage', type: 'text', admin: { description: 'Image URL' } },
+    { name: 'heroImage', type: 'text', admin: { description: 'Image URL — or upload a file in Media and paste its URL here.' } },
     seoFields,
   ],
 }
