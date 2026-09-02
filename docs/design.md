@@ -58,6 +58,11 @@ documented alternate.
   block back to a `<div className="plans-homes-grid">` mapping over
   `visiblePlans` with the `plans-home-card` markup — nothing was deleted
   from `globals.css`, so no new styles need writing.
+- **Card text styling is shared with `ListingGridCard`'s** (see "Homepage"
+  below): title `16px` / `400` weight / `20px` line-height / `#1a1a1a`,
+  price `13px` / `400` / `18px` line-height / `#303030`, secondary line
+  (`.plans-home-type` / `.listing-grid-card-agency`) `12px` / `#303030`.
+  Keep any new project/plan card's name+price text at these same values.
 
 ## Hero media (project detail page)
 
@@ -109,13 +114,21 @@ Built from `src/lib/listing-categories.ts` (config) +
 ItemList JSON-LD, related links) + `listing-page.tsx` (client: filter bar,
 sort, list/map toggle) + `map-pane.tsx` (lazy-loaded map visual).
 
-- **Search + filter bar**: one row — region picker ("All of Sri Lanka")
-  first, then the address search input (icon on the right), then filter
-  pills (For sale / Home type / Any price / 0+ beds / Construction status /
-  More) centered in the middle, List/Map toggle pinned right. Region picker,
-  search input, filter pills, and the List/Map toggle all share the same
-  `52px` control height. Filter pills, the search input, and the sort pill
-  are square (`border-radius: 0`) — the List/Map toggle is the one
+- **Search + filter bar**: sits below the breadcrumb bar, above the H1/sort
+  row. One row — the address search input (icon on the right) first, then
+  the region picker ("All of Sri Lanka", a real `<select>` of every distinct
+  `project.city` in the current list — picking one filters the grid), then
+  filter pills (For sale / Home type / Any price / 0+ beds / Construction
+  status) centered in the middle, a "More filters" icon button, List/Map
+  toggle pinned right. Region picker, search input, filter pills, and the
+  List/Map toggle all share the same `52px` control height. Filter pills,
+  the search input, and the sort pill are square (`border-radius: 0`) — the
+  List/Map toggle is the one exception and stays a rounded pill. The
+  "More filters" button (`SlidersHorizontal` icon,
+  `.listing-filter-more-wrap`) opens a real dropdown panel
+  (`.listing-filter-more-panel`) — same radio-button pattern as the
+  floor-plan filter drawer (`.plans-filter-panel` in components.tsx) —
+  restating the same filter groups; it isn't just a mobile-only CSS toggle.
   deliberate exception and stays a rounded pill (`border-radius: 999px`).
 - **Sort control**: `.listing-sort-pill` — a small rounded pill
   (`↕ Recommended`, `ArrowUpDown` icon) sitting above the H1, not a
@@ -194,18 +207,13 @@ untouched. Both states stay always-mounted — same "CSS-driven visibility,
 never remove from the DOM" philosophy as the List/Map toggle above.
 
 - **Rail** (`.map-sidebar-rail`, 72px wide, `#f5f5f4` background,
-  `#d8d8d8` right border): hamburger (opens a real site-nav drawer — the
-  header's own mobile "Menu" button is dead placeholder markup with no
-  drawer, so this is the first working implementation of that pattern) →
-  Search / Saved / Recents / Alerts / Compare icon buttons (icon + small
+  `#d8d8d8` right border): quick-filter shortcuts (New Listings, Pre-Con,
+  Residences, Villas, Waterfront, Apartments, Lands — fixed global
+  shortcuts on every one of the 11 pages, not contextual to the current
+  page) → Saved / Recents / Alerts / Compare icon buttons (icon + small
   label, active state inverts to a dark pill like
-  `.listing-mobile-icon-btn`) → quick-filter shortcuts to
-  `/projects/colombo`, `/projects/beachfront`, `/projects/branded-residences`,
-  `/projects/pre-construction` (fixed global shortcuts on every one of the
-  11 pages, not contextual to the current page) → a scrollable recently
-  viewed thumbnails list → a bottom-pinned "Neighborhoods" link (to
-  `/sitemap`, the closest existing "browse all neighborhoods" entry point
-  — there's no dedicated public neighborhoods index page).
+  `.listing-mobile-icon-btn`). No hamburger/nav-drawer or in-rail search —
+  those were removed; site nav and search live only in the top header.
 - **Panels** (`.map-sidebar-panel`, 320px, slides out to the right of the
   rail): mirror image of the existing right-anchored
   `.request-info-dialog`/`.plans-filter-panel` treatment — shadow cast
@@ -214,9 +222,6 @@ never remove from the DOM" philosophy as the List/Map toggle above.
   Rounded-square `border-radius: 8px` thumbnails for these compact rows —
   a new convention distinct from the 14px plan-row / 0px filter-pill /
   999px pill radii already in use elsewhere.
-- **Search panel** is intentionally visual-only — it mirrors the top
-  filter bar's controls but isn't wired to any filtering logic, matching
-  the top bar's own current (unwired) behavior.
 - **Saved** and **Alerts** are gated by `useCurrentUser()`; signed-out
   state prompts via `useAuthModal()` (the same in-page modal the header's
   Log in/Sign up buttons use), never a `/login` route redirect.
@@ -241,20 +246,25 @@ never remove from the DOM" philosophy as the List/Map toggle above.
 - **z-index 60** for the rail/panel — below `.auth-modal-backdrop`'s 300
   (the highest in the app), and nothing else on these 11 routes uses
   `position: fixed`.
-- **Layout offset**: reserving 72px on the left required three separate
+- **Vertical position**: the rail starts below the header, not behind it —
+  `top: 82px` (site-header's fixed height) / `height: calc(100vh - 82px)`,
+  rather than `top: 0` / `100vh`. It still overlaps `.site-breadcrumb`
+  below the header (see offset below), just not the header itself.
+- **Layout offset**: reserving 72px on the left required two separate
   fixes, because `.listing-page-shell`/`.listing-map-pane` compute their
   width off raw `100vw` (not a parent-relative `%`), while
-  `.site-header-inner`/`.site-breadcrumb-inner` are `%`-relative:
+  `.site-breadcrumb-inner` is `%`-relative:
   - `.listing-page-shell`'s `--shell-width` and `.listing-map-pane`'s
     bleed margin both get the 72px subtracted directly in their `calc()`
     (a parent padding wouldn't reach a `100vw`-based formula).
-  - `.site-header`/`.site-breadcrumb` just get `padding-left: 72px`
-    (gated by `mapSidebarRoutes` from `listing-categories.ts` — an exact
-    path match, not the broader `.startsWith()` prefix check
-    `site-breadcrumb-inner-wide` uses, since that would incorrectly also
-    match detail pages like `/projects/[slug]` where the rail never
-    renders) — their inner bars are already `%`-relative, so parent
-    padding alone re-centers them correctly.
+  - `.site-breadcrumb` gets `padding-left: 72px` (gated by
+    `mapSidebarRoutes` from `listing-categories.ts` — an exact path match,
+    not the broader `.startsWith()` prefix check `site-breadcrumb-inner-wide`
+    uses, since that would incorrectly also match detail pages like
+    `/projects/[slug]` where the rail never renders) — its inner bar is
+    already `%`-relative, so parent padding alone re-centers it correctly.
+    `.site-header` no longer needs this offset since the rail now starts
+    below it instead of alongside it.
 
 ## Homepage (`src/components/marketplace/home-client.tsx`)
 

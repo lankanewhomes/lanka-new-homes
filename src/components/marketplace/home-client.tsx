@@ -129,6 +129,10 @@ export function HomeClient({ projects }: { projects: Project[] }) {
   const t = copy[language];
 
   const featuredProjects = useMemo(() => projects.filter((project) => project.isFeatured).slice(0, 4), [projects]);
+  const heroQuickLinks = [
+    ...allProjectCategories,
+    { path: "/land", breadcrumbLabel: "Lands" },
+  ];
 
   return <div className="livabl-home">
     <section className="luxury-hero-two" aria-label="Luxury listing search hero">
@@ -144,13 +148,14 @@ export function HomeClient({ projects }: { projects: Project[] }) {
       </div>
       <div className="luxury-hero-two-panel">
           <h1>{t.heroTitle}</h1>
+          <p className="luxury-hero-two-subheading">{t.heroSubtitle}</p>
           <form className="hero-search luxury-hero-two-top-search" onSubmit={submitSearch}>
             <label><input aria-label="Search homes" value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} placeholder={t.searchPlaceholder} /></label>
             <button type="button" className="hero-region-picker" aria-label="Select region"><MapPin size={17} /><span>{t.searchRegion}</span><ChevronDown size={16} /></button>
             <button type="submit" aria-label={t.searchButton} className="hero-search-submit"><Search size={19} /></button>
           </form>
           <div className="hero-quick-links" aria-label="Browse by category">
-            {allProjectCategories.map((category) => (
+            {heroQuickLinks.map((category) => (
               <Link key={category.path} href={category.path} className="listing-filter-pill hero-quick-link-pill">
                 <span>{category.breadcrumbLabel}</span>
               </Link>
@@ -161,8 +166,10 @@ export function HomeClient({ projects }: { projects: Project[] }) {
 
     <main className="home-content">
       <section className="neighborhoods-section" aria-label="Find the city for you">
+        <span className="section-kicker">Best city match</span>
         <h2>Find the City For You</h2>
         <p className="neighborhoods-subtitle">The cities best suited to your lifestyle, and the agents who know them best.</p>
+        <h3 className="neighborhoods-subhead">New developments in Colombo</h3>
         <div className="neighborhoods-grid">
           {neighborhoods.map((neighborhood) => (
             <Link href="/search" className="neighborhood-card" key={neighborhood.name}>
@@ -177,6 +184,7 @@ export function HomeClient({ projects }: { projects: Project[] }) {
 
       <section className="featured-listings-section" aria-label="Featured listings">
         <div className="featured-listings-head">
+          <span className="section-kicker section-kicker--warm">Editor’s picks</span>
           <h2>Featured listings</h2>
         </div>
         <p className="featured-listings-subtitle">A curated set of standout homes selected by LankaNewHomes editors.</p>

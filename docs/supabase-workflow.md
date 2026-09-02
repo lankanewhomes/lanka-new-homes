@@ -49,3 +49,30 @@ See `docs/supabase-schema.sql` for the full schema. Summary:
 
 Not migrated (static reference data, no admin editing): Sri Lanka
 provinces/districts/cities geo lookups.
+
+## Payload CMS (new, additive backend layer)
+
+A second backend, Payload CMS, was added on top of this same Supabase
+Postgres database — **not** a replacement for the tables above. Payload's
+tables live in a dedicated `payload` Postgres schema (via `schemaName:
+'payload'` in `payload.config.ts`), fully isolated from the `public` schema
+tables/RLS policies/triggers documented in this file, which are untouched
+and still power the existing site.
+
+- Config: `payload.config.ts` (repo root). Collections:
+  `src/collections/*.ts`.
+- Admin panel: `/payload-admin`. REST/GraphQL API: `/payload-api/*` —
+  deliberately not `/admin` or `/api`, since the existing app already owns
+  those paths (`src/app/(frontend)/admin`, `src/app/(frontend)/api/*`).
+- Auth is Payload's own (`users` collection, email/password + a custom
+  magic-link flow) — entirely separate from Supabase Auth
+  (`auth.users`/`profiles`), which still powers the existing
+  login/signup/`middleware.ts` flow.
+- One-time data copy from the tables above into Payload's collections:
+  `scripts/migrate-to-payload.ts` (`npx tsx scripts/migrate-to-payload.ts`,
+  safe to re-run). Not copied: Users/accounts (password hashes aren't
+  portable), Hero Slides (shape doesn't map cleanly from `hero_ads`), Saved
+  Listings (needs a Payload user per buyer).
+- The existing frontend (`src/app/(frontend)/**`) has not been wired to
+  Payload's API — it still reads/writes the tables above exactly as before.
+  Moving the frontend onto Payload is a separate, future step.

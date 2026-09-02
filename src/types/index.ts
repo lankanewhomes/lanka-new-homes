@@ -307,6 +307,28 @@ export type Project = SeoFields & {
    * the existing propertyTax/parkingCost/storageCost/monthlyMaintenancePerSqft
    * fields when empty — see UtilitiesCostsSection. */
   paidUtilities?: { label: string; value: string }[];
+
+  // --- Fields added on the Payload side (src/collections/Projects.ts),
+  // synced here via src/collections/hooks/sync-to-supabase.ts. No frontend
+  // section reads these yet unless noted.
+  additionalDeveloperSlugs?: string[];
+  additionalBuilderSlugs?: string[];
+  placements?: { page: string; startDate?: string; endDate?: string }[];
+  completenessScore?: number;
+  viewCount?: number;
+  saveCount?: number;
+  leadCount?: number;
+  paidBoost?: number;
+  finalScore?: number;
+  verification?: {
+    developerVerified?: boolean;
+    addressVerified?: boolean;
+    priceVerified?: boolean;
+    floorPlansVerified?: boolean;
+    completionDateVerified?: boolean;
+    ownershipVerified?: boolean;
+    documentsVerified?: boolean;
+  };
 };
 
 // Land parcels — a separate inventory type from Project (new-construction
@@ -366,6 +388,7 @@ export type Land = SeoFields & {
   description: string;
   heroImage: string;
   gallery: { label: string; image: string }[];
+  brochureUrl?: string;
   /** Site/subdivision layout diagrams — a separate slot from the general gallery so more than one can be entered without relying on label-text matching. */
   blockPlanImages?: { label: string; image: string }[];
   roadMapImages?: { label: string; image: string }[];
@@ -492,6 +515,9 @@ export type ConstructionCompany = {
   email?: string;
   phone?: string;
   socialLinks?: SocialLinks;
+  /** From the Payload backend's `services` field — a looser, non-enum list
+   * distinct from `categories` above. */
+  services?: string[];
 };
 
 // Shared shape for the lightweight partner directories linked from a
@@ -510,6 +536,10 @@ export type CompanyProfile = {
   phone?: string;
   officeHours?: OfficeHoursEntry[];
   socialLinks?: SocialLinks;
+  /** Marketing/Sales Companies only (from Payload's `services` field). */
+  services?: string[];
+  /** Architects only (from Payload's `portfolio_link` field). */
+  portfolioLink?: string;
 };
 
 export type MarketingCompany = CompanyProfile;

@@ -35,6 +35,7 @@ export default async function SearchPage() {
       projects={projects}
       basePath="/projects"
       relatedPaths={["/projects/pre-construction", "/projects/colombo", "/projects/villas", "/projects/beachfront"]}
+      citySectionHeading="New developments in Colombo"
     />
   );
 }

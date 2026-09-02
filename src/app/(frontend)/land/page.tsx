@@ -25,7 +25,7 @@ const LAND_FILTER_GROUPS = [
   { label: "Land use", options: ["Any", "Residential", "Commercial", "Agricultural", "Mixed Use"] },
   { label: "Any price", options: ["Any price", "Under Rs. 10M", "Rs. 10M - 30M", "Rs. 30M+"] },
   { label: "Any size", options: ["Any size", "Under 20 perches", "20 - 50 perches", "50+ perches"] },
-  { label: "Status", options: ["Any", "Available", "Reserved", "Sold"] },
+  { label: "Status", options: ["Any", "Now Selling", "Under Construction", "Nearly Sold Out"] },
 ];
 
 type LandListingPageProps = { searchParams: Promise<{ landUse?: string }> };

@@ -7,17 +7,13 @@ import {
   Award,
   Bell,
   Building2,
-  ChevronDown,
   GitCompare,
   HardHat,
   Heart,
   History,
   Home,
   LandPlot,
-  MapPin,
-  Menu,
   Plus,
-  Search,
   Sparkles,
   Waves,
   X,
@@ -31,7 +27,7 @@ import { useRecentViews } from "@/lib/use-recent-views";
 import { useAuthModal } from "@/components/auth/auth-modal-provider";
 import type { Project } from "@/types";
 
-type PanelId = "nav" | "search" | "saved" | "recents" | "alerts" | "compare";
+type PanelId = "saved" | "recents" | "alerts" | "compare";
 
 const QUICK_FILTERS: { label: string; href: string; icon: typeof Building2 }[] = [
   { label: "New Listings", href: "/projects", icon: Sparkles },
@@ -41,17 +37,6 @@ const QUICK_FILTERS: { label: string; href: string; icon: typeof Building2 }[] =
   { label: "Waterfront", href: "/projects/beachfront", icon: Waves },
   { label: "Apartments", href: "/projects?type=Apartments", icon: Building2 },
   { label: "Lands", href: "/land", icon: LandPlot },
-];
-
-// Visual-only mirror of listing-page.tsx's FILTER_GROUPS — deliberately not
-// wired to any filtering logic, matching the top filter bar's own current
-// (unwired) behavior. Only text search + sort actually filter results today.
-const SEARCH_FILTER_GROUPS = [
-  { label: "For sale", options: ["For sale", "Any"] },
-  { label: "Home type", options: ["Any", "Condominium", "Apartments", "Villas", "Townhouse", "Housing"] },
-  { label: "Price", options: ["Any price", "Under Rs. 30M", "Rs. 30M - 60M", "Rs. 60M+"] },
-  { label: "Bedrooms", options: ["0+ beds", "1+", "2+", "3+", "4+"] },
-  { label: "Status", options: ["Any", "Now Selling", "Coming Soon", "Under Construction", "Nearly Complete"] },
 ];
 
 function ProjectRow({ project, right }: { project: Project; right?: React.ReactNode }) {
@@ -65,74 +50,6 @@ function ProjectRow({ project, right }: { project: Project; right?: React.ReactN
         <span className="map-sidebar-row-subtext">{project.startingPriceLkr > 0 ? formatLkr(project.startingPriceLkr) : project.location}</span>
       </Link>
       {right}
-    </div>
-  );
-}
-
-function NavPanel() {
-  const { user } = useCurrentUser();
-  const { openAuthModal } = useAuthModal();
-
-  const links = [
-    { label: "Home", href: "/" },
-    { label: "New Homes for Sale", href: "/projects" },
-    { label: "Land", href: "/land" },
-    { label: "Search", href: "/search" },
-    { label: "About", href: "/about" },
-    { label: "Contact", href: "/contact" },
-    { label: "Blog", href: "/blog" },
-  ];
-
-  return (
-    <div className="map-sidebar-panel-body">
-      <h3 className="map-sidebar-panel-title">Menu</h3>
-      <nav className="map-sidebar-nav-links">
-        {links.map((link) => (
-          <Link key={link.href} href={link.href}>{link.label}</Link>
-        ))}
-      </nav>
-      <div className="map-sidebar-nav-account">
-        {user ? (
-          <>
-            <Link href="/account/saved">Saved listings</Link>
-            <button type="button" onClick={() => createSupabaseBrowserClient().auth.signOut()}>Log out</button>
-          </>
-        ) : (
-          <>
-            <button type="button" onClick={() => openAuthModal({ mode: "login" })}>Log in</button>
-            <button type="button" onClick={() => openAuthModal({ mode: "signup" })}>Sign up</button>
-          </>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function SearchPanel() {
-  return (
-    <div className="map-sidebar-panel-body">
-      <h3 className="map-sidebar-panel-title">Search</h3>
-      <button type="button" className="map-sidebar-region-picker" aria-label="Select region">
-        <MapPin className="h-4 w-4" aria-hidden="true" />
-        <span>All of Sri Lanka</span>
-        <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
-      </button>
-      <label className="map-sidebar-search-input">
-        <input type="text" placeholder="Enter a location, city, or district" aria-label="Search by location" />
-        <span className="map-sidebar-search-icon">
-          <Search className="h-4 w-4" aria-hidden="true" />
-        </span>
-      </label>
-      {SEARCH_FILTER_GROUPS.map((group) => (
-        <label key={group.label} className="map-sidebar-filter-row">
-          <span>{group.label}</span>
-          <select defaultValue={group.options[0]} aria-label={group.label}>
-            {group.options.map((option) => (
-              <option key={option} value={option}>{option}</option>
-            ))}
-          </select>
-        </label>
-      ))}
     </div>
   );
 }
@@ -337,19 +254,6 @@ export function MapSidebar({ basePath }: { basePath: string }) {
   return (
     <div className="map-sidebar" data-base-path={basePath}>
       <div className="map-sidebar-rail">
-        <button type="button" className="map-sidebar-icon-btn" aria-label="Menu" aria-pressed={activePanel === "nav"} title="Menu" onClick={() => openPanel("nav")}>
-          <Menu className="h-5 w-5" aria-hidden="true" />
-        </button>
-
-        <div className="map-sidebar-divider" />
-
-        <button type="button" className="map-sidebar-icon-btn" aria-label="Search" aria-pressed={activePanel === "search"} title="Search" onClick={() => openPanel("search")}>
-          <Search className="h-5 w-5" aria-hidden="true" />
-          <span>Search</span>
-        </button>
-
-        <div className="map-sidebar-divider" />
-
         {QUICK_FILTERS.map((filter) => (
           <Link key={filter.href} href={filter.href} className="map-sidebar-icon-btn" title={filter.label}>
             <filter.icon className="h-5 w-5" aria-hidden="true" />
@@ -385,8 +289,6 @@ export function MapSidebar({ basePath }: { basePath: string }) {
           <button type="button" className="map-sidebar-panel-close" aria-label="Close panel" onClick={() => setActivePanel(null)}>
             <X className="h-4 w-4" aria-hidden="true" />
           </button>
-          {activePanel === "nav" ? <NavPanel /> : null}
-          {activePanel === "search" ? <SearchPanel /> : null}
           {activePanel === "saved" ? <SavedPanel /> : null}
           {activePanel === "recents" ? <RecentsPanel /> : null}
           {activePanel === "alerts" ? <AlertsPanel /> : null}

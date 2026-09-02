@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import Link from "next/link";
 import { MapPin } from "lucide-react";
 import { getAllNeighborhoods, getNeighborhoodBySlug } from "@/lib/neighborhood-store";
 import { getAllProjects } from "@/lib/project-store";
-import { formatLkr } from "@/lib/format";
 import { toAbsoluteUrl } from "@/lib/seo";
+import { ListingGridCard } from "@/components/marketplace/listing-page";
 
 // Regenerate at most once a minute so admin edits (e.g. status changes)
 // show up without waiting for the next deploy.
@@ -89,15 +88,7 @@ export default async function NeighborhoodPage({ params }: NeighborhoodPageProps
           ) : (
             <div className="home-card-grid developer-projects-grid">
               {neighborhoodProjects.map((project) => (
-                <Link href={`/projects/${project.slug}`} className="home-project-card" key={project.slug}>
-                  <div className="home-project-image-wrap">
-                    <Image src={project.heroImage} alt={project.name} width={640} height={390} />
-                    <span className="developer-status-badge">{project.status}</span>
-                  </div>
-                  <h3>{project.name}</h3>
-                  <p>{project.status === "Coming Soon" ? "Register now" : `From ${formatLkr(project.startingPriceLkr)}`}</p>
-                  <div className="home-card-meta"><MapPin size={13} /><small>{project.location}</small></div>
-                </Link>
+                <ListingGridCard key={project.slug} project={project} />
               ))}
             </div>
           )}

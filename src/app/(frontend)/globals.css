@@ -160,6 +160,56 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
 .footer-logo-img { height: 32px; width: auto; filter: brightness(0) invert(1); }
 .site-header nav, .header-actions { display: flex; gap: 39px; align-items: center; font-size: 14px; font-weight: 550; }.site-header a:hover { text-decoration: underline; }
 .header-actions { gap: 14px; }.sign-up { padding: 11px 21px; background: #f47b36; border: 1px solid #f47b36; color: #24221e; }.mobile-menu { display: none; }
+
+.mobile-menu-panel {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .mobile-menu-panel {
+    display: block;
+    position: absolute;
+    top: 64px;
+    left: 0;
+    right: 0;
+    z-index: 40;
+    background: #fff;
+    border-top: 1px solid #e5e2dc;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+    padding: 16px 20px 24px;
+    max-height: calc(100vh - 64px);
+    overflow-y: auto;
+  }
+
+  .mobile-menu-group {
+    padding: 12px 0;
+    border-bottom: 1px solid #f0ede6;
+  }
+
+  .mobile-menu-group-label {
+    margin: 0 0 8px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #f47b36;
+  }
+
+  .mobile-menu-group a {
+    display: block;
+    padding: 7px 0;
+    font-size: 15px;
+    color: #1f1f1f;
+  }
+
+  .mobile-menu-group a:hover {
+    color: #f47b36;
+  }
+
+  .mobile-menu-actions {
+    padding-top: 16px;
+  }
+}
 .header-link-button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
 .header-link-button:hover { text-decoration: underline; }
 .sign-up.header-link-button:hover { text-decoration: none; }
@@ -187,15 +237,25 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
 .hero-search input { width: 100%; border: 0; outline: 0; color: #333; font-size: 14px; }
 .hero-search a { display: flex; align-items: center; gap: 15px; padding: 0 21px; min-height: 49px; color: #24221e; background: #f47b36; font-size: 14px; font-weight: 650; border-radius: 3px; }
 
+.livabl-home {
+  background: #f4f5f7;
+  color: #1d2430;
+}
+
 .luxury-hero-two {
-  margin: 0 0 36px;
   position: relative;
+  max-width: 1480px;
+  margin: 0 auto 42px;
+  padding: 0 18px;
 }
 
 .luxury-hero-two-media {
   position: relative;
-  height: 590px;
+  height: 620px;
   overflow: hidden;
+  border-radius: 0 0 30px 30px;
+  border: 1px solid rgba(20, 27, 36, 0.08);
+  box-shadow: 0 28px 80px rgba(16, 24, 40, 0.12);
 }
 
 .luxury-hero-two-media > img {
@@ -337,16 +397,18 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
 
 .luxury-hero-two-panel {
   position: absolute;
-  bottom: 0;
   left: 50%;
-  transform: translate(-50%, 50%);
+  bottom: -24px;
+  transform: translateX(-50%);
   z-index: 4;
-  width: min(640px, calc(100% - 56px));
-  background: linear-gradient(180deg, #fbfcfe 0%, #f6f9fd 100%);
-  border: 1px solid #e2e7ee;
-  padding: 32px 34px;
+  width: min(760px, calc(100% - 48px));
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(254, 246, 239, 0.96));
+  border: 1px solid rgba(20, 27, 36, 0.08);
+  border-top: 4px solid #f47b36;
+  backdrop-filter: blur(8px);
+  padding: 28px 30px 22px;
   text-align: center;
-  box-shadow: 0 24px 48px rgba(10, 15, 23, 0.16);
+  box-shadow: 0 30px 80px rgba(244, 123, 54, 0.18), 0 18px 36px rgba(15, 23, 42, 0.12);
   font-family: var(--font-ref-sans);
   font-weight: 500;
   font-style: normal;
@@ -360,12 +422,14 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
   font-family: var(--font-ref-sans);
   font-size: 32px;
   line-height: 40px;
-  font-weight: 400;
+  font-weight: 500;
+  letter-spacing: -0.03em;
 }
 
 .luxury-hero-two-subheading {
   font-family: var(--font-ref-sans);
-  margin: 10px 0 0;
+  margin: 10px auto 0;
+  max-width: 620px;
   font-size: 14px;
   line-height: 22px;
   color: #5f6876;
@@ -444,11 +508,15 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
 .hero-quick-link-pill {
   padding: 6px 14px;
   font-size: 12px;
+  border-radius: 999px;
+  background: #f7f7f6;
+  border-color: #e2e7ee;
 }
 
 .hero-quick-link-pill:hover {
   border-color: #f47b36;
   color: #f47b36;
+  background: #fff7f1;
 }
 
 @media (max-width: 980px) {
@@ -2473,10 +2541,13 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 
 .featured-listings-section {
   position: relative;
-  padding: 46px 30px 50px;
-  margin-bottom: 34px;
-  background: linear-gradient(160deg, #faf8f3 0%, #f3ede0 100%);
-  border: 1px solid #e8dfcd;
+  padding: 42px 30px 52px;
+  margin: 0 auto 34px;
+  max-width: 1280px;
+  background: linear-gradient(160deg, #fffaf4 0%, #f3e7d8 100%);
+  border: 1px solid rgba(207, 168, 124, 0.4);
+  border-radius: 28px;
+  box-shadow: 0 22px 56px rgba(95, 74, 39, 0.08);
 }
 
 .featured-listings-head {
@@ -2484,13 +2555,34 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
+  gap: 8px;
   margin: 10px 0 0;
+}
+
+.section-kicker {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid rgba(20, 27, 36, 0.08);
+  color: #4f5b66;
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.section-kicker--warm {
+  background: #fff4eb;
+  border-color: rgba(244, 123, 54, 0.25);
+  color: #b65f22;
 }
 
 .featured-listings-head h2 {
   margin: 0;
   font-family: var(--font-ref-sans);
-  font-weight: 400;
+  font-weight: 500;
   font-size: 32px;
   line-height: 1.15;
   color: #1f1f1f;
@@ -2508,7 +2600,11 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
      into one viewport-relative formula gives min(1210px, 100% - 128px). */
   width: min(1210px, calc(100% - 128px));
   margin: 0 auto;
-  padding-bottom: 56px;
+  /* .listing-hero-quickjump-bar is position:fixed at bottom:20px with a
+     ~58px pill height (more on mobile, where it's full-width with safe-area
+     padding) — this needs to clear that everywhere the page can scroll to
+     the bottom, or the floating bar sits on top of the last section. */
+  padding-bottom: 140px;
   display: flex;
   flex-direction: column;
   gap: 48px;
@@ -3291,23 +3387,25 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 
 .plans-home-body h4 {
   margin: 0;
+  padding-top: 6px;
   font-size: 15px;
-  font-weight: 600;
-  line-height: 1.3;
-  color: #1f1f1f;
+  font-weight: 400;
+  line-height: 20px;
+  color: #1a1a1a;
 }
 
 .plans-home-price {
-  margin: 6px 0 0;
-  font-size: 14px;
-  font-weight: 600;
-  color: #1f1f1f;
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 18px;
+  color: #303030;
 }
 
 .plans-home-type {
-  margin: 4px 0 0;
-  font-size: 13px;
-  color: #4a4a4a;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #303030;
 }
 
 .plans-home-facts {
@@ -4075,11 +4173,11 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 }
 
 .featured-listings-subtitle {
-  margin: 8px 0 0;
-  font-size: 14px;
-  line-height: 22px;
-  max-width: 540px;
-  color: #6b6355;
+  margin: 10px 0 0;
+  font-size: 15px;
+  line-height: 24px;
+  max-width: 620px;
+  color: #554f49;
 }
 
 #overview,
@@ -4329,34 +4427,34 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 }
 
 .livabl-home .home-content {
-  /* Extra clearance for .luxury-hero-two-panel, which now straddles the
-     hero's bottom edge (transform: translate(-50%, 50%)) instead of sitting
-     fully inside it — this keeps its overlapping bottom half from covering
-     the Featured Listings heading. */
-  padding-top: 200px;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 120px 18px 0;
 }
 
 @media (max-width: 760px) {
   .livabl-home .home-content {
-    padding-top: 260px;
+    padding-top: 170px;
   }
 }
 
-.livabl-home {
-  background: #eff2f5;
-}
-
 .neighborhoods-section {
-  padding: 40px 0 105px;
+  position: relative;
+  padding: 36px 22px 96px;
+  margin: 8px auto 0;
+  max-width: 1280px;
+  border-radius: 30px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(245, 247, 249, 0.8));
+  border: 1px solid rgba(20, 27, 36, 0.06);
 }
 
 .neighborhoods-section h2 {
   font-family: var(--font-ref-sans);
   font-size: 32px;
   line-height: 1.15;
-  font-weight: 400;
+  font-weight: 500;
   color: #1f1f1f;
-  margin: 0;
+  margin: 12px 0 0;
 }
 
 .neighborhoods-subtitle {
@@ -4364,23 +4462,25 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   font-size: 16px;
   line-height: 24px;
   color: #566072;
-  max-width: 560px;
+  max-width: 620px;
 }
 
 .neighborhoods-grid {
   margin-top: 34px;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 22px 20px;
 }
 
 .neighborhood-card {
   position: relative;
   display: block;
-  aspect-ratio: 3 / 1;
-  border-radius: 3px;
+  aspect-ratio: 3 / 1.4;
+  border-radius: 22px;
   overflow: hidden;
   background: #1f1f1f;
+  box-shadow: 0 20px 34px rgba(15, 23, 42, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .neighborhood-card img {
@@ -4885,6 +4985,25 @@ a.developer-profile-press-title {
   font-size: 14px;
   font-weight: 400;
   color: #1f1f1f;
+}
+
+/* Brochure dialog: bigger image, title stacked below it instead of beside
+   it — everywhere else (Contact Us / inquiry) keeps the compact row. */
+.request-info-listing-brochure {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.request-info-listing-brochure .request-info-listing-image {
+  width: 100%;
+  height: 160px;
+}
+
+.request-info-listing-brochure .request-info-listing-title {
+  font-size: 16px;
+  font-weight: 550;
+  text-align: center;
 }
 
 .request-info-body {
@@ -5801,6 +5920,8 @@ a.developer-profile-press-title {
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e5e2dc;
 }
 
 .listing-filter-pills-center {
@@ -5823,7 +5944,7 @@ a.developer-profile-press-title {
   gap: 10px;
   border: 1px solid #d8d8d8;
   border-radius: 0;
-  padding: 0 52px 0 16px;
+  padding: 0 16px;
   background: #fff;
   color: #9a9284;
 }
@@ -5834,16 +5955,15 @@ a.developer-profile-press-title {
 }
 
 .listing-search-icon-btn {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
+  flex-shrink: 0;
   width: 52px;
+  height: 52px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #f47b36;
   color: #fff;
+  cursor: pointer;
 }
 
 .listing-search-clear {
@@ -5864,6 +5984,7 @@ a.developer-profile-press-title {
 }
 
 .listing-region-picker {
+  position: relative;
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
@@ -5877,10 +5998,18 @@ a.developer-profile-press-title {
   font-size: 13px;
   font-weight: 500;
   white-space: nowrap;
+  cursor: pointer;
 }
 
 .listing-region-picker:hover {
   border-color: #b8b8b8;
+}
+
+.listing-region-picker select {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
 }
 
 .listing-search-input-wrap input {
@@ -5896,10 +6025,26 @@ a.developer-profile-press-title {
   color: #9a9284;
 }
 
+/* Base (desktop) defaults for the filter bar. These must come BEFORE the
+   mobile media query below so the query's overrides win — equal-specificity
+   rules later in the file would otherwise beat the media query. */
+.listing-filter-more-wrap--mobile {
+  display: none;
+}
+
+.listing-filter-sticky {
+  display: none;
+}
+
+.listing-filter-bar-actions--desktop {
+  display: flex;
+}
+
 @media (max-width: 760px) {
   .listing-search-bar {
     flex-direction: column;
     align-items: stretch;
+    padding-bottom: 12px;
   }
 
   .listing-view-toggle-label {
@@ -5913,16 +6058,14 @@ a.developer-profile-press-title {
     padding: 0 16px;
   }
 
-  /* On desktop the search icon sits as a filled button on the right edge
-     (see .listing-search-icon-btn above); on mobile it's a plain glyph on
-     the left, ahead of the input text, matching the reference layout. */
+  .listing-region-picker {
+    width: 100%;
+    justify-content: space-between;
+  }
+
   .listing-search-icon-btn {
-    order: -1;
-    position: static;
-    width: auto;
-    height: auto;
-    background: transparent;
-    color: #6b6355;
+    width: 100%;
+    height: 48px;
   }
 
   .listing-filter-pills-center {
@@ -5938,6 +6081,90 @@ a.developer-profile-press-title {
   .listing-filter-pills-center.is-open .listing-filter-pill,
   .listing-filter-pills-center.is-open .listing-filter-pill-more {
     flex: 1 1 calc(50% - 5px);
+  }
+
+  .listing-filter-sticky {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: #fff;
+    padding: 8px 0 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+
+  /* On mobile the title/count sit above the filter + list/map icon row. */
+  .listing-filter-sticky .listing-header-title {
+    order: -1;
+  }
+
+  .listing-filter-sticky-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .listing-filter-sticky-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .listing-filter-more-wrap--desktop {
+    display: none;
+  }
+
+  .listing-filter-more-wrap--mobile {
+    display: block;
+  }
+
+  .listing-filter-bar-actions.listing-filter-bar-actions--desktop {
+    display: none;
+  }
+
+  .listing-filter-sticky .listing-filter-pill-more {
+    width: auto;
+    padding: 0 18px;
+  }
+
+  /* Sort pill sits beside the filter icon as an icon + "SORT" label. */
+  .listing-filter-sticky .listing-sort-pill--mobile {
+    width: auto;
+    height: 52px;
+    justify-content: center;
+    padding: 0 16px;
+  }
+
+  .listing-filter-sticky .listing-sort-pill--mobile .listing-sort-pill-label {
+    display: inline;
+  }
+
+  .listing-filter-sticky .listing-sort-pill--mobile .listing-sort-pill-value {
+    display: none;
+  }
+
+  .listing-filter-sticky .listing-header-title {
+    min-width: 0;
+    padding-top: 12px;
+    padding-bottom: 10px;
+  }
+
+  .listing-filter-sticky .listing-header-h1 {
+    font-size: 18px;
+    line-height: 23px;
+    font-weight: 400;
+  }
+
+  .listing-filter-sticky .listing-header-count {
+    margin-top: 6px;
+    font-size: 11px;
+  }
+
+  .listing-sort-pill-sticky {
+    display: none;
   }
 
   .listing-header-row {
@@ -5983,10 +6210,157 @@ a.developer-profile-press-title {
 
 .listing-filter-pill-more {
   height: 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid #d8d8d8;
   border-radius: 0;
-  background: #fff;
+  background: #f2f2f2;
   padding: 0 16px;
+  cursor: pointer;
+}
+
+.listing-filter-pill-more:hover {
+  border-color: #b8b8b8;
+}
+
+.listing-sort-pill-sticky {
+  display: none;
+}
+
+.listing-filter-more-wrap {
+  position: relative;
+}
+
+.listing-filter-more-scrim {
+  position: fixed;
+  inset: 0;
+  background: transparent;
+  z-index: 40;
+}
+
+.listing-filter-more-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 41;
+  width: 280px;
+  max-height: min(70vh, 520px);
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #d8d8d8;
+  border-radius: 8px;
+  box-shadow: 0 18px 44px rgba(10, 15, 23, 0.16);
+  padding: 16px;
+}
+
+.listing-filter-more-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.listing-filter-more-head p {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1f1f1f;
+}
+
+.listing-filter-more-head button {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  color: #6b6355;
+}
+
+.listing-filter-more-head button:hover {
+  background: #f4f4f4;
+}
+
+.listing-filter-more-group {
+  padding: 12px 0;
+  border-top: 1px solid #ececec;
+}
+
+.listing-filter-more-group:first-of-type {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.listing-filter-more-group-label {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: #8a8a8a;
+}
+
+.listing-filter-more-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.listing-filter-more-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: #1f1f1f;
+  cursor: pointer;
+}
+
+.listing-filter-more-option input {
+  flex-shrink: 0;
+}
+
+.listing-filter-more-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #ececec;
+}
+
+.listing-filter-more-reset {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #1f1f1f;
+  text-decoration: underline;
+}
+
+.listing-filter-more-apply {
+  flex: 1;
+  min-height: 38px;
+  border-radius: 6px;
+  background: #1f1f1f;
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.listing-filter-more-apply:hover {
+  background: #000;
+}
+
+@media (max-width: 520px) {
+  .listing-filter-more-panel {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-height: 80vh;
+    border-radius: 14px 14px 0 0;
+  }
 }
 
 .listing-filter-bar-actions {
@@ -6021,8 +6395,8 @@ a.developer-profile-press-title {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  height: 38px;
-  padding: 0 14px;
+  height: 52px;
+  padding: 0 18px;
   font-size: 13px;
   font-weight: 600;
   background: #fff;
@@ -6043,12 +6417,11 @@ a.developer-profile-press-title {
 .listing-header-row {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 10px;
-  padding-bottom: 26px;
+  gap: 12px 16px;
+  padding: 16px 0 24px;
   border-bottom: 1px solid #e5e2dc;
 }
 
@@ -6063,24 +6436,37 @@ a.developer-profile-press-title {
   color: #f47b36;
 }
 
+.listing-header-title {
+  min-width: 0;
+}
+
 .listing-header-row-right {
   display: flex;
   align-items: center;
   gap: 16px;
+  padding-top: 2px;
 }
 
 .listing-header-h1 {
   font-family: var(--font-ref-sans);
-  font-size: 18px;
-  font-weight: 400;
+  font-size: 22px;
+  font-weight: 600;
   color: #202022;
-  line-height: 26px;
+  line-height: 28px;
+  letter-spacing: -0.01em;
   padding-bottom: 0;
 }
 
 .listing-header-h1-dynamic {
-  font-size: 16px;
-  line-height: 24px;
+  font-size: 19px;
+  line-height: 26px;
+}
+
+.listing-header-count {
+  margin: 6px 0 0;
+  font-size: 13px;
+  font-weight: 400;
+  color: #6b6355;
 }
 
 /* Full map view has no list below to sort or label, so the sort pill and
@@ -6108,15 +6494,18 @@ a.developer-profile-press-title {
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  height: 52px;
   border: 1px solid #d8d8d8;
   border-radius: 0;
   background: #fff;
-  padding: 8px 14px;
-  font-size: 14px;
+  padding: 0 16px;
+  font-size: 13px;
   font-weight: 500;
   color: #1f1f1f;
   cursor: pointer;
+  text-transform: uppercase;
+  transition: border-color 0.15s ease;
 }
 
 .listing-sort-pill:hover {
@@ -6124,8 +6513,7 @@ a.developer-profile-press-title {
 }
 
 .listing-sort-pill-label {
-  color: #6b6355;
-  font-weight: 400;
+  display: none;
 }
 
 .listing-sort-pill select {
@@ -6214,9 +6602,9 @@ a.developer-profile-press-title {
   .map-sidebar {
     display: flex;
     position: fixed;
-    top: 0;
+    top: 82px; /* site-header's height — rail starts below the nav, not behind it */
     left: 0;
-    height: 100vh;
+    height: calc(100vh - 82px);
     z-index: 60; /* below .auth-modal-backdrop's 300 (highest in the app); nothing else on these routes uses position: fixed */
   }
 
@@ -6234,7 +6622,6 @@ a.developer-profile-press-title {
     margin-right: calc((100vw - 72px - var(--shell-width)) / -2);
   }
 
-  .site-header--rail-offset,
   .site-breadcrumb--rail-offset {
     padding-left: 72px;
   }
@@ -6395,95 +6782,6 @@ a.developer-profile-press-title {
   color: #fff;
   font-size: 13px;
   font-weight: 600;
-}
-
-.map-sidebar-nav-links {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  font-size: 14px;
-}
-
-.map-sidebar-nav-account {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 1px solid #ececea;
-}
-
-.map-sidebar-nav-account button,
-.map-sidebar-nav-account a {
-  height: 36px;
-  padding: 0 14px;
-  border-radius: 999px;
-  border: 1px solid #d8d8d8;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.map-sidebar-region-picker {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  height: 44px;
-  padding: 0 12px;
-  border: 1px solid #d8d8d8;
-  margin-bottom: 10px;
-  font-size: 13px;
-  font-weight: 500;
-  color: #1f1f1f;
-}
-
-.map-sidebar-region-picker span {
-  flex: 1;
-  text-align: left;
-}
-
-.map-sidebar-search-input {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 44px;
-  padding: 0 0 0 12px;
-  border: 1px solid #d8d8d8;
-  margin-bottom: 14px;
-  color: #6b6355;
-}
-
-.map-sidebar-search-input input {
-  flex: 1;
-  min-width: 0;
-  font-size: 13px;
-  color: #1f1f1f;
-}
-
-.map-sidebar-search-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  flex-shrink: 0;
-  background: #f47b36;
-  color: #fff;
-}
-
-.map-sidebar-filter-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  height: 40px;
-  font-size: 13px;
-  border-bottom: 1px solid #f0f0ef;
-}
-
-.map-sidebar-filter-row select {
-  font-size: 13px;
-  color: #6b6355;
-  text-align: right;
 }
 
 .map-sidebar-row {
@@ -6745,23 +7043,23 @@ a.developer-profile-press-title {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 400;
   font-style: normal;
   line-height: 20px;
   letter-spacing: normal;
-  color: #303030;
+  color: #1a1a1a;
 }
 
 .listing-grid-card-price {
-  margin-top: 14px;
+  margin-top: 8px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 400;
   font-style: normal;
-  line-height: 20px;
+  line-height: 18px;
   letter-spacing: normal;
   color: #303030;
 }
@@ -6863,6 +7161,15 @@ a.developer-profile-press-title {
 
 .listing-columns[data-view="split"] .listing-list-pane .listing-grid-card:nth-child(-n+3) {
   padding-top: 16px;
+}
+
+/* On mobile the split view collapses to a full-width list (map hidden), so
+   the split grid's 3-across rule above would render tiny squashed cards.
+   Force a single column so each listing stacks below the previous one. */
+@media (max-width: 640px) {
+  .listing-columns[data-view="split"] .listing-list-pane .listing-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .listing-empty-state {

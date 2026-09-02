@@ -2,10 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { AccountMenu } from "@/components/auth/account-menu";
 import { useSavedListing } from "@/lib/use-saved-listing";
-import { mapSidebarRoutes } from "@/lib/listing-categories";
 import {
   ApartmentIcon,
   AreaIcon,
@@ -52,6 +50,7 @@ import {
   Compass,
   Construction,
   Droplet,
+  FileText,
   Gift,
   Layers,
   LayoutGrid,
@@ -178,7 +177,7 @@ export function SaveButton({ projectSlug }: { projectSlug: string }) {
   const { saved, toggle } = useSavedListing(projectSlug);
   return (
     <Button variant="outline" className="rounded-sm" onClick={toggle}>
-      <Heart className={`mr-2 h-4 w-4 ${saved ? "fill-current" : ""}`} />
+      <Heart className={`mr-2 h-4 w-4 ${saved ? "fill-current text-[#d94f4f]" : ""}`} />
       {saved ? "Saved" : "Save"}
     </Button>
   );
@@ -445,6 +444,17 @@ export function ProjectHero({
   const [lightboxView, setLightboxView] = useState<"photos" | "videos" | "map" | "roadMap" | "blockPlan" | "streetView">("photos");
   const [activeSection, setActiveSection] = useState("overview");
   const [requestInfoOpen, setRequestInfoOpen] = useState(false);
+  // The brochure pill opens the same dialog as "Request info", just with
+  // brochure-specific copy — everything else about the dialog is shared.
+  const [requestInfoDialogVariant, setRequestInfoDialogVariant] = useState<"standard" | "inquiry" | "brochure">(requestInfoVariant);
+  const openRequestInfo = () => {
+    setRequestInfoDialogVariant(requestInfoVariant);
+    setRequestInfoOpen(true);
+  };
+  const openBrochureRequest = () => {
+    setRequestInfoDialogVariant("brochure");
+    setRequestInfoOpen(true);
+  };
   const titlePanelRef = useRef<HTMLDivElement>(null);
   const [scrolledPastTitle, setScrolledPastTitle] = useState(false);
 
@@ -587,6 +597,15 @@ export function ProjectHero({
       ),
     },
     {
+      key: "brochure",
+      show: Boolean(project.brochureUrl),
+      render: (className) => (
+        <button type="button" className={className} onClick={openBrochureRequest}>
+          <FileText className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">Brochure</span>
+        </button>
+      ),
+    },
+    {
       key: "road-map",
       show: hasRoadMap,
       lightboxKey: "roadMap",
@@ -684,10 +703,10 @@ export function ProjectHero({
         <div className="listing-hero-actions">
           <button type="button" className="action-link"><Bell className="h-4 w-4" aria-hidden="true" />Get updates</button>
           <button type="button" className="action-link" onClick={toggleSaved}>
-            <Heart className="h-4 w-4" aria-hidden="true" fill={savedListing ? "currentColor" : "none"} />
+            <Heart className={`h-4 w-4${savedListing ? " text-[#d94f4f]" : ""}`} aria-hidden="true" fill={savedListing ? "currentColor" : "none"} />
             {savedListing ? "Saved" : "Save"}
           </button>
-          <button type="button" className="request-info-btn" onClick={() => setRequestInfoOpen(true)}>Request info</button>
+          <button type="button" className="request-info-btn" onClick={openRequestInfo}>Request info</button>
         </div>
       </div>
     </div>
@@ -778,7 +797,7 @@ export function ProjectHero({
                   Get updates
                 </button>
                 <button type="button" className="listing-photo-lightbox-action-btn" onClick={toggleSaved}>
-                  <Heart className="h-4 w-4" aria-hidden="true" fill={savedListing ? "currentColor" : "none"} />
+                  <Heart className={`h-4 w-4${savedListing ? " text-[#d94f4f]" : ""}`} aria-hidden="true" fill={savedListing ? "currentColor" : "none"} />
                   {savedListing ? "Saved" : "Save"}
                 </button>
                 <button type="button" className="listing-photo-lightbox-action-btn">
@@ -1035,7 +1054,7 @@ export function ProjectHero({
             <Bell className="h-4 w-4" aria-hidden="true" />
             Get updates
           </button>
-          <button type="button" className="listing-hero-mobile-btn listing-hero-mobile-btn-request" onClick={() => setRequestInfoOpen(true)}>
+          <button type="button" className="listing-hero-mobile-btn listing-hero-mobile-btn-request" onClick={openRequestInfo}>
             Request info
           </button>
         </div>
@@ -1061,7 +1080,7 @@ export function ProjectHero({
       </div>
     )}
 
-    <RequestInfoDialog open={requestInfoOpen} onClose={() => setRequestInfoOpen(false)} project={project} variant={requestInfoVariant} />
+    <RequestInfoDialog open={requestInfoOpen} onClose={() => setRequestInfoOpen(false)} project={project} variant={requestInfoDialogVariant} />
     </>
   );
 }
@@ -1278,8 +1297,10 @@ export function RequestInfoDialog({
   project: Project;
   /** "inquiry" swaps in the "Send us your inquiry" layout (Name/Email/Contact
    * Number/Message field order, a marketing opt-in checkbox) used on the
-   * land detail page — everywhere else keeps the original layout. */
-  variant?: "standard" | "inquiry";
+   * land detail page. "brochure" keeps the standard layout but swaps the
+   * title/subtitle/submit copy and default lead message for the brochure
+   * pill on the hero media bar. Everywhere else keeps the original layout. */
+  variant?: "standard" | "inquiry" | "brochure";
 }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -1293,6 +1314,7 @@ export function RequestInfoDialog({
   const [errorMessage, setErrorMessage] = useState("");
   const MESSAGE_MAX = 900;
   const isInquiry = variant === "inquiry";
+  const isBrochure = variant === "brochure";
 
   useEffect(() => {
     if (!open) return;
@@ -1324,7 +1346,7 @@ export function RequestInfoDialog({
           email,
           phone,
           preferredContactMethod: contactMethod,
-          message: message.trim() || `Request info for ${project.name}`,
+          message: message.trim() || (isBrochure ? `Brochure request for ${project.name}` : `Request info for ${project.name}`),
           projectSlug: project.slug,
           developerSlug: project.developerSlug,
           marketingOptIn: keepPosted,
@@ -1349,24 +1371,33 @@ export function RequestInfoDialog({
     <div className="request-info-overlay" role="dialog" aria-modal="true" aria-label="Contact us" onClick={onClose}>
       <div className="request-info-dialog" onClick={(event) => event.stopPropagation()}>
         <div className="request-info-topbar">
-          <p className="request-info-topbar-title">{isInquiry ? "Send us your inquiry" : "Contact Us"}</p>
+          <p className="request-info-topbar-title">{isBrochure ? "Download Brochure" : isInquiry ? "Send us your inquiry" : "Contact Us"}</p>
           <button type="button" className="request-info-close" aria-label="Close" onClick={onClose}><X className="h-5 w-5" /></button>
         </div>
 
-        <div className="request-info-listing">
-          <Image src={project.heroImage} alt={project.name} width={64} height={64} className="request-info-listing-image" />
+        <div className={`request-info-listing${isBrochure ? " request-info-listing-brochure" : ""}`}>
+          <Image src={project.heroImage} alt={project.name} width={isBrochure ? 160 : 64} height={isBrochure ? 100 : 64} className="request-info-listing-image" />
           <p className="request-info-listing-title">{project.name}</p>
         </div>
 
         {submitted ? (
           <div className="request-info-success">
-            <h2>Request sent</h2>
-            <p>Thanks, {name.split(" ")[0] || "there"} — the {project.name} sales team will reach out to you by {contactMethod.toLowerCase()} shortly.</p>
+            <h2>{isBrochure ? "Brochure ready" : "Request sent"}</h2>
+            <p>
+              {isBrochure
+                ? `Thanks, ${name.split(" ")[0] || "there"} — click below to download the ${project.name} brochure.`
+                : `Thanks, ${name.split(" ")[0] || "there"} — the ${project.name} sales team will reach out to you by ${contactMethod.toLowerCase()} shortly.`}
+            </p>
+            {isBrochure && project.brochureUrl ? (
+              <Button type="button" onClick={() => window.open(project.brochureUrl, "_blank", "noopener,noreferrer")}>
+                Download Brochure
+              </Button>
+            ) : null}
             <Button type="button" onClick={onClose}>Close</Button>
           </div>
         ) : (
           <form onSubmit={onSubmit} className="request-info-body">
-            <h2>{isInquiry ? "Want to find out more?" : "Our Sales Team Has Answers."}</h2>
+            <h2>{isBrochure ? "Get the Full Brochure." : isInquiry ? "Want to find out more?" : "Our Sales Team Has Answers."}</h2>
             <p className="request-info-required-note"><span className="request-info-star">*</span> Indicates a required field</p>
 
             <label className="request-info-field">
@@ -1443,7 +1474,7 @@ export function RequestInfoDialog({
             {errorMessage ? <p className="request-info-error">{errorMessage}</p> : null}
 
             <button type="submit" className="request-info-submit-big" disabled={submitting || !agreed}>
-              {submitting ? "Sending..." : isInquiry ? "Send" : "Submit Form"}
+              {submitting ? "Sending..." : isBrochure ? "Send Brochure" : isInquiry ? "Send" : "Submit Form"}
             </button>
           </form>
         )}
@@ -2385,8 +2416,7 @@ export function LeadForm({ projectSlug, developerSlug }: { projectSlug: string; 
 
 export function Header() {
   const { language, setLanguage } = useLanguage();
-  const pathname = usePathname();
-  const hasRail = pathname ? mapSidebarRoutes.includes(pathname) : false;
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const labels: Record<SiteLanguage, { homes: string; company: string; login: string; signup: string; menu: string }> = {
     en: {
@@ -2415,7 +2445,7 @@ export function Header() {
   const text = labels[language];
 
   return (
-    <header className={`site-header${hasRail ? " site-header--rail-offset" : ""}`}>
+    <header className="site-header">
       <div className="site-header-inner">
         <div className="site-brand-group">
           <Link href="/" className="site-logo">
@@ -2464,8 +2494,41 @@ export function Header() {
         <div className="header-actions">
           <AccountMenu loginLabel={text.login} signupLabel={text.signup} />
         </div>
-        <button className="mobile-menu">{text.menu}</button>
+        <button className="mobile-menu" onClick={() => setMobileMenuOpen((v) => !v)} aria-expanded={mobileMenuOpen} aria-label={text.menu}>
+          {mobileMenuOpen ? "✕" : text.menu}
+        </button>
       </div>
+      {mobileMenuOpen ? (
+        <div className="mobile-menu-panel">
+          <div className="mobile-menu-group">
+            <p className="mobile-menu-group-label">{text.homes}</p>
+            <Link href="/projects" onClick={() => setMobileMenuOpen(false)}>All new homes</Link>
+            <Link href="/projects?type=Condominium" onClick={() => setMobileMenuOpen(false)}>Condominium</Link>
+            <Link href="/projects?type=Apartments" onClick={() => setMobileMenuOpen(false)}>Apartments</Link>
+            <Link href="/projects?type=Villas" onClick={() => setMobileMenuOpen(false)}>Villas</Link>
+            <Link href="/projects?type=Mixed+Use" onClick={() => setMobileMenuOpen(false)}>Mixed Use</Link>
+            <Link href="/projects?type=Housing" onClick={() => setMobileMenuOpen(false)}>Housing</Link>
+            <Link href="/projects?type=Townhouse" onClick={() => setMobileMenuOpen(false)}>Townhouse</Link>
+          </div>
+          <div className="mobile-menu-group">
+            <p className="mobile-menu-group-label">Land</p>
+            <Link href="/land" onClick={() => setMobileMenuOpen(false)}>All land</Link>
+            <Link href="/land?landUse=Residential" onClick={() => setMobileMenuOpen(false)}>Residential</Link>
+            <Link href="/land?landUse=Commercial" onClick={() => setMobileMenuOpen(false)}>Commercial</Link>
+            <Link href="/land?landUse=Agricultural" onClick={() => setMobileMenuOpen(false)}>Agricultural</Link>
+            <Link href="/land?landUse=Mixed+Use" onClick={() => setMobileMenuOpen(false)}>Mixed Use</Link>
+          </div>
+          <div className="mobile-menu-group">
+            <p className="mobile-menu-group-label">{text.company}</p>
+            <Link href="/about" onClick={() => setMobileMenuOpen(false)}>About</Link>
+            <Link href="/contact" onClick={() => setMobileMenuOpen(false)}>Contact</Link>
+            <Link href="/blog" onClick={() => setMobileMenuOpen(false)}>Blog</Link>
+          </div>
+          <div className="mobile-menu-actions">
+            <AccountMenu loginLabel={text.login} signupLabel={text.signup} />
+          </div>
+        </div>
+      ) : null}
     </header>
   );
 }

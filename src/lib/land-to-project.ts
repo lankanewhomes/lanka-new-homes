@@ -66,6 +66,7 @@ export function landToProjectShape(land: Land): Project {
     description: land.description,
     heroImage: land.heroImage,
     gallery: land.gallery,
+    brochureUrl: land.brochureUrl,
     amenities: land.amenities ?? [],
     unitFeatures: land.unitFeatures,
     floorPlans,

@@ -12,6 +12,7 @@ export function ProjectListingShell({
   singularEyebrow = "community",
   filterGroups,
   emptyStateText,
+  citySectionHeading,
 }: {
   breadcrumbs: BreadcrumbEntry[];
   h1: string;
@@ -23,6 +24,7 @@ export function ProjectListingShell({
   singularEyebrow?: string;
   filterGroups?: { label: string; options: string[] }[];
   emptyStateText?: string;
+  citySectionHeading?: string;
 }) {
   const itemListJsonLd = buildItemListJsonLd(projects.map((project) => ({ name: project.name, url: `${basePath}/${project.slug}` })));
   const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbs);
@@ -32,7 +34,7 @@ export function ProjectListingShell({
       <script {...jsonLdScriptProps(itemListJsonLd)} />
       <script {...jsonLdScriptProps(breadcrumbJsonLd)} />
 
-      <ListingPageBody projects={projects} h1={h1} eyebrow={eyebrow} singularEyebrow={singularEyebrow} intro={intro} basePath={basePath} filterGroups={filterGroups} emptyStateText={emptyStateText} />
+      <ListingPageBody projects={projects} h1={h1} eyebrow={eyebrow} singularEyebrow={singularEyebrow} intro={intro} basePath={basePath} filterGroups={filterGroups} emptyStateText={emptyStateText} citySectionHeading={citySectionHeading} />
     </div>
   );
 }

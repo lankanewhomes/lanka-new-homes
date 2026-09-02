@@ -134,6 +134,7 @@ export function LandWizard({
   const removePlot = (index: number) => setPlots((current) => current.filter((_, i) => i !== index));
 
   const heroImageRef = useRef<HTMLInputElement>(null);
+  const brochureUrlRef = useRef<HTMLInputElement>(null);
   const [gallery, setGallery] = useState<{ label: string; image: string }[]>(initialLand?.gallery ?? []);
   const addGalleryImage = () => setGallery((current) => [...current, { label: "", image: "" }]);
   const updateGalleryImage = (index: number, field: "label" | "image", value: string) =>
@@ -217,6 +218,7 @@ export function LandWizard({
       summary: descriptionRef.current?.value || initialLand?.summary || "",
       description: descriptionRef.current?.value || initialLand?.description || "",
       heroImage: heroImageRef.current?.value || initialLand?.heroImage || "",
+      brochureUrl: brochureUrlRef.current?.value.trim() || undefined,
       gallery: gallery.filter((entry) => entry.image.trim()),
       blockPlanImages: blockPlanImages.filter((entry) => entry.image.trim()),
       roadMapImages: roadMapImages.filter((entry) => entry.image.trim()),
@@ -599,6 +601,7 @@ export function LandWizard({
 
         <div className={`grid gap-3 border border-amber-200 bg-amber-50 p-3 ${stepVisible(6)}`}>
           <Field label="Hero image URL"><input ref={heroImageRef} defaultValue={initialLand?.heroImage} className="border border-stone-300 bg-white px-3 py-2 text-sm w-full" /></Field>
+          <Field label="Brochure URL (optional)"><input ref={brochureUrlRef} defaultValue={initialLand?.brochureUrl} placeholder="https://.../brochure.pdf" className="border border-stone-300 bg-white px-3 py-2 text-sm w-full" /></Field>
 
           <div className="border border-stone-200 bg-white p-3">
             <div className="flex items-center justify-between gap-2">
