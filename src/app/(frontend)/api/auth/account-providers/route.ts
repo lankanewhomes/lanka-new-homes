@@ -17,14 +17,30 @@ export async function POST(request: Request) {
     return NextResponse.json({ providers: [] });
   }
 
-  const response = await fetch(`${supabaseUrl}/auth/v1/admin/users?email=${encodeURIComponent(email)}`, {
-    headers: { apikey: serviceRoleKey, Authorization: `Bearer ${serviceRoleKey}` },
-  });
-  if (!response.ok) {
-    return NextResponse.json({ providers: [] });
+  // GoTrue's admin users endpoint accepts an `email` query param, but on
+  // this project it doesn't actually filter — it silently returns the
+  // regular (unfiltered) listing. Page through it and match the email
+  // ourselves rather than trusting the filter.
+  const targetEmail = email.toLowerCase();
+  const perPage = 200;
+  const maxPages = 25; // 5,000 users — well past this site's real user count
+  let providers: string[] = [];
+
+  for (let page = 1; page <= maxPages; page++) {
+    const response = await fetch(`${supabaseUrl}/auth/v1/admin/users?per_page=${perPage}&page=${page}`, {
+      headers: { apikey: serviceRoleKey, Authorization: `Bearer ${serviceRoleKey}` },
+    });
+    if (!response.ok) break;
+
+    const data = await response.json();
+    const users: { email?: string; app_metadata?: { providers?: string[] } }[] = data?.users ?? [];
+    const match = users.find((user) => user.email?.toLowerCase() === targetEmail);
+    if (match) {
+      providers = match.app_metadata?.providers ?? [];
+      break;
+    }
+    if (users.length < perPage) break; // last page
   }
 
-  const data = await response.json();
-  const providers: string[] = data?.users?.[0]?.app_metadata?.providers ?? [];
   return NextResponse.json({ providers });
 }
