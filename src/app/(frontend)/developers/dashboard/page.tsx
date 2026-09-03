@@ -36,7 +36,7 @@ export default async function DeveloperDashboardPage() {
 
   return (
     <div className="grid gap-4 lg:grid-cols-[220px_1fr] lg:pt-8">
-      <DashboardSidebar links={[{ label: "Overview", href: "/developers/dashboard" }, { label: `${developer?.name ?? "Company"} projects`, href: `/admin/developers/${developerSlug}/projects` }, { label: "Homepage Hero", href: "/admin/hero-ads" }, { label: "Profile", href: `/developers/${developerSlug}` }]} />
+      <DashboardSidebar links={[{ label: "Overview", href: "/developers/dashboard" }, { label: `${developer?.name ?? "Company"} projects`, href: `/admin/developers/${developerSlug}/projects` }, { label: "Homepage Hero", href: "/developers/dashboard/homepage-hero" }, { label: "Profile", href: `/developers/${developerSlug}` }]} />
       <section className="space-y-4">
         <DashboardHeader title="Developer Dashboard" subtitle={`Signed in as ${developer?.name ?? developerSlug} (preview).`} />
         <div className="grid gap-3 md:grid-cols-3 lg:grid-cols-6">
