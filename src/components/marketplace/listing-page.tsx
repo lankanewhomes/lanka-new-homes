@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { BedDouble, ChevronDown, ChevronLeft, ChevronRight, Heart, List, Map as MapIcon, Ruler, Search, MapPin, SlidersHorizontal, X, ArrowUpDown } from "lucide-react";
 import { formatLkr } from "@/lib/format";
 import { useSavedListing } from "@/lib/use-saved-listing";
@@ -209,6 +209,12 @@ export function ListingPageBody({
   const [moreFiltersOpen, setMoreFiltersOpen] = useState(false);
   const [filterSelections, setFilterSelections] = useState<Record<string, string>>({});
   const [regionFilter, setRegionFilter] = useState("All of Sri Lanka");
+
+  useEffect(() => {
+    const query = new URLSearchParams(window.location.search).get("q")?.trim() ?? "";
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSearchQuery(query);
+  }, []);
 
   const cityOptions = useMemo(() => {
     const cities = Array.from(new Set(projects.map((project) => project.city).filter(Boolean)));

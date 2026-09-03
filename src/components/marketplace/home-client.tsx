@@ -99,7 +99,7 @@ export function HomeClient({ projects }: { projects: Project[] }) {
     en: {
       shelfLaunching: "New communities launching soon",
       heroTitle: "New homes for sale across Sri Lanka",
-      heroSubtitle: "Search new condos, apartments, and villas from Colombo to the coast — pricing, floor plans, and availability updated by every developer.",
+      heroSubtitle: "Discover new condos, apartments, villas, and homes across Sri Lanka, with current pricing, floor plans, and availability directly from developers.",
       searchPlaceholder: "Search projects & developments",
       searchRegion: "All of Sri Lanka",
       searchButton: "Search",
@@ -113,7 +113,7 @@ export function HomeClient({ projects }: { projects: Project[] }) {
     ta: {
       shelfLaunching: "விரைவில் தொடங்கும் புதிய சமூகங்கள்",
       heroTitle: "New homes for sale across Sri Lanka",
-      heroSubtitle: "Search new condos, apartments, and villas from Colombo to the coast — pricing, floor plans, and availability updated by every developer.",
+      heroSubtitle: "Discover new condos, apartments, villas, and homes across Sri Lanka, with current pricing, floor plans, and availability directly from developers.",
       searchPlaceholder: "திட்டங்கள் மற்றும் அபிவிருத்திகளைத் தேடுங்கள்",
       searchRegion: "இலங்கை முழுவதும்",
       searchButton: "தேடல்",
@@ -127,7 +127,7 @@ export function HomeClient({ projects }: { projects: Project[] }) {
     si: {
       shelfLaunching: "ඉක්මනින් ආරම්භ වන නව ප්‍රජාවන්",
       heroTitle: "New homes for sale across Sri Lanka",
-      heroSubtitle: "Search new condos, apartments, and villas from Colombo to the coast — pricing, floor plans, and availability updated by every developer.",
+      heroSubtitle: "Discover new condos, apartments, villas, and homes across Sri Lanka, with current pricing, floor plans, and availability directly from developers.",
       searchPlaceholder: "ව්‍යාපෘති සහ සංවර්ධන සොයන්න",
       searchRegion: "ශ්‍රී ලංකාව පුරා",
       searchButton: "සොයන්න",
@@ -180,8 +180,6 @@ export function HomeClient({ projects }: { projects: Project[] }) {
 
     <main className="home-content">
       <section className="neighborhoods-section" aria-label="Find the city for you">
-        <h2>Find the City For You</h2>
-        <p className="neighborhoods-subtitle">The cities best suited to your lifestyle, and the agents who know them best.</p>
         <div className="neighborhoods-grid">
           {neighborhoods.map((neighborhood) => (
             <Link href="/search" className="neighborhood-card" key={neighborhood.name}>
@@ -196,10 +194,8 @@ export function HomeClient({ projects }: { projects: Project[] }) {
 
       <section className="featured-listings-section" aria-label="Featured listings">
         <div className="featured-listings-head">
-          <span className="section-kicker section-kicker--warm">Editor’s picks</span>
           <h2>Featured listings</h2>
         </div>
-        <p className="featured-listings-subtitle">A curated set of standout homes selected by LankaNewHomes editors.</p>
         <div className="featured-listings-shell">
           <div className="home-card-grid featured-listings-grid">
             {featuredProjects.map((project) => (

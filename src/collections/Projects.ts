@@ -193,6 +193,16 @@ export const Projects: CollectionConfig = {
             { name: 'coopFeeRealtors', type: 'text' },
             { name: 'depositPaymentStructure', type: 'text' },
             { name: 'incentives', type: 'text', hasMany: true },
+            { name: 'includedUtilities', type: 'text', hasMany: true, label: 'Included Utilities' },
+            {
+              name: 'paidUtilities',
+              type: 'array',
+              label: 'Paid Utilities',
+              fields: [
+                { name: 'label', type: 'text', required: true },
+                { name: 'value', type: 'text', required: true },
+              ],
+            },
             historyLogField('pricingHistory', 'Pricing History'),
           ],
         },
@@ -266,25 +276,6 @@ export const Projects: CollectionConfig = {
           fields: [
             amenitiesField,
             unitFeaturesField,
-            {
-              name: 'factsGrid',
-              type: 'array',
-              label: 'Property Facts Grid',
-              fields: [
-                { name: 'key', type: 'text', required: true },
-                { name: 'label', type: 'text', required: true },
-                { name: 'value', type: 'text', required: true },
-              ],
-            },
-            { name: 'includedUtilities', type: 'text', hasMany: true },
-            {
-              name: 'paidUtilities',
-              type: 'array',
-              fields: [
-                { name: 'label', type: 'text', required: true },
-                { name: 'value', type: 'text', required: true },
-              ],
-            },
           ],
         },
         {
@@ -342,7 +333,7 @@ export const Projects: CollectionConfig = {
           ],
         },
         {
-          label: 'Nearby',
+          label: 'Neighborhood',
           fields: [nearbyField],
         },
         {

@@ -71,7 +71,6 @@ import {
   Users,
   Video,
   Waves,
-  Wifi,
   X,
   Zap,
 } from "lucide-react";
@@ -1571,6 +1570,8 @@ export function PricingInformationLayout({ project }: { project: Project }) {
   const paymentLines = project.paymentPlanItems?.filter((item) => hasDisplayValue(item)).length
     ? project.paymentPlanItems.filter((item) => hasDisplayValue(item))
     : (depositStructure ?? "").split(";").map((item) => item.trim()).filter((item) => hasDisplayValue(item));
+  const includedUtilities = project.includedUtilities?.filter((item) => hasDisplayValue(item)) ?? [];
+  const paidUtilities = project.paidUtilities?.filter((item) => hasDisplayValue(item.label) && hasDisplayValue(item.value)) ?? [];
 
   const pricingFields = [
     { label: "Available plan prices", value: project.availablePlanPrices },
@@ -1583,7 +1584,7 @@ export function PricingInformationLayout({ project }: { project: Project }) {
     { label: "ⓘ Co-op fee realtors", value: project.coopFeeRealtors },
   ].filter((field) => hasDisplayValue(field.value));
 
-  const hasPricingCard = pricingFields.length > 0 || pricingHistory.length > 0;
+  const hasPricingCard = pricingFields.length > 0 || pricingHistory.length > 0 || includedUtilities.length > 0 || paidUtilities.length > 0;
   const hasDepositCard = paymentLines.length > 0;
   const hasIncentivesCard = incentives.length > 0;
 
@@ -1632,6 +1633,22 @@ export function PricingInformationLayout({ project }: { project: Project }) {
                     </div>
                   </div>
                 ) : null}
+                {includedUtilities.length > 0 ? (
+                  <div>
+                    <p className="font-semibold">Included in maintenance</p>
+                    <p>{includedUtilities.join(", ")}</p>
+                  </div>
+                ) : null}
+                {paidUtilities.length > 0 ? (
+                  <div>
+                    <p className="font-semibold">Paid separately</p>
+                    <div className="space-y-1">
+                      {paidUtilities.map((item) => (
+                        <p key={item.label}>{item.label}: {item.value}</p>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
               </div>
             </article>
           ) : null}
@@ -1671,78 +1688,6 @@ export function PricingInformationLayout({ project }: { project: Project }) {
   );
 }
 
-const UTILITY_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
-  Internet: Wifi,
-  Water: Droplet,
-  Electricity: Zap,
-  Security: ShieldCheck,
-  "Maintenance fee": CircleDollarSign,
-};
-
-function utilityIconFor(label: string) {
-  const match = Object.keys(UTILITY_ICONS).find((key) => label.toLowerCase().includes(key.toLowerCase()));
-  return match ? UTILITY_ICONS[match] : CircleDollarSign;
-}
-
-export function UtilitiesCostsSection({ project }: { project: Project }) {
-  const included = project.includedUtilities?.filter((item) => hasDisplayValue(item)) ?? [];
-
-  const paid = project.paidUtilities?.filter((item) => hasDisplayValue(item.label) && hasDisplayValue(item.value)).length
-    ? project.paidUtilities.filter((item) => hasDisplayValue(item.label) && hasDisplayValue(item.value))
-    : [
-        hasDisplayValue(project.monthlyMaintenancePerSqft) ? { label: "Maintenance fee", value: `${project.monthlyMaintenancePerSqft}/sqft/mo` } : null,
-        hasDisplayValue(project.propertyTax) ? { label: "Property tax", value: project.propertyTax! } : null,
-        hasDisplayValue(project.parkingCost) ? { label: "Parking", value: project.parkingCost! } : null,
-        hasDisplayValue(project.storageCost) ? { label: "Storage", value: project.storageCost! } : null,
-      ].filter((item): item is { label: string; value: string } => item !== null);
-
-  if (included.length === 0 && paid.length === 0) return null;
-
-  return (
-    <section className="utilities-costs-shell" aria-label="Utilities and monthly costs">
-      <h2>Utilities &amp; Monthly Costs</h2>
-
-      <div className="utilities-costs-grid">
-        {included.length > 0 ? (
-          <div className="utilities-costs-card">
-            <span className="utilities-costs-badge utilities-costs-badge-included">Included in Maintenance</span>
-            <div className="utilities-costs-rows">
-              {included.map((label) => {
-                const Icon = utilityIconFor(label);
-                return (
-                  <div key={label} className="utilities-costs-row">
-                    <span className="utilities-costs-icon"><Icon className="h-4 w-4" aria-hidden="true" /></span>
-                    <span className="utilities-costs-label">{label}</span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        ) : null}
-
-        {paid.length > 0 ? (
-          <div className="utilities-costs-card">
-            <span className="utilities-costs-badge utilities-costs-badge-paid">Paid Separately</span>
-            <div className="utilities-costs-rows">
-              {paid.map((item) => {
-                const Icon = utilityIconFor(item.label);
-                return (
-                  <div key={item.label} className="utilities-costs-row">
-                    <span className="utilities-costs-icon"><Icon className="h-4 w-4" aria-hidden="true" /></span>
-                    <span>
-                      <span className="utilities-costs-label">{item.label}</span>
-                      <span className="utilities-costs-value">{item.value}</span>
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        ) : null}
-      </div>
-    </section>
-  );
-}
 
 const PLAN_SORT_OPTIONS = [
   { value: "default", label: "Featured" },
@@ -2720,9 +2665,9 @@ export function NeighborhoodSection({ nearby, neighborhoodName, neighborhoodSlug
         </div>
       ) : null}
 
-      {neighborhoodPageExists && neighborhoodSlug ? (
-        <Link href={`/neighborhoods/${neighborhoodSlug}`} className="neighborhood-section-explore">
-          Explore {neighborhoodName} neighborhood
+      {hasDisplayValue(neighborhoodName) ? (
+        <Link href={neighborhoodPageExists && neighborhoodSlug ? `/neighborhoods/${neighborhoodSlug}` : `/search?q=${encodeURIComponent(neighborhoodName!)}`} className="neighborhood-section-explore">
+          View neighbourhood
         </Link>
       ) : null}
     </section>

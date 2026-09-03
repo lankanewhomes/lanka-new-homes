@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import type { Amenity, CoDeveloperEntry, CompanyProfile, Developer, FactItem, FloorPlan, KeyFeatureCategory, KeyFeatureItem, Neighborhood, Project } from "@/types";
+import type { Amenity, CoDeveloperEntry, CompanyProfile, Developer, FloorPlan, KeyFeatureCategory, KeyFeatureItem, Neighborhood, Project } from "@/types";
 import { Button } from "@/components/ui/button";
 import {
   sriLankaCitiesByDistrict,
@@ -881,12 +881,6 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
   ]);
   const [floorPlanVisibleStats, setFloorPlanVisibleStats] = useState<string[]>(initialProject?.floorPlanVisibleStats ?? floorPlanStatOptions);
 
-  const [factsGrid, setFactsGrid] = useState<FactItem[]>(initialProject?.factsGrid ?? []);
-  const addFactRow = () => setFactsGrid((rows) => [...rows, { key: `fact-${Date.now()}-${rows.length}`, label: "", value: "" }]);
-  const removeFactRow = (index: number) => setFactsGrid((rows) => rows.filter((_, i) => i !== index));
-  const updateFactRow = (index: number, patch: Partial<FactItem>) =>
-    setFactsGrid((rows) => rows.map((row, i) => (i === index ? { ...row, ...patch } : row)));
-
   const nameRef = useRef<HTMLInputElement>(null);
   const descriptionRef = useRef<HTMLTextAreaElement>(null);
   const addressRef = useRef<HTMLInputElement>(null);
@@ -1171,7 +1165,6 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
       },
       desktopVisibleStats: visibleStats as Project["desktopVisibleStats"],
       floorPlanVisibleStats,
-      factsGrid: factsGrid.filter((fact) => fact.label.trim() && fact.value.trim()),
     };
 
     return payload;
@@ -2194,49 +2187,6 @@ export function ProjectWizard({ initialProject, developerSlug, developerName }: 
           {visibleStats.length === maxVisibleStats ? <p className="text-xs text-amber-700">Maximum reached. Turn one item off to enable another.</p> : null}
         </aside>
 
-        <aside className="space-y-3 border border-stone-200 bg-white p-4">
-          <div className="space-y-1">
-            <h3 className="text-sm font-semibold text-stone-900">Property Facts grid</h3>
-            <p className="text-xs text-stone-600">
-              The row of icon facts shown right below the hero. Leave empty to use the automatic defaults built from
-              this project&apos;s other fields (Building, Built in, Residences, Stories, Bedrooms, Bathrooms, Size,
-              Parking, Ownership, Status).
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            {factsGrid.map((fact, index) => (
-              <div key={fact.key} className="grid grid-cols-[1fr_1fr_auto] items-center gap-1.5 border border-stone-200 p-2">
-                <input
-                  type="text"
-                  placeholder="Label"
-                  value={fact.label}
-                  onChange={(event) => updateFactRow(index, { label: event.target.value })}
-                  className="min-w-0 border border-stone-200 px-2 py-1.5 text-xs"
-                />
-                <input
-                  type="text"
-                  placeholder="Value"
-                  value={fact.value}
-                  onChange={(event) => updateFactRow(index, { value: event.target.value })}
-                  className="min-w-0 border border-stone-200 px-2 py-1.5 text-xs"
-                />
-                <button
-                  type="button"
-                  onClick={() => removeFactRow(index)}
-                  aria-label="Remove fact"
-                  className="border border-stone-200 px-2 py-1.5 text-xs text-stone-600 hover:bg-stone-50"
-                >
-                  ✕
-                </button>
-              </div>
-            ))}
-          </div>
-
-          <button type="button" onClick={addFactRow} className="w-full border border-stone-300 py-2 text-xs font-medium text-stone-700 hover:bg-stone-50">
-            + Add fact
-          </button>
-        </aside>
         </div>
         </div>
     </section>

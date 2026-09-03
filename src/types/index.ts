@@ -159,14 +159,6 @@ export type SocialLinks = {
   tiktok?: string;
 };
 
-// Property Facts grid — plain label/value rows, no icon. Lives in
-// Project.factsGrid inside the `data` jsonb column.
-export type FactItem = {
-  key: string;
-  label: string;
-  value: string;
-};
-
 export type OfficeHoursEntry = {
   day: "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday";
   open: boolean;
@@ -281,15 +273,11 @@ export type Project = SeoFields & {
   /** Indexed column `projects.is_verified`. NOT yet mirrored by
    * projectToRow — see supabase/migrations/20260827120500_verification_workflow.sql. */
   isVerified?: boolean;
-  /** Admin-editable Property Facts grid. Falls back to a default set built
-   * from other Project fields when empty — see PropertyFactsGrid. */
-  factsGrid?: FactItem[];
   /** Utilities bundled into the maintenance/CAM fee — e.g. "Water",
-   * "Security". No safe default; the section only shows this card when set. */
+   * "Security". Shown in the "Pricing and fees" card when set. */
   includedUtilities?: string[];
-  /** Utilities/costs the buyer pays on top of maintenance. Falls back to
-   * the existing propertyTax/parkingCost/storageCost/monthlyMaintenancePerSqft
-   * fields when empty — see UtilitiesCostsSection. */
+  /** Utilities/costs the buyer pays on top of maintenance. Shown in the
+   * "Pricing and fees" card when set. */
   paidUtilities?: { label: string; value: string }[];
 
   // --- Fields added on the Payload side (src/collections/Projects.ts),

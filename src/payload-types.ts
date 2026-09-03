@@ -2588,6 +2588,14 @@ export interface Project {
   coopFeeRealtors?: string | null;
   depositPaymentStructure?: string | null;
   incentives?: string[] | null;
+  includedUtilities?: string[] | null;
+  paidUtilities?:
+    | {
+        label: string;
+        value: string;
+        id?: string | null;
+      }[]
+    | null;
   pricingHistory?:
     | {
         date?: string | null;
@@ -2905,22 +2913,6 @@ export interface Project {
               id?: string | null;
             }[]
           | null;
-        id?: string | null;
-      }[]
-    | null;
-  factsGrid?:
-    | {
-        key: string;
-        label: string;
-        value: string;
-        id?: string | null;
-      }[]
-    | null;
-  includedUtilities?: string[] | null;
-  paidUtilities?:
-    | {
-        label: string;
-        value: string;
         id?: string | null;
       }[]
     | null;
@@ -6318,6 +6310,14 @@ export interface ProjectsSelect<T extends boolean = true> {
   coopFeeRealtors?: T;
   depositPaymentStructure?: T;
   incentives?: T;
+  includedUtilities?: T;
+  paidUtilities?:
+    | T
+    | {
+        label?: T;
+        value?: T;
+        id?: T;
+      };
   pricingHistory?:
     | T
     | {
@@ -6391,22 +6391,6 @@ export interface ProjectsSelect<T extends boolean = true> {
               value_other?: T;
               id?: T;
             };
-        id?: T;
-      };
-  factsGrid?:
-    | T
-    | {
-        key?: T;
-        label?: T;
-        value?: T;
-        id?: T;
-      };
-  includedUtilities?: T;
-  paidUtilities?:
-    | T
-    | {
-        label?: T;
-        value?: T;
         id?: T;
       };
   floorPlans?:
