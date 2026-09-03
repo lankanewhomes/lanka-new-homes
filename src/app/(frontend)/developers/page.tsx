@@ -63,7 +63,7 @@ export default async function DevelopersPage() {
 
   return (
     <div className="developer-directory">
-      <h1 className="text-3xl font-normal">Developer Directory</h1>
+      <h1 className="text-3xl">Developer Directory</h1>
       <p className="text-sm text-stone-600">Companies developing new residential apartment projects in Sri Lanka, listed A to Z.</p>
 
       <div className="developer-directory-grid">

@@ -4926,6 +4926,15 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   padding: 36px 0 90px;
 }
 
+/* Overrides the sitewide `h1 { font-weight: 700 }` base rule above — a
+   bare Tailwind `font-normal` utility class can't win that fight since
+   Tailwind v4 puts its utilities in a lower-priority CSS layer than this
+   file's unlayered rules, regardless of selector specificity or source
+   order. */
+.developer-directory h1 {
+  font-weight: 400;
+}
+
 .developer-directory-grid {
   margin-top: 24px;
   display: grid;
