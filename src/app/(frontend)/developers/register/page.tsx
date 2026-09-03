@@ -20,14 +20,14 @@ export default async function DeveloperRegisterPage() {
 
   if (!profile) {
     return (
-      <div className="static-page-shell">
+      <div className="static-page-shell auth-page">
         <h1>Register as a developer</h1>
-        <p className="static-page-lede">
+        <p className="static-page-lede auth-page-lede">
           Create your developer account first, then set up your company profile. This automatically publishes a public
           page at /developers and lets you list projects.
         </p>
         <AuthForm mode="signup" intent="developer" redirectTo="/developers/register" />
-        <p className="static-page-note">
+        <p className="static-page-note auth-page-note">
           Already have a developer account? <Link href="/developers/login">Log in</Link> instead.
         </p>
       </div>

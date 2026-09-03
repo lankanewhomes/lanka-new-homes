@@ -5966,27 +5966,23 @@ a.developer-profile-press-title {
   color: #1f1f1f;
 }
 
-.static-page-shell .developer-login-heading {
-  font-weight: 400;
-}
-
-.developer-login-page {
+.auth-page {
   text-align: center;
 }
 
-.developer-login-page .static-page-lede,
-.developer-login-page .static-page-note {
+.auth-page .static-page-lede,
+.auth-page .static-page-note {
   margin-left: auto;
   margin-right: auto;
 }
 
-.developer-login-page .static-page-form,
-.developer-login-page .auth-social-buttons {
+.auth-page .static-page-form,
+.auth-page .auth-social-buttons {
   margin-left: auto;
   margin-right: auto;
 }
 
-.developer-login-page .static-page-form button {
+.auth-page .static-page-form button {
   justify-self: center;
 }
 
@@ -5997,7 +5993,7 @@ a.developer-profile-press-title {
   color: #6b6355;
 }
 
-.static-page-shell .developer-login-lede {
+.static-page-shell .auth-page-lede {
   margin-bottom: 28px;
 }
 
@@ -6080,7 +6076,7 @@ a.developer-profile-press-title {
   color: #6b6355;
 }
 
-.static-page-note.developer-login-note {
+.static-page-note.auth-page-note {
   margin-top: 32px;
 }
 

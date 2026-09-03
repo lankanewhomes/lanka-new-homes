@@ -247,9 +247,9 @@ export function AuthForm({
 
   return (
     <div>
-      {socialButtons}
-      <div className="auth-divider">or use email</div>
       {formFields}
+      <div className="auth-divider">Or continue with</div>
+      {socialButtons}
     </div>
   );
 }
