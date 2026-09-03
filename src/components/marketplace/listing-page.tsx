@@ -211,9 +211,15 @@ export function ListingPageBody({
   const [regionFilter, setRegionFilter] = useState("All of Sri Lanka");
 
   useEffect(() => {
-    const query = new URLSearchParams(window.location.search).get("q")?.trim() ?? "";
+    const params = new URLSearchParams(window.location.search);
+    const query = params.get("q")?.trim() ?? "";
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setSearchQuery(query);
+    const city = params.get("city")?.trim();
+    if (city) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setRegionFilter(city);
+    }
   }, []);
 
   const cityOptions = useMemo(() => {
@@ -389,7 +395,9 @@ export function ListingPageBody({
             </div>
 
             <div className="listing-header-title">
-              {activeSelection || searchPlaceLabel ? (
+              {!activeSelection && !trimmedQuery && regionFilter !== "All of Sri Lanka" ? (
+                <h1 className="listing-header-h1 listing-header-h1-dynamic">New developments in {regionFilter}</h1>
+              ) : activeSelection || searchPlaceLabel ? (
                 <h1 className="listing-header-h1 listing-header-h1-dynamic">
                   There {sortedProjects.length === 1 ? "is" : "are"} {sortedProjects.length.toLocaleString()} {sortedProjects.length === 1 ? (singularEyebrow ?? eyebrow) : eyebrow} for sale in {activeSelection ? activeSelection.label : searchPlaceLabel}
                 </h1>

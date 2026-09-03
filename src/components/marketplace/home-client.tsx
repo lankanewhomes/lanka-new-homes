@@ -247,7 +247,7 @@ export function HomeClient({ projects }: { projects: Project[] }) {
       <section className="neighborhoods-section" aria-label="Find the city for you">
         <div className="neighborhoods-grid">
           {neighborhoods.map((neighborhood) => (
-            <Link href="/search" className="neighborhood-card" key={neighborhood.name}>
+            <Link href={`/search?city=${encodeURIComponent(neighborhood.name)}`} className="neighborhood-card" key={neighborhood.name}>
               <Image src={neighborhood.image} alt={neighborhood.name} fill sizes="(max-width: 760px) 100vw, 33vw" />
               <span className="neighborhood-card-overlay" />
               <span className="neighborhood-card-title">{neighborhood.name}</span>
