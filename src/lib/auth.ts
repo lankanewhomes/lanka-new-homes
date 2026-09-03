@@ -61,6 +61,20 @@ function rowToProfile(row: ProfileRow, email: string | null): Profile {
   };
 }
 
+// Site-owner allowlist for backend-only features that are built but not yet
+// open to real developers (e.g. featured placement — see ADMIN_EMAILS in
+// .env.local). Separate from Payload's own admin/buyer/developer Users
+// roles, which govern the CMS backend, not this Supabase-authenticated
+// frontend.
+export function isAdminEmail(email: string | null | undefined): boolean {
+  if (!email) return false;
+  const allowlist = (process.env.ADMIN_EMAILS ?? "")
+    .split(",")
+    .map((entry) => entry.trim().toLowerCase())
+    .filter(Boolean);
+  return allowlist.includes(email.toLowerCase());
+}
+
 // Server-side helper: current signed-in user's profile, or null if signed out.
 export async function getCurrentProfile(): Promise<Profile | null> {
   const supabase = await createSupabaseServerClient();

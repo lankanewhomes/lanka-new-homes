@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCurrentProfile } from "@/lib/auth";
+import { getCurrentProfile, isAdminEmail } from "@/lib/auth";
 
 // Bridges the Supabase-authenticated developer dashboard to Payload's
 // Payments collection, which has no Supabase equivalent — the only real
@@ -15,6 +15,11 @@ export async function POST(req: Request) {
   const profile = await getCurrentProfile();
   if (!profile || profile.role !== "developer" || !profile.developerSlug) {
     return NextResponse.json({ error: "Not signed in as a developer" }, { status: 401 });
+  }
+  // Same gate as the dashboard page — featured placement isn't open to real
+  // developers yet, only the site owner testing via their own account.
+  if (!isAdminEmail(profile.email)) {
+    return NextResponse.json({ error: "Featured placement isn't open yet." }, { status: 403 });
   }
 
   const body = await req.json().catch(() => null);
@@ -103,6 +108,9 @@ export async function GET() {
   const profile = await getCurrentProfile();
   if (!profile || profile.role !== "developer" || !profile.developerSlug) {
     return NextResponse.json({ error: "Not signed in as a developer" }, { status: 401 });
+  }
+  if (!isAdminEmail(profile.email)) {
+    return NextResponse.json({ payments: [], pricing: [] });
   }
 
   const { getPayload } = await import("payload");
