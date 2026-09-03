@@ -2200,6 +2200,10 @@ export function ProjectNarrativeDetails({ project }: { project: Project }) {
   const completionMonth = completionDate && !Number.isNaN(completionDate.getTime())
     ? completionDate.toLocaleDateString("en-US", { month: "short", year: "numeric" })
     : "";
+  const constructionStartDate = project.constructionStarted ? new Date(project.constructionStarted) : null;
+  const constructionStarted = constructionStartDate && !Number.isNaN(constructionStartDate.getTime())
+    ? constructionStartDate.toLocaleDateString("en-US", { month: "short", year: "numeric" })
+    : "";
 
   const detailRows = [
     {
@@ -2220,7 +2224,7 @@ export function ProjectNarrativeDetails({ project }: { project: Project }) {
     { label: "Listing status", show: hasDisplayValue(project.status), value: project.status },
     { label: "Sales started", show: hasDisplayValue(salesStarted), value: salesStarted },
     { label: "Construction status", show: hasDisplayValue(project.constructionStatus), value: project.constructionStatus },
-    { label: "Construction started", show: hasDisplayValue(project.constructionStarted), value: project.constructionStarted ?? "" },
+    { label: "Construction started", show: hasDisplayValue(constructionStarted), value: constructionStarted },
     { label: "Completed in", show: hasDisplayValue(completionMonth), value: completionMonth },
     { label: "Ceilings", show: hasDisplayValue(project.ceilingInfo), value: project.ceilingInfo ?? "" },
     { label: "Developer", show: hasDisplayValue(project.developerName), value: renderEntityLink(project.developerName, project.developerSlug, "/developers", "overview-link") },

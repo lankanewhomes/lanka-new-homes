@@ -4,7 +4,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronDown, ChevronLeft, ChevronRight, MapPin, Pause, Search } from "lucide-react";
+import { ArrowUpRight, ChevronDown, ChevronLeft, ChevronRight, MapPin, Pause, Search, X } from "lucide-react";
 import { SiteLanguage, useLanguage } from "@/components/layout/language-provider";
 import { ListingGridCard } from "@/components/marketplace/listing-page";
 import { allProjectCategories } from "@/lib/listing-categories";
@@ -32,6 +32,8 @@ export function HomeClient({ projects }: { projects: Project[] }) {
   const { language } = useLanguage();
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const [desktopSearchOpen, setDesktopSearchOpen] = useState(false);
   const [heroSlide, setHeroSlide] = useState(0);
   // Only the active slide's image is ever needed at first paint — the
   // other 3 sit in the DOM (for the sliding-track animation) but load
@@ -80,6 +82,7 @@ export function HomeClient({ projects }: { projects: Project[] }) {
     event.preventDefault();
     const query = searchTerm.trim();
     router.push(query ? `/search?q=${encodeURIComponent(query)}` : "/search");
+    setMobileSearchOpen(false);
   };
 
   const copy: Record<SiteLanguage, {
@@ -100,7 +103,7 @@ export function HomeClient({ projects }: { projects: Project[] }) {
       shelfLaunching: "New communities launching soon",
       heroTitle: "New homes for sale across Sri Lanka",
       heroSubtitle: "Discover new condos, apartments, villas, and homes across Sri Lanka, with current pricing, floor plans, and availability directly from developers.",
-      searchPlaceholder: "Search projects & developments",
+      searchPlaceholder: "Search projects & lands",
       searchRegion: "All of Sri Lanka",
       searchButton: "Search",
       communities: "Communities",
@@ -114,7 +117,7 @@ export function HomeClient({ projects }: { projects: Project[] }) {
       shelfLaunching: "விரைவில் தொடங்கும் புதிய சமூகங்கள்",
       heroTitle: "New homes for sale across Sri Lanka",
       heroSubtitle: "Discover new condos, apartments, villas, and homes across Sri Lanka, with current pricing, floor plans, and availability directly from developers.",
-      searchPlaceholder: "திட்டங்கள் மற்றும் அபிவிருத்திகளைத் தேடுங்கள்",
+      searchPlaceholder: "Search projects & lands",
       searchRegion: "இலங்கை முழுவதும்",
       searchButton: "தேடல்",
       communities: "சமூகங்கள்",
@@ -128,7 +131,7 @@ export function HomeClient({ projects }: { projects: Project[] }) {
       shelfLaunching: "ඉක්මනින් ආරම්භ වන නව ප්‍රජාවන්",
       heroTitle: "New homes for sale across Sri Lanka",
       heroSubtitle: "Discover new condos, apartments, villas, and homes across Sri Lanka, with current pricing, floor plans, and availability directly from developers.",
-      searchPlaceholder: "ව්‍යාපෘති සහ සංවර්ධන සොයන්න",
+      searchPlaceholder: "Search projects & lands",
       searchRegion: "ශ්‍රී ලංකාව පුරා",
       searchButton: "සොයන්න",
       communities: "ප්‍රජාවන්",
@@ -143,6 +146,30 @@ export function HomeClient({ projects }: { projects: Project[] }) {
   const t = copy[language];
 
   const featuredProjects = useMemo(() => projects.filter((project) => project.isFeatured).slice(0, 4), [projects]);
+  const searchSuggestions = useMemo(() => {
+    const query = searchTerm.trim().toLowerCase();
+    if (!query) return [];
+
+    const suggestions = new Map<string, { label: string; detail: string; href: string }>();
+    projects.forEach((project) => {
+      [
+        { label: project.name, detail: "Project", href: `/projects/${project.slug}` },
+        { label: project.city, detail: "City", href: `/search?q=${encodeURIComponent(project.city)}` },
+      ].forEach((suggestion) => {
+        if (suggestion.label?.toLowerCase().includes(query) && !suggestions.has(suggestion.label)) {
+          suggestions.set(suggestion.label, suggestion);
+        }
+      });
+    });
+
+    return Array.from(suggestions.values()).slice(0, 8);
+  }, [projects, searchTerm]);
+  const selectSearchSuggestion = (suggestion: { label: string; href: string }) => {
+    setSearchTerm(suggestion.label);
+    setDesktopSearchOpen(false);
+    setMobileSearchOpen(false);
+    router.push(suggestion.href);
+  };
   const heroQuickLinks = [
     ...allProjectCategories,
     { path: "/land", breadcrumbLabel: "Lands" },
@@ -152,7 +179,7 @@ export function HomeClient({ projects }: { projects: Project[] }) {
     <section className="luxury-hero-two" aria-label="Luxury listing search hero">
       <div className="luxury-hero-two-media">
         <div className="luxury-hero-two-track" style={{ transform: `translateX(-${heroSlide * 100}%)` }}>
-          {heroSlides.map((slide, index) => <div className="luxury-hero-two-slide" key={`${slide.src}-${index}`}><Link href={slide.href} className="luxury-hero-two-slide-link" aria-hidden={index !== heroSlide} tabIndex={index === heroSlide ? 0 : -1}>{index <= maxHeroSlideReached ? <Image src={slide.src} alt={index === heroSlide ? slide.alt : ""} fill priority={index === 0} sizes="100vw" /> : null}</Link></div>)}
+          {heroSlides.map((slide, index) => <div className="luxury-hero-two-slide" key={`${slide.src}-${index}`}><Link href={slide.href} className="luxury-hero-two-slide-link" aria-hidden={index !== heroSlide} tabIndex={index === heroSlide ? 0 : -1}>{index <= maxHeroSlideReached ? <Image src={slide.src} alt={index === heroSlide ? slide.alt : ""} fill priority={index === 0} sizes="100vw" /> : null}<span className="luxury-hero-two-view-project"><ArrowUpRight className="luxury-hero-two-view-project-icon" size={16} strokeWidth={1.5} aria-hidden="true" />View project</span></Link></div>)}
         </div>
         <div className="luxury-hero-two-overlay" />
         <button type="button" className="luxury-hero-two-arrow" aria-label="Previous slide" onClick={showPreviousHeroSlide}><ChevronLeft size={18} /></button>
@@ -164,10 +191,19 @@ export function HomeClient({ projects }: { projects: Project[] }) {
           <h1>{t.heroTitle}</h1>
           <p className="luxury-hero-two-subheading">{t.heroSubtitle}</p>
           <form className="hero-search luxury-hero-two-top-search" onSubmit={submitSearch}>
-            <label><input aria-label="Search homes" value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} placeholder={t.searchPlaceholder} /></label>
+            <label><input aria-label="Search homes" value={searchTerm} onFocus={() => { setMobileSearchOpen(true); setDesktopSearchOpen(true); }} onChange={(event) => setSearchTerm(event.target.value)} placeholder={t.searchPlaceholder} /></label>
             <button type="button" className="hero-region-picker" aria-label="Select region"><MapPin size={17} /><span>{t.searchRegion}</span><ChevronDown size={16} /></button>
             <button type="submit" aria-label={t.searchButton} className="hero-search-submit"><Search size={19} /></button>
           </form>
+          {desktopSearchOpen && searchSuggestions.length > 0 ? (
+            <div className="hero-search-suggestions" role="listbox" aria-label="Search suggestions">
+              {searchSuggestions.map((suggestion) => (
+                <button key={`${suggestion.detail}-${suggestion.label}`} type="button" role="option" onMouseDown={(event) => event.preventDefault()} onClick={() => selectSearchSuggestion(suggestion)}>
+                  <Search size={16} aria-hidden="true" /><span>{suggestion.label}</span><small>{suggestion.detail}</small>
+                </button>
+              ))}
+            </div>
+          ) : null}
           <div className="hero-quick-links" aria-label="Browse by category">
             {heroQuickLinks.map((category) => (
               <Link key={category.path} href={category.path} className="listing-filter-pill hero-quick-link-pill">
@@ -177,6 +213,35 @@ export function HomeClient({ projects }: { projects: Project[] }) {
           </div>
       </div>
     </section>
+
+    {mobileSearchOpen ? (
+      <div className="mobile-location-search" role="dialog" aria-modal="true" aria-label="Location search">
+        <button type="button" className="mobile-location-search-scrim" aria-label="Close location search" onClick={() => setMobileSearchOpen(false)} />
+        <div className="mobile-location-search-panel">
+          <div className="mobile-location-search-header">
+            <p>Location search</p>
+            <button type="button" aria-label="Close location search" onClick={() => setMobileSearchOpen(false)}><X size={22} /></button>
+          </div>
+          <form className="mobile-location-search-form" onSubmit={submitSearch}>
+            <label className="mobile-location-search-input">
+              <Search size={20} aria-hidden="true" />
+              <input autoFocus aria-label="Search location" value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} placeholder="Enter a location, address, or project" />
+            </label>
+            {searchSuggestions.length > 0 ? (
+              <div className="mobile-location-search-suggestions" role="listbox" aria-label="Search suggestions">
+                {searchSuggestions.map((suggestion) => (
+                  <button key={`${suggestion.detail}-${suggestion.label}`} type="button" role="option" onClick={() => selectSearchSuggestion(suggestion)}>
+                    <Search size={16} aria-hidden="true" /><span>{suggestion.label}</span><small>{suggestion.detail}</small>
+                  </button>
+                ))}
+              </div>
+            ) : null}
+            <button type="button" className="mobile-location-search-region"><span>All of Sri Lanka</span><ChevronDown size={18} aria-hidden="true" /></button>
+            <button type="submit" className="mobile-location-search-submit"><Search size={19} aria-hidden="true" />Search</button>
+          </form>
+        </div>
+      </div>
+    ) : null}
 
     <main className="home-content">
       <section className="neighborhoods-section" aria-label="Find the city for you">
@@ -203,7 +268,7 @@ export function HomeClient({ projects }: { projects: Project[] }) {
             ))}
           </div>
           <div className="featured-listings-footer">
-            <Link href="/search" className="featured-listings-button">View all listings</Link>
+            <Link href="/search" className="featured-listings-button">VIEW ALL LISTINGS</Link>
           </div>
         </div>
       </section>

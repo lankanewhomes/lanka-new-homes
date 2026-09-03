@@ -10,6 +10,7 @@ type CreateHeroAdInput = {
   linkUrl: string;
   startDate: string;
   endDate: string;
+  priceLkr: number;
 };
 
 type UpdateHeroAdInput = Partial<Pick<HeroAd, "image" | "headline" | "linkUrl" | "startDate" | "endDate" | "order" | "status" | "reviewNote" | "priceLkr">>;
@@ -71,7 +72,7 @@ export async function createHeroAdRequest(input: CreateHeroAdInput): Promise<Her
     endDate: input.endDate,
     status: "pending",
     order: ads.length,
-    priceLkr: null,
+    priceLkr: input.priceLkr,
     submittedAt: new Date().toISOString(),
   };
 
@@ -88,6 +89,9 @@ export async function updateHeroAd(id: string, changes: UpdateHeroAdInput): Prom
 
   const current = rowToHeroAd(row as HeroAdRow);
   const next: HeroAd = { ...current, ...changes };
+  if (next.status === "approved" && (!next.priceLkr || next.priceLkr <= 0)) {
+    throw new Error("A paid placement price greater than zero is required before approval");
+  }
   if (changes.status && changes.status !== "pending") {
     next.reviewedAt = new Date().toISOString();
   }

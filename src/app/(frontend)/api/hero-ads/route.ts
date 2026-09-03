@@ -19,13 +19,18 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
   if (!body) return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
 
-  const requiredFields = ["developerSlug", "developerName", "image", "headline", "linkUrl", "startDate", "endDate"] as const;
+  const requiredFields = ["developerSlug", "developerName", "projectSlug", "image", "headline", "linkUrl", "startDate", "endDate", "priceLkr"] as const;
   for (const field of requiredFields) {
     if (!body[field]) return NextResponse.json({ error: `${field} is required` }, { status: 400 });
   }
 
   if (String(body.endDate) < String(body.startDate)) {
     return NextResponse.json({ error: "End date must be on or after the start date" }, { status: 400 });
+  }
+
+  const priceLkr = Number(body.priceLkr);
+  if (!Number.isFinite(priceLkr) || priceLkr <= 0) {
+    return NextResponse.json({ error: "A paid placement price greater than zero is required" }, { status: 400 });
   }
 
   const ad = await createHeroAdRequest({
@@ -37,6 +42,7 @@ export async function POST(request: Request) {
     linkUrl: String(body.linkUrl),
     startDate: String(body.startDate),
     endDate: String(body.endDate),
+    priceLkr,
   });
 
   return NextResponse.json({ ok: true, ad }, { status: 201 });

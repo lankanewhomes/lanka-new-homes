@@ -20,7 +20,12 @@ export async function PATCH(request: Request, { params }: RouteContext) {
     changes.priceLkr = body.priceLkr === null ? null : Number(body.priceLkr);
   }
 
-  const ad = await updateHeroAd(id, changes);
+  let ad;
+  try {
+    ad = await updateHeroAd(id, changes);
+  } catch (error) {
+    return NextResponse.json({ error: error instanceof Error ? error.message : "Unable to update hero ad" }, { status: 400 });
+  }
   if (!ad) return NextResponse.json({ error: "Hero ad not found" }, { status: 404 });
 
   return NextResponse.json({ ok: true, ad });

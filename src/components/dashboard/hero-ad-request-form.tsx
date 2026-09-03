@@ -16,6 +16,7 @@ export function HeroAdRequestForm({ developers, onCreated }: { developers: Devel
   const [projectSlug, setProjectSlug] = useState(developers[0]?.projects[0]?.slug ?? "");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [priceLkr, setPriceLkr] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -42,6 +43,7 @@ export function HeroAdRequestForm({ developers, onCreated }: { developers: Devel
           linkUrl,
           startDate,
           endDate,
+          priceLkr: Number(priceLkr),
         }),
       });
 
@@ -57,6 +59,7 @@ export function HeroAdRequestForm({ developers, onCreated }: { developers: Devel
       setHeadline("");
       setStartDate("");
       setEndDate("");
+      setPriceLkr("");
       onCreated?.();
     } catch {
       setErrorMessage("Unable to submit this request.");
@@ -68,7 +71,7 @@ export function HeroAdRequestForm({ developers, onCreated }: { developers: Devel
   return (
     <form onSubmit={onSubmit} className="space-y-4 border border-stone-200 bg-white p-4">
       <p className="border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
-        Hero placements are free while the site is building traffic — no price is required to submit or approve one. You can set a price per placement later from the list below.
+        Homepage hero placements are paid. Select the project, add the banner image, set its dates and enter the agreed LKR placement price before submitting for approval.
       </p>
 
       <div className="grid gap-3 md:grid-cols-2">
@@ -110,6 +113,11 @@ export function HeroAdRequestForm({ developers, onCreated }: { developers: Devel
           <span>End date</span>
           <input type="date" value={endDate} onChange={(event) => setEndDate(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" required />
         </label>
+
+        <label className="grid gap-1 text-xs text-stone-700">
+          <span>Paid placement price (LKR)</span>
+          <input type="number" min="1" step="1" value={priceLkr} onChange={(event) => setPriceLkr(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm" required />
+        </label>
       </div>
 
       {image ? (
@@ -124,7 +132,7 @@ export function HeroAdRequestForm({ developers, onCreated }: { developers: Devel
       {successMessage ? <p className="text-sm text-emerald-700">{successMessage}</p> : null}
 
       <div className="flex items-center justify-between gap-3">
-        <p className="text-xs text-stone-500">Clicking the hero image takes buyers to the project page.</p>
+        <p className="text-xs text-stone-500">Clicking the hero image takes buyers to the selected project page.</p>
         <Button type="submit" disabled={submitting || !selectedDeveloper}>{submitting ? "Submitting..." : "Add as pending request"}</Button>
       </div>
     </form>

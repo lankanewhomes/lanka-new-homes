@@ -152,7 +152,7 @@ export function HeroAdsManager() {
           {ad.priceLkr ? (
             <span className="bg-[#f47b36] px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-stone-900">{formatLkr(ad.priceLkr)}</span>
           ) : (
-            <span className="bg-stone-100 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-stone-600">Free (promotional)</span>
+            <span className="bg-red-100 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-red-700">Price required</span>
           )}
         </div>
         <p className="text-xs text-stone-600">{ad.developerName}{ad.projectSlug ? ` · ${ad.projectSlug}` : ""}</p>
@@ -165,7 +165,7 @@ export function HeroAdsManager() {
             type="number"
             min="0"
             step="1"
-            placeholder="Free"
+            placeholder="Required"
             defaultValue={ad.priceLkr ?? ""}
             onChange={(event) => setPriceDrafts((current) => ({ ...current, [ad.id]: event.target.value }))}
             className="w-28 border border-stone-300 px-2 py-1 text-xs"
@@ -198,7 +198,7 @@ export function HeroAdsManager() {
   return (
     <div className="space-y-6">
       <p className="border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
-        Hero placements are free while the site is building traffic. Approve requests as normal — pricing is optional right now, so you can set a price per placement later without it blocking approval.
+        Hero placements are paid. Confirm the agreed LKR price before approving a placement.
       </p>
       {error ? <p className="border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</p> : null}
 
