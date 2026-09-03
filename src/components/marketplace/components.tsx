@@ -333,6 +333,32 @@ export function ProjectListItem({ project }: { project: Project }) {
   );
 }
 
+// Swipe-to-navigate for the photo lightbox's media wrap (mobile touch
+// only — desktop keeps using the arrow buttons). Tracks the touch start
+// position in a ref rather than state, since it never needs to trigger a
+// re-render; a horizontal drag past SWIPE_THRESHOLD_PX fires the matching
+// prev/next callback, same as clicking an arrow would.
+const SWIPE_THRESHOLD_PX = 50;
+
+function useSwipeNavigation(onPrev: () => void, onNext: () => void) {
+  const touchStartX = useRef<number | null>(null);
+
+  return {
+    onTouchStart: (event: React.TouchEvent) => {
+      touchStartX.current = event.touches[0]?.clientX ?? null;
+    },
+    onTouchEnd: (event: React.TouchEvent) => {
+      if (touchStartX.current === null) return;
+      const endX = event.changedTouches[0]?.clientX ?? touchStartX.current;
+      const delta = endX - touchStartX.current;
+      touchStartX.current = null;
+      if (Math.abs(delta) < SWIPE_THRESHOLD_PX) return;
+      if (delta > 0) onPrev();
+      else onNext();
+    },
+  };
+}
+
 export function ProjectHero({
   project,
   titleOverride,
@@ -530,6 +556,10 @@ export function ProjectHero({
     if (!blockPlanImages.length) return;
     setBlockPlanIndex((index) => (index + 1) % blockPlanImages.length);
   };
+
+  const photoSwipeHandlers = useSwipeNavigation(handlePrevPhoto, handleNextPhoto);
+  const roadMapSwipeHandlers = useSwipeNavigation(handlePrevRoadMap, handleNextRoadMap);
+  const blockPlanSwipeHandlers = useSwipeNavigation(handlePrevBlockPlan, handleNextBlockPlan);
 
   // Every quick-jump control on the hero (photos/videos/map/etc.) — shared
   // by the hero's own pill row and the desktop floating bottom bar, so the
@@ -895,7 +925,7 @@ export function ProjectHero({
                     <ChevronLeft className="h-5 w-5" aria-hidden="true" />
                   </button>
                 )}
-                <div className="listing-photo-lightbox-media-wrap">
+                <div className="listing-photo-lightbox-media-wrap" {...photoSwipeHandlers}>
                   <Image
                     src={activePhoto.image}
                     alt={`${project.name} ${activePhoto.label}`}
@@ -957,7 +987,7 @@ export function ProjectHero({
                     <ChevronLeft className="h-5 w-5" aria-hidden="true" />
                   </button>
                 )}
-                <div className="listing-photo-lightbox-media-wrap">
+                <div className="listing-photo-lightbox-media-wrap" {...roadMapSwipeHandlers}>
                   <Image
                     src={activeRoadMapItem.image}
                     alt={`${project.name} ${activeRoadMapItem.label || "road map"}`}
@@ -986,7 +1016,7 @@ export function ProjectHero({
                     <ChevronLeft className="h-5 w-5" aria-hidden="true" />
                   </button>
                 )}
-                <div className="listing-photo-lightbox-media-wrap">
+                <div className="listing-photo-lightbox-media-wrap" {...blockPlanSwipeHandlers}>
                   <Image
                     src={activeBlockPlanItem.image}
                     alt={`${project.name} ${activeBlockPlanItem.label || "block plan"}`}

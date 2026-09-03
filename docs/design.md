@@ -88,6 +88,29 @@ visitor picks a tab). The tab bar below the media area — Photos / Videos /
 Map / Block Plan / Road Map / Interactive map / Virtual tours — and the full
 lightbox gallery are unchanged either way.
 
+### Photo lightbox
+
+`.listing-photo-lightbox` (full-screen, `position: fixed; inset: 0;`) is the
+containing block for its absolutely-positioned children:
+- `.listing-photo-lightbox-close` sits in the fixed top-right corner
+  (`position: absolute; top: 14px; right: 16px;`), not inline with the
+  action buttons.
+- `.listing-photo-lightbox-arrow` (prev/next) uses a solid white background
+  with a dark icon (`#212834`) — matches the homepage hero carousel's arrow
+  style — rather than a transparent/outlined button.
+- On mobile (`max-width: 640px`) the title/address block
+  (`.listing-photo-lightbox-meta`) and the action row
+  (`.listing-photo-lightbox-actions`: Get updates / Save / Share) stack onto
+  their own full-width rows. The meta block keeps `padding-right: 46px` so
+  its text doesn't run under the absolutely-positioned close button, and the
+  action row's own `padding-right: 46px` (used on desktop to clear the close
+  button when everything shares one row) is reset to `0` so the three
+  buttons center correctly.
+- Swiping left/right on the photo/road-map/block-plan media area on touch
+  devices navigates prev/next (`useSwipeNavigation` hook in
+  `components.tsx`, `SWIPE_THRESHOLD_PX = 50`) — same navigation the arrow
+  buttons trigger, just gesture-driven.
+
 ## Status / badge pills
 
 Each pill type has its own dedicated CSS class — never relying on sibling
