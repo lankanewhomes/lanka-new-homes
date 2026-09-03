@@ -6133,6 +6133,19 @@ a.developer-profile-press-title {
   background: #e4e0d8;
 }
 
+.auth-forgot-password {
+  margin: -6px 0 0;
+  font-size: 13px;
+}
+
+.auth-forgot-password a {
+  color: #6b6355;
+}
+
+.auth-forgot-password a:hover {
+  color: #1f1f1f;
+}
+
 .auth-error {
   margin-top: 4px;
   font-size: 13px;

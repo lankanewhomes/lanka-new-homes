@@ -40,6 +40,36 @@ const PROVIDERS: { id: Provider; label: string; icon: ReactNode }[] = [
   },
 ];
 
+const PROVIDER_LABELS: Record<string, string> = {
+  google: "Google",
+  facebook: "Facebook",
+  linkedin_oidc: "LinkedIn",
+};
+
+// Supabase returns a generic "Invalid login credentials" error whether the
+// password was wrong or the account has no password at all (created via
+// Google/Facebook/LinkedIn). This looks up which providers the email is
+// actually registered with so we can point the person at the right button
+// instead of leaving them stuck re-typing a password that was never set.
+async function getOAuthOnlyHint(attemptedEmail: string): Promise<string | null> {
+  try {
+    const response = await fetch("/api/auth/account-providers", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: attemptedEmail }),
+    });
+    if (!response.ok) return null;
+    const { providers } = (await response.json()) as { providers: string[] };
+    if (providers.length > 0 && !providers.includes("email")) {
+      const names = providers.map((provider) => PROVIDER_LABELS[provider] ?? provider).join(" or ");
+      return `This email is registered with ${names} sign-in — use "Continue with ${names}" above instead of a password.`;
+    }
+  } catch {
+    // Fall back to the original Supabase error message.
+  }
+  return null;
+}
+
 type Mode = "login" | "signup";
 
 export function AuthForm({
@@ -120,11 +150,13 @@ export function AuthForm({
     }
 
     const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
     if (signInError) {
-      setError(signInError.message);
+      const hint = await getOAuthOnlyHint(email);
+      setLoading(false);
+      setError(hint ?? signInError.message);
       return;
     }
+    setLoading(false);
 
     if (onDeveloperRoleCheck && data.user) {
       const { data: profile } = await supabase.from("profiles").select("role").eq("id", data.user.id).single();
@@ -174,6 +206,11 @@ export function AuthForm({
           onChange={(e) => setPassword(e.target.value)}
         />
       </label>
+      {mode === "login" && (
+        <p className="auth-forgot-password">
+          <a href="/forgot-password">Forgot password?</a>
+        </p>
+      )}
       {error && <p className="auth-error">{error}</p>}
       <button type="submit" disabled={loading}>
         {loading ? "Please wait…" : variant === "modal" ? "Continue" : mode === "signup" ? "Create account" : "Log in"}
