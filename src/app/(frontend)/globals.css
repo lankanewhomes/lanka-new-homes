@@ -4632,6 +4632,10 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
     padding: 28px 14px 30px;
   }
 
+  .featured-listings-grid {
+    grid-template-columns: 1fr;
+  }
+
   .featured-listings-footer {
     margin-top: 24px;
   }
