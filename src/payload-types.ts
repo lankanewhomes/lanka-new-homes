@@ -5852,9 +5852,17 @@ export interface Land {
 export interface HeroSlide {
   id: number;
   /**
-   * Image URL — or upload a file in Media and paste its URL here.
+   * Legacy external image URL. Use Hero Image for new paid placements.
    */
-  image: string;
+  image?: string | null;
+  /**
+   * Choose the banner image uploaded through Media.
+   */
+  hero_image?: (number | null) | Media;
+  /**
+   * The project opened when a visitor clicks this paid hero placement.
+   */
+  project: number | Project;
   link?: string | null;
   /**
    * e.g. homepage, colombo, luxury
@@ -5864,10 +5872,39 @@ export interface HeroSlide {
   advertiser?: (number | null) | Developer;
   start_date?: string | null;
   end_date?: string | null;
+  /**
+   * Homepage hero placements are paid inventory.
+   */
   is_paid_placement?: boolean | null;
+  /**
+   * Attach the completed Hero Slide or Hero Image payment before activating this placement.
+   */
+  payment?: (number | null) | Payment;
   status?: ('pending' | 'active' | 'rejected') | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: number;
+  /**
+   * Describes the file for accessibility/SEO — required for images.
+   */
+  alt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -5997,28 +6034,6 @@ export interface Article {
   } | null;
   updatedAt: string;
   createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
- */
-export interface Media {
-  id: number;
-  /**
-   * Describes the file for accessibility/SEO — required for images.
-   */
-  alt?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -6721,6 +6736,8 @@ export interface NeighborhoodsSelect<T extends boolean = true> {
  */
 export interface HeroSlidesSelect<T extends boolean = true> {
   image?: T;
+  hero_image?: T;
+  project?: T;
   link?: T;
   page_target?: T;
   display_order?: T;
@@ -6728,6 +6745,7 @@ export interface HeroSlidesSelect<T extends boolean = true> {
   start_date?: T;
   end_date?: T;
   is_paid_placement?: T;
+  payment?: T;
   status?: T;
   updatedAt?: T;
   createdAt?: T;

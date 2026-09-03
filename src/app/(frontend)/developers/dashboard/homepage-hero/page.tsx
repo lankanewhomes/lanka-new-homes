@@ -24,7 +24,7 @@ export default async function DeveloperHomepageHeroPage() {
 
   return (
     <div className="grid gap-4 px-4 pt-6 pb-16 lg:grid-cols-[220px_1fr] lg:px-6 lg:pt-8">
-      <DashboardSidebar links={[{ label: "Overview", href: "/developers/dashboard" }, { label: "Homepage Hero", href: "/developers/dashboard/homepage-hero" }, { label: "Profile", href: `/developers/${profile.developerSlug}` }]} />
+      <DashboardSidebar links={[{ label: "Overview", href: "/developers/dashboard" }, { label: "Homepage Hero", href: "/developers/dashboard/homepage-hero" }, { label: "Featured Placement", href: "/developers/dashboard/featured" }, { label: "Profile", href: `/developers/${profile.developerSlug}` }]} />
       <section className="space-y-4">
         <DashboardHeader title="Homepage Hero Banner" subtitle="Submit a paid homepage hero placement for one of your projects. It will be reviewed before going live." />
         <HeroAdRequestForm developers={[{ slug: profile.developerSlug, name: developer?.name ?? profile.developerSlug, projects }]} />
