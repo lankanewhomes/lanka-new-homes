@@ -396,6 +396,7 @@ export type Lead = {
   status: "New" | "Contacted" | "Qualified" | "Closed";
   assignedTo?: string;
   assignedAt?: string;
+  userId?: string;
 };
 
 export type LeadActivity = {

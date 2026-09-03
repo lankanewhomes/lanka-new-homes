@@ -446,3 +446,41 @@ create table if not exists developer_subscriptions (
 );
 create index if not exists idx_developer_subscriptions_developer_slug on developer_subscriptions (developer_slug);
 alter table developer_subscriptions enable row level security;
+
+-- User account dashboard -------------------------------------------------
+-- (supabase/migrations/20260903120000_account_dashboard.sql)
+
+alter table leads add column if not exists user_id uuid references auth.users(id) on delete set null;
+create index if not exists idx_leads_user_id on leads (user_id, created_at);
+
+drop policy if exists "leads: read own" on leads;
+create policy "leads: read own" on leads for select
+  using (auth.uid() = user_id or auth.email() = email);
+
+alter table profiles add column if not exists phone text;
+alter table profiles add column if not exists preferred_locations text[] not null default '{}';
+alter table profiles add column if not exists preferred_property_types text[] not null default '{}';
+alter table profiles add column if not exists budget_min numeric;
+alter table profiles add column if not exists budget_max numeric;
+alter table profiles add column if not exists preferred_bedrooms text;
+alter table profiles add column if not exists notify_email boolean not null default true;
+alter table profiles add column if not exists notify_new_properties boolean not null default true;
+alter table profiles add column if not exists notify_price_changes boolean not null default true;
+alter table profiles add column if not exists marketing_opt_in boolean not null default false;
+
+create table if not exists saved_developers (
+  id bigint generated always as identity primary key,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  developer_slug text not null references developers(slug) on delete cascade,
+  created_at timestamptz not null default now(),
+  unique (user_id, developer_slug)
+);
+create index if not exists idx_saved_developers_user on saved_developers (user_id, created_at);
+
+alter table saved_developers enable row level security;
+drop policy if exists "saved_developers: read own" on saved_developers;
+create policy "saved_developers: read own" on saved_developers for select using (auth.uid() = user_id);
+drop policy if exists "saved_developers: insert own" on saved_developers;
+create policy "saved_developers: insert own" on saved_developers for insert with check (auth.uid() = user_id);
+drop policy if exists "saved_developers: delete own" on saved_developers;
+create policy "saved_developers: delete own" on saved_developers for delete using (auth.uid() = user_id);

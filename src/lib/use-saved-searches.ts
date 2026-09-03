@@ -60,10 +60,10 @@ export function useSavedSearches() {
   }, [load]);
 
   const create = useCallback(
-    async (name: string) => {
+    async (name: string, filters: Record<string, unknown> = {}) => {
       if (!userId) return;
       const supabase = createSupabaseBrowserClient();
-      await supabase.from("saved_searches").insert({ user_id: userId, name, filters: {}, is_active: true });
+      await supabase.from("saved_searches").insert({ user_id: userId, name, filters, is_active: true });
       await load();
     },
     [userId, load]

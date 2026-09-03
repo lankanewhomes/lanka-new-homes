@@ -3,15 +3,17 @@
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronDown, House, Star } from "lucide-react";
+import { ChevronDown, Heart, House, Star } from "lucide-react";
 import type { Developer, Project } from "@/types";
 import { formatLkr, formatOfficeHours } from "@/lib/format";
 import { SOCIAL_ICON } from "@/components/marketplace/components";
+import { useSavedDeveloper } from "@/lib/use-saved-developer";
 
 type Tab = "projects" | "reviews" | "awards" | "press";
 
 export function DeveloperProfileView({ developer, projects }: { developer: Developer; projects: Project[] }) {
   const [tab, setTab] = useState<Tab>("projects");
+  const { saved: following, toggle: toggleFollow } = useSavedDeveloper(developer.slug);
   const [locationFilter, setLocationFilter] = useState("all");
   const formattedOfficeHours = formatOfficeHours(developer.officeHours);
   const coDevelopers = (developer.coDevelopers ?? []).filter((entry) => entry.name);
@@ -33,6 +35,15 @@ export function DeveloperProfileView({ developer, projects }: { developer: Devel
         <p className="developer-profile-role">Developer</p>
         <p className="developer-profile-reviews">0 Reviews</p>
         <button type="button" className="developer-profile-review-button">Write a review <Star size={16} /></button>
+        <button
+          type="button"
+          className={`developer-profile-follow-button${following ? " is-following" : ""}`}
+          onClick={toggleFollow}
+          aria-pressed={following}
+        >
+          <Heart size={16} className={following ? "text-[#d94f4f]" : undefined} fill={following ? "#d94f4f" : "none"} />
+          {following ? "Following" : "Follow developer"}
+        </button>
 
         <div className="developer-profile-contact">
           <p>{developer.location}</p>

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { insertLead } from "@/lib/tracking-db";
+import { createSupabaseServerClient } from "@/lib/supabase-server";
 
 export async function POST(req: Request) {
   try {
@@ -24,6 +25,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid email" }, { status: 400 });
     }
 
+    const supabase = await createSupabaseServerClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     const saved = await insertLead({
       name: body.name,
       email: typeof body.email === "string" ? body.email : "",
@@ -33,6 +39,7 @@ export async function POST(req: Request) {
       projectSlug: body.projectSlug,
       developerSlug: body.developerSlug,
       marketingOptIn: typeof body.marketingOptIn === "boolean" ? body.marketingOptIn : undefined,
+      userId: user?.id,
     });
 
     return NextResponse.json({ ok: true, id: saved.id, createdAt: saved.createdAt });

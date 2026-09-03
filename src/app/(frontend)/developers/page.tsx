@@ -25,7 +25,20 @@ export const metadata: Metadata = {
 };
 
 export default async function DevelopersPage() {
-  const developers = await getAllDevelopers();
+  const allDevelopers = await getAllDevelopers();
+  const developers = Array.from(
+    allDevelopers.reduce((unique, developer) => {
+      const key = developer.name.trim().toLowerCase();
+      const current = unique.get(key);
+      const currentScore = current
+        ? current.activeProjects + current.completedProjects + Number(Boolean(current.location)) + Number(Boolean(current.description))
+        : -1;
+      const nextScore = developer.activeProjects + developer.completedProjects + Number(Boolean(developer.location)) + Number(Boolean(developer.description));
+
+      if (!current || nextScore > currentScore) unique.set(key, developer);
+      return unique;
+    }, new Map<string, (typeof allDevelopers)[number]>()).values(),
+  );
 
   return (
     <div className="space-y-4">

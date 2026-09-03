@@ -10,13 +10,13 @@ export const metadata: Metadata = {
 
 export default function DeveloperLoginPage() {
   return (
-    <div className="static-page-shell">
-      <h1>Developer login</h1>
-      <p className="static-page-lede">Sign in to manage your projects, leads, and hero placements.</p>
+    <div className="static-page-shell developer-login-page">
+      <h1 className="developer-login-heading">Developer login</h1>
+      <p className="static-page-lede developer-login-lede">Sign in to manage your projects, leads, and hero placements.</p>
 
       <AuthForm mode="login" intent="developer" redirectTo="/developers/dashboard" onDeveloperRoleCheck />
 
-      <p className="static-page-note">
+      <p className="static-page-note developer-login-note">
         Don&apos;t have a developer account yet? <Link href="/developers/register">Register your company</Link>.
       </p>
     </div>

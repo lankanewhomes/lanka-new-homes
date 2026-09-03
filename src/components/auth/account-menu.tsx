@@ -49,9 +49,14 @@ export function AccountMenu({ loginLabel, signupLabel }: { loginLabel: string; s
               Developer dashboard
             </Link>
           ) : (
-            <Link href="/account/saved" onClick={() => setOpen(false)}>
-              Saved listings
-            </Link>
+            <>
+              <Link href="/account" onClick={() => setOpen(false)}>
+                My account
+              </Link>
+              <Link href="/account/saved" onClick={() => setOpen(false)}>
+                Saved listings
+              </Link>
+            </>
           )}
           <button type="button" onClick={onLogout}>
             Log out
