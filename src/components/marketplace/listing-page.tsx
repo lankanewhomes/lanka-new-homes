@@ -144,6 +144,11 @@ export function ListingGridCard({ project, basePath = "/projects" }: { project: 
       </Link>
 
       <div className="listing-grid-card-body">
+        {project.isFeatured ? (
+          <div className="home-card-badge-row">
+            <span className="badge-featured">Featured</span>
+          </div>
+        ) : null}
         <Link href={href} className="listing-grid-card-name">{project.name}</Link>
         <p className="listing-grid-card-price">
           {isLand
