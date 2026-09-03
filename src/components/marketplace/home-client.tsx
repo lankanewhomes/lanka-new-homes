@@ -33,6 +33,14 @@ export function HomeClient({ projects }: { projects: Project[] }) {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [heroSlide, setHeroSlide] = useState(0);
+  // Only the active slide's image is ever needed at first paint — the
+  // other 3 sit in the DOM (for the sliding-track animation) but load
+  // their <Image> lazily, on demand, as the carousel actually reaches
+  // them, instead of all 4 competing for bandwidth with the real LCP
+  // image on initial load. Tracks the furthest slide reached (not just
+  // the current one) so a slide already shown stays mounted when the
+  // carousel moves backward past it.
+  const [maxHeroSlideReached, setMaxHeroSlideReached] = useState(0);
   const [heroPaused, setHeroPaused] = useState(false);
   const [heroAds, setHeroAds] = useState<HeroAd[]>([]);
 
@@ -53,6 +61,11 @@ export function HomeClient({ projects }: { projects: Project[] }) {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setHeroSlide((current) => (current >= heroSlides.length ? 0 : current));
   }, [heroSlides.length]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMaxHeroSlideReached((max) => Math.max(max, heroSlide));
+  }, [heroSlide]);
 
   useEffect(() => {
     if (heroPaused) return;
@@ -139,7 +152,7 @@ export function HomeClient({ projects }: { projects: Project[] }) {
     <section className="luxury-hero-two" aria-label="Luxury listing search hero">
       <div className="luxury-hero-two-media">
         <div className="luxury-hero-two-track" style={{ transform: `translateX(-${heroSlide * 100}%)` }}>
-          {heroSlides.map((slide, index) => <div className="luxury-hero-two-slide" key={`${slide.src}-${index}`}><Link href={slide.href} className="luxury-hero-two-slide-link" aria-hidden={index !== heroSlide} tabIndex={index === heroSlide ? 0 : -1}><Image src={slide.src} alt={index === heroSlide ? slide.alt : ""} fill priority={index === 0} sizes="100vw" /></Link></div>)}
+          {heroSlides.map((slide, index) => <div className="luxury-hero-two-slide" key={`${slide.src}-${index}`}><Link href={slide.href} className="luxury-hero-two-slide-link" aria-hidden={index !== heroSlide} tabIndex={index === heroSlide ? 0 : -1}>{index <= maxHeroSlideReached ? <Image src={slide.src} alt={index === heroSlide ? slide.alt : ""} fill priority={index === 0} sizes="100vw" /> : null}</Link></div>)}
         </div>
         <div className="luxury-hero-two-overlay" />
         <button type="button" className="luxury-hero-two-arrow" aria-label="Previous slide" onClick={showPreviousHeroSlide}><ChevronLeft size={18} /></button>
