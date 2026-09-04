@@ -80,6 +80,7 @@ export interface Config {
     'hero-slides': HeroSlide;
     'saved-listings': SavedListing;
     leads: Lead;
+    reviews: Review;
     analytics: Analytics;
     payments: Payment;
     'placement-pricing': PlacementPricing;
@@ -114,6 +115,7 @@ export interface Config {
     'hero-slides': HeroSlidesSelect<false> | HeroSlidesSelect<true>;
     'saved-listings': SavedListingsSelect<false> | SavedListingsSelect<true>;
     leads: LeadsSelect<false> | LeadsSelect<true>;
+    reviews: ReviewsSelect<false> | ReviewsSelect<true>;
     analytics: AnalyticsSelect<false> | AnalyticsSelect<true>;
     payments: PaymentsSelect<false> | PaymentsSelect<true>;
     'placement-pricing': PlacementPricingSelect<false> | PlacementPricingSelect<true>;
@@ -5965,6 +5967,25 @@ export interface Lead {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reviews".
+ */
+export interface Review {
+  id: number;
+  developer: number | Developer;
+  project?: (number | null) | Project;
+  rating: number;
+  comment: string;
+  reviewer_name: string;
+  reviewer_email?: string | null;
+  /**
+   * Approved reviews show on the developer's public profile page.
+   */
+  status: 'pending' | 'approved' | 'rejected';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "analytics".
  */
 export interface Analytics {
@@ -6190,6 +6211,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'leads';
         value: number | Lead;
+      } | null)
+    | ({
+        relationTo: 'reviews';
+        value: number | Review;
       } | null)
     | ({
         relationTo: 'analytics';
@@ -6878,6 +6903,21 @@ export interface LeadsSelect<T extends boolean = true> {
   email?: T;
   phone?: T;
   message?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reviews_select".
+ */
+export interface ReviewsSelect<T extends boolean = true> {
+  developer?: T;
+  project?: T;
+  rating?: T;
+  comment?: T;
+  reviewer_name?: T;
+  reviewer_email?: T;
   status?: T;
   updatedAt?: T;
   createdAt?: T;

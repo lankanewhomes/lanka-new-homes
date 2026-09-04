@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { DeveloperProfileView } from "@/components/marketplace/developer-profile-view";
 import { getAllDevelopers, getDeveloperBySlug } from "@/lib/developer-store";
 import { getAllProjects } from "@/lib/project-store";
+import { getApprovedReviewsByDeveloperSlug } from "@/lib/review-store";
 import { toAbsoluteUrl } from "@/lib/seo";
 
 // Regenerate at most once a minute so admin edits (e.g. status changes)
@@ -65,6 +66,7 @@ export default async function DeveloperProfilePage({ params }: DeveloperProfileP
 
   const allProjects = await getAllProjects();
   const developerProjects = allProjects.filter((p) => p.developerSlug === slug);
+  const reviews = await getApprovedReviewsByDeveloperSlug(slug);
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -94,7 +96,7 @@ export default async function DeveloperProfilePage({ params }: DeveloperProfileP
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      <DeveloperProfileView developer={developer} projects={developerProjects} />
+      <DeveloperProfileView developer={developer} projects={developerProjects} reviews={reviews} />
     </div>
   );
 }

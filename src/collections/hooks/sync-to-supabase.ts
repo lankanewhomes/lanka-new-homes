@@ -293,6 +293,42 @@ export const syncHeroSlideToSupabase: CollectionAfterChangeHook = async ({ doc, 
   return doc
 }
 
+// Reviewer email is intentionally never synced here — it stays in Payload
+// only (moderation contact info), keeping the public-facing mirror down to
+// exactly what the developer profile page needs to display.
+export const syncReviewToSupabase: CollectionAfterChangeHook = async ({ doc, req }) => {
+  const d = doc as AnyDoc
+  await safeSync(req, `review ${d.id}`, async () => {
+    const [developer, project] = await Promise.all([
+      resolveSlugName(req, 'developers', d.developer),
+      resolveSlugName(req, 'projects', d.project),
+    ])
+    if (!developer.slug) return
+
+    const review: AnyDoc = {
+      id: `payload-${d.id}`,
+      developerSlug: developer.slug,
+      projectSlug: project.slug,
+      rating: d.rating,
+      comment: d.comment,
+      reviewerName: d.reviewer_name,
+      status: d.status,
+      createdAt: d.createdAt,
+    }
+
+    const row = {
+      id: review.id,
+      developer_slug: review.developerSlug,
+      project_slug: review.projectSlug ?? null,
+      status: review.status,
+      data: review,
+    }
+    const { error } = await supabaseAdmin.from('reviews').upsert(row, { onConflict: 'id' })
+    if (error) throw new Error(error.message)
+  })
+  return doc
+}
+
 export const syncNeighborhoodToSupabase: CollectionAfterChangeHook = async ({ doc, req }) => {
   const d = doc as AnyDoc
   await safeSync(req, `neighborhood ${d.slug}`, async () => {

@@ -22,6 +22,7 @@ import { Neighborhoods } from './src/collections/Neighborhoods'
 import { Payments } from './src/collections/Payments'
 import { PlacementPricing } from './src/collections/PlacementPricing'
 import { Projects } from './src/collections/Projects'
+import { Reviews } from './src/collections/Reviews'
 import { SalesCompanies } from './src/collections/SalesCompanies'
 import { SavedListings } from './src/collections/SavedListings'
 import { supabaseStorageAdapter } from './src/collections/storage/supabase-storage-adapter'
@@ -83,6 +84,7 @@ export default buildConfig({
     HeroSlides,
     SavedListings,
     Leads,
+    Reviews,
     Analytics,
     Payments,
     PlacementPricing,

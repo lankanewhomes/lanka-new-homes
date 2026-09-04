@@ -80,6 +80,23 @@ create table if not exists hero_ads (
 create index if not exists idx_hero_ads_status on hero_ads (status);
 create index if not exists idx_hero_ads_developer_slug on hero_ads (developer_slug);
 
+-- Developer profile reviews, synced one-way from Payload's `reviews`
+-- collection (syncReviewToSupabase) — same shape/id convention as hero_ads.
+-- Reviewer email is intentionally never synced here; it stays in Payload
+-- only as moderation contact info.
+create table if not exists reviews (
+  id text primary key,
+  developer_slug text not null,
+  project_slug text,
+  status text,
+  data jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists idx_reviews_status on reviews (status);
+create index if not exists idx_reviews_developer_slug on reviews (developer_slug);
+
 -- Construction companies, and the lighter-weight partner directories linked
 -- from a project's "Connected Pages" section (marketing companies, sales
 -- companies, architects, interior designers). All share the same shape.
@@ -310,6 +327,10 @@ create policy "neighborhoods: public read" on neighborhoods for select using (tr
 alter table hero_ads enable row level security;
 drop policy if exists "hero_ads: public read" on hero_ads;
 create policy "hero_ads: public read" on hero_ads for select using (true);
+
+alter table reviews enable row level security;
+drop policy if exists "reviews: public read" on reviews;
+create policy "reviews: public read" on reviews for select using (true);
 
 alter table construction_companies enable row level security;
 drop policy if exists "construction_companies: public read" on construction_companies;

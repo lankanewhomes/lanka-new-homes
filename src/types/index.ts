@@ -446,6 +446,17 @@ export type DeveloperSubscription = {
   createdAt: string;
 };
 
+export type Review = {
+  id: string;
+  developerSlug: string;
+  projectSlug?: string;
+  rating: number;
+  comment: string;
+  reviewerName: string;
+  status: "pending" | "approved" | "rejected";
+  createdAt: string;
+};
+
 export type Article = {
   slug: string;
   title: string;

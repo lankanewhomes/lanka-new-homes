@@ -5318,8 +5318,55 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   justify-content: flex-end;
 }
 
-.developer-profile-reviews {
+.developer-profile-reviews-tab {
   margin-top: 28px;
+}
+
+.developer-profile-reviews-star {
+  vertical-align: -2px;
+  margin-right: 2px;
+}
+
+.developer-review-row {
+  padding: 16px 0;
+  border-top: 1px solid #ececec;
+}
+
+.developer-review-row:first-child {
+  border-top: none;
+}
+
+.developer-review-stars {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+
+.developer-review-star-filled {
+  stroke: #f47b36;
+}
+
+.developer-review-star-empty {
+  stroke: #d8d8d8;
+}
+
+.developer-review-comment {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #1f1f1f;
+}
+
+.write-review-star-picker {
+  display: flex;
+  gap: 6px;
+}
+
+.write-review-star-picker button {
+  padding: 2px;
+  border: 0;
+  background: none;
+  cursor: pointer;
 }
 
 .developer-profile-filter {
