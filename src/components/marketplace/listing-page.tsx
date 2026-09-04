@@ -252,7 +252,13 @@ export function ListingPageBody({
 
   const sortedProjects = useMemo(() => {
     const list = [...baseProjects];
-    if (sortBy === "priceAsc") list.sort((a, b) => a.startingPriceLkr - b.startingPriceLkr);
+    // "Recommended" (the default) ranks by final_score — completeness +
+    // engagement + recency + paid_boost, computed in Payload (see
+    // src/collections/hooks/project-scoring.ts) — so a developer paying for
+    // a placement boost actually surfaces higher in search, not just on the
+    // homepage's hero/featured sections.
+    if (sortBy === "featured") list.sort((a, b) => (b.finalScore ?? 0) - (a.finalScore ?? 0));
+    else if (sortBy === "priceAsc") list.sort((a, b) => a.startingPriceLkr - b.startingPriceLkr);
     else if (sortBy === "priceDesc") list.sort((a, b) => b.startingPriceLkr - a.startingPriceLkr);
     else if (sortBy === "newest") list.sort((a, b) => (b.launchDate ?? "").localeCompare(a.launchDate ?? ""));
     return list;
