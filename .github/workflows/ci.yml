@@ -72,6 +72,11 @@ jobs:
           SMTP_PASS: ${{ secrets.SMTP_PASS }}
           EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
           ADMIN_EMAILS: ${{ secrets.ADMIN_EMAILS }}
+          NEXT_PUBLIC_GA_MEASUREMENT_ID: ${{ secrets.NEXT_PUBLIC_GA_MEASUREMENT_ID }}
+          GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
+          GA4_SERVICE_ACCOUNT_EMAIL: ${{ secrets.GA4_SERVICE_ACCOUNT_EMAIL }}
+          GA4_SERVICE_ACCOUNT_PRIVATE_KEY: ${{ secrets.GA4_SERVICE_ACCOUNT_PRIVATE_KEY }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
 
   deploy:
     name: Deploy to Vercel (production)

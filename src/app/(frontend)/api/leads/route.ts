@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { insertLead } from "@/lib/tracking-db";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 
@@ -40,6 +40,46 @@ export async function POST(req: Request) {
       developerSlug: body.developerSlug,
       marketingOptIn: typeof body.marketingOptIn === "boolean" ? body.marketingOptIn : undefined,
       userId: user?.id,
+    });
+
+    // Best-effort mirror into Payload's Leads collection so builders can see
+    // and manage this inquiry (status, analytics) in /payload-admin.
+    // Deferred with after() so the visitor isn't stuck waiting several
+    // seconds on Payload's local API (project lookup + create + its
+    // cascading count-increment hooks) before seeing "request sent" — the
+    // user-facing submission above already succeeded on its own.
+    // skipSupabaseSync stops the collection's own afterChange hook from
+    // inserting a second, duplicate Supabase row for this lead.
+    after(async () => {
+      try {
+        const { getPayload } = await import("payload");
+        const payloadConfig = (await import("../../../../../payload.config")).default;
+        const payload = await getPayload({ config: payloadConfig });
+        const projectRes = await payload.find({
+          collection: "projects",
+          where: { slug: { equals: body.projectSlug } },
+          limit: 1,
+          depth: 0,
+          overrideAccess: true,
+        });
+        const projectDoc = projectRes.docs[0];
+        if (projectDoc) {
+          await payload.create({
+            collection: "leads",
+            data: {
+              project: projectDoc.id,
+              name: body.name,
+              email: typeof body.email === "string" ? body.email : "",
+              phone: body.phone,
+              message: body.message,
+            } as never,
+            context: { skipSupabaseSync: true },
+            overrideAccess: true,
+          });
+        }
+      } catch (mirrorError) {
+        console.error("Failed to mirror lead into Payload", mirrorError);
+      }
     });
 
     return NextResponse.json({ ok: true, id: saved.id, createdAt: saved.createdAt });

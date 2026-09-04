@@ -387,6 +387,18 @@ export const Projects: CollectionConfig = {
           ],
         },
         {
+          label: 'Analytics',
+          fields: [
+            {
+              name: 'analyticsPanel',
+              type: 'ui',
+              admin: {
+                components: { Field: '@/components/payload/ListingAnalyticsPanel#ListingAnalyticsPanel' },
+              },
+            },
+          ],
+        },
+        {
           label: 'SEO',
           fields: [seoFields],
         },

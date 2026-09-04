@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { AccountMenu } from "@/components/auth/account-menu";
 import { useSavedListing } from "@/lib/use-saved-listing";
+import { getStoredUtmParams, getTrafficSource, trackEvent } from "@/lib/ga4";
 import {
   ApartmentIcon,
   AreaIcon,
@@ -1395,6 +1396,13 @@ export function RequestInfoDialog({
       }
 
       setSubmitted(true);
+      const { utm_campaign } = getStoredUtmParams();
+      trackEvent("generate_lead", {
+        listing_id: project.slug,
+        listing_name: project.name,
+        traffic_source: getTrafficSource(),
+        ...(utm_campaign ? { utm_campaign } : {}),
+      });
     } catch {
       setErrorMessage("Unable to send your request. Please try again.");
     } finally {

@@ -296,6 +296,12 @@ export const syncArchitectToSupabase = companyProfileSyncHook('architects')
 
 export const syncLeadToSupabase: CollectionAfterChangeHook = async ({ doc, operation, req }) => {
   if (operation !== 'create') return doc
+  // The live inquiry form (src/app/(frontend)/api/leads/route.ts) writes to
+  // Supabase directly *and* mirrors the lead into this Payload collection
+  // (so builders can manage lead status in /payload-admin) — it sets this
+  // context flag on that mirrored create so this hook doesn't also insert a
+  // second, duplicate Supabase row for the same submission.
+  if (req.context?.skipSupabaseSync) return doc
   const d = doc as AnyDoc
   await safeSync(req, `lead ${d.id}`, async () => {
     const project = await resolveSlugName(req, 'projects', d.project)

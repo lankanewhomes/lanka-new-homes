@@ -254,7 +254,7 @@ async function main() {
     if (existing.docs.length > 0) continue
     await payload.create({
       collection: 'leads',
-      data: { name: lead.name, email: lead.email, phone: lead.phone, message: lead.message, project: projectId },
+      data: { name: lead.name, email: lead.email, phone: lead.phone, message: lead.message, project: projectId, status: 'new' },
       overrideAccess: true,
       depth: 0,
     })

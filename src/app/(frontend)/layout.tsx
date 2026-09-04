@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
 import { Archivo } from "next/font/google";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { Footer, Header } from "@/components/marketplace/components";
 import { BreadcrumbBar } from "@/components/layout/breadcrumb-bar";
 import { LanguageProvider } from "@/components/layout/language-provider";
 import { AuthModalProvider } from "@/components/auth/auth-modal-provider";
+import { UtmCapture } from "@/components/analytics/utm-capture";
 import { getSiteUrl } from "@/lib/seo";
 import "./globals.css";
+
+const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
 const siteUrl = getSiteUrl();
 
@@ -44,5 +48,20 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
-  return <html lang="en" className={`h-full antialiased ${bodyFont.variable}`}><body className="min-h-full" suppressHydrationWarning><LanguageProvider><AuthModalProvider><Header /><BreadcrumbBar /><main>{children}</main><Footer /></AuthModalProvider></LanguageProvider></body></html>;
+  return (
+    <html lang="en" className={`h-full antialiased ${bodyFont.variable}`}>
+      <body className="min-h-full" suppressHydrationWarning>
+        {gaMeasurementId ? <GoogleAnalytics gaId={gaMeasurementId} /> : null}
+        <UtmCapture />
+        <LanguageProvider>
+          <AuthModalProvider>
+            <Header />
+            <BreadcrumbBar />
+            <main>{children}</main>
+            <Footer />
+          </AuthModalProvider>
+        </LanguageProvider>
+      </body>
+    </html>
+  );
 }

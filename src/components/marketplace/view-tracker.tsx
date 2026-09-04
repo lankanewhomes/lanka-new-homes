@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { trackEvent } from "@/lib/ga4";
 
 export const SESSION_KEY = "newhomessrilanka-session-id";
 
@@ -14,9 +15,11 @@ export function getSessionId() {
 
 export function ProjectViewTracker({
   projectSlug,
+  projectName,
   developerSlug,
 }: {
   projectSlug: string;
+  projectName: string;
   developerSlug: string;
 }) {
   useEffect(() => {
@@ -29,7 +32,12 @@ export function ProjectViewTracker({
     }).catch(() => {
       // No-op for UI mode.
     });
-  }, [projectSlug, developerSlug]);
+
+    // listing_id is passed as a custom event parameter (not GA4's built-in
+    // item_id) so it can be filtered on directly in GA4/Looker Studio — see
+    // docs/analytics.md for the GA4-side custom dimension setup this needs.
+    trackEvent("view_listing", { listing_id: projectSlug, listing_name: projectName });
+  }, [projectSlug, projectName, developerSlug]);
 
   return null;
 }

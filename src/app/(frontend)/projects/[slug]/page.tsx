@@ -114,7 +114,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      <ProjectViewTracker projectSlug={project.slug} developerSlug={project.developerSlug} />
+      <ProjectViewTracker projectSlug={project.slug} projectName={project.name} developerSlug={project.developerSlug} />
       <ProjectHero project={project} backHref="/projects" backLabel="New Projects" />
 
       <div className="project-page-content">

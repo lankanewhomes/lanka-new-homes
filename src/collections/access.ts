@@ -1,4 +1,4 @@
-import type { Access, FieldAccess, PayloadRequest } from 'payload'
+import type { Access, FieldAccess, PayloadRequest, Where } from 'payload'
 
 // req.user's shape isn't known until `payload generate:types` runs against
 // this config, so it's narrowed manually here instead of importing the
@@ -41,6 +41,37 @@ export const ownerOrAdmin: Access = ({ req }) => {
   if (isAdmin(req)) return true
   const user = authedUser(req)
   if (!user) return false
+  return { user: { equals: user.id } }
+}
+
+// Leads read/update: the submitting buyer (if they had an account), an
+// admin, or the developer whose project the lead is about — a builder needs
+// to see and update the status of inquiries on their own projects, even
+// though they're not the `user` who submitted the lead.
+export const leadOwnerOrDeveloperOrAdmin: Access = async ({ req }) => {
+  if (isAdmin(req)) return true
+  const user = authedUser(req)
+  if (!user) return false
+
+  if (getRole(req) === 'developer') {
+    const ownedDeveloperIds = await getOwnedDeveloperIds(req)
+    if (ownedDeveloperIds.length > 0) {
+      const ownedProjects = await req.payload.find({
+        collection: 'projects',
+        where: { developer: { in: ownedDeveloperIds } },
+        limit: 1000,
+        depth: 0,
+        overrideAccess: true,
+        req,
+      })
+      const projectIds = ownedProjects.docs.map((doc) => doc.id)
+      if (projectIds.length > 0) {
+        const where: Where = { or: [{ user: { equals: user.id } }, { project: { in: projectIds } }] }
+        return where
+      }
+    }
+  }
+
   return { user: { equals: user.id } }
 }
 

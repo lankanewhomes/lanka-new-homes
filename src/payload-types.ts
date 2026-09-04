@@ -5929,6 +5929,10 @@ export interface Lead {
   email: string;
   phone?: string | null;
   message?: string | null;
+  /**
+   * Update as this inquiry progresses — drives the lead-status breakdown on the project analytics panel.
+   */
+  status: 'new' | 'contacted' | 'toured' | 'sold';
   updatedAt: string;
   createdAt: string;
 }
@@ -6771,6 +6775,7 @@ export interface LeadsSelect<T extends boolean = true> {
   email?: T;
   phone?: T;
   message?: T;
+  status?: T;
   updatedAt?: T;
   createdAt?: T;
 }
