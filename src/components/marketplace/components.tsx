@@ -727,6 +727,16 @@ export function ProjectHero({
     },
   ];
   const visibleHeroMediaPills = heroMediaPills.filter((pill) => pill.show);
+  // The mobile sticky-to-bottom quick-jump bar has room for 6 icons max.
+  // Street View is the least essential of the set, so it always sorts last
+  // and is the first (only) thing dropped when the bar is already full —
+  // never bumps a more useful pill out to make room for itself.
+  const quickjumpOtherPills = visibleHeroMediaPills.filter((pill) => pill.key !== "street-view");
+  const quickjumpStreetViewPill = visibleHeroMediaPills.find((pill) => pill.key === "street-view");
+  const quickjumpPills =
+    quickjumpOtherPills.length < 6 && quickjumpStreetViewPill
+      ? [...quickjumpOtherPills.slice(0, 6), quickjumpStreetViewPill]
+      : quickjumpOtherPills.slice(0, 6);
 
   return (
     <>
@@ -1118,13 +1128,15 @@ export function ProjectHero({
         bounded by its nearest containing block, so nested inside the short
         hero section it would scroll away with the section instead of
         staying pinned through the rest of the page on mobile. */}
-    {visibleHeroMediaPills.length > 0 && (
+    {quickjumpPills.length > 0 && (
       // Mobile only: two-word labels ("Road Map", "Block Plan", "Floor
       // Plans", "Street View") stack onto two lines — but only once there
       // are enough tabs (the full set of 7) that they need the room; with
-      // fewer tabs every label stays on its natural single line.
-      <div className={`listing-hero-quickjump-bar${visibleHeroMediaPills.length >= 7 ? " is-compact" : ""}`} aria-label="Quick jump">
-        {visibleHeroMediaPills.map((pill) => (
+      // fewer tabs every label stays on its natural single line. Capped at
+      // 6 pills now (see quickjumpPills above), so this can no longer
+      // actually trigger — left in place in case the cap changes later.
+      <div className={`listing-hero-quickjump-bar${quickjumpPills.length >= 7 ? " is-compact" : ""}`} aria-label="Quick jump">
+        {quickjumpPills.map((pill) => (
           <Fragment key={pill.key}>
             {pill.render(`listing-hero-quickjump-btn${pill.lightboxKey && pill.lightboxKey === lightboxView ? " is-active" : ""}`)}
           </Fragment>
@@ -1563,7 +1575,7 @@ export function RequestInfoDialog({
             {errorMessage ? <p className="request-info-error">{errorMessage}</p> : null}
 
             <button type="submit" className="request-info-submit-big" disabled={submitting || !agreed}>
-              {submitting ? "Sending..." : isBrochure ? "Send Brochure" : isInquiry ? "Send" : "Submit Form"}
+              {submitting ? "Sending..." : isBrochure ? "Download Brochure" : isInquiry ? "Send" : "Submit Form"}
             </button>
           </form>
         )}

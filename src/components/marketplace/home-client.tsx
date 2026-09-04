@@ -8,7 +8,7 @@ import { ArrowUpRight, ChevronDown, ChevronLeft, ChevronRight, MapPin, Pause, Se
 import { SiteLanguage, useLanguage } from "@/components/layout/language-provider";
 import { ListingGridCard } from "@/components/marketplace/listing-page";
 import { allProjectCategories } from "@/lib/listing-categories";
-import type { HeroAd, Project } from "@/types";
+import type { Developer, HeroAd, Project } from "@/types";
 
 const neighborhoods = [
   { name: "Colombo", image: "https://images.unsplash.com/photo-1590490360182-c33d57733427?q=80&w=900&auto=format&fit=crop" },
@@ -28,7 +28,7 @@ const fallbackHeroSlides = [
   "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?q=85&w=2600&auto=format&fit=crop",
 ];
 
-export function HomeClient({ projects }: { projects: Project[] }) {
+export function HomeClient({ projects, developers = [] }: { projects: Project[]; developers?: Developer[] }) {
   const { language } = useLanguage();
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
@@ -146,6 +146,23 @@ export function HomeClient({ projects }: { projects: Project[] }) {
   const t = copy[language];
 
   const featuredProjects = useMemo(() => projects.filter((project) => project.isFeatured).slice(0, 4), [projects]);
+  // Same de-dupe-by-name logic as /developers (a builder can have more than
+  // one profile row) — most active/complete profile wins — then the ones
+  // with the most combined projects lead, since that's what "featured"
+  // means here absent a dedicated flag on Developer.
+  const featuredBuilders = useMemo(() => {
+    const unique = developers.reduce((map, developer) => {
+      const key = developer.name.trim().toLowerCase();
+      const current = map.get(key);
+      const currentScore = current ? current.activeProjects + current.completedProjects + Number(Boolean(current.location)) : -1;
+      const nextScore = developer.activeProjects + developer.completedProjects + Number(Boolean(developer.location));
+      if (!current || nextScore > currentScore) map.set(key, developer);
+      return map;
+    }, new Map<string, Developer>());
+    return Array.from(unique.values())
+      .sort((a, b) => (b.activeProjects + b.completedProjects) - (a.activeProjects + a.completedProjects))
+      .slice(0, 8);
+  }, [developers]);
   const searchSuggestions = useMemo(() => {
     const query = searchTerm.trim().toLowerCase();
     if (!query) return [];
@@ -272,6 +289,32 @@ export function HomeClient({ projects }: { projects: Project[] }) {
           </div>
         </div>
       </section>
+
+      {featuredBuilders.length > 0 ? (
+        <section className="featured-listings-section" aria-label="Featured builders">
+          <div className="featured-listings-head">
+            <h2>Featured builders</h2>
+          </div>
+          <div className="featured-listings-shell">
+            <div className="featured-builders-grid">
+              {featuredBuilders.map((developer) => (
+                <Link key={developer.slug} href={`/developers/${developer.slug}`} className="featured-builder-card">
+                  <span className="featured-builder-card-logo">
+                    <Image src={developer.logo} alt={developer.name} width={120} height={120} />
+                  </span>
+                  <span className="featured-builder-card-name">{developer.name}</span>
+                  <span className="featured-builder-card-count">
+                    {developer.activeProjects + developer.completedProjects} project{developer.activeProjects + developer.completedProjects === 1 ? "" : "s"}
+                  </span>
+                </Link>
+              ))}
+            </div>
+            <div className="featured-listings-footer">
+              <Link href="/developers" className="featured-listings-button">VIEW ALL BUILDERS</Link>
+            </div>
+          </div>
+        </section>
+      ) : null}
     </main>
   </div>;
 }
