@@ -28,6 +28,18 @@ export const Analytics: CollectionConfig = {
   admin: {
     useAsTitle: 'event_type',
     defaultColumns: ['event_type', 'project', 'traffic_source', 'device_type', 'is_duplicate', 'timestamp'],
+    // Raw per-event rows aren't useful to look at directly — this replaces
+    // the default list table with an aggregated dashboard (stat cards,
+    // traffic source/device breakdowns, a by-listing table, trend chart —
+    // see AnalyticsDashboard.tsx). The individual event docs are still
+    // there and still exportable, just not the landing view anymore.
+    components: {
+      views: {
+        list: {
+          Component: '@/components/payload/AnalyticsDashboard#AnalyticsDashboard',
+        },
+      },
+    },
   },
   access: {
     create: () => true,

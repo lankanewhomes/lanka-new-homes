@@ -7,7 +7,7 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { buildConfig } from 'payload'
 
 import { Analytics } from './src/collections/Analytics'
-import { analyticsEndpoint } from './src/collections/endpoints/analytics'
+import { analyticsEndpoint, analyticsSummaryEndpoint } from './src/collections/endpoints/analytics'
 import { Architects } from './src/collections/Architects'
 import { Articles } from './src/collections/Articles'
 import { ConstructionCompanies } from './src/collections/ConstructionCompanies'
@@ -78,7 +78,7 @@ export default buildConfig({
     Media,
   ],
   globals: [SiteSettings],
-  endpoints: [analyticsEndpoint],
+  endpoints: [analyticsEndpoint, analyticsSummaryEndpoint],
   editor: lexicalEditor(),
   db: postgresAdapter({
     pool: { connectionString: process.env.DATABASE_URI },

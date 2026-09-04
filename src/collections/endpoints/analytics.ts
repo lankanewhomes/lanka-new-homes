@@ -1,6 +1,7 @@
 import type { Endpoint, PayloadRequest } from 'payload'
-import { getOwnedDeveloperIds, isAdmin } from '../access'
+import { getOwnedDeveloperIds, getOwnedProjectIds, isAdmin } from '../access'
 import { buildListingAnalyticsReport, type AnalyticsRange } from '@/lib/analytics-report'
+import { buildAnalyticsSummary } from '@/lib/analytics-summary'
 
 const DAY_MS = 24 * 60 * 60 * 1000
 
@@ -77,5 +78,47 @@ export const analyticsEndpoint: Endpoint = {
     )
 
     return Response.json(report)
+  },
+}
+
+// GET /payload-api/analytics-summary — the dashboard that replaces the
+// Analytics collection's raw per-event list view (see Analytics.ts's
+// admin.components.views.list). A developer sees an aggregate across their
+// own portfolio (every project their company owns); an admin sees the
+// whole platform plus a by-developer breakdown, gated by the same
+// isAdmin() check everywhere else in this file uses.
+export const analyticsSummaryEndpoint: Endpoint = {
+  path: '/analytics-summary',
+  method: 'get',
+  handler: async (req: PayloadRequest) => {
+    if (!req.user) {
+      return Response.json({ error: 'Not signed in.' }, { status: 401 })
+    }
+
+    const url = new URL(req.url ?? '', 'http://localhost')
+    const { startDate, endDate } = parseRange(url)
+    const admin = isAdmin(req)
+
+    const projectIds = admin ? undefined : await getOwnedProjectIds(req)
+    if (!admin && (!projectIds || projectIds.length === 0)) {
+      return Response.json({
+        range: { startDate, endDate },
+        totalEvents: 0,
+        byType: [],
+        trafficSources: [],
+        deviceTypes: [],
+        byListing: [],
+        trend: [],
+      })
+    }
+
+    const summary = await buildAnalyticsSummary(req.payload, {
+      projectIds,
+      startDate,
+      endDate,
+      includeByDeveloper: admin,
+    })
+
+    return Response.json(summary)
   },
 }
