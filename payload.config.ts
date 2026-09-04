@@ -39,6 +39,12 @@ export default buildConfig({
   admin: {
     user: Users.slug,
     importMap: { baseDir: dirname },
+    components: {
+      // Payload's default logout is a small icon at the bottom of the left
+      // sidebar — this adds a conventional top-right "Account / Log out"
+      // menu alongside it (doesn't replace the sidebar one).
+      header: ['@/components/payload/TopRightAccountMenu#TopRightAccountMenu'],
+    },
   },
   // Top-level `routes` controls the base mount paths (admin panel, REST/
   // GraphQL API) — kept away from the existing app's own /admin and /api.
