@@ -36,15 +36,6 @@ const SOCIAL_PROVIDERS = [
   },
 ];
 
-function slugify(value: string): string {
-  return value
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-");
-}
-
 // Same look as the buyer login/signup forms (AuthForm) on purpose — one
 // consistent design across the whole site — but authenticates against
 // Payload's own Users collection instead of Supabase, and lands in /cms
@@ -58,6 +49,7 @@ export function PayloadLoginForm({ mode = "login" }: { mode?: "login" | "signup"
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [socialNotice, setSocialNotice] = useState(false);
+  const [checkEmail, setCheckEmail] = useState(false);
 
   const onSubmitLogin = async () => {
     const response = await fetch("/payload-api/users/login", {
@@ -68,38 +60,29 @@ export function PayloadLoginForm({ mode = "login" }: { mode?: "login" | "signup"
     });
     const body = await response.json();
     if (!response.ok) {
-      throw new Error(body?.errors?.[0]?.message ?? body?.message ?? "Invalid email or password.");
+      const message = body?.errors?.[0]?.message ?? body?.message;
+      if (response.status === 403 && message?.toLowerCase().includes("verify")) {
+        throw new Error("Please confirm your email first — check your inbox for the link we sent when you signed up.");
+      }
+      throw new Error(message ?? "Invalid email or password.");
     }
   };
 
+  // A new account (any role) needs to confirm its email before it can log
+  // in (see Users.ts's auth.verify) — so this only ever creates the
+  // account and stops there. The linked company profile is created
+  // automatically server-side (Users.ts's afterChange hook), not by a
+  // second request here, since there's no authenticated session yet to make
+  // one with.
   const onSubmitSignup = async () => {
-    // 1. Create the Payload account (role: developer). Public create, but
-    //    doesn't establish a session on its own — log in right after.
     const createRes = await fetch("/payload-api/users", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password, full_name: fullName, role: "developer" }),
+      body: JSON.stringify({ email, password, full_name: fullName, role: "developer", company_name: companyName }),
     });
     const createBody = await createRes.json();
     if (!createRes.ok) {
       throw new Error(createBody?.errors?.[0]?.message ?? createBody?.message ?? "Couldn't create your account.");
-    }
-
-    await onSubmitLogin();
-
-    // 2. Create the company profile, linked to this account automatically
-    //    (see Developers.ts's beforeChange hook — user/verification_status
-    //    are forced server-side, never trusted from this request).
-    const slug = slugify(companyName) || `developer-${Date.now()}`;
-    const companyRes = await fetch("/payload-api/developers", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ slug, name: companyName, contact_email: email }),
-    });
-    if (!companyRes.ok) {
-      const companyBody = await companyRes.json().catch(() => null);
-      throw new Error(companyBody?.errors?.[0]?.message ?? "Account created, but couldn't set up your company profile — contact us.");
     }
   };
 
@@ -111,15 +94,21 @@ export function PayloadLoginForm({ mode = "login" }: { mode?: "login" | "signup"
     try {
       if (mode === "signup") {
         await onSubmitSignup();
-      } else {
-        await onSubmitLogin();
+        setCheckEmail(true);
+        setLoading(false);
+        return;
       }
+      await onSubmitLogin();
       window.location.href = "/cms";
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
       setLoading(false);
     }
   };
+
+  if (checkEmail) {
+    return <p className="auth-success">Almost there — check {email} for a confirmation link to activate your account.</p>;
+  }
 
   return (
     <div>

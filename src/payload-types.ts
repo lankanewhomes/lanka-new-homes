@@ -171,6 +171,10 @@ export interface User {
   id: number;
   full_name: string;
   phone?: string | null;
+  /**
+   * Developer signup only — used once to auto-create the linked company profile, then cleared.
+   */
+  company_name?: string | null;
   role: 'buyer' | 'developer' | 'construction_company' | 'admin';
   updatedAt: string;
   createdAt: string;
@@ -179,6 +183,8 @@ export interface User {
   resetPasswordExpiration?: string | null;
   salt?: string | null;
   hash?: string | null;
+  _verified?: boolean | null;
+  _verificationToken?: string | null;
   loginAttempts?: number | null;
   lockUntil?: string | null;
   sessions?:
@@ -6258,6 +6264,7 @@ export interface PayloadMigration {
 export interface UsersSelect<T extends boolean = true> {
   full_name?: T;
   phone?: T;
+  company_name?: T;
   role?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -6266,6 +6273,8 @@ export interface UsersSelect<T extends boolean = true> {
   resetPasswordExpiration?: T;
   salt?: T;
   hash?: T;
+  _verified?: T;
+  _verificationToken?: T;
   loginAttempts?: T;
   lockUntil?: T;
   sessions?:

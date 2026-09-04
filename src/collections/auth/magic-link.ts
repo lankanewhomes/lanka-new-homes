@@ -101,6 +101,14 @@ const magicLinkCallback: Endpoint = {
     if (!user) {
       return Response.json({ error: 'No account found for this link.' }, { status: 400 })
     }
+    // This mints a session by hand below rather than going through Payload's
+    // own login operation, so it has to enforce the same verification gate
+    // that operation does (login.js's `user._verified === false` check) —
+    // otherwise an unverified account could bypass email confirmation
+    // entirely just by requesting a magic link instead of logging in.
+    if ((user as { _verified?: boolean })._verified === false) {
+      return Response.json({ error: 'Please verify your email before logging in.' }, { status: 403 })
+    }
 
     const collection = req.payload.collections.users
 
