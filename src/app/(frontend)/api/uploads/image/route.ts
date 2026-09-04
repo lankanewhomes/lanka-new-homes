@@ -8,7 +8,7 @@ import { supabaseAdmin } from "@/lib/supabase";
 // plain URL field, not content Payload manages directly.
 const BUCKET = "uploads";
 const MAX_BYTES = 5 * 1024 * 1024;
-const ALLOWED_FOLDERS = new Set(["avatars", "logos"]);
+const ALLOWED_FOLDERS = new Set(["avatars", "logos", "hero-slides"]);
 
 async function ensureBucketExists() {
   const { data: buckets } = await supabaseAdmin.storage.listBuckets();
