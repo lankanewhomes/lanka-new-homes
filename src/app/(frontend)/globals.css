@@ -206,8 +206,24 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
     color: #f47b36;
   }
 
-  .mobile-menu-actions {
+  .mobile-menu-actions-top {
+    padding-bottom: 16px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid #f0ede6;
+  }
+
+  /* Language switcher moves out of the top bar and into the bottom of the
+     mobile menu dropdown instead — mobile only, keeps the header down to
+     just the hamburger. */
+  .site-brand-group .language-segmented {
+    display: none;
+  }
+
+  .mobile-menu-language {
+    margin-top: 16px;
     padding-top: 16px;
+    border-top: 1px solid #f0ede6;
+    justify-content: center;
   }
 }
 .header-link-button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }

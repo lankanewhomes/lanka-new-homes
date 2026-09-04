@@ -2555,6 +2555,9 @@ export function Header() {
       </div>
       {mobileMenuOpen ? (
         <div className="mobile-menu-panel">
+          <div className="mobile-menu-actions mobile-menu-actions-top">
+            <AccountMenu loginLabel={text.login} signupLabel={text.signup} />
+          </div>
           <div className="mobile-menu-group">
             <p className="mobile-menu-group-label">{text.homes}</p>
             <Link href="/projects" onClick={() => setMobileMenuOpen(false)}>All new homes</Link>
@@ -2579,8 +2582,10 @@ export function Header() {
             <Link href="/contact" onClick={() => setMobileMenuOpen(false)}>Contact</Link>
             <Link href="/blog" onClick={() => setMobileMenuOpen(false)}>Blog</Link>
           </div>
-          <div className="mobile-menu-actions">
-            <AccountMenu loginLabel={text.login} signupLabel={text.signup} />
+          <div className="mobile-menu-language language-segmented" role="group" aria-label="Language switcher">
+            <button type="button" className={language === "en" ? "active" : undefined} onClick={() => setLanguage("en")}>EN</button>
+            <button type="button" className={language === "si" ? "active" : undefined} onClick={() => setLanguage("si")}>සිංහල</button>
+            <button type="button" className={language === "ta" ? "active" : undefined} onClick={() => setLanguage("ta")}>தமிழ்</button>
           </div>
         </div>
       ) : null}
