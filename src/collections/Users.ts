@@ -1,7 +1,7 @@
 import type { CollectionConfig, PayloadRequest } from 'payload'
 import { adminOnly, adminOnlyField, adminOrSelfById, hiddenUnlessAdmin, isAdmin } from './access'
 import { magicLinkEndpoints } from './auth/magic-link'
-import { renderVerificationEmailHTML } from './auth/verification-email'
+import { renderPasswordResetEmailHTML, renderVerificationEmailHTML } from './auth/verification-email'
 
 function slugify(value: string): string {
   return value
@@ -21,10 +21,11 @@ export const Users: CollectionConfig = {
   auth: {
     tokenExpiration: 60 * 60 * 24 * 7, // 7 days
     // A new account (any role) must confirm its email before it can log in
-    // — see login.js's `user._verified === false` check. Existing accounts
-    // created before this was turned on are unaffected: that check only
-    // blocks an explicit `false`, and their _verified field was never set
-    // (undefined), so nothing needed backfilling.
+    // — see login.js's `user._verified === false` check. That check alone
+    // doesn't cover every account created *before* this was turned on
+    // (their _verified was never set, i.e. null) — the JWT strategy used on
+    // every later request checks _verified *truthily*, which null also
+    // fails. scripts/backfill-verified.ts grandfathered those in once.
     verify: {
       generateEmailHTML: ({ req, token, user }) => {
         const serverURL = getServerURL(req)
@@ -34,6 +35,20 @@ export const Users: CollectionConfig = {
         return renderVerificationEmailHTML({ verificationURL, loginURL })
       },
       generateEmailSubject: () => 'Confirm your LankaNewHomes account',
+    },
+    // Branded HTML instead of Payload's plain default — resetURL is its own
+    // built-in /cms/reset/:token page, no custom page needed.
+    forgotPassword: {
+      generateEmailHTML: (args) => {
+        if (!args?.req) return renderPasswordResetEmailHTML({ resetURL: '' })
+        const { req, token } = args
+        const serverURL = getServerURL(req)
+        const adminRoute = req.payload.config.routes.admin || '/cms'
+        const resetRoute = req.payload.config.admin.routes.reset || '/reset'
+        const resetURL = `${serverURL}${adminRoute}${resetRoute}/${token}`
+        return renderPasswordResetEmailHTML({ resetURL })
+      },
+      generateEmailSubject: () => 'Reset your LankaNewHomes password',
     },
   },
   admin: {

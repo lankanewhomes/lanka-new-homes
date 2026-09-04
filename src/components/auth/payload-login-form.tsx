@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import Link from "next/link";
 
 const SOCIAL_PROVIDERS = [
   {
@@ -133,6 +134,11 @@ export function PayloadLoginForm({ mode = "login" }: { mode?: "login" | "signup"
           Password
           <input type="password" placeholder="Password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
         </label>
+        {mode === "login" && (
+          <p className="auth-forgot-password">
+            <Link href="/developers/forgot-password">Forgot password?</Link>
+          </p>
+        )}
         {error && <p className="auth-error">{error}</p>}
         <button type="submit" disabled={loading}>
           {loading ? "Please wait…" : mode === "signup" ? "Create account" : "Log in"}
