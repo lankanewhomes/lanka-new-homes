@@ -229,6 +229,28 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
 .site-breadcrumb a:hover { text-decoration: underline; }
 .site-breadcrumb-separator { color: #9ea5b2; }
 .site-breadcrumb [aria-current="page"] { color: #20242f; font-weight: 600; }
+
+@media (max-width: 760px) {
+  /* Long trails (Home / New Projects / <project name> / Floor Plans /
+     <plan type>) wrap onto their own stacked line per segment on narrow
+     screens with the default flex-wrap — scroll horizontally on one line
+     instead. */
+  .site-breadcrumb ol {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .site-breadcrumb ol::-webkit-scrollbar {
+    display: none;
+  }
+
+  .site-breadcrumb li {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+}
 .language-segmented { display: inline-flex; border: 1px solid #d8d8dd; border-radius: 4px; overflow: hidden; background: #fff; }
 .language-segmented button { border: 0; border-right: 1px solid #d8d8dd; background: #f8f8f9; color: #1f1f25; min-height: 34px; padding: 0 16px; font-size: 13px; font-weight: 600; }
 .language-segmented button:last-child { border-right: 0; }
@@ -7082,9 +7104,9 @@ a.developer-profile-press-title {
 .listing-header-h1 {
   font-family: var(--font-ref-sans);
   font-size: 22px;
-  font-weight: 600;
+  font-weight: 500;
   color: #202022;
-  line-height: 28px;
+  line-height: 30px;
   letter-spacing: -0.01em;
   padding-bottom: 0;
 }
