@@ -218,6 +218,11 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
 .site-breadcrumb { border-top: 1px solid #ececec; border-bottom: 1px solid #ececec; background: #fff; }
 .site-breadcrumb-inner { width: min(1290px, calc(100% - 48px)); margin: 0 auto; }
 .site-breadcrumb-inner-wide { width: min(1760px, calc(100% - 48px)); }
+/* Project/land detail pages (ProjectHero's .listing-hero-panel) — same
+   uncapped width formula, so the breadcrumb's edges match the title/stats
+   panel below it exactly instead of centering within the listing pages'
+   capped 1760px shell. */
+.site-breadcrumb-inner-detail { width: calc(100% - 80px); }
 .site-breadcrumb ol { margin: 0; padding: 10px 0; list-style: none; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 12px; color: #60656f; }
 .site-breadcrumb li { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; }
 .site-breadcrumb a { color: #2f3746; text-decoration: none; }
@@ -2190,14 +2195,18 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   border-color: #1e1e1e;
 }
 
+/* Matches .listing-hero-panel's own width formula (calc(100% - 80px),
+   centered) instead of its previous fixed 1330px, so this grid's left/right
+   edges line up with the title container above it at any viewport width —
+   fixed 250px columns swapped for fluid 1fr ones so they actually stretch
+   to fill that shared width instead of just centering within it. */
 .listing-hero-stats-chips {
-  width: 1330px;
+  width: calc(100% - 80px);
   max-width: 100%;
   margin: 24px auto 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(5, 250px);
-  justify-content: center;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 20px;
   border: none;
   background: transparent;
@@ -2208,7 +2217,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   flex-direction: row;
   align-items: center;
   gap: 12px;
-  width: 250px;
+  width: auto;
   padding: 24px 16px;
   background: #f3f2f0;
   border-radius: 0;

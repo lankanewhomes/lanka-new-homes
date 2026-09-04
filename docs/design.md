@@ -190,9 +190,20 @@ sort, list/map toggle) + `map-pane.tsx` (lazy-loaded map visual).
   `.listing-page-shell`) than the sitewide header/breadcrumb bar
   (`min(1290px, calc(100% - 48px))`). Since the breadcrumb bar is a global
   component shared by every route, it gets a route-scoped
-  `.site-breadcrumb-inner-wide` modifier (applied in `breadcrumb-bar.tsx`
-  when the pathname starts with `/projects` or `/land`) so it still lines
-  up with the wider content below instead of the sitewide width.
+  `.site-breadcrumb-inner-wide` modifier (applied in `breadcrumb-bar.tsx`)
+  so it still lines up with the wider content below instead of the sitewide
+  width — matched by **exact** pathname against `mapSidebarRoutes`
+  (`/projects`, `/land`, `/search`, and each category page), not a
+  `.startsWith()` prefix check. A project/land *detail* page
+  (`/projects/[slug]`, `/land/[slug]`, and their sub-routes) is a different
+  page type — it reuses `ProjectHero`, whose `.listing-hero-panel` has its
+  *own* width formula (`calc(100% - 80px)`, uncapped, no `1760px` ceiling)
+  — so it gets a third breadcrumb modifier, `.site-breadcrumb-inner-detail`,
+  matching *that* width instead. A `.startsWith("/projects")` prefix check
+  would incorrectly give detail pages the listing pages' capped width and
+  misalign the breadcrumb's edge against the panel below it on wide
+  screens — this happened once already, worth remembering if this logic
+  gets touched again.
 - **Map**: real map — MapLibre GL (`maplibre-gl` + `react-map-gl/maplibre`)
   against OpenFreeMap vector tiles (`https://tiles.openfreemap.org/styles/liberty`),
   not a decorative visual layer. Always `next/dynamic(..., { ssr: false })`

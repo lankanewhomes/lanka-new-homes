@@ -50,19 +50,29 @@ export function BreadcrumbBar() {
   }
 
   const segments = pathname.split("/").filter(Boolean);
-  // The listing pages (/projects, /land, /search) use a wider content
-  // container (--shell-width in globals.css) than the rest of the site —
-  // match the breadcrumb's inset to it here so "Home / ..." lines up with
-  // the search bar/cards below instead of the sitewide 1290px width.
-  const isWideListing = pathname.startsWith("/projects") || pathname.startsWith("/land") || pathname.startsWith("/search");
-  // Exact match only (unlike isWideListing's prefix check above) — the map
-  // sidebar rail only renders on these routes, never on detail pages like
-  // /projects/[slug] that isWideListing also matches.
+  // The listing pages (/projects, /land, /search, and the project category
+  // pages like /projects/colombo) use a wider, *capped* content container
+  // (--shell-width: min(1760px, ...) in globals.css) than the rest of the
+  // site — match the breadcrumb's inset to it here so "Home / ..." lines up
+  // with the search bar/cards below instead of the sitewide 1290px width.
+  // Exact match against the same route list the map-sidebar rail uses
+  // (mapSidebarRoutes), not a prefix check — a prefix check here would also
+  // catch detail pages below.
+  const isWideListing = mapSidebarRoutes.includes(pathname);
+  // Detail pages (/projects/[slug], /land/[slug], and their sub-routes like
+  // /projects/[slug]/floor-plans/[id]) share ProjectHero's .listing-hero-panel,
+  // which uses a *different*, uncapped width (calc(100% - 80px)) — matching
+  // isWideListing's capped 1760px shell here left the breadcrumb's left
+  // edge not quite lined up with the title/stats panel below it on wide
+  // screens.
+  const isWideDetail = !isWideListing && (pathname.startsWith("/projects/") || pathname.startsWith("/land/"));
+  // Exact match only (unlike the prefix checks above) — the map sidebar
+  // rail only renders on these routes, never on detail pages.
   const hasRail = mapSidebarRoutes.includes(pathname);
 
   return (
     <nav className={`site-breadcrumb${hasRail ? " site-breadcrumb--rail-offset" : ""}`} aria-label="Breadcrumb">
-      <div className={`site-breadcrumb-inner${isWideListing ? " site-breadcrumb-inner-wide" : ""}`}>
+      <div className={`site-breadcrumb-inner${isWideListing ? " site-breadcrumb-inner-wide" : isWideDetail ? " site-breadcrumb-inner-detail" : ""}`}>
         <ol>
           <li>
             <Link href="/">Home</Link>
