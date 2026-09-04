@@ -44,7 +44,7 @@ export async function POST(req: Request) {
     });
 
     // Best-effort mirror into Payload's Leads collection so builders can see
-    // and manage this inquiry (status, analytics) in /payload-admin.
+    // and manage this inquiry (status, analytics) in /cms.
     // Deferred with after() so the visitor isn't stuck waiting several
     // seconds on Payload's local API (project lookup + create + its
     // cascading count-increment hooks) before seeing "request sent" — the

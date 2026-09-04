@@ -325,7 +325,7 @@ export function normalizeUnitFeatures(raw: unknown): KeyFeatureCategory[] {
 }
 
 // Single source of truth for the admin sidebar — every remaining /admin/*
-// page renders this same list. Most sections moved to /payload-admin
+// page renders this same list. Most sections moved to /cms
 // (architects, construction/marketing/sales companies, interior designers,
 // neighborhoods, land) — only what's still blocked on a proper migration
 // stays here: hero-ads (Payload's HeroSlides schema doesn't match the live

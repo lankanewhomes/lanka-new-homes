@@ -353,7 +353,7 @@ export const syncLeadToSupabase: CollectionAfterChangeHook = async ({ doc, opera
   if (operation !== 'create') return doc
   // The live inquiry form (src/app/(frontend)/api/leads/route.ts) writes to
   // Supabase directly *and* mirrors the lead into this Payload collection
-  // (so builders can manage lead status in /payload-admin) — it sets this
+  // (so builders can manage lead status in /cms) — it sets this
   // context flag on that mirrored create so this hook doesn't also insert a
   // second, duplicate Supabase row for the same submission.
   if (req.context?.skipSupabaseSync) return doc

@@ -43,19 +43,19 @@
     sees listings their own linked developer company owns (`ownDeveloperAccess`
     pattern, same as everywhere else in `src/collections/access.ts`).
 - **Admin panel component**: `src/components/payload/ListingAnalyticsPanel.tsx`
-  — a new **Analytics** tab on every Project's edit view in `/payload-admin`
+  — a new **Analytics** tab on every Project's edit view in `/cms`
   (stat cards, insight callouts, traffic-source table, lead-status chips, a
   recharts trend line). Renders fine with zero GA4 setup — views/traffic
   just show 0 until GA4 is configured; inquiries/lead status are live from
   day one since they don't depend on GA4 at all.
 - **Lead status** — `src/collections/Leads.ts` gained a `status` field
   (`new`/`contacted`/`toured`/`sold`). A developer can change their own
-  projects' lead status directly in `/payload-admin` (every other field on a
+  projects' lead status directly in `/cms` (every other field on a
   lead stays admin-only — see the field-level `access.update` on each).
 - **Live inquiry form → Payload bridge** — `src/app/(frontend)/api/leads/route.ts`
   (the actual public inquiry form's submit endpoint) now also mirrors each
   new lead into Payload's `leads` collection, best-effort, so builders
-  actually see real inquiries in `/payload-admin` and the analytics panel's
+  actually see real inquiries in `/cms` and the analytics panel's
   inquiry counts reflect real submissions. Previously Payload's `leads`
   collection only held the one-time historical migration snapshot from
   `scripts/migrate-to-payload.ts` — new leads never reached it. The mirror

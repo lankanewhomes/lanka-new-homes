@@ -28,7 +28,7 @@ export const Users: CollectionConfig = {
       type: 'select',
       required: true,
       // No defaultValue on purpose: the very first account created at
-      // /payload-admin (while this collection is still empty) must
+      // /cms (while this collection is still empty) must
       // explicitly choose "Admin" — see the validate bootstrap branch below.
       options: [
         { label: 'Buyer', value: 'buyer' },

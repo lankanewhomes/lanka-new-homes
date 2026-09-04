@@ -44,7 +44,7 @@ export default buildConfig({
   // GraphQL API) — kept away from the existing app's own /admin and /api.
   // (`admin.routes.*` below would instead configure sub-paths *within* the
   // panel, like login/logout — not used here.)
-  routes: { admin: '/payload-admin', api: '/payload-api' },
+  routes: { admin: '/cms', api: '/payload-api' },
   collections: [
     Users,
     Developers,

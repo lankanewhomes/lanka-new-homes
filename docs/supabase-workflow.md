@@ -61,7 +61,7 @@ and still power the existing site.
 
 - Config: `payload.config.ts` (repo root). Collections:
   `src/collections/*.ts`.
-- Admin panel: `/payload-admin`. REST/GraphQL API: `/payload-api/*` —
+- Admin panel: `/cms`. REST/GraphQL API: `/payload-api/*` —
   deliberately not `/admin` or `/api`, since the existing app already owns
   those paths (`src/app/(frontend)/admin`, `src/app/(frontend)/api/*`).
 - Auth is Payload's own (`users` collection, email/password + a custom

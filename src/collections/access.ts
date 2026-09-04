@@ -82,7 +82,7 @@ export const leadOwnerOrDeveloperOrAdmin: Access = async ({ req }) => {
 
 // Analytics events: admin sees everything; a developer sees only events
 // logged against their own projects (so they can filter/query raw traffic
-// for their own listings in /payload-admin) — never other builders' data.
+// for their own listings in /cms) — never other builders' data.
 export const analyticsOwnerOrAdmin: Access = async ({ req }) => {
   if (isAdmin(req)) return true
   const projectIds = await getOwnedProjectIds(req)
