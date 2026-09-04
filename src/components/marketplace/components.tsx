@@ -5,6 +5,7 @@ import Link from "next/link";
 import { AccountMenu } from "@/components/auth/account-menu";
 import { useSavedListing } from "@/lib/use-saved-listing";
 import { getStoredUtmParams, getTrafficSource, trackEvent } from "@/lib/ga4";
+import { getSessionId } from "@/components/marketplace/view-tracker";
 import {
   ApartmentIcon,
   AreaIcon,
@@ -167,6 +168,22 @@ function isHotDealActive(project: Project) {
 
 function hasQuickMoveIn(project: Project) {
   return project.floorPlans.some((plan) => plan.quickMoveIn);
+}
+
+// Fire-and-forget: logs a raw Analytics event server-side (Payload) and
+// mirrors it to GA4 client-side. Used by the brochure-download button and
+// the tel: phone links — never awaited, never blocks the actual action
+// (opening the brochure, dialing the number).
+function logListingEvent(endpoint: string, ga4EventName: string, projectSlug: string, listingName: string) {
+  const sessionId = getSessionId();
+  const trafficSource = getTrafficSource();
+  fetch(endpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ projectSlug, sessionId, trafficSource }),
+    keepalive: true,
+  }).catch(() => {});
+  trackEvent(ga4EventName, { listing_id: projectSlug, listing_name: listingName });
 }
 
 export function StatusBadge({ status }: { status: string }) {
@@ -1292,7 +1309,11 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
         ) : null}
 
         {hasDisplayValue(phone) ? (
-          <a href={`tel:${phone}`} className="stats-contact-card-row">
+          <a
+            href={`tel:${phone}`}
+            className="stats-contact-card-row"
+            onClick={() => logListingEvent("/api/events/phone-click", "click_phone", project.slug, project.name)}
+          >
             <Phone className="h-4 w-4" aria-hidden="true" /> {phone}
           </a>
         ) : null}
@@ -1386,6 +1407,8 @@ export function RequestInfoDialog({
           projectSlug: project.slug,
           developerSlug: project.developerSlug,
           marketingOptIn: keepPosted,
+          sessionId: getSessionId(),
+          trafficSource: getTrafficSource(),
         }),
       });
 
@@ -1432,7 +1455,13 @@ export function RequestInfoDialog({
                 : `Thanks, ${name.split(" ")[0] || "there"} — the ${project.name} sales team will reach out to you by ${contactMethod.toLowerCase()} shortly.`}
             </p>
             {isBrochure && project.brochureUrl ? (
-              <Button type="button" onClick={() => window.open(project.brochureUrl, "_blank", "noopener,noreferrer")}>
+              <Button
+                type="button"
+                onClick={() => {
+                  logListingEvent("/api/events/brochure-download", "download_brochure", project.slug, project.name);
+                  window.open(project.brochureUrl, "_blank", "noopener,noreferrer");
+                }}
+              >
                 Download Brochure
               </Button>
             ) : null}
@@ -2141,7 +2170,11 @@ export function ListingSidebarCard({ project, developer }: { project: Project; d
       </button>
 
       {phone ? (
-        <a href={`tel:${phone.replace(/[^+\d]/g, "")}`} className="listing-sidebar-call-line">
+        <a
+          href={`tel:${phone.replace(/[^+\d]/g, "")}`}
+          className="listing-sidebar-call-line"
+          onClick={() => logListingEvent("/api/events/phone-click", "click_phone", project.slug, project.name)}
+        >
           <Phone className="h-4 w-4" aria-hidden="true" /> Call us {phone}
         </a>
       ) : null}

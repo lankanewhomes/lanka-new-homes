@@ -3058,6 +3058,14 @@ export interface Project {
    */
   lead_count?: number | null;
   /**
+   * Auto-incremented from Analytics "brochure_download" events for this project.
+   */
+  download_count?: number | null;
+  /**
+   * Auto-incremented from Analytics "phone_click" events for this project.
+   */
+  phone_click_count?: number | null;
+  /**
    * Paid featured placements — one row per page/window, added automatically when a featured_listing payment is confirmed.
    */
   placements?:
@@ -5943,9 +5951,36 @@ export interface Lead {
 export interface Analytics {
   id: number;
   project: number | Project;
-  event_type: 'view' | 'save' | 'lead_submitted' | 'hero_click';
+  /**
+   * Auto-filled from the listing — the builder this event rolls up to.
+   */
+  developer?: (number | null) | Developer;
+  event_type: 'view' | 'save' | 'lead_submitted' | 'hero_click' | 'brochure_download' | 'phone_click';
   timestamp?: string | null;
+  /**
+   * Anonymous per-browser-session id (localStorage) — same one the internal view/session tracking already uses. Used to detect repeat actions.
+   */
+  session_id?: string | null;
+  /**
+   * The signed-in Payload user, if any — most visitors won't have one.
+   */
   user?: (number | null) | User;
+  /**
+   * Auto-flagged: same session + listing + event type seen again within 30 minutes. Excluded from rollup counters, kept for raw traffic visibility.
+   */
+  is_duplicate?: boolean | null;
+  /**
+   * Auto-flagged from the User-Agent (crawlers, headless browsers, missing UA). Excluded from rollup counters.
+   */
+  is_bot?: boolean | null;
+  /**
+   * organic_search / organic_social / paid_search / paid_social / referral / direct.
+   */
+  traffic_source?: string | null;
+  referrer?: string | null;
+  city?: string | null;
+  region?: string | null;
+  device_type?: ('desktop' | 'mobile' | 'tablet' | 'unknown') | null;
   /**
    * Which page the event happened on, e.g. colombo, sitewide
    */
@@ -6470,6 +6505,8 @@ export interface ProjectsSelect<T extends boolean = true> {
   view_count?: T;
   save_count?: T;
   lead_count?: T;
+  download_count?: T;
+  phone_click_count?: T;
   placements?:
     | T
     | {
@@ -6785,9 +6822,18 @@ export interface LeadsSelect<T extends boolean = true> {
  */
 export interface AnalyticsSelect<T extends boolean = true> {
   project?: T;
+  developer?: T;
   event_type?: T;
   timestamp?: T;
+  session_id?: T;
   user?: T;
+  is_duplicate?: T;
+  is_bot?: T;
+  traffic_source?: T;
+  referrer?: T;
+  city?: T;
+  region?: T;
+  device_type?: T;
   source_page?: T;
   updatedAt?: T;
   createdAt?: T;

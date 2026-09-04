@@ -44,6 +44,24 @@ export const ownerOrAdmin: Access = ({ req }) => {
   return { user: { equals: user.id } }
 }
 
+// Project ids belonging to the current developer-role user's own company —
+// shared by every access rule below that scopes a collection down to "my
+// own projects" (Leads, Analytics).
+export async function getOwnedProjectIds(req: PayloadRequest): Promise<(string | number)[]> {
+  if (getRole(req) !== 'developer') return []
+  const ownedDeveloperIds = await getOwnedDeveloperIds(req)
+  if (ownedDeveloperIds.length === 0) return []
+  const ownedProjects = await req.payload.find({
+    collection: 'projects',
+    where: { developer: { in: ownedDeveloperIds } },
+    limit: 1000,
+    depth: 0,
+    overrideAccess: true,
+    req,
+  })
+  return ownedProjects.docs.map((doc) => doc.id)
+}
+
 // Leads read/update: the submitting buyer (if they had an account), an
 // admin, or the developer whose project the lead is about — a builder needs
 // to see and update the status of inquiries on their own projects, even
@@ -53,26 +71,24 @@ export const leadOwnerOrDeveloperOrAdmin: Access = async ({ req }) => {
   const user = authedUser(req)
   if (!user) return false
 
-  if (getRole(req) === 'developer') {
-    const ownedDeveloperIds = await getOwnedDeveloperIds(req)
-    if (ownedDeveloperIds.length > 0) {
-      const ownedProjects = await req.payload.find({
-        collection: 'projects',
-        where: { developer: { in: ownedDeveloperIds } },
-        limit: 1000,
-        depth: 0,
-        overrideAccess: true,
-        req,
-      })
-      const projectIds = ownedProjects.docs.map((doc) => doc.id)
-      if (projectIds.length > 0) {
-        const where: Where = { or: [{ user: { equals: user.id } }, { project: { in: projectIds } }] }
-        return where
-      }
-    }
+  const projectIds = await getOwnedProjectIds(req)
+  if (projectIds.length > 0) {
+    const where: Where = { or: [{ user: { equals: user.id } }, { project: { in: projectIds } }] }
+    return where
   }
 
   return { user: { equals: user.id } }
+}
+
+// Analytics events: admin sees everything; a developer sees only events
+// logged against their own projects (so they can filter/query raw traffic
+// for their own listings in /payload-admin) — never other builders' data.
+export const analyticsOwnerOrAdmin: Access = async ({ req }) => {
+  if (isAdmin(req)) return true
+  const projectIds = await getOwnedProjectIds(req)
+  if (projectIds.length === 0) return false
+  const where: Where = { project: { in: projectIds } }
+  return where
 }
 
 // Company-profile ids owned by the current user (that collection's `user`

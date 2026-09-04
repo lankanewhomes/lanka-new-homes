@@ -353,6 +353,8 @@ export const Projects: CollectionConfig = {
             { name: 'view_count', type: 'number', label: 'View Count', defaultValue: 0, admin: { description: 'Auto-incremented from Analytics "view" events for this project.' } },
             { name: 'save_count', type: 'number', label: 'Save Count', defaultValue: 0, admin: { description: 'Auto-incremented from Analytics "save" events (logged automatically when a Saved Listing is created).' } },
             { name: 'lead_count', type: 'number', label: 'Lead Count', defaultValue: 0, admin: { description: 'Auto-incremented from Analytics "lead_submitted" events (logged automatically when a Lead is created).' } },
+            { name: 'download_count', type: 'number', label: 'Download Count', defaultValue: 0, admin: { description: 'Auto-incremented from Analytics "brochure_download" events for this project.' } },
+            { name: 'phone_click_count', type: 'number', label: 'Phone Click Count', defaultValue: 0, admin: { description: 'Auto-incremented from Analytics "phone_click" events for this project.' } },
             {
               // A project can be paid-featured on more than one page at
               // once (e.g. sitewide AND colombo), each on its own window —

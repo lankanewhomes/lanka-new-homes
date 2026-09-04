@@ -1,6 +1,7 @@
 import { after, NextResponse } from "next/server";
 import { insertLead } from "@/lib/tracking-db";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
+import { buildEventEnrichment } from "@/lib/analytics-event";
 
 export async function POST(req: Request) {
   try {
@@ -64,6 +65,10 @@ export async function POST(req: Request) {
         });
         const projectDoc = projectRes.docs[0];
         if (projectDoc) {
+          // Also enriches the Analytics "lead_submitted" event that Leads'
+          // own afterChange hook (logLeadSubmitted) auto-creates — see
+          // hooks/increment-counts.ts's analyticsEnrichment context read.
+          const analyticsEnrichment = buildEventEnrichment(req, { sessionId: body.sessionId, trafficSource: body.trafficSource });
           await payload.create({
             collection: "leads",
             data: {
@@ -73,7 +78,7 @@ export async function POST(req: Request) {
               phone: body.phone,
               message: body.message,
             } as never,
-            context: { skipSupabaseSync: true },
+            context: { skipSupabaseSync: true, analyticsEnrichment },
             overrideAccess: true,
           });
         }
