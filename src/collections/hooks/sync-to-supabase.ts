@@ -202,7 +202,13 @@ export const syncDeveloperToSupabase: CollectionAfterChangeHook = async ({ doc, 
       name: d.name,
       logo: d.logo,
       description: d.description,
-      location: '',
+      location: d.location ?? '',
+      establishedYear: d.establishedYear,
+      yearsInBusiness: d.yearsInBusiness,
+      activeProjects: d.activeProjects,
+      completedProjects: d.completedProjects,
+      coDevelopers: d.coDevelopers,
+      officeHours: d.officeHours,
       website: d.website,
       email: d.contact_email,
       phone: d.contact_phone,
@@ -216,7 +222,7 @@ export const syncDeveloperToSupabase: CollectionAfterChangeHook = async ({ doc, 
     }
     const { error } = await supabaseAdmin
       .from('developers')
-      .upsert({ slug: d.slug, name: d.name, location: '', data: developer }, { onConflict: 'slug' })
+      .upsert({ slug: d.slug, name: d.name, location: d.location ?? '', data: developer }, { onConflict: 'slug' })
     if (error) throw new Error(error.message)
   })
   return doc

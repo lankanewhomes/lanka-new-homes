@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import type { Amenity, CoDeveloperEntry, CompanyProfile, Developer, FloorPlan, KeyFeatureCategory, KeyFeatureItem, Neighborhood, Project } from "@/types";
+import type { Amenity, CoDeveloperEntry, CompanyProfile, Developer, FloorPlan, KeyFeatureCategory, KeyFeatureItem, Project } from "@/types";
 import { Button } from "@/components/ui/button";
 import {
   sriLankaCitiesByDistrict,
@@ -558,73 +558,6 @@ export function BuilderProfileForm({ initialDeveloper, redirectTo = "/admin/deve
       <div className="flex items-center justify-between gap-3">
         <p className="text-xs text-stone-500">Template is applied automatically. You can refine visuals later.</p>
         <Button type="submit" disabled={saving}>{saving ? "Saving..." : isEditing ? "Save Changes" : "Create Builder Page"}</Button>
-      </div>
-    </form>
-  );
-}
-
-export function NeighborhoodForm({ initialNeighborhood }: { initialNeighborhood?: Neighborhood } = {}) {
-  const isEditing = Boolean(initialNeighborhood);
-  const [name, setName] = useState(initialNeighborhood?.name ?? "");
-  const [city, setCity] = useState(initialNeighborhood?.city ?? "");
-  const [province, setProvince] = useState(initialNeighborhood?.province ?? "");
-  const [description, setDescription] = useState(initialNeighborhood?.description ?? "");
-  const [heroImage, setHeroImage] = useState(initialNeighborhood?.heroImage ?? "");
-  const [saving, setSaving] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-
-  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setSaving(true);
-    setErrorMessage("");
-
-    const payload = { name, city, province, description, heroImage };
-
-    try {
-      const response = isEditing
-        ? await fetch(`/api/neighborhoods/${initialNeighborhood!.slug}`, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          })
-        : await fetch("/api/neighborhoods", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          });
-
-      const data = await response.json().catch(() => null);
-      const savedSlug = isEditing ? initialNeighborhood!.slug : data?.slug;
-
-      if (!response.ok || !savedSlug) {
-        setErrorMessage(data?.error ?? `Unable to ${isEditing ? "save" : "create"} this neighborhood.`);
-        setSaving(false);
-        return;
-      }
-
-      window.location.href = "/admin/neighborhoods";
-    } catch {
-      setErrorMessage(`Unable to ${isEditing ? "save" : "create"} this neighborhood.`);
-      setSaving(false);
-    }
-  };
-
-  return (
-    <form onSubmit={onSubmit} className="space-y-4 border border-stone-200 bg-white p-4">
-      <div className="grid gap-3 md:grid-cols-2">
-        <Field label="Neighborhood name"><input value={name} onChange={(event) => setName(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" placeholder="e.g. Thalawathugoda" required /></Field>
-        <Field label="City"><input value={city} onChange={(event) => setCity(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" required /></Field>
-
-        <Field label="Province" className="md:col-span-2"><input value={province} onChange={(event) => setProvince(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" required /></Field>
-        <Field label="Hero image URL" className="md:col-span-2"><input value={heroImage} onChange={(event) => setHeroImage(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" placeholder="https://..." required /></Field>
-        <Field label="Description shown on the public neighborhood page" className="md:col-span-2"><textarea value={description} onChange={(event) => setDescription(event.target.value)} className="border border-stone-300 px-3 py-2 text-sm w-full" rows={5} required /></Field>
-      </div>
-
-      {errorMessage ? <p className="text-sm text-red-600">{errorMessage}</p> : null}
-
-      <div className="flex items-center justify-between gap-3">
-        <p className="text-xs text-stone-500">Project pages link here automatically once a matching neighborhood slug is set.</p>
-        <Button type="submit" disabled={saving}>{saving ? "Saving..." : isEditing ? "Save Changes" : "Create Neighborhood"}</Button>
       </div>
     </form>
   );

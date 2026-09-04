@@ -207,6 +207,33 @@ export interface Developer {
   contact_email?: string | null;
   contact_phone?: string | null;
   website?: string | null;
+  /**
+   * e.g. Colombo 03
+   */
+  location?: string | null;
+  establishedYear?: number | null;
+  yearsInBusiness?: number | null;
+  activeProjects?: number | null;
+  completedProjects?: number | null;
+  /**
+   * Free-text credits for co-developers that don’t have a Developer record here — shown on the public builder page.
+   */
+  coDevelopers?:
+    | {
+        name: string;
+        href?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  officeHours?:
+    | {
+        day: 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
+        open?: boolean | null;
+        from?: string | null;
+        to?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   socialLinks?: {
     facebook?: string | null;
     instagram?: string | null;
@@ -6253,6 +6280,27 @@ export interface DevelopersSelect<T extends boolean = true> {
   contact_email?: T;
   contact_phone?: T;
   website?: T;
+  location?: T;
+  establishedYear?: T;
+  yearsInBusiness?: T;
+  activeProjects?: T;
+  completedProjects?: T;
+  coDevelopers?:
+    | T
+    | {
+        name?: T;
+        href?: T;
+        id?: T;
+      };
+  officeHours?:
+    | T
+    | {
+        day?: T;
+        open?: T;
+        from?: T;
+        to?: T;
+        id?: T;
+      };
   socialLinks?:
     | T
     | {

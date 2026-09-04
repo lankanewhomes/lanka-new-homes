@@ -53,7 +53,32 @@ export const Developers: CollectionConfig = {
     afterChange: [syncDeveloperToSupabase],
   },
   fields: [
-    ...companyProfileFields([{ name: 'website', type: 'text' }]),
+    ...companyProfileFields([{ name: 'website', type: 'text' }, { name: 'location', type: 'text', label: 'Primary Location', admin: { description: 'e.g. Colombo 03' } }]),
+    { name: 'establishedYear', type: 'number', label: 'Established Year' },
+    { name: 'yearsInBusiness', type: 'number', label: 'Years in Business' },
+    { name: 'activeProjects', type: 'number', label: 'Active Projects' },
+    { name: 'completedProjects', type: 'number', label: 'Completed Projects' },
+    {
+      name: 'coDevelopers',
+      type: 'array',
+      label: 'Co-Developers (external, not in system)',
+      admin: { description: 'Free-text credits for co-developers that don’t have a Developer record here — shown on the public builder page.' },
+      fields: [
+        { name: 'name', type: 'text', required: true },
+        { name: 'href', type: 'text' },
+      ],
+    },
+    {
+      name: 'officeHours',
+      type: 'array',
+      label: 'Office Hours',
+      fields: [
+        { name: 'day', type: 'select', required: true, options: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] },
+        { name: 'open', type: 'checkbox', label: 'Open', defaultValue: false },
+        { name: 'from', type: 'text', admin: { condition: (_, siblingData) => Boolean(siblingData?.open) } },
+        { name: 'to', type: 'text', admin: { condition: (_, siblingData) => Boolean(siblingData?.open) } },
+      ],
+    },
     socialLinksField,
     {
       name: 'user',
