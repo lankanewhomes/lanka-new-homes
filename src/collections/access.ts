@@ -28,6 +28,15 @@ export const publicRead: Access = () => true
 
 export const authenticatedCreate: Access = ({ req }) => Boolean(req.user)
 
+// admin.hidden for collections a developer/builder has no reason to see in
+// the CMS nav at all (Users, Payments, internal directories they don't
+// manage, Site Settings, etc.) — keeps their view of /cms focused on what
+// they actually need: their own Projects, Leads, Analytics, and company
+// profile. An admin always sees everything.
+export function hiddenUnlessAdmin({ user }: { user?: { role?: string } | null }): boolean {
+  return user?.role !== 'admin'
+}
+
 // Owner-or-admin: used by collections with a top-level `user` relationship
 // (Saved Listings, Leads) that only the owning user (or an admin) may touch.
 export const adminOrSelfById: Access = ({ req }) => {

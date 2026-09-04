@@ -1,15 +1,14 @@
 "use client";
 
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode as RNode } from "react";
+import Link from "next/link";
 import { X } from "lucide-react";
 import { AuthForm } from "@/components/auth/auth-form";
 
 type ModalMode = "login" | "signup";
-type ModalIntent = "buyer" | "developer";
 
 type OpenOptions = {
   mode?: ModalMode;
-  intent?: ModalIntent;
   redirectTo?: string;
 };
 
@@ -26,24 +25,23 @@ export function useAuthModal() {
   return ctx;
 }
 
-const TITLES: Record<ModalIntent, Record<ModalMode, string>> = {
-  buyer: { login: "Log in", signup: "Sign up" },
-  developer: { login: "Developer login", signup: "Developer registration" },
-};
+// Buyer-only modal — developers and admin log in through Payload directly
+// now (/developers/login, /admin-login), not through this Supabase-backed
+// modal, so it no longer needs a "developer" intent branch.
+const TITLES: Record<ModalMode, string> = { login: "Log in", signup: "Sign up" };
 
 export function AuthModalProvider({ children }: { children: RNode }) {
-  const [state, setState] = useState<{ open: boolean; mode: ModalMode; intent: ModalIntent; redirectTo: string }>({
+  const [state, setState] = useState<{ open: boolean; mode: ModalMode; redirectTo: string }>({
     open: false,
     mode: "login",
-    intent: "buyer",
     redirectTo: "/account",
   });
 
   const openAuthModal = useCallback((options?: OpenOptions) => {
     setState((prev) => ({
+      ...prev,
       open: true,
       mode: options?.mode ?? "login",
-      intent: options?.intent ?? "buyer",
       redirectTo: options?.redirectTo ?? "/account",
     }));
   }, []);
@@ -64,14 +62,12 @@ export function AuthModalProvider({ children }: { children: RNode }) {
               <X className="h-5 w-5" aria-hidden="true" />
             </button>
 
-            <h2 className="auth-modal-title">{TITLES[state.intent][state.mode]}</h2>
+            <h2 className="auth-modal-title">{TITLES[state.mode]}</h2>
 
             <AuthForm
-              key={`${state.mode}-${state.intent}`}
+              key={state.mode}
               mode={state.mode}
-              intent={state.intent === "developer" ? "developer" : undefined}
               redirectTo={state.redirectTo}
-              onDeveloperRoleCheck={state.intent === "developer" && state.mode === "login"}
               variant="modal"
               onAuthenticated={() => {
                 closeAuthModal();
@@ -97,26 +93,7 @@ export function AuthModalProvider({ children }: { children: RNode }) {
                   .
                 </>
               )}{" "}
-              {state.intent === "buyer" ? (
-                <>
-                  Registering a development company?{" "}
-                  <button
-                    type="button"
-                    onClick={() => setState((prev) => ({ ...prev, intent: "developer", mode: "signup" }))}
-                  >
-                    Developer registration
-                  </button>
-                  .
-                </>
-              ) : (
-                <>
-                  Not a developer?{" "}
-                  <button type="button" onClick={() => setState((prev) => ({ ...prev, intent: "buyer", mode: "login" }))}>
-                    Buyer login
-                  </button>
-                  .
-                </>
-              )}
+              Registering a development company? <Link href="/developers/login">Developer login</Link>.
             </p>
 
             <p className="auth-modal-legal">
