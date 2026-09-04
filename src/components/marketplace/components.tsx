@@ -2600,7 +2600,7 @@ export function Footer() {
 
       <div className="footer-bottom">
         <p className="copyright">© 2026 LankaNewHomes</p>
-        <Link href="/admin" className="footer-admin-link">Admin</Link>
+        <Link href="/admin-login" className="footer-admin-link">Admin</Link>
       </div>
     </footer>
   );
