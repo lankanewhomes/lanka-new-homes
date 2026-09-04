@@ -1,19 +1,25 @@
 import type { CollectionConfig } from 'payload'
-import { adminOnly, publicRead } from './access'
+import { adminOnly, hiddenUnlessAdmin, publicRead } from './access'
 import { FEATURED_PAGE_OPTIONS } from './shared-fields'
 import { PAYMENT_TYPE_OPTIONS } from './Payments'
 
 // Rate card for every paid placement/product a developer or builder can pay
-// for (see Payments.ts's payment_type). Public read so a future developer
-// portal can show "how much does this cost" before someone submits a
-// payment request; admin-only to edit. Seeded with made-up placeholder
-// prices (scripts/seed-placement-pricing.ts) — adjust freely, nothing else
-// depends on the exact numbers.
+// for (see Payments.ts's payment_type). Public read (the PlacementPicker
+// wizard fetches it directly, independent of nav visibility below) so a
+// developer sees "how much does this cost" before submitting a payment
+// request; admin-only to edit. Seeded with made-up placeholder prices
+// (scripts/seed-placement-pricing.ts) — adjust freely, nothing else depends
+// on the exact numbers.
 export const PlacementPricing: CollectionConfig = {
   slug: 'placement-pricing',
   admin: {
     useAsTitle: 'tier_name',
     defaultColumns: ['payment_type', 'tier_name', 'featured_page', 'price', 'currency', 'duration_days'],
+    // Hidden from a developer's /cms nav — they browse pricing through the
+    // "Get Featured" wizard (PlacementPicker.tsx), not this raw admin-style
+    // collection list. Still readable via the API either way (publicRead
+    // above), this only hides the sidebar entry.
+    hidden: hiddenUnlessAdmin,
   },
   access: {
     read: publicRead,

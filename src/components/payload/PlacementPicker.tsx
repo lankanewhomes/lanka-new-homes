@@ -166,13 +166,13 @@ export function PlacementPicker() {
       {error && <p style={{ color: "#c0392b" }}>{error}</p>}
 
       {!loading && !error && submitted && (
-        <div style={{ border: "1px solid #1a6b2f", background: "#e8f4e8", borderRadius: 6, padding: 20, marginBottom: 24 }}>
-          <p style={{ margin: 0, fontWeight: 600, color: "#1a6b2f" }}>Request submitted.</p>
-          <p style={{ margin: "6px 0 12px", fontSize: 14 }}>
+        <div style={{ border: "1px solid var(--theme-success-500)", background: "var(--theme-success-100)", borderRadius: 6, padding: 20, marginBottom: 24 }}>
+          <p style={{ margin: 0, fontWeight: 600, color: "var(--theme-success-800)" }}>Request submitted.</p>
+          <p style={{ margin: "6px 0 12px", fontSize: 14, color: "var(--theme-success-800)" }}>
             It&apos;s pending admin confirmation. Once your payment is confirmed, it activates automatically — no
             further steps needed from you.
           </p>
-          <button type="button" onClick={resetWizard} style={{ fontSize: 13, padding: "8px 16px", borderRadius: 999, border: "1px solid var(--theme-elevation-200)", background: "transparent", cursor: "pointer" }}>
+          <button type="button" onClick={resetWizard} style={{ fontSize: 13, padding: "8px 16px", borderRadius: 999, border: "1px solid var(--theme-elevation-200)", background: "transparent", color: "inherit", cursor: "pointer" }}>
             Request another placement
           </button>
         </div>
