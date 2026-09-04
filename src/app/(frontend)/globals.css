@@ -159,7 +159,19 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
 .site-logo-img { height: 32px; width: auto; }
 .footer-logo-img { height: 32px; width: auto; filter: brightness(0) invert(1); }
 .site-header nav, .header-actions { display: flex; gap: 39px; align-items: center; font-size: 14px; font-weight: 550; }.site-header a:hover { text-decoration: underline; }
-.header-actions { gap: 14px; }.sign-up { padding: 11px 21px; background: #f47b36; border: 1px solid #f47b36; color: #24221e; }.mobile-menu { display: none; }
+.header-actions { gap: 14px; }.sign-up { padding: 11px 21px; background: #f47b36; border: 1px solid #f47b36; color: #24221e; }
+.mobile-menu {
+  display: none;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  background: #1f1f1f;
+  color: #fff;
+  padding: 0;
+}
 
 .mobile-menu-panel {
   display: none;
@@ -190,9 +202,26 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
     margin: 0 0 8px;
     font-size: 12px;
     font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: #f47b36;
+    color: #1f1f1f;
+  }
+
+  .mobile-menu-group-toggle {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    border: 0;
+    background: none;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  .mobile-menu-group-chevron {
+    transition: transform 0.15s ease;
+  }
+
+  .mobile-menu-group-toggle.is-open .mobile-menu-group-chevron {
+    transform: rotate(90deg);
   }
 
   .mobile-menu-group a {
@@ -206,9 +235,9 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
     color: #f47b36;
   }
 
-  .mobile-menu-actions-top {
+  .mobile-menu-actions {
+    padding-top: 16px;
     padding-bottom: 16px;
-    margin-bottom: 4px;
     border-bottom: 1px solid #f0ede6;
   }
 
@@ -219,11 +248,21 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
     display: none;
   }
 
-  .mobile-menu-language {
+  /* Compound selector (not just .mobile-menu-language) so this reliably
+     beats the plain .language-segmented rule below regardless of source
+     order — both have one-class specificity, so without this the later
+     unconditional `display: inline-flex` rule was winning here and
+     silently undoing the stretch-to-fill layout. */
+  .mobile-menu-language.language-segmented {
+    display: flex;
+    width: 100%;
     margin-top: 16px;
     padding-top: 16px;
     border-top: 1px solid #f0ede6;
-    justify-content: center;
+  }
+
+  .mobile-menu-language.language-segmented button {
+    flex: 1;
   }
 }
 .header-link-button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }

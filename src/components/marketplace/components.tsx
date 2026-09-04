@@ -60,6 +60,7 @@ import {
   Map as MapIcon,
   MapPinned,
   MapPin,
+  Menu,
   Navigation,
   Phone,
   Ruler,
@@ -2469,9 +2470,15 @@ export function LeadForm({ projectSlug, developerSlug }: { projectSlug: string; 
   );
 }
 
+function toSentenceCase(text: string): string {
+  const lower = text.toLowerCase();
+  return lower.charAt(0).toUpperCase() + lower.slice(1);
+}
+
 export function Header() {
   const { language, setLanguage } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [openMobileGroup, setOpenMobileGroup] = useState<"homes" | "land" | null>(null);
 
   const labels: Record<SiteLanguage, { homes: string; company: string; login: string; signup: string; menu: string }> = {
     en: {
@@ -2550,37 +2557,53 @@ export function Header() {
           <AccountMenu loginLabel={text.login} signupLabel={text.signup} />
         </div>
         <button className="mobile-menu" onClick={() => setMobileMenuOpen((v) => !v)} aria-expanded={mobileMenuOpen} aria-label={text.menu}>
-          {mobileMenuOpen ? "✕" : text.menu}
+          {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>
       {mobileMenuOpen ? (
         <div className="mobile-menu-panel">
-          <div className="mobile-menu-actions mobile-menu-actions-top">
+          <div className="mobile-menu-group">
+            <button
+              type="button"
+              className={`mobile-menu-group-label mobile-menu-group-toggle${openMobileGroup === "homes" ? " is-open" : ""}`}
+              aria-expanded={openMobileGroup === "homes"}
+              onClick={() => setOpenMobileGroup(openMobileGroup === "homes" ? null : "homes")}
+            >
+              {toSentenceCase(text.homes)} <ChevronRight className="h-4 w-4 mobile-menu-group-chevron" aria-hidden="true" />
+            </button>
+            {openMobileGroup === "homes" ? (
+              <>
+                <Link href="/projects" onClick={() => setMobileMenuOpen(false)}>All new homes</Link>
+                <Link href="/projects?type=Condominium" onClick={() => setMobileMenuOpen(false)}>Condominium</Link>
+                <Link href="/projects?type=Apartments" onClick={() => setMobileMenuOpen(false)}>Apartments</Link>
+                <Link href="/projects?type=Villas" onClick={() => setMobileMenuOpen(false)}>Villas</Link>
+                <Link href="/projects?type=Mixed+Use" onClick={() => setMobileMenuOpen(false)}>Mixed Use</Link>
+                <Link href="/projects?type=Housing" onClick={() => setMobileMenuOpen(false)}>Housing</Link>
+                <Link href="/projects?type=Townhouse" onClick={() => setMobileMenuOpen(false)}>Townhouse</Link>
+              </>
+            ) : null}
+          </div>
+          <div className="mobile-menu-group">
+            <button
+              type="button"
+              className={`mobile-menu-group-label mobile-menu-group-toggle${openMobileGroup === "land" ? " is-open" : ""}`}
+              aria-expanded={openMobileGroup === "land"}
+              onClick={() => setOpenMobileGroup(openMobileGroup === "land" ? null : "land")}
+            >
+              Lands <ChevronRight className="h-4 w-4 mobile-menu-group-chevron" aria-hidden="true" />
+            </button>
+            {openMobileGroup === "land" ? (
+              <>
+                <Link href="/land" onClick={() => setMobileMenuOpen(false)}>All land</Link>
+                <Link href="/land?landUse=Residential" onClick={() => setMobileMenuOpen(false)}>Residential</Link>
+                <Link href="/land?landUse=Commercial" onClick={() => setMobileMenuOpen(false)}>Commercial</Link>
+                <Link href="/land?landUse=Agricultural" onClick={() => setMobileMenuOpen(false)}>Agricultural</Link>
+                <Link href="/land?landUse=Mixed+Use" onClick={() => setMobileMenuOpen(false)}>Mixed Use</Link>
+              </>
+            ) : null}
+          </div>
+          <div className="mobile-menu-actions">
             <AccountMenu loginLabel={text.login} signupLabel={text.signup} />
-          </div>
-          <div className="mobile-menu-group">
-            <p className="mobile-menu-group-label">{text.homes}</p>
-            <Link href="/projects" onClick={() => setMobileMenuOpen(false)}>All new homes</Link>
-            <Link href="/projects?type=Condominium" onClick={() => setMobileMenuOpen(false)}>Condominium</Link>
-            <Link href="/projects?type=Apartments" onClick={() => setMobileMenuOpen(false)}>Apartments</Link>
-            <Link href="/projects?type=Villas" onClick={() => setMobileMenuOpen(false)}>Villas</Link>
-            <Link href="/projects?type=Mixed+Use" onClick={() => setMobileMenuOpen(false)}>Mixed Use</Link>
-            <Link href="/projects?type=Housing" onClick={() => setMobileMenuOpen(false)}>Housing</Link>
-            <Link href="/projects?type=Townhouse" onClick={() => setMobileMenuOpen(false)}>Townhouse</Link>
-          </div>
-          <div className="mobile-menu-group">
-            <p className="mobile-menu-group-label">Land</p>
-            <Link href="/land" onClick={() => setMobileMenuOpen(false)}>All land</Link>
-            <Link href="/land?landUse=Residential" onClick={() => setMobileMenuOpen(false)}>Residential</Link>
-            <Link href="/land?landUse=Commercial" onClick={() => setMobileMenuOpen(false)}>Commercial</Link>
-            <Link href="/land?landUse=Agricultural" onClick={() => setMobileMenuOpen(false)}>Agricultural</Link>
-            <Link href="/land?landUse=Mixed+Use" onClick={() => setMobileMenuOpen(false)}>Mixed Use</Link>
-          </div>
-          <div className="mobile-menu-group">
-            <p className="mobile-menu-group-label">{text.company}</p>
-            <Link href="/about" onClick={() => setMobileMenuOpen(false)}>About</Link>
-            <Link href="/contact" onClick={() => setMobileMenuOpen(false)}>Contact</Link>
-            <Link href="/blog" onClick={() => setMobileMenuOpen(false)}>Blog</Link>
           </div>
           <div className="mobile-menu-language language-segmented" role="group" aria-label="Language switcher">
             <button type="button" className={language === "en" ? "active" : undefined} onClick={() => setLanguage("en")}>EN</button>
