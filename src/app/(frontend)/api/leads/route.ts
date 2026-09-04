@@ -2,6 +2,7 @@ import { after, NextResponse } from "next/server";
 import { insertLead } from "@/lib/tracking-db";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { buildEventEnrichment } from "@/lib/analytics-event";
+import { renderBrochureEmailHTML } from "@/lib/brochure-email";
 
 export async function POST(req: Request) {
   try {
@@ -81,6 +82,25 @@ export async function POST(req: Request) {
             context: { skipSupabaseSync: true, analyticsEnrichment },
             overrideAccess: true,
           });
+
+          // Brochure requests also get emailed a copy — the dialog's
+          // "Download Brochure" button still works as a fallback (the
+          // auto-download this triggers client-side on submit can get
+          // blocked by the browser's popup blocker), and the project's
+          // own brochureUrl is looked up server-side here rather than
+          // trusted from the request body, so this can't be used to email
+          // an arbitrary link through this form.
+          const brochureUrl = typeof projectDoc.brochureUrl === "string" ? projectDoc.brochureUrl : null;
+          if (body.isBrochureRequest && brochureUrl && typeof body.email === "string" && body.email) {
+            const serverURL = payload.config.serverURL || new URL(req.url).origin
+            const absoluteBrochureUrl = brochureUrl.startsWith("http") ? brochureUrl : `${serverURL}${brochureUrl}`
+            await payload.sendEmail({
+              to: body.email,
+              from: process.env.EMAIL_FROM,
+              subject: `Your ${projectDoc.name} brochure`,
+              html: renderBrochureEmailHTML({ projectName: String(projectDoc.name), brochureUrl: absoluteBrochureUrl }),
+            })
+          }
         }
       } catch (mirrorError) {
         console.error("Failed to mirror lead into Payload", mirrorError);

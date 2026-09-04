@@ -1409,6 +1409,7 @@ export function RequestInfoDialog({
           marketingOptIn: keepPosted,
           sessionId: getSessionId(),
           trafficSource: getTrafficSource(),
+          isBrochureRequest: isBrochure,
         }),
       });
 
@@ -1426,6 +1427,15 @@ export function RequestInfoDialog({
         traffic_source: getTrafficSource(),
         ...(utm_campaign ? { utm_campaign } : {}),
       });
+
+      // Best-effort: start the download right away instead of making them
+      // click "Download Brochure" again below — kept as a visible fallback
+      // since a window.open() this far into an async handler can still get
+      // blocked by the browser's popup blocker in some cases.
+      if (isBrochure && project.brochureUrl) {
+        logListingEvent("/api/events/brochure-download", "download_brochure", project.slug, project.name);
+        window.open(project.brochureUrl, "_blank", "noopener,noreferrer");
+      }
     } catch {
       setErrorMessage("Unable to send your request. Please try again.");
     } finally {
@@ -1435,15 +1445,22 @@ export function RequestInfoDialog({
 
   return (
     <div className="request-info-overlay" role="dialog" aria-modal="true" aria-label="Contact us" onClick={onClose}>
-      <div className="request-info-dialog" onClick={(event) => event.stopPropagation()}>
+      <div className={`request-info-dialog${!isInquiry ? " request-info-dialog-brochure" : ""}`} onClick={(event) => event.stopPropagation()}>
         <div className="request-info-topbar">
           <p className="request-info-topbar-title">{isBrochure ? "Download Brochure" : isInquiry ? "Send us your inquiry" : "Contact Us"}</p>
           <button type="button" className="request-info-close" aria-label="Close" onClick={onClose}><X className="h-5 w-5" /></button>
         </div>
 
-        <div className={`request-info-listing${isBrochure ? " request-info-listing-brochure" : ""}`}>
-          <Image src={project.heroImage} alt={project.name} width={isBrochure ? 160 : 64} height={isBrochure ? 100 : 64} className="request-info-listing-image" />
-          <p className="request-info-listing-title">{project.name}</p>
+        <div className={`request-info-listing${!isInquiry ? " request-info-listing-brochure" : ""}`}>
+          <Image src={project.heroImage} alt={project.name} width={64} height={64} className="request-info-listing-image" />
+          {!isInquiry ? (
+            <div className="request-info-listing-text">
+              <p className="request-info-listing-title">{project.name}</p>
+              <p className="request-info-listing-address">{[project.location, project.city].filter(Boolean).join(", ")}</p>
+            </div>
+          ) : (
+            <p className="request-info-listing-title">{project.name}</p>
+          )}
         </div>
 
         {submitted ? (
@@ -1451,7 +1468,7 @@ export function RequestInfoDialog({
             <h2>{isBrochure ? "Brochure ready" : "Request sent"}</h2>
             <p>
               {isBrochure
-                ? `Thanks, ${name.split(" ")[0] || "there"} — click below to download the ${project.name} brochure.`
+                ? `Thanks, ${name.split(" ")[0] || "there"} — your download should start automatically. We've also emailed a copy to ${email}.`
                 : `Thanks, ${name.split(" ")[0] || "there"} — the ${project.name} sales team will reach out to you by ${contactMethod.toLowerCase()} shortly.`}
             </p>
             {isBrochure && project.brochureUrl ? (
@@ -1469,7 +1486,7 @@ export function RequestInfoDialog({
           </div>
         ) : (
           <form onSubmit={onSubmit} className="request-info-body">
-            <h2>{isBrochure ? "Get the Full Brochure." : isInquiry ? "Want to find out more?" : "Our Sales Team Has Answers."}</h2>
+            {isInquiry && <h2>Want to find out more?</h2>}
             <p className="request-info-required-note"><span className="request-info-star">*</span> Indicates a required field</p>
 
             <label className="request-info-field">
