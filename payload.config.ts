@@ -44,6 +44,11 @@ export default buildConfig({
       // sidebar — this adds a conventional top-right "Account / Log out"
       // menu alongside it (doesn't replace the sidebar one).
       header: ['@/components/payload/TopRightAccountMenu#TopRightAccountMenu'],
+      // "Admin Dashboard" / "Developer Dashboard" heading on the /cms
+      // landing page itself, so it's obvious at a glance which account
+      // you're signed in as — same list of collections either way, just a
+      // label (the real scoping is baseListFilter/hiddenUnlessAdmin).
+      beforeDashboard: ['@/components/payload/DashboardHeading#DashboardHeading'],
     },
   },
   // Top-level `routes` controls the base mount paths (admin panel, REST/
