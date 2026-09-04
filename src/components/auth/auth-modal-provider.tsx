@@ -44,7 +44,7 @@ export function AuthModalProvider({ children }: { children: RNode }) {
       open: true,
       mode: options?.mode ?? "login",
       intent: options?.intent ?? "buyer",
-      redirectTo: options?.redirectTo ?? (options?.intent === "developer" ? "/developers/dashboard" : "/account"),
+      redirectTo: options?.redirectTo ?? "/account",
     }));
   }, []);
 

@@ -14,7 +14,7 @@ export default function DeveloperLoginPage() {
       <h1>Developer login</h1>
       <p className="static-page-lede auth-page-lede">Sign in to manage your projects, leads, and hero placements.</p>
 
-      <AuthForm mode="login" intent="developer" redirectTo="/developers/dashboard" onDeveloperRoleCheck />
+      <AuthForm mode="login" intent="developer" redirectTo="/account" onDeveloperRoleCheck />
 
       <p className="static-page-note auth-page-note">
         Don&apos;t have a developer account yet? <Link href="/developers/register">Register your company</Link>.

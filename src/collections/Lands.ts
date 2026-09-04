@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { adminOnly, publicRead } from './access'
+import { syncLandToSupabase } from './hooks/sync-to-supabase'
 import {
   amenitiesField,
   CITY_OPTIONS,
@@ -35,6 +36,9 @@ export const Lands: CollectionConfig = {
     create: adminOnly,
     update: adminOnly,
     delete: adminOnly,
+  },
+  hooks: {
+    afterChange: [syncLandToSupabase],
   },
   fields: [
     {

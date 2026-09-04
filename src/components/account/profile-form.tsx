@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { createSupabaseBrowserClient } from "@/lib/supabase-browser";
 import type { Profile } from "@/lib/auth";
+import { ImageUrlField } from "@/components/ui/image-url-field";
 
 const PROPERTY_TYPES = ["Apartments", "Condominium", "Villas", "House", "Townhouse", "Serviced Apartment", "Mixed-Use"];
 const BEDROOM_OPTIONS = ["Any", "1", "2", "3", "4+"];
@@ -58,8 +59,8 @@ export function ProfileForm({ profile }: { profile: Profile }) {
           <input type="tel" value={phone} onChange={(event) => setPhone(event.target.value)} className="w-full border border-stone-300 px-3 py-2 text-sm" />
         </label>
         <label className="space-y-1 text-xs font-medium text-stone-600">
-          Profile photo URL
-          <input type="text" value={avatarUrl} onChange={(event) => setAvatarUrl(event.target.value)} placeholder="https://..." className="w-full border border-stone-300 px-3 py-2 text-sm" />
+          Profile photo
+          <ImageUrlField value={avatarUrl} onChange={setAvatarUrl} folder="avatars" />
         </label>
       </div>
 

@@ -15,7 +15,7 @@ export default async function DeveloperRegisterPage() {
   const profile = await getCurrentProfile();
 
   if (profile?.developerSlug) {
-    redirect("/developers/dashboard");
+    redirect(`/developers/${profile.developerSlug}`);
   }
 
   if (!profile) {

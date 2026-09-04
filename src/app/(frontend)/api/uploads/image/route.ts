@@ -1,8 +1,14 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
 
-const BUCKET = "logos";
+// Generic image upload used by every "photo URL" field on the site that
+// should also let someone just pick a file — profile photos, developer
+// logos, etc. Deliberately separate from Payload's own Media collection
+// (supabase-storage-adapter.ts): this is for ad-hoc images pasted into a
+// plain URL field, not content Payload manages directly.
+const BUCKET = "uploads";
 const MAX_BYTES = 5 * 1024 * 1024;
+const ALLOWED_FOLDERS = new Set(["avatars", "logos"]);
 
 async function ensureBucketExists() {
   const { data: buckets } = await supabaseAdmin.storage.listBuckets();
@@ -14,6 +20,8 @@ async function ensureBucketExists() {
 export async function POST(request: Request) {
   const formData = await request.formData().catch(() => null);
   const file = formData?.get("file");
+  const folderInput = formData?.get("folder");
+  const folder = typeof folderInput === "string" && ALLOWED_FOLDERS.has(folderInput) ? folderInput : "misc";
 
   if (!file || !(file instanceof File)) {
     return NextResponse.json({ error: "No file provided" }, { status: 400 });
@@ -28,7 +36,7 @@ export async function POST(request: Request) {
   await ensureBucketExists();
 
   const extension = file.name.split(".").pop()?.toLowerCase() || "png";
-  const path = `${crypto.randomUUID()}.${extension}`;
+  const path = `${folder}/${crypto.randomUUID()}.${extension}`;
 
   const { error: uploadError } = await supabaseAdmin.storage.from(BUCKET).upload(path, file, {
     contentType: file.type,

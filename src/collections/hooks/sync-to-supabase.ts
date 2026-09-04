@@ -293,6 +293,61 @@ function companyProfileSyncHook(table: string): CollectionAfterChangeHook {
 export const syncMarketingCompanyToSupabase = companyProfileSyncHook('marketing_companies')
 export const syncSalesCompanyToSupabase = companyProfileSyncHook('sales_companies')
 export const syncArchitectToSupabase = companyProfileSyncHook('architects')
+export const syncInteriorDesignerToSupabase = companyProfileSyncHook('interior_designers')
+
+// Polymorphic relationship (relationTo: ['developers', 'construction-companies'])
+// -> its slug, whichever collection it actually points at. Unpopulated
+// shape is { relationTo, value: id }; populated (depth > 0) has value as
+// the full doc.
+async function resolvePolymorphicSlug(req: PayloadRequest, value: unknown): Promise<string | undefined> {
+  if (!value || typeof value !== 'object') return undefined
+  const v = value as { relationTo?: string; value?: unknown }
+  if (!v.relationTo || v.value === undefined) return undefined
+  const resolved = await resolveSlugName(req, v.relationTo, v.value)
+  return resolved.slug
+}
+
+export const syncLandToSupabase: CollectionAfterChangeHook = async ({ doc, req }) => {
+  const d = doc as AnyDoc
+  await safeSync(req, `land ${d.slug}`, async () => {
+    const sellerSlug = await resolvePolymorphicSlug(req, d.seller)
+    const seo = (d.seo as AnyDoc) ?? {}
+
+    const land: AnyDoc = {
+      ...d,
+      sellerSlug,
+      district: resolveOther(d.district, d.district_other) ?? '',
+      city: resolveOther(d.city, d.city_other) ?? '',
+      province: resolveOther(d.province, d.province_other) ?? '',
+      electricity: resolveOther(d.electricity, d.electricity_other),
+      unitFeatures: resolveUnitFeatures(d.unitFeatures),
+      isFeatured: Boolean(d.isFeatured),
+      seoTitle: seo.seoTitle,
+      seoDescription: seo.seoDescription,
+      ogImage: seo.ogImage,
+      canonicalUrl: seo.canonicalUrl,
+      noIndex: seo.noIndex,
+    }
+
+    const row = {
+      slug: d.slug,
+      title: land.title,
+      seller_type: land.sellerType,
+      seller_slug: sellerSlug ?? null,
+      seller_name: land.sellerName,
+      status: land.status,
+      price_lkr: land.priceLkr,
+      district: land.district,
+      city: land.city,
+      province: land.province,
+      is_featured: Boolean(land.isFeatured),
+      data: land,
+    }
+    const { error } = await supabaseAdmin.from('lands').upsert(row, { onConflict: 'slug' })
+    if (error) throw new Error(error.message)
+  })
+  return doc
+}
 
 export const syncLeadToSupabase: CollectionAfterChangeHook = async ({ doc, operation, req }) => {
   if (operation !== 'create') return doc

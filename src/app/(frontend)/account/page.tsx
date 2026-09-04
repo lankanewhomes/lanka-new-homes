@@ -19,7 +19,7 @@ export default async function AccountPage() {
   if (!profile) redirect("/login");
 
   if (profile.role === "developer" && profile.developerSlug) {
-    redirect("/developers/dashboard");
+    redirect(`/developers/${profile.developerSlug}`);
   }
 
   const supabase = await createSupabaseServerClient();

@@ -324,25 +324,17 @@ export function normalizeUnitFeatures(raw: unknown): KeyFeatureCategory[] {
   return categories;
 }
 
-// Single source of truth for the admin sidebar — every /admin/* page renders
-// this same list so a new section only needs to be added here once.
+// Single source of truth for the admin sidebar — every remaining /admin/*
+// page renders this same list. Most sections moved to /payload-admin
+// (architects, construction/marketing/sales companies, interior designers,
+// neighborhoods, land) — only what's still blocked on a proper migration
+// stays here: hero-ads (Payload's HeroSlides schema doesn't match the live
+// Supabase shape yet) and developer/project editing (blocked on the
+// developers-move-to-Payload decision).
 export const ADMIN_NAV_LINKS: { label: string; href: string }[] = [
   { label: "Overview", href: "/admin" },
-  { label: "Projects", href: "/admin" },
   { label: "Developers", href: "/admin/developers" },
-  { label: "Construction Companies", href: "/admin/construction-companies" },
-  { label: "Marketing Companies", href: "/admin/marketing-companies" },
-  { label: "Sales Companies", href: "/admin/sales-companies" },
-  { label: "Architects", href: "/admin/architects" },
-  { label: "Interior Designers", href: "/admin/interior-designers" },
-  { label: "Neighborhoods", href: "/admin/neighborhoods" },
-  { label: "Land", href: "/admin/lands" },
   { label: "Homepage Hero", href: "/admin/hero-ads" },
-  { label: "Users", href: "/admin" },
-  { label: "Leads", href: "/admin" },
-  { label: "Articles", href: "/admin" },
-  { label: "Locations", href: "/admin" },
-  { label: "Settings", href: "/admin" },
 ];
 
 // Same single-source-of-truth pattern as ADMIN_NAV_LINKS, for the

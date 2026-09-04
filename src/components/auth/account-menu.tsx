@@ -45,8 +45,8 @@ export function AccountMenu({ loginLabel, signupLabel }: { loginLabel: string; s
         <div className="header-account-menu">
           <p className="header-account-email">{user.email}</p>
           {user.role === "developer" ? (
-            <Link href="/developers/dashboard" onClick={() => setOpen(false)}>
-              Developer dashboard
+            <Link href="/account" onClick={() => setOpen(false)}>
+              My account
             </Link>
           ) : (
             <>
