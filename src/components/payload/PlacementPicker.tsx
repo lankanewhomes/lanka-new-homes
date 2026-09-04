@@ -34,10 +34,10 @@ const PROJECT_SCOPED_TYPES = new Set(['featured_listing', 'featured_search', 'he
 
 const STATUS_LABEL: Record<string, string> = { pending: "Pending review", completed: "Active", failed: "Failed", refunded: "Refunded" };
 const STATUS_COLOR: Record<string, string> = {
-  pending: "#8a6d1f",
-  completed: "#1a6b2f",
-  failed: "#c0392b",
-  refunded: "#6b6355",
+  pending: "var(--theme-warning-500)",
+  completed: "var(--theme-success-500)",
+  failed: "var(--theme-error-500)",
+  refunded: "var(--theme-elevation-500)",
 };
 
 function formatMoney(amount: number, currency: string): string {
@@ -163,7 +163,7 @@ export function PlacementPicker() {
       </p>
 
       {loading && <p style={{ opacity: 0.7 }}>Loading…</p>}
-      {error && <p style={{ color: "#c0392b" }}>{error}</p>}
+      {error && <p style={{ color: "var(--theme-error-500)" }}>{error}</p>}
 
       {!loading && !error && submitted && (
         <div style={{ border: "1px solid var(--theme-success-500)", background: "var(--theme-success-100)", borderRadius: 6, padding: 20, marginBottom: 24 }}>
@@ -267,7 +267,7 @@ export function PlacementPicker() {
               {selectedTier.featured_page && <p style={{ margin: "4px 0", fontSize: 14 }}><strong>Page:</strong> {selectedTier.featured_page}</p>}
               {selectedProject && <p style={{ margin: "4px 0", fontSize: 14 }}><strong>Listing:</strong> {selectedProject.name}</p>}
               <p style={{ margin: "4px 0", fontSize: 14 }}><strong>Price:</strong> {formatMoney(selectedTier.price, selectedTier.currency)}{selectedTier.duration_days ? ` for ${selectedTier.duration_days} days` : ""}</p>
-              {submitError && <p style={{ color: "#c0392b", fontSize: 13 }}>{submitError}</p>}
+              {submitError && <p style={{ color: "var(--theme-error-500)", fontSize: 13 }}>{submitError}</p>}
               <button
                 type="button"
                 disabled={submitting}
