@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 // projects/leads/analytics.
 export default function DeveloperLoginPage() {
   return (
-    <div className="static-page-shell auth-page">
+    <div className="static-page-shell auth-page payload-auth-page">
       <h1>Developer login</h1>
       <p className="static-page-lede auth-page-lede">Sign in to manage your projects, leads, and analytics.</p>
 

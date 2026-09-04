@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 // logging in instead of a developer's restricted view.
 export default function AdminLoginPage() {
   return (
-    <div className="static-page-shell auth-page">
+    <div className="static-page-shell auth-page payload-auth-page">
       <h1>Admin login</h1>
       <p className="static-page-lede auth-page-lede">Sign in to manage the site.</p>
 

@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 // see Developers.ts's beforeChange hook — an admin approves it from there.
 export default function DeveloperRegisterPage() {
   return (
-    <div className="static-page-shell auth-page">
+    <div className="static-page-shell auth-page payload-auth-page">
       <h1>Register as a developer</h1>
       <p className="static-page-lede auth-page-lede">
         Create your account and company profile in one step. Your listing dashboard is at /cms once you&apos;re in.

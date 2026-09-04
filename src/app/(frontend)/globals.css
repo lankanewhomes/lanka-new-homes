@@ -5986,6 +5986,18 @@ a.developer-profile-press-title {
   justify-self: center;
 }
 
+/* /admin-login, /developers/login, /developers/register only — the buyer
+   /login and /signup pages share .auth-page but keep their own bold H1 and
+   off-center divider untouched. */
+.payload-auth-page h1 {
+  font-weight: 400;
+}
+
+.payload-auth-page .auth-divider {
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .static-page-shell .static-page-lede {
   margin: 12px 0 0;
   font-size: 16px;
