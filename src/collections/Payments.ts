@@ -72,6 +72,16 @@ export const Payments: CollectionConfig = {
     },
     { name: 'related_project', type: 'relationship', relationTo: 'projects', label: 'Related Project' },
     {
+      name: 'related_hero_slide',
+      type: 'relationship',
+      relationTo: 'hero-slides',
+      label: 'Related Hero Slide',
+      admin: {
+        description: 'For a hero_slide (or hero_image) payment: which hero slide request this pays for. Confirming this payment activates that slide automatically.',
+        condition: (data) => data?.payment_type === 'hero_slide' || data?.payment_type === 'hero_image',
+      },
+    },
+    {
       name: 'featured_page',
       type: 'select',
       label: 'Featured Page',

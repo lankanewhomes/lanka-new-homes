@@ -1,33 +1,9 @@
-import type { Metadata } from "next";
-import { DashboardHeader, DashboardSidebar } from "@/components/dashboard/components";
-import { HeroAdsAdminPanel } from "@/components/dashboard/hero-ads-manager";
-import { getAllDevelopers } from "@/lib/developer-store";
-import { getAllProjects } from "@/lib/project-store";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Homepage Hero Banner",
-  robots: {
-    index: false,
-    follow: false,
-  },
-};
-
-export default async function AdminHeroAdsPage() {
-  const developers = await getAllDevelopers();
-  const allProjects = await getAllProjects();
-  const developerOptions = developers.map((developer) => ({
-    slug: developer.slug,
-    name: developer.name,
-    projects: allProjects.filter((project) => project.developerSlug === developer.slug).map((project) => ({ slug: project.slug, name: project.name })),
-  }));
-
-  return (
-    <div className="grid gap-4 px-4 pt-6 pb-16 lg:grid-cols-[220px_1fr] lg:px-6 lg:pt-8">
-      <DashboardSidebar />
-      <section className="space-y-4">
-        <DashboardHeader title="Homepage Hero Banner" subtitle="Add a hero image on behalf of a builder, then approve, reorder, or unpublish it." />
-        <HeroAdsAdminPanel developers={developerOptions} />
-      </section>
-    </div>
-  );
+// The old Supabase-backed hero-ads admin panel is retired — HeroSlides now
+// has full field parity (headline, review_note, archived status) and syncs
+// one-way to the live hero_ads table, same pattern as Developers/Projects.
+// Same friendly-alias pattern as /admin and /admin/dashboard.
+export default function AdminHeroAdsRedirect() {
+  redirect("/cms");
 }

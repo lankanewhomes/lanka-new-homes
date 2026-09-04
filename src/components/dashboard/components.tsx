@@ -2,18 +2,7 @@
 
 import Link from "next/link";
 
-// Single source of truth for the admin sidebar — every remaining /admin/*
-// page renders this same list. Every other section moved to /cms
-// (architects, construction/marketing/sales companies, interior designers,
-// neighborhoods, land, developers, projects) — hero-ads is the last one
-// left, blocked on a real schema mismatch between Payload's HeroSlides and
-// the live Supabase hero_ads shape.
-export const ADMIN_NAV_LINKS: { label: string; href: string }[] = [
-  { label: "Homepage Hero", href: "/admin/hero-ads" },
-];
-
-// Same single-source-of-truth pattern as ADMIN_NAV_LINKS, for the
-// buyer-facing /account/* dashboard.
+// Single source of truth for the /account/* sidebar nav.
 export const ACCOUNT_NAV_LINKS: { label: string; href: string }[] = [
   { label: "Dashboard", href: "/account" },
   { label: "Saved Properties", href: "/account/saved" },
@@ -25,7 +14,7 @@ export const ACCOUNT_NAV_LINKS: { label: string; href: string }[] = [
   { label: "Settings", href: "/account/settings" },
 ];
 
-export function DashboardSidebar({ links = ADMIN_NAV_LINKS }: { links?: { label: string; href: string }[] }) {
+export function DashboardSidebar({ links }: { links: { label: string; href: string }[] }) {
   return (
     <aside className="sticky top-6 box-border min-w-0 w-full self-start border-r border-stone-200 bg-white p-4">
       <nav className="grid gap-2 text-sm">

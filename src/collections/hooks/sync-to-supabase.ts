@@ -228,6 +228,71 @@ export const syncDeveloperToSupabase: CollectionAfterChangeHook = async ({ doc, 
   return doc
 }
 
+// Payload date fields store a full ISO datetime ("2026-09-10T00:00:00.000Z")
+// but the live homepage's active-window check (src/lib/hero-ad-store.ts)
+// compares against a plain "YYYY-MM-DD" string — left as a full datetime,
+// a placement starting "today" would lexicographically compare as later
+// than today's plain date and incorrectly read as not-yet-started.
+function toDateOnly(value: unknown): string | undefined {
+  return typeof value === 'string' ? value.slice(0, 10) : undefined
+}
+
+const HERO_SLIDE_STATUS_TO_LEGACY: Record<string, string> = {
+  pending: 'pending',
+  active: 'approved',
+  rejected: 'rejected',
+  archived: 'archived',
+}
+
+export const syncHeroSlideToSupabase: CollectionAfterChangeHook = async ({ doc, req }) => {
+  const d = doc as AnyDoc
+  await safeSync(req, `hero slide ${d.id}`, async () => {
+    const [advertiser, project] = await Promise.all([
+      resolveSlugName(req, 'developers', d.advertiser),
+      resolveSlugName(req, 'projects', d.project),
+    ])
+
+    let priceLkr: number | null = null
+    const paymentId = relId(d.payment)
+    if (paymentId) {
+      const payment = await req.payload
+        .findByID({ collection: 'payments', id: paymentId, depth: 0, overrideAccess: true, req })
+        .catch(() => null)
+      if (payment && typeof (payment as unknown as AnyDoc).amount === 'number') priceLkr = (payment as unknown as AnyDoc).amount as number
+    }
+
+    const heroAd: AnyDoc = {
+      id: `payload-${d.id}`,
+      developerSlug: advertiser.slug,
+      developerName: advertiser.name,
+      projectSlug: project.slug,
+      image: d.image,
+      headline: d.headline,
+      linkUrl: d.link,
+      startDate: toDateOnly(d.start_date),
+      endDate: toDateOnly(d.end_date),
+      status: HERO_SLIDE_STATUS_TO_LEGACY[d.status as string] ?? 'pending',
+      order: d.display_order ?? 0,
+      priceLkr,
+      submittedAt: d.createdAt,
+      reviewedAt: d.status !== 'pending' ? d.updatedAt : undefined,
+      reviewNote: d.review_note || undefined,
+    }
+
+    const row = {
+      id: heroAd.id,
+      developer_slug: heroAd.developerSlug ?? null,
+      project_slug: heroAd.projectSlug ?? null,
+      status: heroAd.status,
+      order: heroAd.order,
+      data: heroAd,
+    }
+    const { error } = await supabaseAdmin.from('hero_ads').upsert(row, { onConflict: 'id' })
+    if (error) throw new Error(error.message)
+  })
+  return doc
+}
+
 export const syncNeighborhoodToSupabase: CollectionAfterChangeHook = async ({ doc, req }) => {
   const d = doc as AnyDoc
   await safeSync(req, `neighborhood ${d.slug}`, async () => {

@@ -3326,6 +3326,10 @@ export interface Payment {
     | 'lead_package';
   related_project?: (number | null) | Project;
   /**
+   * For a hero_slide (or hero_image) payment: which hero slide request this pays for. Confirming this payment activates that slide automatically.
+   */
+  related_hero_slide?: (number | null) | HeroSlide;
+  /**
    * For a featured_listing (or featured_search) payment: which page to feature the project on once confirmed.
    */
   featured_page?:
@@ -3353,6 +3357,49 @@ export interface Payment {
    * Placeholder for a future payment provider (e.g. Stripe) reference id.
    */
   provider_reference?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "hero-slides".
+ */
+export interface HeroSlide {
+  id: number;
+  /**
+   * Shown over the banner image, e.g. "Now Selling: Colombo Heights".
+   */
+  headline: string;
+  /**
+   * Wide banner image URL (at least 2000px). Upload one in Media and paste its URL here, same as any other image field.
+   */
+  image: string;
+  /**
+   * The project opened when a visitor clicks this paid hero placement.
+   */
+  project: number | Project;
+  link?: string | null;
+  /**
+   * e.g. homepage, colombo, luxury
+   */
+  page_target?: string | null;
+  display_order?: number | null;
+  advertiser?: (number | null) | Developer;
+  start_date?: string | null;
+  end_date?: string | null;
+  /**
+   * Homepage hero placements are paid inventory.
+   */
+  is_paid_placement?: boolean | null;
+  /**
+   * Attach the completed Hero Slide or Hero Image payment before activating this placement — set automatically once that payment is confirmed.
+   */
+  payment?: (number | null) | Payment;
+  status?: ('pending' | 'active' | 'rejected' | 'archived') | null;
+  /**
+   * Shown to the developer, e.g. the reason a request was rejected.
+   */
+  review_note?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -5882,67 +5929,6 @@ export interface Land {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "hero-slides".
- */
-export interface HeroSlide {
-  id: number;
-  /**
-   * Legacy external image URL. Use Hero Image for new paid placements.
-   */
-  image?: string | null;
-  /**
-   * Choose the banner image uploaded through Media.
-   */
-  hero_image?: (number | null) | Media;
-  /**
-   * The project opened when a visitor clicks this paid hero placement.
-   */
-  project: number | Project;
-  link?: string | null;
-  /**
-   * e.g. homepage, colombo, luxury
-   */
-  page_target?: string | null;
-  display_order?: number | null;
-  advertiser?: (number | null) | Developer;
-  start_date?: string | null;
-  end_date?: string | null;
-  /**
-   * Homepage hero placements are paid inventory.
-   */
-  is_paid_placement?: boolean | null;
-  /**
-   * Attach the completed Hero Slide or Hero Image payment before activating this placement.
-   */
-  payment?: (number | null) | Payment;
-  status?: ('pending' | 'active' | 'rejected') | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
- */
-export interface Media {
-  id: number;
-  /**
-   * Describes the file for accessibility/SEO — required for images.
-   */
-  alt?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "saved-listings".
  */
 export interface SavedListing {
@@ -6100,6 +6086,28 @@ export interface Article {
   } | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: number;
+  /**
+   * Describes the file for accessibility/SEO — required for images.
+   */
+  alt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -6824,8 +6832,8 @@ export interface NeighborhoodsSelect<T extends boolean = true> {
  * via the `definition` "hero-slides_select".
  */
 export interface HeroSlidesSelect<T extends boolean = true> {
+  headline?: T;
   image?: T;
-  hero_image?: T;
   project?: T;
   link?: T;
   page_target?: T;
@@ -6836,6 +6844,7 @@ export interface HeroSlidesSelect<T extends boolean = true> {
   is_paid_placement?: T;
   payment?: T;
   status?: T;
+  review_note?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -6896,6 +6905,7 @@ export interface PaymentsSelect<T extends boolean = true> {
   currency?: T;
   payment_type?: T;
   related_project?: T;
+  related_hero_slide?: T;
   featured_page?: T;
   status?: T;
   payment_date?: T;
