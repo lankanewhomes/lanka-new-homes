@@ -36,17 +36,72 @@ const SOCIAL_PROVIDERS = [
   },
 ];
 
-// Same look as the buyer login form (AuthForm) on purpose — one consistent
-// login design across the whole site — but authenticates against Payload's
-// own Users collection instead of Supabase, and lands in /cms rather than
-// /account. Kept as a separate component (not a mode on AuthForm) so the
-// buyer flow stays completely untouched.
-export function PayloadLoginForm() {
+function slugify(value: string): string {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
+// Same look as the buyer login/signup forms (AuthForm) on purpose — one
+// consistent design across the whole site — but authenticates against
+// Payload's own Users collection instead of Supabase, and lands in /cms
+// rather than /account. Kept as a separate component (not a mode on
+// AuthForm) so the buyer flow stays completely untouched.
+export function PayloadLoginForm({ mode = "login" }: { mode?: "login" | "signup" }) {
+  const [fullName, setFullName] = useState("");
+  const [companyName, setCompanyName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [socialNotice, setSocialNotice] = useState(false);
+
+  const onSubmitLogin = async () => {
+    const response = await fetch("/payload-api/users/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ email, password }),
+    });
+    const body = await response.json();
+    if (!response.ok) {
+      throw new Error(body?.errors?.[0]?.message ?? body?.message ?? "Invalid email or password.");
+    }
+  };
+
+  const onSubmitSignup = async () => {
+    // 1. Create the Payload account (role: developer). Public create, but
+    //    doesn't establish a session on its own — log in right after.
+    const createRes = await fetch("/payload-api/users", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password, full_name: fullName, role: "developer" }),
+    });
+    const createBody = await createRes.json();
+    if (!createRes.ok) {
+      throw new Error(createBody?.errors?.[0]?.message ?? createBody?.message ?? "Couldn't create your account.");
+    }
+
+    await onSubmitLogin();
+
+    // 2. Create the company profile, linked to this account automatically
+    //    (see Developers.ts's beforeChange hook — user/verification_status
+    //    are forced server-side, never trusted from this request).
+    const slug = slugify(companyName) || `developer-${Date.now()}`;
+    const companyRes = await fetch("/payload-api/developers", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ slug, name: companyName, contact_email: email }),
+    });
+    if (!companyRes.ok) {
+      const companyBody = await companyRes.json().catch(() => null);
+      throw new Error(companyBody?.errors?.[0]?.message ?? "Account created, but couldn't set up your company profile — contact us.");
+    }
+  };
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -54,21 +109,14 @@ export function PayloadLoginForm() {
     setLoading(true);
 
     try {
-      const response = await fetch("/payload-api/users/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ email, password }),
-      });
-      const body = await response.json();
-      if (!response.ok) {
-        setError(body?.errors?.[0]?.message ?? body?.message ?? "Invalid email or password.");
-        setLoading(false);
-        return;
+      if (mode === "signup") {
+        await onSubmitSignup();
+      } else {
+        await onSubmitLogin();
       }
       window.location.href = "/cms";
-    } catch {
-      setError("Unable to log in. Please try again.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
       setLoading(false);
     }
   };
@@ -76,17 +124,29 @@ export function PayloadLoginForm() {
   return (
     <div>
       <form className="static-page-form" onSubmit={onSubmit}>
+        {mode === "signup" && (
+          <>
+            <label>
+              Your name
+              <input type="text" placeholder="Full name" required value={fullName} onChange={(e) => setFullName(e.target.value)} />
+            </label>
+            <label>
+              Company name
+              <input type="text" placeholder="Company name" required value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
+            </label>
+          </>
+        )}
         <label>
           Email
           <input type="email" placeholder="Email address" required value={email} onChange={(e) => setEmail(e.target.value)} />
         </label>
         <label>
           Password
-          <input type="password" placeholder="Password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+          <input type="password" placeholder="Password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
         </label>
         {error && <p className="auth-error">{error}</p>}
         <button type="submit" disabled={loading}>
-          {loading ? "Please wait…" : "Log in"}
+          {loading ? "Please wait…" : mode === "signup" ? "Create account" : "Log in"}
         </button>
       </form>
 

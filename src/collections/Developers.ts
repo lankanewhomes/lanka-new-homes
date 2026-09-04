@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { adminOnly, adminOnlyField, getOwnedDeveloperIds, isAdmin, publicRead } from './access'
+import { adminOnly, adminOnlyField, getOwnedDeveloperIds, getRole, isAdmin, publicRead } from './access'
 import { companyProfileFields, seoFields, socialLinksField } from './shared-fields'
 import { syncDeveloperToSupabase } from './hooks/sync-to-supabase'
 
@@ -19,10 +19,21 @@ export const Developers: CollectionConfig = {
   },
   access: {
     read: publicRead,
-    // Only admins create new company profiles (and delete), but the linked
-    // developer account can edit their own — verification_status and the
-    // `user` link itself stay admin-only via field-level access below.
-    create: adminOnly,
+    // An admin can create any profile. A developer-role account with no
+    // company profile of their own yet can self-register one (self-service
+    // signup) — forced to status: 'pending' and linked to themselves by
+    // the beforeChange hook below, same "self-service create, admin
+    // approves" pattern as Payments/HeroSlides. A developer who already
+    // owns a profile can't create a second one.
+    create: async ({ req }) => {
+      if (isAdmin(req)) return true
+      if (getRole(req) !== 'developer') return false
+      const ownedIds = await getOwnedDeveloperIds(req)
+      return ownedIds.length === 0
+    },
+    // Delete and verification/ownership changes (below) stay admin-only —
+    // the linked developer account can edit everything else about their
+    // own profile.
     update: async ({ req }) => {
       if (isAdmin(req)) return true
       const ownedIds = await getOwnedDeveloperIds(req)
@@ -30,7 +41,17 @@ export const Developers: CollectionConfig = {
     },
     delete: adminOnly,
   },
-  hooks: { afterChange: [syncDeveloperToSupabase] },
+  hooks: {
+    beforeChange: [
+      ({ data, req, operation }) => {
+        if (operation === 'create' && !isAdmin(req)) {
+          return { ...data, user: req.user ? req.user.id : undefined, verification_status: 'pending' }
+        }
+        return data
+      },
+    ],
+    afterChange: [syncDeveloperToSupabase],
+  },
   fields: [
     ...companyProfileFields([{ name: 'website', type: 'text' }]),
     socialLinksField,

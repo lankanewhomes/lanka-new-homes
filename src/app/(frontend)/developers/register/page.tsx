@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { BuilderProfileForm } from "@/components/dashboard/components";
-import { AuthForm } from "@/components/auth/auth-form";
-import { getCurrentProfile } from "@/lib/auth";
+import { PayloadLoginForm } from "@/components/auth/payload-login-form";
 
 export const metadata: Metadata = {
   title: "Developer Registration",
@@ -11,36 +8,23 @@ export const metadata: Metadata = {
   alternates: { canonical: "/developers/register" },
 };
 
-export default async function DeveloperRegisterPage() {
-  const profile = await getCurrentProfile();
-
-  if (profile?.developerSlug) {
-    redirect(`/developers/${profile.developerSlug}`);
-  }
-
-  if (!profile) {
-    return (
-      <div className="static-page-shell auth-page">
-        <h1>Register as a developer</h1>
-        <p className="static-page-lede auth-page-lede">
-          Create your developer account first, then set up your company profile. This automatically publishes a public
-          page at /developers and lets you list projects.
-        </p>
-        <AuthForm mode="signup" intent="developer" redirectTo="/developers/register" />
-        <p className="static-page-note auth-page-note">
-          Already have a developer account? <Link href="/developers/login">Log in</Link> instead.
-        </p>
-      </div>
-    );
-  }
-
+// Same look as the buyer /signup page — one submission creates the Payload
+// account and the linked company profile together (see PayloadLoginForm's
+// signup mode), then lands in /cms. The company profile starts pending —
+// see Developers.ts's beforeChange hook — an admin approves it from there.
+export default function DeveloperRegisterPage() {
   return (
-    <div className="static-page-shell">
-      <h1>Set up your company profile</h1>
-      <p className="static-page-lede">You&apos;re signed in as {profile.email}. Fill in your company details to finish registering.</p>
-      <div className="mt-6">
-        <BuilderProfileForm redirectTo="/developers/{slug}" />
-      </div>
+    <div className="static-page-shell auth-page">
+      <h1>Register as a developer</h1>
+      <p className="static-page-lede auth-page-lede">
+        Create your account and company profile in one step. Your listing dashboard is at /cms once you&apos;re in.
+      </p>
+
+      <PayloadLoginForm mode="signup" />
+
+      <p className="static-page-note auth-page-note">
+        Already have a developer account? <Link href="/developers/login">Log in</Link> instead.
+      </p>
     </div>
   );
 }
