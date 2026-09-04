@@ -9,15 +9,18 @@ export const metadata: Metadata = {
 };
 
 // Same look as the buyer /signup page — one submission creates the Payload
-// account and the linked company profile together (see PayloadLoginForm's
-// signup mode), then lands in /cms. The company profile starts pending —
-// see Developers.ts's beforeChange hook — an admin approves it from there.
+// account (Users.ts's afterChange hook creates the linked company profile
+// server-side once the account exists — see PayloadLoginForm's signup
+// mode). Confirm-your-email is required before logging in (Users.ts's
+// auth.verify), so this no longer lands straight in /cms — the form shows
+// a "check your email" message instead. The company profile starts
+// pending — an admin approves it from /cms.
 export default function DeveloperRegisterPage() {
   return (
     <div className="static-page-shell auth-page payload-auth-page">
       <h1>Register as a developer</h1>
       <p className="static-page-lede auth-page-lede">
-        Create your account and company profile in one step. Your listing dashboard is at /cms once you&apos;re in.
+        Create your account and company profile in one step. Confirm your email, then your listing dashboard is at /cms.
       </p>
 
       <PayloadLoginForm mode="signup" />
