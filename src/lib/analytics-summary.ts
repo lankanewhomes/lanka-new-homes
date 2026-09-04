@@ -11,6 +11,7 @@ export type AnalyticsSummaryResponse = {
   totalEvents: number
   byType: AnalyticsBreakdownRow[]
   trafficSources: AnalyticsBreakdownRow[]
+  adSources: AnalyticsBreakdownRow[]
   deviceTypes: AnalyticsBreakdownRow[]
   byListing: ListingBreakdownRow[]
   byDeveloper?: DeveloperBreakdownRow[]
@@ -18,6 +19,25 @@ export type AnalyticsSummaryResponse = {
 }
 
 const EVENT_TYPE_LABELS: Record<string, string> = Object.fromEntries(ANALYTICS_EVENT_TYPES.map((t) => [t.value, t.label]))
+
+// getTrafficSource() (src/lib/ga4.ts) already distinguishes paid vs organic
+// and Google vs Meta at collection time — paid_search only ever comes from
+// a Google-tagged UTM (utm_source containing "google" + a paid medium),
+// paid_social from a Facebook/Instagram/Meta-tagged one. Nothing new to
+// collect, just a friendlier label for what's already stored.
+const TRAFFIC_SOURCE_LABELS: Record<string, string> = {
+  organic_search: 'Organic search',
+  organic_social: 'Organic social (Facebook/Instagram, unpaid)',
+  paid_search: 'Google Ads',
+  paid_social: 'Facebook & Instagram Ads',
+  referral: 'Referral',
+  direct: 'Direct',
+}
+
+const AD_SOURCE_LABELS: Record<string, string> = {
+  paid_search: 'Google Ads',
+  paid_social: 'Facebook & Instagram Ads',
+}
 
 function relId(value: unknown): string | number | undefined {
   if (value && typeof value === 'object' && 'id' in value) return (value as { id: string | number }).id
@@ -117,11 +137,18 @@ export async function buildAnalyticsSummary(
     .sort(([a], [b]) => (a < b ? -1 : 1))
     .map(([date, count]) => ({ date, count }))
 
+  const adSourceCounts = new Map<string, number>()
+  for (const key of Object.keys(AD_SOURCE_LABELS)) {
+    const count = trafficSourceCounts.get(key)
+    if (count) adSourceCounts.set(key, count)
+  }
+
   return {
     range: { startDate, endDate },
     totalEvents,
     byType: toRows(byTypeCounts, totalEvents, EVENT_TYPE_LABELS),
-    trafficSources: toRows(trafficSourceCounts, totalEvents),
+    trafficSources: toRows(trafficSourceCounts, totalEvents, TRAFFIC_SOURCE_LABELS),
+    adSources: toRows(adSourceCounts, totalEvents, AD_SOURCE_LABELS),
     deviceTypes: toRows(deviceTypeCounts, totalEvents),
     byListing: Array.from(listingMap.values()).sort((a, b) => b.total - a.total),
     byDeveloper: includeByDeveloper ? Array.from(developerMap.values()).sort((a, b) => b.total - a.total) : undefined,

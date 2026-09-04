@@ -23,6 +23,66 @@ function isoDateDaysAgo(days: number): string {
   return new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
 }
 
+function csvCell(value: string | number): string {
+  const str = String(value);
+  return /[",\n]/.test(str) ? `"${str.replace(/"/g, '""')}"` : str;
+}
+
+// Assembles every section already loaded into one CSV, no extra server
+// round-trip — the dashboard already has everything it needs in `data`.
+function downloadAnalyticsCsv(data: AnalyticsSummaryResponse) {
+  const lines: string[] = [];
+  lines.push(`Analytics report,${data.range.startDate} to ${data.range.endDate}`);
+  lines.push("");
+
+  lines.push("Totals by event type");
+  lines.push("Event type,Count,Share");
+  for (const row of data.byType) lines.push([csvCell(row.label), row.count, `${row.percent}%`].join(","));
+  lines.push(`Total events,${data.totalEvents},`);
+  lines.push("");
+
+  lines.push("Traffic source");
+  lines.push("Source,Count,Share");
+  for (const row of data.trafficSources) lines.push([csvCell(row.label), row.count, `${row.percent}%`].join(","));
+  lines.push("");
+
+  lines.push("Ad sources (Google / Facebook & Instagram)");
+  lines.push("Source,Count,Share of all traffic");
+  for (const row of data.adSources) lines.push([csvCell(row.label), row.count, `${row.percent}%`].join(","));
+  if (data.adSources.length === 0) lines.push("No ad-attributed traffic in this period,,");
+  lines.push("");
+
+  lines.push("Device type");
+  lines.push("Device,Count,Share");
+  for (const row of data.deviceTypes) lines.push([csvCell(row.label), row.count, `${row.percent}%`].join(","));
+  lines.push("");
+
+  lines.push("By listing");
+  lines.push("Listing,Views,Inquiries,Saves,Total events");
+  for (const row of data.byListing) {
+    lines.push([csvCell(row.projectName), row.byType.view ?? 0, row.byType.lead_submitted ?? 0, row.byType.save ?? 0, row.total].join(","));
+  }
+
+  if (data.byDeveloper) {
+    lines.push("");
+    lines.push("By developer (platform-wide)");
+    lines.push("Developer,Views,Inquiries,Total events");
+    for (const row of data.byDeveloper) {
+      lines.push([csvCell(row.developerName), row.byType.view ?? 0, row.byType.lead_submitted ?? 0, row.total].join(","));
+    }
+  }
+
+  const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `lankanewhomes-analytics-${data.range.startDate}-to-${data.range.endDate}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
     <div style={{ border: "1px solid var(--theme-elevation-150)", borderRadius: 6, padding: "16px 18px", background: "var(--theme-elevation-0)" }}>
@@ -32,12 +92,12 @@ function StatCard({ label, value }: { label: string; value: string }) {
   );
 }
 
-function BreakdownList({ title, rows }: { title: string; rows: { key: string; label: string; count: number; percent: number }[] }) {
+function BreakdownList({ title, rows, emptyLabel }: { title: string; rows: { key: string; label: string; count: number; percent: number }[]; emptyLabel?: string }) {
   return (
     <div style={{ border: "1px solid var(--theme-elevation-150)", borderRadius: 6, padding: 16, background: "var(--theme-elevation-0)" }}>
       <h5 style={{ margin: "0 0 12px" }}>{title}</h5>
       {rows.length === 0 ? (
-        <p style={{ fontSize: 13, opacity: 0.65, margin: 0 }}>No events yet for this period.</p>
+        <p style={{ fontSize: 13, opacity: 0.65, margin: 0 }}>{emptyLabel ?? "No events yet for this period."}</p>
       ) : (
         <div style={{ display: "grid", gap: 8 }}>
           {rows.map((row) => (
@@ -106,7 +166,7 @@ export function AnalyticsDashboard() {
     <div style={{ padding: "24px 32px" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8, marginBottom: 20 }}>
         <h1 style={{ margin: 0 }}>Analytics</h1>
-        <div style={{ display: "flex", gap: 6 }}>
+        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
           {RANGE_PRESETS.map((p, i) => (
             <button
               key={p.label}
@@ -125,6 +185,23 @@ export function AnalyticsDashboard() {
               {p.label}
             </button>
           ))}
+          <button
+            type="button"
+            disabled={!data}
+            onClick={() => data && downloadAnalyticsCsv(data)}
+            style={{
+              fontSize: 13,
+              padding: "6px 14px",
+              borderRadius: 999,
+              border: "1px solid var(--theme-elevation-200)",
+              background: "transparent",
+              cursor: data ? "pointer" : "not-allowed",
+              opacity: data ? 1 : 0.5,
+              marginLeft: 6,
+            }}
+          >
+            Download CSV
+          </button>
         </div>
       </div>
 
@@ -159,6 +236,14 @@ export function AnalyticsDashboard() {
                 </ResponsiveContainer>
               </div>
             )}
+          </div>
+
+          <div style={{ marginBottom: 24 }}>
+            <BreakdownList
+              title="Ad Traffic (Google, Facebook & Instagram)"
+              rows={data.adSources}
+              emptyLabel="No ad-attributed traffic in this period — this only counts visits that arrived through a properly tagged ad link (utm_source/utm_medium)."
+            />
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 16, marginBottom: 24 }}>

@@ -106,6 +106,7 @@ export const analyticsSummaryEndpoint: Endpoint = {
         totalEvents: 0,
         byType: [],
         trafficSources: [],
+        adSources: [],
         deviceTypes: [],
         byListing: [],
         trend: [],
