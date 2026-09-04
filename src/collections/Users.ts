@@ -1,5 +1,5 @@
 import type { CollectionConfig, PayloadRequest } from 'payload'
-import { adminOnly, adminOnlyField, adminOrSelfById, isAdmin } from './access'
+import { adminOnly, adminOnlyField, adminOrSelfById, hiddenUnlessAdmin, isAdmin } from './access'
 import { magicLinkEndpoints } from './auth/magic-link'
 
 export const Users: CollectionConfig = {
@@ -10,6 +10,7 @@ export const Users: CollectionConfig = {
   admin: {
     useAsTitle: 'email',
     defaultColumns: ['email', 'full_name', 'role'],
+    hidden: hiddenUnlessAdmin,
   },
   access: {
     // Public so buyers/developers can self-register; the `role` field below

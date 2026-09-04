@@ -33,8 +33,8 @@ export const authenticatedCreate: Access = ({ req }) => Boolean(req.user)
 // manage, Site Settings, etc.) — keeps their view of /cms focused on what
 // they actually need: their own Projects, Leads, Analytics, and company
 // profile. An admin always sees everything.
-export function hiddenUnlessAdmin({ user }: { user?: { role?: string } | null }): boolean {
-  return user?.role !== 'admin'
+export function hiddenUnlessAdmin({ user }: { user?: unknown }): boolean {
+  return (user as AuthedUser | null | undefined)?.role !== 'admin'
 }
 
 // Owner-or-admin: used by collections with a top-level `user` relationship

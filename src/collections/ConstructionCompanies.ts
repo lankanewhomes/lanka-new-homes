@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { adminOnly, publicRead } from './access'
+import { adminOnly, hiddenUnlessAdmin, publicRead } from './access'
 import { companyProfileFields } from './shared-fields'
 import { syncConstructionCompanyToSupabase } from './hooks/sync-to-supabase'
 
@@ -9,7 +9,7 @@ import { syncConstructionCompanyToSupabase } from './hooks/sync-to-supabase'
 // profile record itself stays admin-only to create/edit.
 export const ConstructionCompanies: CollectionConfig = {
   slug: 'construction-companies',
-  admin: { useAsTitle: 'name', defaultColumns: ['name', 'slug', 'user'] },
+  admin: { useAsTitle: 'name', defaultColumns: ['name', 'slug', 'user'], hidden: hiddenUnlessAdmin },
   access: {
     read: publicRead,
     create: adminOnly,

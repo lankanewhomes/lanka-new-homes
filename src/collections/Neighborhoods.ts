@@ -1,11 +1,11 @@
 import type { CollectionConfig } from 'payload'
-import { adminOnly, publicRead } from './access'
+import { adminOnly, hiddenUnlessAdmin, publicRead } from './access'
 import { seoFields } from './shared-fields'
 import { syncNeighborhoodToSupabase } from './hooks/sync-to-supabase'
 
 export const Neighborhoods: CollectionConfig = {
   slug: 'neighborhoods',
-  admin: { useAsTitle: 'name', defaultColumns: ['name', 'slug', 'city'] },
+  admin: { useAsTitle: 'name', defaultColumns: ['name', 'slug', 'city'], hidden: hiddenUnlessAdmin },
   access: {
     read: publicRead,
     create: adminOnly,

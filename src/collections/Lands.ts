@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { adminOnly, publicRead } from './access'
+import { adminOnly, hiddenUnlessAdmin, publicRead } from './access'
 import { syncLandToSupabase } from './hooks/sync-to-supabase'
 import {
   amenitiesField,
@@ -30,6 +30,7 @@ export const Lands: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'sellerName', 'status', 'priceLkr', 'district'],
+    hidden: hiddenUnlessAdmin,
   },
   access: {
     read: publicRead,

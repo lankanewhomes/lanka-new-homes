@@ -1,5 +1,5 @@
 import type { CollectionAfterChangeHook, CollectionConfig, Field } from 'payload'
-import { adminOnly, publicRead } from './access'
+import { adminOnly, hiddenUnlessAdmin, publicRead } from './access'
 import cities from '../data/cities.json'
 
 // A closed dropdown plus a separate "(Other)" text field for anything not
@@ -355,7 +355,7 @@ export function historyLogField(name: string, label: string): Field {
 export function directoryCollection(slug: string, extraFields: Field[], afterChangeHooks: CollectionAfterChangeHook[] = []): CollectionConfig {
   return {
     slug,
-    admin: { useAsTitle: 'name', defaultColumns: ['name', 'slug', 'contact_email'] },
+    admin: { useAsTitle: 'name', defaultColumns: ['name', 'slug', 'contact_email'], hidden: hiddenUnlessAdmin },
     access: {
       read: publicRead,
       create: adminOnly,

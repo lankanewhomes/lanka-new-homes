@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { adminOnly, publicRead } from './access'
+import { adminOnly, hiddenUnlessAdmin, publicRead } from './access'
 
 // Was static data (src/data/articles.ts) — matches that Article type's
 // fields, plus `content`/`publishedDate`/`author` since a real CMS
@@ -9,6 +9,7 @@ export const Articles: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'category', 'publishedDate'],
+    hidden: hiddenUnlessAdmin,
   },
   access: {
     read: publicRead,

@@ -1,10 +1,10 @@
 import type { CollectionConfig } from 'payload'
-import { authenticatedCreate, ownerOrAdmin } from './access'
+import { authenticatedCreate, hiddenUnlessAdmin, ownerOrAdmin } from './access'
 import { logSaveEvent } from './hooks/increment-counts'
 
 export const SavedListings: CollectionConfig = {
   slug: 'saved-listings',
-  admin: { defaultColumns: ['user', 'project', 'createdAt'] },
+  admin: { defaultColumns: ['user', 'project', 'createdAt'], hidden: hiddenUnlessAdmin },
   access: {
     create: authenticatedCreate,
     read: ownerOrAdmin,

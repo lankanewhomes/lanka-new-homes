@@ -1,5 +1,5 @@
 import type { GlobalConfig } from 'payload'
-import { adminOnly, publicRead } from '../collections/access'
+import { adminOnly, hiddenUnlessAdmin, publicRead } from '../collections/access'
 import { socialLinksField } from '../collections/shared-fields'
 
 // Site-wide settings the frontend can read publicly (contact info, SEO
@@ -7,6 +7,7 @@ import { socialLinksField } from '../collections/shared-fields'
 // only ever one of these.
 export const SiteSettings: GlobalConfig = {
   slug: 'site-settings',
+  admin: { hidden: hiddenUnlessAdmin },
   access: {
     read: publicRead,
     update: adminOnly,

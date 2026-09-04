@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { adminOnly, adminOnlyField, ownDeveloperAccess, publicRead } from './access'
+import { adminOnly, adminOnlyField, getOwnedDeveloperIds, isAdmin, ownDeveloperAccess, publicRead } from './access'
 import {
   amenitiesField,
   BASEMENT_OPTIONS,
@@ -86,6 +86,17 @@ export const Projects: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'developer', 'status', 'startingPriceLkr', 'featured', 'final_score'],
+    // `read` access below is deliberately public (the live site needs
+    // anonymous access to project data) — that alone would let a developer
+    // browsing /cms see every other developer's projects in the list, not
+    // just their own. This filters the /cms list view itself down to their
+    // own projects, without touching the underlying access (or the public
+    // REST API real visitors depend on).
+    baseListFilter: async ({ req }) => {
+      if (isAdmin(req)) return null
+      const ownedIds = await getOwnedDeveloperIds(req)
+      return ownedIds.length > 0 ? { developer: { in: ownedIds } } : null
+    },
   },
   access: {
     read: publicRead,
