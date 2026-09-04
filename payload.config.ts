@@ -49,6 +49,19 @@ export default buildConfig({
       // you're signed in as — same list of collections either way, just a
       // label (the real scoping is baseListFilter/hiddenUnlessAdmin).
       beforeDashboard: ['@/components/payload/DashboardHeading#DashboardHeading'],
+      // "✨ Get Featured" link into the placements wizard below — developer
+      // accounts only (see NavPlacementLink.tsx).
+      afterNavLinks: ['@/components/payload/NavPlacementLink#NavPlacementLink'],
+      views: {
+        // Step-by-step "choose a placement, submit a request" flow for
+        // developers — see PlacementPicker.tsx. Payment stays request-only
+        // (creates a pending Payments record an admin confirms manually)
+        // until a real payment gateway is wired up.
+        placements: {
+          Component: '@/components/payload/PlacementPicker#PlacementPicker',
+          path: '/placements',
+        },
+      },
     },
   },
   // Top-level `routes` controls the base mount paths (admin panel, REST/
