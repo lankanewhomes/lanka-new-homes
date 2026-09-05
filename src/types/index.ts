@@ -496,10 +496,14 @@ export type ConstructionCompany = {
   description: string;
   location: string;
   categories: ConstructionCompanyCategory[];
+  establishedYear?: number;
   yearsInBusiness?: number;
+  activeProjects?: number;
+  completedProjects?: number;
   website?: string;
   email?: string;
   phone?: string;
+  officeHours?: OfficeHoursEntry[];
   socialLinks?: SocialLinks;
   /** From the Payload backend's `services` field — a looser, non-enum list
    * distinct from `categories` above. */

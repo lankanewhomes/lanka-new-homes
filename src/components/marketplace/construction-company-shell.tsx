@@ -16,7 +16,7 @@ const PAGE_LABELS: Record<string, string> = {
 };
 
 export function ConstructionCompanyShell({ config, companies }: { config: ConstructionCompanyPageConfig; companies: ConstructionCompany[] }) {
-  const itemListJsonLd = buildItemListJsonLd(companies.map((company) => ({ name: company.name, url: `/construction-companies#${company.slug}` })));
+  const itemListJsonLd = buildItemListJsonLd(companies.map((company) => ({ name: company.name, url: `/construction-companies/${company.slug}` })));
   const breadcrumbJsonLd = buildBreadcrumbJsonLd(config.breadcrumbs);
 
   return (
@@ -33,8 +33,17 @@ export function ConstructionCompanyShell({ config, companies }: { config: Constr
 
       <div className="grid gap-4 md:grid-cols-2">
         {companies.map((company) => (
-          <article key={company.slug} id={company.slug} className="grid grid-cols-[80px_1fr] gap-3 border border-stone-200 bg-white p-4">
-            <Image src={company.logo} alt={`${company.name} logo, construction company in ${company.location}`} width={80} height={80} className="h-20 w-20 rounded-sm object-cover" />
+          <Link
+            key={company.slug}
+            href={`/construction-companies/${company.slug}`}
+            id={company.slug}
+            className="grid grid-cols-[80px_1fr] gap-3 border border-stone-200 bg-white p-4 transition-colors hover:border-stone-400"
+          >
+            {company.logo ? (
+              <Image src={company.logo} alt={`${company.name} logo, construction company in ${company.location}`} width={80} height={80} className="h-20 w-20 rounded-sm object-cover" />
+            ) : (
+              <div className="h-20 w-20 rounded-sm bg-stone-100" aria-hidden="true" />
+            )}
             <div className="space-y-1">
               <h2 className="text-base font-semibold text-stone-900">{company.name}</h2>
               <p className="text-sm text-stone-600">{company.location}</p>
@@ -42,10 +51,9 @@ export function ConstructionCompanyShell({ config, companies }: { config: Constr
               <div className="flex flex-wrap gap-3 pt-1 text-xs text-stone-500">
                 {company.yearsInBusiness ? <span>{company.yearsInBusiness} years in business</span> : null}
                 {company.phone ? <span>{company.phone}</span> : null}
-                {company.website ? <a href={company.website} className="underline" target="_blank" rel="noopener noreferrer">Website</a> : null}
               </div>
             </div>
-          </article>
+          </Link>
         ))}
       </div>
 
