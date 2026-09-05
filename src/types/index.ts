@@ -197,6 +197,7 @@ export type Project = SeoFields & {
   launchDate: string;
   completionYear: number;
   constructionStatus: string;
+  constructionStagePercent?: string;
   constructionStarted?: string;
   startingPriceLkr: number;
   priceRange: string;
@@ -224,6 +225,7 @@ export type Project = SeoFields & {
   averagePricePerSqft?: string;
   monthlyMaintenancePerSqft?: string;
   propertyTax?: string;
+  rentalIncome?: string;
   parkingCost?: string;
   storageCost?: string;
   coopFeeRealtors?: string;

@@ -75,7 +75,7 @@ export const BASEMENT_OPTIONS = ['None', 'Unfinished', 'Finished', 'Walkout', 'P
 export const GARAGE_OPTIONS = ['None', 'Attached', 'Detached', 'Carport', 'Underground']
 
 export const PARKING_TYPE_OPTIONS = [
-  'Indoor', 'Outdoor', 'Covered', 'Underground', 'Garage', 'Driveway', 'Street', 'Assigned', 'Visitor',
+  'Indoor', 'Outdoor', 'Covered', 'Underground', 'Garage', 'Driveway', 'Street', 'Assigned', 'Visitor', 'Private (Dedicated)',
 ]
 
 export const SECURITY_OPTIONS = [
@@ -87,7 +87,7 @@ export const SECURITY_OPTIONS = [
 // Matches the plural forms already used by src/lib/listing-categories.ts's
 // filter logic (project.type === "Apartments" / "Villas").
 export const PROJECT_TYPE_OPTIONS = [
-  'Apartments', 'Condominium', 'Villas', 'House', 'Townhouse', 'Serviced Apartment', 'Mixed-Use',
+  'Apartments', 'Condominium', 'Villas', 'House', 'Townhouse', 'Serviced Apartment', 'Mixed-Use', 'Luxury Beach Villas', 'Luxury Retirement Cottages',
 ]
 
 // The site's keyword-targeted pages a project can be paid-featured on (see
