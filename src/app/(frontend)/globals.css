@@ -7764,6 +7764,19 @@ a.developer-profile-press-title {
   transition: box-shadow 0.15s ease, transform 0.15s ease;
 }
 
+/* Homepage's Featured listings only — the same .listing-grid-card is
+   reused on /search, /projects, /land, which weren't asked for here. */
+.featured-listings-section .listing-grid-card {
+  border: 1.5px solid #1a1a1a;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.featured-listings-section .listing-grid-card-media {
+  border-radius: 0;
+  border-bottom: 1px solid #e5e5e5;
+}
+
 .listing-grid-card-media {
   position: relative;
   display: block;
