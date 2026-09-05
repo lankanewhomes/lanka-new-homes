@@ -2873,7 +2873,7 @@ export interface Project {
     | null;
   unitFeatures?:
     | {
-        key?: ('indoor' | 'outdoor') | null;
+        key?: ('indoor' | 'outdoor' | 'specifications') | null;
         /**
          * Custom value, used when Category above doesn't have the right option.
          */
@@ -6037,7 +6037,7 @@ export interface Land {
     | null;
   unitFeatures?:
     | {
-        key?: ('indoor' | 'outdoor') | null;
+        key?: ('indoor' | 'outdoor' | 'specifications') | null;
         /**
          * Custom value, used when Category above doesn't have the right option.
          */
