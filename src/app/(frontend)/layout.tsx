@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Archivo } from "next/font/google";
-import { GoogleAnalytics } from "@next/third-parties/google";
+import { GoogleAnalytics, GoogleTagManager } from "@next/third-parties/google";
 import { Footer, Header } from "@/components/marketplace/components";
 import { BreadcrumbBar } from "@/components/layout/breadcrumb-bar";
 import { LanguageProvider } from "@/components/layout/language-provider";
@@ -10,6 +10,7 @@ import { getSiteUrl } from "@/lib/seo";
 import "./globals.css";
 
 const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+const gtmContainerId = process.env.NEXT_PUBLIC_GTM_ID;
 
 const siteUrl = getSiteUrl();
 
@@ -52,6 +53,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="en" className={`h-full antialiased ${bodyFont.variable}`}>
       <body className="min-h-full" suppressHydrationWarning>
         {gaMeasurementId ? <GoogleAnalytics gaId={gaMeasurementId} /> : null}
+        {gtmContainerId ? <GoogleTagManager gtmId={gtmContainerId} /> : null}
         <UtmCapture />
         <LanguageProvider>
           <AuthModalProvider>
