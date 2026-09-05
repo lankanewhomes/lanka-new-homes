@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { BedDouble, ChevronDown, ChevronLeft, ChevronRight, Heart, List, Map as MapIcon, Ruler, Search, MapPin, SlidersHorizontal, X, ArrowUpDown } from "lucide-react";
+import { BedDouble, Building2, ChevronDown, ChevronLeft, ChevronRight, Heart, List, Map as MapIcon, Ruler, Search, MapPin, SlidersHorizontal, X, ArrowUpDown } from "lucide-react";
 import { formatLkr } from "@/lib/format";
 import { useSavedListing } from "@/lib/use-saved-listing";
 import { MapSidebar } from "@/components/marketplace/map-sidebar";
@@ -177,6 +177,15 @@ export function ListingGridCard({ project, basePath = "/projects" }: { project: 
               ? (hasLandSize ? project.floorAreaRange : "—")
               : (project.floorAreaRange && project.floorAreaRange !== "-" ? `${project.floorAreaRange} SqFt` : "—")}
           </span>
+          {isLand && project.type ? (
+            <>
+              <span className="listing-grid-card-fact-divider">|</span>
+              <span className="listing-grid-card-fact">
+                <Building2 className="h-3.5 w-3.5" aria-hidden="true" />
+                {project.type}
+              </span>
+            </>
+          ) : null}
         </div>
       </div>
     </article>
