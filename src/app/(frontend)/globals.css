@@ -178,7 +178,11 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
 }
 
 @media (max-width: 760px) {
-  .mobile-menu-panel {
+  /* Always mounted now (not conditionally rendered) so AccountMenu's
+     useCurrentUser() session check stays warm across opens instead of
+     re-fetching — and briefly rendering nothing — every single time the
+     menu is toggled open. Visibility is purely this class + display. */
+  .mobile-menu-panel.is-open {
     display: block;
     position: absolute;
     top: 64px;
@@ -200,8 +204,8 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
 
   .mobile-menu-group-label {
     margin: 0 0 8px;
-    font-size: 12px;
-    font-weight: 700;
+    font-size: 16px;
+    font-weight: 400;
     color: #1f1f1f;
   }
 
@@ -212,7 +216,7 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
     justify-content: space-between;
     border: 0;
     background: none;
-    padding: 0;
+    padding: 14px 0;
     cursor: pointer;
   }
 
@@ -231,14 +235,35 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
     color: #1f1f1f;
   }
 
+  .mobile-menu-group-link a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    padding: 14px 0;
+  }
+
+  .mobile-menu-group-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
   .mobile-menu-group a:hover {
     color: #f47b36;
   }
 
   .mobile-menu-actions {
+    display: flex;
     padding-top: 16px;
     padding-bottom: 16px;
     border-bottom: 1px solid #f0ede6;
+  }
+
+  /* Login/Sign up (logged-out) stay left-aligned by the flex default above
+     — only the logged-in profile trigger pushes itself to the right. */
+  .mobile-menu-actions .header-account {
+    margin-left: auto;
   }
 
   /* Language switcher moves out of the top bar and into the bottom of the
@@ -6433,7 +6458,9 @@ a.developer-profile-press-title {
 
 .header-account-menu a,
 .header-account-menu button {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 6px;
   width: 100%;
   text-align: left;
   padding: 9px 10px;
@@ -6509,7 +6536,7 @@ a.developer-profile-press-title {
   margin: 0 0 26px;
   text-align: center;
   font-size: 26px;
-  font-weight: 700;
+  font-weight: 400;
   color: #1f1f1f;
 }
 

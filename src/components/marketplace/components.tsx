@@ -46,6 +46,7 @@ import {
   Heart,
   HeartPulse,
   Hammer,
+  House,
   HousePlus,
   Landmark,
   Mail,
@@ -2560,8 +2561,12 @@ export function Header() {
           {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>
-      {mobileMenuOpen ? (
-        <div className="mobile-menu-panel">
+      <div className={`mobile-menu-panel${mobileMenuOpen ? " is-open" : ""}`}>
+          <div className="mobile-menu-group mobile-menu-group-link">
+            <Link href="/" onClick={() => setMobileMenuOpen(false)}>
+              <House className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" /> Home
+            </Link>
+          </div>
           <div className="mobile-menu-group">
             <button
               type="button"
@@ -2569,7 +2574,10 @@ export function Header() {
               aria-expanded={openMobileGroup === "homes"}
               onClick={() => setOpenMobileGroup(openMobileGroup === "homes" ? null : "homes")}
             >
-              {toSentenceCase(text.homes)} <ChevronRight className="h-4 w-4 mobile-menu-group-chevron" aria-hidden="true" />
+              <span className="mobile-menu-group-toggle-label">
+                <Building className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" /> {toSentenceCase(text.homes)}
+              </span>
+              <ChevronRight className="h-4 w-4 mobile-menu-group-chevron" aria-hidden="true" />
             </button>
             {openMobileGroup === "homes" ? (
               <>
@@ -2590,7 +2598,10 @@ export function Header() {
               aria-expanded={openMobileGroup === "land"}
               onClick={() => setOpenMobileGroup(openMobileGroup === "land" ? null : "land")}
             >
-              Lands <ChevronRight className="h-4 w-4 mobile-menu-group-chevron" aria-hidden="true" />
+              <span className="mobile-menu-group-toggle-label">
+                <Landmark className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" /> Lands
+              </span>
+              <ChevronRight className="h-4 w-4 mobile-menu-group-chevron" aria-hidden="true" />
             </button>
             {openMobileGroup === "land" ? (
               <>
@@ -2611,7 +2622,6 @@ export function Header() {
             <button type="button" className={language === "ta" ? "active" : undefined} onClick={() => setLanguage("ta")}>தமிழ்</button>
           </div>
         </div>
-      ) : null}
     </header>
   );
 }
