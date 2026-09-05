@@ -262,6 +262,9 @@ export function HomeClient({ projects, developers = [] }: { projects: Project[];
 
     <main className="home-content">
       <section className="neighborhoods-section" aria-label="Find the city for you">
+        <div className="featured-listings-head">
+          <h2>Explore by city</h2>
+        </div>
         <div className="neighborhoods-grid">
           {neighborhoods.map((neighborhood) => (
             <Link href={`/search?city=${encodeURIComponent(neighborhood.name)}`} className="neighborhood-card" key={neighborhood.name}>

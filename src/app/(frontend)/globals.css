@@ -3070,6 +3070,13 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   margin: 10px 0 0;
 }
 
+/* This section has no .featured-listings-shell wrapper between the heading
+   and the grid (unlike Featured listings/Featured builders), so it needs
+   its own bottom spacing here instead of relying on the shell's padding. */
+.neighborhoods-section .featured-listings-head {
+  margin-bottom: 24px;
+}
+
 .section-kicker {
   display: inline-block;
   padding: 6px 12px;
@@ -7756,14 +7763,6 @@ a.developer-profile-press-title {
   border-radius: 6px;
   transition: box-shadow 0.15s ease, transform 0.15s ease;
 }
-
-/* Homepage's Featured listings only — the same .listing-grid-card is
-   reused on /search, /projects, /land, which weren't asked for here. */
-.featured-listings-section .listing-grid-card {
-  border: 1px solid #e5e2dc;
-}
-
-
 
 .listing-grid-card-media {
   position: relative;
