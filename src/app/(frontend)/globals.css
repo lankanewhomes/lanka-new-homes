@@ -7770,6 +7770,7 @@ a.developer-profile-press-title {
   border: 1.5px solid #1a1a1a;
   border-radius: 16px;
   overflow: hidden;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 }
 
 .featured-listings-section .listing-grid-card-media {
