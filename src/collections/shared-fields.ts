@@ -222,20 +222,22 @@ export const KEY_FEATURE_VALUE_OPTIONS = [
 const KEY_FEATURE_CATEGORY_LABELS: Record<string, string> = {
   indoor: 'Indoor Features',
   outdoor: 'Outdoor Features',
+  specifications: 'Specifications',
 }
 
 // Same KeyFeatureCategory shape used by Project.unitFeatures and
-// Land.unitFeatures. `key` drives both the section icon ("indoor"/"outdoor"
-// get a matching icon on the frontend; anything else falls back to a
-// generic one) and the visitor-facing label, auto-derived below so there's
-// nothing to re-type — pick indoor/outdoor (or type a custom category in
-// the "(Other)" field) and the label follows automatically.
+// Land.unitFeatures. `key` drives both the section icon ("indoor"/
+// "outdoor"/"specifications" get a matching icon on the frontend; anything
+// else falls back to a generic one) and the visitor-facing label,
+// auto-derived below so there's nothing to re-type — pick a category (or
+// type a custom one in the "(Other)" field) and the label follows
+// automatically.
 export const unitFeaturesField: Field = {
   name: 'unitFeatures',
   type: 'array',
   label: 'Key Features',
   fields: [
-    ...selectWithOther('key', 'Category', ['indoor', 'outdoor']),
+    ...selectWithOther('key', 'Category', ['indoor', 'outdoor', 'specifications']),
     {
       name: 'label',
       type: 'text',

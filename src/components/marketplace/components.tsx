@@ -71,6 +71,7 @@ import {
   Square,
   SlidersHorizontal,
   Trees,
+  ClipboardList,
   UtensilsCrossed,
   Users,
   Video,
@@ -2041,6 +2042,7 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
 const KEY_FEATURE_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   indoor: LayoutPanelLeft,
   outdoor: Trees,
+  specifications: ClipboardList,
 };
 
 /** Accepts either the current `KeyFeatureCategory[]` shape or the legacy
