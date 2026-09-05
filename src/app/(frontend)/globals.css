@@ -5212,14 +5212,14 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 .developer-profile-sidebar {
   border: 1px solid #e5e5e5;
   padding: 32px 24px;
-  text-align: center;
+  text-align: left;
   position: sticky;
   top: 24px;
 }
 
 .developer-profile-logo {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   margin-bottom: 20px;
 }
 
