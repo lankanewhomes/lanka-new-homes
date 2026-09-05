@@ -41,7 +41,7 @@ export function landToProjectShape(land: Land): Project {
     city: land.city,
     province: land.province,
     neighborhood: land.city,
-    type: land.landUse,
+    type: land.landUse.join(" & "),
     status: landStatusToProjectStatus(land.status),
     isFeatured: land.isFeatured,
     launchDate: "",

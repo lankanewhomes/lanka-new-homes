@@ -331,8 +331,8 @@ export type Land = SeoFields & {
   priceLkr: number;
   pricePerPerchLkrMin?: number;
   pricePerPerchLkrMax?: number;
-  /** e.g. "Residential", "Commercial", "Agricultural", "Mixed" — free text, no fixed vocabulary yet. */
-  landUse: string;
+  /** One or two values — a mixed-use parcel picks two (e.g. Residential + Commercial). */
+  landUse: ("Residential" | "Commercial" | "Agricultural" | "Mixed Use")[];
   /** Distinct from `landUse` (intended use) — e.g. "Bare Land", "Land with House", "Paddy Land", "Coconut Land". Free text, no fixed vocabulary yet. */
   landType?: string;
   /** e.g. "Rectangular", "Square", "Irregular", "L-Shaped". */
@@ -359,6 +359,7 @@ export type Land = SeoFields & {
   plots?: LandPlot[];
   status: "Available" | "Reserved" | "Sold";
   isFeatured?: boolean;
+  isTrending?: boolean;
   summary: string;
   description: string;
   heroImage: string;

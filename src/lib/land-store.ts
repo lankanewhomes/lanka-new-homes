@@ -69,7 +69,7 @@ function defaultLandFields(input: Partial<Land>): Partial<Land> {
     province: input.province || "",
     landSizePerches: input.landSizePerches ?? 0,
     priceLkr: input.priceLkr ?? 0,
-    landUse: input.landUse || "Residential",
+    landUse: input.landUse && input.landUse.length > 0 ? input.landUse : ["Residential"],
     status: input.status || "Available",
     summary: input.summary || input.description || "",
     description: input.description || "",

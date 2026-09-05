@@ -5915,15 +5915,16 @@ export interface Land {
   province_other?: string | null;
   status: 'Available' | 'Reserved' | 'Sold';
   isFeatured?: boolean | null;
+  isTrending?: boolean | null;
   landSizePerches: number;
   landSizeAcres?: number | null;
   priceLkr: number;
   pricePerPerchLkrMin?: number | null;
   pricePerPerchLkrMax?: number | null;
   /**
-   * e.g. Residential, Commercial, Agricultural, Mixed
+   * Choose one, or two for a mixed-use parcel (e.g. Residential + Commercial).
    */
-  landUse: string;
+  landUse?: ('Residential' | 'Commercial' | 'Agricultural' | 'Mixed Use')[] | null;
   /**
    * e.g. Bare Land, Land with House, Paddy Land, Coconut Land
    */
@@ -5932,7 +5933,11 @@ export interface Land {
    * e.g. Rectangular, Square, Irregular, L-Shaped
    */
   landShape?: string | null;
-  roadAccess?: string | null;
+  roadAccess?: ('Carpet Road' | 'Tar Road' | 'Concrete Road' | 'Gravel Road' | 'Access Road' | 'No Road Access') | null;
+  /**
+   * Custom value, used when Road Access above doesn't have the right option.
+   */
+  roadAccess_other?: string | null;
   roadWidthFt?: number | null;
   electricity?: ('Available' | '3-Phase Available' | 'Metered' | 'Not Available' | 'Solar') | null;
   /**
@@ -6905,6 +6910,7 @@ export interface LandsSelect<T extends boolean = true> {
   province_other?: T;
   status?: T;
   isFeatured?: T;
+  isTrending?: T;
   landSizePerches?: T;
   landSizeAcres?: T;
   priceLkr?: T;
@@ -6914,6 +6920,7 @@ export interface LandsSelect<T extends boolean = true> {
   landType?: T;
   landShape?: T;
   roadAccess?: T;
+  roadAccess_other?: T;
   roadWidthFt?: T;
   electricity?: T;
   electricity_other?: T;

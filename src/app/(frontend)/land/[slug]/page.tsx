@@ -85,11 +85,11 @@ export default async function LandDetailPage({ params }: LandPageProps) {
     ...(totalPlots > 0 ? [{ icon: Compass, label: "Plots available", value: String(plotsAvailable) }] : []),
     ...(totalPlots > 0 ? [{ icon: Layers, label: "Plots sold", value: String(plotsSold) }] : []),
     ...(land.landSizePerches > 0 ? [{ icon: Ruler, label: "Land size", value: `${land.landSizePerches} perches` }] : []),
-    { icon: Compass, label: "Land use", value: land.landUse },
+    { icon: Compass, label: "Land use", value: land.landUse.join(" & ") },
   ];
 
   const detailRows = [
-    { label: "Land use", value: land.landUse },
+    { label: "Land use", value: land.landUse.join(", ") },
     { label: "Land type", value: land.landType },
     { label: "Shape of land", value: land.landShape },
     { label: "Status", value: land.status },

@@ -65,6 +65,10 @@ export const TAP_WATER_OPTIONS = ['Available', 'Metered', 'Not Available', 'Well
 
 export const ELECTRICITY_OPTIONS = ['Available', '3-Phase Available', 'Metered', 'Not Available', 'Solar']
 
+export const ROAD_ACCESS_OPTIONS = ['Carpet Road', 'Tar Road', 'Concrete Road', 'Gravel Road', 'Access Road', 'No Road Access']
+
+export const LAND_USE_OPTIONS = ['Residential', 'Commercial', 'Agricultural', 'Mixed Use']
+
 export const PLAN_TYPE_OPTIONS = [
   'Open Floor Plan', 'Closed Floor Plan', 'Studio Floor Plan', 'Multi-Story Floor Plan',
   'Split-Level Floor Plan', 'Loft', 'Duplex', 'Penthouse',

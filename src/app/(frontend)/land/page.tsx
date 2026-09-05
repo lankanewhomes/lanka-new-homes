@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getAllLands } from "@/lib/land-store";
 import { landToProjectShape } from "@/lib/land-to-project";
 import { ProjectListingShell } from "@/components/marketplace/listing-shell";
+import type { Land } from "@/types";
 
 // Regenerate at most once a minute so admin edits show up without waiting for the next deploy.
 export const revalidate = 60;
@@ -33,8 +34,8 @@ type LandListingPageProps = { searchParams: Promise<{ landUse?: string }> };
 export default async function LandListingPage({ searchParams }: LandListingPageProps) {
   const { landUse } = await searchParams;
   const lands = await getAllLands();
-  const allProjects = lands.map(landToProjectShape);
-  const projects = landUse ? allProjects.filter((project) => project.type === landUse) : allProjects;
+  const filteredLands = landUse ? lands.filter((land) => land.landUse.includes(landUse as Land["landUse"][number])) : lands;
+  const projects = filteredLands.map(landToProjectShape);
 
   return (
     <ProjectListingShell
