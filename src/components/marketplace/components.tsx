@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { AccountMenu } from "@/components/auth/account-menu";
+import { IconChevronRight as TablerChevronRight, IconMenu2, IconX as TablerX } from "@tabler/icons-react";
 import { useSavedListing } from "@/lib/use-saved-listing";
 import { getStoredUtmParams, getTrafficSource, trackEvent } from "@/lib/ga4";
 import { getSessionId } from "@/components/marketplace/view-tracker";
@@ -46,7 +47,6 @@ import {
   Heart,
   HeartPulse,
   Hammer,
-  House,
   HousePlus,
   Landmark,
   Mail,
@@ -61,7 +61,6 @@ import {
   Map as MapIcon,
   MapPinned,
   MapPin,
-  Menu,
   Navigation,
   Phone,
   Ruler,
@@ -2471,9 +2470,28 @@ export function LeadForm({ projectSlug, developerSlug }: { projectSlug: string; 
   );
 }
 
-function toSentenceCase(text: string): string {
-  const lower = text.toLowerCase();
-  return lower.charAt(0).toUpperCase() + lower.slice(1);
+function MobileHomeIcon({ size = 22 }: { size?: number }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="#1f1f1f" width={size} height={size} aria-hidden="true">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21m0 0h4.5V3.545M12.75 21h7.5V10.75M2.25 21h1.5m18 0h-18M2.25 9l4.5-1.636M18.75 3l-1.5.545m0 6.205 3 1m1.5.5-1.5-.5M6.75 7.364V3h-3v18m3-13.636 10.5-3.819" />
+    </svg>
+  );
+}
+
+function MobileBuildingIcon({ size = 22 }: { size?: number }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="#1f1f1f" width={size} height={size} aria-hidden="true">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
+    </svg>
+  );
+}
+
+function MobileLandIcon({ size = 22 }: { size?: number }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="#1f1f1f" width={size} height={size} aria-hidden="true">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 4.5v15m6-15v15m-10.875 0h15.75c.621 0 1.125-.504 1.125-1.125V5.625c0-.621-.504-1.125-1.125-1.125H4.125C3.504 4.5 3 5.004 3 5.625v12.75c0 .621.504 1.125 1.125 1.125Z" />
+    </svg>
+  );
 }
 
 export function Header() {
@@ -2558,13 +2576,13 @@ export function Header() {
           <AccountMenu loginLabel={text.login} signupLabel={text.signup} />
         </div>
         <button className="mobile-menu" onClick={() => setMobileMenuOpen((v) => !v)} aria-expanded={mobileMenuOpen} aria-label={text.menu}>
-          {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          {mobileMenuOpen ? <TablerX size={22} stroke={1} /> : <IconMenu2 size={22} stroke={1} />}
         </button>
       </div>
       <div className={`mobile-menu-panel${mobileMenuOpen ? " is-open" : ""}`}>
           <div className="mobile-menu-group mobile-menu-group-link">
             <Link href="/" onClick={() => setMobileMenuOpen(false)}>
-              <House className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" /> Home
+              <MobileHomeIcon /> Home
             </Link>
           </div>
           <div className="mobile-menu-group">
@@ -2575,9 +2593,9 @@ export function Header() {
               onClick={() => setOpenMobileGroup(openMobileGroup === "homes" ? null : "homes")}
             >
               <span className="mobile-menu-group-toggle-label">
-                <Building className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" /> {toSentenceCase(text.homes)}
+                <MobileBuildingIcon /> {text.homes}
               </span>
-              <ChevronRight className="h-4 w-4 mobile-menu-group-chevron" aria-hidden="true" />
+              <TablerChevronRight size={18} stroke={1} className="mobile-menu-group-chevron" aria-hidden="true" />
             </button>
             {openMobileGroup === "homes" ? (
               <>
@@ -2599,9 +2617,9 @@ export function Header() {
               onClick={() => setOpenMobileGroup(openMobileGroup === "land" ? null : "land")}
             >
               <span className="mobile-menu-group-toggle-label">
-                <Landmark className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" /> Lands
+                <MobileLandIcon /> Lands
               </span>
-              <ChevronRight className="h-4 w-4 mobile-menu-group-chevron" aria-hidden="true" />
+              <TablerChevronRight size={18} stroke={1} className="mobile-menu-group-chevron" aria-hidden="true" />
             </button>
             {openMobileGroup === "land" ? (
               <>

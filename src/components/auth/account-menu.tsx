@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { CircleUserRound, Heart } from "lucide-react";
+import { CircleUserRound } from "lucide-react";
+import { IconHeart } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import { useCurrentUser } from "@/lib/use-current-user";
 import { createSupabaseBrowserClient } from "@/lib/supabase-browser";
@@ -41,7 +42,7 @@ export function AccountMenu({ loginLabel, signupLabel }: { loginLabel: string; s
     <div className="header-account">
       <button type="button" className="header-account-trigger" onClick={() => setOpen((v) => !v)}>
         {user.email?.split("@")[0] ?? "Account"}
-        <CircleUserRound className="h-5 w-5" aria-hidden="true" />
+        <CircleUserRound className="h-7 w-7" strokeWidth={1} aria-hidden="true" />
       </button>
       {open && (
         <div className="header-account-menu">
@@ -56,7 +57,7 @@ export function AccountMenu({ loginLabel, signupLabel }: { loginLabel: string; s
                 My account
               </Link>
               <Link href="/account/saved" onClick={() => setOpen(false)}>
-                <Heart className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" /> My Saved
+                <IconHeart size={20} stroke={1} aria-hidden="true" /> My Saved
               </Link>
             </>
           )}
