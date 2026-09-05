@@ -197,13 +197,21 @@ sort, list/map toggle) + `map-pane.tsx` (lazy-loaded map visual).
   `.startsWith()` prefix check. A project/land *detail* page
   (`/projects/[slug]`, `/land/[slug]`, and their sub-routes) is a different
   page type — it reuses `ProjectHero`, whose `.listing-hero-panel` has its
-  *own* width formula (`calc(100% - 80px)`, uncapped, no `1760px` ceiling)
-  — so it gets a third breadcrumb modifier, `.site-breadcrumb-inner-detail`,
-  matching *that* width instead. A `.startsWith("/projects")` prefix check
-  would incorrectly give detail pages the listing pages' capped width and
-  misalign the breadcrumb's edge against the panel below it on wide
-  screens — this happened once already, worth remembering if this logic
-  gets touched again.
+  *own* width formula — so it gets a third breadcrumb modifier,
+  `.site-breadcrumb-inner-detail`, matching *that* width instead. A
+  `.startsWith("/projects")` prefix check would incorrectly give detail
+  pages the listing pages' capped width and misalign the breadcrumb's edge
+  against the panel below it on wide screens — this happened once already,
+  worth remembering if this logic gets touched again.
+  `.listing-hero-panel`'s own rule reads `width: calc(100% - 80px)`, but
+  that `100%` is relative to its *parent* `.listing-hero`, which is itself
+  capped at `min(1290px, calc(100% - 48px))` — not the raw viewport. Its
+  true rendered width relative to the viewport is therefore the compound
+  `min(1210px, calc(100% - 128px))` (1290-80 and 48+80 respectively), and
+  that's what `.site-breadcrumb-inner-detail` needs to replicate. Copying
+  just the panel's own `calc(100% - 80px)` in isolation — ignoring its
+  parent's cap — looks identical at very wide viewports but drifts out of
+  alignment by 48px below ~1338px wide; this happened once already too.
 - **Map**: real map — MapLibre GL (`maplibre-gl` + `react-map-gl/maplibre`)
   against OpenFreeMap vector tiles (`https://tiles.openfreemap.org/styles/liberty`),
   not a decorative visual layer. Always `next/dynamic(..., { ssr: false })`
