@@ -1275,6 +1275,17 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
     border-radius: 0;
   }
 
+  /* Same full-bleed treatment for the homepage hero carousel — .luxury-hero-two
+     has 18px of padding on each side, so pull the media out by that much. */
+  .luxury-hero-two-media {
+    margin-left: -18px;
+    margin-right: -18px;
+    width: calc(100% + 36px);
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
+  }
+
   .listing-hero-grid {
     grid-template-columns: 1fr;
     grid-template-rows: 260px;
@@ -7744,6 +7755,12 @@ a.developer-profile-press-title {
   background: #fff;
   border-radius: 6px;
   transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+/* Homepage's Featured listings only — the same .listing-grid-card is
+   reused on /search, /projects, /land, which weren't asked for here. */
+.featured-listings-section .listing-grid-card {
+  border: 1px solid #e5e2dc;
 }
 
 
