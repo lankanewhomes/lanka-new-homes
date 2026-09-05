@@ -1,7 +1,6 @@
 import { createHmac, timingSafeEqual } from 'node:crypto'
-import { getFieldsToSign, jwtSign } from 'payload'
-import { generatePayloadCookie } from 'payload/shared'
 import type { Endpoint, PayloadRequest } from 'payload'
+import { mintPayloadSessionCookie } from './mint-session'
 
 const MAGIC_LINK_TTL_MS = 15 * 60 * 1000
 
@@ -110,42 +109,7 @@ const magicLinkCallback: Endpoint = {
       return Response.json({ error: 'Please verify your email before logging in.' }, { status: 403 })
     }
 
-    const collection = req.payload.collections.users
-
-    // auth.useSessions defaults to true in Payload 3.x — the JWT strategy
-    // requires a matching session (sid) on the user doc, or it treats the
-    // token as invalid. Mirrors Payload's own addSessionToUser (not
-    // exported from the package) since a plain JWT isn't enough on its own.
-    let sid: string | undefined
-    if (collection.config.auth.useSessions) {
-      sid = crypto.randomUUID()
-      const now = new Date()
-      const expiresAt = new Date(now.getTime() + collection.config.auth.tokenExpiration * 1000)
-      const existingSessions = (Array.isArray((user as { sessions?: unknown }).sessions)
-        ? ((user as { sessions: { id: string; expiresAt: string }[] }).sessions)
-        : []
-      ).filter((s) => new Date(s.expiresAt) > now)
-      await req.payload.update({
-        collection: 'users',
-        id: user.id,
-        data: { sessions: [...existingSessions, { id: sid, createdAt: now.toISOString(), expiresAt: expiresAt.toISOString() }] },
-        overrideAccess: true,
-        req,
-      })
-    }
-
-    const signableUser = { ...user, collection: 'users' } as PayloadRequest['user']
-    const fieldsToSign = getFieldsToSign({ collectionConfig: collection.config, email, sid, user: signableUser })
-    const { token: jwt } = await jwtSign({
-      fieldsToSign,
-      secret: req.payload.secret,
-      tokenExpiration: collection.config.auth.tokenExpiration,
-    })
-    const cookie = generatePayloadCookie({
-      collectionAuthConfig: collection.config.auth,
-      cookiePrefix: req.payload.config.cookiePrefix,
-      token: jwt,
-    })
+    const cookie = await mintPayloadSessionCookie(req.payload, user as { id: string | number; email: string }, req)
 
     const adminRoute = req.payload.config.routes.admin || '/admin'
     const serverURL = req.payload.config.serverURL || new URL(req.url ?? 'http://localhost:3000').origin

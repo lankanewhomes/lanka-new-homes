@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 const SOCIAL_PROVIDERS = [
   {
@@ -25,16 +26,6 @@ const SOCIAL_PROVIDERS = [
       </svg>
     ),
   },
-  {
-    id: "linkedin",
-    label: "Continue with LinkedIn",
-    icon: (
-      <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
-        <rect width="18" height="18" rx="2" fill="#0A66C2" />
-        <path fill="#fff" d="M5.34 7.5H3.02V15h2.32V7.5ZM4.18 3.6a1.35 1.35 0 1 0 0 2.7 1.35 1.35 0 0 0 0-2.7ZM15 15h-2.32v-4.06c0-.97-.02-2.21-1.35-2.21-1.35 0-1.56 1.05-1.56 2.14V15H7.45V7.5h2.23v1.03h.03c.31-.58 1.06-1.2 2.19-1.2 2.34 0 2.77 1.54 2.77 3.54V15Z" />
-      </svg>
-    ),
-  },
 ];
 
 // Same look as the buyer login/signup forms (AuthForm) on purpose — one
@@ -51,6 +42,20 @@ export function PayloadLoginForm({ mode = "login" }: { mode?: "login" | "signup"
   const [error, setError] = useState("");
   const [socialNotice, setSocialNotice] = useState(false);
   const [checkEmail, setCheckEmail] = useState(false);
+  const searchParams = useSearchParams();
+
+  // Google sign-in failures redirect back here with ?error= (there's no
+  // client-side state to carry it otherwise, since the whole round trip
+  // goes through Google's own domain in between).
+  useEffect(() => {
+    const oauthError = searchParams.get("error");
+    if (oauthError) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setError(oauthError);
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onSubmitLogin = async () => {
     const response = await fetch("/payload-api/users/login", {
@@ -148,7 +153,18 @@ export function PayloadLoginForm({ mode = "login" }: { mode?: "login" | "signup"
       <div className="auth-divider">Or continue with</div>
       <div className="auth-social-buttons">
         {SOCIAL_PROVIDERS.map((provider) => (
-          <button key={provider.id} type="button" className="auth-social-button" onClick={() => setSocialNotice(true)}>
+          <button
+            key={provider.id}
+            type="button"
+            className="auth-social-button"
+            onClick={() => {
+              if (provider.id === "google") {
+                window.location.href = `/api/auth/admin-google?from=${encodeURIComponent(window.location.pathname)}`;
+                return;
+              }
+              setSocialNotice(true);
+            }}
+          >
             {provider.icon}
             <span>{provider.label}</span>
           </button>
