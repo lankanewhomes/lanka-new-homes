@@ -349,6 +349,27 @@ export function businessProfileExtraFields(): Field[] {
         { name: 'to', type: 'text', admin: { condition: (_, siblingData) => Boolean(siblingData?.open) } },
       ],
     },
+    {
+      name: 'awards',
+      type: 'array',
+      label: 'Awards',
+      fields: [
+        { name: 'title', type: 'text', required: true },
+        { name: 'issuer', type: 'text' },
+        { name: 'year', type: 'text' },
+      ],
+    },
+    {
+      name: 'pressMentions',
+      type: 'array',
+      label: 'Press Mentions',
+      fields: [
+        { name: 'title', type: 'text', required: true },
+        { name: 'source', type: 'text', required: true },
+        { name: 'url', type: 'text' },
+        { name: 'date', type: 'text' },
+      ],
+    },
     socialLinksField,
   ]
 }

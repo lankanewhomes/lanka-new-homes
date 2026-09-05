@@ -372,6 +372,8 @@ export const syncConstructionCompanyToSupabase: CollectionAfterChangeHook = asyn
       activeProjects: d.activeProjects,
       completedProjects: d.completedProjects,
       officeHours: d.officeHours,
+      awards: d.awards,
+      pressMentions: d.pressMentions,
       socialLinks: d.socialLinks,
     }
     const { error } = await supabaseAdmin
@@ -402,6 +404,8 @@ function companyProfileSyncHook(table: string): CollectionAfterChangeHook {
         activeProjects: d.activeProjects,
         completedProjects: d.completedProjects,
         officeHours: d.officeHours,
+        awards: d.awards,
+        pressMentions: d.pressMentions,
         socialLinks: d.socialLinks,
       }
       const { error } = await supabaseAdmin.from(table).upsert({ slug: d.slug, name: d.name, location: d.location ?? '', data: profile }, { onConflict: 'slug' })

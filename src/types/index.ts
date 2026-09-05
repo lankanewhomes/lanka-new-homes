@@ -504,6 +504,8 @@ export type ConstructionCompany = {
   email?: string;
   phone?: string;
   officeHours?: OfficeHoursEntry[];
+  awards?: { title: string; year?: string; issuer?: string }[];
+  pressMentions?: { title: string; source: string; url?: string; date?: string }[];
   socialLinks?: SocialLinks;
   /** From the Payload backend's `services` field — a looser, non-enum list
    * distinct from `categories` above. */
@@ -528,6 +530,8 @@ export type CompanyProfile = {
   email?: string;
   phone?: string;
   officeHours?: OfficeHoursEntry[];
+  awards?: { title: string; year?: string; issuer?: string }[];
+  pressMentions?: { title: string; source: string; url?: string; date?: string }[];
   socialLinks?: SocialLinks;
   /** Marketing/Sales Companies only (from Payload's `services` field). */
   services?: string[];

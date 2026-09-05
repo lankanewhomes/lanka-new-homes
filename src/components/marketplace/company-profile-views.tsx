@@ -1,11 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { House } from "lucide-react";
 import type { CompanyProfile, Project } from "@/types";
 import { formatLkr, formatOfficeHours } from "@/lib/format";
 import { SOCIAL_ICON } from "@/components/marketplace/components";
+
+type CompanyTab = "projects" | "awards" | "press";
 
 export function CompanyProfileListView({
   title,
@@ -55,6 +58,7 @@ export function CompanyProfileListView({
 }
 
 export function CompanyProfileDetailView({ company, entityLabel, projects }: { company: CompanyProfile; entityLabel: string; projects: Project[] }) {
+  const [tab, setTab] = useState<CompanyTab>("projects");
   const socialEntries = Object.entries(company.socialLinks ?? {}).filter(([, url]) => Boolean(url)) as [string, string][];
   const formattedOfficeHours = formatOfficeHours(company.officeHours);
 
@@ -102,30 +106,69 @@ export function CompanyProfileDetailView({ company, entityLabel, projects }: { c
       </aside>
 
       <div className="developer-profile-main">
-        <p className="text-sm text-stone-700">{company.description}</p>
+        <div className="developer-profile-tabs" role="tablist">
+          <button type="button" role="tab" aria-selected={tab === "projects"} className={tab === "projects" ? "active" : undefined} onClick={() => setTab("projects")}>Projects</button>
+          <button type="button" role="tab" aria-selected={tab === "awards"} className={tab === "awards" ? "active" : undefined} onClick={() => setTab("awards")}>Awards</button>
+          <button type="button" role="tab" aria-selected={tab === "press"} className={tab === "press" ? "active" : undefined} onClick={() => setTab("press")}>Press mentions</button>
+        </div>
 
-        <section className="developer-profile-communities mt-4">
-          <p className="developer-profile-hours-title">Connected projects</p>
-          {projects.length === 0 ? (
-            <p className="developer-empty-note">No projects link to {company.name} yet.</p>
-          ) : (
-            <div className="developer-profile-list">
-              {projects.map((project) => (
-                <Link href={`/projects/${project.slug}`} key={project.slug} className="developer-profile-row">
-                  <div className="developer-profile-row-image">
-                    {project.heroImage ? <Image src={project.heroImage} alt={project.name} width={150} height={110} /> : <House size={28} />}
+        {tab === "projects" ? (
+          <section className="developer-profile-communities">
+            {projects.length === 0 ? (
+              <p className="developer-empty-note">No projects link to {company.name} yet.</p>
+            ) : (
+              <div className="developer-profile-list">
+                {projects.map((project) => (
+                  <Link href={`/projects/${project.slug}`} key={project.slug} className="developer-profile-row">
+                    <div className="developer-profile-row-image">
+                      {project.heroImage ? <Image src={project.heroImage} alt={project.name} width={150} height={110} /> : <House size={28} />}
+                    </div>
+                    <div className="developer-profile-row-body">
+                      <h3>{project.name}</h3>
+                      <p className="developer-profile-row-price">{project.status === "Coming Soon" ? "Register now" : `From ${formatLkr(project.startingPriceLkr)}`}</p>
+                      <p className="developer-profile-row-meta">{project.type} | {project.constructionStatus}</p>
+                      <p className="developer-profile-row-address">{project.location}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </section>
+        ) : tab === "awards" ? (
+          <section className="developer-profile-awards">
+            {company.awards && company.awards.length > 0 ? (
+              <div className="developer-profile-list-plain">
+                {company.awards.map((award) => (
+                  <div key={award.title} className="developer-profile-award-row">
+                    <p className="developer-profile-award-title">{award.title}</p>
+                    <p className="developer-profile-award-meta">{[award.issuer, award.year].filter(Boolean).join(" · ")}</p>
                   </div>
-                  <div className="developer-profile-row-body">
-                    <h3>{project.name}</h3>
-                    <p className="developer-profile-row-price">{project.status === "Coming Soon" ? "Register now" : `From ${formatLkr(project.startingPriceLkr)}`}</p>
-                    <p className="developer-profile-row-meta">{project.type} | {project.constructionStatus}</p>
-                    <p className="developer-profile-row-address">{project.location}</p>
+                ))}
+              </div>
+            ) : (
+              <p className="developer-empty-note">No awards listed yet.</p>
+            )}
+          </section>
+        ) : (
+          <section className="developer-profile-press">
+            {company.pressMentions && company.pressMentions.length > 0 ? (
+              <div className="developer-profile-list-plain">
+                {company.pressMentions.map((mention) => (
+                  <div key={mention.title} className="developer-profile-press-row">
+                    {mention.url ? (
+                      <a href={mention.url} target="_blank" rel="noopener noreferrer" className="developer-profile-press-title">{mention.title}</a>
+                    ) : (
+                      <p className="developer-profile-press-title">{mention.title}</p>
+                    )}
+                    <p className="developer-profile-press-meta">{[mention.source, mention.date].filter(Boolean).join(" · ")}</p>
                   </div>
-                </Link>
-              ))}
-            </div>
-          )}
-        </section>
+                ))}
+              </div>
+            ) : (
+              <p className="developer-empty-note">No press mentions yet.</p>
+            )}
+          </section>
+        )}
       </div>
     </div>
   );

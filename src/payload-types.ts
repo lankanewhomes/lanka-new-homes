@@ -3217,6 +3217,23 @@ export interface Architect {
         id?: string | null;
       }[]
     | null;
+  awards?:
+    | {
+        title: string;
+        issuer?: string | null;
+        year?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  pressMentions?:
+    | {
+        title: string;
+        source: string;
+        url?: string | null;
+        date?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   socialLinks?: {
     facebook?: string | null;
     instagram?: string | null;
@@ -3260,6 +3277,23 @@ export interface MarketingCompany {
         open?: boolean | null;
         from?: string | null;
         to?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  awards?:
+    | {
+        title: string;
+        issuer?: string | null;
+        year?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  pressMentions?:
+    | {
+        title: string;
+        source: string;
+        url?: string | null;
+        date?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -3309,6 +3343,23 @@ export interface SalesCompany {
         id?: string | null;
       }[]
     | null;
+  awards?:
+    | {
+        title: string;
+        issuer?: string | null;
+        year?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  pressMentions?:
+    | {
+        title: string;
+        source: string;
+        url?: string | null;
+        date?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   socialLinks?: {
     facebook?: string | null;
     instagram?: string | null;
@@ -3352,6 +3403,23 @@ export interface InteriorDesigner {
         open?: boolean | null;
         from?: string | null;
         to?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  awards?:
+    | {
+        title: string;
+        issuer?: string | null;
+        year?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  pressMentions?:
+    | {
+        title: string;
+        source: string;
+        url?: string | null;
+        date?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -3426,6 +3494,23 @@ export interface ConstructionCompany {
         open?: boolean | null;
         from?: string | null;
         to?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  awards?:
+    | {
+        title: string;
+        issuer?: string | null;
+        year?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  pressMentions?:
+    | {
+        title: string;
+        source: string;
+        url?: string | null;
+        date?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -6957,6 +7042,23 @@ export interface ConstructionCompaniesSelect<T extends boolean = true> {
         to?: T;
         id?: T;
       };
+  awards?:
+    | T
+    | {
+        title?: T;
+        issuer?: T;
+        year?: T;
+        id?: T;
+      };
+  pressMentions?:
+    | T
+    | {
+        title?: T;
+        source?: T;
+        url?: T;
+        date?: T;
+        id?: T;
+      };
   socialLinks?:
     | T
     | {
@@ -7000,6 +7102,23 @@ export interface MarketingCompaniesSelect<T extends boolean = true> {
         to?: T;
         id?: T;
       };
+  awards?:
+    | T
+    | {
+        title?: T;
+        issuer?: T;
+        year?: T;
+        id?: T;
+      };
+  pressMentions?:
+    | T
+    | {
+        title?: T;
+        source?: T;
+        url?: T;
+        date?: T;
+        id?: T;
+      };
   socialLinks?:
     | T
     | {
@@ -7039,6 +7158,23 @@ export interface SalesCompaniesSelect<T extends boolean = true> {
         open?: T;
         from?: T;
         to?: T;
+        id?: T;
+      };
+  awards?:
+    | T
+    | {
+        title?: T;
+        issuer?: T;
+        year?: T;
+        id?: T;
+      };
+  pressMentions?:
+    | T
+    | {
+        title?: T;
+        source?: T;
+        url?: T;
+        date?: T;
         id?: T;
       };
   socialLinks?:
@@ -7082,6 +7218,23 @@ export interface ArchitectsSelect<T extends boolean = true> {
         to?: T;
         id?: T;
       };
+  awards?:
+    | T
+    | {
+        title?: T;
+        issuer?: T;
+        year?: T;
+        id?: T;
+      };
+  pressMentions?:
+    | T
+    | {
+        title?: T;
+        source?: T;
+        url?: T;
+        date?: T;
+        id?: T;
+      };
   socialLinks?:
     | T
     | {
@@ -7121,6 +7274,23 @@ export interface InteriorDesignersSelect<T extends boolean = true> {
         open?: T;
         from?: T;
         to?: T;
+        id?: T;
+      };
+  awards?:
+    | T
+    | {
+        title?: T;
+        issuer?: T;
+        year?: T;
+        id?: T;
+      };
+  pressMentions?:
+    | T
+    | {
+        title?: T;
+        source?: T;
+        url?: T;
+        date?: T;
         id?: T;
       };
   socialLinks?:
