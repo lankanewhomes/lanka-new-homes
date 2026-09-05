@@ -332,7 +332,7 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
   }
 }
 .language-segmented { display: inline-flex; border: 1px solid #d8d8dd; border-radius: 4px; overflow: hidden; background: #fff; }
-.language-segmented button { border: 0; border-right: 1px solid #d8d8dd; background: #f8f8f9; color: #1f1f25; min-height: 34px; padding: 0 16px; font-size: 13px; font-weight: 600; }
+.language-segmented button { display: flex; align-items: center; justify-content: center; border: 0; border-right: 1px solid #d8d8dd; background: #f8f8f9; color: #1f1f25; min-height: 34px; padding: 0 16px; font-size: 13px; font-weight: 600; }
 .language-segmented button:last-child { border-right: 0; }
 .language-segmented button.active { background: #fff; color: #111; }
 .home-hero { height: 455px; position: relative; overflow: hidden; color: #fff; }.home-hero > img { object-fit: cover; object-position: center 53%; }.hero-scrim { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,.2), rgba(0,0,0,.02) 65%); }
