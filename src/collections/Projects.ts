@@ -270,6 +270,7 @@ export const Projects: CollectionConfig = {
               ],
             },
             { name: 'interactiveMapUrl', type: 'text', admin: { description: 'Embed link (e.g. Google My Maps) — or upload a file in Media and paste its URL here.' } },
+            { name: 'view360Url', type: 'text', label: '360° View URL', admin: { description: 'Embed link (e.g. a 360° panorama tour) — or upload an image/file in Media and paste its URL here.' } },
             {
               // Same access level as floorPlanVisibleStats (Floor Plans
               // tab) — developer/builder-editable, not admin-only.

@@ -62,6 +62,7 @@ import {
   MapPinned,
   MapPin,
   Navigation,
+  RotateCw,
   Phone,
   Ruler,
   Search,
@@ -486,7 +487,7 @@ export function ProjectHero({
 
   const [activeMedia, setActiveMedia] = useState<"interactiveMap" | "virtualTours" | null>(null);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-  const [lightboxView, setLightboxView] = useState<"photos" | "videos" | "map" | "roadMap" | "blockPlan" | "streetView">("photos");
+  const [lightboxView, setLightboxView] = useState<"photos" | "videos" | "map" | "roadMap" | "blockPlan" | "streetView" | "view360">("photos");
   const [activeSection, setActiveSection] = useState("overview");
   const [requestInfoOpen, setRequestInfoOpen] = useState(false);
   // The brochure pill opens the same dialog as "Request info", just with
@@ -688,6 +689,23 @@ export function ProjectHero({
           }}
         >
           <Layers className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">Block Plan{blockPlanImages.length > 1 ? <span className="listing-hero-quickjump-count">{blockPlanImages.length}</span> : null}</span>
+        </button>
+      ),
+    },
+    {
+      key: "view-360",
+      show: Boolean(project.view360Url),
+      lightboxKey: "view360",
+      render: (className) => (
+        <button
+          type="button"
+          className={className}
+          onClick={() => {
+            setLightboxView("view360");
+            setIsLightboxOpen(true);
+          }}
+        >
+          <RotateCw className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">360° View</span>
         </button>
       ),
     },
@@ -932,6 +950,17 @@ export function ProjectHero({
                   Block Plan
                 </button>
               )}
+              {project.view360Url && (
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={lightboxView === "view360"}
+                  className={lightboxView === "view360" ? "active" : undefined}
+                  onClick={() => setLightboxView("view360")}
+                >
+                  360° View
+                </button>
+              )}
               {hasStreetView && (
                 <button
                   type="button"
@@ -1072,6 +1101,16 @@ export function ProjectHero({
                 className="listing-photo-lightbox-map"
                 title="Street view"
                 src={streetViewSrc}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            )}
+
+            {lightboxView === "view360" && project.view360Url && (
+              <iframe
+                className="listing-photo-lightbox-map"
+                title="360° view"
+                src={project.view360Url}
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
               />

@@ -246,6 +246,7 @@ export type Project = SeoFields & {
   videos?: { label: string; embedUrl?: string; thumbnail?: string }[];
   virtualTours?: { label: string; url: string }[];
   interactiveMapUrl?: string;
+  view360Url?: string;
   mobileVisibleStats?: ProjectStatLabel[];
   desktopVisibleStats?: ProjectStatLabel[];
   floorPlanVisibleStats?: string[];

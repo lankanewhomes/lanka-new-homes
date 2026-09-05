@@ -2758,6 +2758,10 @@ export interface Project {
    */
   interactiveMapUrl?: string | null;
   /**
+   * Embed link (e.g. a 360° panorama tour) — or upload an image/file in Media and paste its URL here.
+   */
+  view360Url?: string | null;
+  /**
    * Which detail chips show in the listing icon stats on mobile. Maximum 10.
    */
   mobileVisibleStats?:
@@ -6766,6 +6770,7 @@ export interface ProjectsSelect<T extends boolean = true> {
         id?: T;
       };
   interactiveMapUrl?: T;
+  view360Url?: T;
   mobileVisibleStats?: T;
   desktopVisibleStats?: T;
   amenities?:
