@@ -516,7 +516,10 @@ export type CompanyProfile = {
   logo: string;
   description: string;
   location: string;
+  establishedYear?: number;
   yearsInBusiness?: number;
+  activeProjects?: number;
+  completedProjects?: number;
   website?: string;
   email?: string;
   phone?: string;

@@ -2534,7 +2534,19 @@ export interface Project {
    * Custom value, used when Tap Water above doesn't have the right option.
    */
   tapWater_other?: string | null;
-  type?: ('Apartments' | 'Condominium' | 'Villas' | 'House' | 'Townhouse' | 'Serviced Apartment' | 'Mixed-Use') | null;
+  type?:
+    | (
+        | 'Apartments'
+        | 'Condominium'
+        | 'Villas'
+        | 'House'
+        | 'Townhouse'
+        | 'Serviced Apartment'
+        | 'Mixed-Use'
+        | 'Luxury Beach Villas'
+        | 'Luxury Retirement Cottages'
+      )
+    | null;
   /**
    * Custom value, used when Type above doesn't have the right option.
    */
@@ -2588,6 +2600,10 @@ export interface Project {
    * Custom value, used when Construction Status above doesn't have the right option.
    */
   constructionStatus_other?: string | null;
+  /**
+   * How far along construction is, shown alongside Construction Status.
+   */
+  constructionStagePercent?: ('0%' | '10%' | '25%' | '50%' | '75%' | '90%' | '100%') | null;
   constructionStarted?: string | null;
   statusHistory?:
     | {
@@ -2618,6 +2634,10 @@ export interface Project {
   availablePlanPrices?: string | null;
   pricingComingSoon?: string | null;
   propertyTax?: string | null;
+  /**
+   * Free-text, e.g. "Rs. 45,000–60,000/month" or "8% estimated yield".
+   */
+  rentalIncome?: string | null;
   parkingCost?: string | null;
   storageCost?: string | null;
   coopFeeRealtors?: string | null;
@@ -2647,7 +2667,18 @@ export interface Project {
   carparkLevels?: number | null;
   parkingCount?: number | null;
   parkingType?:
-    | ('Indoor' | 'Outdoor' | 'Covered' | 'Underground' | 'Garage' | 'Driveway' | 'Street' | 'Assigned' | 'Visitor')
+    | (
+        | 'Indoor'
+        | 'Outdoor'
+        | 'Covered'
+        | 'Underground'
+        | 'Garage'
+        | 'Driveway'
+        | 'Street'
+        | 'Assigned'
+        | 'Visitor'
+        | 'Private (Dedicated)'
+      )
     | null;
   /**
    * Custom value, used when Parking Type above doesn't have the right option.
@@ -2997,6 +3028,7 @@ export interface Project {
               | 'Street'
               | 'Assigned'
               | 'Visitor'
+              | 'Private (Dedicated)'
             )
           | null;
         /**
@@ -3167,6 +3199,33 @@ export interface Architect {
   contact_email?: string | null;
   contact_phone?: string | null;
   portfolio_link?: string | null;
+  website?: string | null;
+  /**
+   * e.g. Colombo 03
+   */
+  location?: string | null;
+  establishedYear?: number | null;
+  yearsInBusiness?: number | null;
+  activeProjects?: number | null;
+  completedProjects?: number | null;
+  officeHours?:
+    | {
+        day: 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
+        open?: boolean | null;
+        from?: string | null;
+        to?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  socialLinks?: {
+    facebook?: string | null;
+    instagram?: string | null;
+    linkedin?: string | null;
+    twitter?: string | null;
+    whatsapp?: string | null;
+    youtube?: string | null;
+    tiktok?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -3186,6 +3245,33 @@ export interface MarketingCompany {
   contact_email?: string | null;
   contact_phone?: string | null;
   services?: string[] | null;
+  website?: string | null;
+  /**
+   * e.g. Colombo 03
+   */
+  location?: string | null;
+  establishedYear?: number | null;
+  yearsInBusiness?: number | null;
+  activeProjects?: number | null;
+  completedProjects?: number | null;
+  officeHours?:
+    | {
+        day: 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
+        open?: boolean | null;
+        from?: string | null;
+        to?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  socialLinks?: {
+    facebook?: string | null;
+    instagram?: string | null;
+    linkedin?: string | null;
+    twitter?: string | null;
+    whatsapp?: string | null;
+    youtube?: string | null;
+    tiktok?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -3205,6 +3291,33 @@ export interface SalesCompany {
   contact_email?: string | null;
   contact_phone?: string | null;
   services?: string[] | null;
+  website?: string | null;
+  /**
+   * e.g. Colombo 03
+   */
+  location?: string | null;
+  establishedYear?: number | null;
+  yearsInBusiness?: number | null;
+  activeProjects?: number | null;
+  completedProjects?: number | null;
+  officeHours?:
+    | {
+        day: 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
+        open?: boolean | null;
+        from?: string | null;
+        to?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  socialLinks?: {
+    facebook?: string | null;
+    instagram?: string | null;
+    linkedin?: string | null;
+    twitter?: string | null;
+    whatsapp?: string | null;
+    youtube?: string | null;
+    tiktok?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -3224,6 +3337,33 @@ export interface InteriorDesigner {
   contact_email?: string | null;
   contact_phone?: string | null;
   portfolio_link?: string | null;
+  website?: string | null;
+  /**
+   * e.g. Colombo 03
+   */
+  location?: string | null;
+  establishedYear?: number | null;
+  yearsInBusiness?: number | null;
+  activeProjects?: number | null;
+  completedProjects?: number | null;
+  officeHours?:
+    | {
+        day: 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
+        open?: boolean | null;
+        from?: string | null;
+        to?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  socialLinks?: {
+    facebook?: string | null;
+    instagram?: string | null;
+    linkedin?: string | null;
+    twitter?: string | null;
+    whatsapp?: string | null;
+    youtube?: string | null;
+    tiktok?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -3271,6 +3411,33 @@ export interface ConstructionCompany {
   contact_email?: string | null;
   contact_phone?: string | null;
   services?: string[] | null;
+  website?: string | null;
+  /**
+   * e.g. Colombo 03
+   */
+  location?: string | null;
+  establishedYear?: number | null;
+  yearsInBusiness?: number | null;
+  activeProjects?: number | null;
+  completedProjects?: number | null;
+  officeHours?:
+    | {
+        day: 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
+        open?: boolean | null;
+        from?: string | null;
+        to?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  socialLinks?: {
+    facebook?: string | null;
+    instagram?: string | null;
+    linkedin?: string | null;
+    twitter?: string | null;
+    whatsapp?: string | null;
+    youtube?: string | null;
+    tiktok?: string | null;
+  };
   /**
    * The construction_company-role account that manages this profile.
    */
@@ -6419,6 +6586,7 @@ export interface ProjectsSelect<T extends boolean = true> {
   completionYear?: T;
   constructionStatus?: T;
   constructionStatus_other?: T;
+  constructionStagePercent?: T;
   constructionStarted?: T;
   statusHistory?:
     | T
@@ -6449,6 +6617,7 @@ export interface ProjectsSelect<T extends boolean = true> {
   availablePlanPrices?: T;
   pricingComingSoon?: T;
   propertyTax?: T;
+  rentalIncome?: T;
   parkingCost?: T;
   storageCost?: T;
   coopFeeRealtors?: T;
@@ -6773,6 +6942,32 @@ export interface ConstructionCompaniesSelect<T extends boolean = true> {
   contact_email?: T;
   contact_phone?: T;
   services?: T;
+  website?: T;
+  location?: T;
+  establishedYear?: T;
+  yearsInBusiness?: T;
+  activeProjects?: T;
+  completedProjects?: T;
+  officeHours?:
+    | T
+    | {
+        day?: T;
+        open?: T;
+        from?: T;
+        to?: T;
+        id?: T;
+      };
+  socialLinks?:
+    | T
+    | {
+        facebook?: T;
+        instagram?: T;
+        linkedin?: T;
+        twitter?: T;
+        whatsapp?: T;
+        youtube?: T;
+        tiktok?: T;
+      };
   user?: T;
   team_members?: T;
   updatedAt?: T;
@@ -6790,6 +6985,32 @@ export interface MarketingCompaniesSelect<T extends boolean = true> {
   contact_email?: T;
   contact_phone?: T;
   services?: T;
+  website?: T;
+  location?: T;
+  establishedYear?: T;
+  yearsInBusiness?: T;
+  activeProjects?: T;
+  completedProjects?: T;
+  officeHours?:
+    | T
+    | {
+        day?: T;
+        open?: T;
+        from?: T;
+        to?: T;
+        id?: T;
+      };
+  socialLinks?:
+    | T
+    | {
+        facebook?: T;
+        instagram?: T;
+        linkedin?: T;
+        twitter?: T;
+        whatsapp?: T;
+        youtube?: T;
+        tiktok?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -6805,6 +7026,32 @@ export interface SalesCompaniesSelect<T extends boolean = true> {
   contact_email?: T;
   contact_phone?: T;
   services?: T;
+  website?: T;
+  location?: T;
+  establishedYear?: T;
+  yearsInBusiness?: T;
+  activeProjects?: T;
+  completedProjects?: T;
+  officeHours?:
+    | T
+    | {
+        day?: T;
+        open?: T;
+        from?: T;
+        to?: T;
+        id?: T;
+      };
+  socialLinks?:
+    | T
+    | {
+        facebook?: T;
+        instagram?: T;
+        linkedin?: T;
+        twitter?: T;
+        whatsapp?: T;
+        youtube?: T;
+        tiktok?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -6820,6 +7067,32 @@ export interface ArchitectsSelect<T extends boolean = true> {
   contact_email?: T;
   contact_phone?: T;
   portfolio_link?: T;
+  website?: T;
+  location?: T;
+  establishedYear?: T;
+  yearsInBusiness?: T;
+  activeProjects?: T;
+  completedProjects?: T;
+  officeHours?:
+    | T
+    | {
+        day?: T;
+        open?: T;
+        from?: T;
+        to?: T;
+        id?: T;
+      };
+  socialLinks?:
+    | T
+    | {
+        facebook?: T;
+        instagram?: T;
+        linkedin?: T;
+        twitter?: T;
+        whatsapp?: T;
+        youtube?: T;
+        tiktok?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -6835,6 +7108,32 @@ export interface InteriorDesignersSelect<T extends boolean = true> {
   contact_email?: T;
   contact_phone?: T;
   portfolio_link?: T;
+  website?: T;
+  location?: T;
+  establishedYear?: T;
+  yearsInBusiness?: T;
+  activeProjects?: T;
+  completedProjects?: T;
+  officeHours?:
+    | T
+    | {
+        day?: T;
+        open?: T;
+        from?: T;
+        to?: T;
+        id?: T;
+      };
+  socialLinks?:
+    | T
+    | {
+        facebook?: T;
+        instagram?: T;
+        linkedin?: T;
+        twitter?: T;
+        whatsapp?: T;
+        youtube?: T;
+        tiktok?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }

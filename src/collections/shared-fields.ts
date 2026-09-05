@@ -323,6 +323,36 @@ export const seoFields: Field = {
 // used by Developers, Construction/Marketing/Sales Companies, and
 // Architects. `extra` appends the one or two fields each of those adds on
 // top (e.g. `website`, `services`, `portfolio_link`).
+// Same "business profile" extras Developers has (website, primary location,
+// established year, years in business, active/completed projects, office
+// hours, social links) — reused by the other directory collections
+// (Marketing/Sales Companies, Architects, Interior Designers, Construction
+// Companies) so builders/agencies/designers get the same profile depth.
+// Co-Developers is intentionally NOT included here — that concept (external
+// credits on a joint project) is specific to Developers.
+export function businessProfileExtraFields(): Field[] {
+  return [
+    { name: 'website', type: 'text' },
+    { name: 'location', type: 'text', label: 'Primary Location', admin: { description: 'e.g. Colombo 03' } },
+    { name: 'establishedYear', type: 'number', label: 'Established Year' },
+    { name: 'yearsInBusiness', type: 'number', label: 'Years in Business' },
+    { name: 'activeProjects', type: 'number', label: 'Active Projects' },
+    { name: 'completedProjects', type: 'number', label: 'Completed Projects' },
+    {
+      name: 'officeHours',
+      type: 'array',
+      label: 'Office Hours',
+      fields: [
+        { name: 'day', type: 'select', required: true, options: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] },
+        { name: 'open', type: 'checkbox', label: 'Open', defaultValue: false },
+        { name: 'from', type: 'text', admin: { condition: (_, siblingData) => Boolean(siblingData?.open) } },
+        { name: 'to', type: 'text', admin: { condition: (_, siblingData) => Boolean(siblingData?.open) } },
+      ],
+    },
+    socialLinksField,
+  ]
+}
+
 export function companyProfileFields(extra: Field[] = []): Field[] {
   return [
     { name: 'slug', type: 'text', required: true, unique: true, index: true },

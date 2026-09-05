@@ -361,15 +361,22 @@ export const syncConstructionCompanyToSupabase: CollectionAfterChangeHook = asyn
       name: d.name,
       logo: d.logo,
       description: d.description,
-      location: '',
+      location: d.location ?? '',
+      website: d.website,
       categories: ['general'],
       email: d.contact_email,
       phone: d.contact_phone,
       services: d.services,
+      establishedYear: d.establishedYear,
+      yearsInBusiness: d.yearsInBusiness,
+      activeProjects: d.activeProjects,
+      completedProjects: d.completedProjects,
+      officeHours: d.officeHours,
+      socialLinks: d.socialLinks,
     }
     const { error } = await supabaseAdmin
       .from('construction_companies')
-      .upsert({ slug: d.slug, name: d.name, location: '', data: company }, { onConflict: 'slug' })
+      .upsert({ slug: d.slug, name: d.name, location: d.location ?? '', data: company }, { onConflict: 'slug' })
     if (error) throw new Error(error.message)
   })
   return doc
@@ -384,13 +391,20 @@ function companyProfileSyncHook(table: string): CollectionAfterChangeHook {
         name: d.name,
         logo: d.logo,
         description: d.description,
-        location: '',
+        location: d.location ?? '',
+        website: d.website,
         email: d.contact_email,
         phone: d.contact_phone,
         services: d.services,
         portfolioLink: d.portfolio_link,
+        establishedYear: d.establishedYear,
+        yearsInBusiness: d.yearsInBusiness,
+        activeProjects: d.activeProjects,
+        completedProjects: d.completedProjects,
+        officeHours: d.officeHours,
+        socialLinks: d.socialLinks,
       }
-      const { error } = await supabaseAdmin.from(table).upsert({ slug: d.slug, name: d.name, location: '', data: profile }, { onConflict: 'slug' })
+      const { error } = await supabaseAdmin.from(table).upsert({ slug: d.slug, name: d.name, location: d.location ?? '', data: profile }, { onConflict: 'slug' })
       if (error) throw new Error(error.message)
     })
     return doc

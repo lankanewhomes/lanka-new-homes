@@ -1,4 +1,4 @@
-import { directoryCollection } from './shared-fields'
+import { businessProfileExtraFields, directoryCollection } from './shared-fields'
 import { syncInteriorDesignerToSupabase } from './hooks/sync-to-supabase'
 
 // Selectable by developers on their Projects (see Projects.ts's
@@ -6,6 +6,6 @@ import { syncInteriorDesignerToSupabase } from './hooks/sync-to-supabase'
 // admin-only per the access-control spec, same as Architects/Marketing/Sales.
 export const InteriorDesigners = directoryCollection(
   'interior-designers',
-  [{ name: 'portfolio_link', type: 'text', label: 'Portfolio Link' }],
+  [{ name: 'portfolio_link', type: 'text', label: 'Portfolio Link' }, ...businessProfileExtraFields()],
   [syncInteriorDesignerToSupabase],
 )

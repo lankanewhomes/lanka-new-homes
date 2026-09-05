@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { adminOnly, hiddenUnlessAdmin, publicRead } from './access'
-import { companyProfileFields } from './shared-fields'
+import { businessProfileExtraFields, companyProfileFields } from './shared-fields'
 import { syncConstructionCompanyToSupabase } from './hooks/sync-to-supabase'
 
 // Unlike Marketing/Sales Companies and Architects, Construction Companies
@@ -18,7 +18,7 @@ export const ConstructionCompanies: CollectionConfig = {
   },
   hooks: { afterChange: [syncConstructionCompanyToSupabase] },
   fields: [
-    ...companyProfileFields([{ name: 'services', type: 'text', hasMany: true }]),
+    ...companyProfileFields([{ name: 'services', type: 'text', hasMany: true }, ...businessProfileExtraFields()]),
     {
       name: 'user',
       type: 'relationship',

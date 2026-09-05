@@ -1,4 +1,4 @@
-import { directoryCollection } from './shared-fields'
+import { businessProfileExtraFields, directoryCollection } from './shared-fields'
 import { syncSalesCompanyToSupabase } from './hooks/sync-to-supabase'
 
 // Selectable by developers on their Projects (see Projects.ts's
@@ -6,6 +6,6 @@ import { syncSalesCompanyToSupabase } from './hooks/sync-to-supabase'
 // per the access-control spec.
 export const SalesCompanies = directoryCollection(
   'sales-companies',
-  [{ name: 'services', type: 'text', hasMany: true }],
+  [{ name: 'services', type: 'text', hasMany: true }, ...businessProfileExtraFields()],
   [syncSalesCompanyToSupabase],
 )
