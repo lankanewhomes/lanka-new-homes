@@ -162,8 +162,8 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
 .header-actions { gap: 14px; }.sign-up { padding: 11px 21px; background: #f47b36; border: 1px solid #f47b36; color: #24221e; }
 .mobile-menu {
   display: none;
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   align-items: center;
   justify-content: center;
   border: 1px solid #d8d8d8;
@@ -185,7 +185,7 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
   .mobile-menu-panel.is-open {
     display: block;
     position: absolute;
-    top: 64px;
+    top: 76px;
     left: 0;
     right: 0;
     z-index: 40;
@@ -193,7 +193,7 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
     border-top: 1px solid #e5e2dc;
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
     padding: 16px 20px 24px;
-    max-height: calc(100vh - 64px);
+    max-height: calc(100vh - 76px);
     overflow-y: auto;
   }
 
@@ -544,7 +544,7 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
 .luxury-hero-two-panel {
   position: absolute;
   left: 50%;
-  bottom: -24px;
+  bottom: -50px;
   transform: translateX(-50%);
   z-index: 4;
   width: min(760px, calc(100% - 48px));
@@ -722,6 +722,23 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
   border-color: #f47b36;
   color: #f47b36;
   background: #fff7f1;
+}
+
+/* Compound selector, not just .hero-quick-link-pill-highlight — the later
+   unconditional .listing-filter-pill rule (also on this element) has equal
+   one-class specificity and was winning on border/background regardless of
+   source order here, same issue as the mobile language-switcher bug. */
+.hero-quick-link-pill.hero-quick-link-pill-highlight {
+  background: #fff7f1;
+  border: 1.5px solid #f47b36;
+  color: #f47b36;
+  font-weight: 600;
+}
+
+.hero-quick-link-pill.hero-quick-link-pill-highlight:hover {
+  background: #fff0e2;
+  border-color: #d9601f;
+  color: #d9601f;
 }
 
 @media (max-width: 980px) {
@@ -1080,7 +1097,7 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
 .location-links { background: #faf8f3; padding: 73px 24px 82px; }.location-links > div { max-width: 1290px; margin: auto; }.location-links h2 { font-size: 25px; margin-bottom: 25px; }.link-columns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 19px 65px; max-width: 1000px; }.link-columns a { font-size: 14px; }.location-links button { background: none; border: 0; display: flex; align-items: center; gap: 9px; text-decoration: underline; margin: 27px 0 55px; font-size: 14px; }.site-footer { background: #202024; color: #fff; min-height: 245px; padding: 45px max(25px, calc((100vw - 1500px)/2)); display: flex; justify-content: space-between; position: relative; }.footer-links { display: flex; flex-wrap: wrap; gap: 42px 80px; margin-top: 27px; font-size: 13px; }.partner-sites { margin-top: 33px; font-size: 13px; }.partner-sites span { line-height: 2.1; }.copyright { align-self: flex-end; font-size: 12px; color: #bbb; }
 .location-links .show-more-cities { font-weight: 500; }
 .location-links .show-more-cities .rotate { transform: rotate(180deg); }
-@media (max-width: 760px) { .site-header { height: 64px; }.site-header-inner { width: calc(100% - 32px); }.site-header nav, .header-actions { display: none; }.mobile-menu { display: flex; }.site-brand-group { gap: 10px; }.language-segmented button { min-height: 32px; padding: 0 10px; font-size: 12px; }.home-hero { height: 430px; }.hero-content { padding: 105px 18px 0; }.hero-search { min-height: 0; flex-direction: column; padding: 9px; }.hero-region-picker { width: 100%; justify-content: space-between; min-height: 46px; }.hero-search label { width: 100%; height: 46px; background: #f0f0ef; border-radius: 4px; }.hero-search a { width: 100%; height: 45px; justify-content: center; }.home-content { padding: 68px 18px 0; }.section-title h2 { font-size: 31px; }.community-intro { margin-bottom: 42px; }.featured-communities-block { margin: -68px -18px 64px; padding: 52px 18px 20px; }.villa-developments-block { margin: 0 -18px 64px; padding: 44px 18px 2px; }.home-card-grid, .builder-grid { grid-template-columns: repeat(2, 1fr); gap: 22px 15px; }.home-project-card img { height: 115px; }.home-exclusive-card { padding: 10px 10px 12px; }.home-exclusive-card h3 { font-size: 20px; max-width: 170px; }.home-shelf { margin-bottom: 65px; }.shelf-heading h2 { font-size: 23px; }.home-ad-banner { margin: -12px 0 52px; padding: 16px; }.home-ad-banner .ad-body { display: grid; gap: 10px; }.home-ad-banner a { margin-left: 0; width: fit-content; }.trust-panel { margin: 20px -18px 67px; padding: 48px 28px; gap: 28px; flex-direction: column; align-items: flex-start; }.trust-graphic { transform: scale(.82); transform-origin: left top; height: 165px; }.trust-panel p { font-size: 25px; }.feature-articles, .article-grid { grid-template-columns: 1fr; }.feature-articles h3 { font-size: 25px; }.article-grid { margin-top: 45px; }.article-grid img { height: 190px; }.more-section { margin: 60px -18px 0; padding: 56px 18px 6px; }.link-columns { grid-template-columns: 1fr 1fr; gap: 18px; }.site-footer { min-height: 300px; display: block; }.footer-links { gap: 19px 35px; }.copyright { margin-top: 40px; }.orange-swoop { display: none; } }
+@media (max-width: 760px) { .site-header { height: 76px; }.site-header-inner { width: calc(100% - 32px); }.site-header nav, .header-actions { display: none; }.mobile-menu { display: flex; }.site-brand-group { gap: 10px; }.language-segmented button { min-height: 32px; padding: 0 10px; font-size: 12px; }.home-hero { height: 430px; }.hero-content { padding: 105px 18px 0; }.hero-search { min-height: 0; flex-direction: column; padding: 9px; }.hero-region-picker { width: 100%; justify-content: space-between; min-height: 46px; }.hero-search label { width: 100%; height: 46px; background: #f0f0ef; border-radius: 4px; }.hero-search a { width: 100%; height: 45px; justify-content: center; }.home-content { padding: 68px 18px 0; }.section-title h2 { font-size: 31px; }.community-intro { margin-bottom: 42px; }.featured-communities-block { margin: -68px -18px 64px; padding: 52px 18px 20px; }.villa-developments-block { margin: 0 -18px 64px; padding: 44px 18px 2px; }.home-card-grid, .builder-grid { grid-template-columns: repeat(2, 1fr); gap: 22px 15px; }.home-project-card img { height: 115px; }.home-exclusive-card { padding: 10px 10px 12px; }.home-exclusive-card h3 { font-size: 20px; max-width: 170px; }.home-shelf { margin-bottom: 65px; }.shelf-heading h2 { font-size: 23px; }.home-ad-banner { margin: -12px 0 52px; padding: 16px; }.home-ad-banner .ad-body { display: grid; gap: 10px; }.home-ad-banner a { margin-left: 0; width: fit-content; }.trust-panel { margin: 20px -18px 67px; padding: 48px 28px; gap: 28px; flex-direction: column; align-items: flex-start; }.trust-graphic { transform: scale(.82); transform-origin: left top; height: 165px; }.trust-panel p { font-size: 25px; }.feature-articles, .article-grid { grid-template-columns: 1fr; }.feature-articles h3 { font-size: 25px; }.article-grid { margin-top: 45px; }.article-grid img { height: 190px; }.more-section { margin: 60px -18px 0; padding: 56px 18px 6px; }.link-columns { grid-template-columns: 1fr 1fr; gap: 18px; }.site-footer { min-height: 300px; display: block; }.footer-links { gap: 19px 35px; }.copyright { margin-top: 40px; }.orange-swoop { display: none; } }
 
 /* Typography scale */
 h1 { font-size: 32px; line-height: 40px; font-weight: 700; }
@@ -3041,7 +3058,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   margin: 0 auto 34px;
   max-width: 1280px;
   overflow: hidden;
-  background: #fff;
+  background: #f5f0e6;
   border-radius: 0;
   box-shadow: 0 22px 56px rgba(95, 74, 39, 0.08);
 }
@@ -7762,20 +7779,6 @@ a.developer-profile-press-title {
   background: #fff;
   border-radius: 6px;
   transition: box-shadow 0.15s ease, transform 0.15s ease;
-}
-
-/* Homepage's Featured listings only — the same .listing-grid-card is
-   reused on /search, /projects, /land, which weren't asked for here. */
-.featured-listings-section .listing-grid-card {
-  border: 1.5px solid #1a1a1a;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
-}
-
-.featured-listings-section .listing-grid-card-media {
-  border-radius: 0;
-  border-bottom: 1px solid #e5e5e5;
 }
 
 .listing-grid-card-media {

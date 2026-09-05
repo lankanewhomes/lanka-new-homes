@@ -2576,7 +2576,7 @@ export function Header() {
           <AccountMenu loginLabel={text.login} signupLabel={text.signup} />
         </div>
         <button className="mobile-menu" onClick={() => setMobileMenuOpen((v) => !v)} aria-expanded={mobileMenuOpen} aria-label={text.menu}>
-          {mobileMenuOpen ? <TablerX size={22} stroke={1} /> : <IconMenu2 size={22} stroke={1} />}
+          {mobileMenuOpen ? <TablerX size={26} stroke={1} /> : <IconMenu2 size={26} stroke={1} />}
         </button>
       </div>
       <div className={`mobile-menu-panel${mobileMenuOpen ? " is-open" : ""}`}>
@@ -2650,7 +2650,6 @@ export function Footer() {
       <div className="footer-top">
         <div className="footer-brand">
           <Image src="/logo.svg" alt="LankaNewHomes" width={220} height={40} className="footer-logo-img" />
-          <p className="partner-sites">Partner sites<br /><span>New homes in Sri Lanka</span></p>
         </div>
 
         <div className="footer-columns">

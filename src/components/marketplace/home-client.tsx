@@ -8,7 +8,7 @@ import { ArrowUpRight, ChevronDown, ChevronLeft, ChevronRight, MapPin, Pause, Se
 import { SiteLanguage, useLanguage } from "@/components/layout/language-provider";
 import { ListingGridCard } from "@/components/marketplace/listing-page";
 import { allProjectCategories } from "@/lib/listing-categories";
-import type { Developer, HeroAd, Project } from "@/types";
+import type { HeroAd, Project } from "@/types";
 
 const neighborhoods = [
   { name: "Colombo", image: "https://images.unsplash.com/photo-1590490360182-c33d57733427?q=80&w=900&auto=format&fit=crop" },
@@ -19,6 +19,10 @@ const neighborhoods = [
   { name: "Jaffna", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=900&auto=format&fit=crop" },
   { name: "Nuwara Eliya", image: "https://images.unsplash.com/photo-1566296314736-6eaac1ca0cb9?q=80&w=900&auto=format&fit=crop" },
   { name: "Trincomalee", image: "https://images.unsplash.com/photo-1610641818989-c2051b5e2cfd?q=80&w=900&auto=format&fit=crop" },
+  { name: "Bentota", image: "https://images.unsplash.com/photo-1586861203927-800a5acdcc4d?q=80&w=900&auto=format&fit=crop" },
+  { name: "Matara", image: "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?q=80&w=900&auto=format&fit=crop" },
+  { name: "Anuradhapura", image: "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?q=80&w=900&auto=format&fit=crop" },
+  { name: "Kurunegala", image: "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?q=80&w=900&auto=format&fit=crop" },
 ];
 
 const fallbackHeroSlides = [
@@ -28,7 +32,7 @@ const fallbackHeroSlides = [
   "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?q=85&w=2600&auto=format&fit=crop",
 ];
 
-export function HomeClient({ projects, developers = [] }: { projects: Project[]; developers?: Developer[] }) {
+export function HomeClient({ projects }: { projects: Project[] }) {
   const { language } = useLanguage();
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
@@ -146,23 +150,6 @@ export function HomeClient({ projects, developers = [] }: { projects: Project[];
   const t = copy[language];
 
   const featuredProjects = useMemo(() => projects.filter((project) => project.isFeatured).slice(0, 4), [projects]);
-  // Same de-dupe-by-name logic as /developers (a builder can have more than
-  // one profile row) — most active/complete profile wins — then the ones
-  // with the most combined projects lead, since that's what "featured"
-  // means here absent a dedicated flag on Developer.
-  const featuredBuilders = useMemo(() => {
-    const unique = developers.reduce((map, developer) => {
-      const key = developer.name.trim().toLowerCase();
-      const current = map.get(key);
-      const currentScore = current ? current.activeProjects + current.completedProjects + Number(Boolean(current.location)) : -1;
-      const nextScore = developer.activeProjects + developer.completedProjects + Number(Boolean(developer.location));
-      if (!current || nextScore > currentScore) map.set(key, developer);
-      return map;
-    }, new Map<string, Developer>());
-    return Array.from(unique.values())
-      .sort((a, b) => (b.activeProjects + b.completedProjects) - (a.activeProjects + a.completedProjects))
-      .slice(0, 8);
-  }, [developers]);
   const searchSuggestions = useMemo(() => {
     const query = searchTerm.trim().toLowerCase();
     if (!query) return [];
@@ -188,6 +175,7 @@ export function HomeClient({ projects, developers = [] }: { projects: Project[];
     router.push(suggestion.href);
   };
   const heroQuickLinks = [
+    { path: "/developers/prime", breadcrumbLabel: "Prime Lands", isHighlighted: true },
     ...allProjectCategories,
     { path: "/land", breadcrumbLabel: "Lands" },
   ];
@@ -223,7 +211,11 @@ export function HomeClient({ projects, developers = [] }: { projects: Project[];
           ) : null}
           <div className="hero-quick-links" aria-label="Browse by category">
             {heroQuickLinks.map((category) => (
-              <Link key={category.path} href={category.path} className="listing-filter-pill hero-quick-link-pill">
+              <Link
+                key={category.path}
+                href={category.path}
+                className={`listing-filter-pill hero-quick-link-pill${"isHighlighted" in category && category.isHighlighted ? " hero-quick-link-pill-highlight" : ""}`}
+              >
                 <span>{category.breadcrumbLabel}</span>
               </Link>
             ))}
@@ -288,36 +280,11 @@ export function HomeClient({ projects, developers = [] }: { projects: Project[];
             ))}
           </div>
           <div className="featured-listings-footer">
-            <Link href="/search" className="featured-listings-button">VIEW ALL LISTINGS</Link>
+            <Link href="/search" className="featured-listings-button">view all listings</Link>
           </div>
         </div>
       </section>
 
-      {featuredBuilders.length > 0 ? (
-        <section className="featured-listings-section" aria-label="Featured builders">
-          <div className="featured-listings-head">
-            <h2>Featured builders</h2>
-          </div>
-          <div className="featured-listings-shell">
-            <div className="featured-builders-grid">
-              {featuredBuilders.map((developer) => (
-                <Link key={developer.slug} href={`/developers/${developer.slug}`} className="featured-builder-card">
-                  <span className="featured-builder-card-logo">
-                    <Image src={developer.logo} alt={developer.name} width={120} height={120} />
-                  </span>
-                  <span className="featured-builder-card-name">{developer.name}</span>
-                  <span className="featured-builder-card-count">
-                    {developer.activeProjects + developer.completedProjects} project{developer.activeProjects + developer.completedProjects === 1 ? "" : "s"}
-                  </span>
-                </Link>
-              ))}
-            </div>
-            <div className="featured-listings-footer">
-              <Link href="/developers" className="featured-listings-button">VIEW ALL BUILDERS</Link>
-            </div>
-          </div>
-        </section>
-      ) : null}
     </main>
   </div>;
 }
