@@ -297,7 +297,7 @@ export function HomeClient({ projects }: { projects: Project[] }) {
       <section className="neighborhoods-section" aria-label="Find the city for you">
         <div className="featured-listings-head">
           <h2>Explore by city</h2>
-          <p className="featured-listings-subhead">Browse new homes and developments in Sri Lanka's most popular cities and towns.</p>
+          <p className="featured-listings-subhead">Browse new homes and developments in Sri Lanka&apos;s most popular cities and towns.</p>
         </div>
         <div className="neighborhoods-grid">
           {neighborhoods.map((neighborhood) => (

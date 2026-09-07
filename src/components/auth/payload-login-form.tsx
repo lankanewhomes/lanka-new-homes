@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { Suspense, useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
@@ -28,12 +28,27 @@ const SOCIAL_PROVIDERS = [
   },
 ];
 
+// useSearchParams() in a client component opts the page out of static
+// prerendering, and Next fails `next build` outright unless that read sits
+// under a Suspense boundary. Without this wrapper every page rendering the
+// form (/admin-login, /developers/login, /developers/register) errored at
+// build time — which is what silently broke every Vercel deploy from the
+// Google OAuth commit (38cdcd3, 2026-09-05) until it was caught on
+// 2026-09-07. Kept here rather than in each page so a new page can't forget.
+export function PayloadLoginForm(props: { mode?: "login" | "signup" }) {
+  return (
+    <Suspense fallback={null}>
+      <PayloadLoginFormInner {...props} />
+    </Suspense>
+  );
+}
+
 // Same look as the buyer login/signup forms (AuthForm) on purpose — one
 // consistent design across the whole site — but authenticates against
 // Payload's own Users collection instead of Supabase, and lands in /cms
 // rather than /account. Kept as a separate component (not a mode on
 // AuthForm) so the buyer flow stays completely untouched.
-export function PayloadLoginForm({ mode = "login" }: { mode?: "login" | "signup" }) {
+function PayloadLoginFormInner({ mode = "login" }: { mode?: "login" | "signup" }) {
   const [fullName, setFullName] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [email, setEmail] = useState("");
