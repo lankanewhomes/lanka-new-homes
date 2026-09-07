@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { adminOnly, hiddenUnlessAdmin, publicRead } from './access'
-import { seoFields } from './shared-fields'
+import { nearbyField, seoFields } from './shared-fields'
 import { syncNeighborhoodToSupabase } from './hooks/sync-to-supabase'
 
 export const Neighborhoods: CollectionConfig = {
@@ -20,6 +20,14 @@ export const Neighborhoods: CollectionConfig = {
     { name: 'province', type: 'text' },
     { name: 'description', type: 'textarea' },
     { name: 'heroImage', type: 'text', admin: { description: 'Image URL — or upload a file in Media and paste its URL here.' } },
+    {
+      name: 'highlights',
+      type: 'text',
+      hasMany: true,
+      label: 'Key Highlights',
+      admin: { description: '3-5 short standout facts shown at the top of the neighborhood page (e.g. "16 km from central Colombo").' },
+    },
+    nearbyField,
     seoFields,
   ],
 }

@@ -26,7 +26,7 @@ function getSegmentLabel(segments: string[], index: number, projects: Project[])
 
   if (segments[index - 1] === "floor-plans") {
     const project = projects.find((item) => item.slug === segments[index - 2]);
-    return project?.floorPlans.find((plan) => plan.id === segments[index])?.planName ?? toTitleCase(segments[index]);
+    return project?.floorPlans.find((plan) => plan.slug === segments[index] || plan.id === segments[index])?.planName ?? toTitleCase(segments[index]);
   }
 
   return toTitleCase(segments[index]);
@@ -59,13 +59,13 @@ export function BreadcrumbBar() {
   // (mapSidebarRoutes), not a prefix check — a prefix check here would also
   // catch detail pages below.
   const isWideListing = mapSidebarRoutes.includes(pathname);
-  // Detail pages (/projects/[slug], /land/[slug], and their sub-routes like
-  // /projects/[slug]/floor-plans/[id]) share ProjectHero's .listing-hero-panel,
-  // which uses a *different*, uncapped width (calc(100% - 80px)) — matching
-  // isWideListing's capped 1760px shell here left the breadcrumb's left
-  // edge not quite lined up with the title/stats panel below it on wide
-  // screens.
-  const isWideDetail = !isWideListing && (pathname.startsWith("/projects/") || pathname.startsWith("/land/"));
+  // Detail pages (/projects/[slug], /land/[slug], /neighborhoods/[slug], and
+  // their sub-routes like /projects/[slug]/floor-plans/[id]). On desktop the
+  // class is the sitewide 1290px container — same as the sticky section bar
+  // right under the breadcrumb — so it must NOT get isWideListing's 1760px
+  // shell; on mobile it carries a gutter override that tracks .listing-hero
+  // (see .site-breadcrumb-inner-detail in globals.css).
+  const isWideDetail = !isWideListing && (pathname.startsWith("/projects/") || pathname.startsWith("/land/") || pathname.startsWith("/neighborhoods/"));
   // Exact match only (unlike the prefix checks above) — the map sidebar
   // rail only renders on these routes, never on detail pages.
   const hasRail = mapSidebarRoutes.includes(pathname);

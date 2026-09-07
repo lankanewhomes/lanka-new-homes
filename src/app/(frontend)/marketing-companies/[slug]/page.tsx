@@ -37,5 +37,9 @@ export default async function MarketingCompanyPage({ params }: MarketingCompanyP
   const allProjects = await getAllProjects();
   const projects = allProjects.filter((project) => project.marketingCompanySlug === slug);
 
-  return <CompanyProfileDetailView company={company} entityLabel="Marketing Company" projects={projects} />;
+  return (
+    <div className="developer-page">
+      <CompanyProfileDetailView company={company} entityLabel="Marketing Company" projects={projects} />
+    </div>
+  );
 }

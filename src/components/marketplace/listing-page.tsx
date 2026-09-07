@@ -8,6 +8,7 @@ import { BedDouble, Building2, ChevronDown, ChevronLeft, ChevronRight, Heart, Li
 import { formatLkr } from "@/lib/format";
 import { useSavedListing } from "@/lib/use-saved-listing";
 import { MapSidebar } from "@/components/marketplace/map-sidebar";
+import { searchablePages } from "@/lib/listing-categories";
 import type { Project } from "@/types";
 import type { MapAreaSelection } from "@/components/marketplace/map-pane";
 
@@ -144,9 +145,10 @@ export function ListingGridCard({ project, basePath = "/projects" }: { project: 
       </Link>
 
       <div className="listing-grid-card-body">
-        {project.isFeatured ? (
+        {project.isFeatured || project.paymentPlanBadge ? (
           <div className="home-card-badge-row">
-            <span className="badge-featured">Featured</span>
+            {project.isFeatured ? <span className="badge-featured">Featured</span> : null}
+            {project.paymentPlanBadge ? <span className="badge-featured">{project.paymentPlanBadge}</span> : null}
           </div>
         ) : null}
         <Link href={href} className="listing-grid-card-name">{project.name}</Link>
@@ -223,6 +225,7 @@ export function ListingPageBody({
   const [moreFiltersOpen, setMoreFiltersOpen] = useState(false);
   const [filterSelections, setFilterSelections] = useState<Record<string, string>>({});
   const [regionFilter, setRegionFilter] = useState("All of Sri Lanka");
+  const [searchFocused, setSearchFocused] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -243,6 +246,11 @@ export function ListingPageBody({
 
   const activeSelection = selectedArea;
   const trimmedQuery = searchQuery.trim().toLowerCase();
+  const matchingPages = useMemo(() => {
+    if (!trimmedQuery) return [];
+    return searchablePages.filter((page) => page.keywords.includes(trimmedQuery)).slice(0, 5);
+  }, [trimmedQuery]);
+  const showPageSuggestions = searchFocused && matchingPages.length > 0;
   const regionFilteredProjects = useMemo(() => {
     let list = regionFilter === "All of Sri Lanka" ? projects : projects.filter((project) => project.city === regionFilter);
     if (trimmedQuery) {
@@ -322,12 +330,24 @@ export function ListingPageBody({
                 placeholder="Search by location, project name..."
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
+                onFocus={() => setSearchFocused(true)}
+                onBlur={() => setTimeout(() => setSearchFocused(false), 150)}
               />
               {searchQuery ? (
                 <button type="button" className="listing-search-clear" onClick={() => setSearchQuery("")} aria-label="Clear search">
                   &times;
                 </button>
               ) : null}
+              {showPageSuggestions && (
+                <div className="listing-search-suggestions" role="listbox">
+                  <p className="listing-search-suggestions-label">Pages</p>
+                  {matchingPages.map((page) => (
+                    <Link key={page.path} href={page.path} className="listing-search-suggestion-item" role="option">
+                      {page.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
 
             <label className="listing-region-picker">

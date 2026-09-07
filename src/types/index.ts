@@ -50,6 +50,9 @@ export type KeyFeatureCategory = {
 
 export type FloorPlan = {
   id: string;
+  /** Derived from planName at read time (see project-store.ts) — used for
+   * this plan's URL segment instead of its raw id. */
+  slug?: string;
   planName: string;
   planType?: string;
   bedrooms: number;
@@ -63,6 +66,8 @@ export type FloorPlan = {
   parkingType?: string;
   startingPriceLkr: number;
   image: string;
+  /** Optional 3D render of the same plan — shown alongside the 2D drawing. */
+  image3d?: string;
   availability: "Available" | "Limited" | "Sold Out";
   quickMoveIn?: boolean;
 };
@@ -70,7 +75,7 @@ export type FloorPlan = {
 export type NearbyPlace = {
   category: "School" | "Hospital" | "Shopping" | "Restaurant" | "Transport" | "Landmark";
   name: string;
-  distanceKm: number;
+  distanceKm?: number;
 };
 
 export type PricingHistoryEntry = {
@@ -140,7 +145,7 @@ export type Developer = SeoFields & {
   coDevelopers?: CoDeveloperEntry[];
   officeHours?: OfficeHoursEntry[];
   socialLinks?: SocialLinks;
-  awards?: { title: string; year?: string; issuer?: string }[];
+  awards?: { title: string; year?: string; issuer?: string; description?: string; imageUrl?: string; url?: string }[];
   pressMentions?: { title: string; source: string; url?: string; date?: string }[];
   /** Indexed column `developers.verification_status`. NOT yet mirrored by
    * developerToRow — see supabase/migrations/20260827120500_verification_workflow.sql. */
@@ -193,6 +198,19 @@ export type Project = SeoFields & {
   status: ProjectStatus;
   isFeatured?: boolean;
   isMoveInNow?: boolean;
+  isDesignBuild?: boolean;
+  isPublished?: boolean;
+  availableUnits?: number;
+  bookedUnits?: number;
+  soldUnits?: number;
+  socialLinks?: SocialLinks;
+  commercialAreas?: { label: string; image: string }[];
+  streetViewUrl?: string;
+  highlights?: string[];
+  paymentPlanBadge?: string;
+  availabilityBadge?: string;
+  marketingBadges?: string[];
+  locationBadges?: string[];
   coDevelopers?: CoDeveloperEntry[];
   launchDate: string;
   completionYear: number;
@@ -487,6 +505,8 @@ export type Neighborhood = SeoFields & {
   province: string;
   description: string;
   heroImage: string;
+  highlights?: string[];
+  nearby?: NearbyPlace[];
 };
 
 export type ConstructionCompanyCategory = "general" | "colombo" | "swimming-pools" | "consulting";
@@ -506,12 +526,13 @@ export type ConstructionCompany = {
   email?: string;
   phone?: string;
   officeHours?: OfficeHoursEntry[];
-  awards?: { title: string; year?: string; issuer?: string }[];
+  awards?: { title: string; year?: string; issuer?: string; description?: string; imageUrl?: string; url?: string }[];
   pressMentions?: { title: string; source: string; url?: string; date?: string }[];
   socialLinks?: SocialLinks;
   /** From the Payload backend's `services` field — a looser, non-enum list
    * distinct from `categories` above. */
   services?: string[];
+  isDesignBuild?: boolean;
 };
 
 // Shared shape for the lightweight partner directories linked from a
@@ -532,7 +553,7 @@ export type CompanyProfile = {
   email?: string;
   phone?: string;
   officeHours?: OfficeHoursEntry[];
-  awards?: { title: string; year?: string; issuer?: string }[];
+  awards?: { title: string; year?: string; issuer?: string; description?: string; imageUrl?: string; url?: string }[];
   pressMentions?: { title: string; source: string; url?: string; date?: string }[];
   socialLinks?: SocialLinks;
   /** Marketing/Sales Companies only (from Payload's `services` field). */

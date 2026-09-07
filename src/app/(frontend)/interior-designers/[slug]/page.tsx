@@ -37,5 +37,9 @@ export default async function InteriorDesignerPage({ params }: InteriorDesignerP
   const allProjects = await getAllProjects();
   const projects = allProjects.filter((project) => project.interiorDesignerSlug === slug);
 
-  return <CompanyProfileDetailView company={designer} entityLabel="Interior Designer" projects={projects} />;
+  return (
+    <div className="developer-page">
+      <CompanyProfileDetailView company={designer} entityLabel="Interior Designer" projects={projects} />
+    </div>
+  );
 }

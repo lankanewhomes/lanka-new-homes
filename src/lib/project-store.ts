@@ -1,5 +1,5 @@
 import { supabaseAdmin } from "@/lib/supabase";
-import type { Project } from "@/types";
+import type { FloorPlan, Project } from "@/types";
 
 function toSlug(value: string) {
   return value
@@ -10,13 +10,48 @@ function toSlug(value: string) {
     .replace(/-+/g, "-");
 }
 
+// Floor plans don't have their own stored slug field (they're a plain array
+// on the project's jsonb data, not a separate table) — derive one from the
+// plan name at read time instead, same as every other entity's slug in this
+// codebase. Deduped within a project in case two plans share a name (e.g.
+// two "Type A" entries), so a URL never collides between them.
+function withFloorPlanSlugs(floorPlans: FloorPlan[]): FloorPlan[] {
+  const seen = new Map<string, number>();
+  return floorPlans.map((plan) => {
+    const base = toSlug(plan.planName) || plan.id;
+    const count = seen.get(base) ?? 0;
+    seen.set(base, count + 1);
+    return { ...plan, slug: count === 0 ? base : `${base}-${count + 1}` };
+  });
+}
+
 type ProjectRow = {
   slug: string;
   data: Project;
 };
 
+// Smallest–largest floor-plan size, e.g. "1,300–1,700" (bare — the "SqFt"
+// unit is added where it's shown). These are the developer's own per-plan
+// figures, not an estimate, so summarising them as a range stays inside
+// docs/supabase-workflow.md Standing Rule 4. Only used when nobody typed a
+// range into the floorAreaRange text field, which always wins.
+function deriveFloorAreaRange(floorPlans: FloorPlan[]): string {
+  const sizes = floorPlans.map((plan) => plan.floorAreaSqFt).filter((size) => Number.isFinite(size) && size > 0);
+  if (!sizes.length) return "";
+  const min = Math.min(...sizes);
+  const max = Math.max(...sizes);
+  return min === max ? min.toLocaleString("en-US") : `${min.toLocaleString("en-US")}–${max.toLocaleString("en-US")}`;
+}
+
 function rowToProject(row: ProjectRow): Project {
-  return { ...row.data, slug: row.slug };
+  const floorPlans = withFloorPlanSlugs(row.data.floorPlans ?? []);
+  const typedRange = (row.data.floorAreaRange ?? "").trim();
+  return {
+    ...row.data,
+    slug: row.slug,
+    floorPlans,
+    floorAreaRange: typedRange && typedRange !== "-" ? typedRange : deriveFloorAreaRange(floorPlans) || "-",
+  };
 }
 
 function projectToRow(project: Project) {
@@ -39,20 +74,35 @@ function projectToRow(project: Project) {
   };
 }
 
+// A project only counts as unpublished (hidden from the public site) when
+// isPublished is explicitly false. Missing/undefined (every project created
+// before this field existed) is treated as published, so nothing already
+// live silently disappears.
+function isPublished(project: Project): boolean {
+  return project.isPublished !== false;
+}
+
 export async function getAllProjects(): Promise<Project[]> {
   const { data, error } = await supabaseAdmin.from("projects").select("slug, data");
   if (error) throw new Error(`Failed to load projects: ${error.message}`);
-  return (data ?? []).map((row) => rowToProject(row as ProjectRow));
+  return (data ?? []).map((row) => rowToProject(row as ProjectRow)).filter(isPublished);
 }
 
-export async function getProjectBySlug(slug: string): Promise<Project | undefined> {
+// Unfiltered — includes drafts. Only for internal use (the developer preview
+// link, and update/create below where a draft must still be readable/writable).
+export async function getProjectBySlugRaw(slug: string): Promise<Project | undefined> {
   const { data, error } = await supabaseAdmin.from("projects").select("slug, data").eq("slug", slug).maybeSingle();
   if (error) throw new Error(`Failed to load project ${slug}: ${error.message}`);
   return data ? rowToProject(data as ProjectRow) : undefined;
 }
 
+export async function getProjectBySlug(slug: string): Promise<Project | undefined> {
+  const project = await getProjectBySlugRaw(slug);
+  return project && isPublished(project) ? project : undefined;
+}
+
 export async function updateProject(slug: string, changes: Partial<Project>) {
-  const existing = await getProjectBySlug(slug);
+  const existing = await getProjectBySlugRaw(slug);
   if (!existing) return undefined;
 
   const merged: Project = { ...existing, ...changes, slug };
@@ -120,5 +170,5 @@ export async function createProject(input: Partial<Project> & { name: string; de
   const { error } = await supabaseAdmin.from("projects").insert(projectToRow(project));
   if (error) throw new Error(`Failed to create project: ${error.message}`);
 
-  return getProjectBySlug(slug);
+  return getProjectBySlugRaw(slug);
 }

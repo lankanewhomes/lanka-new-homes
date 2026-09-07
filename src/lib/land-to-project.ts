@@ -1,5 +1,14 @@
 import type { FloorPlan, Land, Project, ProjectStatus } from "@/types";
 
+function toSlug(value: string) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
 function landStatusToProjectStatus(status: Land["status"]): ProjectStatus {
   if (status === "Sold") return "Nearly Sold Out";
   if (status === "Reserved") return "Under Construction";
@@ -20,16 +29,24 @@ function formatPerchPriceRange(min?: number, max?: number): string {
 // non-misleading defaults ("-", 0, empty arrays) rather than fabricated
 // values. Shared by the land detail page and the land plot detail page.
 export function landToProjectShape(land: Land): Project {
-  const floorPlans: FloorPlan[] = (land.plots ?? []).map((plot) => ({
-    id: plot.id,
-    planName: plot.name,
-    bedrooms: 0,
-    bathrooms: 0,
-    floorAreaSqFt: plot.sizePerches,
-    startingPriceLkr: plot.priceLkr,
-    image: land.heroImage,
-    availability: plot.status === "Available" ? "Available" : plot.status === "Sold" ? "Sold Out" : "Limited",
-  }));
+  const plotSlugCounts = new Map<string, number>();
+  const floorPlans: FloorPlan[] = (land.plots ?? []).map((plot) => {
+    const base = toSlug(plot.name) || plot.id;
+    const count = plotSlugCounts.get(base) ?? 0;
+    plotSlugCounts.set(base, count + 1);
+
+    return {
+      id: plot.id,
+      slug: count === 0 ? base : `${base}-${count + 1}`,
+      planName: plot.name,
+      bedrooms: 0,
+      bathrooms: 0,
+      floorAreaSqFt: plot.sizePerches,
+      startingPriceLkr: plot.priceLkr,
+      image: land.heroImage,
+      availability: plot.status === "Available" ? "Available" : plot.status === "Sold" ? "Sold Out" : "Limited",
+    };
+  });
 
   return {
     slug: land.slug,

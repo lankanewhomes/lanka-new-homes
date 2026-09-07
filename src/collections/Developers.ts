@@ -87,7 +87,10 @@ export const Developers: CollectionConfig = {
       hasMany: false,
       filterOptions: { role: { equals: 'developer' } },
       access: { update: adminOnlyField },
-      admin: { description: 'The developer-role account that manages this company profile.' },
+      admin: {
+        description:
+          'The developer-role account that manages this company profile. Leave blank when pre-building a profile before the developer has an account — if they later sign up with this Contact Email, they auto-claim it (and everything created under it, including projects); otherwise set this manually once they exist.',
+      },
     },
     { name: 'projects', type: 'join', collection: 'projects', on: 'developer' },
     { name: 'team_members', type: 'join', collection: 'team-members', on: 'company', label: 'Team Members' },

@@ -44,7 +44,11 @@ export default buildConfig({
       // Payload's default logout is a small icon at the bottom of the left
       // sidebar — this adds a conventional top-right "Account / Log out"
       // menu alongside it (doesn't replace the sidebar one).
-      header: ['@/components/payload/TopRightAccountMenu#TopRightAccountMenu'],
+      header: [
+        '@/components/payload/TopRightAccountMenu#TopRightAccountMenu',
+        '@/components/payload/FloatingSaveBar#FloatingSaveBar',
+        '@/components/payload/StatusVerificationStyles#StatusVerificationStyles',
+      ],
       // "Admin Dashboard" / "Developer Dashboard" heading on the /cms
       // landing page itself, so it's obvious at a glance which account
       // you're signed in as — same list of collections either way, just a

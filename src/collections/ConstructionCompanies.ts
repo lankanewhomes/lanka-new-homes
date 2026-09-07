@@ -18,7 +18,11 @@ export const ConstructionCompanies: CollectionConfig = {
   },
   hooks: { afterChange: [syncConstructionCompanyToSupabase] },
   fields: [
-    ...companyProfileFields([{ name: 'services', type: 'text', hasMany: true }, ...businessProfileExtraFields()]),
+    ...companyProfileFields([
+      { name: 'services', type: 'text', hasMany: true },
+      { name: 'isDesignBuild', type: 'checkbox', label: 'Design & Build', defaultValue: false, admin: { description: 'This company offers combined design and construction (Design & Build) services.' } },
+      ...businessProfileExtraFields(),
+    ]),
     {
       name: 'user',
       type: 'relationship',

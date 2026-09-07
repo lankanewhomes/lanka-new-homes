@@ -6,6 +6,7 @@ import { getNeighborhoodBySlug } from "@/lib/neighborhood-store";
 import { getDeveloperBySlug } from "@/lib/developer-store";
 import {
   AmenitiesShowcaseSection,
+  CommercialAreasSection,
   KeyFeaturesSection,
   NeighborhoodSection,
   PlansAndHomesSection,
@@ -115,7 +116,16 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       <ProjectViewTracker projectSlug={project.slug} projectName={project.name} developerSlug={project.developerSlug} />
-      <ProjectHero project={project} backHref="/projects" backLabel="New Projects" />
+      <ProjectHero
+        project={project}
+        backHref="/projects"
+        backLabel="New Projects"
+        extraBadges={[
+          ...(project.availabilityBadge ? [{ label: project.availabilityBadge, kind: "availability" as const }] : []),
+          ...(project.marketingBadges ?? []).map((label) => ({ label, kind: "marketing" as const })),
+          ...(project.locationBadges ?? []).map((label) => ({ label, kind: "location" as const })),
+        ]}
+      />
 
       <div className="project-page-content">
         <ProjectStatsChips project={project} />
@@ -130,6 +140,8 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
         <KeyFeaturesSection unitFeatures={project.unitFeatures} />
 
         <AmenitiesShowcaseSection amenities={project.amenities} gallery={project.gallery} heroImage={project.heroImage} />
+
+        <CommercialAreasSection commercialAreas={project.commercialAreas ?? []} />
 
         <PlansAndHomesSection project={project} />
 

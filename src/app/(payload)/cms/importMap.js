@@ -1,3 +1,4 @@
+import { PreviewLinkPanel as PreviewLinkPanel_58de2ef0318e59b9fbb2898773569633 } from '@/components/payload/PreviewLinkPanel'
 import { ListingAnalyticsPanel as ListingAnalyticsPanel_aef927c4ceb2652d7f7abf8ef0fcf2e5 } from '@/components/payload/ListingAnalyticsPanel'
 import { AnalyticsDashboard as AnalyticsDashboard_16ddde46401d8b8f0e062ed5c8fb8520 } from '@/components/payload/AnalyticsDashboard'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -24,6 +25,8 @@ import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997e
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { TopRightAccountMenu as TopRightAccountMenu_b2809303c67bf58cfd568d38b4192636 } from '@/components/payload/TopRightAccountMenu'
+import { FloatingSaveBar as FloatingSaveBar_8d219332c77d82c062bca2cb2e74e200 } from '@/components/payload/FloatingSaveBar'
+import { StatusVerificationStyles as StatusVerificationStyles_30e7ab21255f6e336fc700daeb6431c9 } from '@/components/payload/StatusVerificationStyles'
 import { NavPlacementLink as NavPlacementLink_4dd4594cbbb08508c8d44f490a29b529 } from '@/components/payload/NavPlacementLink'
 import { DashboardHeading as DashboardHeading_b35bd138182ec0819d58316aa107f82c } from '@/components/payload/DashboardHeading'
 import { PlacementPicker as PlacementPicker_6da902505ef4c3d4a54d1cfe2cf4f5b4 } from '@/components/payload/PlacementPicker'
@@ -31,6 +34,7 @@ import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } f
 
 /** @type import('payload').ImportMap */
 export const importMap = {
+  "@/components/payload/PreviewLinkPanel#PreviewLinkPanel": PreviewLinkPanel_58de2ef0318e59b9fbb2898773569633,
   "@/components/payload/ListingAnalyticsPanel#ListingAnalyticsPanel": ListingAnalyticsPanel_aef927c4ceb2652d7f7abf8ef0fcf2e5,
   "@/components/payload/AnalyticsDashboard#AnalyticsDashboard": AnalyticsDashboard_16ddde46401d8b8f0e062ed5c8fb8520,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
@@ -57,6 +61,8 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@/components/payload/TopRightAccountMenu#TopRightAccountMenu": TopRightAccountMenu_b2809303c67bf58cfd568d38b4192636,
+  "@/components/payload/FloatingSaveBar#FloatingSaveBar": FloatingSaveBar_8d219332c77d82c062bca2cb2e74e200,
+  "@/components/payload/StatusVerificationStyles#StatusVerificationStyles": StatusVerificationStyles_30e7ab21255f6e336fc700daeb6431c9,
   "@/components/payload/NavPlacementLink#NavPlacementLink": NavPlacementLink_4dd4594cbbb08508c8d44f490a29b529,
   "@/components/payload/DashboardHeading#DashboardHeading": DashboardHeading_b35bd138182ec0819d58316aa107f82c,
   "@/components/payload/PlacementPicker#PlacementPicker": PlacementPicker_6da902505ef4c3d4a54d1cfe2cf4f5b4,

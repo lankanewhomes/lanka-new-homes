@@ -140,8 +140,21 @@ export function CompanyProfileDetailView({ company, entityLabel, projects }: { c
               <div className="developer-profile-list-plain">
                 {company.awards.map((award) => (
                   <div key={award.title} className="developer-profile-award-row">
-                    <p className="developer-profile-award-title">{award.title}</p>
-                    <p className="developer-profile-award-meta">{[award.issuer, award.year].filter(Boolean).join(" · ")}</p>
+                    {award.imageUrl && (
+                      <div className="developer-profile-award-image">
+                        <Image src={award.imageUrl} alt={award.title} fill sizes="72px" />
+                      </div>
+                    )}
+                    <div>
+                      <p className="developer-profile-award-title">{award.title}</p>
+                      <p className="developer-profile-award-meta">{[award.issuer, award.year].filter(Boolean).join(" · ")}</p>
+                      {award.description && <p className="developer-profile-award-description">{award.description}</p>}
+                      {award.url && (
+                        <a href={award.url} target="_blank" rel="noreferrer" className="developer-profile-award-link">
+                          Learn more
+                        </a>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>

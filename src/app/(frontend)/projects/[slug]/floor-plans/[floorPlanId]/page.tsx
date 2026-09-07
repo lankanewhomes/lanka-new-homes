@@ -5,6 +5,7 @@ import { getProjectBySlug } from "@/lib/project-store";
 import { getDeveloperBySlug } from "@/lib/developer-store";
 import {
   AmenitiesShowcaseSection,
+  KeyFeaturesSection,
   PlansAndHomesSection,
   PricingInformationLayout,
   ProjectDescriptionSection,
@@ -32,7 +33,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: FloorPlanPageProps): Promise<Metadata> {
   const { slug, floorPlanId } = await params;
   const project = await getProjectBySlug(slug);
-  const floorPlan = project?.floorPlans.find((item) => item.id === floorPlanId);
+  const floorPlan = project?.floorPlans.find((item) => item.slug === floorPlanId || item.id === floorPlanId);
 
   if (!project || !floorPlan) {
     return { title: "Floor Plan Not Found", robots: { index: false, follow: false } };
@@ -41,11 +42,11 @@ export async function generateMetadata({ params }: FloorPlanPageProps): Promise<
   return {
     title: `${floorPlan.planName} Floor Plan - ${project.name}`,
     description: `${floorPlan.planName} floor plan at ${project.name}: ${floorPlan.bedrooms} bedrooms, ${floorPlan.bathrooms} bathrooms, and ${floorPlan.floorAreaSqFt} sq.ft.`,
-    alternates: { canonical: `/projects/${project.slug}/floor-plans/${floorPlan.id}` },
+    alternates: { canonical: `/projects/${project.slug}/floor-plans/${floorPlan.slug ?? floorPlan.id}` },
     openGraph: {
       title: `${floorPlan.planName} Floor Plan - ${project.name}`,
       description: `Explore the ${floorPlan.planName} floor plan at ${project.name}.`,
-      url: `/projects/${project.slug}/floor-plans/${floorPlan.id}`,
+      url: `/projects/${project.slug}/floor-plans/${floorPlan.slug ?? floorPlan.id}`,
       images: [{ url: floorPlan.image, alt: floorPlan.planName }],
     },
   };
@@ -54,7 +55,7 @@ export async function generateMetadata({ params }: FloorPlanPageProps): Promise<
 export default async function FloorPlanDetailPage({ params }: FloorPlanPageProps) {
   const { slug, floorPlanId } = await params;
   const project = await getProjectBySlug(slug);
-  const floorPlan = project?.floorPlans.find((item) => item.id === floorPlanId);
+  const floorPlan = project?.floorPlans.find((item) => item.slug === floorPlanId || item.id === floorPlanId);
 
   if (!project || !floorPlan) return notFound();
 
@@ -75,13 +76,15 @@ export default async function FloorPlanDetailPage({ params }: FloorPlanPageProps
 
       <div className="project-page-content">
         <ProjectStatsChips project={project} floorPlan={floorPlan} />
-        <ProjectDescriptionSection project={project} headingOverride={`${floorPlan.planName} Details`} />
+        <ProjectDescriptionSection project={project} floorPlan={floorPlan} />
 
         <ProjectNarrativeDetails project={project} />
 
         <section id="pricing" className="space-y-3">
           <PricingInformationLayout project={project} />
         </section>
+
+        <KeyFeaturesSection unitFeatures={project.unitFeatures} />
 
         <AmenitiesShowcaseSection amenities={project.amenities} gallery={project.gallery} heroImage={project.heroImage} />
 

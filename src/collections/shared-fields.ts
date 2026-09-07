@@ -55,7 +55,21 @@ export const CITY_OPTIONS: string[] = Array.from(
   new Set([...DISTRICT_OPTIONS, ...(cities as { name_en: string }[]).map((c) => c.name_en)]),
 ).sort()
 
-export const OWNERSHIP_OPTIONS = ['Freehold', 'Leasehold', 'Condominium']
+export const OWNERSHIP_OPTIONS = [
+  'Freehold',
+  'Leasehold',
+  'Condominium',
+  'Transfer commenced',
+  'Deed of Transfer',
+  'Deed of Gift',
+  'Deed of Sale',
+  'Partition Deed',
+  'Grant / State Grant',
+  'Title Certificate',
+  'Condominium Title',
+  'Apartment Ownership Certificate',
+  'Bim Saviya / Title Certificate',
+]
 
 export const CONSTRUCTION_STATUS_OPTIONS = [
   'Not Started', 'Foundation', 'Under Construction', 'Structure Complete', 'Finishing', 'Completed', 'Ready to Move In',
@@ -91,7 +105,7 @@ export const SECURITY_OPTIONS = [
 // Matches the plural forms already used by src/lib/listing-categories.ts's
 // filter logic (project.type === "Apartments" / "Villas").
 export const PROJECT_TYPE_OPTIONS = [
-  'Apartments', 'Condominium', 'Villas', 'House', 'Townhouse', 'Serviced Apartment', 'Mixed-Use', 'Luxury Beach Villas', 'Luxury Retirement Cottages',
+  'Apartments', 'Condominium', 'Villas', 'Luxury Villas', 'House', 'Townhouse', 'Serviced Apartment', 'Mixed-Use', 'Luxury Beach Villas', 'Luxury Retirement Cottages',
 ]
 
 // The site's keyword-targeted pages a project can be paid-featured on (see
@@ -363,6 +377,9 @@ export function businessProfileExtraFields(): Field[] {
         { name: 'title', type: 'text', required: true },
         { name: 'issuer', type: 'text' },
         { name: 'year', type: 'text' },
+        { name: 'description', type: 'textarea' },
+        { name: 'imageUrl', type: 'text', label: 'Image URL', admin: { description: 'Image URL — or upload a file in Media and paste its URL here.' } },
+        { name: 'url', type: 'text', label: 'Learn More Link', admin: { description: 'Optional — link to the award announcement/press release.' } },
       ],
     },
     {

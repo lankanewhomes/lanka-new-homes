@@ -72,8 +72,8 @@ import {
   SlidersHorizontal,
   Trees,
   ClipboardList,
-  UtensilsCrossed,
   Users,
+  UtensilsCrossed,
   Video,
   Waves,
   X,
@@ -82,7 +82,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { SiteLanguage, useLanguage } from "@/components/layout/language-provider";
 import { compactLkr, formatLkr, formatOfficeHours } from "@/lib/format";
-import { Amenity, Article, Developer, FloorPlan, Lead, Location, NearbyPlace, Project, ProjectStatLabel } from "@/types";
+import { Amenity, Article, Developer, FloorPlan, Lead, Location, NearbyPlace, Project } from "@/types";
+import { groupNearbyPlaces } from "@/lib/nearby-places";
 
 const amenityIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   Pool: Waves,
@@ -148,6 +149,23 @@ export const SOCIAL_ICON: Record<string, React.ComponentType<{ className?: strin
   linkedin: LinkedinIcon,
   twitter: TwitterIcon,
 };
+
+// Admin/developer-pasted video fields accept a plain YouTube/Vimeo watch
+// link ("or upload a video file... paste its URL here") — neither of those
+// play in an <iframe> as-is, only their dedicated embed URL does.
+function toEmbeddableVideoUrl(url: string): string {
+  const youtubeWatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
+  if (youtubeWatch) return `https://www.youtube.com/embed/${youtubeWatch[1]}`;
+
+  const vimeo = url.match(/vimeo\.com\/(\d+)/);
+  if (vimeo) return `https://player.vimeo.com/video/${vimeo[1]}`;
+
+  return url;
+}
+
+function isDirectVideoFile(url: string): boolean {
+  return /\.(mp4|webm|mov)(\?|$)/i.test(url) || url.startsWith("blob:");
+}
 
 function hasDisplayValue(value: unknown) {
   if (value === null || value === undefined) {
@@ -393,7 +411,7 @@ export function ProjectHero({
   statusLabelOverride,
   extraBadges = [],
   roadMapImages = [],
-  blockPlanImages = [],
+  blockPlanImages: blockPlanImagesProp = [],
   videoLinks = [],
   requestInfoVariant = "standard",
 }: {
@@ -413,7 +431,10 @@ export function ProjectHero({
   /** Extra small pills rendered alongside Move-In-Now/Featured/etc. — for
    * marketing trust badges (e.g. land's "Easy Payment Plan") that don't map
    * to any existing Project boolean flag. */
-  extraBadges?: string[];
+  // Plain strings render with the generic .badge-extra color; pass an
+  // object with `kind` to get a per-category color (availability /
+  // marketing / location) so the badge groups are visually distinct.
+  extraBadges?: (string | { label: string; kind?: "availability" | "marketing" | "location" })[];
   /** Land-only media that doesn't fit the Project shape: multiple road map
    * images, multiple block plan images, and a list of video links (rather
    * than the single gallery-label-matched road map image / single embed
@@ -426,6 +447,7 @@ export function ProjectHero({
 }) {
   const { saved: savedListing, toggle: toggleSaved } = useSavedListing(project.slug);
   const hasKeyFeatures = normalizeUnitFeaturesForDisplay(project.unitFeatures).some((group) => group.items.length > 0);
+  const hasCommercialAreas = (project.commercialAreas?.length ?? 0) > 0;
   const fallbackPhotoLabels = [
     "Exterior",
     "Living Room",
@@ -440,18 +462,37 @@ export function ProjectHero({
   ];
 
   const photoItems = heroImageOverride
-    ? [{ label: "Floor Plan", image: heroImageOverride }]
+    ? [
+        { label: floorPlan?.image3d ? `${floorPlan.planName} — 2D Floor Plan` : (floorPlan?.planName ?? "Floor Plan"), image: heroImageOverride },
+        // A 3D render of the same plan, when the developer provides one —
+        // becomes the second lightbox item so 2D/3D flip via the arrows.
+        ...(floorPlan?.image3d ? [{ label: `${floorPlan.planName} — 3D View`, image: floorPlan.image3d }] : []),
+      ]
     : [
         { label: "Exterior", image: project.heroImage },
-        ...project.gallery.map((item, index) => ({
-          ...item,
-          label: item.label?.trim() || fallbackPhotoLabels[index % fallbackPhotoLabels.length],
-        })),
+        // heroImage is almost always also the first (or an early) gallery
+        // photo — without this filter that same image shows twice in the
+        // grid (once as the main photo via heroImage, once again as a side
+        // thumbnail via gallery), while a genuinely different photo never
+        // gets its slot.
+        ...project.gallery
+          .filter((item) => item.image !== project.heroImage)
+          .map((item, index) => ({
+            ...item,
+            label: item.label?.trim() || fallbackPhotoLabels[index % fallbackPhotoLabels.length],
+          })),
       ];
   const [photoIndex, setPhotoIndex] = useState(0);
 
   const usingExtraVideos = !project.videos?.length && videoLinks.length > 0;
-  const videoCount = usingExtraVideos ? videoLinks.length : (project.videos?.length ?? 0);
+  const videoItems: { label: string; url: string }[] = usingExtraVideos
+    ? videoLinks
+    : (project.videos ?? []).filter((video) => video.embedUrl).map((video, index) => ({ label: video.label || `Video ${index + 1}`, url: video.embedUrl! }));
+  const videoCount = videoItems.length;
+  const [videoIndex, setVideoIndex] = useState(0);
+  const activeVideo = videoItems[Math.max(0, Math.min(videoIndex, videoItems.length - 1))];
+  const handlePrevVideo = () => setVideoIndex((index) => (index - 1 + videoItems.length) % videoItems.length);
+  const handleNextVideo = () => setVideoIndex((index) => (index + 1) % videoItems.length);
   const virtualTourCount = project.virtualTours?.length ?? 0;
   const hasMap = project.coordinates?.lat != null && project.coordinates?.lng != null;
   const hasInteractiveMap = Boolean(project.interactiveMapUrl);
@@ -468,6 +509,12 @@ export function ProjectHero({
   const roadMapImage = project.gallery.find((item) => /road\s*map/i.test(item.label))?.image;
   const roadMapItems = roadMapImages.length > 0 ? roadMapImages : (roadMapImage ? [{ label: "Road Map", image: roadMapImage }] : []);
   const hasRoadMap = roadMapItems.length > 0;
+  // Block Plan pill/lightbox — same auto-derive-from-gallery convention as
+  // Road Map above. This was previously prop-only, and since no caller ever
+  // passed it, the Block Plan pill never actually appeared anywhere on the
+  // live site even when a project had a "Block Plan" gallery photo.
+  const blockPlanImage = project.gallery.find((item) => /block\s*plan/i.test(item.label))?.image;
+  const blockPlanImages = blockPlanImagesProp.length > 0 ? blockPlanImagesProp : (blockPlanImage ? [{ label: "Block Plan", image: blockPlanImage }] : []);
   const hasBlockPlanImages = blockPlanImages.length > 0;
   const hasStreetView = hasMap;
 
@@ -488,6 +535,14 @@ export function ProjectHero({
 
   const [activeMedia, setActiveMedia] = useState<"interactiveMap" | "virtualTours" | null>(null);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  useEffect(() => {
+    if (!isLightboxOpen) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsLightboxOpen(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isLightboxOpen]);
   const [lightboxView, setLightboxView] = useState<"photos" | "videos" | "map" | "roadMap" | "blockPlan" | "streetView" | "view360">("photos");
   const [activeSection, setActiveSection] = useState("overview");
   const [requestInfoOpen, setRequestInfoOpen] = useState(false);
@@ -542,9 +597,11 @@ export function ProjectHero({
   const mapQuery = encodeURIComponent(`${project.name} ${project.location}`);
   const mapSrc = `https://www.google.com/maps?q=${mapQuery}&output=embed`;
   const interactiveMapSrc = project.interactiveMapUrl ?? mapSrc;
-  const streetViewSrc = hasMap
-    ? `https://www.google.com/maps?layer=c&cbll=${project.coordinates.lat},${project.coordinates.lng}&output=svembed`
-    : mapSrc;
+  const streetViewSrc = project.streetViewUrl
+    ? project.streetViewUrl
+    : hasMap
+      ? `https://www.google.com/maps?layer=c&cbll=${project.coordinates.lat},${project.coordinates.lng}&output=svembed`
+      : mapSrc;
 
   const activePhoto = photoItems[Math.max(0, Math.min(photoIndex, photoItems.length - 1))];
 
@@ -640,17 +697,12 @@ export function ProjectHero({
       ),
     },
     {
-      key: "floor-plans",
-      show: hasBlockPlan,
-      render: (className) => (
-        <a href="#plans-homes" className={className} onClick={() => setActiveSection("plans-homes")}>
-          <LayoutPanelLeft className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">{plansHomesNavLabel} <span className="listing-hero-quickjump-count">{floorPlanCount}</span></span>
-        </a>
-      ),
-    },
-    {
       key: "brochure",
-      show: Boolean(project.brochureUrl),
+      // Always available, not just when a PDF exists — this is a lead-
+      // capture touchpoint either way: with a real file it downloads one
+      // after submitting, without one it still collects the request (see
+      // RequestInfoDialog's isBrochure branch below).
+      show: true,
       render: (className) => (
         <button type="button" className={className} onClick={openBrochureRequest}>
           <FileText className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">Brochure</span>
@@ -745,6 +797,19 @@ export function ProjectHero({
         </button>
       ),
     },
+    {
+      // Last among the regular pills (only Street View, which always sorts
+      // after everything else, can come after it) — moved here from right
+      // after Map, per an explicit request to push it to the end of the
+      // mobile sticky bar.
+      key: "floor-plans",
+      show: hasBlockPlan,
+      render: (className) => (
+        <a href="#plans-homes" className={className} onClick={() => setActiveSection("plans-homes")}>
+          <LayoutPanelLeft className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">{plansHomesNavLabel} <span className="listing-hero-quickjump-count">{floorPlanCount}</span></span>
+        </a>
+      ),
+    },
   ];
   const visibleHeroMediaPills = heroMediaPills.filter((pill) => pill.show);
   // The mobile sticky-to-bottom quick-jump bar has room for 6 icons max.
@@ -777,6 +842,9 @@ export function ProjectHero({
           {showAmenitiesAndNeighborhoodNav ? (
             <>
               <a href="#amenities" className={activeSection === "amenities" ? "active" : undefined} onClick={() => setActiveSection("amenities")}>{amenitiesNavLabel}</a>
+              {hasCommercialAreas ? (
+                <a href="#commercial-areas" className={activeSection === "commercial-areas" ? "active" : undefined} onClick={() => setActiveSection("commercial-areas")}>Commercial Areas</a>
+              ) : null}
               <a href="#neighborhood" className={activeSection === "neighborhood" ? "active" : undefined} onClick={() => setActiveSection("neighborhood")}>Neighborhood</a>
             </>
           ) : null}
@@ -796,7 +864,7 @@ export function ProjectHero({
     <section className="listing-hero">
       <div className="listing-hero-media">
         {activeMedia === null && (
-          <div className="listing-hero-grid">
+          <div className={`listing-hero-grid${photoItems.length === 1 ? " single-photo" : photoItems.length === 2 ? " two-photo" : ""}`}>
             <button
               type="button"
               className="listing-hero-grid-main"
@@ -807,7 +875,14 @@ export function ProjectHero({
               }}
               aria-label="Open photo gallery"
             >
-              <Image src={photoItems[0].image} alt={`${project.name} ${photoItems[0].label}`} width={1200} height={900} className="listing-hero-grid-main-image" priority />
+              <Image
+                src={photoItems[0].image}
+                alt={`${project.name} ${photoItems[0].label}`}
+                width={1200}
+                height={900}
+                className={`listing-hero-grid-main-image${heroImageOverride ? " is-floor-plan" : ""}`}
+                priority
+              />
             </button>
 
             {photoItems.length > 1 && (
@@ -990,7 +1065,7 @@ export function ProjectHero({
                     alt={`${project.name} ${activePhoto.label}`}
                     width={1920}
                     height={1080}
-                    className="listing-photo-lightbox-image"
+                    className={`listing-photo-lightbox-image${heroImageOverride ? " is-floor-plan" : ""}`}
                   />
                   <div className="listing-photo-lightbox-caption-row">
                     <div className="listing-photo-lightbox-caption">{activePhoto.label}</div>
@@ -1004,29 +1079,37 @@ export function ProjectHero({
               </>
             )}
 
-            {lightboxView === "videos" && (
-              usingExtraVideos ? (
-                <div className="listing-hero-video-list listing-photo-lightbox-video-list">
-                  {videoLinks.map((video, index) =>
-                    /\.(mp4|webm|mov)(\?|$)/i.test(video.url) || video.url.startsWith("blob:") ? (
-                      <video key={`${video.url}-${index}`} src={video.url} controls className="listing-hero-map-frame" />
-                    ) : (
-                      <a key={`${video.url}-${index}`} href={video.url} target="_blank" rel="noopener noreferrer" className="listing-hero-video-link">
-                        <Video className="h-4 w-4" aria-hidden="true" /> {video.label || `Video ${index + 1}`}
-                      </a>
-                    )
+            {lightboxView === "videos" && activeVideo && (
+              <>
+                {videoItems.length > 1 && (
+                  <button type="button" className="listing-photo-lightbox-arrow left" onClick={handlePrevVideo} aria-label="Previous video">
+                    <ChevronLeft className="h-5 w-5" aria-hidden="true" />
+                  </button>
+                )}
+                <div className="listing-photo-lightbox-media-wrap">
+                  {isDirectVideoFile(activeVideo.url) ? (
+                    <video key={activeVideo.url} src={activeVideo.url} controls className="listing-hero-map-frame" />
+                  ) : (
+                    <iframe
+                      key={activeVideo.url}
+                      className="listing-photo-lightbox-map"
+                      title={activeVideo.label}
+                      src={toEmbeddableVideoUrl(activeVideo.url)}
+                      loading="lazy"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
                   )}
+                  <div className="listing-photo-lightbox-caption-row">
+                    <div className="listing-photo-lightbox-caption">{activeVideo.label}</div>
+                  </div>
                 </div>
-              ) : project.videos?.[0]?.embedUrl ? (
-                <iframe
-                  className="listing-photo-lightbox-map"
-                  title={`${project.name} video`}
-                  src={project.videos[0].embedUrl}
-                  loading="lazy"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              ) : null
+                {videoItems.length > 1 && (
+                  <button type="button" className="listing-photo-lightbox-arrow right" onClick={handleNextVideo} aria-label="Next video">
+                    <ChevronRight className="h-5 w-5" aria-hidden="true" />
+                  </button>
+                )}
+              </>
             )}
 
             {lightboxView === "map" && (
@@ -1132,21 +1215,30 @@ export function ProjectHero({
             {hasDisplayValue(project.city) ? (
               <>
                 <span> | </span>
-                <span>{project.city}</span>
+                {project.neighborhoodSlug ? (
+                  <Link href={`/neighborhoods/${project.neighborhoodSlug}`}>{project.city}</Link>
+                ) : (
+                  <span>{project.city}</span>
+                )}
               </>
             ) : null}
           </p>
         </div>
       </div>
 
-      {(hasDisplayValue(project.status) || hasDisplayValue(project.completionYear) || project.isFeatured || project.isMoveInNow || hasQuickMoveIn(project) || extraBadges.length > 0) ? (
+      {(hasDisplayValue(project.status) || hasDisplayValue(project.completionYear) || project.isFeatured || project.isMoveInNow || hasQuickMoveIn(project) || Boolean(project.paymentPlanBadge) || extraBadges.length > 0) ? (
         <div className="listing-hero-tags" aria-label="Listing status tags">
           {hasDisplayValue(project.status) ? <span className="listing-hero-tag-status">{statusLabelOverride ?? project.status}</span> : null}
           {hasDisplayValue(project.completionYear) ? <span className="listing-hero-tag-move-in">Move in {project.completionYear}</span> : null}
           {project.isMoveInNow ? <span className="listing-badge-pill badge-move-in-now">Move-In Now</span> : null}
           {hasQuickMoveIn(project) ? <span className="listing-badge-pill badge-quick-move-in">Quick Move-In</span> : null}
           {project.isFeatured ? <span className="listing-badge-pill badge-featured">Featured</span> : null}
-          {extraBadges.map((badge) => <span key={badge} className="listing-badge-pill badge-featured">{badge}</span>)}
+          {project.paymentPlanBadge ? <span className="listing-badge-pill badge-featured">{project.paymentPlanBadge}</span> : null}
+          {extraBadges.map((badge) => {
+            const label = typeof badge === "string" ? badge : badge.label;
+            const kind = typeof badge === "string" ? undefined : badge.kind;
+            return <span key={`${kind ?? "extra"}-${label}`} className={`listing-badge-pill ${kind ? `badge-${kind}` : "badge-extra"}`}>{label}</span>;
+          })}
         </div>
       ) : null}
 
@@ -1200,11 +1292,14 @@ function HotDealCard({ hotDeal }: { hotDeal: NonNullable<Project["hotDeal"]> }) 
   );
 }
 
+// Keyed by chip *key* (the stored picker value), not the display label.
 const STAT_CHIP_ICON: Record<string, React.ComponentType<{ className?: string }>> = {
   "Listing status": HousePlus,
+  Status: HousePlus,
   "Building status": Construction,
   "Move in": Clock3,
   "Price range": CircleDollarSign,
+  Price: CircleDollarSign,
   "Price CAD": CircleDollarSign,
   Address: MapPin,
   "Total units": Building2,
@@ -1212,17 +1307,22 @@ const STAT_CHIP_ICON: Record<string, React.ComponentType<{ className?: string }>
   "Units sold": Layers,
   "Units available": Compass,
   "Floor plans": LayoutGrid,
+  "Plan type": LayoutGrid,
   Stories: Ruler,
   Floors: Ruler,
   "Property type": Building,
+  "Project type": Building,
   Beds: BedDouble,
   Baths: Bath,
   SqFt: Square,
+  "Interior size": Square,
+  Balcony: Square,
+  Basement: Layers,
+  Garage: Car,
   Road: MapPinned,
   Area: MapPin,
   Electricity: Zap,
   "Tap water": Droplet,
-  "Per SqFt (Avg)": CircleDollarSign,
   Incentives: Gift,
   Parking: Car,
   "Carpark levels": Car,
@@ -1236,99 +1336,139 @@ const STAT_CHIP_ICON: Record<string, React.ComponentType<{ className?: string }>
   "Sales started": Clock3,
 };
 
-export function ProjectStatsChips({ project, floorPlan }: { project: Project; floorPlan?: FloorPlan }) {
+// A chip's key is the value stored by the admin pickers (desktop/mobile/
+// floorPlanVisibleStats — a Postgres enum), so a chip can be renamed on the
+// page without a schema change: only this map moves. It also keeps one name
+// per field across chips, fact sheet and admin — the same value used to be
+// "Move in" as a chip and "Completed in" in the fact sheet, "Building status"
+// vs "Construction status", "Property type" vs "Building type".
+const STAT_DISPLAY_LABEL: Record<string, string> = {
+  "Move in": "Move-in year",
+  "Building status": "Construction status",
+  "Total Units": "Total units",
+  "Total units": "Total units",
+  "Project type": "Property type",
+  Stories: "Floors",
+};
+const statDisplayLabel = (key: string) => STAT_DISPLAY_LABEL[key] ?? key;
+
+// The default chip set is the listing-card facts a buyer filters on, in this
+// order — what they need to decide "worth a look?" in a few seconds.
+// Everything else lives in the fact sheet under Overview and only becomes a
+// chip when a project's picker explicitly selects it (long text like an
+// address or a security note wraps badly in a chip; derived numbers like
+// the old "Per SqFt (Avg)" — price ÷ first plan's size — are gone for good).
+// "Total Units" / "Floors" are alternatives: Floors only fills in when the
+// project has no unit count. See docs/design.md "Stats chips vs fact sheet".
+const DEFAULT_PROJECT_STAT_KEYS = ["Price range", "Property type", "Beds", "Baths", "SqFt", "Listing status", "Move in", "Total Units", "Floors"];
+const DEFAULT_FLOOR_PLAN_STAT_KEYS = ["Price", "Project type", "Plan type", "Beds", "Baths", "SqFt", "Status", "Move in"];
+const DEFAULT_DESKTOP_CHIP_CAP = 8;
+const DEFAULT_MOBILE_CHIP_CAP = 6;
+const PICKER_CHIP_CAP = 10;
+
+type StatChip = { key: string; value: string; label?: string };
+
+function pickDefaultChips(candidates: StatChip[], defaultKeys: string[]): StatChip[] {
+  const byKey = new Map(candidates.map((item) => [item.key, item]));
+  const picked = defaultKeys.map((key) => byKey.get(key)).filter((item): item is StatChip => Boolean(item));
+  const hasUnitCount = picked.some((item) => item.key === "Total Units");
+  return picked.filter((item) => !(hasUnitCount && item.key === "Floors")).slice(0, DEFAULT_DESKTOP_CHIP_CAP);
+}
+
+export function ProjectStatsChips({ project, floorPlan, areaUnit = "SqFt" }: { project: Project; floorPlan?: FloorPlan; areaUnit?: "SqFt" | "perches" }) {
   const soldCount = project.floorPlans.filter((plan) => plan.availability === "Sold Out").length;
   const availableCount = project.floorPlans.filter((plan) => plan.availability === "Available").length;
   const hasSoldAvailableData = project.floorPlans.length > 0;
+  const formatArea = (value: number) => value.toLocaleString("en-US");
+  const moveInYear = project.completionYear > 0 ? String(project.completionYear) : "";
 
-  const stats: { value: string; label: string }[] = floorPlan
+  const candidates: StatChip[] = floorPlan
     ? [
-        { value: floorPlan.availability, label: "Status" },
-        ...(floorPlan.startingPriceLkr > 0 ? [{ value: `From ${formatLkr(floorPlan.startingPriceLkr)}`, label: "Price" }] : []),
-        { value: project.location, label: "Address" },
-        { value: project.type, label: "Project type" },
-        ...(hasDisplayValue(floorPlan.planType) ? [{ value: floorPlan.planType ?? "", label: "Plan type" }] : []),
-        { value: String(floorPlan.bedrooms), label: "Beds" },
-        { value: String(floorPlan.bathrooms), label: "Baths" },
-        ...(floorPlan.floorAreaSqFt > 0 ? [{ value: `From ${floorPlan.floorAreaSqFt} SqFt`, label: "SqFt" }] : []),
-        ...(hasDisplayValue(project.ownership) ? [{ value: project.ownership, label: "Ownership" }] : []),
-        ...(floorPlan.interiorSizeSqFt ? [{ value: `From ${floorPlan.interiorSizeSqFt} SqFt`, label: "Interior size" }] : []),
-        ...(hasDisplayValue(floorPlan.basement) ? [{ value: floorPlan.basement ?? "", label: "Basement" }] : []),
-        ...(floorPlan.balconySizeSqFt ? [{ value: `${floorPlan.balconySizeSqFt} SqFt`, label: "Balcony" }] : []),
-        ...(hasDisplayValue(floorPlan.garage) ? [{ value: floorPlan.garage ?? "", label: "Garage" }] : []),
-        ...(floorPlan.parkingSpaces ? [{ value: String(floorPlan.parkingSpaces), label: "Parking" }] : []),
-        ...(hasDisplayValue(project.ceilingInfo) ? [{ value: project.ceilingInfo ?? "", label: "Ceilings" }] : []),
-        ...(hasDisplayValue(project.security) ? [{ value: project.security, label: "Security" }] : []),
-        ...(hasDisplayValue(project.neighborhood) ? [{ value: project.neighborhood, label: "Neighborhood" }] : []),
-        ...(hasDisplayValue(project.constructionStatus) ? [{ value: project.constructionStatus, label: "Building status" }] : []),
-        ...(floorPlan.startingPriceLkr > 0 && floorPlan.floorAreaSqFt > 0
-          ? [{ value: compactLkr(Math.round(floorPlan.startingPriceLkr / floorPlan.floorAreaSqFt)), label: "Per SqFt (Avg)" }]
-          : []),
+        // Defaults, in display order
+        ...(floorPlan.startingPriceLkr > 0 ? [{ key: "Price", value: `From ${formatLkr(floorPlan.startingPriceLkr)}` }] : []),
+        { key: "Project type", value: project.type },
+        ...(hasDisplayValue(floorPlan.planType) ? [{ key: "Plan type", value: floorPlan.planType ?? "" }] : []),
+        // A land plot maps onto this shape with 0 beds/baths — that means
+        // "not applicable", never "zero bedrooms".
+        ...(floorPlan.bedrooms > 0 ? [{ key: "Beds", value: String(floorPlan.bedrooms) }] : []),
+        ...(floorPlan.bathrooms > 0 ? [{ key: "Baths", value: String(floorPlan.bathrooms) }] : []),
+        // One plan is one exact size, so no "From" prefix here — the range
+        // belongs on the project page.
+        ...(floorPlan.floorAreaSqFt > 0 ? [{ key: "SqFt", value: formatArea(floorPlan.floorAreaSqFt), label: areaUnit === "perches" ? "Perches" : "SqFt" }] : []),
+        { key: "Status", value: floorPlan.availability },
+        ...(moveInYear ? [{ key: "Move in", value: moveInYear }] : []),
+        // Picker-only
+        { key: "Address", value: project.location },
+        ...(hasDisplayValue(project.ownership) ? [{ key: "Ownership", value: project.ownership }] : []),
+        ...(floorPlan.interiorSizeSqFt ? [{ key: "Interior size", value: `${formatArea(floorPlan.interiorSizeSqFt)} SqFt` }] : []),
+        ...(hasDisplayValue(floorPlan.basement) ? [{ key: "Basement", value: floorPlan.basement ?? "" }] : []),
+        ...(floorPlan.balconySizeSqFt ? [{ key: "Balcony", value: `${formatArea(floorPlan.balconySizeSqFt)} SqFt` }] : []),
+        ...(hasDisplayValue(floorPlan.garage) ? [{ key: "Garage", value: floorPlan.garage ?? "" }] : []),
+        ...(floorPlan.parkingSpaces ? [{ key: "Parking", value: String(floorPlan.parkingSpaces) }] : []),
+        ...(hasDisplayValue(project.ceilingInfo) ? [{ key: "Ceilings", value: project.ceilingInfo ?? "" }] : []),
+        ...(hasDisplayValue(project.security) ? [{ key: "Security", value: project.security }] : []),
+        ...(hasDisplayValue(project.constructionStatus) ? [{ key: "Building status", value: project.constructionStatus }] : []),
       ]
-        .filter((item) => hasDisplayValue(item.value))
-        .filter((item) => {
-          if (!project.floorPlanVisibleStats?.length) return true;
-          return project.floorPlanVisibleStats.includes(item.label);
-        })
     : [
-        { value: project.status, label: "Listing status" },
-        ...(project.completionYear > 0 ? [{ value: String(project.completionYear), label: "Move in" }] : []),
-        { value: project.constructionStatus, label: "Building status" },
-        ...(project.startingPriceLkr > 0 ? [{ value: `From ${formatLkr(project.startingPriceLkr)}`, label: "Price range" }] : []),
-        { value: project.location, label: "Address" },
-        ...(project.units > 0 ? [{ value: String(project.units), label: "Total Units" }] : []),
-        ...(hasSoldAvailableData ? [{ value: String(soldCount), label: "Units sold" }] : []),
-        ...(hasSoldAvailableData ? [{ value: String(availableCount), label: "Units available" }] : []),
-        ...(project.floors > 0 ? [{ value: String(project.floors), label: "Floors" }] : []),
-        ...(project.floorPlans.length > 0 ? [{ value: String(project.floorPlans.length), label: "Floor plans" }] : []),
-        { value: project.type, label: "Property type" },
-        { value: project.bedrooms, label: "Beds" },
-        { value: project.bathrooms, label: "Baths" },
-        { value: project.floorAreaRange, label: "SqFt" },
-        { value: project.road ?? "", label: "Road" },
-        { value: project.area ?? "", label: "Area" },
-        { value: project.electricity ?? "", label: "Electricity" },
-        { value: project.tapWater ?? "", label: "Tap water" },
-        ...(project.incentives?.length ? [{ value: String(project.incentives.length), label: "Incentives" }] : []),
-        ...(hasDisplayValue(project.parking) ? [{ value: project.parking, label: "Parking" }] : []),
-        ...(project.carparkLevels ? [{ value: String(project.carparkLevels), label: "Carpark levels" }] : []),
-        ...(project.averageUnitPriceLkr ? [{ value: formatLkr(project.averageUnitPriceLkr), label: "Avg unit price" }] : []),
-        ...(project.averageFloorAreaSqFt ? [{ value: `${project.averageFloorAreaSqFt} SqFt`, label: "Avg floor area" }] : []),
-        ...(hasDisplayValue(project.ownership) ? [{ value: project.ownership, label: "Ownership" }] : []),
-        ...(hasDisplayValue(project.ceilingInfo) ? [{ value: project.ceilingInfo ?? "", label: "Ceilings" }] : []),
-        ...(hasDisplayValue(project.neighborhood) ? [{ value: project.neighborhood, label: "Neighborhood" }] : []),
-        ...(hasDisplayValue(project.security) ? [{ value: project.security, label: "Security" }] : []),
-        ...(hasDisplayValue(project.district) ? [{ value: project.district, label: "District" }] : []),
-        ...(hasDisplayValue(project.launchDate) ? [{ value: new Date(project.launchDate).toLocaleDateString("en-US", { month: "short", year: "numeric" }), label: "Sales started" }] : []),
-        ...(project.startingPriceLkr > 0 && (project.floorPlans[0]?.floorAreaSqFt ?? 0) > 0
-          ? [{ value: compactLkr(Math.round(project.startingPriceLkr / Math.max(1, project.floorPlans[0]?.floorAreaSqFt ?? 1))), label: "Per SqFt (Avg)" }]
-          : []),
-      ]
-        .filter((item) => hasDisplayValue(item.value))
-        .filter((item) => {
-          if (!project.desktopVisibleStats?.length) return true;
-          return project.desktopVisibleStats.includes(item.label as ProjectStatLabel);
-        })
-        .slice(0, 10);
+        // Defaults, in display order
+        ...(project.startingPriceLkr > 0 ? [{ key: "Price range", value: `From ${formatLkr(project.startingPriceLkr)}` }] : []),
+        { key: "Property type", value: project.type },
+        { key: "Beds", value: project.bedrooms },
+        { key: "Baths", value: project.bathrooms },
+        { key: "SqFt", value: project.floorAreaRange },
+        { key: "Listing status", value: project.status },
+        ...(moveInYear ? [{ key: "Move in", value: moveInYear }] : []),
+        ...(project.units > 0 ? [{ key: "Total Units", value: String(project.units) }] : []),
+        ...(project.floors > 0 ? [{ key: "Floors", value: String(project.floors) }] : []),
+        // Picker-only
+        { key: "Building status", value: project.constructionStatus },
+        { key: "Address", value: project.location },
+        ...(hasSoldAvailableData ? [{ key: "Units sold", value: String(soldCount) }] : []),
+        ...(hasSoldAvailableData ? [{ key: "Units available", value: String(availableCount) }] : []),
+        ...(project.floorPlans.length > 0 ? [{ key: "Floor plans", value: String(project.floorPlans.length) }] : []),
+        { key: "Road", value: project.road ?? "" },
+        { key: "Area", value: project.area ?? "" },
+        { key: "Electricity", value: project.electricity ?? "" },
+        { key: "Tap water", value: project.tapWater ?? "" },
+        ...(project.incentives?.length ? [{ key: "Incentives", value: String(project.incentives.length) }] : []),
+        ...(hasDisplayValue(project.parking) ? [{ key: "Parking", value: project.parking }] : []),
+        ...(project.carparkLevels ? [{ key: "Carpark levels", value: String(project.carparkLevels) }] : []),
+        ...(project.averageUnitPriceLkr ? [{ key: "Avg unit price", value: formatLkr(project.averageUnitPriceLkr) }] : []),
+        ...(project.averageFloorAreaSqFt ? [{ key: "Avg floor area", value: `${formatArea(project.averageFloorAreaSqFt)} SqFt` }] : []),
+        ...(hasDisplayValue(project.ownership) ? [{ key: "Ownership", value: project.ownership }] : []),
+        ...(hasDisplayValue(project.ceilingInfo) ? [{ key: "Ceilings", value: project.ceilingInfo ?? "" }] : []),
+        ...(hasDisplayValue(project.security) ? [{ key: "Security", value: project.security }] : []),
+        ...(hasDisplayValue(project.district) ? [{ key: "District", value: project.district }] : []),
+        ...(hasDisplayValue(project.launchDate) ? [{ key: "Sales started", value: new Date(project.launchDate).toLocaleDateString("en-US", { month: "short", year: "numeric" }) }] : []),
+      ];
 
-  const mobileVisibleLabels = new Set(
+  // "-" is the store's "not provided" placeholder for bedrooms/bathrooms/
+  // floorAreaRange — never worth a chip.
+  const available = candidates.filter((item) => hasDisplayValue(item.value) && item.value.trim() !== "-");
+  const picker: string[] | undefined = floorPlan ? project.floorPlanVisibleStats : project.desktopVisibleStats;
+  const stats = picker?.length
+    ? available.filter((item) => picker.includes(item.key)).slice(0, PICKER_CHIP_CAP)
+    : pickDefaultChips(available, floorPlan ? DEFAULT_FLOOR_PLAN_STAT_KEYS : DEFAULT_PROJECT_STAT_KEYS);
+
+  const mobileVisibleKeys = new Set<string>(
     project.mobileVisibleStats?.length
       ? project.mobileVisibleStats
-      : ["Price range", "Property type", "Beds", "Baths", "Stories", "SqFt"]
+      : stats.slice(0, DEFAULT_MOBILE_CHIP_CAP).map((item) => item.key)
   );
 
   if (!stats.length) return null;
 
   return (
-    <div className="listing-hero-stats-chips" role="list" aria-label="Project summary stats">
+    <div className="listing-hero-stats-chips stats-chips-mobile-limited" role="list" aria-label="Project summary stats">
       {stats.map((item) => {
-        const Icon = STAT_CHIP_ICON[item.label] ?? Building2;
+        const Icon = STAT_CHIP_ICON[item.key] ?? Building2;
+        const label = item.label ?? statDisplayLabel(item.key);
         return (
-          <div key={item.label} role="listitem" className={`listing-hero-stat-chip${mobileVisibleLabels.has(item.label) ? " mobile-stat-visible" : ""}`}>
+          <div key={item.key} role="listitem" className={`listing-hero-stat-chip${mobileVisibleKeys.has(item.key) ? " mobile-stat-visible" : ""}`}>
             <Icon className="listing-hero-stat-chip-icon" aria-hidden="true" />
             <div className="listing-hero-stat-chip-content">
               <span className="listing-hero-stat-chip-value">{item.value}</span>
-              <span className="listing-hero-stat-chip-label">{item.label}</span>
+              <span className="listing-hero-stat-chip-label">{label}</span>
             </div>
           </div>
         );
@@ -1342,7 +1482,9 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
   const name = developer?.name ?? project.developerName ?? project.contact.name;
   const email = hasDisplayValue(project.contact?.email) ? project.contact.email : developer?.email;
   const phone = hasDisplayValue(project.contact?.phone) ? project.contact.phone : developer?.phone;
-  const socialEntries = Object.entries(developer?.socialLinks ?? {}).filter(([, url]) => hasDisplayValue(url)) as [string, string][];
+  const projectSocialEntries = Object.entries(project.socialLinks ?? {}).filter(([, url]) => hasDisplayValue(url)) as [string, string][];
+  const developerSocialEntries = Object.entries(developer?.socialLinks ?? {}).filter(([, url]) => hasDisplayValue(url)) as [string, string][];
+  const socialEntries = projectSocialEntries.length > 0 ? projectSocialEntries : developerSocialEntries;
 
   return (
     <div className="stats-contact-card">
@@ -1521,7 +1663,9 @@ export function RequestInfoDialog({
             <h2>{isBrochure ? "Brochure ready" : "Request sent"}</h2>
             <p>
               {isBrochure
-                ? `Thanks, ${name.split(" ")[0] || "there"} — your download should start automatically. We've also emailed a copy to ${email}.`
+                ? project.brochureUrl
+                  ? `Thanks, ${name.split(" ")[0] || "there"} — your download should start automatically. We've also emailed a copy to ${email}.`
+                  : `Thanks, ${name.split(" ")[0] || "there"} — we don't have a digital brochure for ${project.name} yet, but the sales team will send you the details shortly.`
                 : `Thanks, ${name.split(" ")[0] || "there"} — the ${project.name} sales team will reach out to you by ${contactMethod.toLowerCase()} shortly.`}
             </p>
             {isBrochure && project.brochureUrl ? (
@@ -1721,11 +1865,20 @@ export function PricingInformationLayout({ project }: { project: Project }) {
     { label: "ⓘ Co-op fee realtors", value: project.coopFeeRealtors },
   ].filter((field) => hasDisplayValue(field.value));
 
-  const hasPricingCard = pricingFields.length > 0 || pricingHistory.length > 0 || includedUtilities.length > 0 || paidUtilities.length > 0;
+  // Every listing gets a Pricing section — the sticky nav always links to
+  // #pricing, and a buyer looks for price first. These rows come from
+  // figures already in the record (the developer's own starting price and
+  // per-plan prices), so the card is never empty even before an editor
+  // fills the fee fields; when there is genuinely nothing, it says so.
+  const startingPrice = project.startingPriceLkr > 0 ? `From ${formatLkr(project.startingPriceLkr)}` : "";
+  const planPrices = project.floorPlans
+    .filter((plan) => plan.startingPriceLkr > 0)
+    .map((plan) => `${plan.planName} — ${formatLkr(plan.startingPriceLkr)}`);
+  const hasAnyPricingDetail = Boolean(startingPrice) || planPrices.length > 0 || pricingFields.length > 0 || pricingHistory.length > 0 || includedUtilities.length > 0 || paidUtilities.length > 0;
+
+  const hasPricingCard = true;
   const hasDepositCard = paymentLines.length > 0;
   const hasIncentivesCard = incentives.length > 0;
-
-  if (!hasPricingCard && !hasDepositCard && !hasIncentivesCard) return null;
 
   return (
     <section className="space-y-4">
@@ -1754,6 +1907,21 @@ export function PricingInformationLayout({ project }: { project: Project }) {
               <h3 className="text-[29px] font-semibold">Pricing and fees</h3>
 
               <div className="mt-7 space-y-4 text-[15px] leading-7">
+                {startingPrice ? (
+                  <div>
+                    <p className="font-semibold">Starting price</p>
+                    <p>{startingPrice}</p>
+                  </div>
+                ) : null}
+                {planPrices.length > 0 ? (
+                  <div>
+                    <p className="font-semibold">Plan prices</p>
+                    <div className="space-y-1">
+                      {planPrices.map((line) => <p key={line}>{line}</p>)}
+                    </div>
+                  </div>
+                ) : null}
+                {!hasAnyPricingDetail ? <p>Contact us for current pricing and availability.</p> : null}
                 {pricingFields.map((field) => (
                   <div key={field.label}>
                     <p className="font-semibold">{field.label}</p>
@@ -1923,7 +2091,7 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
               {option} ({floorPlans.filter((plan) => plan.availability === option).length})
             </button>
           ))}
-          {showQuickMoveIns ? (
+          {showQuickMoveIns && quickMoveIns.length > 0 ? (
             <button
               type="button"
               role="tab"
@@ -1997,9 +2165,9 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
 
       <div className="plans-homes-grid">
         {visiblePlans.map((plan) => (
-          <Link key={plan.id} href={`${hrefBase}/${plan.id}`} className="plans-home-card">
+          <Link key={plan.id} href={`${hrefBase}/${plan.slug ?? plan.id}`} className="plans-home-card">
             <figure>
-              <Image src={plan.image} alt={plan.planName} width={960} height={620} className="plans-home-image" />
+              <Image src={plan.image || project.heroImage} alt={plan.planName} width={960} height={620} className="plans-home-image" />
               <span
                 className={`plans-status-pill${plan.availability === "Sold Out" ? " plans-status-pill-sold" : plan.availability === "Limited" ? " plans-status-pill-booked" : ""}`}
               >
@@ -2014,7 +2182,7 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
                 </div>
               ) : null}
               <h4>{plan.planName}</h4>
-              <p className="plans-home-price">From {formatLkr(plan.startingPriceLkr)}</p>
+              <p className="plans-home-price">{plan.startingPriceLkr > 0 ? `From ${formatLkr(plan.startingPriceLkr)}` : "Contact for pricing"}</p>
               <p className="plans-home-type">{plan.planType || project.type}</p>
               <div className="plans-home-facts">
                 {showBedBath ? (
@@ -2136,10 +2304,13 @@ export function AmenitiesShowcaseSection({ amenities, gallery, heroImage, title 
       return {
         name: amenity.name,
         description: fallbackDescriptions[amenity.name] ?? "Thoughtfully planned amenity spaces enhance comfort and support modern urban living.",
-        image: imageMatch?.image ?? heroImage,
+        // No heroImage fallback on purpose — showing the building's exterior
+        // shot for an amenity that has no real photo (e.g. "Security") would
+        // misrepresent what that amenity actually looks like.
+        image: imageMatch?.image ?? null,
       };
     });
-  }, [amenities, gallery, heroImage]);
+  }, [amenities, gallery]);
 
   const [activeAmenityIndex, setActiveAmenityIndex] = useState(0);
   const activeAmenity = amenityItems[Math.max(0, Math.min(activeAmenityIndex, amenityItems.length - 1))];
@@ -2153,14 +2324,20 @@ export function AmenitiesShowcaseSection({ amenities, gallery, heroImage, title 
       <h2>{title}</h2>
 
       <div className="amenities-showcase-grid">
-        <figure className="amenities-showcase-image-wrap">
-          <Image
-            src={activeAmenity.image}
-            alt={`${activeAmenity.name} amenity`}
-            width={1400}
-            height={950}
-            className="amenities-showcase-image"
-          />
+        <figure className={`amenities-showcase-image-wrap${activeAmenity.image ? "" : " no-image"}`}>
+          {activeAmenity.image ? (
+            <Image
+              src={activeAmenity.image}
+              alt={`${activeAmenity.name} amenity`}
+              width={1400}
+              height={950}
+              className="amenities-showcase-image"
+            />
+          ) : (
+            <div className="amenities-showcase-image-placeholder" aria-hidden="true">
+              <span>{activeAmenity.name}</span>
+            </div>
+          )}
         </figure>
 
         <div className="amenities-showcase-list" role="list" aria-label="Amenity details">
@@ -2180,6 +2357,53 @@ export function AmenitiesShowcaseSection({ amenities, gallery, heroImage, title 
 
                 <span className="amenities-showcase-item-copy">
                   <strong>{amenity.name}</strong>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// Simpler sibling of AmenitiesShowcaseSection — commercial areas are named
+// tenants with their own photo already paired (not generic tags matched
+// against the gallery by name), so no fallback-description lookup is needed.
+export function CommercialAreasSection({ commercialAreas, title = "Commercial Areas" }: { commercialAreas: { label: string; image: string }[]; title?: string }) {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const active = commercialAreas[Math.max(0, Math.min(activeIndex, commercialAreas.length - 1))];
+
+  if (!commercialAreas.length || !active) {
+    return null;
+  }
+
+  return (
+    <section id="commercial-areas" className="amenities-showcase-shell" aria-label={title}>
+      <div className="key-features-pattern" aria-hidden="true" />
+      <h2>{title}</h2>
+
+      <div className="amenities-showcase-grid">
+        <figure className="amenities-showcase-image-wrap">
+          <Image src={active.image} alt={active.label} width={1400} height={950} className="amenities-showcase-image" />
+        </figure>
+
+        <div className="amenities-showcase-list" role="list" aria-label="Commercial area details">
+          {commercialAreas.map((area, index) => {
+            const isActive = index === activeIndex;
+
+            return (
+              <button
+                key={area.label}
+                type="button"
+                role="listitem"
+                className={`amenities-showcase-item ${isActive ? "active" : ""}`.trim()}
+                aria-pressed={isActive}
+                onClick={() => setActiveIndex(index)}
+              >
+                <span className="amenities-showcase-item-icon" aria-hidden="true">✓</span>
+                <span className="amenities-showcase-item-copy">
+                  <strong>{area.label}</strong>
                 </span>
               </button>
             );
@@ -2318,16 +2542,81 @@ export function SalesCenterSection({ project, developer }: { project: Project; d
   );
 }
 
-export function ProjectDescriptionSection({ project, headingOverride }: { project: Project; headingOverride?: string }) {
-  const article = /^[aeiou]/i.test(project.type.trim()) ? "an" : "a";
+const DESCRIPTION_TRUNCATE_WORDS = 70;
+
+// Shared by ProjectDescriptionSection below and the neighborhood page's
+// Overview section — mobile-only truncation (see .project-description-full/
+// -short in globals.css): desktop always shows the full text regardless of
+// this button's state, no separate desktop word limit.
+export function TruncatedDescription({ text }: { text: string }) {
+  const [expanded, setExpanded] = useState(false);
+  const words = text.trim().split(/\s+/);
+  const isLong = words.length > DESCRIPTION_TRUNCATE_WORDS;
+  const shortText = `${words.slice(0, DESCRIPTION_TRUNCATE_WORDS).join(" ")}…`;
+
+  if (!isLong) return <p>{text}</p>;
+
+  return (
+    <>
+      <p className="project-description-short">{expanded ? text : shortText}</p>
+      <p className="project-description-full">{text}</p>
+      <button type="button" className="project-description-toggle" onClick={() => setExpanded((value) => !value)}>
+        {expanded ? "View less" : "View more"}
+      </button>
+    </>
+  );
+}
+
+export function ProjectDescriptionSection({ project, floorPlan, headingOverride }: { project: Project; floorPlan?: FloorPlan; headingOverride?: string }) {
+  // A specific floor plan has its own detail page (linked from the main
+  // project page, which already shows the project-wide highlights/
+  // description) — reusing that same project-level copy here would just
+  // repeat it under a different heading. Build a short summary from the
+  // plan's own facts (plus the project's construction status/move-in year,
+  // since a plan doesn't track those itself) instead.
+  if (floorPlan) {
+    const facts = [
+      floorPlan.bedrooms ? `${floorPlan.bedrooms} bedroom${floorPlan.bedrooms === 1 ? "" : "s"}` : "",
+      floorPlan.bathrooms ? `${floorPlan.bathrooms} bathroom${floorPlan.bathrooms === 1 ? "" : "s"}` : "",
+      floorPlan.floorAreaSqFt > 0 ? `${floorPlan.floorAreaSqFt} sq.ft. of floor area` : "",
+    ].filter(Boolean).join(", ");
+
+    const sentences = [
+      facts ? `The ${floorPlan.planName} is a ${facts} home at ${project.name}.` : `The ${floorPlan.planName} is a home at ${project.name}.`,
+      floorPlan.startingPriceLkr > 0 ? `Priced from ${formatLkr(floorPlan.startingPriceLkr)}.` : "",
+      hasDisplayValue(floorPlan.availability) ? `Currently ${floorPlan.availability.toLowerCase()}.` : "",
+      floorPlan.quickMoveIn ? "Available for quick move-in." : "",
+      hasDisplayValue(project.constructionStatus)
+        ? `The project is ${project.constructionStatus.toLowerCase()}${hasDisplayValue(project.completionYear) ? `, with move-in expected in ${project.completionYear}` : ""}.`
+        : "",
+    ].filter(Boolean);
+
+    return (
+      <section id="overview" className="project-description-shell" aria-label="Floor plan description">
+        <h2>{headingOverride ?? `${floorPlan.planName} Details`}</h2>
+        <p>{sentences.join(" ")}</p>
+      </section>
+    );
+  }
+
+  // The Overview shows the description only. `summary` is the short teaser
+  // for cards and the meta description — appending it here just repeated
+  // the paragraph in miniature at the end (dropped 2026-09-07). It's still
+  // the fallback when a project has no description at all.
+  const fullText = hasDisplayValue(project.description) ? project.description : (project.summary ?? "");
+  const highlights = (project.highlights ?? []).filter(Boolean);
 
   return (
     <section id="overview" className="project-description-shell" aria-label="Project description">
       <h2>{headingOverride ?? "Overview"}</h2>
-      <p>
-        {project.description} {project.summary} {project.name} by {project.developerName} in {project.location} offers
-        {" "}{article} {project.type.toLowerCase()} with {project.units} units across {project.floors} floors.
-      </p>
+      {highlights.length > 0 ? (
+        <ul className="project-description-highlights">
+          {highlights.map((highlight) => (
+            <li key={highlight}>{highlight}</li>
+          ))}
+        </ul>
+      ) : null}
+      <TruncatedDescription text={fullText} />
     </section>
   );
 }
@@ -2338,65 +2627,141 @@ export function ProjectNarrativeDetails({ project }: { project: Project }) {
   const salesStarted = launchDate && !Number.isNaN(launchDate.getTime())
     ? launchDate.toLocaleDateString("en-US", { month: "short", year: "numeric" })
     : "";
-  const completionDate = hasDisplayValue(project.completionYear) ? new Date(`${project.completionYear}-12-01`) : null;
-  const completionMonth = completionDate && !Number.isNaN(completionDate.getTime())
-    ? completionDate.toLocaleDateString("en-US", { month: "short", year: "numeric" })
-    : "";
+  // Only a year is stored, so show only the year — the previous
+  // `${year}-12-01` invented a month the developer never stated, and UTC-
+  // midnight parsing then drifted it to "Nov" in western timezones.
+  const completionMonth = project.completionYear > 0 ? String(project.completionYear) : "";
   const constructionStartDate = project.constructionStarted ? new Date(project.constructionStarted) : null;
   const constructionStarted = constructionStartDate && !Number.isNaN(constructionStartDate.getTime())
     ? constructionStartDate.toLocaleDateString("en-US", { month: "short", year: "numeric" })
     : "";
 
+  const parkingSummary = hasDisplayValue(project.parking) ? project.parking : "";
+  // "-" is the store's "not provided" placeholder — not a fact to list.
+  const isFact = (value: unknown) => hasDisplayValue(value) && String(value).trim() !== "-";
+
+  const incentives = (project.incentives ?? []).filter((item) => isFact(item));
+
+  // The fact sheet is the full reference table. Row order is the one set on
+  // 2026-09-07 (docs/design.md "Stats chips vs fact sheet"): type & status
+  // → timeline → pricing → inventory → home size → building → utilities →
+  // location, then the who's-who links. Headline facts (Beds, Baths, SqFt,
+  // Listing status, Price range, Total units) deliberately repeat the hero
+  // chips. Labels match the chip names exactly (one name per field — see
+  // STAT_DISPLAY_LABEL). Every number here is developer-entered: unit
+  // counts come from availableUnits/soldUnits (never from counting plan
+  // types), the averages and price-per-sqft from their own fields — nothing
+  // is computed (docs/supabase-workflow.md Standing Rule 4).
   const detailRows = [
+    { label: "Property type", show: isFact(project.type), value: <Link href={`/projects?type=${encodeURIComponent(project.type)}`} className="overview-link">{project.type}</Link> },
+    { label: "Listing status", show: isFact(project.status), value: project.status },
+    { label: "Construction status", show: isFact(project.constructionStatus), value: project.constructionStatus },
+    { label: "Sales started", show: isFact(salesStarted), value: salesStarted },
+    { label: "Move-in year", show: isFact(completionMonth), value: completionMonth },
+    { label: "Price range", show: project.startingPriceLkr > 0, value: `From ${formatLkr(project.startingPriceLkr)}` },
+    { label: "Avg unit price", show: Boolean(project.averageUnitPriceLkr), value: project.averageUnitPriceLkr ? formatLkr(project.averageUnitPriceLkr) : "" },
+    { label: "Per SqFt (Avg)", show: isFact(project.averagePricePerSqft), value: project.averagePricePerSqft ?? "" },
+    { label: "Incentives", show: incentives.length > 0, value: incentives.join("; ") },
+    { label: "Total units", show: project.units > 0, value: String(project.units) },
+    { label: "Units available", show: (project.availableUnits ?? 0) > 0, value: String(project.availableUnits ?? 0) },
+    { label: "Units sold", show: (project.soldUnits ?? 0) > 0, value: String(project.soldUnits ?? 0) },
+    { label: "Floors", show: project.floors > 0, value: String(project.floors) },
+    { label: "Floor plans", show: project.floorPlans.length > 0, value: String(project.floorPlans.length) },
+    { label: "Beds", show: isFact(project.bedrooms), value: project.bedrooms },
+    { label: "Baths", show: isFact(project.bathrooms), value: project.bathrooms },
+    { label: "SqFt", show: isFact(project.floorAreaRange), value: `${project.floorAreaRange} SqFt` },
+    { label: "Avg floor area", show: Boolean(project.averageFloorAreaSqFt), value: project.averageFloorAreaSqFt ? `${project.averageFloorAreaSqFt.toLocaleString("en-US")} SqFt` : "" },
+    { label: "Ceilings", show: isFact(project.ceilingInfo), value: project.ceilingInfo ?? "" },
+    { label: "Ownership", show: isFact(project.ownership), value: project.ownership },
+    // Free-text parking note (e.g. "1 dedicated bay per residence").
+    { label: "Parking", show: isFact(parkingSummary), value: parkingSummary },
+    { label: "Carpark levels", show: (project.carparkLevels ?? 0) > 0, value: String(project.carparkLevels ?? 0) },
+    { label: "Security", show: isFact(project.security), value: project.security },
+    { label: "Electricity", show: isFact(project.electricity), value: project.electricity ?? "" },
+    { label: "Tap water", show: isFact(project.tapWater), value: project.tapWater ?? "" },
+    { label: "Address", show: isFact(project.location), value: project.location },
+    { label: "Road", show: isFact(project.road), value: project.road ?? "" },
+    { label: "Area", show: isFact(project.area), value: project.area ?? "" },
     {
       label: "Neighborhood",
-      show: hasDisplayValue(project.neighborhood),
+      show: isFact(project.neighborhood),
       value: project.neighborhoodSlug
         ? renderEntityLink(project.neighborhood, project.neighborhoodSlug, "/neighborhoods", "overview-link")
         : <span className="overview-link">{project.neighborhood}</span>,
     },
-    { label: "Building type", show: hasDisplayValue(project.type), value: <Link href={`/projects?type=${encodeURIComponent(project.type)}`} className="overview-link">{project.type}</Link> },
-    { label: "Beds", show: hasDisplayValue(project.bedrooms), value: project.bedrooms },
-    { label: "Baths", show: hasDisplayValue(project.bathrooms), value: project.bathrooms },
-    { label: "Road", show: hasDisplayValue(project.road), value: project.road ?? "" },
-    { label: "Area", show: hasDisplayValue(project.area), value: project.area ?? "" },
-    { label: "Electricity", show: hasDisplayValue(project.electricity), value: project.electricity ?? "" },
-    { label: "Tap water", show: hasDisplayValue(project.tapWater), value: project.tapWater ?? "" },
-    { label: "Ownership", show: hasDisplayValue(project.ownership), value: project.ownership },
-    { label: "Listing status", show: hasDisplayValue(project.status), value: project.status },
-    { label: "Sales started", show: hasDisplayValue(salesStarted), value: salesStarted },
-    { label: "Construction status", show: hasDisplayValue(project.constructionStatus), value: project.constructionStatus },
-    { label: "Construction started", show: hasDisplayValue(constructionStarted), value: constructionStarted },
-    { label: "Completed in", show: hasDisplayValue(completionMonth), value: completionMonth },
-    { label: "Ceilings", show: hasDisplayValue(project.ceilingInfo), value: project.ceilingInfo ?? "" },
-    { label: "Developer", show: hasDisplayValue(project.developerName), value: renderEntityLink(project.developerName, project.developerSlug, "/developers", "overview-link") },
-    { label: "Architect", show: hasDisplayValue(project.architectName), value: renderEntityLink(project.architectName ?? "", project.architectSlug, "/architects", "overview-link") },
-    { label: "Marketing company", show: hasDisplayValue(project.marketingCompanyName), value: renderEntityLink(project.marketingCompanyName ?? "", project.marketingCompanySlug, "/marketing-companies", "overview-link") },
-    { label: "Sales company", show: hasDisplayValue(project.salesCompanyName), value: renderEntityLink(project.salesCompanyName ?? "", project.salesCompanySlug, "/sales-companies", "overview-link") },
-    { label: "Interior designer", show: hasDisplayValue(project.interiorDesignerName), value: renderEntityLink(project.interiorDesignerName ?? "", project.interiorDesignerSlug, "/interior-designers", "overview-link") },
+    { label: "District", show: isFact(project.district), value: project.district },
+    // Not in the ordered list above — kept after it so the links to the
+    // company profile pages aren't lost.
+    { label: "Construction started", show: isFact(constructionStarted), value: constructionStarted },
+    { label: "Developer", show: isFact(project.developerName), value: renderEntityLink(project.developerName, project.developerSlug, "/developers", "overview-link") },
+    { label: "Architect", show: isFact(project.architectName), value: renderEntityLink(project.architectName ?? "", project.architectSlug, "/architects", "overview-link") },
+    { label: "Marketing company", show: isFact(project.marketingCompanyName), value: renderEntityLink(project.marketingCompanyName ?? "", project.marketingCompanySlug, "/marketing-companies", "overview-link") },
+    { label: "Sales company", show: isFact(project.salesCompanyName), value: renderEntityLink(project.salesCompanyName ?? "", project.salesCompanySlug, "/sales-companies", "overview-link") },
+    { label: "Interior designer", show: isFact(project.interiorDesignerName), value: renderEntityLink(project.interiorDesignerName ?? "", project.interiorDesignerSlug, "/interior-designers", "overview-link") },
   ].filter((row) => row.show);
 
-  const PER_ROW = 2;
-  const rowGroups: (typeof detailRows)[number][][] = [];
-  for (let i = 0; i < detailRows.length; i += PER_ROW) rowGroups.push(detailRows.slice(i, i + PER_ROW));
+  // Mobile shows a shorter list in its own order (set by the owner
+  // 2026-09-07) — a subset of the desktop rows, so both tables are built
+  // from the same detailRows and the CSS picks one per breakpoint (≤980px),
+  // no JS/hydration involved.
+  const byLabel = new Map(detailRows.map((row) => [row.label, row]));
+  const mobileRows = MOBILE_FACT_SHEET_ORDER.map((label) => byLabel.get(label)).filter((row): row is (typeof detailRows)[number] => Boolean(row));
 
   return (
     <section className="project-narrative-shell" aria-label="Project details">
-      <table className="project-fact-sheet">
-        <tbody>
-          {rowGroups.map((group) => (
-            <tr key={group[0].label}>
-              {group.map(({ label, value }) => (
-                <td key={label}><span className="project-fact-label">{label}:</span> {value}</td>
-              ))}
-              {group.length < PER_ROW
-                ? Array.from({ length: PER_ROW - group.length }).map((_, index) => <td key={`pad-${index}`} aria-hidden="true" />)
-                : null}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <FactSheetTable rows={detailRows} className="project-fact-sheet project-fact-sheet-desktop" />
+      <FactSheetTable rows={mobileRows} className="project-fact-sheet project-fact-sheet-mobile" />
     </section>
+  );
+}
+
+// Fact-sheet rows shown on mobile, in order. Labels are the display names
+// used in ProjectNarrativeDetails (one name per field).
+const MOBILE_FACT_SHEET_ORDER = [
+  "Property type",
+  "Listing status",
+  "Construction status",
+  "Move-in year",
+  "Price range",
+  "Per SqFt (Avg)",
+  "Beds",
+  "Baths",
+  "SqFt",
+  "Total units",
+  "Floors",
+  "Ownership",
+  "Parking",
+  "Address",
+  "Neighborhood",
+  "District",
+];
+
+// Two columns filled top-to-bottom, not left-to-right: the first half of the
+// ordered list runs down the LEFT column (highest priority), the second half
+// down the RIGHT (lowest) — so the eye reads the list in priority order by
+// scanning down, then across.
+function FactSheetTable({ rows, className }: { rows: { label: string; value: React.ReactNode }[]; className: string }) {
+  if (!rows.length) return null;
+  const split = Math.ceil(rows.length / 2);
+  const left = rows.slice(0, split);
+  const right = rows.slice(split);
+
+  return (
+    <table className={className}>
+      <tbody>
+        {left.map((leftRow, index) => {
+          const rightRow = right[index];
+          return (
+            <tr key={leftRow.label}>
+              <td><span className="project-fact-label">{leftRow.label}:</span> {leftRow.value}</td>
+              {rightRow
+                ? <td><span className="project-fact-label">{rightRow.label}:</span> {rightRow.value}</td>
+                : <td aria-hidden="true" />}
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
   );
 }
 
@@ -2812,19 +3177,52 @@ const NEARBY_CATEGORY_ICON: Record<NearbyPlace["category"], React.ComponentType<
   Landmark: Landmark,
 };
 
-const NEARBY_CATEGORY_ORDER: NearbyPlace["category"][] = ["School", "Hospital", "Shopping", "Restaurant", "Transport", "Landmark"];
+// Shared accordion UI — used both by NeighborhoodSection (the "Neighborhood"
+// tab on a project page) and the standalone neighborhood guide page, so the
+// two stay visually identical rather than drifting into two designs. Takes
+// plain group data (from groupNearbyPlaces, a server-safe helper) and
+// resolves icons here on the client — a resolved icon *component* can't
+// itself be passed as a server->client prop.
+export function NearbyPlacesAccordion({ groups }: { groups: ReturnType<typeof groupNearbyPlaces> }) {
+  const [openKey, setOpenKey] = useState<string | null>(groups[0]?.key ?? null);
+
+  if (groups.length === 0) return null;
+
+  return (
+    <div className="key-features-list">
+      {groups.map((group) => {
+        const isOpen = openKey === group.key;
+        const Icon = NEARBY_CATEGORY_ICON[group.key];
+        return (
+          <div key={group.key} className={`key-features-row ${isOpen ? "open" : ""}`}>
+            <button
+              type="button"
+              className="key-features-row-trigger"
+              aria-expanded={isOpen}
+              onClick={() => setOpenKey(isOpen ? null : group.key)}
+            >
+              <Icon className="h-6 w-6" aria-hidden="true" />
+              <span>{group.label}</span>
+              <ChevronDown className="key-features-chevron h-6 w-6" aria-hidden="true" />
+            </button>
+            {isOpen ? (
+              <div className="key-features-row-body">
+                {group.items.map((place) => (
+                  <span key={place.name} className="key-features-item">
+                    <span className="key-features-item-label">{place.name}:</span> {hasDisplayValue(place.distanceKm) ? `${place.distanceKm} km` : "Nearby"}
+                  </span>
+                ))}
+              </div>
+            ) : null}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 export function NeighborhoodSection({ nearby, neighborhoodName, neighborhoodSlug, neighborhoodPageExists }: { nearby: NearbyPlace[]; neighborhoodName?: string; neighborhoodSlug?: string; neighborhoodPageExists?: boolean }) {
-  const groups = NEARBY_CATEGORY_ORDER
-    .map((category) => ({
-      key: category,
-      label: category,
-      icon: NEARBY_CATEGORY_ICON[category],
-      items: nearby.filter((place) => place.category === category).sort((a, b) => a.distanceKm - b.distanceKm),
-    }))
-    .filter((group) => group.items.length > 0);
-
-  const [openKey, setOpenKey] = useState<string | null>(groups[0]?.key ?? null);
+  const groups = groupNearbyPlaces(nearby);
 
   if (!hasDisplayValue(neighborhoodName) && groups.length === 0) return null;
 
@@ -2833,43 +3231,67 @@ export function NeighborhoodSection({ nearby, neighborhoodName, neighborhoodSlug
       <div className="key-features-pattern" aria-hidden="true" />
       <h2>Neighborhood</h2>
 
-      {groups.length > 0 ? (
-        <div className="key-features-list">
-          {groups.map((group) => {
-            const isOpen = openKey === group.key;
-            const Icon = group.icon;
-            return (
-              <div key={group.key} className={`key-features-row ${isOpen ? "open" : ""}`}>
-                <button
-                  type="button"
-                  className="key-features-row-trigger"
-                  aria-expanded={isOpen}
-                  onClick={() => setOpenKey(isOpen ? null : group.key)}
-                >
-                  <Icon className="h-6 w-6" aria-hidden="true" />
-                  <span>{group.label}</span>
-                  <ChevronDown className="key-features-chevron h-6 w-6" aria-hidden="true" />
-                </button>
-                {isOpen ? (
-                  <div className="key-features-row-body">
-                    {group.items.map((place) => (
-                      <span key={place.name} className="key-features-item">
-                        <span className="key-features-item-label">{place.name}:</span> {place.distanceKm} km
-                      </span>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-            );
-          })}
-        </div>
-      ) : null}
+      <NearbyPlacesAccordion groups={groups} />
 
       {hasDisplayValue(neighborhoodName) ? (
         <Link href={neighborhoodPageExists && neighborhoodSlug ? `/neighborhoods/${neighborhoodSlug}` : `/search?q=${encodeURIComponent(neighborhoodName!)}`} className="neighborhood-section-explore">
           View neighbourhood
         </Link>
       ) : null}
+    </section>
+  );
+}
+
+// Reuses AmenitiesShowcaseSection's exact click-to-swap card design
+// (amenities-showcase-*) for the neighborhood page's landmark highlights —
+// no per-landmark photos exist yet, so every entry shows the same
+// text-only placeholder AmenitiesShowcaseSection already falls back to for
+// an amenity with no matched gallery image, rather than inventing new CSS.
+export function KnownLandmarksSection({ nearby, title = "Known Landmarks" }: { nearby: NearbyPlace[]; title?: string }) {
+  const landmarkItems = useMemo(
+    () => nearby.filter((place) => place.category !== "School" && place.category !== "Transport").slice(0, 8),
+    [nearby],
+  );
+
+  const [activeIndex, setActiveIndex] = useState(0);
+  const active = landmarkItems[Math.max(0, Math.min(activeIndex, landmarkItems.length - 1))];
+
+  if (!landmarkItems.length || !active) return null;
+
+  return (
+    <section id="known-landmarks" className="amenities-showcase-shell" aria-label={title}>
+      <h2>{title}</h2>
+
+      <div className="amenities-showcase-grid">
+        <figure className="amenities-showcase-image-wrap no-image">
+          <div className="amenities-showcase-image-placeholder" aria-hidden="true">
+            <span>{active.name}</span>
+          </div>
+        </figure>
+
+        <div className="amenities-showcase-list" role="list" aria-label="Landmark details">
+          {landmarkItems.map((place, index) => {
+            const isActive = index === activeIndex;
+
+            return (
+              <button
+                key={place.name}
+                type="button"
+                role="listitem"
+                className={`amenities-showcase-item ${isActive ? "active" : ""}`.trim()}
+                aria-pressed={isActive}
+                onClick={() => setActiveIndex(index)}
+              >
+                <span className="amenities-showcase-item-icon" aria-hidden="true">✓</span>
+                <span className="amenities-showcase-item-copy">
+                  <strong>{place.name}</strong>
+                  {place.distanceKm ? ` — ${place.distanceKm} km away` : ""}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
     </section>
   );
 }

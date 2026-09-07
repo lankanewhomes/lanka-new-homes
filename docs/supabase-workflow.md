@@ -18,6 +18,19 @@ these rules whenever the data model changes.
    unused — ask before removing it from the schema.
 3. Keep `docs/supabase-schema.sql` (or the most recent schema file) in sync
    with the actual live schema — treat schema drift as a bug.
+4. **Never invent numbers that aren't on the source material** — for a
+   project/developer's own fields (price, floor area, unit counts, etc.),
+   only enter figures the developer actually published somewhere (their
+   site, a brochure, a floor plan drawing). If a number isn't available,
+   ask the user rather than estimating one and presenting it as fact. If an
+   estimate is genuinely unavoidable for one field, it's fine to enter it
+   as long as it's clearly disclosed to the user as an estimate, not a
+   sourced figure. Never go a step further and compute a derived/aggregate
+   number (e.g. `averageFloorAreaSqFt`) from a set of values that includes
+   estimates — an average built from a mix of real and estimated inputs
+   looks precise while being less trustworthy than the estimates it came
+   from. Skip the derived field entirely rather than compute it in that
+   case.
 
 ## Connection
 
@@ -73,6 +86,21 @@ and still power the existing site.
   safe to re-run). Not copied: Users/accounts (password hashes aren't
   portable), Hero Slides (shape doesn't map cleanly from `hero_ads`), Saved
   Listings (needs a Payload user per buyer).
-- The existing frontend (`src/app/(frontend)/**`) has not been wired to
-  Payload's API — it still reads/writes the tables above exactly as before.
-  Moving the frontend onto Payload is a separate, future step.
+- The existing frontend (`src/app/(frontend)/**`) still reads its data
+  straight from the `public` tables above (via `src/lib/*-store.ts`), not
+  Payload's API directly — but for collections with a sync-to-Supabase
+  `afterChange` hook (e.g. Projects), that's no longer a second copy of the
+  data: editing in `/cms` writes the real record, and the hook mirrors the
+  full doc into that table's `data` jsonb column, which the frontend then
+  reads. So in practice, `/cms` already **is** the content editor for those
+  collections — there's no separate legacy admin flow left for them.
+- **Draft/publish (Projects only):** `isPublished` (default `false` for new
+  projects) gates whether a project shows on the public site. `getAllProjects`/
+  `getProjectBySlug` in `src/lib/project-store.ts` filter out anything with
+  `isPublished === false` (missing/undefined counts as published, so every
+  project that existed before this field was added stays visible). A
+  developer can still view an unpublished draft — full production styling,
+  not a mockup — at `/listing-preview/<slug>`, which uses the unfiltered
+  `getProjectBySlugRaw`; that page is not linked from anywhere on the site,
+  and the direct link lives on the project's own `/cms` edit screen
+  ("Preview Link" field, `src/components/payload/PreviewLinkPanel.tsx`).

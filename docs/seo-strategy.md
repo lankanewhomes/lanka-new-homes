@@ -27,6 +27,11 @@ Update this file whenever a new keyword group or page is added.
 | `/construction-companies/consulting` | Construction consultants | new |
 | `/land` | Land parcel listings (separate from projects) | new, no listings yet |
 | `/land/{slug}` | Individual land listing detail page | new, no listings yet |
+| `/neighborhoods/{slug}` | Neighborhood guide (highlights, nearby places, homes in that area) | existing — no `/neighborhoods` index/hub page yet, only detail pages |
+| `/architects`, `/architects/{slug}` | Architect directory + profiles | existing |
+| `/interior-designers`, `/interior-designers/{slug}` | Interior designer directory + profiles | existing |
+| `/marketing-companies`, `/marketing-companies/{slug}` | Marketing company directory + profiles | existing |
+| `/sales-companies`, `/sales-companies/{slug}` | Sales company directory + profiles | existing |
 
 Config for all of these lives in code, not hardcoded per page:
 - `/projects/*` — `src/lib/listing-categories.ts` (`projectCategories`)
@@ -204,8 +209,17 @@ fields (e.g. a `tags: string[]` on `Project`) instead of text matching.
    not query-string variants. `?type=` on `/projects` remains as a secondary,
    non-canonical filter for backward compatibility with existing links.
 5. **Sitemap** — `src/app/sitemap.ts` includes only the canonical path URLs
-   listed above (plus individual project/developer detail pages). No
-   query-param or view-toggle URLs are included.
+   listed above (plus individual project/developer/land/neighborhood detail
+   pages and every partner-directory profile page — architects, interior
+   designers, marketing companies, sales companies, construction companies).
+   No query-param or view-toggle URLs are included. **2026-09-06 fix**: the
+   five partner-directory families (list pages + every profile page) and all
+   `/neighborhoods/{slug}` pages were completely missing from the sitemap
+   despite already having proper unique metadata/canonicals — Google could
+   only discover them by crawling internal links, not via the sitemap. Watch
+   for this same gap on any *new* entity type added later: a page having
+   good on-page metadata doesn't mean it's actually in `sitemap.ts` — check
+   both.
 6. **Structured data** —
    - `ItemList` on every listing/directory page, from the currently rendered
      list (`buildItemListJsonLd` in `src/lib/seo.ts`).

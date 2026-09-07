@@ -37,5 +37,9 @@ export default async function ArchitectPage({ params }: ArchitectPageProps) {
   const allProjects = await getAllProjects();
   const projects = allProjects.filter((project) => project.architectSlug === slug);
 
-  return <CompanyProfileDetailView company={architect} entityLabel="Architect" projects={projects} />;
+  return (
+    <div className="developer-page">
+      <CompanyProfileDetailView company={architect} entityLabel="Architect" projects={projects} />
+    </div>
+  );
 }

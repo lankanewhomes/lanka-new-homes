@@ -125,6 +125,22 @@ export const allProjectCategories = Object.values(projectCategories);
 // or /land/[slug], which never render the rail.
 export const mapSidebarRoutes: string[] = ["/projects", "/land", "/search", ...allProjectCategories.map((category) => category.path)];
 
+export type SearchablePage = { label: string; path: string; keywords: string };
+
+// Powers the "Pages" suggestions in the listing search bar (src/components/
+// marketplace/listing-page.tsx) — typing e.g. "pre" or "luxury" jumps
+// straight to the matching category page instead of only filtering the
+// projects already loaded on the current page.
+export const searchablePages: SearchablePage[] = [
+  { label: "New Projects", path: "/projects", keywords: "new projects all projects new homes" },
+  ...allProjectCategories.map((category) => ({
+    label: category.h1,
+    path: category.path,
+    keywords: `${category.breadcrumbLabel} ${category.h1}`.toLowerCase(),
+  })),
+  { label: "Land for Sale in Sri Lanka", path: "/land", keywords: "land lands plot plots" },
+];
+
 export function buildCategoryMetadata(category: ProjectCategory): Metadata {
   return {
     title: category.metaTitle,

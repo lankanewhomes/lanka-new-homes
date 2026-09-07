@@ -37,5 +37,9 @@ export default async function ConstructionCompanyPage({ params }: ConstructionCo
   const allProjects = await getAllProjects();
   const projects = allProjects.filter((project) => project.additionalBuilderSlugs?.includes(slug));
 
-  return <CompanyProfileDetailView company={company} entityLabel="Construction Company" projects={projects} />;
+  return (
+    <div className="developer-page">
+      <CompanyProfileDetailView company={company} entityLabel="Construction Company" projects={projects} />
+    </div>
+  );
 }

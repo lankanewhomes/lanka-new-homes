@@ -252,7 +252,7 @@ export interface Developer {
     tiktok?: string | null;
   };
   /**
-   * The developer-role account that manages this company profile.
+   * The developer-role account that manages this company profile. Leave blank when pre-building a profile before the developer has an account — if they later sign up with this Contact Email, they auto-claim it (and everything created under it, including projects); otherwise set this manually once they exist.
    */
   user?: (number | null) | User;
   projects?: {
@@ -2539,6 +2539,7 @@ export interface Project {
         | 'Apartments'
         | 'Condominium'
         | 'Villas'
+        | 'Luxury Villas'
         | 'House'
         | 'Townhouse'
         | 'Serviced Apartment'
@@ -2551,20 +2552,27 @@ export interface Project {
    * Custom value, used when Type above doesn't have the right option.
    */
   type_other?: string | null;
-  ownership?: ('Freehold' | 'Leasehold' | 'Condominium') | null;
+  ownership?:
+    | (
+        | 'Freehold'
+        | 'Leasehold'
+        | 'Condominium'
+        | 'Transfer commenced'
+        | 'Deed of Transfer'
+        | 'Deed of Gift'
+        | 'Deed of Sale'
+        | 'Partition Deed'
+        | 'Grant / State Grant'
+        | 'Title Certificate'
+        | 'Condominium Title'
+        | 'Apartment Ownership Certificate'
+        | 'Bim Saviya / Title Certificate'
+      )
+    | null;
   /**
    * Custom value, used when Ownership above doesn't have the right option.
    */
   ownership_other?: string | null;
-  status?:
-    | ('Now Selling' | 'Coming Soon' | 'Under Construction' | 'Launching Soon' | 'Nearly Sold Out' | 'Nearly Complete')
-    | null;
-  featured?: boolean | null;
-  isMoveInNow?: boolean | null;
-  /**
-   * Auto-set true once every item on the Verification tab is checked off.
-   */
-  isVerified?: boolean | null;
   /**
    * Free-text credits for co-developers that don’t have a Developer record here.
    */
@@ -2583,8 +2591,89 @@ export interface Project {
    * Construction companies / builders credited on this project.
    */
   additional_builders?: (number | ConstructionCompany)[] | null;
-  launchDate?: string | null;
+  /**
+   * Off by default for new listings — while off, this project is hidden from the live site (listings, search, sitemap) but still viewable at the Preview Link field below. Turn on when ready to go live.
+   */
+  isPublished?: boolean | null;
+  status?:
+    | (
+        | 'Now Selling'
+        | 'Coming Soon'
+        | 'Under Construction'
+        | 'Launching Soon'
+        | 'Nearly Sold Out'
+        | 'Nearly Complete'
+        | 'Completed'
+      )
+    | null;
+  /**
+   * Shown as a "Move in {year}" badge on the listing.
+   */
   completionYear?: number | null;
+  featured?: boolean | null;
+  isMoveInNow?: boolean | null;
+  /**
+   * This project was delivered under a Design & Build contract model.
+   */
+  isDesignBuild?: boolean | null;
+  /**
+   * Auto-set true once every item on the Verification tab is checked off.
+   */
+  isVerified?: boolean | null;
+  /**
+   * Optional — shows as a badge on the listing card, same way Featured does. Free to set, no payment required (like Featured, you can grant it directly).
+   */
+  paymentPlanBadge?:
+    | (
+        | 'Flexible Payment Plan'
+        | '0% Down Payment'
+        | 'Easy Installments'
+        | 'Interest-Free Installments'
+        | 'Early Bird Pricing'
+      )
+    | null;
+  /**
+   * Custom value, used when Payment Plan Badge above doesn't have the right option.
+   */
+  paymentPlanBadge_other?: string | null;
+  /**
+   * Optional — shows as a badge alongside the others (e.g. "Only 3 units left" via Other).
+   */
+  availabilityBadge?: ('Limited Units' | 'Last Few Units') | null;
+  /**
+   * Custom value, used when Availability Badge above doesn't have the right option.
+   */
+  availabilityBadge_other?: string | null;
+  /**
+   * Pick any that apply — each shows as its own badge on the listing, same style as Featured. Note: "Status" (Coming Soon/Now Selling/etc.) and property features (Freehold, Pool, Gym, Security, EV Charging, Gated Community...) already have their own dedicated fields (Overview tab's Status, and Ownership/Amenities) — no need to duplicate those here.
+   */
+  marketingBadges?:
+    | (
+        | 'Premium'
+        | 'Luxury'
+        | 'Exclusive'
+        | 'Popular'
+        | 'Best Seller'
+        | 'Special Offer'
+        | 'Price Reduced'
+        | 'Early Bird'
+        | 'Investor Friendly'
+        | 'High Rental Potential'
+        | 'BOI Approved Project'
+      )[]
+    | null;
+  /**
+   * Pick any that apply — shows alongside the other badges on the listing.
+   */
+  locationBadges?:
+    ('Beachfront' | 'Ocean View' | 'City View' | 'Mountain View' | 'Nature View' | 'Prime Location')[] | null;
+  hotDeal?: {
+    enabled?: boolean | null;
+    badge?: string | null;
+    title?: string | null;
+    description?: string | null;
+  };
+  launchDate?: string | null;
   constructionStatus?:
     | (
         | 'Not Started'
@@ -2663,6 +2752,9 @@ export interface Project {
   floorAreaRange?: string | null;
   averageFloorAreaSqFt?: number | null;
   units?: number | null;
+  availableUnits?: number | null;
+  bookedUnits?: number | null;
+  soldUnits?: number | null;
   floors?: number | null;
   carparkLevels?: number | null;
   parkingCount?: number | null;
@@ -2712,6 +2804,10 @@ export interface Project {
   summary?: string | null;
   description?: string | null;
   /**
+   * 3-5 short standout points shown above the Overview text (e.g. "South Asia's highest sky bridge").
+   */
+  highlights?: string[] | null;
+  /**
    * Image URL — or upload a file in Media and paste its URL here.
    */
   heroImage?: string | null;
@@ -2758,36 +2854,45 @@ export interface Project {
    */
   interactiveMapUrl?: string | null;
   /**
+   * Optional — paste a specific Google Street View embed link (from Google Maps' Share > Embed a map) to override the default view generated from Coordinates above.
+   */
+  streetViewUrl?: string | null;
+  /**
    * Embed link (e.g. a 360° panorama tour) — or upload an image/file in Media and paste its URL here.
    */
   view360Url?: string | null;
+  socialLinks?: {
+    facebook?: string | null;
+    instagram?: string | null;
+    linkedin?: string | null;
+    twitter?: string | null;
+    whatsapp?: string | null;
+    youtube?: string | null;
+    tiktok?: string | null;
+  };
   /**
-   * Which detail chips show in the listing icon stats on mobile. Maximum 10.
+   * Which detail chips show on mobile. Maximum 10. Leave empty for the first six of the desktop set.
    */
   mobileVisibleStats?:
     | (
-        | 'Listing status'
-        | 'Building status'
-        | 'Price CAD'
         | 'Price range'
-        | 'Address'
-        | 'Total units'
-        | 'Total Units'
-        | 'Floor plans'
-        | 'Stories'
-        | 'Floors'
         | 'Property type'
         | 'Beds'
         | 'Baths'
         | 'SqFt'
+        | 'Listing status'
         | 'Move in'
+        | 'Total Units'
+        | 'Floors'
+        | 'Building status'
+        | 'Address'
         | 'Units sold'
         | 'Units available'
+        | 'Floor plans'
         | 'Road'
         | 'Area'
         | 'Electricity'
         | 'Tap water'
-        | 'Per SqFt (Avg)'
         | 'Incentives'
         | 'Parking'
         | 'Carpark levels'
@@ -2795,39 +2900,39 @@ export interface Project {
         | 'Avg floor area'
         | 'Ownership'
         | 'Ceilings'
-        | 'Neighborhood'
         | 'Security'
         | 'District'
         | 'Sales started'
+        | 'Neighborhood'
+        | 'Per SqFt (Avg)'
+        | 'Total units'
+        | 'Stories'
+        | 'Price CAD'
       )[]
     | null;
   /**
-   * Which detail chips show in the listing icon stats on desktop. Maximum 10.
+   * Which detail chips show on desktop. Maximum 10. Leave empty for the default set: Price range, Property type, Beds, Baths, SqFt, Listing status, Move-in year, Total units (or Floors). Everything else shows in the details table under Overview; pick it here only if it must also be a chip.
    */
   desktopVisibleStats?:
     | (
-        | 'Listing status'
-        | 'Building status'
-        | 'Price CAD'
         | 'Price range'
-        | 'Address'
-        | 'Total units'
-        | 'Total Units'
-        | 'Floor plans'
-        | 'Stories'
-        | 'Floors'
         | 'Property type'
         | 'Beds'
         | 'Baths'
         | 'SqFt'
+        | 'Listing status'
         | 'Move in'
+        | 'Total Units'
+        | 'Floors'
+        | 'Building status'
+        | 'Address'
         | 'Units sold'
         | 'Units available'
+        | 'Floor plans'
         | 'Road'
         | 'Area'
         | 'Electricity'
         | 'Tap water'
-        | 'Per SqFt (Avg)'
         | 'Incentives'
         | 'Parking'
         | 'Carpark levels'
@@ -2835,10 +2940,14 @@ export interface Project {
         | 'Avg floor area'
         | 'Ownership'
         | 'Ceilings'
-        | 'Neighborhood'
         | 'Security'
         | 'District'
         | 'Sales started'
+        | 'Neighborhood'
+        | 'Per SqFt (Avg)'
+        | 'Total units'
+        | 'Stories'
+        | 'Price CAD'
       )[]
     | null;
   amenities?:
@@ -2986,6 +3095,16 @@ export interface Project {
         id?: string | null;
       }[]
     | null;
+  commercialAreas?:
+    | {
+        label?: string | null;
+        /**
+         * Image URL — or upload a file in Media and paste its URL here.
+         */
+        image: string;
+        id?: string | null;
+      }[]
+    | null;
   floorPlans?:
     | {
         planName: string;
@@ -3044,38 +3163,38 @@ export interface Project {
          * Image URL — or upload a file in Media and paste its URL here.
          */
         image?: string | null;
+        /**
+         * Optional 3D render of this plan. When set, the plan page shows a 2D/3D pair in the hero and lightbox.
+         */
+        image3d?: string | null;
         availability?: ('Available' | 'Limited' | 'Sold Out') | null;
         quickMoveIn?: boolean | null;
         id?: string | null;
       }[]
     | null;
   /**
-   * Which detail chips show on the floor plan page. Maximum 10.
+   * Which detail chips show on each floor plan page. Maximum 10. Leave empty for the default set: Price, Property type, Plan type, Beds, Baths, SqFt, Status, Move-in year.
    */
   floorPlanVisibleStats?:
     | (
-        | 'Listing status'
-        | 'Building status'
-        | 'Price CAD'
         | 'Price range'
-        | 'Address'
-        | 'Total units'
-        | 'Total Units'
-        | 'Floor plans'
-        | 'Stories'
-        | 'Floors'
         | 'Property type'
         | 'Beds'
         | 'Baths'
         | 'SqFt'
+        | 'Listing status'
         | 'Move in'
+        | 'Total Units'
+        | 'Floors'
+        | 'Building status'
+        | 'Address'
         | 'Units sold'
         | 'Units available'
+        | 'Floor plans'
         | 'Road'
         | 'Area'
         | 'Electricity'
         | 'Tap water'
-        | 'Per SqFt (Avg)'
         | 'Incentives'
         | 'Parking'
         | 'Carpark levels'
@@ -3083,18 +3202,16 @@ export interface Project {
         | 'Avg floor area'
         | 'Ownership'
         | 'Ceilings'
-        | 'Neighborhood'
         | 'Security'
         | 'District'
         | 'Sales started'
+        | 'Neighborhood'
+        | 'Per SqFt (Avg)'
+        | 'Total units'
+        | 'Stories'
+        | 'Price CAD'
       )[]
     | null;
-  hotDeal?: {
-    enabled?: boolean | null;
-    badge?: string | null;
-    title?: string | null;
-    description?: string | null;
-  };
   nearby?:
     | {
         category: 'School' | 'Hospital' | 'Shopping' | 'Restaurant' | 'Transport' | 'Landmark';
@@ -3226,6 +3343,15 @@ export interface Architect {
         title: string;
         issuer?: string | null;
         year?: string | null;
+        description?: string | null;
+        /**
+         * Image URL — or upload a file in Media and paste its URL here.
+         */
+        imageUrl?: string | null;
+        /**
+         * Optional — link to the award announcement/press release.
+         */
+        url?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -3289,6 +3415,15 @@ export interface MarketingCompany {
         title: string;
         issuer?: string | null;
         year?: string | null;
+        description?: string | null;
+        /**
+         * Image URL — or upload a file in Media and paste its URL here.
+         */
+        imageUrl?: string | null;
+        /**
+         * Optional — link to the award announcement/press release.
+         */
+        url?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -3352,6 +3487,15 @@ export interface SalesCompany {
         title: string;
         issuer?: string | null;
         year?: string | null;
+        description?: string | null;
+        /**
+         * Image URL — or upload a file in Media and paste its URL here.
+         */
+        imageUrl?: string | null;
+        /**
+         * Optional — link to the award announcement/press release.
+         */
+        url?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -3415,6 +3559,15 @@ export interface InteriorDesigner {
         title: string;
         issuer?: string | null;
         year?: string | null;
+        description?: string | null;
+        /**
+         * Image URL — or upload a file in Media and paste its URL here.
+         */
+        imageUrl?: string | null;
+        /**
+         * Optional — link to the award announcement/press release.
+         */
+        url?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -3454,6 +3607,18 @@ export interface Neighborhood {
    * Image URL — or upload a file in Media and paste its URL here.
    */
   heroImage?: string | null;
+  /**
+   * 3-5 short standout facts shown at the top of the neighborhood page (e.g. "16 km from central Colombo").
+   */
+  highlights?: string[] | null;
+  nearby?:
+    | {
+        category: 'School' | 'Hospital' | 'Shopping' | 'Restaurant' | 'Transport' | 'Landmark';
+        name: string;
+        distanceKm?: number | null;
+        id?: string | null;
+      }[]
+    | null;
   seo?: {
     seoTitle?: string | null;
     seoDescription?: string | null;
@@ -3483,6 +3648,10 @@ export interface ConstructionCompany {
   contact_email?: string | null;
   contact_phone?: string | null;
   services?: string[] | null;
+  /**
+   * This company offers combined design and construction (Design & Build) services.
+   */
+  isDesignBuild?: boolean | null;
   website?: string | null;
   /**
    * e.g. Colombo 03
@@ -3506,6 +3675,15 @@ export interface ConstructionCompany {
         title: string;
         issuer?: string | null;
         year?: string | null;
+        description?: string | null;
+        /**
+         * Image URL — or upload a file in Media and paste its URL here.
+         */
+        imageUrl?: string | null;
+        /**
+         * Optional — link to the award announcement/press release.
+         */
+        url?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -6663,10 +6841,6 @@ export interface ProjectsSelect<T extends boolean = true> {
   type_other?: T;
   ownership?: T;
   ownership_other?: T;
-  status?: T;
-  featured?: T;
-  isMoveInNow?: T;
-  isVerified?: T;
   coDevelopers?:
     | T
     | {
@@ -6676,8 +6850,28 @@ export interface ProjectsSelect<T extends boolean = true> {
       };
   additional_developers?: T;
   additional_builders?: T;
-  launchDate?: T;
+  isPublished?: T;
+  status?: T;
   completionYear?: T;
+  featured?: T;
+  isMoveInNow?: T;
+  isDesignBuild?: T;
+  isVerified?: T;
+  paymentPlanBadge?: T;
+  paymentPlanBadge_other?: T;
+  availabilityBadge?: T;
+  availabilityBadge_other?: T;
+  marketingBadges?: T;
+  locationBadges?: T;
+  hotDeal?:
+    | T
+    | {
+        enabled?: T;
+        badge?: T;
+        title?: T;
+        description?: T;
+      };
+  launchDate?: T;
   constructionStatus?: T;
   constructionStatus_other?: T;
   constructionStagePercent?: T;
@@ -6737,6 +6931,9 @@ export interface ProjectsSelect<T extends boolean = true> {
   floorAreaRange?: T;
   averageFloorAreaSqFt?: T;
   units?: T;
+  availableUnits?: T;
+  bookedUnits?: T;
+  soldUnits?: T;
   floors?: T;
   carparkLevels?: T;
   parkingCount?: T;
@@ -6750,6 +6947,7 @@ export interface ProjectsSelect<T extends boolean = true> {
   monthlyMaintenancePerSqft?: T;
   summary?: T;
   description?: T;
+  highlights?: T;
   heroImage?: T;
   gallery?:
     | T
@@ -6775,7 +6973,19 @@ export interface ProjectsSelect<T extends boolean = true> {
         id?: T;
       };
   interactiveMapUrl?: T;
+  streetViewUrl?: T;
   view360Url?: T;
+  socialLinks?:
+    | T
+    | {
+        facebook?: T;
+        instagram?: T;
+        linkedin?: T;
+        twitter?: T;
+        whatsapp?: T;
+        youtube?: T;
+        tiktok?: T;
+      };
   mobileVisibleStats?: T;
   desktopVisibleStats?: T;
   amenities?:
@@ -6801,6 +7011,13 @@ export interface ProjectsSelect<T extends boolean = true> {
             };
         id?: T;
       };
+  commercialAreas?:
+    | T
+    | {
+        label?: T;
+        image?: T;
+        id?: T;
+      };
   floorPlans?:
     | T
     | {
@@ -6821,19 +7038,12 @@ export interface ProjectsSelect<T extends boolean = true> {
         parkingType_other?: T;
         startingPriceLkr?: T;
         image?: T;
+        image3d?: T;
         availability?: T;
         quickMoveIn?: T;
         id?: T;
       };
   floorPlanVisibleStats?: T;
-  hotDeal?:
-    | T
-    | {
-        enabled?: T;
-        badge?: T;
-        title?: T;
-        description?: T;
-      };
   nearby?:
     | T
     | {
@@ -7039,6 +7249,7 @@ export interface ConstructionCompaniesSelect<T extends boolean = true> {
   contact_email?: T;
   contact_phone?: T;
   services?: T;
+  isDesignBuild?: T;
   website?: T;
   location?: T;
   establishedYear?: T;
@@ -7060,6 +7271,9 @@ export interface ConstructionCompaniesSelect<T extends boolean = true> {
         title?: T;
         issuer?: T;
         year?: T;
+        description?: T;
+        imageUrl?: T;
+        url?: T;
         id?: T;
       };
   pressMentions?:
@@ -7120,6 +7334,9 @@ export interface MarketingCompaniesSelect<T extends boolean = true> {
         title?: T;
         issuer?: T;
         year?: T;
+        description?: T;
+        imageUrl?: T;
+        url?: T;
         id?: T;
       };
   pressMentions?:
@@ -7178,6 +7395,9 @@ export interface SalesCompaniesSelect<T extends boolean = true> {
         title?: T;
         issuer?: T;
         year?: T;
+        description?: T;
+        imageUrl?: T;
+        url?: T;
         id?: T;
       };
   pressMentions?:
@@ -7236,6 +7456,9 @@ export interface ArchitectsSelect<T extends boolean = true> {
         title?: T;
         issuer?: T;
         year?: T;
+        description?: T;
+        imageUrl?: T;
+        url?: T;
         id?: T;
       };
   pressMentions?:
@@ -7294,6 +7517,9 @@ export interface InteriorDesignersSelect<T extends boolean = true> {
         title?: T;
         issuer?: T;
         year?: T;
+        description?: T;
+        imageUrl?: T;
+        url?: T;
         id?: T;
       };
   pressMentions?:
@@ -7330,6 +7556,15 @@ export interface NeighborhoodsSelect<T extends boolean = true> {
   province?: T;
   description?: T;
   heroImage?: T;
+  highlights?: T;
+  nearby?:
+    | T
+    | {
+        category?: T;
+        name?: T;
+        distanceKm?: T;
+        id?: T;
+      };
   seo?:
     | T
     | {

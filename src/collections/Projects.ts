@@ -22,6 +22,7 @@ import {
   SECURITY_OPTIONS,
   seoFields,
   selectWithOther,
+  socialLinksField,
   TAP_WATER_OPTIONS,
   unitFeaturesField,
 } from './shared-fields'
@@ -39,47 +40,89 @@ const PROJECT_STATUS_OPTIONS = [
   'Launching Soon',
   'Nearly Sold Out',
   'Nearly Complete',
+  'Completed',
 ]
 
-// Matches ProjectStatLabel in src/types/index.ts verbatim, including the
-// "Total units"/"Total Units" duplicate already present there.
-const PROJECT_STAT_LABEL_OPTIONS = [
-  'Listing status',
-  'Building status',
-  'Price CAD',
-  'Price range',
-  'Address',
-  'Total units',
-  'Total Units',
-  'Floor plans',
-  'Stories',
-  'Floors',
-  'Property type',
-  'Beds',
-  'Baths',
-  'SqFt',
-  'Move in',
-  'Units sold',
-  'Units available',
-  'Road',
-  'Area',
-  'Electricity',
-  'Tap water',
-  'Per SqFt (Avg)',
-  'Incentives',
-  'Parking',
-  'Carpark levels',
-  'Avg unit price',
-  'Avg floor area',
-  'Ownership',
-  'Ceilings',
-  'Neighborhood',
-  'Security',
-  'District',
-  'Sales started',
+const PAYMENT_PLAN_BADGE_OPTIONS = [
+  'Flexible Payment Plan',
+  '0% Down Payment',
+  'Easy Installments',
+  'Interest-Free Installments',
+  'Early Bird Pricing',
 ]
+
+const AVAILABILITY_BADGE_OPTIONS = ['Limited Units', 'Last Few Units']
+
+// Deliberately excludes anything with its own dedicated field already:
+// "Featured" (its own checkbox, drives sort/scoring), status values (the
+// Status select above), ownership types and amenities (Ownership/Amenities
+// fields) — this is only for badges with no existing home.
+const MARKETING_BADGE_OPTIONS = [
+  'Premium',
+  'Luxury',
+  'Exclusive',
+  'Popular',
+  'Best Seller',
+  'Special Offer',
+  'Price Reduced',
+  'Early Bird',
+  'Investor Friendly',
+  'High Rental Potential',
+  'BOI Approved Project',
+]
+
+const LOCATION_BADGE_OPTIONS = ['Beachfront', 'Ocean View', 'City View', 'Mountain View', 'Nature View', 'Prime Location']
+
+// Values match ProjectStatLabel in src/types/index.ts verbatim (they are a
+// Postgres enum — never rename a value, only its label). Labels are the
+// names the chips actually show on the page (STAT_DISPLAY_LABEL in
+// components.tsx), so an editor picks "Move-in year" and sees "Move-in year".
+// Leaving every picker empty gives the default chip set documented in
+// docs/design.md ("Stats chips vs fact sheet").
+const PROJECT_STAT_LABEL_OPTIONS = [
+  { label: 'Price range', value: 'Price range' },
+  { label: 'Property type', value: 'Property type' },
+  { label: 'Beds', value: 'Beds' },
+  { label: 'Baths', value: 'Baths' },
+  { label: 'SqFt', value: 'SqFt' },
+  { label: 'Listing status', value: 'Listing status' },
+  { label: 'Move-in year', value: 'Move in' },
+  { label: 'Total units', value: 'Total Units' },
+  { label: 'Floors', value: 'Floors' },
+  { label: 'Construction status', value: 'Building status' },
+  { label: 'Address', value: 'Address' },
+  { label: 'Units sold', value: 'Units sold' },
+  { label: 'Units available', value: 'Units available' },
+  { label: 'Floor plans', value: 'Floor plans' },
+  { label: 'Road', value: 'Road' },
+  { label: 'Area', value: 'Area' },
+  { label: 'Electricity', value: 'Electricity' },
+  { label: 'Tap water', value: 'Tap water' },
+  { label: 'Incentives', value: 'Incentives' },
+  { label: 'Parking', value: 'Parking' },
+  { label: 'Carpark levels', value: 'Carpark levels' },
+  { label: 'Avg unit price', value: 'Avg unit price' },
+  { label: 'Avg floor area', value: 'Avg floor area' },
+  { label: 'Ownership', value: 'Ownership' },
+  { label: 'Ceilings', value: 'Ceilings' },
+  { label: 'Security', value: 'Security' },
+  { label: 'District', value: 'District' },
+  { label: 'Sales started', value: 'Sales started' },
+  { label: 'Neighborhood', value: 'Neighborhood' },
+  // Retired values — kept only because they exist in the enum. None of
+  // these renders a chip any more: "Per SqFt (Avg)" was a derived number
+  // (price ÷ first plan's size), the rest are legacy aliases.
+  { label: 'Per SqFt (Avg) — retired, no longer shown', value: 'Per SqFt (Avg)' },
+  { label: 'Total units (legacy alias — use "Total units")', value: 'Total units' },
+  { label: 'Stories (legacy alias — use "Floors")', value: 'Stories' },
+  { label: 'Price CAD (legacy — unused)', value: 'Price CAD' },
+]
+
+const STAT_PICKER_DEFAULTS_NOTE =
+  'Leave empty for the default set: Price range, Property type, Beds, Baths, SqFt, Listing status, Move-in year, Total units (or Floors). Everything else shows in the details table under Overview; pick it here only if it must also be a chip.'
 
 const galleryField = galleryLikeField('gallery')
+const commercialAreasField = galleryLikeField('commercialAreas', 'Commercial Areas')
 
 export const Projects: CollectionConfig = {
   slug: 'projects',
@@ -135,16 +178,6 @@ export const Projects: CollectionConfig = {
             ...selectWithOther('tapWater', 'Tap Water', TAP_WATER_OPTIONS),
             ...selectWithOther('type', 'Type', PROJECT_TYPE_OPTIONS),
             ...selectWithOther('ownership', 'Ownership', OWNERSHIP_OPTIONS),
-            { name: 'status', type: 'select', options: PROJECT_STATUS_OPTIONS, index: true },
-            { name: 'featured', type: 'checkbox', defaultValue: false },
-            { name: 'isMoveInNow', type: 'checkbox', defaultValue: false },
-            {
-              name: 'isVerified',
-              type: 'checkbox',
-              label: 'Is Verified',
-              defaultValue: false,
-              admin: { readOnly: true, description: 'Auto-set true once every item on the Verification tab is checked off.' },
-            },
             {
               name: 'coDevelopers',
               type: 'array',
@@ -174,13 +207,88 @@ export const Projects: CollectionConfig = {
               label: 'Additional Builders',
               admin: { description: 'Construction companies / builders credited on this project.' },
             },
+            {
+              name: 'isPublished',
+              type: 'checkbox',
+              label: 'Published (visible on live site)',
+              defaultValue: false,
+              admin: {
+                description:
+                  'Off by default for new listings — while off, this project is hidden from the live site (listings, search, sitemap) but still viewable at the Preview Link field below. Turn on when ready to go live.',
+              },
+            },
+            {
+              name: 'previewLinkPanel',
+              type: 'ui',
+              label: 'Preview Link',
+              admin: {
+                components: { Field: '@/components/payload/PreviewLinkPanel#PreviewLinkPanel' },
+              },
+            },
+          ],
+        },
+        {
+          label: 'Status & Badges',
+          fields: [
+            { name: 'status', type: 'select', options: PROJECT_STATUS_OPTIONS, index: true },
+            { name: 'completionYear', type: 'number', label: 'Move-In Year', admin: { description: 'Shown as a "Move in {year}" badge on the listing.' } },
+            { name: 'featured', type: 'checkbox', defaultValue: false },
+            { name: 'isMoveInNow', type: 'checkbox', label: 'Move in now', defaultValue: false },
+            { name: 'isDesignBuild', type: 'checkbox', label: 'Design & Build', defaultValue: false, admin: { description: 'This project was delivered under a Design & Build contract model.' } },
+            {
+              name: 'isVerified',
+              type: 'checkbox',
+              label: 'Is Verified',
+              defaultValue: false,
+              admin: { readOnly: true, description: 'Auto-set true once every item on the Verification tab is checked off.' },
+            },
+            ...selectWithOther(
+              'paymentPlanBadge',
+              'Payment Plan Badge',
+              PAYMENT_PLAN_BADGE_OPTIONS,
+              'Optional — shows as a badge on the listing card, same way Featured does. Free to set, no payment required (like Featured, you can grant it directly).',
+            ),
+            ...selectWithOther(
+              'availabilityBadge',
+              'Availability Badge',
+              AVAILABILITY_BADGE_OPTIONS,
+              'Optional — shows as a badge alongside the others (e.g. "Only 3 units left" via Other).',
+            ),
+            {
+              name: 'marketingBadges',
+              type: 'select',
+              label: 'Marketing Badges',
+              hasMany: true,
+              options: MARKETING_BADGE_OPTIONS,
+              admin: { description: 'Pick any that apply — each shows as its own badge on the listing, same style as Featured. Note: "Status" (Coming Soon/Now Selling/etc.) and property features (Freehold, Pool, Gym, Security, EV Charging, Gated Community...) already have their own dedicated fields (Overview tab\'s Status, and Ownership/Amenities) — no need to duplicate those here.' },
+            },
+            {
+              name: 'locationBadges',
+              type: 'select',
+              label: 'Location Badges',
+              hasMany: true,
+              options: LOCATION_BADGE_OPTIONS,
+              admin: { description: 'Pick any that apply — shows alongside the other badges on the listing.' },
+            },
+            {
+              type: 'collapsible',
+              label: 'Hot Deal Banner',
+              admin: { initCollapsed: true, className: 'status-verification-collapsible' },
+              fields: [
+                { name: 'hotDeal', type: 'group', fields: [
+                  { name: 'enabled', type: 'checkbox', defaultValue: false },
+                  { name: 'badge', type: 'text' },
+                  { name: 'title', type: 'text' },
+                  { name: 'description', type: 'text' },
+                ] },
+              ],
+            },
           ],
         },
         {
           label: 'Timeline',
           fields: [
             { name: 'launchDate', type: 'date', admin: { date: { pickerAppearance: 'dayOnly' } } },
-            { name: 'completionYear', type: 'number' },
             ...selectWithOther('constructionStatus', 'Construction Status', CONSTRUCTION_STATUS_OPTIONS),
             {
               name: 'constructionStagePercent',
@@ -232,7 +340,10 @@ export const Projects: CollectionConfig = {
             { name: 'bathrooms', type: 'text' },
             { name: 'floorAreaRange', type: 'text' },
             { name: 'averageFloorAreaSqFt', type: 'number' },
-            { name: 'units', type: 'number' },
+            { name: 'units', type: 'number', label: 'Total Units' },
+            { name: 'availableUnits', type: 'number', label: 'Available Units' },
+            { name: 'bookedUnits', type: 'number', label: 'Booked Units' },
+            { name: 'soldUnits', type: 'number', label: 'Sold Units' },
             { name: 'floors', type: 'number' },
             { name: 'carparkLevels', type: 'number' },
             { name: 'parkingCount', type: 'number', label: 'Parking Count' },
@@ -249,6 +360,7 @@ export const Projects: CollectionConfig = {
           fields: [
             { name: 'summary', type: 'textarea' },
             { name: 'description', type: 'textarea' },
+            { name: 'highlights', type: 'text', hasMany: true, label: 'Key Highlights', admin: { description: '3-5 short standout points shown above the Overview text (e.g. "South Asia\'s highest sky bridge").' } },
             { name: 'heroImage', type: 'text', admin: { description: 'Image URL — or upload a file in Media and paste its URL here.' } },
             galleryField,
             { name: 'brochureUrl', type: 'text', label: 'Brochure URL', admin: { description: 'PDF URL — or upload a file in Media and paste its URL here.' } },
@@ -270,7 +382,9 @@ export const Projects: CollectionConfig = {
               ],
             },
             { name: 'interactiveMapUrl', type: 'text', admin: { description: 'Embed link (e.g. Google My Maps) — or upload a file in Media and paste its URL here.' } },
+            { name: 'streetViewUrl', type: 'text', label: 'Street View URL', admin: { description: "Optional — paste a specific Google Street View embed link (from Google Maps' Share > Embed a map) to override the default view generated from Coordinates above." } },
             { name: 'view360Url', type: 'text', label: '360° View URL', admin: { description: 'Embed link (e.g. a 360° panorama tour) — or upload an image/file in Media and paste its URL here.' } },
+            socialLinksField,
             {
               // Same access level as floorPlanVisibleStats (Floor Plans
               // tab) — developer/builder-editable, not admin-only.
@@ -279,7 +393,7 @@ export const Projects: CollectionConfig = {
               hasMany: true,
               options: PROJECT_STAT_LABEL_OPTIONS,
               validate: maxSelections,
-              admin: { description: 'Which detail chips show in the listing icon stats on mobile. Maximum 10.' },
+              admin: { description: `Which detail chips show on mobile. Maximum 10. Leave empty for the first six of the desktop set.` },
             },
             {
               name: 'desktopVisibleStats',
@@ -287,7 +401,7 @@ export const Projects: CollectionConfig = {
               hasMany: true,
               options: PROJECT_STAT_LABEL_OPTIONS,
               validate: maxSelections,
-              admin: { description: 'Which detail chips show in the listing icon stats on desktop. Maximum 10.' },
+              admin: { description: `Which detail chips show on desktop. Maximum 10. ${STAT_PICKER_DEFAULTS_NOTE}` },
             },
           ],
         },
@@ -296,6 +410,7 @@ export const Projects: CollectionConfig = {
           fields: [
             amenitiesField,
             unitFeaturesField,
+            commercialAreasField,
           ],
         },
         {
@@ -318,6 +433,7 @@ export const Projects: CollectionConfig = {
                 ...selectWithOther('parkingType', 'Parking Type', PARKING_TYPE_OPTIONS),
                 { name: 'startingPriceLkr', type: 'number', required: true },
                 { name: 'image', type: 'text', admin: { description: 'Image URL — or upload a file in Media and paste its URL here.' } },
+                { name: 'image3d', type: 'text', label: '3D View Image', admin: { description: 'Optional 3D render of this plan. When set, the plan page shows a 2D/3D pair in the hero and lightbox.' } },
                 {
                   name: 'availability',
                   type: 'select',
@@ -338,17 +454,7 @@ export const Projects: CollectionConfig = {
               hasMany: true,
               options: PROJECT_STAT_LABEL_OPTIONS,
               validate: maxSelections,
-              admin: { description: 'Which detail chips show on the floor plan page. Maximum 10.' },
-            },
-            {
-              name: 'hotDeal',
-              type: 'group',
-              fields: [
-                { name: 'enabled', type: 'checkbox', defaultValue: false },
-                { name: 'badge', type: 'text' },
-                { name: 'title', type: 'text' },
-                { name: 'description', type: 'text' },
-              ],
+              admin: { description: 'Which detail chips show on each floor plan page. Maximum 10. Leave empty for the default set: Price, Property type, Plan type, Beds, Baths, SqFt, Status, Move-in year.' },
             },
           ],
         },

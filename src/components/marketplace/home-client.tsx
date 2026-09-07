@@ -150,6 +150,13 @@ export function HomeClient({ projects }: { projects: Project[] }) {
   const t = copy[language];
 
   const featuredProjects = useMemo(() => projects.filter((project) => project.isFeatured).slice(0, 4), [projects]);
+  const newListings = useMemo(() => {
+    const featuredSlugs = new Set(featuredProjects.map((project) => project.slug));
+    return [...projects]
+      .filter((project) => !featuredSlugs.has(project.slug))
+      .sort((a, b) => (b.launchDate ?? "").localeCompare(a.launchDate ?? ""))
+      .slice(0, 4);
+  }, [projects, featuredProjects]);
   const searchSuggestions = useMemo(() => {
     const query = searchTerm.trim().toLowerCase();
     if (!query) return [];
@@ -175,7 +182,7 @@ export function HomeClient({ projects }: { projects: Project[] }) {
     router.push(suggestion.href);
   };
   const heroQuickLinks = [
-    { path: "/developers/prime", breadcrumbLabel: "Prime Lands", isHighlighted: true },
+    { path: "/developers/prime-lands", breadcrumbLabel: "Prime Lands", isHighlighted: true },
     ...allProjectCategories,
     { path: "/land", breadcrumbLabel: "Lands" },
   ];
@@ -253,9 +260,44 @@ export function HomeClient({ projects }: { projects: Project[] }) {
     ) : null}
 
     <main className="home-content">
+      <section className="featured-listings-section" aria-label="Featured listings">
+        <div className="featured-listings-head">
+          <h2>Featured listings</h2>
+          <p className="featured-listings-subhead">The newest and best-performing new developments across Sri Lanka, updated daily.</p>
+        </div>
+        <div className="featured-listings-shell">
+          <div className="home-card-grid featured-listings-grid">
+            {featuredProjects.map((project) => (
+              <ListingGridCard key={`featured-${project.slug}`} project={project} />
+            ))}
+          </div>
+          <div className="featured-listings-footer">
+            <Link href="/search" className="featured-listings-button">View all listings</Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="new-listings-section" aria-label="New listings">
+        <div className="featured-listings-head">
+          <h2>New listings</h2>
+          <p className="featured-listings-subhead">The latest developments just added to Lanka New Homes.</p>
+        </div>
+        <div className="featured-listings-shell">
+          <div className="home-card-grid featured-listings-grid">
+            {newListings.map((project) => (
+              <ListingGridCard key={`new-${project.slug}`} project={project} />
+            ))}
+          </div>
+          <div className="featured-listings-footer new-listings-footer">
+            <Link href="/search" className="featured-listings-button">View all new listings</Link>
+          </div>
+        </div>
+      </section>
+
       <section className="neighborhoods-section" aria-label="Find the city for you">
         <div className="featured-listings-head">
           <h2>Explore by city</h2>
+          <p className="featured-listings-subhead">Browse new homes and developments in Sri Lanka's most popular cities and towns.</p>
         </div>
         <div className="neighborhoods-grid">
           {neighborhoods.map((neighborhood) => (
@@ -267,22 +309,6 @@ export function HomeClient({ projects }: { projects: Project[] }) {
           ))}
         </div>
         <Link href="/search" className="neighborhood-section-explore">View more cities</Link>
-      </section>
-
-      <section className="featured-listings-section" aria-label="Featured listings">
-        <div className="featured-listings-head">
-          <h2>Featured listings</h2>
-        </div>
-        <div className="featured-listings-shell">
-          <div className="home-card-grid featured-listings-grid">
-            {featuredProjects.map((project) => (
-              <ListingGridCard key={`featured-${project.slug}`} project={project} />
-            ))}
-          </div>
-          <div className="featured-listings-footer">
-            <Link href="/search" className="featured-listings-button">view all listings</Link>
-          </div>
-        </div>
       </section>
 
     </main>

@@ -78,13 +78,34 @@ export const Users: CollectionConfig = {
       async ({ doc, operation, req }) => {
         if (operation === 'create' && doc.role === 'developer' && doc.company_name) {
           const companyName = doc.company_name as string
-          const slug = slugify(companyName) || `developer-${doc.id}`
-          const developer = await req.payload.create({
+          const email = (doc.email as string)?.toLowerCase()
+
+          // An admin may have pre-built this developer's whole profile
+          // (and projects) before they ever signed up, using the same
+          // contact email — claim that profile instead of creating a
+          // duplicate the admin would otherwise have to find and merge by
+          // hand (see the Prime Lands cleanup precedent).
+          const { docs: unclaimed } = await req.payload.find({
             collection: 'developers',
-            data: { slug, name: companyName, contact_email: doc.email },
+            where: { user: { exists: false } },
+            limit: 100,
+            depth: 0,
             overrideAccess: true,
             req,
           })
+          const preCreated = unclaimed.find((d) => (d.contact_email as string | undefined)?.toLowerCase() === email)
+
+          const developerId =
+            preCreated?.id ??
+            (
+              await req.payload.create({
+                collection: 'developers',
+                data: { slug: slugify(companyName) || `developer-${doc.id}`, name: companyName, contact_email: doc.email },
+                overrideAccess: true,
+                req,
+              })
+            ).id
+
           // A second step, not part of the create data above: Developers'
           // own beforeChange hook forces `user` from req.user on a non-admin
           // create, and there's no authenticated req.user in this
@@ -92,7 +113,7 @@ export const Users: CollectionConfig = {
           // instead, which that hook only touches on `create`.
           await req.payload.update({
             collection: 'developers',
-            id: developer.id,
+            id: developerId,
             data: { user: doc.id },
             overrideAccess: true,
             req,

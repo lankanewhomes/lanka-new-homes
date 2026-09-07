@@ -88,6 +88,16 @@ visitor picks a tab). The tab bar below the media area — Photos / Videos /
 Map / Block Plan / Road Map / Interactive map / Virtual tours — and the full
 lightbox gallery are unchanged either way.
 
+**Floor plan / plot pages (2D + 3D):** a floor plan's hero is its 2D
+drawing (`heroImageOverride`), shown `object-fit: contain` (`.is-floor-plan`)
+so edge labels like "TOTAL FLOOR AREA" aren't cropped. If the plan also has
+an `image3d` (optional, e.g. Imaarat Unit A's 3D render), `ProjectHero`
+builds a two-item `photoItems` — "{plan} — 2D Floor Plan" and "{plan} — 3D
+View" — so the 2D/3D pair flips via the lightbox arrows/swipe and both show
+in the hero grid. `.listing-hero-grid.two-photo` collapses the side column
+to one row so the lone 3D thumbnail fills it (`.single-photo` handles the
+no-3D case by dropping the side column entirely).
+
 ### Photo lightbox
 
 `.listing-photo-lightbox` (full-screen, `position: fixed; inset: 0;`) is the
@@ -122,11 +132,29 @@ per project and order isn't stable.
 | Listing status ("Coming Soon", "Now Selling"...) | `.listing-hero-tag-status` | Green |
 | "Move in {year}" | `.listing-hero-tag-move-in` | Blue |
 | Hot deal | `.listing-hero-tag-hot-deal` | Red |
-| Move-In Now / Quick Move-In / Featured | `.listing-badge-pill` (hero) / `.home-card-badge-row span` (cards) / `.plans-home-badge-row span` (floor plan cards) | Purple |
+| Move-In Now / Quick Move-In / Featured | `.listing-badge-pill` (hero) / `.home-card-badge-row span` (cards) / `.plans-home-badge-row span` (floor plan cards) | Purple (Move-In Now) / Gold (`.badge-featured`) |
+| Availability badge ("Limited Units"…) | `.listing-badge-pill.badge-availability` | Orange |
+| Marketing badges (Premium, BOI Approved Project…) | `.listing-badge-pill.badge-marketing` | Rose |
+| Location badges (Ocean View, Beachfront…) | `.listing-badge-pill.badge-location` | Teal |
+| Untyped extra badges (e.g. `land.badges` strings) | `.listing-badge-pill.badge-extra` | Teal (same as location) |
 
 Badges are driven by `Project.isFeatured`, `Project.isMoveInNow`, and
 per-floor-plan `FloorPlan.quickMoveIn` — set in the project editor's
 "Badges" box.
+
+**Badge categories (Status & Badges tab)**: Status (Coming Soon/Now Selling/
+etc.) and property features (Freehold, Pool, Gym, Security, EV Charging,
+Gated Community...) already had dedicated fields before badges existed —
+Status and Ownership/Amenities respectively — so they aren't duplicated as
+badges. Three genuinely new categories were added instead:
+`availabilityBadge` (+ Other) — Limited Units / Last Few Units;
+`marketingBadges` (multi-select) — Premium, Luxury, Exclusive, Popular, Best
+Seller, Special Offer, Price Reduced, Early Bird, Investor Friendly, High
+Rental Potential, BOI Approved Project; `locationBadges` (multi-select) —
+Beachfront, Ocean View, City View, Mountain View, Nature View, Prime
+Location. All three feed into `ProjectHero`'s existing `extraBadges` prop
+(`src/app/projects/[slug]/page.tsx`) rather than new rendering — they render
+identically to Featured/Move-In Now, just with different label text.
 
 ## Category listing pages (`/projects/*`, and the pattern for future
 directory-style pages like `/construction-companies/*`)
@@ -212,6 +240,38 @@ sort, list/map toggle) + `map-pane.tsx` (lazy-loaded map visual).
   just the panel's own `calc(100% - 80px)` in isolation — ignoring its
   parent's cap — looks identical at very wide viewports but drifts out of
   alignment by 48px below ~1338px wide; this happened once already too.
+  A fourth instance of the same root cause: `.listing-hero-panel` swaps to a
+  *completely different* mobile formula below 980px (`.listing-hero` itself
+  becomes `calc(100% - 24px)`, then the panel is `calc(100% - 14px)` inside
+  that — collapsing to `calc(100% - 38px)`, which `.project-page-content`
+  already mirrors at that breakpoint). `.site-breadcrumb-inner-detail` had no
+  mobile override at all, so it kept using the desktop `min(1210px,
+  calc(100% - 128px))` formula on phones too — 64px of margin per side
+  instead of 19px, clearly too indented next to the hero image below it. Any
+  width formula copied from a desktop rule needs its own mobile breakpoint
+  checked too, not just its desktop derivation.
+- **Recurring bug pattern — breadcrumb vs. content-container width mismatch**:
+  this has now happened three times (the two above, plus a third: the
+  Developer/Architect/Construction Company/Marketing Company/Sales
+  Company/Interior Designer profile pages). Every profile page shares
+  `.developer-page` for its width — but `.developer-page` used to be
+  `max-width: 1160px; padding: 36px 22px 90px` (a *different* formula from
+  the breadcrumb's `width: min(1290px, calc(100% - 48px))`), so its content
+  didn't line up with the breadcrumb above it. Worse, the non-Developer
+  profile routes (Architects, Construction/Marketing/Sales Companies,
+  Interior Designers) didn't even apply `.developer-page` to their page at
+  all — `CompanyProfileDetailView` returns `.developer-profile` directly
+  with no width wrapper around it, so it rendered edge-to-edge (full
+  viewport width, no cap at all) until each of those 5 route files was
+  fixed to wrap it in `<div className="developer-page">`, matching how
+  `/developers/[slug]/page.tsx` already did it. `.developer-page` itself was
+  also changed to the exact same `width: min(1290px, calc(100% - 48px));
+  margin: 0 auto` formula as the breadcrumb (dropping the mismatched
+  max-width+padding combo) so the two are now byte-for-byte identical, not
+  just visually close. **Lesson, worth repeating:** when a bug report says
+  two elements should "line up," don't eyeball a screenshot — measure both
+  elements' `boundingBox()` via Playwright and diff the numbers. A visual
+  pass has missed this exact bug at least twice this project.
 - **Map**: real map — MapLibre GL (`maplibre-gl` + `react-map-gl/maplibre`)
   against OpenFreeMap vector tiles (`https://tiles.openfreemap.org/styles/liberty`),
   not a decorative visual layer. Always `next/dynamic(..., { ssr: false })`
@@ -416,6 +476,62 @@ same step-isolation shape (`stepVisible`, one colored box per step) rather
 than the older scroll-to-anchor approach — any brand-new wizard should start
 from this pattern directly instead of the pre-Neighborhood-step version.
 
+## Stats chips vs fact sheet (project, floor-plan, plot pages)
+
+Two places on a detail page list facts: the icon **chips** right under the
+hero (`ProjectStatsChips`, `.listing-hero-stats-chips`) and the 2-per-row
+**fact sheet** under Overview (`ProjectNarrativeDetails`,
+`.project-fact-sheet`). The split, decided 2026-09-07:
+
+- **Chips = the listing-card facts** a buyer filters on — short, one-line
+  values only. Project default (max 8 desktop, first 6 on mobile, in this
+  order): Price range · Property type · Beds · Baths · SqFt · Listing status ·
+  Move-in year · Total units (Floors fills in only when there's no unit
+  count). Floor-plan/plot page default: Price · Property type · Plan type ·
+  Beds · Baths · SqFt (exact, no "From") · Status · Move-in year.
+- **Fact sheet = the full reference table**, in this fixed order (set by the
+  owner 2026-09-07): Property type · Listing status · Construction status ·
+  Sales started · Move-in year · Price range · Avg unit price · Per SqFt
+  (Avg) · Incentives · Total units · Units available · Units sold · Floors ·
+  Floor plans · Beds · Baths · SqFt · Avg floor area · Ceilings · Ownership ·
+  Parking · Carpark levels · Security · Electricity · Tap water · Address ·
+  Road · Area · Neighborhood · District — then the rows that weren't in that
+  list: Construction started, Developer, Architect, Marketing company, Sales
+  company, Interior designer (profile links). A row is skipped when its
+  field is empty. Units available/sold come from the `availableUnits` /
+  `soldUnits` fields, never from counting plan types; "Per SqFt (Avg)" is the
+  developer's `averagePricePerSqft` text, never computed.
+- **Mobile fact sheet (≤980px)** is a shorter list in its own order
+  (`MOBILE_FACT_SHEET_ORDER`): Property type · Listing status · Construction
+  status · Move-in year · Price range · Per SqFt (Avg) · Beds · Baths · SqFt ·
+  Total units · Floors · Ownership · Parking · Address · Neighborhood ·
+  District. Both tables render (`.project-fact-sheet-desktop` /
+  `.project-fact-sheet-mobile`); CSS shows one per breakpoint.
+- **Column-major fill**: the two columns fill top-to-bottom — first half of
+  the ordered list down the left column (top priority), second half down the
+  right (least) — not left-to-right across each row.
+- **Repeating is fine for headline facts** (Price range, Beds, Baths, SqFt,
+  Listing status, Total units/Floors appear in both). Long text (Address,
+  Electricity, Tap water, Ceilings, Security) never becomes a chip by
+  default — Address is already in the hero location line.
+- **One name per field, everywhere** (chips, fact sheet, admin picker):
+  "Move-in year" (not "Move in" / "Completed in"), "Construction status" (not
+  "Building status"), "Property type" (not "Building type" / "Project type"),
+  "Total units". Chip *keys* are the stored picker enum values and never
+  change; the display name comes from `STAT_DISPLAY_LABEL` in
+  `components.tsx`, and the Payload options carry matching `label`s.
+- **No derived numbers as chips**: "Per SqFt (Avg)" (price ÷ first plan's
+  size) is retired. The only derived value is the project SqFt range, which
+  is just min–max of the developer's own per-plan sizes
+  (`deriveFloorAreaRange` in `project-store.ts`) and is overridden by a typed
+  `floorAreaRange`.
+- The per-project admin pickers (`desktopVisibleStats`, `mobileVisibleStats`,
+  `floorPlanVisibleStats`) still override everything (cap 10) — the defaults
+  only apply when a picker is empty, so a new project looks right unconfigured.
+- Mobile: `.stats-chips-mobile-limited` on the wrapper hides chips without
+  `.mobile-stat-visible` at ≤980px. The land page's hand-built chip row
+  doesn't use the wrapper class and is unaffected.
+
 ## Land detail page (`/land/{slug}`)
 
 Deliberately reuses the *same* CSS classes as the project detail page
@@ -456,11 +572,9 @@ Community, etc.), not building amenities, rendered as a simple bordered-chip
 grid (`src/app/land/[slug]/page.tsx`, mirroring the plain `AmenityGrid`
 component's markup rather than the interactive `AmenitiesShowcaseSection`,
 which is tightly coupled to `Amenity["name"]`'s fixed vocabulary and
-per-amenity gallery-image matching that doesn't apply to land). There is
-**no** Key Features section on land — `unitFeatures` (Kitchen/Bathroom/
-Flooring/etc.) describes in-unit building finishes, which don't exist on an
-empty parcel; skipped deliberately rather than added as a meaningless empty
-section.
+per-amenity gallery-image matching that doesn't apply to land). Land and
+plot pages render `KeyFeaturesSection` from `land.unitFeatures` when it has
+content and render nothing otherwise — the section is never shown empty.
 
 **Convention going forward:** any new single-item detail page (a future
 inventory type beyond Project/Land) should reuse this same class set for the

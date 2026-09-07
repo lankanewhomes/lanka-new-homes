@@ -5,6 +5,7 @@ import { landToProjectShape } from "@/lib/land-to-project";
 import { getDeveloperBySlug } from "@/lib/developer-store";
 import {
   AmenitiesShowcaseSection,
+  KeyFeaturesSection,
   PlansAndHomesSection,
   PricingInformationLayout,
   ProjectDescriptionSection,
@@ -30,21 +31,22 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: PlotPageProps): Promise<Metadata> {
   const { slug, plotId } = await params;
   const land = await getLandBySlug(slug);
-  const plot = land?.plots?.find((item) => item.id === plotId);
+  const project = land ? landToProjectShape(land) : undefined;
+  const plot = project?.floorPlans.find((item) => item.slug === plotId || item.id === plotId);
 
   if (!land || !plot) {
     return { title: "Plot Not Found", robots: { index: false, follow: false } };
   }
 
   return {
-    title: `${plot.name} - ${land.title}`,
-    description: `${plot.name} at ${land.title}: ${plot.sizePerches} perches.`,
-    alternates: { canonical: `/land/${land.slug}/plots/${plot.id}` },
+    title: `${plot.planName} - ${land.title}`,
+    description: `${plot.planName} at ${land.title}: ${plot.floorAreaSqFt} perches.`,
+    alternates: { canonical: `/land/${land.slug}/plots/${plot.slug ?? plot.id}` },
     openGraph: {
-      title: `${plot.name} - ${land.title}`,
-      description: `Explore ${plot.name} at ${land.title}.`,
-      url: `/land/${land.slug}/plots/${plot.id}`,
-      images: [{ url: land.heroImage, alt: plot.name }],
+      title: `${plot.planName} - ${land.title}`,
+      description: `Explore ${plot.planName} at ${land.title}.`,
+      url: `/land/${land.slug}/plots/${plot.slug ?? plot.id}`,
+      images: [{ url: land.heroImage, alt: plot.planName }],
     },
   };
 }
@@ -55,7 +57,7 @@ export default async function LandPlotDetailPage({ params }: PlotPageProps) {
   if (!land) return notFound();
 
   const project = landToProjectShape(land);
-  const plot = project.floorPlans.find((item) => item.id === plotId);
+  const plot = project.floorPlans.find((item) => item.slug === plotId || item.id === plotId);
   if (!plot) return notFound();
 
   let developer;
@@ -79,14 +81,16 @@ export default async function LandPlotDetailPage({ params }: PlotPageProps) {
       />
 
       <div className="project-page-content">
-        <ProjectStatsChips project={project} floorPlan={plot} />
-        <ProjectDescriptionSection project={project} headingOverride={`${plot.planName} Details`} />
+        <ProjectStatsChips project={project} floorPlan={plot} areaUnit="perches" />
+        <ProjectDescriptionSection project={project} floorPlan={plot} />
 
         <ProjectNarrativeDetails project={project} />
 
         <section id="pricing" className="space-y-3">
           <PricingInformationLayout project={project} />
         </section>
+
+        <KeyFeaturesSection unitFeatures={project.unitFeatures} />
 
         <AmenitiesShowcaseSection amenities={project.amenities} gallery={project.gallery} heroImage={project.heroImage} title="Facilities" />
 

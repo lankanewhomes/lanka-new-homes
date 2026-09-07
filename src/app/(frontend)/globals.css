@@ -184,7 +184,7 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
      menu is toggled open. Visibility is purely this class + display. */
   .mobile-menu-panel.is-open {
     display: block;
-    position: absolute;
+    position: fixed;
     top: 76px;
     left: 0;
     right: 0;
@@ -193,7 +193,8 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
     border-top: 1px solid #e5e2dc;
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
     padding: 16px 20px 24px;
-    max-height: calc(100vh - 76px);
+    height: calc(100vh - 76px);
+    height: calc(100dvh - 76px);
     overflow-y: auto;
   }
 
@@ -300,22 +301,34 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
 .site-breadcrumb { border-top: 1px solid #ececec; border-bottom: 1px solid #ececec; background: #fff; }
 .site-breadcrumb-inner { width: min(1290px, calc(100% - 48px)); margin: 0 auto; }
 .site-breadcrumb-inner-wide { width: min(1760px, calc(100% - 48px)); }
-/* Project/land detail pages (ProjectHero's .listing-hero-panel) — matches
-   its *true* rendered width so the breadcrumb's edges line up with the
-   title/stats panel below it. .listing-hero-panel's own `calc(100% - 80px)`
-   is relative to its parent .listing-hero, which is itself capped at
-   `min(1290px, 100% - 48px)` — not the raw viewport — so reproducing just
-   the panel's own 80px subtraction here (ignoring its parent's cap) drifted
-   out of alignment by 48px on any screen narrower than ~1338px. This
-   collapses both steps into one min() relative to the same 100% this
-   element itself sees. */
-.site-breadcrumb-inner-detail { width: min(1210px, calc(100% - 128px)); }
+/* Project/land/neighborhood detail pages keep the sitewide 1290px container
+   on desktop so "Home / …" lines up with the sticky section bar directly
+   beneath it (.listing-hero-panel-row uses the same min(1290px, 100% - 48px))
+   and with the hero photo's outer edge — i.e. exactly like every other
+   page's breadcrumb. It was previously inset to the narrower title panel
+   (min(1210px, 100% - 128px)), which read as a 40px jog between two stacked
+   bars (reported 2026-09-07). The class still exists for the mobile
+   override below, where the hero switches to a different gutter. */
+.site-breadcrumb-inner-detail { width: min(1290px, calc(100% - 48px)); }
 .site-breadcrumb ol { margin: 0; padding: 10px 0; list-style: none; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 12px; color: #60656f; }
 .site-breadcrumb li { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; }
 .site-breadcrumb a { color: #2f3746; text-decoration: none; }
 .site-breadcrumb a:hover { text-decoration: underline; }
 .site-breadcrumb-separator { color: #9ea5b2; }
 .site-breadcrumb [aria-current="page"] { color: #20242f; font-weight: 600; }
+
+@media (max-width: 980px) {
+  /* .site-breadcrumb-inner-detail's min(1210px, calc(100% - 128px)) formula
+     is only correct at desktop widths — .listing-hero-panel (the element it
+     lines up with) switches to a completely different, simpler mobile
+     formula below 980px (see .listing-hero/.listing-hero-panel and
+     .project-page-content's matching override above), so the desktop
+     formula drifted the breadcrumb back off-alignment on mobile with no
+     override here at all. */
+  .site-breadcrumb-inner-detail {
+    width: calc(100% - 38px);
+  }
+}
 
 @media (max-width: 760px) {
   /* Long trails (Home / New Projects / <project name> / Floor Plans /
@@ -1190,6 +1203,22 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   height: 560px;
 }
 
+/* A single photo (e.g. a floor plan/plot page, which only ever has one hero
+   image) has no side thumbnails to fill the reserved 1fr column — left
+   without this, the main photo sits confined to the 1.65fr column with a
+   blank gap on the right instead of spanning/centering across the full
+   width. */
+.listing-hero-grid.single-photo {
+  grid-template-columns: 1fr;
+}
+
+/* Exactly two photos (e.g. a floor plan's 2D drawing + 3D render): the side
+   column would otherwise reserve two stacked rows and leave the bottom one
+   empty — let the single side photo fill the whole column instead. */
+.listing-hero-grid.two-photo .listing-hero-grid-side {
+  grid-template-rows: 1fr;
+}
+
 .listing-hero-grid-main {
   position: relative;
   border: 0;
@@ -1205,6 +1234,15 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+/* Floor plan / plot detail pages pass a technical drawing (white background,
+   labels near the edges, e.g. the "TOTAL FLOOR AREA" box) as this hero image
+   instead of a photo — object-fit:cover crops that content off. Show the
+   whole drawing letterboxed instead. */
+.listing-hero-grid-main-image.is-floor-plan {
+  object-fit: contain;
+  background: #f7f7f6;
 }
 
 .listing-hero-grid-side {
@@ -1430,7 +1468,11 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 .listing-photo-lightbox {
   position: fixed;
   inset: 0;
-  z-index: 70;
+  /* Was 70 — lower than .site-header's 90, so the header (position: sticky
+     once scrolled) could render on top of this "fullscreen" overlay,
+     covering the lightbox's own topbar (name/address/Get updates/Save/
+     Share) whenever the page had already been scrolled before opening it. */
+  z-index: 200;
   background: #000;
   display: flex;
   flex-direction: column;
@@ -1590,7 +1632,18 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 .listing-photo-lightbox-image {
   width: 100%;
   height: 100vh;
-  object-fit: cover;
+  /* Was cover — for a normal wide photo, cover scales it up to fill the
+     full viewport height, which for a modest-resolution source (e.g.
+     1200x540) means visible upscaling/blur ("quality is bad"). contain
+     fits the image by whichever dimension is tighter instead, so it's
+     never scaled up more than necessary. */
+  object-fit: contain;
+  background: #000;
+}
+
+.listing-photo-lightbox-image.is-floor-plan {
+  object-fit: contain;
+  background: #f7f7f6;
 }
 
 .listing-photo-lightbox-map {
@@ -1813,8 +1866,19 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   font-size: 16px;
 }
 
+/* Icon + text variant of the subtitle line (e.g. the neighborhood page's
+   "<pin> City, Province") — needs its own display:flex rather than relying
+   on the plain <p> above's inline text flow, since a bare lucide <svg> icon
+   inherits Tailwind preflight's `svg { display: block }` and drops onto its
+   own line otherwise. */
+.listing-hero-location-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .listing-hero-title-wrap a {
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .listing-hero-sticky-bar {
@@ -1980,6 +2044,29 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   background: #fdf3e0;
   border: 1px solid #f2d38a;
   color: #92670c;
+}
+
+/* extraBadges — one color per category so the groups are distinct from each
+   other and from the existing pills (status green, move-in-year blue,
+   move-in-now purple, featured gold, hot-deal red). Plain-string badges
+   (e.g. land.badges) fall back to .badge-extra. */
+.badge-extra,
+.badge-location {
+  background: #e6f4f3;
+  border: 1px solid #9ed4cf;
+  color: #0d6b63;
+}
+
+.badge-marketing {
+  background: #fdf2f8;
+  border: 1px solid #f0abd0;
+  color: #9d174d;
+}
+
+.badge-availability {
+  background: #fff1e6;
+  border: 1px solid #f7c39b;
+  color: #9a3412;
 }
 
 .listing-hero-save-pill {
@@ -2356,7 +2443,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   gap: 12px;
   width: auto;
   padding: 24px 16px;
-  background: #f3f2f0;
+  background: #fbfaf9;
   border-radius: 0;
   box-shadow: 0 2px 6px rgba(16, 24, 40, 0.06);
 }
@@ -2376,7 +2463,6 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   min-width: 0;
 }
 
-.listing-hero-stat-chip-value,
 .listing-hero-stat-chip-label {
   display: block;
   overflow: hidden;
@@ -2384,10 +2470,16 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   white-space: nowrap;
 }
 
+/* Wraps onto a second line instead of shrinking further or ellipsis-
+   truncating when it doesn't fit (e.g. a long address, a multi-word
+   security note) — font-size stays fixed either way. */
 .listing-hero-stat-chip-value {
+  display: block;
+  overflow: visible;
+  white-space: normal;
   font-family: var(--font-ref-sans);
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 400;
   line-height: 1.3;
   color: #1f1f1f;
 }
@@ -2401,6 +2493,13 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 
 .land-stats-chips .listing-hero-stat-chip-value {
   font-weight: 400;
+}
+
+/* ProjectNarrativeDetails renders two fact-sheet tables — the full desktop
+   order and the shorter mobile order — and this picks one per breakpoint
+   (mobile rules in the ≤980px block below). */
+.project-fact-sheet-mobile {
+  display: none;
 }
 
 @media (max-width: 980px) {
@@ -2557,9 +2656,6 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
     overflow-x: visible;
   }
 
-  .listing-hero-stats > div:not(.mobile-stat-visible) {
-    display: none;
-  }
 
   .listing-hero-stats > div {
     border-top: 1px solid #e6e6e6;
@@ -2626,12 +2722,31 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
     width: auto;
   }
 
-  .listing-hero-stat-chip:not(.mobile-stat-visible) {
+  /* Mobile shows six chips, not the full desktop set. ProjectStatsChips
+     marks the first six (or the admin's mobileVisibleStats picks) with
+     .mobile-stat-visible; the rest are desktop-only. Scoped to the shared
+     component's wrapper class so the land page's hand-built chip row, which
+     never sets the marker class, is untouched. */
+  .stats-chips-mobile-limited .listing-hero-stat-chip:not(.mobile-stat-visible) {
     display: none;
   }
 
-  .listing-hero-stat-label,
-  .listing-hero-stat-value {
+  .project-fact-sheet-desktop {
+    display: none;
+  }
+
+  .project-fact-sheet-mobile {
+    display: table;
+  }
+
+  /* Was targeting .listing-hero-stat-label/-value (no "-chip-") — those
+     classes are never rendered anywhere, so this never actually shrank the
+     real chip text on mobile. Long values (an address, a multi-word
+     security note) were sitting at the full 15px desktop size in a narrow
+     2-column mobile grid, forcing hard ellipsis-truncation much sooner than
+     necessary. */
+  .listing-hero-stat-chip-label,
+  .listing-hero-stat-chip-value {
     font-size: 13px;
   }
 }
@@ -2874,8 +2989,9 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 .project-description-shell {
   width: 100%;
   margin: 0;
-  background: #fff;
-  padding: 28px 0 0;
+  background: #f7f7f6;
+  border: 1px solid #e5e5e4;
+  padding: 28px 32px 48px;
 }
 
 .project-description-shell h2 {
@@ -2887,11 +3003,75 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   color: #1f1f1f;
 }
 
-.project-description-shell > p:last-child {
+.project-description-shell > p:last-child,
+.project-description-short,
+.project-description-full {
   margin: 12px 0 0;
   font-size: 14.5px;
-  line-height: 1.65;
+  /* 1.85 (was 1.65) — the Overview paragraph is a dense multi-sentence
+     block; the extra leading was asked for on 2026-09-07. */
+  line-height: 1.85;
   color: #3a3a3a;
+}
+
+.project-description-highlights {
+  margin: 14px 0 24px;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+
+.project-description-highlights li {
+  position: relative;
+  padding-left: 22px;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: #1f1f1f;
+  font-weight: 500;
+}
+
+.project-description-highlights li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #1f1f1f;
+  font-weight: 700;
+}
+
+/* Mobile-only truncation toggle — desktop always shows the full text and
+   hides the short version + the toggle entirely, regardless of React state. */
+.project-description-full {
+  display: none;
+}
+
+.project-description-toggle {
+  display: none;
+  margin-top: 10px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f1f1f;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+@media (max-width: 760px) {
+  .project-description-toggle {
+    display: inline-block;
+  }
+}
+
+@media (min-width: 761px) {
+  .project-description-short {
+    display: none;
+  }
+
+  .project-description-full {
+    display: block;
+  }
 }
 
 .project-narrative-shell {
@@ -2899,6 +3079,17 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   margin: 0;
   background: #fff;
   padding: 0;
+}
+
+@media (max-width: 980px) {
+  /* Pulls this section closer to the Overview/"House Type A Details" text
+     above it specifically — .project-page-content's 48px flex `gap` is
+     shared uniformly by every section on the page, so this negative
+     margin only tightens this one pair rather than the whole page's
+     mobile rhythm. */
+  .project-narrative-shell {
+    margin-top: -24px;
+  }
 }
 
 .project-fact-sheet {
@@ -3035,16 +3226,27 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   @media (max-width: 980px) {
     .project-description-shell {
       margin: 6px 0 0;
+      padding-left: 18px;
+      padding-right: 18px;
+      /* The 48px bottom padding added for the (usually multi-line) project/
+         neighborhood Overview text reads as too much empty space on mobile
+         under a short single-sentence variant (e.g. the floor plan/plot
+         "House Type A Details" summary) — a narrow viewport makes the same
+         pixel gap feel proportionally larger. Desktop keeps 48px; this only
+         scales it back for mobile, on every page that shares this class. */
+      padding-bottom: 16px;
     }
 
     .project-description-shell h2 {
       font-size: 26px;
     }
 
-    .project-description-shell > p:last-child {
+    .project-description-shell > p:last-child,
+    .project-description-short,
+    .project-description-full {
       margin: 10px 0 0;
       font-size: 14px;
-      line-height: 1.6;
+      line-height: 1.8;
     }
 
 
@@ -3059,23 +3261,37 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 
 .featured-listings-section {
   position: relative;
-  padding: 42px 30px 52px;
+  padding: 56px 30px 52px;
   margin: 0 auto 34px;
   max-width: 1280px;
   overflow: hidden;
-  background: #f5f0e6;
+  background: #f7f6f4;
   border-radius: 0;
-  box-shadow: 0 22px 56px rgba(95, 74, 39, 0.08);
 }
 
-.featured-listings-section::before {
+.new-listings-section {
+  position: relative;
+  padding: 56px 30px 52px;
+  margin: 0 auto 34px;
+  max-width: 1280px;
+  overflow: hidden;
+  background: #eef2f4;
+  border-radius: 0;
+}
+
+.new-listings-section::before {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background-image: repeating-linear-gradient(90deg, transparent 0 20px, rgba(64, 105, 135, 0.24) 20px 21px);
+  background-image: repeating-linear-gradient(135deg, transparent 0 18px, rgba(64, 105, 135, 0.16) 18px 19px);
   -webkit-mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
   mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
+}
+
+.new-listings-section > * {
+  position: relative;
+  z-index: 1;
 }
 
 .featured-listings-section > * {
@@ -3126,6 +3342,14 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   font-size: 32px;
   line-height: 1.15;
   color: #1f1f1f;
+}
+
+.featured-listings-subhead {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #6b6355;
+  max-width: 460px;
 }
 
 /* Two-column layout: main content + a sticky contact/tour sidebar that
@@ -4251,6 +4475,23 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   border-radius: 0;
 }
 
+/* Commercial Areas shares AmenitiesShowcaseSection's markup/CSS class, but
+   gets its own background here (scoped by id, not the shared class) so it
+   reads as a distinct section from Amenities right above it rather than an
+   unbroken continuation of the same cream block. */
+#commercial-areas.amenities-showcase-shell {
+  position: relative;
+  overflow: hidden;
+  background: #f4f6f7;
+  border-color: #dde3e4;
+}
+
+#commercial-areas.amenities-showcase-shell h2,
+#commercial-areas .amenities-showcase-grid {
+  position: relative;
+  z-index: 1;
+}
+
 .amenities-showcase-shell h2 {
   margin: 0 0 16px;
   font-family: var(--font-ref-sans);
@@ -4280,6 +4521,21 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   min-height: 540px;
   object-fit: cover;
   display: block;
+}
+
+.amenities-showcase-image-placeholder {
+  width: 100%;
+  height: 100%;
+  min-height: 540px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f4f2;
+  color: #9a9284;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
+  padding: 24px;
 }
 
 .amenities-showcase-list {
@@ -4639,6 +4895,15 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
     min-height: 270px;
   }
 
+  /* No real photo to show (e.g. Known Landmarks, or an amenity with no
+     matched gallery image) — the placeholder box is just empty space on a
+     narrow screen, so drop it entirely and let the item list take the full
+     width. Desktop keeps the placeholder since the two-column layout has
+     room either way. */
+  .amenities-showcase-image-wrap.no-image {
+    display: none;
+  }
+
   .amenities-showcase-list {
     max-height: 420px;
     padding-right: 0;
@@ -4746,6 +5011,10 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   text-align: left;
 }
 
+.new-listings-footer {
+  margin-top: 52px;
+}
+
 .featured-listings-button {
   font-family: var(--font-ref-sans);
   font-weight: 400;
@@ -4773,8 +5042,10 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   color: #000;
 }
 
+
 .featured-listings-grid {
   margin-bottom: 0;
+  gap: 34px;
 }
 
 .featured-builders-grid {
@@ -4848,20 +5119,45 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
     padding: 42px 18px 42px;
   }
 
-  .featured-listings-section {
+  .featured-listings-section,
+  .new-listings-section {
     margin: 0 -8px 28px;
     padding: 28px 14px 30px;
   }
 
-  /* The last of these sections (Featured builders) sits right above the
-     footer — needs more breathing room than the shared 28px, which was
-     fine between two stacked sections but too tight against the footer. */
-  .featured-listings-section:last-of-type {
+  /* New listings sits right above the footer — needs more breathing room
+     than the shared 28px, which is fine between two stacked sections but
+     too tight against the footer. */
+  .new-listings-section {
     margin-bottom: 56px;
   }
 
   .featured-listings-grid {
     grid-template-columns: 1fr;
+  }
+
+  /* New listings only, mobile only — a swipeable carousel (one card at a
+     time, peeking the next) instead of the stacked single-column list
+     Featured listings keeps. */
+  .new-listings-section .featured-listings-grid {
+    display: flex;
+    grid-template-columns: unset;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 14px;
+    margin: 0 -14px;
+    padding: 0 14px 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .new-listings-section .featured-listings-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .new-listings-section .featured-listings-grid .listing-grid-card {
+    flex: 0 0 82%;
+    scroll-snap-align: start;
   }
 
   .featured-listings-footer {
@@ -5049,9 +5345,10 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 
 .neighborhoods-section {
   position: relative;
-  padding: 12px 22px 96px;
-  margin: 8px auto 0;
+  padding: 56px 30px 52px;
+  margin: 8px auto 34px;
   max-width: 1280px;
+  background: #faf7f2;
 }
 
 .neighborhoods-section h2 {
@@ -5120,7 +5417,8 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 
 @media (max-width: 760px) {
   .neighborhoods-section {
-    padding: 0 0 64px;
+    margin: 0 -8px 28px;
+    padding: 28px 14px 30px;
   }
 
   .neighborhoods-section h2 {
@@ -5143,9 +5441,38 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 }
 
 .developer-page {
-  max-width: 1160px;
+  width: min(1290px, calc(100% - 48px));
   margin: 0 auto;
-  padding: 36px 22px 90px;
+  padding: 36px 0 90px;
+}
+
+/* Only used by the neighborhood detail page's "New homes" section — matches
+   the 32px/400 major-section-heading convention the other sections on that
+   page (Overview, Known Landmarks, What's Nearby) already use, so headings
+   don't flip weight/size walking down the page. */
+.developer-projects-section {
+  background: #f7f7f6;
+  border: 1px solid #e5e5e4;
+  padding: 28px 32px;
+}
+
+.developer-projects-section h2 {
+  margin: 0 0 16px;
+  font-family: var(--font-ref-sans);
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.15;
+  color: #1f1f1f;
+}
+
+@media (max-width: 760px) {
+  .developer-projects-section {
+    padding: 18px;
+  }
+
+  .developer-projects-section h2 {
+    font-size: 26px;
+  }
 }
 
 .developer-directory {
@@ -5523,6 +5850,42 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 .developer-profile-press-row {
   padding: 16px 0;
   border-top: 1px solid #ececec;
+}
+
+.developer-profile-award-row {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.developer-profile-award-image {
+  position: relative;
+  flex: none;
+  width: 72px;
+  height: 72px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f5f0e6;
+}
+
+.developer-profile-award-image img {
+  object-fit: cover;
+}
+
+.developer-profile-award-description {
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #3f3a33;
+}
+
+.developer-profile-award-link {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: underline;
+  color: #1f1f1f;
 }
 
 .developer-profile-award-row:first-child,
@@ -6003,7 +6366,7 @@ a.developer-profile-press-title {
 
 .neighborhood-section-explore {
   display: inline-block;
-  margin-top: 32px;
+  margin-top: 52px;
   font-family: var(--font-ref-sans);
   font-size: 16px;
   font-weight: 400;
@@ -6855,6 +7218,39 @@ a.developer-profile-press-title {
 
 .listing-search-input-wrap input::placeholder {
   color: #9a9284;
+}
+
+.listing-search-suggestions {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  background: #fff;
+  border: 1px solid #e5e2dc;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  padding: 8px 0;
+}
+
+.listing-search-suggestions-label {
+  margin: 0;
+  padding: 4px 16px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #9a9284;
+}
+
+.listing-search-suggestion-item {
+  display: block;
+  padding: 9px 16px;
+  font-size: 14px;
+  color: #1f1f1f;
+}
+
+.listing-search-suggestion-item:hover {
+  background: #f7f4ee;
+  color: #f47b36;
 }
 
 /* Base (desktop) defaults for the filter bar. These must come BEFORE the
@@ -7786,6 +8182,14 @@ a.developer-profile-press-title {
   transition: box-shadow 0.15s ease, transform 0.15s ease;
 }
 
+/* Homepage Featured listings only — the card itself has no wide white box
+   here, it just sits on the section's own background (see
+   .featured-listings-section). /projects and other listing pages keep the
+   white card background above untouched. */
+.featured-listings-grid .listing-grid-card {
+  background: transparent;
+}
+
 .listing-grid-card-media {
   position: relative;
   display: block;
@@ -7836,6 +8240,14 @@ a.developer-profile-press-title {
 }
 
 .listing-grid-card-media:hover .listing-grid-card-carousel-arrow {
+  opacity: 1;
+}
+
+/* Homepage cards (Featured listings / New listings) only — always show the
+   photo arrows instead of hover-only, since hover doesn't exist on mobile
+   and they're easy to miss on desktop otherwise. /projects and other
+   listing pages keep the original hover-reveal behavior. */
+.featured-listings-grid .listing-grid-card-carousel-arrow {
   opacity: 1;
 }
 
