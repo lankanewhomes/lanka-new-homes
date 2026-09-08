@@ -453,6 +453,28 @@ list of named field/value pairs (not just free-text lines) should reuse this
 category-tabs + preset-dropdown-with-custom-escape-hatch shape, not a
 textarea.
 
+## Import a project from a website / brochure (`/cms/import`)
+
+Developer-facing onboarding shortcut (added 2026-09-08). `ImportListing.tsx`
+(admin view, linked from the nav via `NavImportLink`) posts to
+`/payload-api/import-listing` (`src/collections/endpoints/import-listing.ts`)
+with a project page URL and/or a brochure PDF (≤4 MB upload; a PDF linked
+from the page is fetched server-side up to 15 MB). The extractor
+(`src/lib/listing-import/extract.ts`) is heuristic and conservative: title,
+meta/paragraph description, `<li>` highlights, images (classified into
+photos vs floor-plan images by alt/filename), brochure link, phones/emails,
+address (JSON-LD first), city/district/type by vocabulary match, amenity
+keywords, "N km to X" distances, unit/floor counts, move-in year, and a
+"from Rs. X" starting price. Sizes, bedroom counts, other prices and
+payment-plan lines are returned as **signals** for the developer to confirm —
+never written into floor plans (Standing Rule 4: no invented numbers).
+Photos are copied into R2 (`projects/<slug>/gallery|floor-plans|brochure/…`,
+`src/lib/listing-import/mirror.ts`); the draft is created **unpublished**
+under the signed-in developer (admins choose one) with `overrideAccess:
+false`, so ownership rules still apply. Image-only PDFs (most brochures)
+yield nothing but are stored as the brochure. Route handler has
+`maxDuration = 60`.
+
 ## Project wizard step isolation (admin, `ProjectWizard`)
 
 `ProjectWizard` (`src/components/dashboard/components.tsx`) shows exactly one

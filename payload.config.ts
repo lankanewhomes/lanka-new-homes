@@ -8,6 +8,7 @@ import { buildConfig } from 'payload'
 
 import { Analytics } from './src/collections/Analytics'
 import { analyticsEndpoint, analyticsSummaryEndpoint } from './src/collections/endpoints/analytics'
+import { importListingEndpoint } from './src/collections/endpoints/import-listing'
 import { Architects } from './src/collections/Architects'
 import { Articles } from './src/collections/Articles'
 import { ConstructionCompanies } from './src/collections/ConstructionCompanies'
@@ -57,8 +58,15 @@ export default buildConfig({
       beforeDashboard: ['@/components/payload/DashboardHeading#DashboardHeading'],
       // "✨ Get Featured" link into the placements wizard below — developer
       // accounts only (see NavPlacementLink.tsx).
-      afterNavLinks: ['@/components/payload/NavPlacementLink#NavPlacementLink'],
+      afterNavLinks: ['@/components/payload/NavPlacementLink#NavPlacementLink', '@/components/payload/NavImportLink#NavImportLink'],
       views: {
+        // "Import from your website": paste a project URL / upload a
+        // brochure, get an unpublished draft — see ImportListing.tsx and
+        // src/collections/endpoints/import-listing.ts.
+        importListing: {
+          Component: '@/components/payload/ImportListing#ImportListing',
+          path: '/import',
+        },
         // Step-by-step "choose a placement, submit a request" flow for
         // developers — see PlacementPicker.tsx. Payment stays request-only
         // (creates a pending Payments record an admin confirms manually)
@@ -98,7 +106,7 @@ export default buildConfig({
     Media,
   ],
   globals: [SiteSettings],
-  endpoints: [analyticsEndpoint, analyticsSummaryEndpoint],
+  endpoints: [analyticsEndpoint, analyticsSummaryEndpoint, importListingEndpoint],
   editor: lexicalEditor(),
   db: postgresAdapter({
     pool: { connectionString: process.env.DATABASE_URI },
