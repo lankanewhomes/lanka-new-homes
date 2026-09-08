@@ -7,7 +7,8 @@ import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { DashboardHeader, DashboardSidebar, StatCard, ACCOUNT_NAV_LINKS } from "@/components/dashboard/components";
 import { RecentlyViewedPreview } from "@/components/account/recently-viewed-preview";
 import { formatLkr } from "@/lib/format";
-import type { Developer, Project } from "@/types";
+import { getSavedProfiles } from "@/lib/saved-profiles";
+import type { Project } from "@/types";
 
 export const metadata: Metadata = {
   title: "My Account",
@@ -24,9 +25,10 @@ export default async function AccountPage() {
 
   const supabase = await createSupabaseServerClient();
 
-  const [savedListingsRes, savedDevelopersRes, savedSearchesRes, leadsRes] = await Promise.all([
+  const [savedListingsRes, savedProfiles, savedSearchesRes, leadsRes] = await Promise.all([
     supabase.from("saved_listings").select("project_slug, projects(data)").eq("user_id", profile.id).order("created_at", { ascending: false }),
-    supabase.from("saved_developers").select("developer_slug, developers(data)").eq("user_id", profile.id).order("created_at", { ascending: false }),
+    // Followed developers + followed companies (saved_developers + saved_companies).
+    getSavedProfiles(supabase, profile.id),
     supabase.from("saved_searches").select("id, is_active").eq("user_id", profile.id),
     supabase.from("leads").select("id, name, message, created_at, status, project_slug, developer_slug").order("created_at", { ascending: false }).limit(5),
   ]);
@@ -34,10 +36,6 @@ export default async function AccountPage() {
   const savedProjects = (savedListingsRes.data ?? [])
     .map((row) => (row as unknown as { projects: { data: Project } | null }).projects?.data)
     .filter((project): project is Project => Boolean(project));
-
-  const savedDevelopers = (savedDevelopersRes.data ?? [])
-    .map((row) => (row as unknown as { developers: { data: Developer } | null }).developers?.data)
-    .filter((developer): developer is Developer => Boolean(developer));
 
   const savedSearches = savedSearchesRes.data ?? [];
   const activeAlerts = savedSearches.filter((search) => search.is_active).length;
@@ -51,7 +49,7 @@ export default async function AccountPage() {
 
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-5">
           <StatCard label="Saved Properties" value={String(savedProjects.length)} />
-          <StatCard label="Saved Developments" value={String(savedDevelopers.length)} />
+          <StatCard label="Saved Developments" value={String(savedProfiles.length)} />
           <StatCard label="Saved Searches" value={String(savedSearches.length)} />
           <StatCard label="Active Alerts" value={String(activeAlerts)} />
           <StatCard label="Enquiries Sent" value={String(recentEnquiries.length)} />
@@ -94,18 +92,18 @@ export default async function AccountPage() {
               <h2 className="text-sm font-semibold text-stone-900">Saved developments</h2>
               <Link href="/account/developments" className="text-xs font-medium text-stone-600 hover:text-stone-900">View all →</Link>
             </div>
-            {savedDevelopers.length === 0 ? (
-              <p className="text-xs text-stone-500">You&apos;re not following any developers yet.</p>
+            {savedProfiles.length === 0 ? (
+              <p className="text-xs text-stone-500">You&apos;re not following any developers or companies yet.</p>
             ) : (
               <div className="space-y-2">
-                {savedDevelopers.slice(0, 3).map((developer) => (
-                  <Link key={developer.slug} href={`/developers/${developer.slug}`} className="flex items-center gap-3">
+                {savedProfiles.slice(0, 3).map((item) => (
+                  <Link key={`${item.kind}:${item.slug}`} href={item.href} className="flex items-center gap-3">
                     <div className="relative h-12 w-12 shrink-0 overflow-hidden border border-stone-200 bg-stone-100">
-                      <Image src={developer.logo} alt={developer.name} fill className="object-contain p-1" sizes="48px" />
+                      {item.logo ? <Image src={item.logo} alt={item.name} fill className="object-contain p-1" sizes="48px" /> : null}
                     </div>
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-stone-900">{developer.name}</p>
-                      <p className="text-xs text-stone-500">{developer.activeProjects} active project{developer.activeProjects === 1 ? "" : "s"}</p>
+                      <p className="truncate text-sm font-medium text-stone-900">{item.name}</p>
+                      <p className="text-xs text-stone-500">{item.label}{item.meta && item.meta !== item.label ? ` · ${item.meta}` : ""}</p>
                     </div>
                   </Link>
                 ))}
