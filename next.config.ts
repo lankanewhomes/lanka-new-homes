@@ -19,6 +19,13 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       ...(r2Host ? [{ protocol: "https" as const, hostname: r2Host }] : []),
       {
+        // All project photos, plans, brochures and logos live here (moved
+        // out of public/ on 2026-09-08) — listed statically so an
+        // environment without R2_PUBLIC_URL still renders them.
+        protocol: "https",
+        hostname: "media.lankanewhomes.com",
+      },
+      {
         protocol: "https",
         hostname: "*.r2.dev",
       },

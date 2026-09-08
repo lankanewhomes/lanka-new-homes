@@ -59,7 +59,9 @@ export function ProfileView({
       <aside className="developer-profile-sidebar">
         {entity.logo ? (
           <div className="developer-profile-logo">
-            <div className={entity.logo.startsWith("/") ? "developer-profile-logo-chip" : undefined}>
+            {/* Own logos (repo-relative or on our media bucket) get the chip
+                background; third-party hosted logos are shown bare. */}
+            <div className={entity.logo.startsWith("/") || entity.logo.startsWith("https://media.lankanewhomes.com/") ? "developer-profile-logo-chip" : undefined}>
               <Image src={entity.logo} alt={entity.name} width={220} height={90} />
             </div>
           </div>
@@ -89,7 +91,8 @@ export function ProfileView({
         {entity.location || entity.phone || entity.website ? (
           <div className="developer-profile-contact">
             {entity.location ? <p>{entity.location}</p> : null}
-            {entity.phone ? <p>{entity.phone}</p> : null}
+            {/* A record can hold several numbers separated by "/" — each gets its own line and tel: link. */}
+            {entity.phone ? entity.phone.split(/\s*\/\s*/).filter(Boolean).map((number) => <p key={number}><a href={`tel:${number.replace(/\s+/g, "")}`}>{number}</a></p>) : null}
             {entity.website ? <a href={entity.website} target="_blank" rel="noopener noreferrer">{entity.website.replace(/^https?:\/\//, "")}</a> : null}
           </div>
         ) : null}

@@ -1530,15 +1530,17 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
           </a>
         ) : null}
 
-        {hasDisplayValue(phone) ? (
+        {/* A developer can list several numbers separated by "/" — each is its own tap-to-call row. */}
+        {phone && hasDisplayValue(phone) ? phone.split(/\s*\/\s*/).filter(Boolean).map((number) => (
           <a
-            href={`tel:${phone}`}
+            key={number}
+            href={`tel:${number.replace(/\s+/g, "")}`}
             className="stats-contact-card-row"
             onClick={() => logListingEvent("/api/events/phone-click", "click_phone", project.slug, project.name)}
           >
-            <Phone className="h-4 w-4" aria-hidden="true" /> {phone}
+            <Phone className="h-4 w-4" aria-hidden="true" /> {number}
           </a>
-        ) : null}
+        )) : null}
       </div>
 
       {socialEntries.length > 0 ? (

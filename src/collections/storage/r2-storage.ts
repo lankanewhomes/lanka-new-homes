@@ -30,6 +30,11 @@ export function r2Storage() {
         // Files live only in R2, not also on local disk — required on
         // Vercel's read-only filesystem.
         disableLocalStorage: true,
+        // CMS uploads sit under uploads/ so they never collide with the
+        // curated project/logo folders (projects/<slug>/…, logos/…) that
+        // were moved into the same bucket — see docs/supabase-workflow.md
+        // "Media uploads (Cloudflare R2)".
+        prefix: 'uploads',
         generateFileURL: ({ filename, prefix }) => `${env.publicUrl}/${[prefix, filename].filter(Boolean).join('/')}`,
       },
     },

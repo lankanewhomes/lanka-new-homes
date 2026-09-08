@@ -61,9 +61,29 @@ and served from its public URL. Setup (once per Cloudflare account):
 While any of the five is missing, `payload.config.ts` falls back to the
 older Supabase Storage adapter (`supabase-storage-adapter.ts`, bucket
 `media`), so an unconfigured environment still boots. `next.config.ts`
-allow-lists the `R2_PUBLIC_URL` host (and `*.r2.dev`) for `next/image`.
-Project photos under `public/` are a separate matter — they're still
-committed to the repo and served by Vercel.
+allow-lists the `R2_PUBLIC_URL` host, `media.lankanewhomes.com` and
+`*.r2.dev` for `next/image`.
+
+### Bucket layout (`lankanewhomes-media`, served at https://media.lankanewhomes.com)
+
+```
+projects/<project-slug>/gallery/<slug>_<description>.jpg
+projects/<project-slug>/floor-plans/<slug>_<plan>.jpg        (+ _3d variants)
+projects/<project-slug>/block-plan|road-map|amenities|commercial-areas|brochure/…
+projects/<project-slug>/<slug>_logo.ext
+logos/developers/<developer-slug>-logo.ext
+logos/architects/<slug>-logo.ext
+logos/awards/<company-slug>/<award>.png
+uploads/<filename>                                            ← CMS Media uploads (plugin prefix)
+```
+
+Conventions: folder = the record's slug exactly; every project file is
+prefixed `<project-slug>_`; lower-case, hyphens, no spaces. Records store
+the **absolute** URL (`https://media.lankanewhomes.com/projects/…`). The
+files were moved out of `public/` on 2026-09-08 (they had been committed to
+the repo, ~63 MB); to add a project's photos now, name them per the
+convention, upload to the bucket under `projects/<slug>/…`, and paste the
+public URLs into Payload.
 
 ## Applying a schema change
 
