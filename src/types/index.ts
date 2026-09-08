@@ -281,6 +281,10 @@ export type Project = SeoFields & {
   completionDateHistory?: PricingHistoryEntry[];
   depositPaymentStructure?: string;
   incentives?: string[];
+  /** Sinhala / Tamil prose entered on the project's Translations tab; each
+   * field falls back to English when empty. Fixed labels are translated in
+   * code (src/lib/i18n/listing-strings.ts). */
+  translations?: { si?: ProjectTranslation; ta?: ProjectTranslation };
   summary: string;
   description: string;
   heroImage: string;
@@ -496,6 +500,12 @@ export type DeveloperSubscription = {
 // Every public profile page that can be reviewed and followed. The value is
 // what `reviews.entity_type` / `saved_companies.entity_type` store; the
 // Payload collection and URL for each live in src/lib/profile-entities.ts.
+export type ProjectTranslation = {
+  summary?: string;
+  highlights?: string[];
+  description?: string;
+};
+
 export type ProfileEntityType =
   | "developer"
   | "marketing-company"

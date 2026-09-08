@@ -1,4 +1,5 @@
 import { ListingGridCard } from "@/components/marketplace/listing-page";
+import { T } from "@/components/layout/t";
 import type { Project } from "@/types";
 
 // "Similar listings" — the last section on every detail page, right under
@@ -19,7 +20,7 @@ export function SimilarListingsSection({
 
   return (
     <section className="developer-projects-section similar-listings-section" aria-label={title}>
-      <h2>{title}</h2>
+      <h2><T>{title}</T></h2>
       <div className="home-card-grid developer-projects-grid">
         {listings.map((project) => (
           <ListingGridCard key={project.slug} project={project} basePath={basePath} />

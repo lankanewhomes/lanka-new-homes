@@ -5,6 +5,7 @@ import { Bath, BedDouble, Building2, Car, Clock3, Compass, DoorOpen, Eye, HouseP
 import type { FloorPlan, Project } from "@/types";
 import { formatLkr } from "@/lib/format";
 import { FactSheetTable } from "@/components/marketplace/components";
+import { useListingT } from "@/lib/i18n/use-listing-t";
 
 // Floor-plan page facts and chips, per the owner's spec of 2026-09-08
 // (docs/design.md "Floor plan page facts & chips"). Everything shown is a
@@ -163,6 +164,7 @@ function buildChips(plan: FloorPlan, primary: FloorPlanChipKey[], max: number, c
 }
 
 function ChipRow({ chips, className }: { chips: Chip[]; className: string }) {
+  const { t, tPrice } = useListingT();
   if (!chips.length) return null;
   return (
     <div className={`listing-hero-stats-chips ${className}`} role="list" aria-label="Floor plan summary stats">
@@ -172,8 +174,8 @@ function ChipRow({ chips, className }: { chips: Chip[]; className: string }) {
           <div key={chip.key} role="listitem" className="listing-hero-stat-chip">
             <Icon className="listing-hero-stat-chip-icon" aria-hidden="true" />
             <div className="listing-hero-stat-chip-content">
-              <span className="listing-hero-stat-chip-value">{chip.value}</span>
-              <span className="listing-hero-stat-chip-label">{chip.label}</span>
+              <span className="listing-hero-stat-chip-value">{tPrice(t(chip.value))}</span>
+              <span className="listing-hero-stat-chip-label">{t(chip.label)}</span>
             </div>
           </div>
         );

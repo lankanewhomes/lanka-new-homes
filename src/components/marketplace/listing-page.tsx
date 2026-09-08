@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { BedDouble, Building2, ChevronDown, ChevronLeft, ChevronRight, Heart, List, Map as MapIcon, Ruler, Search, MapPin, SlidersHorizontal, X, ArrowUpDown } from "lucide-react";
 import { formatLkr } from "@/lib/format";
+import { useListingT } from "@/lib/i18n/use-listing-t";
 import { useSavedListing } from "@/lib/use-saved-listing";
 import { MapSidebar } from "@/components/marketplace/map-sidebar";
 import { searchablePages } from "@/lib/listing-categories";
@@ -117,6 +118,7 @@ function statusPillLabel(project: Project) {
 
 export function ListingGridCard({ project, basePath = "/projects" }: { project: Project; basePath?: string }) {
   const { saved, toggle } = useSavedListing(project.slug);
+  const { t, tPrice } = useListingT();
   const isLand = basePath === "/land";
   const hasPrice = project.startingPriceLkr > 0;
   const hasLandSize = project.floorAreaRange && project.floorAreaRange !== "-";
@@ -146,7 +148,7 @@ export function ListingGridCard({ project, basePath = "/projects" }: { project: 
           height={340}
           className="listing-grid-card-image"
         />
-        <span className="listing-grid-card-status">{statusPillLabel(project)}</span>
+        <span className="listing-grid-card-status">{t(statusPillLabel(project))}</span>
         <button
           type="button"
           className={`listing-grid-card-save${saved ? " saved" : ""}`}
@@ -175,15 +177,15 @@ export function ListingGridCard({ project, basePath = "/projects" }: { project: 
       <div className="listing-grid-card-body">
         {project.isFeatured || project.paymentPlanBadge ? (
           <div className="home-card-badge-row">
-            {project.isFeatured ? <span className="badge-featured">Featured</span> : null}
+            {project.isFeatured ? <span className="badge-featured">{t("Featured")}</span> : null}
             {project.paymentPlanBadge ? <span className="badge-featured">{project.paymentPlanBadge}</span> : null}
           </div>
         ) : null}
         <Link href={href} className="listing-grid-card-name">{project.name}</Link>
         <p className="listing-grid-card-price">
           {isLand
-            ? (hasLandSize ? `From ${project.floorAreaRange}` : project.status)
-            : (hasPrice ? `From ${formatLkr(project.startingPriceLkr)}` : project.status)}
+            ? (hasLandSize ? tPrice(`From ${project.floorAreaRange}`) : t(project.status))
+            : (hasPrice ? tPrice(`From ${formatLkr(project.startingPriceLkr)}`) : t(project.status))}
         </p>
         <p className="listing-grid-card-agency">{project.developerName}</p>
         <p className="listing-grid-card-address">{project.location}</p>

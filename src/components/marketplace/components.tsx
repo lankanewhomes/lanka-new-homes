@@ -83,6 +83,8 @@ import { Button } from "@/components/ui/button";
 import { SiteLanguage, useLanguage } from "@/components/layout/language-provider";
 import { compactLkr, formatLkr, formatOfficeHours } from "@/lib/format";
 import { Amenity, Article, Developer, FloorPlan, Lead, Location, NearbyPlace, Project } from "@/types";
+import { localizedProjectCopy, useListingT } from "@/lib/i18n/use-listing-t";
+import { floorPlanSummarySentence } from "@/lib/i18n/floor-plan-sentence";
 import { groupNearbyPlaces } from "@/lib/nearby-places";
 
 const amenityIcons: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -510,6 +512,7 @@ export function ProjectHero({
   const handlePrevVideo = () => setVideoIndex((index) => (index - 1 + videoItems.length) % videoItems.length);
   const handleNextVideo = () => setVideoIndex((index) => (index + 1) % videoItems.length);
   const virtualTourCount = project.virtualTours?.length ?? 0;
+  const { t } = useListingT();
   const hasMap = project.coordinates?.lat != null && project.coordinates?.lng != null;
   const hasInteractiveMap = Boolean(project.interactiveMapUrl);
   // Floor plan count for the hero pill: prefer a gallery photo explicitly
@@ -674,7 +677,7 @@ export function ProjectHero({
             setIsLightboxOpen(true);
           }}
         >
-          <LayoutGrid className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">Photos <span className="listing-hero-quickjump-count">{photoItems.length}</span></span>
+          <LayoutGrid className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">{t("Photos")} <span className="listing-hero-quickjump-count">{photoItems.length}</span></span>
         </button>
       ),
     },
@@ -691,7 +694,7 @@ export function ProjectHero({
             setIsLightboxOpen(true);
           }}
         >
-          <Video className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">Videos <span className="listing-hero-quickjump-count">{videoCount}</span></span>
+          <Video className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">{t("Videos")} <span className="listing-hero-quickjump-count">{videoCount}</span></span>
         </button>
       ),
     },
@@ -708,7 +711,7 @@ export function ProjectHero({
             setIsLightboxOpen(true);
           }}
         >
-          <MapIcon className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">Map</span>
+          <MapIcon className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">{t("Map")}</span>
         </button>
       ),
     },
@@ -721,7 +724,7 @@ export function ProjectHero({
       show: true,
       render: (className) => (
         <button type="button" className={className} onClick={openBrochureRequest}>
-          <FileText className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">Brochure</span>
+          <FileText className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">{t("Brochure")}</span>
         </button>
       ),
     },
@@ -739,7 +742,7 @@ export function ProjectHero({
             setIsLightboxOpen(true);
           }}
         >
-          <MapPinned className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">Road Map{roadMapItems.length > 1 ? <span className="listing-hero-quickjump-count">{roadMapItems.length}</span> : null}</span>
+          <MapPinned className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">{t("Road Map")}{roadMapItems.length > 1 ? <span className="listing-hero-quickjump-count">{roadMapItems.length}</span> : null}</span>
         </button>
       ),
     },
@@ -757,7 +760,7 @@ export function ProjectHero({
             setIsLightboxOpen(true);
           }}
         >
-          <Layers className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">Block Plan{blockPlanImages.length > 1 ? <span className="listing-hero-quickjump-count">{blockPlanImages.length}</span> : null}</span>
+          <Layers className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">{t("Block Plan")}{blockPlanImages.length > 1 ? <span className="listing-hero-quickjump-count">{blockPlanImages.length}</span> : null}</span>
         </button>
       ),
     },
@@ -791,7 +794,7 @@ export function ProjectHero({
             setIsLightboxOpen(true);
           }}
         >
-          <Navigation className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">Street View</span>
+          <Navigation className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">{t("Street View")}</span>
         </button>
       ),
     },
@@ -809,7 +812,7 @@ export function ProjectHero({
       show: virtualTourCount > 0,
       render: (className) => (
         <button type="button" className={className} onClick={() => setActiveMedia("virtualTours")}>
-          <Camera className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">Virtual tours <span className="listing-hero-quickjump-count">{virtualTourCount}</span></span>
+          <Camera className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">{t("Virtual tours")} <span className="listing-hero-quickjump-count">{virtualTourCount}</span></span>
         </button>
       ),
     },
@@ -822,7 +825,7 @@ export function ProjectHero({
       show: hasBlockPlan,
       render: (className) => (
         <a href="#plans-homes" className={className} onClick={() => setActiveSection("plans-homes")}>
-          <LayoutPanelLeft className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">{plansHomesNavLabel} <span className="listing-hero-quickjump-count">{floorPlanCount}</span></span>
+          <LayoutPanelLeft className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">{t(plansHomesNavLabel)} <span className="listing-hero-quickjump-count">{floorPlanCount}</span></span>
         </a>
       ),
     },
@@ -846,33 +849,33 @@ export function ProjectHero({
         <nav aria-label="Project sections" className="listing-hero-nav">
           {backHref ? (
             <Link href={backHref} className="listing-hero-nav-back">
-              <ChevronLeft className="h-3.5 w-3.5" aria-hidden="true" /> {backLabel ?? "Back"}
+              <ChevronLeft className="h-3.5 w-3.5" aria-hidden="true" /> {t(backLabel ?? "Back")}
             </Link>
           ) : null}
-          <a href="#overview" className={activeSection === "overview" ? "active" : undefined} onClick={() => setActiveSection("overview")}>Overview</a>
-          <a href="#pricing" className={activeSection === "pricing" ? "active" : undefined} onClick={() => setActiveSection("pricing")}>Pricing</a>
+          <a href="#overview" className={activeSection === "overview" ? "active" : undefined} onClick={() => setActiveSection("overview")}>{t("Overview")}</a>
+          <a href="#pricing" className={activeSection === "pricing" ? "active" : undefined} onClick={() => setActiveSection("pricing")}>{t("Pricing")}</a>
           {hasKeyFeatures ? (
-            <a href="#key-features" className={activeSection === "key-features" ? "active" : undefined} onClick={() => setActiveSection("key-features")}>Key Features</a>
+            <a href="#key-features" className={activeSection === "key-features" ? "active" : undefined} onClick={() => setActiveSection("key-features")}>{t("Key Features")}</a>
           ) : null}
-          <a href="#plans-homes" className={activeSection === "plans-homes" ? "active" : undefined} onClick={() => setActiveSection("plans-homes")}>{plansHomesNavLabel}</a>
+          <a href="#plans-homes" className={activeSection === "plans-homes" ? "active" : undefined} onClick={() => setActiveSection("plans-homes")}>{t(plansHomesNavLabel)}</a>
           {showAmenitiesAndNeighborhoodNav ? (
             <>
-              <a href="#amenities" className={activeSection === "amenities" ? "active" : undefined} onClick={() => setActiveSection("amenities")}>{amenitiesNavLabel}</a>
+              <a href="#amenities" className={activeSection === "amenities" ? "active" : undefined} onClick={() => setActiveSection("amenities")}>{t(amenitiesNavLabel)}</a>
               {hasCommercialAreas ? (
-                <a href="#commercial-areas" className={activeSection === "commercial-areas" ? "active" : undefined} onClick={() => setActiveSection("commercial-areas")}>Commercial Areas</a>
+                <a href="#commercial-areas" className={activeSection === "commercial-areas" ? "active" : undefined} onClick={() => setActiveSection("commercial-areas")}>{t("Commercial Areas")}</a>
               ) : null}
-              <a href="#neighborhood" className={activeSection === "neighborhood" ? "active" : undefined} onClick={() => setActiveSection("neighborhood")}>Neighborhood</a>
+              <a href="#neighborhood" className={activeSection === "neighborhood" ? "active" : undefined} onClick={() => setActiveSection("neighborhood")}>{t("Neighborhood")}</a>
             </>
           ) : null}
         </nav>
 
         <div className="listing-hero-actions">
-          <button type="button" className="action-link"><Bell className="h-4 w-4" aria-hidden="true" />Get updates</button>
+          <button type="button" className="action-link"><Bell className="h-4 w-4" aria-hidden="true" />{t("Get updates")}</button>
           <button type="button" className="action-link" onClick={toggleSaved}>
             <Heart className={`h-4 w-4${savedListing ? " text-[#d94f4f]" : ""}`} aria-hidden="true" fill={savedListing ? "currentColor" : "none"} />
-            {savedListing ? "Saved" : "Save"}
+            {savedListing ? t("Saved") : t("Save")}
           </button>
-          <button type="button" className="request-info-btn" onClick={openRequestInfo}>Request info</button>
+          <button type="button" className="request-info-btn" onClick={openRequestInfo}>{t("Request info")}</button>
         </div>
       </div>
     </div>
@@ -967,15 +970,15 @@ export function ProjectHero({
               <div className="listing-photo-lightbox-actions">
                 <button type="button" className="listing-photo-lightbox-action-btn">
                   <Bell className="h-4 w-4" aria-hidden="true" />
-                  Get updates
+                  {t("Get updates")}
                 </button>
                 <button type="button" className="listing-photo-lightbox-action-btn" onClick={toggleSaved}>
                   <Heart className={`h-4 w-4${savedListing ? " text-[#d94f4f]" : ""}`} aria-hidden="true" fill={savedListing ? "currentColor" : "none"} />
-                  {savedListing ? "Saved" : "Save"}
+                  {savedListing ? t("Saved") : t("Save")}
                 </button>
                 <button type="button" className="listing-photo-lightbox-action-btn">
                   <Share2 className="h-4 w-4" aria-hidden="true" />
-                  Share
+                  {t("Share")}
                 </button>
                 <button
                   type="button"
@@ -996,7 +999,7 @@ export function ProjectHero({
                 className={lightboxView === "photos" ? "active" : undefined}
                 onClick={() => setLightboxView("photos")}
               >
-                Photos <span className="listing-photo-lightbox-tab-count">{photoItems.length}</span>
+                {t("Photos")} <span className="listing-photo-lightbox-tab-count">{photoItems.length}</span>
               </button>
               {videoCount > 0 && (
                 <button
@@ -1006,7 +1009,7 @@ export function ProjectHero({
                   className={lightboxView === "videos" ? "active" : undefined}
                   onClick={() => setLightboxView("videos")}
                 >
-                  Videos <span className="listing-photo-lightbox-tab-count">{videoCount}</span>
+                  {t("Videos")} <span className="listing-photo-lightbox-tab-count">{videoCount}</span>
                 </button>
               )}
               {hasMap && (
@@ -1244,11 +1247,11 @@ export function ProjectHero({
 
       {(hasDisplayValue(project.status) || isUpcomingMoveIn(project) || project.isFeatured || project.isMoveInNow || hasQuickMoveIn(project) || Boolean(project.paymentPlanBadge) || extraBadges.length > 0) ? (
         <div className="listing-hero-tags" aria-label="Listing status tags">
-          {hasDisplayValue(project.status) ? <span className="listing-hero-tag-status">{statusLabelOverride ?? project.status}</span> : null}
-          {isUpcomingMoveIn(project) ? <span className="listing-hero-tag-move-in">Move in {project.completionYear}</span> : null}
-          {project.isMoveInNow ? <span className="listing-badge-pill badge-move-in-now">Move-In Now</span> : null}
-          {hasQuickMoveIn(project) ? <span className="listing-badge-pill badge-quick-move-in">Quick Move-In</span> : null}
-          {project.isFeatured ? <span className="listing-badge-pill badge-featured">Featured</span> : null}
+          {hasDisplayValue(project.status) ? <span className="listing-hero-tag-status">{t(statusLabelOverride ?? project.status)}</span> : null}
+          {isUpcomingMoveIn(project) ? <span className="listing-hero-tag-move-in">{t("Move in")} {project.completionYear}</span> : null}
+          {project.isMoveInNow ? <span className="listing-badge-pill badge-move-in-now">{t("Move-In Now")}</span> : null}
+          {hasQuickMoveIn(project) ? <span className="listing-badge-pill badge-quick-move-in">{t("Quick Move-In")}</span> : null}
+          {project.isFeatured ? <span className="listing-badge-pill badge-featured">{t("Featured")}</span> : null}
           {project.paymentPlanBadge ? <span className="listing-badge-pill badge-featured">{project.paymentPlanBadge}</span> : null}
           {extraBadges.map((badge) => {
             const label = typeof badge === "string" ? badge : badge.label;
@@ -1263,10 +1266,10 @@ export function ProjectHero({
         <div className={`listing-hero-mobile-ctas${scrolledPastTitle ? " is-visible" : ""}`} aria-label="Mobile quick actions">
           <button type="button" className="listing-hero-mobile-btn listing-hero-mobile-btn-updates">
             <Bell className="h-4 w-4" aria-hidden="true" />
-            Get updates
+            {t("Get updates")}
           </button>
           <button type="button" className="listing-hero-mobile-btn listing-hero-mobile-btn-request" onClick={openRequestInfo}>
-            Request info
+            {t("Request info")}
           </button>
         </div>
 
@@ -1399,6 +1402,7 @@ function pickDefaultChips(candidates: StatChip[], defaultKeys: string[], overflo
 }
 
 export function ProjectStatsChips({ project, floorPlan, areaUnit = "SqFt" }: { project: Project; floorPlan?: FloorPlan; areaUnit?: "SqFt" | "perches" }) {
+  const { t, tPrice } = useListingT();
   const formatArea = (value: number) => value.toLocaleString("en-US");
   // Same rule as the badge: a move-in year is a chip only while it's still
   // ahead (this year onward) — the fact sheet keeps past years as "Completed in".
@@ -1489,12 +1493,12 @@ export function ProjectStatsChips({ project, floorPlan, areaUnit = "SqFt" }: { p
     <div className="listing-hero-stats-chips stats-chips-mobile-limited" role="list" aria-label="Project summary stats">
       {stats.map((item) => {
         const Icon = STAT_CHIP_ICON[item.key] ?? Building2;
-        const label = item.label ?? statDisplayLabel(item.key);
+        const label = t(item.label ?? statDisplayLabel(item.key));
         return (
           <div key={item.key} role="listitem" className={`listing-hero-stat-chip${mobileVisibleKeys.has(item.key) ? " mobile-stat-visible" : ""}`}>
             <Icon className="listing-hero-stat-chip-icon" aria-hidden="true" />
             <div className="listing-hero-stat-chip-content">
-              <span className="listing-hero-stat-chip-value">{item.value}</span>
+              <span className="listing-hero-stat-chip-value">{tPrice(t(item.value))}</span>
               <span className="listing-hero-stat-chip-label">{label}</span>
             </div>
           </div>
@@ -1874,6 +1878,7 @@ export function AmenityGrid({ amenities }: { amenities: Amenity[] }) {
 }
 
 export function PricingInformationLayout({ project }: { project: Project }) {
+  const { t, tPrice } = useListingT();
   const pricingHistory = project.pricingHistory?.filter((entry) => hasDisplayValue(entry.date) || hasDisplayValue(entry.note)) ?? [];
   const incentives = project.incentives?.filter((item) => hasDisplayValue(item)) ?? [];
   const depositStructure = project.depositPaymentStructure ?? project.paymentPlan;
@@ -1933,18 +1938,18 @@ export function PricingInformationLayout({ project }: { project: Project }) {
         <div className="relative z-10 grid gap-6 lg:grid-cols-3">
           {hasPricingCard ? (
             <article className="border border-[#c9ddf5] bg-white px-6 py-6 text-[#1f2321] shadow-[0_10px_28px_rgba(36,78,54,0.08)]">
-              <h3 className="text-[29px] font-semibold">Pricing and fees</h3>
+              <h3 className="text-[29px] font-semibold">{t("Pricing and fees")}</h3>
 
               <div className="mt-7 space-y-4 text-[15px] leading-7">
                 {startingPrice ? (
                   <div>
-                    <p className="font-semibold">Starting price</p>
-                    <p>{startingPrice}</p>
+                    <p className="font-semibold">{t("Starting price")}</p>
+                    <p>{tPrice(startingPrice)}</p>
                   </div>
                 ) : null}
                 {planPrices.length > 0 ? (
                   <div>
-                    <p className="font-semibold">Plan prices</p>
+                    <p className="font-semibold">{t("Plan prices")}</p>
                     <div className="space-y-1">
                       {planPrices.map((line) => <p key={line}>{line}</p>)}
                     </div>
@@ -1989,11 +1994,11 @@ export function PricingInformationLayout({ project }: { project: Project }) {
 
           {hasDepositCard ? (
             <article className="border border-[#c9ddf5] bg-white px-6 py-6 text-[#1f2321] shadow-[0_10px_28px_rgba(36,78,54,0.08)]">
-              <h3 className="text-[29px] font-semibold">Deposit Structure</h3>
+              <h3 className="text-[29px] font-semibold">{t("Deposit Structure")}</h3>
 
               <div className="mt-7 space-y-4 text-[15px] leading-7">
                 <div>
-                  <p className="font-semibold">Payment structure</p>
+                  <p className="font-semibold">{t("Payment structure")}</p>
                   <div className="space-y-1">
                     {paymentLines.map((line, index) => <p key={`${line}-${index}`}>{line}</p>)}
                   </div>
@@ -2004,7 +2009,7 @@ export function PricingInformationLayout({ project }: { project: Project }) {
 
           {hasIncentivesCard ? (
             <article className="border border-[#c9ddf5] bg-white px-6 py-6 text-[#1f2321] shadow-[0_10px_28px_rgba(36,78,54,0.08)]">
-              <h3 className="text-[29px] font-semibold">Current Incentives</h3>
+              <h3 className="text-[29px] font-semibold">{t("Current Incentives")}</h3>
 
               <div className="mt-7 space-y-4 text-[15px] leading-7">
                 {incentives.map((incentive, index) => (
@@ -2034,6 +2039,7 @@ const PLAN_SORT_OPTIONS = [
 type PlanSortValue = typeof PLAN_SORT_OPTIONS[number]["value"];
 
 export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFloorPlanId, showQuickMoveIns = true, planHrefBase, showBedBath = true }: { project: Project; title?: string; excludeFloorPlanId?: string; showQuickMoveIns?: boolean; planHrefBase?: string; showBedBath?: boolean }) {
+  const { t, tPrice } = useListingT();
   const hrefBase = planHrefBase ?? `/projects/${project.slug}/floor-plans`;
   const [activeTab, setActiveTab] = useState<string>("all");
   const [filterOpen, setFilterOpen] = useState(false);
@@ -2094,7 +2100,7 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
   return (
     <section id="plans-homes" className="plans-homes-shell" aria-label="Plans and homes">
       <div className="plans-homes-head">
-        <h2>{title}</h2>
+        <h2>{t(title)}</h2>
       </div>
 
       <div className="plans-homes-toolbar">
@@ -2211,7 +2217,7 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
                 </div>
               ) : null}
               <h4>{plan.planName}</h4>
-              <p className="plans-home-price">{plan.startingPriceLkr > 0 ? `From ${formatLkr(plan.startingPriceLkr)}` : "Contact for pricing"}</p>
+              <p className="plans-home-price">{plan.startingPriceLkr > 0 ? tPrice(`From ${formatLkr(plan.startingPriceLkr)}`) : t("Contact for pricing")}</p>
               <p className="plans-home-type">{plan.planType || project.type}</p>
               <div className="plans-home-facts">
                 {showBedBath ? (
@@ -2264,6 +2270,7 @@ function normalizeUnitFeaturesForDisplay(raw: unknown): { key: string; label: st
 }
 
 export function KeyFeaturesSection({ unitFeatures }: { unitFeatures: unknown }) {
+  const { t } = useListingT();
   const groups = normalizeUnitFeaturesForDisplay(unitFeatures).filter((group) => group.items.length > 0);
 
   const [openKey, setOpenKey] = useState<string | null>(groups[0]?.key ?? null);
@@ -2273,7 +2280,7 @@ export function KeyFeaturesSection({ unitFeatures }: { unitFeatures: unknown }) 
   return (
     <section id="key-features" className="key-features-shell" aria-label="Key features">
       <div className="key-features-pattern" aria-hidden="true" />
-      <h2>Key Features</h2>
+      <h2>{t("Key Features")}</h2>
 
       <div className="key-features-list">
         {groups.map((group) => {
@@ -2309,6 +2316,7 @@ export function KeyFeaturesSection({ unitFeatures }: { unitFeatures: unknown }) 
 }
 
 export function AmenitiesShowcaseSection({ amenities, gallery, heroImage, title = "Amenities" }: { amenities: Amenity[]; gallery: { label: string; image: string }[]; heroImage: string; title?: string }) {
+  const { t } = useListingT();
   const amenityItems = useMemo(() => {
     const fallbackDescriptions: Record<string, string> = {
       Pool: "Resort-style pool areas create a calming retreat for daily relaxation and weekend gatherings.",
@@ -2350,7 +2358,7 @@ export function AmenitiesShowcaseSection({ amenities, gallery, heroImage, title 
 
   return (
     <section id="amenities" className="amenities-showcase-shell" aria-label={title}>
-      <h2>{title}</h2>
+      <h2>{t(title)}</h2>
 
       <div className="amenities-showcase-grid">
         <figure className={`amenities-showcase-image-wrap${activeAmenity.image ? "" : " no-image"}`}>
@@ -2400,6 +2408,7 @@ export function AmenitiesShowcaseSection({ amenities, gallery, heroImage, title 
 // tenants with their own photo already paired (not generic tags matched
 // against the gallery by name), so no fallback-description lookup is needed.
 export function CommercialAreasSection({ commercialAreas, title = "Commercial Areas" }: { commercialAreas: { label: string; image: string }[]; title?: string }) {
+  const { t } = useListingT();
   const [activeIndex, setActiveIndex] = useState(0);
   const active = commercialAreas[Math.max(0, Math.min(activeIndex, commercialAreas.length - 1))];
 
@@ -2410,7 +2419,7 @@ export function CommercialAreasSection({ commercialAreas, title = "Commercial Ar
   return (
     <section id="commercial-areas" className="amenities-showcase-shell" aria-label={title}>
       <div className="key-features-pattern" aria-hidden="true" />
-      <h2>{title}</h2>
+      <h2>{t(title)}</h2>
 
       <div className="amenities-showcase-grid">
         <figure className="amenities-showcase-image-wrap">
@@ -2509,6 +2518,7 @@ export function ListingSidebarCard({ project, developer }: { project: Project; d
 }
 
 export function SalesCenterSection({ project, developer }: { project: Project; developer?: Developer }) {
+  const { t } = useListingT();
   const [requestInfoOpen, setRequestInfoOpen] = useState(false);
 
   const socialEntries = Object.entries(developer?.socialLinks ?? {}).filter(([, url]) => hasDisplayValue(url)) as [string, string][];
@@ -2526,7 +2536,7 @@ export function SalesCenterSection({ project, developer }: { project: Project; d
                   <Image src={developer.logo} alt={developer.name} width={120} height={60} />
                 </div>
               ) : null}
-              <p className="sales-alert-center-label">Sales Center</p>
+              <p className="sales-alert-center-label">{t("Sales Center")}</p>
               <h2 className="sales-alert-heading">{project.name}</h2>
               {phone ? (
                 <p className="sales-alert-phone">
@@ -2534,7 +2544,7 @@ export function SalesCenterSection({ project, developer }: { project: Project; d
                   {phone}
                 </p>
               ) : null}
-              <button type="button" className="sales-alert-request" onClick={() => setRequestInfoOpen(true)}>Request info</button>
+              <button type="button" className="sales-alert-request" onClick={() => setRequestInfoOpen(true)}>{t("Request info")}</button>
             </div>
 
             {hoursLines.length > 0 ? (
@@ -2578,6 +2588,7 @@ const DESCRIPTION_TRUNCATE_WORDS = 70;
 // -short in globals.css): desktop always shows the full text regardless of
 // this button's state, no separate desktop word limit.
 export function TruncatedDescription({ text }: { text: string }) {
+  const { t } = useListingT();
   const [expanded, setExpanded] = useState(false);
   const words = text.trim().split(/\s+/);
   const isLong = words.length > DESCRIPTION_TRUNCATE_WORDS;
@@ -2590,13 +2601,14 @@ export function TruncatedDescription({ text }: { text: string }) {
       <p className="project-description-short">{expanded ? text : shortText}</p>
       <p className="project-description-full">{text}</p>
       <button type="button" className="project-description-toggle" onClick={() => setExpanded((value) => !value)}>
-        {expanded ? "View less" : "View more"}
+        {expanded ? t("View less") : t("View more")}
       </button>
     </>
   );
 }
 
 export function ProjectDescriptionSection({ project, floorPlan, headingOverride }: { project: Project; floorPlan?: FloorPlan; headingOverride?: string }) {
+  const { t, language } = useListingT();
   // A specific floor plan has its own detail page (linked from the main
   // project page, which already shows the project-wide highlights/
   // description) — reusing that same project-level copy here would just
@@ -2625,10 +2637,16 @@ export function ProjectDescriptionSection({ project, floorPlan, headingOverride 
         : "",
     ].filter(Boolean);
 
+    // Sinhala/Tamil get their own sentence templates (word order differs);
+    // English keeps the one above.
+    const summaryText = language === "en"
+      ? sentences.join(" ")
+      : floorPlanSummarySentence(language, floorPlan, project, isUpcomingMoveIn(project));
+
     return (
       <section id="overview" className="project-description-shell" aria-label="Floor plan description">
-        <h2>{headingOverride ?? `${floorPlan.planName} Details`}</h2>
-        <p>{sentences.join(" ")}</p>
+        <h2>{headingOverride ? t(headingOverride) : `${floorPlan.planName} ${t("Details")}`}</h2>
+        <p>{summaryText}</p>
       </section>
     );
   }
@@ -2637,12 +2655,15 @@ export function ProjectDescriptionSection({ project, floorPlan, headingOverride 
   // for cards and the meta description — appending it here just repeated
   // the paragraph in miniature at the end (dropped 2026-09-07). It's still
   // the fallback when a project has no description at all.
-  const fullText = hasDisplayValue(project.description) ? project.description : (project.summary ?? "");
-  const highlights = (project.highlights ?? []).filter(Boolean);
+  // Sinhala/Tamil prose comes from the project's Translations tab, field by
+  // field, falling back to English.
+  const copy = localizedProjectCopy(project, language);
+  const fullText = hasDisplayValue(copy.description) ? copy.description : (copy.summary ?? "");
+  const highlights = copy.highlights.filter(Boolean);
 
   return (
     <section id="overview" className="project-description-shell" aria-label="Project description">
-      <h2>{headingOverride ?? "Overview"}</h2>
+      <h2>{t(headingOverride ?? "Overview")}</h2>
       {highlights.length > 0 ? (
         <ul className="project-description-highlights">
           {highlights.map((highlight) => (
@@ -2778,6 +2799,10 @@ const MOBILE_FACT_SHEET_ORDER = [
 // down the RIGHT (lowest) — so the eye reads the list in priority order by
 // scanning down, then across.
 export function FactSheetTable({ rows, className }: { rows: { label: string; value: React.ReactNode }[]; className: string }) {
+  const { t, tPrice } = useListingT();
+  // Labels and plain-string values (statuses, types, "From Rs. …") are
+  // translated; links/nodes and numbers pass through untouched.
+  const show = (value: React.ReactNode) => (typeof value === "string" ? tPrice(t(value)) : value);
   if (!rows.length) return null;
   const split = Math.ceil(rows.length / 2);
   const left = rows.slice(0, split);
@@ -2790,9 +2815,9 @@ export function FactSheetTable({ rows, className }: { rows: { label: string; val
           const rightRow = right[index];
           return (
             <tr key={leftRow.label}>
-              <td><span className="project-fact-label">{leftRow.label}:</span> {leftRow.value}</td>
+              <td><span className="project-fact-label">{t(leftRow.label)}:</span> {show(leftRow.value)}</td>
               {rightRow
-                ? <td><span className="project-fact-label">{rightRow.label}:</span> {rightRow.value}</td>
+                ? <td><span className="project-fact-label">{t(rightRow.label)}:</span> {show(rightRow.value)}</td>
                 : <td aria-hidden="true" />}
             </tr>
           );
@@ -3274,6 +3299,7 @@ export function NearbyPlacesAccordion({ groups }: { groups: ReturnType<typeof gr
 }
 
 export function NeighborhoodSection({ nearby, neighborhoodName, neighborhoodSlug, neighborhoodPageExists }: { nearby: NearbyPlace[]; neighborhoodName?: string; neighborhoodSlug?: string; neighborhoodPageExists?: boolean }) {
+  const { t } = useListingT();
   const groups = groupNearbyPlaces(nearby);
 
   if (!hasDisplayValue(neighborhoodName) && groups.length === 0) return null;
@@ -3281,7 +3307,7 @@ export function NeighborhoodSection({ nearby, neighborhoodName, neighborhoodSlug
   return (
     <section id="neighborhood" className="key-features-shell" aria-label="Neighborhood">
       <div className="key-features-pattern" aria-hidden="true" />
-      <h2>Neighborhood</h2>
+      <h2>{t("Neighborhood")}</h2>
 
       <NearbyPlacesAccordion groups={groups} />
 
@@ -3300,6 +3326,7 @@ export function NeighborhoodSection({ nearby, neighborhoodName, neighborhoodSlug
 // text-only placeholder AmenitiesShowcaseSection already falls back to for
 // an amenity with no matched gallery image, rather than inventing new CSS.
 export function KnownLandmarksSection({ nearby, title = "Known Landmarks" }: { nearby: NearbyPlace[]; title?: string }) {
+  const { t } = useListingT();
   const landmarkItems = useMemo(
     () => nearby.filter((place) => place.category !== "School" && place.category !== "Transport").slice(0, 8),
     [nearby],
@@ -3312,7 +3339,7 @@ export function KnownLandmarksSection({ nearby, title = "Known Landmarks" }: { n
 
   return (
     <section id="known-landmarks" className="amenities-showcase-shell" aria-label={title}>
-      <h2>{title}</h2>
+      <h2>{t(title)}</h2>
 
       <div className="amenities-showcase-grid">
         <figure className="amenities-showcase-image-wrap no-image">

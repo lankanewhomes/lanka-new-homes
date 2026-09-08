@@ -9,6 +9,7 @@ import type { CoDeveloperEntry, CompanyProfile, Developer, ProfileEntityType, Pr
 import { formatLkr, formatOfficeHours } from "@/lib/format";
 import { SOCIAL_ICON } from "@/components/marketplace/components";
 import { useSavedProfile } from "@/lib/use-saved-profile";
+import { useListingT } from "@/lib/i18n/use-listing-t";
 import { Button } from "@/components/ui/button";
 
 type Tab = "projects" | "reviews" | "awards" | "press";
@@ -41,6 +42,7 @@ export function ProfileView({
 }) {
   const [tab, setTab] = useState<Tab>("projects");
   const { saved: following, toggle: toggleFollow } = useSavedProfile(entityType, entity.slug);
+  const { t, tPrice } = useListingT();
   const [locationFilter, setLocationFilter] = useState("all");
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const formattedOfficeHours = formatOfficeHours(entity.officeHours);
@@ -163,8 +165,8 @@ export function ProfileView({
                     </div>
                     <div className="developer-profile-row-body">
                       <h3>{project.name}</h3>
-                      <p className="developer-profile-row-price">{project.status === "Coming Soon" ? "Register now" : project.startingPriceLkr > 0 ? `From ${formatLkr(project.startingPriceLkr)}` : project.status}</p>
-                      <p className="developer-profile-row-meta">{project.type} | {project.constructionStatus}</p>
+                      <p className="developer-profile-row-price">{project.status === "Coming Soon" ? t("Register now") : project.startingPriceLkr > 0 ? tPrice(`From ${formatLkr(project.startingPriceLkr)}`) : t(project.status)}</p>
+                      <p className="developer-profile-row-meta">{t(project.type)} | {t(project.constructionStatus)}</p>
                       <p className="developer-profile-row-address">{project.location}</p>
                     </div>
                   </Link>

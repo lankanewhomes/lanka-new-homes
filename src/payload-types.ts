@@ -3105,6 +3105,18 @@ export interface Project {
         id?: string | null;
       }[]
     | null;
+  translations?: {
+    si?: {
+      summary?: string | null;
+      highlights?: string[] | null;
+      description?: string | null;
+    };
+    ta?: {
+      summary?: string | null;
+      highlights?: string[] | null;
+      description?: string | null;
+    };
+  };
   floorPlans?:
     | {
         planName: string;
@@ -7138,6 +7150,24 @@ export interface ProjectsSelect<T extends boolean = true> {
         label?: T;
         image?: T;
         id?: T;
+      };
+  translations?:
+    | T
+    | {
+        si?:
+          | T
+          | {
+              summary?: T;
+              highlights?: T;
+              description?: T;
+            };
+        ta?:
+          | T
+          | {
+              summary?: T;
+              highlights?: T;
+              description?: T;
+            };
       };
   floorPlans?:
     | T

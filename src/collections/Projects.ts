@@ -421,6 +421,29 @@ export const Projects: CollectionConfig = {
           ],
         },
         {
+          // Sinhala / Tamil versions of the free-text copy. The fixed labels
+          // (Beds, Price range, statuses…) are translated in code
+          // (src/lib/i18n/listing-strings.ts); only prose needs entering
+          // here. Empty = the English text is shown for that language.
+          label: 'Translations',
+          fields: [
+            {
+              name: 'translations',
+              type: 'group',
+              fields: (['si', 'ta'] as const).map((code) => ({
+                name: code,
+                type: 'group' as const,
+                label: code === 'si' ? 'සිංහල (Sinhala)' : 'தமிழ் (Tamil)',
+                fields: [
+                  { name: 'summary', type: 'textarea' as const, label: 'Summary' },
+                  { name: 'highlights', type: 'text' as const, hasMany: true, label: 'Key Highlights' },
+                  { name: 'description', type: 'textarea' as const, label: 'Description' },
+                ],
+              })),
+            },
+          ],
+        },
+        {
           label: 'Floor Plans',
           fields: [
             {

@@ -621,6 +621,38 @@ padded with other published listings so the grid fills. It is pure selection
 over existing fields — nothing is computed about a listing — and renders
 nothing when there is no other listing to show.
 
+## Languages (Sinhala / Tamil listing content)
+
+The header language toggle (`LanguageProvider`, localStorage key
+`newhomessrilanka-language`, `en | si | ta`) now reaches listing pages in
+two layers:
+
+- **Fixed UI strings** — section headings, nav pills, chip and fact-sheet
+  labels, statuses, property types, "From Rs. …", "View more", badges —
+  are translated from a dictionary keyed by the English string:
+  `src/lib/i18n/listing-strings.ts`. Client components call
+  `useListingT()` (`src/lib/i18n/use-listing-t.ts`) and wrap text in
+  `t("Beds")` / `tPrice("From Rs. 45 M")`; a server component with one
+  heading uses `<T>Similar listings</T>` (`src/components/layout/t.tsx`).
+  Unknown strings fall back to English unchanged, so a missing entry never
+  blanks the UI. `"3 Bed"`-style values translate the word and keep the
+  number.
+- **Per-project prose** — summary, highlights and description — comes from
+  the project's **Translations** tab in the CMS (`translations.si.*`,
+  `translations.ta.*`). `localizedProjectCopy(project, language)` picks
+  each field in the current language and falls back to English field by
+  field, so a project with a Sinhala summary but no description yet still
+  reads correctly. Nothing is machine-translated at runtime.
+
+Fonts: Archivo has no Sinhala/Tamil glyphs, so `--font-app` /
+`--font-ref-sans` list "Noto Sans Sinhala" / "Iskoola Pota" /
+"Sinhala Sangam MN" and "Noto Sans Tamil" / "Latha" / "Tamil Sangam MN"
+after the Latin faces — the browser falls through per glyph. Names,
+addresses and numbers stay as entered.
+
+When adding a new fixed string to a listing component, add it to both
+dictionaries in `listing-strings.ts` in the same change.
+
 ## Land detail page (`/land/{slug}`)
 
 Deliberately reuses the *same* CSS classes as the project detail page
