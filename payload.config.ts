@@ -10,6 +10,7 @@ import { Analytics } from './src/collections/Analytics'
 import { analyticsEndpoint, analyticsSummaryEndpoint } from './src/collections/endpoints/analytics'
 import { importListingEndpoint } from './src/collections/endpoints/import-listing'
 import { listingTodoEndpoint } from './src/collections/endpoints/listing-todo'
+import { leadActivityEndpoint } from './src/collections/endpoints/lead-activity'
 import { Architects } from './src/collections/Architects'
 import { Articles } from './src/collections/Articles'
 import { ConstructionCompanies } from './src/collections/ConstructionCompanies'
@@ -64,7 +65,11 @@ export default buildConfig({
       ],
       // "✨ Get Featured" link into the placements wizard below — developer
       // accounts only (see NavPlacementLink.tsx).
-      afterNavLinks: ['@/components/payload/NavPlacementLink#NavPlacementLink', '@/components/payload/NavImportLink#NavImportLink'],
+      afterNavLinks: [
+        '@/components/payload/NavPlacementLink#NavPlacementLink',
+        '@/components/payload/NavImportLink#NavImportLink',
+        '@/components/payload/NavLeadActivityLink#NavLeadActivityLink',
+      ],
       views: {
         // "Import from your website": paste a project URL / upload a
         // brochure, get an unpublished draft — see ImportListing.tsx and
@@ -72,6 +77,13 @@ export default buildConfig({
         importListing: {
           Component: '@/components/payload/ImportListing#ImportListing',
           path: '/import',
+        },
+        // Admin-only "what's happening with leads": alerts sent, replies,
+        // response times, per-developer scoreboard — see LeadActivity.tsx and
+        // src/collections/endpoints/lead-activity.ts.
+        leadActivity: {
+          Component: '@/components/payload/LeadActivity#LeadActivity',
+          path: '/lead-activity',
         },
         // Step-by-step "choose a placement, submit a request" flow for
         // developers — see PlacementPicker.tsx. Payment stays request-only
@@ -112,7 +124,7 @@ export default buildConfig({
     Media,
   ],
   globals: [SiteSettings, LeadAlertSettings],
-  endpoints: [analyticsEndpoint, analyticsSummaryEndpoint, importListingEndpoint, listingTodoEndpoint],
+  endpoints: [analyticsEndpoint, analyticsSummaryEndpoint, importListingEndpoint, listingTodoEndpoint, leadActivityEndpoint],
   editor: lexicalEditor(),
   db: postgresAdapter({
     pool: { connectionString: process.env.DATABASE_URI },

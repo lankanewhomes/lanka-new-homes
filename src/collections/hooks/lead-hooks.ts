@@ -22,7 +22,7 @@ export const SUPABASE_LEAD_STATUS: Record<string, string> = {
 export const notifyDeveloperOfLead: CollectionAfterChangeHook = async ({ doc, operation, req }) => {
   if (operation !== 'create' || req.context?.skipLeadHooks) return doc
   try {
-    await sendLeadAlerts(req.payload, doc)
+    await sendLeadAlerts(req.payload, doc, { req })
   } catch (error) {
     req.payload.logger.error({ err: error, leadId: doc.id }, 'Lead alert failed')
   }
@@ -40,10 +40,19 @@ export const stampFirstResponse: CollectionAfterChangeHook = async ({ doc, previ
   const createdAt = typeof doc.createdAt === 'string' ? new Date(doc.createdAt) : new Date()
   const now = new Date()
   const response_minutes = Math.max(0, Math.round((now.getTime() - createdAt.getTime()) / 60_000))
+  // Answered by tapping the alert's reply link (route sets context.replyVia
+  // and its own reply event) or by changing the status in the CMS.
+  const via = typeof req.context?.replyVia === 'string' ? req.context.replyVia : 'cms'
+  const existingEvents = Array.isArray(doc.reply_events) ? (doc.reply_events as Record<string, unknown>[]) : []
   await req.payload.update({
     collection: 'leads',
     id: doc.id,
-    data: { first_response_at: now.toISOString(), response_minutes },
+    data: {
+      first_response_at: now.toISOString(),
+      response_minutes,
+      first_reply_via: (typeof doc.first_reply_via === 'string' && doc.first_reply_via) || via,
+      reply_events: via === 'cms' ? [...existingEvents, { via: 'cms', source: 'cms', at: now.toISOString() }] : existingEvents,
+    },
     overrideAccess: true,
     context: { skipLeadHooks: true, skipSupabaseSync: true },
     req,
@@ -53,7 +62,7 @@ export const stampFirstResponse: CollectionAfterChangeHook = async ({ doc, previ
     const projectId = relId(doc.project)
     const project = projectId ? await req.payload.findByID({ collection: 'projects', id: projectId, depth: 0, overrideAccess: true, req }) : null
     const developerId = relId(project?.developer)
-    if (developerId) await recomputeDeveloperResponseStats(req.payload, developerId)
+    if (developerId) await recomputeDeveloperResponseStats(req.payload, developerId, req)
   } catch (error) {
     req.payload.logger.error({ err: error, leadId: doc.id }, 'Response badge recompute failed')
   }

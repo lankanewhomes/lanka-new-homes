@@ -10,7 +10,7 @@
 // answered, and weekly by the analytics-digest cron so it decays as the
 // window slides.
 
-import type { Payload } from 'payload'
+import type { Payload, PayloadRequest } from 'payload'
 
 export const RESPONSE_BADGE_WINDOW_DAYS = 90
 export const RESPONSE_BADGE_MIN_SAMPLE = 5
@@ -64,7 +64,7 @@ export function computeResponseStats(leads: LeadForStats[], now: Date = new Date
   }
 }
 
-export async function loadLeadsForProjects(payload: Payload, projectIds: (string | number)[]): Promise<LeadForStats[]> {
+export async function loadLeadsForProjects(payload: Payload, projectIds: (string | number)[], req?: PayloadRequest): Promise<LeadForStats[]> {
   if (!projectIds.length) return []
   const since = new Date(Date.now() - RESPONSE_BADGE_WINDOW_DAYS * 24 * 60 * 60 * 1000).toISOString()
   const { docs } = await payload.find({
@@ -73,14 +73,17 @@ export async function loadLeadsForProjects(payload: Payload, projectIds: (string
     limit: 5000,
     depth: 0,
     overrideAccess: true,
+    req,
   })
   return docs
 }
 
-/** Recompute and store `response_stats` on one developer (syncs to Supabase via the collection hook). */
-export async function recomputeDeveloperResponseStats(payload: Payload, developerId: string | number): Promise<ResponseStats> {
-  const { docs: projects } = await payload.find({ collection: 'projects', where: { developer: { equals: developerId } }, limit: 500, depth: 0, overrideAccess: true })
-  const leads = await loadLeadsForProjects(payload, projects.map((p) => p.id))
+/** Recompute and store `response_stats` on one developer (syncs to Supabase
+ * via the collection hook). Pass `req` from inside a hook so the reads see
+ * that request's uncommitted lead update. */
+export async function recomputeDeveloperResponseStats(payload: Payload, developerId: string | number, req?: PayloadRequest): Promise<ResponseStats> {
+  const { docs: projects } = await payload.find({ collection: 'projects', where: { developer: { equals: developerId } }, limit: 500, depth: 0, overrideAccess: true, req })
+  const leads = await loadLeadsForProjects(payload, projects.map((p) => p.id), req)
   const stats = computeResponseStats(leads)
   await payload.update({
     collection: 'developers',
@@ -96,6 +99,7 @@ export async function recomputeDeveloperResponseStats(payload: Payload, develope
     } as never,
     overrideAccess: true,
     context: { skipResponseStats: true },
+    req,
   })
   return stats
 }

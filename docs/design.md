@@ -523,6 +523,33 @@ Button: *Open lead* → `https://www.lankanewhomes.com/cms/{{1}}` (dynamic URL).
 Optional env: `WHATSAPP_LEAD_TEMPLATE` (default `lead_alert`),
 `WHATSAPP_TEMPLATE_LANG` (default `en`), `WHATSAPP_API_VERSION` (`v21.0`).
 
+**One-tap reply links = the answer signal.** The alert's Reply on
+WhatsApp / Call / Email buttons are signed links
+(`src/lib/lead-reply-links.ts`, HMAC of lead id + channel with
+`PAYLOAD_SECRET`) through `/api/leads/reply`. A tap moves a "New" lead to
+Contacted (stamping the response time and re-judging the badge), records
+a `reply_events` entry and `first_reply_via`, then forwards — WhatsApp as
+a redirect to wa.me, Call / Email via a tiny "✓ Marked as contacted" page
+that opens tel: / mailto:. So replying the way developers already do is
+what counts; changing the status in the CMS still works too
+(`first_reply_via: cms`).
+
+**Lead activity (admin).** `/cms/lead-activity` (nav link, admins only;
+`src/collections/endpoints/lead-activity.ts` + `LeadActivity.tsx`): every
+lead in the period with its alert trail (`alert_log`: channel, recipient,
+sent/failed, live or test routing), status, first reply channel and
+minutes, and a per-developer scoreboard (leads, awaiting, answered, avg
+response, within-1-hour %, failed alerts, badge). Rows expand to the full
+trail. The Leads list also shows `first_reply_via`, `response_minutes` and
+`alert_summary` as columns. **Origin:** `/api/leads` stores where the
+buyer was (`origin`: country / region / city from Vercel's `x-vercel-ip-*`
+geo headers, device class, traffic source, referrer —
+`src/lib/request-origin.ts`) and each reply tap records the developer's
+country / city / device on its `reply_events` entry, so the page shows
+"📍 Dubai, United Arab Emirates · mobile · Google Ads" under the buyer and
+"from Colombo, Sri Lanka · mobile" on the reply. Blank on localhost and for
+hand-added leads; non-LK buyers are tinted amber.
+
 **Pipeline.** `status` on Leads is New → Contacted → Site visit → Closed
 (`new | contacted | site_visit | closed`). The first move off New stamps
 `first_response_at` and `response_minutes` (admin-only fields, written

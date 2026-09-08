@@ -3,6 +3,7 @@ import { insertLead } from "@/lib/tracking-db";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { buildEventEnrichment } from "@/lib/analytics-event";
 import { renderBrochureEmailHTML } from "@/lib/brochure-email";
+import { requestOrigin } from "@/lib/request-origin";
 
 export async function POST(req: Request) {
   try {
@@ -77,6 +78,9 @@ export async function POST(req: Request) {
           // own afterChange hook (logLeadSubmitted) auto-creates — see
           // hooks/increment-counts.ts's analyticsEnrichment context read.
           const analyticsEnrichment = buildEventEnrichment(req, { sessionId: body.sessionId, trafficSource: body.trafficSource });
+          // Where the buyer was (country/city from Vercel's geo headers,
+          // device, how they arrived) — shown to admins on Lead activity.
+          const origin = requestOrigin(req);
           // Creating the Payload lead also fires the developer's instant
           // email/WhatsApp alert (Leads afterChange → hooks/lead-hooks.ts).
           await payload.create({
@@ -91,6 +95,14 @@ export async function POST(req: Request) {
               floor_plan: floorPlanName || undefined,
               source,
               supabase_lead_id: saved.id,
+              origin: {
+                country: origin.country || undefined,
+                region: origin.region || undefined,
+                city: origin.city || undefined,
+                device: origin.device,
+                traffic_source: analyticsEnrichment.traffic_source,
+                referrer: analyticsEnrichment.referrer,
+              },
             } as never,
             context: { skipSupabaseSync: true, analyticsEnrichment },
             overrideAccess: true,

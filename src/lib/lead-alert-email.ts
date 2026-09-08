@@ -12,8 +12,10 @@ export type LeadAlertEmailInput = {
   preferredContact?: string | null
   message?: string | null
   receivedAt: Date
-  /** wa.me link to the buyer with a pre-filled opener; null when no usable number. */
-  whatsappHref?: string | null
+  /** Signed one-tap links (src/lib/lead-reply-links.ts) — tapping one marks
+   * the lead answered and forwards to WhatsApp / the dialer / mail. Null
+   * when the buyer left no number / address for that channel. */
+  replyLinks: { whatsapp: string | null; call: string | null; email: string | null }
   dashboardUrl: string
 }
 
@@ -36,11 +38,11 @@ function row(label: string, value: string): string {
 
 export function renderLeadAlertEmailHTML(input: LeadAlertEmailInput): string {
   const what = input.planName ? `${escapeHtml(input.planName)} · ${escapeHtml(input.projectName)}` : escapeHtml(input.projectName)
-  const phoneDigits = input.buyerPhone ? input.buyerPhone.replace(/[^+\d]/g, '') : ''
+  const { replyLinks } = input
   const buttons = [
-    input.whatsappHref ? button(input.whatsappHref, 'Reply on WhatsApp', '#25d366') : '',
-    phoneDigits ? button(`tel:${phoneDigits}`, 'Call', '#1f1f1f') : '',
-    input.buyerEmail ? button(`mailto:${encodeURIComponent(input.buyerEmail)}?subject=${encodeURIComponent(`Re: ${input.projectName}`)}`, 'Email', '#1f1f1f') : '',
+    replyLinks.whatsapp ? button(replyLinks.whatsapp, 'Reply on WhatsApp', '#25d366') : '',
+    replyLinks.call ? button(replyLinks.call, 'Call', '#1f1f1f') : '',
+    replyLinks.email ? button(replyLinks.email, 'Email', '#1f1f1f') : '',
   ].filter(Boolean).join('')
 
   const when = input.receivedAt.toLocaleString('en-GB', { timeZone: 'Asia/Colombo', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
@@ -86,8 +88,8 @@ export function renderLeadAlertEmailHTML(input: LeadAlertEmailInput): string {
             <td style="padding:16px 32px 0;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid #e4e0d8; padding-top:12px;">
                 ${row('Name', escapeHtml(input.buyerName))}
-                ${input.buyerPhone ? row('Phone', `<a href="tel:${phoneDigits}" style="color:#1f1f1f;">${escapeHtml(input.buyerPhone)}</a>`) : ''}
-                ${input.buyerEmail ? row('Email', `<a href="mailto:${escapeHtml(input.buyerEmail)}" style="color:#1f1f1f;">${escapeHtml(input.buyerEmail)}</a>`) : ''}
+                ${input.buyerPhone ? row('Phone', replyLinks.call ? `<a href="${replyLinks.call}" style="color:#1f1f1f;">${escapeHtml(input.buyerPhone)}</a>` : escapeHtml(input.buyerPhone)) : ''}
+                ${input.buyerEmail ? row('Email', replyLinks.email ? `<a href="${replyLinks.email}" style="color:#1f1f1f;">${escapeHtml(input.buyerEmail)}</a>` : escapeHtml(input.buyerEmail)) : ''}
                 ${input.preferredContact ? row('Prefers', escapeHtml(input.preferredContact)) : ''}
                 ${input.message ? row('Message', escapeHtml(input.message).replace(/\n/g, '<br>')) : ''}
               </table>
@@ -96,7 +98,8 @@ export function renderLeadAlertEmailHTML(input: LeadAlertEmailInput): string {
 
           <tr>
             <td align="center" style="padding:24px 32px 8px;">
-              <a href="${input.dashboardUrl}" style="font-size:14px; font-weight:700; color:#f47b36; text-decoration:none;">Open in your dashboard → mark as Contacted</a>
+              <p style="margin:0 0 10px; font-size:13px; color:#4a4a4a;">Tapping a reply button above marks this lead as contacted for you.</p>
+              <a href="${input.dashboardUrl}" style="font-size:14px; font-weight:700; color:#f47b36; text-decoration:none;">Open in your dashboard</a>
             </td>
           </tr>
 

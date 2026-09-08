@@ -6548,6 +6548,46 @@ export interface Lead {
    */
   first_response_at?: string | null;
   response_minutes?: number | null;
+  /**
+   * How the developer first answered — a tap on the alert’s reply buttons counts automatically.
+   */
+  first_reply_via?: ('whatsapp' | 'call' | 'email' | 'cms') | null;
+  /**
+   * Where the instant alert went (src/lib/lead-alerts.ts).
+   */
+  alert_summary?: string | null;
+  alert_log?:
+    | {
+        channel?: string | null;
+        to?: string | null;
+        status?: string | null;
+        routing?: string | null;
+        at?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  reply_events?:
+    | {
+        via?: string | null;
+        source?: string | null;
+        at?: string | null;
+        country?: string | null;
+        city?: string | null;
+        device?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  origin?: {
+    /**
+     * ISO code, e.g. LK, AE, GB.
+     */
+    country?: string | null;
+    region?: string | null;
+    city?: string | null;
+    device?: string | null;
+    traffic_source?: string | null;
+    referrer?: string | null;
+  };
   supabase_lead_id?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -7868,6 +7908,39 @@ export interface LeadsSelect<T extends boolean = true> {
   status?: T;
   first_response_at?: T;
   response_minutes?: T;
+  first_reply_via?: T;
+  alert_summary?: T;
+  alert_log?:
+    | T
+    | {
+        channel?: T;
+        to?: T;
+        status?: T;
+        routing?: T;
+        at?: T;
+        id?: T;
+      };
+  reply_events?:
+    | T
+    | {
+        via?: T;
+        source?: T;
+        at?: T;
+        country?: T;
+        city?: T;
+        device?: T;
+        id?: T;
+      };
+  origin?:
+    | T
+    | {
+        country?: T;
+        region?: T;
+        city?: T;
+        device?: T;
+        traffic_source?: T;
+        referrer?: T;
+      };
   supabase_lead_id?: T;
   updatedAt?: T;
   createdAt?: T;

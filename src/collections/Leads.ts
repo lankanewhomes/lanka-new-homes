@@ -23,7 +23,7 @@ export const LEAD_SOURCE_OPTIONS = [
 export const Leads: CollectionConfig = {
   slug: 'leads',
   admin: {
-    defaultColumns: ['name', 'project', 'floor_plan', 'status', 'response_minutes', 'createdAt'],
+    defaultColumns: ['name', 'project', 'status', 'first_reply_via', 'response_minutes', 'alert_summary', 'createdAt'],
     listSearchableFields: ['name', 'email', 'phone'],
   },
   access: {
@@ -93,6 +93,75 @@ export const Leads: CollectionConfig = {
       label: 'Response time (minutes)',
       access: { update: adminOnlyField },
       admin: { readOnly: true, position: 'sidebar' },
+    },
+    {
+      name: 'first_reply_via',
+      type: 'select',
+      label: 'First reply via',
+      options: [
+        { label: 'WhatsApp (from alert)', value: 'whatsapp' },
+        { label: 'Call (from alert)', value: 'call' },
+        { label: 'Email (from alert)', value: 'email' },
+        { label: 'Status changed in CMS', value: 'cms' },
+      ],
+      access: { update: adminOnlyField },
+      admin: { readOnly: true, position: 'sidebar', description: 'How the developer first answered — a tap on the alert’s reply buttons counts automatically.' },
+    },
+    {
+      name: 'alert_summary',
+      type: 'text',
+      label: 'Alert',
+      access: { update: adminOnlyField },
+      admin: { readOnly: true, position: 'sidebar', description: 'Where the instant alert went (src/lib/lead-alerts.ts).' },
+    },
+    // Activity trail — written only by the alert sender and the reply
+    // route, shown in full on the admin "Lead activity" page.
+    {
+      name: 'alert_log',
+      type: 'array',
+      label: 'Alert log',
+      access: { update: adminOnlyField },
+      admin: { readOnly: true, initCollapsed: true },
+      fields: [
+        { name: 'channel', type: 'text' },
+        { name: 'to', type: 'text' },
+        { name: 'status', type: 'text' },
+        { name: 'routing', type: 'text' },
+        { name: 'at', type: 'date', admin: { date: { pickerAppearance: 'dayAndTime' } } },
+      ],
+    },
+    {
+      name: 'reply_events',
+      type: 'array',
+      label: 'Reply events',
+      access: { update: adminOnlyField },
+      admin: { readOnly: true, initCollapsed: true },
+      fields: [
+        { name: 'via', type: 'text' },
+        { name: 'source', type: 'text' },
+        { name: 'at', type: 'date', admin: { date: { pickerAppearance: 'dayAndTime' } } },
+        // Where the tap came from (src/lib/request-origin.ts).
+        { name: 'country', type: 'text' },
+        { name: 'city', type: 'text' },
+        { name: 'device', type: 'text' },
+      ],
+    },
+    // Where the buyer was when they sent the inquiry — Vercel geo headers +
+    // device class, captured by /api/leads. Blank for leads added by hand.
+    {
+      name: 'origin',
+      type: 'group',
+      label: 'Buyer origin',
+      access: { update: adminOnlyField },
+      admin: { readOnly: true },
+      fields: [
+        { name: 'country', type: 'text', admin: { description: 'ISO code, e.g. LK, AE, GB.' } },
+        { name: 'region', type: 'text' },
+        { name: 'city', type: 'text' },
+        { name: 'device', type: 'text' },
+        { name: 'traffic_source', type: 'text', label: 'Traffic source' },
+        { name: 'referrer', type: 'text' },
+      ],
     },
     // Id of the mirrored row in Supabase `leads` (what the buyer's account
     // page reads) so status changes here can be copied across.

@@ -31,11 +31,13 @@ import { FloatingSaveBar as FloatingSaveBar_8d219332c77d82c062bca2cb2e74e200 } f
 import { StatusVerificationStyles as StatusVerificationStyles_30e7ab21255f6e336fc700daeb6431c9 } from '@/components/payload/StatusVerificationStyles'
 import { NavPlacementLink as NavPlacementLink_4dd4594cbbb08508c8d44f490a29b529 } from '@/components/payload/NavPlacementLink'
 import { NavImportLink as NavImportLink_5a308347dbd45d2c0e34cd2393d9f672 } from '@/components/payload/NavImportLink'
+import { NavLeadActivityLink as NavLeadActivityLink_6ff6d1b469ac83a0810868896e9d2423 } from '@/components/payload/NavLeadActivityLink'
 import { DashboardHeading as DashboardHeading_b35bd138182ec0819d58316aa107f82c } from '@/components/payload/DashboardHeading'
 import { LeadAlertModeBanner as LeadAlertModeBanner_2047686ca44a7f00a03adf17abdca6cd } from '@/components/payload/LeadAlertModeBanner'
 import { ListingTodoPanel as ListingTodoPanel_33ebabb4a848599de8c9093bb92914e0 } from '@/components/payload/ListingTodoPanel'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 import { ImportListing as ImportListing_ce25d0c3f088e28836c6e36f3beaffcc } from '@/components/payload/ImportListing'
+import { LeadActivity as LeadActivity_260e16162a752a0a1f35c87c01736fa5 } from '@/components/payload/LeadActivity'
 import { PlacementPicker as PlacementPicker_6da902505ef4c3d4a54d1cfe2cf4f5b4 } from '@/components/payload/PlacementPicker'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
@@ -74,11 +76,13 @@ export const importMap = {
   "@/components/payload/StatusVerificationStyles#StatusVerificationStyles": StatusVerificationStyles_30e7ab21255f6e336fc700daeb6431c9,
   "@/components/payload/NavPlacementLink#NavPlacementLink": NavPlacementLink_4dd4594cbbb08508c8d44f490a29b529,
   "@/components/payload/NavImportLink#NavImportLink": NavImportLink_5a308347dbd45d2c0e34cd2393d9f672,
+  "@/components/payload/NavLeadActivityLink#NavLeadActivityLink": NavLeadActivityLink_6ff6d1b469ac83a0810868896e9d2423,
   "@/components/payload/DashboardHeading#DashboardHeading": DashboardHeading_b35bd138182ec0819d58316aa107f82c,
   "@/components/payload/LeadAlertModeBanner#LeadAlertModeBanner": LeadAlertModeBanner_2047686ca44a7f00a03adf17abdca6cd,
   "@/components/payload/ListingTodoPanel#ListingTodoPanel": ListingTodoPanel_33ebabb4a848599de8c9093bb92914e0,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,
   "@/components/payload/ImportListing#ImportListing": ImportListing_ce25d0c3f088e28836c6e36f3beaffcc,
+  "@/components/payload/LeadActivity#LeadActivity": LeadActivity_260e16162a752a0a1f35c87c01736fa5,
   "@/components/payload/PlacementPicker#PlacementPicker": PlacementPicker_6da902505ef4c3d4a54d1cfe2cf4f5b4,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

@@ -22,9 +22,10 @@
 // The test inbox is Lead alert settings → Test inbox, else
 // LEAD_ALERTS_TEST_INBOX, else delivered@resend.dev (accepts + discards).
 
-import type { Payload } from 'payload'
+import type { Payload, PayloadRequest } from 'payload'
 import { renderLeadAlertEmailHTML } from '@/lib/lead-alert-email'
-import { buyerWhatsAppMessage, toWhatsAppNumber, whatsappChatHref } from '@/lib/whatsapp'
+import { leadReplyUrl } from '@/lib/lead-reply-links'
+import { buyerWhatsAppMessage, toWhatsAppNumber } from '@/lib/whatsapp'
 import { isWhatsAppCloudConfigured, sendWhatsAppTemplate } from '@/lib/whatsapp-cloud'
 
 type AnyDoc = Record<string, unknown>
@@ -95,7 +96,10 @@ function relId(value: unknown): string | number | undefined {
 
 const text = (value: unknown): string => (typeof value === 'string' ? value.trim() : '')
 
-export async function sendLeadAlerts(payload: Payload, lead: LeadLike): Promise<LeadAlertOutcome> {
+// `req` matters when called from the Leads afterChange hook: the lead row is
+// still inside that request's transaction, so the alert-log write below
+// must ride the same request or it can't see the row (Postgres).
+export async function sendLeadAlerts(payload: Payload, lead: LeadLike, opts: { req?: PayloadRequest } = {}): Promise<LeadAlertOutcome> {
   const routing = await resolveLeadAlertRouting(payload, text(lead.email) || null)
   const outcome: LeadAlertOutcome = { email: 'skipped', whatsapp: 'skipped', to: { email: null, whatsapp: null }, routing: routing.reason }
 
@@ -144,8 +148,13 @@ export async function sendLeadAlerts(payload: Payload, lead: LeadLike): Promise<
   const serverURL = payload.config.serverURL || process.env.NEXT_PUBLIC_SITE_URL || 'https://www.lankanewhomes.com'
   const dashboardPath = `collections/leads/${lead.id}`
   const dashboardUrl = `${serverURL}/cms/${dashboardPath}`
-  const replyOpener = `Hi ${buyerName}, thanks for your interest in ${planName ? `${planName} at ` : ''}${projectName}. `
-  const whatsappHref = whatsappChatHref(buyerPhone, replyOpener)
+  // One-tap reply links: tapping marks the lead answered, then forwards
+  // (src/lib/lead-reply-links.ts + /api/leads/reply).
+  const replyLinks = {
+    whatsapp: toWhatsAppNumber(buyerPhone) ? leadReplyUrl(serverURL, lead.id, 'whatsapp') : null,
+    call: buyerPhone ? leadReplyUrl(serverURL, lead.id, 'call') : null,
+    email: buyerEmail ? leadReplyUrl(serverURL, lead.id, 'email') : null,
+  }
 
   // Email.
   if (alertEmail) {
@@ -154,7 +163,7 @@ export async function sendLeadAlerts(payload: Payload, lead: LeadLike): Promise<
         to: alertEmail,
         from: process.env.EMAIL_FROM,
         subject: `${subjectPrefix}${sourceLabel}: ${planName ? `${planName} · ` : ''}${projectName} — ${buyerName}${buyerPhone ? ` (${buyerPhone})` : ''}`,
-        html: renderLeadAlertEmailHTML({ projectName, planName, sourceLabel, buyerName, buyerPhone, buyerEmail, preferredContact: preferred, message, receivedAt, whatsappHref, dashboardUrl }),
+        html: renderLeadAlertEmailHTML({ projectName, planName, sourceLabel, buyerName, buyerPhone, buyerEmail, preferredContact: preferred, message, receivedAt, replyLinks, dashboardUrl }),
       })
       outcome.email = 'sent'
     } catch (error) {
@@ -182,6 +191,28 @@ export async function sendLeadAlerts(payload: Payload, lead: LeadLike): Promise<
       outcome.whatsapp = 'failed'
       payload.logger.error({ leadId: lead.id, error: result.error }, 'Lead alert WhatsApp failed')
     }
+  }
+
+  // Leave a trail on the lead for the admin "Lead activity" page.
+  const at = new Date().toISOString()
+  const alertLog = [
+    { channel: 'email', to: alertEmail || '-', status: alertEmail ? outcome.email : 'skipped (no address)', routing: routing.reason, at },
+    ...(alertWhatsApp ? [{ channel: 'whatsapp', to: alertWhatsApp, status: isWhatsAppCloudConfigured() ? outcome.whatsapp : 'skipped (API not configured)', routing: routing.reason, at }] : []),
+  ]
+  const summary = alertEmail
+    ? `Email ${outcome.email} → ${alertEmail}${routing.mode === 'test' ? ` (TEST: ${routing.reason})` : ''}${alertWhatsApp && outcome.whatsapp === 'sent' ? ' · WhatsApp sent' : ''}`
+    : 'No alert — developer has no email'
+  try {
+    await payload.update({
+      collection: 'leads',
+      id: lead.id,
+      data: { alert_log: alertLog, alert_summary: summary } as never,
+      overrideAccess: true,
+      context: { skipLeadHooks: true, skipSupabaseSync: true },
+      req: opts.req,
+    })
+  } catch (error) {
+    payload.logger.error({ err: error, leadId: lead.id }, 'Could not record lead alert log')
   }
 
   payload.logger.info({ leadId: lead.id, routing: routing.reason, to: outcome.to.email, email: outcome.email, whatsapp: outcome.whatsapp }, 'Lead alert')
