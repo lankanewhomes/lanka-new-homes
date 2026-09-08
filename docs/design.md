@@ -492,6 +492,15 @@ account's login email) and Alert WhatsApp number (fallback Social Links →
 WhatsApp); the "Send instant lead alerts" checkbox turns them off. Alerts
 never throw — a failed send is logged, the lead is still saved.
 
+**Buyer confirmation.** The buyer gets their own email at once
+(`src/lib/lead-confirmation-email.ts`): "Your request was sent to
+<developer>", how they'll be reached, the developer's phone / email /
+WhatsApp button, the listing link and My enquiries; Reply-To is the
+developer's email so a reply goes straight to them. Always sent to the
+address the buyer typed (test routing only concerns the developer's side);
+brochure requests skip it because `/api/leads` already emails the
+brochure. Logged on the lead as channel "buyer confirmation".
+
 **Test routing — a trial inquiry can't reach a real developer.**
 `resolveLeadAlertRouting` redirects the email to the test inbox, prefixes
 the subject `[TEST — not sent to <developer>]` and skips WhatsApp when any

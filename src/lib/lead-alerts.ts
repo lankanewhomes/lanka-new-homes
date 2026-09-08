@@ -24,8 +24,9 @@
 
 import type { Payload, PayloadRequest } from 'payload'
 import { renderLeadAlertEmailHTML } from '@/lib/lead-alert-email'
+import { renderLeadConfirmationEmailHTML } from '@/lib/lead-confirmation-email'
 import { leadReplyUrl } from '@/lib/lead-reply-links'
-import { buyerWhatsAppMessage, toWhatsAppNumber } from '@/lib/whatsapp'
+import { buyerWhatsAppMessage, toWhatsAppNumber, whatsappChatHref } from '@/lib/whatsapp'
 import { isWhatsAppCloudConfigured, sendWhatsAppTemplate } from '@/lib/whatsapp-cloud'
 
 type AnyDoc = Record<string, unknown>
@@ -46,6 +47,8 @@ export type LeadLike = {
 export type LeadAlertOutcome = {
   email: 'sent' | 'skipped' | 'failed'
   whatsapp: 'sent' | 'skipped' | 'failed'
+  /** The buyer's own "your request was sent to …" confirmation. */
+  buyer: 'sent' | 'skipped' | 'failed'
   to: { email: string | null; whatsapp: string | null }
   /** 'live' = the developer; otherwise why the alert was redirected. */
   routing: LeadAlertRouting['reason']
@@ -101,7 +104,7 @@ const text = (value: unknown): string => (typeof value === 'string' ? value.trim
 // must ride the same request or it can't see the row (Postgres).
 export async function sendLeadAlerts(payload: Payload, lead: LeadLike, opts: { req?: PayloadRequest } = {}): Promise<LeadAlertOutcome> {
   const routing = await resolveLeadAlertRouting(payload, text(lead.email) || null)
-  const outcome: LeadAlertOutcome = { email: 'skipped', whatsapp: 'skipped', to: { email: null, whatsapp: null }, routing: routing.reason }
+  const outcome: LeadAlertOutcome = { email: 'skipped', whatsapp: 'skipped', buyer: 'skipped', to: { email: null, whatsapp: null }, routing: routing.reason }
 
   const projectId = relId(lead.project)
   if (!projectId) return { ...outcome, detail: 'lead has no project' }
@@ -193,11 +196,50 @@ export async function sendLeadAlerts(payload: Payload, lead: LeadLike, opts: { r
     }
   }
 
+  // The buyer's own copy: "your request was sent to <developer>", with the
+  // developer's direct contacts. Always to the address the buyer typed —
+  // test routing only concerns the developer's side. Brochure requests
+  // already get the brochure email from /api/leads, so they skip this.
+  const brochureHandledByRoute = text(lead.source) === 'brochure_request' && Boolean(text(project.brochureUrl))
+  if (buyerEmail && !brochureHandledByRoute) {
+    const developerPhone = text(developer.contact_phone) || text((project.contact as AnyDoc | undefined)?.phone) || null
+    const developerEmail = text(developer.contact_email) || text((project.contact as AnyDoc | undefined)?.email) || null
+    try {
+      await payload.sendEmail({
+        to: buyerEmail,
+        from: process.env.EMAIL_FROM,
+        // A reply from the buyer goes straight to the developer.
+        ...(developerEmail ? { replyTo: developerEmail } : {}),
+        subject: `Your request about ${planName ? `${planName} at ` : ''}${projectName} was sent to ${text(developer.name) || 'the developer'}`,
+        html: renderLeadConfirmationEmailHTML({
+          buyerName,
+          projectName,
+          planName,
+          projectUrl: `${serverURL}/projects/${text(project.slug)}`,
+          developerName: text(developer.name) || 'the developer',
+          developerPhone,
+          developerEmail,
+          developerWhatsAppHref: whatsappChatHref(text(social.whatsapp), buyerWhatsAppMessage(projectName, planName)),
+          preferredContact: preferred,
+          buyerPhone,
+          buyerEmail,
+          message,
+          enquiriesUrl: `${serverURL}/account/enquiries`,
+        }),
+      })
+      outcome.buyer = 'sent'
+    } catch (error) {
+      outcome.buyer = 'failed'
+      payload.logger.error({ err: error, leadId: lead.id }, 'Buyer confirmation email failed')
+    }
+  }
+
   // Leave a trail on the lead for the admin "Lead activity" page.
   const at = new Date().toISOString()
   const alertLog = [
     { channel: 'email', to: alertEmail || '-', status: alertEmail ? outcome.email : 'skipped (no address)', routing: routing.reason, at },
     ...(alertWhatsApp ? [{ channel: 'whatsapp', to: alertWhatsApp, status: isWhatsAppCloudConfigured() ? outcome.whatsapp : 'skipped (API not configured)', routing: routing.reason, at }] : []),
+    ...(buyerEmail ? [{ channel: 'buyer confirmation', to: buyerEmail, status: brochureHandledByRoute ? 'skipped (brochure email sent instead)' : outcome.buyer, routing: 'buyer', at }] : []),
   ]
   const summary = alertEmail
     ? `Email ${outcome.email} → ${alertEmail}${routing.mode === 'test' ? ` (TEST: ${routing.reason})` : ''}${alertWhatsApp && outcome.whatsapp === 'sent' ? ' · WhatsApp sent' : ''}`
@@ -215,6 +257,6 @@ export async function sendLeadAlerts(payload: Payload, lead: LeadLike, opts: { r
     payload.logger.error({ err: error, leadId: lead.id }, 'Could not record lead alert log')
   }
 
-  payload.logger.info({ leadId: lead.id, routing: routing.reason, to: outcome.to.email, email: outcome.email, whatsapp: outcome.whatsapp }, 'Lead alert')
+  payload.logger.info({ leadId: lead.id, routing: routing.reason, to: outcome.to.email, email: outcome.email, whatsapp: outcome.whatsapp, buyer: outcome.buyer }, 'Lead alert')
   return outcome
 }

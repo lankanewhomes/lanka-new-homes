@@ -60,8 +60,9 @@ function Pill({ label, color }: { label: string; color: string }) {
 
 function LeadRow({ row }: { row: LeadActivityRow }) {
   const [open, setOpen] = useState(false);
+  const developerAlerts = row.alertLog.filter((e) => e.routing !== "buyer");
   const alertFailed = row.alertLog.some((e) => e.status === "failed");
-  const alertTest = row.alertLog.some((e) => e.routing !== "live");
+  const alertTest = developerAlerts.some((e) => e.routing !== "live");
   const reply = row.responseMinutes !== null ? `${formatMinutes(row.responseMinutes)}${row.firstReplyVia ? ` · ${VIA_LABEL[row.firstReplyVia] ?? row.firstReplyVia}` : ""}` : row.status === "new" ? "Awaiting reply" : "—";
   const cell: React.CSSProperties = { padding: "8px 12px", verticalAlign: "top", fontSize: 13 };
 
@@ -99,7 +100,7 @@ function LeadRow({ row }: { row: LeadActivityRow }) {
               <div>
                 <strong>Alerts</strong>
                 {row.alertLog.length === 0 ? <div style={{ opacity: 0.6 }}>None recorded.</div> : row.alertLog.map((e, i) => (
-                  <div key={i}>{when(e.at)} · {e.channel} → {e.to} · <em>{e.status}</em>{e.routing !== "live" ? ` (${e.routing})` : ""}</div>
+                  <div key={i}>{when(e.at)} · {e.channel} → {e.to} · <em>{e.status}</em>{e.routing !== "live" && e.routing !== "buyer" ? ` (${e.routing})` : ""}</div>
                 ))}
               </div>
               <div>
