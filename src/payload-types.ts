@@ -252,6 +252,20 @@ export interface Developer {
     tiktok?: string | null;
   };
   /**
+   * Every new inquiry on one of your projects is emailed — and sent by WhatsApp once the WhatsApp Business API is connected — the moment it comes in, with the buyer’s details and one-tap reply links.
+   */
+  lead_alerts?: {
+    enabled?: boolean | null;
+    /**
+     * Leave blank to use the Contact Email above (or the linked account’s login email).
+     */
+    email?: string | null;
+    /**
+     * International format, e.g. +94 77 123 4567. Leave blank to use the WhatsApp number under Social Links.
+     */
+    whatsapp?: string | null;
+  };
+  /**
    * The developer-role account that manages this company profile. Leave blank when pre-building a profile before the developer has an account — if they later sign up with this Contact Email, they auto-claim it (and everything created under it, including projects); otherwise set this manually once they exist.
    */
   user?: (number | null) | User;
@@ -2607,7 +2621,7 @@ export interface Project {
       )
     | null;
   /**
-   * Shown as a "Move in {year}" badge on the listing.
+   * Shown as a "Move in {year}" badge on the listing while the year is still ahead.
    */
   completionYear?: number | null;
   featured?: boolean | null;
@@ -3359,6 +3373,10 @@ export interface Project {
    * Auto-incremented from Analytics "phone_click" events for this project.
    */
   phone_click_count?: number | null;
+  /**
+   * Auto-incremented from Analytics "whatsapp_click" events for this project (the WhatsApp button beside "Request info").
+   */
+  whatsapp_click_count?: number | null;
   /**
    * Paid featured placements — one row per page/window, added automatically when a featured_listing payment is confirmed.
    */
@@ -6499,14 +6517,26 @@ export interface Lead {
   id: number;
   user?: (number | null) | User;
   project: number | Project;
+  /**
+   * Set automatically when the buyer asked from a floor-plan page (e.g. "Unit A · 3 bed · 1,300 SqFt").
+   */
+  floor_plan?: string | null;
+  source?: ('request_info' | 'brochure_request' | 'manual') | null;
   name: string;
   email: string;
   phone?: string | null;
+  preferred_contact_method?: string | null;
   message?: string | null;
   /**
-   * Update as this inquiry progresses — drives the lead-status breakdown on the project analytics panel.
+   * Move each inquiry along: New → Contacted → Site visit → Closed. Your first move off "New" is timed as your response.
    */
-  status: 'new' | 'contacted' | 'toured' | 'sold';
+  status: 'new' | 'contacted' | 'site_visit' | 'closed';
+  /**
+   * When this lead first left "New".
+   */
+  first_response_at?: string | null;
+  response_minutes?: number | null;
+  supabase_lead_id?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -6566,7 +6596,8 @@ export interface Analytics {
    * Auto-filled from the listing — the builder this event rolls up to.
    */
   developer?: (number | null) | Developer;
-  event_type: 'view' | 'save' | 'lead_submitted' | 'hero_click' | 'brochure_download' | 'phone_click';
+  event_type:
+    'view' | 'save' | 'lead_submitted' | 'hero_click' | 'brochure_download' | 'phone_click' | 'whatsapp_click';
   timestamp?: string | null;
   /**
    * Anonymous per-browser-session id (localStorage) — same one the internal view/session tracking already uses. Used to detect repeat actions.
@@ -6926,6 +6957,13 @@ export interface DevelopersSelect<T extends boolean = true> {
         youtube?: T;
         tiktok?: T;
       };
+  lead_alerts?:
+    | T
+    | {
+        enabled?: T;
+        email?: T;
+        whatsapp?: T;
+      };
   user?: T;
   projects?: T;
   team_members?: T;
@@ -7254,6 +7292,7 @@ export interface ProjectsSelect<T extends boolean = true> {
   lead_count?: T;
   download_count?: T;
   phone_click_count?: T;
+  whatsapp_click_count?: T;
   placements?:
     | T
     | {
@@ -7798,11 +7837,17 @@ export interface SavedListingsSelect<T extends boolean = true> {
 export interface LeadsSelect<T extends boolean = true> {
   user?: T;
   project?: T;
+  floor_plan?: T;
+  source?: T;
   name?: T;
   email?: T;
   phone?: T;
+  preferred_contact_method?: T;
   message?: T;
   status?: T;
+  first_response_at?: T;
+  response_minutes?: T;
+  supabase_lead_id?: T;
   updatedAt?: T;
   createdAt?: T;
 }

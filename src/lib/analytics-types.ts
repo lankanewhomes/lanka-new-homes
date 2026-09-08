@@ -12,7 +12,7 @@ export type TrafficSourceRow = {
 };
 
 export type LeadStatusRow = {
-  status: "new" | "contacted" | "toured" | "sold";
+  status: "new" | "contacted" | "site_visit" | "closed";
   label: string;
   count: number;
 };

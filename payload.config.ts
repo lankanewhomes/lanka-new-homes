@@ -9,6 +9,7 @@ import { buildConfig } from 'payload'
 import { Analytics } from './src/collections/Analytics'
 import { analyticsEndpoint, analyticsSummaryEndpoint } from './src/collections/endpoints/analytics'
 import { importListingEndpoint } from './src/collections/endpoints/import-listing'
+import { listingTodoEndpoint } from './src/collections/endpoints/listing-todo'
 import { Architects } from './src/collections/Architects'
 import { Articles } from './src/collections/Articles'
 import { ConstructionCompanies } from './src/collections/ConstructionCompanies'
@@ -55,7 +56,7 @@ export default buildConfig({
       // landing page itself, so it's obvious at a glance which account
       // you're signed in as — same list of collections either way, just a
       // label (the real scoping is baseListFilter/hiddenUnlessAdmin).
-      beforeDashboard: ['@/components/payload/DashboardHeading#DashboardHeading'],
+      beforeDashboard: ['@/components/payload/DashboardHeading#DashboardHeading', '@/components/payload/ListingTodoPanel#ListingTodoPanel'],
       // "✨ Get Featured" link into the placements wizard below — developer
       // accounts only (see NavPlacementLink.tsx).
       afterNavLinks: ['@/components/payload/NavPlacementLink#NavPlacementLink', '@/components/payload/NavImportLink#NavImportLink'],
@@ -106,7 +107,7 @@ export default buildConfig({
     Media,
   ],
   globals: [SiteSettings],
-  endpoints: [analyticsEndpoint, analyticsSummaryEndpoint, importListingEndpoint],
+  endpoints: [analyticsEndpoint, analyticsSummaryEndpoint, importListingEndpoint, listingTodoEndpoint],
   editor: lexicalEditor(),
   db: postgresAdapter({
     pool: { connectionString: process.env.DATABASE_URI },

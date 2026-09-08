@@ -12,6 +12,7 @@ import {
   YAxis,
 } from "recharts";
 import type { AnalyticsSummaryResponse } from "@/lib/analytics-summary";
+import { formatMinutes } from "@/lib/format";
 
 const RANGE_PRESETS = [
   { label: "Last 7 days", days: 7 },
@@ -217,7 +218,31 @@ export function AnalyticsDashboard() {
             <StatCard label="Saves" value={(byTypeMap.get("save") ?? 0).toLocaleString()} />
             <StatCard label="Brochure downloads" value={(byTypeMap.get("brochure_download") ?? 0).toLocaleString()} />
             <StatCard label="Phone clicks" value={(byTypeMap.get("phone_click") ?? 0).toLocaleString()} />
+            <StatCard label="WhatsApp clicks" value={(byTypeMap.get("whatsapp_click") ?? 0).toLocaleString()} />
           </div>
+
+          {data.leads ? (
+            <div style={{ marginBottom: 24 }}>
+              <h5 style={{ marginBottom: 8 }}>Lead pipeline &amp; response time</h5>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12, marginBottom: 12 }}>
+                <StatCard label="Awaiting your reply" value={data.leads.awaitingReply.toLocaleString()} />
+                <StatCard label="Avg first response" value={formatMinutes(data.leads.avgResponseMinutes)} />
+                <StatCard label="Median first response" value={formatMinutes(data.leads.medianResponseMinutes)} />
+                <StatCard label="Answered within 1 hour" value={data.leads.respondedWithinHourPercent === null ? "—" : `${data.leads.respondedWithinHourPercent}%`} />
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: `repeat(${data.leads.stages.length}, 1fr)`, gap: 8 }}>
+                {data.leads.stages.map((stage, index) => (
+                  <div key={stage.status} style={{ border: "1px solid var(--theme-elevation-150)", borderRadius: 6, padding: "10px 12px", background: "var(--theme-elevation-0)" }}>
+                    <div style={{ fontSize: 11, opacity: 0.65, textTransform: "uppercase", letterSpacing: "0.06em" }}>{index + 1}. {stage.label}</div>
+                    <div style={{ fontSize: 22, fontWeight: 700 }}>{stage.count.toLocaleString()}</div>
+                  </div>
+                ))}
+              </div>
+              <p style={{ margin: "8px 0 0", fontSize: 12, opacity: 0.65 }}>
+                Response time is measured from when a lead arrives to the first time you move it off &ldquo;New&rdquo; in <Link href="/cms/collections/leads">Leads</Link>. Fast, consistent replies will earn a &ldquo;responds within 1 hour&rdquo; badge on your listings.
+              </p>
+            </div>
+          ) : null}
 
           <div style={{ marginBottom: 24 }}>
             <h5 style={{ marginBottom: 8 }}>Activity over time</h5>

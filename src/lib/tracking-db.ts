@@ -10,6 +10,9 @@ type LeadInput = {
   developerSlug: string;
   marketingOptIn?: boolean;
   userId?: string;
+  /** "Unit A · 3 bed · 1,300 SqFt" when the buyer asked from a plan page. */
+  floorPlan?: string;
+  source?: "request_info" | "brochure_request";
 };
 
 type ViewInput = {
@@ -36,6 +39,8 @@ export async function insertLead(input: LeadInput) {
     developer_slug: input.developerSlug,
     marketing_opt_in: input.marketingOptIn ?? false,
     user_id: input.userId ?? null,
+    floor_plan: input.floorPlan?.trim() || null,
+    source: input.source ?? "request_info",
     created_at: createdAt,
   });
   if (error) throw new Error(`Failed to save lead: ${error.message}`);

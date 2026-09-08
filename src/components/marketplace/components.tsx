@@ -78,6 +78,7 @@ import {
   Waves,
   X,
   Zap,
+  MessageCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteLanguage, useLanguage } from "@/components/layout/language-provider";
@@ -85,6 +86,7 @@ import { compactLkr, formatLkr, formatOfficeHours } from "@/lib/format";
 import { Amenity, Article, Developer, FloorPlan, Lead, Location, NearbyPlace, Project } from "@/types";
 import { localizedProjectCopy, useListingT } from "@/lib/i18n/use-listing-t";
 import { floorPlanSummarySentence } from "@/lib/i18n/floor-plan-sentence";
+import { formatWhatsAppNumber, listingWhatsAppHref } from "@/lib/whatsapp";
 import { groupNearbyPlaces } from "@/lib/nearby-places";
 
 const amenityIcons: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -213,6 +215,16 @@ function hasQuickMoveIn(project: Project) {
 // mirrors it to GA4 client-side. Used by the brochure-download button and
 // the tel: phone links — never awaited, never blocks the actual action
 // (opening the brochure, dialing the number).
+// "Unit A · 3 bed · 1,300 SqFt" — how a plan is named on a lead and in the
+// developer's alert. Only facts the plan carries; missing ones drop out.
+function describeFloorPlanForLead(plan: FloorPlan): string {
+  return [
+    plan.planName,
+    plan.bedrooms > 0 ? `${plan.bedrooms} bed` : "",
+    plan.floorAreaSqFt > 0 ? `${plan.floorAreaSqFt.toLocaleString("en-US")} SqFt` : "",
+  ].filter(Boolean).join(" · ");
+}
+
 function logListingEvent(endpoint: string, ga4EventName: string, projectSlug: string, listingName: string) {
   const sessionId = getSessionId();
   const trafficSource = getTrafficSource();
@@ -432,6 +444,7 @@ export function ProjectHero({
   blockPlanImages: blockPlanImagesProp = [],
   videoLinks = [],
   requestInfoVariant = "standard",
+  whatsappHref = null,
 }: {
   project: Project;
   titleOverride?: string;
@@ -462,6 +475,10 @@ export function ProjectHero({
   videoLinks?: { label: string; url: string }[];
   /** Forwarded to RequestInfoDialog — see its `variant` prop. */
   requestInfoVariant?: "standard" | "inquiry";
+  /** wa.me link to the developer with a pre-filled opener (src/lib/whatsapp.ts
+   * listingWhatsAppHref) — renders the green WhatsApp button beside
+   * "Request info" on desktop and in the mobile bar. Null = no button. */
+  whatsappHref?: string | null;
 }) {
   const { saved: savedListing, toggle: toggleSaved } = useSavedListing(project.slug);
   const hasKeyFeatures = normalizeUnitFeaturesForDisplay(project.unitFeatures).some((group) => group.items.length > 0);
@@ -875,6 +892,18 @@ export function ProjectHero({
             <Heart className={`h-4 w-4${savedListing ? " text-[#d94f4f]" : ""}`} aria-hidden="true" fill={savedListing ? "currentColor" : "none"} />
             {savedListing ? t("Saved") : t("Save")}
           </button>
+          {whatsappHref ? (
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="request-info-btn whatsapp-btn"
+              onClick={() => logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project.slug, project.name)}
+            >
+              <MessageCircle className="h-4 w-4" aria-hidden="true" />
+              WhatsApp
+            </a>
+          ) : null}
           <button type="button" className="request-info-btn" onClick={openRequestInfo}>{t("Request info")}</button>
         </div>
       </div>
@@ -1263,11 +1292,23 @@ export function ProjectHero({
 
       {isHotDealActive(project) ? <HotDealCard hotDeal={project.hotDeal!} /> : null}
 
-        <div className={`listing-hero-mobile-ctas${scrolledPastTitle ? " is-visible" : ""}`} aria-label="Mobile quick actions">
+        <div className={`listing-hero-mobile-ctas${scrolledPastTitle ? " is-visible" : ""}${whatsappHref ? " has-whatsapp" : ""}`} aria-label="Mobile quick actions">
           <button type="button" className="listing-hero-mobile-btn listing-hero-mobile-btn-updates">
             <Bell className="h-4 w-4" aria-hidden="true" />
             {t("Get updates")}
           </button>
+          {whatsappHref ? (
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="listing-hero-mobile-btn listing-hero-mobile-btn-whatsapp"
+              aria-label="Chat on WhatsApp"
+              onClick={() => logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project.slug, project.name)}
+            >
+              <MessageCircle className="h-5 w-5" aria-hidden="true" />
+            </a>
+          ) : null}
           <button type="button" className="listing-hero-mobile-btn listing-hero-mobile-btn-request" onClick={openRequestInfo}>
             {t("Request info")}
           </button>
@@ -1296,7 +1337,7 @@ export function ProjectHero({
       </div>
     )}
 
-    <RequestInfoDialog open={requestInfoOpen} onClose={() => setRequestInfoOpen(false)} project={project} variant={requestInfoDialogVariant} />
+    <RequestInfoDialog open={requestInfoOpen} onClose={() => setRequestInfoOpen(false)} project={project} floorPlan={floorPlan} variant={requestInfoDialogVariant} />
     </>
   );
 }
@@ -1515,7 +1556,11 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
   const phone = hasDisplayValue(project.contact?.phone) ? project.contact.phone : developer?.phone;
   const projectSocialEntries = Object.entries(project.socialLinks ?? {}).filter(([, url]) => hasDisplayValue(url)) as [string, string][];
   const developerSocialEntries = Object.entries(developer?.socialLinks ?? {}).filter(([, url]) => hasDisplayValue(url)) as [string, string][];
-  const socialEntries = projectSocialEntries.length > 0 ? projectSocialEntries : developerSocialEntries;
+  // WhatsApp gets its own labelled tap-to-chat row (tracked like phone
+  // clicks), so it's dropped from the social icon strip to avoid showing twice.
+  const contactWhatsAppHref = listingWhatsAppHref(developer?.socialLinks?.whatsapp, project.name);
+  const socialEntries = (projectSocialEntries.length > 0 ? projectSocialEntries : developerSocialEntries)
+    .filter(([platform]) => !(platform === "whatsapp" && contactWhatsAppHref));
 
   return (
     <div className="stats-contact-card">
@@ -1545,6 +1590,18 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
             <Phone className="h-4 w-4" aria-hidden="true" /> {number}
           </a>
         )) : null}
+
+        {contactWhatsAppHref ? (
+          <a
+            href={contactWhatsAppHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="stats-contact-card-row stats-contact-card-row-whatsapp"
+            onClick={() => logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project.slug, project.name)}
+          >
+            <MessageCircle className="h-4 w-4" aria-hidden="true" /> WhatsApp {formatWhatsAppNumber(developer?.socialLinks?.whatsapp)}
+          </a>
+        ) : null}
       </div>
 
       {socialEntries.length > 0 ? (
@@ -1574,11 +1631,15 @@ export function RequestInfoDialog({
   open,
   onClose,
   project,
+  floorPlan,
   variant = "standard",
 }: {
   open: boolean;
   onClose: () => void;
   project: Project;
+  /** The plan the buyer is looking at (floor-plan pages) — named in the
+   * lead and in the developer's alert so they know exactly what was asked about. */
+  floorPlan?: FloorPlan;
   /** "inquiry" swaps in the "Send us your inquiry" layout (Name/Email/Contact
    * Number/Message field order, a marketing opt-in checkbox) used on the
    * land detail page. "brochure" keeps the standard layout but swaps the
@@ -1623,6 +1684,8 @@ export function RequestInfoDialog({
     setErrorMessage("");
 
     try {
+      const planLabel = floorPlan ? describeFloorPlanForLead(floorPlan) : "";
+      const subject = planLabel ? `${planLabel} at ${project.name}` : project.name;
       const response = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -1631,13 +1694,14 @@ export function RequestInfoDialog({
           email,
           phone,
           preferredContactMethod: contactMethod,
-          message: message.trim() || (isBrochure ? `Brochure request for ${project.name}` : `Request info for ${project.name}`),
+          message: message.trim() || (isBrochure ? `Brochure request for ${subject}` : `Request info for ${subject}`),
           projectSlug: project.slug,
           developerSlug: project.developerSlug,
           marketingOptIn: keepPosted,
           sessionId: getSessionId(),
           trafficSource: getTrafficSource(),
           isBrochureRequest: isBrochure,
+          floorPlanName: planLabel || undefined,
         }),
       });
 
@@ -2459,6 +2523,7 @@ export function ListingSidebarCard({ project, developer }: { project: Project; d
   const address = hasDisplayValue(developer?.location) ? developer!.location : project.location;
   const hoursLines = formatOfficeHours(developer?.officeHours);
   const socialEntries = Object.entries(developer?.socialLinks ?? {}).filter(([, url]) => hasDisplayValue(url)) as [string, string][];
+  const salesWhatsAppHref = listingWhatsAppHref(developer?.socialLinks?.whatsapp, project.name);
 
   return (
     <div className="listing-sidebar-card">
@@ -2509,6 +2574,18 @@ export function ListingSidebarCard({ project, developer }: { project: Project; d
           onClick={() => logListingEvent("/api/events/phone-click", "click_phone", project.slug, project.name)}
         >
           <Phone className="h-4 w-4" aria-hidden="true" /> Call us {phone}
+        </a>
+      ) : null}
+
+      {salesWhatsAppHref ? (
+        <a
+          href={salesWhatsAppHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="listing-sidebar-call-line listing-sidebar-whatsapp-line"
+          onClick={() => logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project.slug, project.name)}
+        >
+          <MessageCircle className="h-4 w-4" aria-hidden="true" /> Chat on WhatsApp
         </a>
       ) : null}
 

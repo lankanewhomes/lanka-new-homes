@@ -4,6 +4,7 @@ import { projects } from "@/data/projects";
 import { getAllProjects, getProjectBySlug } from "@/lib/project-store";
 import { getNeighborhoodBySlug } from "@/lib/neighborhood-store";
 import { getDeveloperBySlug } from "@/lib/developer-store";
+import { listingWhatsAppHref } from "@/lib/whatsapp";
 import { pickSimilarListings } from "@/lib/similar-listings";
 import { SimilarListingsSection } from "@/components/marketplace/similar-listings";
 import {
@@ -126,6 +127,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
         project={project}
         backHref="/projects"
         backLabel="New Projects"
+        whatsappHref={listingWhatsAppHref(developer?.socialLinks?.whatsapp, project.name)}
         extraBadges={[
           ...(project.availabilityBadge ? [{ label: project.availabilityBadge, kind: "availability" as const }] : []),
           ...(project.marketingBadges ?? []).map((label) => ({ label, kind: "marketing" as const })),

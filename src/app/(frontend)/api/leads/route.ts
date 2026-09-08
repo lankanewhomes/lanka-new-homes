@@ -32,6 +32,11 @@ export async function POST(req: Request) {
       data: { user },
     } = await supabase.auth.getUser();
 
+    // Which floor plan the buyer was looking at, when they asked from a plan
+    // page — named in the developer's alert and stored on the lead.
+    const floorPlanName = typeof body.floorPlanName === "string" ? body.floorPlanName.trim().slice(0, 120) : "";
+    const source = body.isBrochureRequest ? "brochure_request" : "request_info";
+
     const saved = await insertLead({
       name: body.name,
       email: typeof body.email === "string" ? body.email : "",
@@ -42,6 +47,8 @@ export async function POST(req: Request) {
       developerSlug: body.developerSlug,
       marketingOptIn: typeof body.marketingOptIn === "boolean" ? body.marketingOptIn : undefined,
       userId: user?.id,
+      floorPlan: floorPlanName || undefined,
+      source,
     });
 
     // Best-effort mirror into Payload's Leads collection so builders can see
@@ -70,6 +77,8 @@ export async function POST(req: Request) {
           // own afterChange hook (logLeadSubmitted) auto-creates — see
           // hooks/increment-counts.ts's analyticsEnrichment context read.
           const analyticsEnrichment = buildEventEnrichment(req, { sessionId: body.sessionId, trafficSource: body.trafficSource });
+          // Creating the Payload lead also fires the developer's instant
+          // email/WhatsApp alert (Leads afterChange → hooks/lead-hooks.ts).
           await payload.create({
             collection: "leads",
             data: {
@@ -78,6 +87,10 @@ export async function POST(req: Request) {
               email: typeof body.email === "string" ? body.email : "",
               phone: body.phone,
               message: body.message,
+              preferred_contact_method: body.preferredContactMethod,
+              floor_plan: floorPlanName || undefined,
+              source,
+              supabase_lead_id: saved.id,
             } as never,
             context: { skipSupabaseSync: true, analyticsEnrichment },
             overrideAccess: true,

@@ -93,7 +93,7 @@ async function buildDeveloperDigest(payload: Payload, developer: { id: string | 
     }
   }
 
-  const leadStatusCounts: Record<string, number> = { new: 0, contacted: 0, toured: 0, sold: 0 };
+  const leadStatusCounts: Record<string, number> = { new: 0, contacted: 0, site_visit: 0, closed: 0 };
   for (const doc of allLeads.docs) {
     const status = typeof doc.status === "string" ? doc.status : "new";
     leadStatusCounts[status] = (leadStatusCounts[status] ?? 0) + 1;
@@ -120,7 +120,7 @@ function digestEmailHtml(digest: DeveloperDigest, period: DigestPeriod, dashboar
         <tr><td style="padding: 6px 0;">Total inquiries</td><td style="padding: 6px 0; text-align: right;"><strong>${digest.totalInquiries}</strong></td></tr>
         <tr><td style="padding: 6px 0;">Top traffic source</td><td style="padding: 6px 0; text-align: right;"><strong>${digest.topTrafficSource ?? "—"}</strong></td></tr>
       </table>
-      <p>Lead status right now: ${digest.leadStatusCounts.new} new, ${digest.leadStatusCounts.contacted} contacted, ${digest.leadStatusCounts.toured} toured, ${digest.leadStatusCounts.sold} sold.</p>
+      <p>Lead pipeline right now: ${digest.leadStatusCounts.new} new, ${digest.leadStatusCounts.contacted} contacted, ${digest.leadStatusCounts.site_visit} site visits, ${digest.leadStatusCounts.closed} closed.</p>
       <p><a href="${dashboardUrl}">View your full dashboard</a></p>
     </div>
   `;

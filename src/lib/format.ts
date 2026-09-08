@@ -59,3 +59,17 @@ export function formatOfficeHours(officeHours: OfficeHoursEntry[] | undefined) {
     value: group.text,
   }));
 }
+
+/** "45 min", "3 h 10 min", "2 d 4 h" — response times on dashboards. */
+export function formatMinutes(minutes: number | null | undefined): string {
+  if (minutes === null || minutes === undefined || !Number.isFinite(minutes)) return "—";
+  if (minutes < 60) return `${minutes} min`;
+  if (minutes < 60 * 24) {
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return m ? `${h} h ${m} min` : `${h} h`;
+  }
+  const d = Math.floor(minutes / (60 * 24));
+  const h = Math.floor((minutes % (60 * 24)) / 60);
+  return h ? `${d} d ${h} h` : `${d} d`;
+}

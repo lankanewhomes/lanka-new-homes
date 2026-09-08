@@ -2,6 +2,7 @@ import type { Endpoint, PayloadRequest } from 'payload'
 import { getOwnedDeveloperIds, getOwnedProjectIds, isAdmin } from '../access'
 import { buildListingAnalyticsReport, type AnalyticsRange } from '@/lib/analytics-report'
 import { buildAnalyticsSummary } from '@/lib/analytics-summary'
+import { buildLeadPipelineSummary } from '@/lib/lead-pipeline'
 
 const DAY_MS = 24 * 60 * 60 * 1000
 
@@ -113,13 +114,18 @@ export const analyticsSummaryEndpoint: Endpoint = {
       })
     }
 
-    const summary = await buildAnalyticsSummary(req.payload, {
-      projectIds,
-      startDate,
-      endDate,
-      includeByDeveloper: admin,
-    })
+    const [summary, leads] = await Promise.all([
+      buildAnalyticsSummary(req.payload, {
+        projectIds,
+        startDate,
+        endDate,
+        includeByDeveloper: admin,
+      }),
+      // Pipeline + response times are all-time (a lead's stage is where it
+      // stands today), scoped to the same projects as the event summary.
+      buildLeadPipelineSummary(req.payload, projectIds),
+    ])
 
-    return Response.json(summary)
+    return Response.json({ ...summary, leads })
   },
 }

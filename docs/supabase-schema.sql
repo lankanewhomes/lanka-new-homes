@@ -535,3 +535,12 @@ drop policy if exists "saved_companies: insert own" on saved_companies;
 create policy "saved_companies: insert own" on saved_companies for insert with check (auth.uid() = user_id);
 drop policy if exists "saved_companies: delete own" on saved_companies;
 create policy "saved_companies: delete own" on saved_companies for delete using (auth.uid() = user_id);
+
+-- 2026-09-08 lead pipeline + alerts (supabase/migrations/20260908130000_lead_pipeline.sql).
+-- Developers work leads in Payload (New → Contacted → Site visit → Closed);
+-- the status here is the buyer's copy and is mirrored from Payload on change.
+alter table leads drop constraint if exists leads_status_check;
+alter table leads add constraint leads_status_check
+  check (status in ('New', 'Contacted', 'Qualified', 'Site visit', 'Closed'));
+alter table leads add column if not exists floor_plan text;
+alter table leads add column if not exists source text not null default 'request_info';

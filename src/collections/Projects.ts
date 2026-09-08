@@ -176,6 +176,9 @@ export const Projects: CollectionConfig = {
         {
           label: 'Overview',
           fields: [
+            // Live completeness to-do list (src/lib/completeness.ts) — same
+            // checks the scoring hook stores as completeness_score on save.
+            { name: 'completeness_todo', type: 'ui', admin: { components: { Field: '@/components/payload/CompletenessTodo#CompletenessTodo' } } },
             { name: 'slug', type: 'text', required: true, unique: true, index: true },
             { name: 'name', type: 'text', required: true },
             { name: 'developer', type: 'relationship', relationTo: 'developers', required: true, index: true },
@@ -558,6 +561,7 @@ export const Projects: CollectionConfig = {
             { name: 'lead_count', type: 'number', label: 'Lead Count', defaultValue: 0, admin: { description: 'Auto-incremented from Analytics "lead_submitted" events (logged automatically when a Lead is created).' } },
             { name: 'download_count', type: 'number', label: 'Download Count', defaultValue: 0, admin: { description: 'Auto-incremented from Analytics "brochure_download" events for this project.' } },
             { name: 'phone_click_count', type: 'number', label: 'Phone Click Count', defaultValue: 0, admin: { description: 'Auto-incremented from Analytics "phone_click" events for this project.' } },
+            { name: 'whatsapp_click_count', type: 'number', label: 'WhatsApp Click Count', defaultValue: 0, admin: { description: 'Auto-incremented from Analytics "whatsapp_click" events for this project (the WhatsApp button beside "Request info").' } },
             {
               // A project can be paid-featured on more than one page at
               // once (e.g. sitewide AND colombo), each on its own window —

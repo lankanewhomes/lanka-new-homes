@@ -81,6 +81,30 @@ export const Developers: CollectionConfig = {
     },
     socialLinksField,
     {
+      name: 'lead_alerts',
+      type: 'group',
+      label: 'Lead alerts',
+      admin: {
+        description:
+          'Every new inquiry on one of your projects is emailed — and sent by WhatsApp once the WhatsApp Business API is connected — the moment it comes in, with the buyer’s details and one-tap reply links.',
+      },
+      fields: [
+        { name: 'enabled', type: 'checkbox', label: 'Send instant lead alerts', defaultValue: true },
+        {
+          name: 'email',
+          type: 'email',
+          label: 'Alert email',
+          admin: { description: 'Leave blank to use the Contact Email above (or the linked account’s login email).' },
+        },
+        {
+          name: 'whatsapp',
+          type: 'text',
+          label: 'Alert WhatsApp number',
+          admin: { description: 'International format, e.g. +94 77 123 4567. Leave blank to use the WhatsApp number under Social Links.' },
+        },
+      ],
+    },
+    {
       name: 'user',
       type: 'relationship',
       relationTo: 'users',

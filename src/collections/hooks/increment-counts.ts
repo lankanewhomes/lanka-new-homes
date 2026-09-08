@@ -7,7 +7,7 @@ function relatedId(value: unknown): string | number | undefined {
   return value as string | number | undefined
 }
 
-type CounterField = 'view_count' | 'save_count' | 'lead_count' | 'download_count' | 'phone_click_count'
+type CounterField = 'view_count' | 'save_count' | 'lead_count' | 'download_count' | 'phone_click_count' | 'whatsapp_click_count'
 
 const COUNTER_FIELD_BY_EVENT: Record<string, CounterField | undefined> = {
   view: 'view_count',
@@ -16,6 +16,7 @@ const COUNTER_FIELD_BY_EVENT: Record<string, CounterField | undefined> = {
   hero_click: undefined, // logged, but no Project counter to bump
   brochure_download: 'download_count',
   phone_click: 'phone_click_count',
+  whatsapp_click: 'whatsapp_click_count',
 }
 
 async function bumpProjectCount(

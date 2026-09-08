@@ -475,6 +475,84 @@ false`, so ownership rules still apply. Image-only PDFs (most brochures)
 yield nothing but are stored as the brochure. Route handler has
 `maxDuration = 60`.
 
+## Lead alerts, pipeline and response time
+
+**Alert.** Creating a lead in Payload (the `/api/leads` route mirrors every
+Request-info / brochure request there; admins can add one by hand) fires
+`notifyDeveloperOfLead` (`src/collections/hooks/lead-hooks.ts` →
+`src/lib/lead-alerts.ts`): an email to the project's developer, and a
+WhatsApp template message when the Cloud API is configured. Both name the
+project and the floor plan the buyer asked from (`floor_plan`, set by the
+plan page's dialog as "Unit A · 3 bed · 1,300 SqFt"), carry the buyer's
+name / phone / email / preferred channel / message, and give one-tap
+replies: **Reply on WhatsApp** (wa.me to the buyer with an opener), **Call**,
+**Email**, plus a link to the lead in `/cms`. Recipients: Developers →
+Lead alerts → Alert email (fallback Contact Email, then the linked
+account's login email) and Alert WhatsApp number (fallback Social Links →
+WhatsApp); the "Send instant lead alerts" checkbox turns them off. Alerts
+never throw — a failed send is logged, the lead is still saved.
+
+Testing: `LEAD_ALERTS_OVERRIDE_TO` / `LEAD_ALERTS_OVERRIDE_WHATSAPP` route
+every alert to one inbox / number. Never post a test lead at a live
+project without the override set — the real developer gets it.
+
+**WhatsApp Cloud API setup** (`src/lib/whatsapp-cloud.ts`; email works
+without it): in Meta Business Suite create an app with the WhatsApp
+product, add/verify the sending number, create a System User with a
+permanent token, then set `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`
+on Vercel. Business-initiated messages must be templates, so create and
+submit one named `lead_alert` (language `en`, category Utility) with this
+body and a URL button:
+
+```
+New lead for {{1}}
+From: {{2}} ({{3}}) — prefers {{4}}
+"{{5}}"
+```
+Button: *Open lead* → `https://www.lankanewhomes.com/cms/{{1}}` (dynamic URL).
+Optional env: `WHATSAPP_LEAD_TEMPLATE` (default `lead_alert`),
+`WHATSAPP_TEMPLATE_LANG` (default `en`), `WHATSAPP_API_VERSION` (`v21.0`).
+
+**Pipeline.** `status` on Leads is New → Contacted → Site visit → Closed
+(`new | contacted | site_visit | closed`). The first move off New stamps
+`first_response_at` and `response_minutes` (admin-only fields, written
+with overrideAccess by `stampFirstResponse`) — that is the number a future
+"responds within 1 hour" badge is built on. Status changes are mirrored to
+the buyer's Supabase `leads` row via `supabase_lead_id`
+(`syncLeadStatusToSupabase`; Supabase labels: New / Contacted / Site visit /
+Closed). The `/cms` Analytics dashboard shows the pipeline counts, leads
+awaiting reply, average and median first response and the share answered
+within an hour (`src/lib/lead-pipeline.ts`, added to `/analytics-summary`).
+
+## Listing completeness to-do
+
+`src/lib/completeness.ts` is the single checklist (28 checks, equal
+weight) behind `completeness_score`, the to-do panel at the top of the
+project form (`CompletenessTodo`, a `ui` field reading live form values via
+`useAllFormFields`) and the "Finish your listings" panel on the `/cms`
+dashboard (`ListingTodoPanel` ← `/payload-api/listing-todo`, scoped to the
+developer's own projects). Each unfinished item shows what it adds:
+`SCORE_POINTS_PER_ITEM` to the score and `RANKING_POINTS_PER_ITEM`
+(score × `COMPLETENESS_WEIGHT` from the ranking formula) to the ranking.
+Adding a check: append to `COMPLETENESS_CHECKS` with an imperative label
+("Add per-plan prices") and a hint naming the tab/field — every score on
+the site changes on the next save, which is intended. The per-plan checks
+(price, floor area, image, view + handover condition, units available) are
+how the 2026-09-08 floor-plan fields get filled without chasing anyone.
+
+## WhatsApp click-to-chat
+
+Developers' Social Links → WhatsApp (a number in any format, or a wa.me
+link) becomes a green **WhatsApp** button beside "Request info" in the
+hero (desktop actions + mobile bar), a labelled row on the builder card
+(`StatsContactCard`, dropped from the social icon strip so it isn't shown
+twice) and a line on the sales-center card. `src/lib/whatsapp.ts`
+normalises the number (local 07x → 947x) and builds the wa.me link with an
+opener naming the project and plan. Clicks log a `whatsapp_click`
+Analytics event (`/api/events/whatsapp-click`), bump
+`whatsapp_click_count` on the project and show as "WhatsApp clicks" on the
+dashboard — same path as phone clicks. No number, no button.
+
 ## Move-In Year picker (CMS)
 
 `completionYear` on Projects is still a plain number in the database, but
@@ -487,7 +565,10 @@ badge are untouched. The grid pages in blocks of 15 years (2026–2040 first,
 earlier years one "previous" click back); range 2000 to this year + 15.
 Reuse it for any other field that stores a bare year: point
 `admin.components.Field` at it and regenerate the import map
-(`npx tsx scripts/generate-payload-importmap.ts`).
+(`npx tsx scripts/generate-payload-importmap.ts` — that script loads
+`.env.local` itself and refuses to run without `R2_*`, because a map
+generated without the R2 plugin registered loses
+`S3ClientUploadHandler` and the whole admin renders blank).
 
 Related fix (2026-09-08): the admin "create" view asks collection `create`
 access for permission with an empty `data: {}`; `ownDeveloperAccess` used to

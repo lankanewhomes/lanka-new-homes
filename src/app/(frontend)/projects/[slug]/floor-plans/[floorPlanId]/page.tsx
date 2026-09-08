@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { projects } from "@/data/projects";
 import { getAllProjects, getProjectBySlug } from "@/lib/project-store";
 import { getDeveloperBySlug } from "@/lib/developer-store";
+import { listingWhatsAppHref } from "@/lib/whatsapp";
 import { pickSimilarListings } from "@/lib/similar-listings";
 import { SimilarListingsSection } from "@/components/marketplace/similar-listings";
 import { FloorPlanFactSheet, FloorPlanStatsChips } from "@/components/marketplace/floor-plan-facts";
@@ -74,6 +75,7 @@ export default async function FloorPlanDetailPage({ params }: FloorPlanPageProps
         backHref={`/projects/${project.slug}`}
         backLabel={project.name}
         plansHomesNavLabel="Other floor plans"
+        whatsappHref={listingWhatsAppHref(developer?.socialLinks?.whatsapp, project.name, floorPlan.planName)}
       />
 
       <div className="project-page-content">

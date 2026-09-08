@@ -8,6 +8,7 @@ import { pickSimilarListings } from "@/lib/similar-listings";
 import { SimilarListingsSection } from "@/components/marketplace/similar-listings";
 import { formatLkr } from "@/lib/format";
 import { getDeveloperBySlug } from "@/lib/developer-store";
+import { listingWhatsAppHref } from "@/lib/whatsapp";
 import { getAllConstructionCompanies } from "@/lib/construction-company-store";
 import {
   AmenitiesShowcaseSection,
@@ -128,6 +129,7 @@ export default async function LandDetailPage({ params }: LandPageProps) {
         blockPlanImages={land.blockPlanImages ?? []}
         videoLinks={land.videos ?? []}
         requestInfoVariant="inquiry"
+        whatsappHref={listingWhatsAppHref(developer?.socialLinks?.whatsapp, project.name)}
       />
 
       <div className="project-page-content">

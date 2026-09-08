@@ -19,7 +19,7 @@ export default function TermsPage() {
       <p>Developers are responsible for the accuracy of the project information, pricing, and imagery they submit.</p>
 
       <h2>Contact</h2>
-      <p>Questions about these terms can be sent to <a href="mailto:lankanewhomes@gmail.com">lankanewhomes@gmail.com</a>.</p>
+      <p>Questions about these terms can be sent to <a href="mailto:support@lankanewhomes.com">support@lankanewhomes.com</a>.</p>
     </div>
   );
 }

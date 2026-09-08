@@ -19,7 +19,7 @@ export default function PrivacyPage() {
       <p>We use your information to respond to inquiries, connect you with developers and their sales teams, and improve the platform.</p>
 
       <h2>Contact</h2>
-      <p>Questions about this policy can be sent to <a href="mailto:lankanewhomes@gmail.com">lankanewhomes@gmail.com</a>.</p>
+      <p>Questions about this policy can be sent to <a href="mailto:support@lankanewhomes.com">support@lankanewhomes.com</a>.</p>
     </div>
   );
 }

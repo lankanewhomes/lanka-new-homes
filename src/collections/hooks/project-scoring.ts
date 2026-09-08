@@ -1,4 +1,5 @@
 import type { CollectionBeforeChangeHook } from 'payload'
+import { COMPLETENESS_WEIGHT, computeCompletenessScore, type CompletenessData } from '@/lib/completeness'
 
 // Named weights so the formula is easy to retune later without hunting
 // through the hook body:
@@ -6,32 +7,15 @@ import type { CollectionBeforeChangeHook } from 'payload'
 //                + (view_count * VIEW_WEIGHT + save_count * SAVE_WEIGHT + lead_count * LEAD_WEIGHT)
 //                + recencyScore (decays RECENCY_MAX_POINTS -> 0 over RECENCY_WINDOW_DAYS)
 //                + paid_boost
-const COMPLETENESS_WEIGHT = 0.3
+// COMPLETENESS_WEIGHT and the checklist itself live in src/lib/completeness.ts
+// so the developer-facing to-do list shows exactly what this hook scores.
 const VIEW_WEIGHT = 0.1
 const SAVE_WEIGHT = 1
 const LEAD_WEIGHT = 3
 const RECENCY_MAX_POINTS = 20
 const RECENCY_WINDOW_DAYS = 90
 
-type ScoredProjectData = {
-  name?: unknown
-  developer?: unknown
-  location?: unknown
-  status?: unknown
-  type?: unknown
-  startingPriceLkr?: unknown
-  bedrooms?: unknown
-  bathrooms?: unknown
-  floorAreaRange?: unknown
-  units?: unknown
-  floors?: unknown
-  description?: unknown
-  heroImage?: unknown
-  gallery?: unknown
-  amenities?: unknown
-  floorPlans?: unknown
-  coordinates?: { lat?: unknown; lng?: unknown }
-  contact?: { name?: unknown; email?: unknown; phone?: unknown }
+type ScoredProjectData = CompletenessData & {
   view_count?: unknown
   save_count?: unknown
   lead_count?: unknown
@@ -39,31 +23,7 @@ type ScoredProjectData = {
   createdAt?: unknown
 }
 
-const COMPLETENESS_CHECKS: ((data: ScoredProjectData) => boolean)[] = [
-  (d) => Boolean(d.name),
-  (d) => Boolean(d.developer),
-  (d) => Boolean(d.location),
-  (d) => Boolean(d.status),
-  (d) => Boolean(d.type),
-  (d) => typeof d.startingPriceLkr === 'number' && d.startingPriceLkr > 0,
-  (d) => Boolean(d.bedrooms),
-  (d) => Boolean(d.bathrooms),
-  (d) => Boolean(d.floorAreaRange),
-  (d) => typeof d.units === 'number' && d.units > 0,
-  (d) => typeof d.floors === 'number' && d.floors > 0,
-  (d) => Boolean(d.description),
-  (d) => Boolean(d.heroImage),
-  (d) => Array.isArray(d.gallery) && d.gallery.length > 0,
-  (d) => Array.isArray(d.amenities) && d.amenities.length > 0,
-  (d) => Array.isArray(d.floorPlans) && d.floorPlans.length > 0,
-  (d) => typeof d.coordinates?.lat === 'number' && typeof d.coordinates?.lng === 'number',
-  (d) => Boolean(d.contact?.name && d.contact?.email && d.contact?.phone),
-]
-
-export function computeCompletenessScore(data: ScoredProjectData): number {
-  const filled = COMPLETENESS_CHECKS.filter((check) => check(data)).length
-  return Math.round((filled / COMPLETENESS_CHECKS.length) * 100)
-}
+export { computeCompletenessScore }
 
 function computeRecencyScore(createdAt: unknown): number {
   if (typeof createdAt !== 'string') return RECENCY_MAX_POINTS

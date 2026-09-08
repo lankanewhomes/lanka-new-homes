@@ -509,7 +509,7 @@ export const syncLeadToSupabase: CollectionAfterChangeHook = async ({ doc, opera
     const project = await resolveSlugName(req, 'projects', d.project)
     const developer = project.slug ? await resolveSlugName(req, 'developers', (await req.payload.findByID({ collection: 'projects', id: relId(d.project) as string | number, depth: 0, overrideAccess: true, req })).developer) : {}
     if (!project.slug || !developer.slug) return
-    await insertLead({
+    const { id: supabaseLeadId } = await insertLead({
       name: d.name as string,
       email: (d.email as string) ?? '',
       phone: (d.phone as string) ?? '',
@@ -517,6 +517,18 @@ export const syncLeadToSupabase: CollectionAfterChangeHook = async ({ doc, opera
       message: (d.message as string) ?? '',
       projectSlug: project.slug,
       developerSlug: developer.slug,
+      floorPlan: typeof d.floor_plan === 'string' ? d.floor_plan : undefined,
+      source: d.source === 'brochure_request' ? 'brochure_request' : 'request_info',
+    })
+    // Remember the mirrored row so pipeline status changes reach the
+    // buyer's copy (hooks/lead-hooks.ts syncLeadStatusToSupabase).
+    await req.payload.update({
+      collection: 'leads',
+      id: d.id as string | number,
+      data: { supabase_lead_id: supabaseLeadId },
+      overrideAccess: true,
+      context: { skipLeadHooks: true, skipSupabaseSync: true },
+      req,
     })
   })
   return doc

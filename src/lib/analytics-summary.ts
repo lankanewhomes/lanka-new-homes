@@ -1,5 +1,6 @@
 import type { Payload, Where } from 'payload'
 import { ANALYTICS_EVENT_TYPES } from '@/collections/Analytics'
+import type { LeadPipelineSummary } from '@/lib/lead-pipeline'
 
 export type AnalyticsBreakdownRow = { key: string; label: string; count: number; percent: number }
 export type ListingBreakdownRow = { projectId: string | number; projectName: string; projectSlug: string; total: number; byType: Record<string, number> }
@@ -16,6 +17,8 @@ export type AnalyticsSummaryResponse = {
   byListing: ListingBreakdownRow[]
   byDeveloper?: DeveloperBreakdownRow[]
   trend: TrendPoint[]
+  /** Lead pipeline + response times (src/lib/lead-pipeline.ts); added by the endpoint. */
+  leads?: LeadPipelineSummary
 }
 
 const EVENT_TYPE_LABELS: Record<string, string> = Object.fromEntries(ANALYTICS_EVENT_TYPES.map((t) => [t.value, t.label]))

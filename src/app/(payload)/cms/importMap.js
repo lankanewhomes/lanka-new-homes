@@ -1,3 +1,4 @@
+import { CompletenessTodo as CompletenessTodo_e02911b42e48821b16fd5d9e40cf5034 } from '@/components/payload/CompletenessTodo'
 import { PreviewLinkPanel as PreviewLinkPanel_58de2ef0318e59b9fbb2898773569633 } from '@/components/payload/PreviewLinkPanel'
 import { YearPickerField as YearPickerField_4dc9f7e903015cdc77733f6107aaaf6d } from '@/components/payload/YearPickerField'
 import { ListingAnalyticsPanel as ListingAnalyticsPanel_aef927c4ceb2652d7f7abf8ef0fcf2e5 } from '@/components/payload/ListingAnalyticsPanel'
@@ -31,6 +32,7 @@ import { StatusVerificationStyles as StatusVerificationStyles_30e7ab21255f6e336f
 import { NavPlacementLink as NavPlacementLink_4dd4594cbbb08508c8d44f490a29b529 } from '@/components/payload/NavPlacementLink'
 import { NavImportLink as NavImportLink_5a308347dbd45d2c0e34cd2393d9f672 } from '@/components/payload/NavImportLink'
 import { DashboardHeading as DashboardHeading_b35bd138182ec0819d58316aa107f82c } from '@/components/payload/DashboardHeading'
+import { ListingTodoPanel as ListingTodoPanel_33ebabb4a848599de8c9093bb92914e0 } from '@/components/payload/ListingTodoPanel'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 import { ImportListing as ImportListing_ce25d0c3f088e28836c6e36f3beaffcc } from '@/components/payload/ImportListing'
 import { PlacementPicker as PlacementPicker_6da902505ef4c3d4a54d1cfe2cf4f5b4 } from '@/components/payload/PlacementPicker'
@@ -38,6 +40,7 @@ import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } f
 
 /** @type import('payload').ImportMap */
 export const importMap = {
+  "@/components/payload/CompletenessTodo#CompletenessTodo": CompletenessTodo_e02911b42e48821b16fd5d9e40cf5034,
   "@/components/payload/PreviewLinkPanel#PreviewLinkPanel": PreviewLinkPanel_58de2ef0318e59b9fbb2898773569633,
   "@/components/payload/YearPickerField#YearPickerField": YearPickerField_4dc9f7e903015cdc77733f6107aaaf6d,
   "@/components/payload/ListingAnalyticsPanel#ListingAnalyticsPanel": ListingAnalyticsPanel_aef927c4ceb2652d7f7abf8ef0fcf2e5,
@@ -71,6 +74,7 @@ export const importMap = {
   "@/components/payload/NavPlacementLink#NavPlacementLink": NavPlacementLink_4dd4594cbbb08508c8d44f490a29b529,
   "@/components/payload/NavImportLink#NavImportLink": NavImportLink_5a308347dbd45d2c0e34cd2393d9f672,
   "@/components/payload/DashboardHeading#DashboardHeading": DashboardHeading_b35bd138182ec0819d58316aa107f82c,
+  "@/components/payload/ListingTodoPanel#ListingTodoPanel": ListingTodoPanel_33ebabb4a848599de8c9093bb92914e0,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,
   "@/components/payload/ImportListing#ImportListing": ImportListing_ce25d0c3f088e28836c6e36f3beaffcc,
   "@/components/payload/PlacementPicker#PlacementPicker": PlacementPicker_6da902505ef4c3d4a54d1cfe2cf4f5b4,

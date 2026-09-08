@@ -88,7 +88,7 @@ async function getPayloadInstance(): Promise<Payload> {
 // visitor-facing action this is attached to).
 export async function logRawAnalyticsEvent(
   request: Request,
-  args: { projectSlug: string; eventType: "view" | "brochure_download" | "phone_click"; sourcePage?: string; sessionId?: unknown; trafficSource?: unknown },
+  args: { projectSlug: string; eventType: "view" | "brochure_download" | "phone_click" | "whatsapp_click"; sourcePage?: string; sessionId?: unknown; trafficSource?: unknown },
 ): Promise<void> {
   const payload = await getPayloadInstance();
   const projectRes = await payload.find({
