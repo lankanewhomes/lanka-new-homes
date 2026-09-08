@@ -83,6 +83,13 @@ jobs:
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
           R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
 
+  # Production is normally deployed by Vercel's own Git integration on every
+  # push to main. This job is an optional CLI deploy for when that
+  # integration is off; it only runs if VERCEL_TOKEN / VERCEL_ORG_ID /
+  # VERCEL_PROJECT_ID are configured as repo secrets — otherwise it skips
+  # and stays green. (It used to fail on every push while those secrets
+  # were unset, which made the whole workflow permanently red and hid a
+  # real build break for three days in Sep 2026.)
   deploy:
     name: Deploy to Vercel (production)
     runs-on: ubuntu-latest
@@ -90,25 +97,41 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     environment: production
     steps:
+      - name: Check Vercel CLI secrets
+        id: vercel
+        run: |
+          if [ -n "${{ secrets.VERCEL_TOKEN }}" ] && [ -n "${{ secrets.VERCEL_ORG_ID }}" ] && [ -n "${{ secrets.VERCEL_PROJECT_ID }}" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::VERCEL_* secrets not set — skipping CLI deploy (Vercel Git integration deploys main)."
+          fi
       - uses: actions/checkout@v4
+        if: steps.vercel.outputs.enabled == 'true'
       - uses: actions/setup-node@v4
+        if: steps.vercel.outputs.enabled == 'true'
         with:
           node-version: 20
           cache: npm
       - run: npm ci
+        if: steps.vercel.outputs.enabled == 'true'
       - name: Install Vercel CLI
+        if: steps.vercel.outputs.enabled == 'true'
         run: npm install -g vercel@latest
       - name: Pull Vercel environment
+        if: steps.vercel.outputs.enabled == 'true'
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
       - name: Build project artifacts
+        if: steps.vercel.outputs.enabled == 'true'
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
       - name: Deploy to Vercel
+        if: steps.vercel.outputs.enabled == 'true'
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
