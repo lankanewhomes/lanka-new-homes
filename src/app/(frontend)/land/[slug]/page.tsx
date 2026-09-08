@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { CircleDollarSign, Compass, HousePlus, Layers, MapPin, Ruler } from "lucide-react";
-import { getLandBySlug } from "@/lib/land-store";
+import { getAllLands, getLandBySlug } from "@/lib/land-store";
 import { landToProjectShape } from "@/lib/land-to-project";
+import { pickSimilarListings } from "@/lib/similar-listings";
+import { SimilarListingsSection } from "@/components/marketplace/similar-listings";
 import { formatLkr } from "@/lib/format";
 import { getDeveloperBySlug } from "@/lib/developer-store";
 import { getAllConstructionCompanies } from "@/lib/construction-company-store";
@@ -46,6 +48,8 @@ export default async function LandDetailPage({ params }: LandPageProps) {
   if (!land) return notFound();
 
   const project = landToProjectShape(land);
+  const otherLands = (await getAllLands()).filter((item) => item.slug !== land.slug).map(landToProjectShape);
+  const similarListings = pickSimilarListings(project, otherLands, 4);
 
   let developer: Developer | undefined;
   if (land.sellerType === "developer" && land.sellerSlug) {
@@ -192,6 +196,8 @@ export default async function LandDetailPage({ params }: LandPageProps) {
         <NeighborhoodSection nearby={project.nearby} neighborhoodName={project.neighborhood} neighborhoodSlug={undefined} neighborhoodPageExists={false} />
 
         <StatsContactCard project={project} developer={developer} requestInfoVariant="inquiry" />
+
+        <SimilarListingsSection listings={similarListings} basePath="/land" />
       </div>
     </div>
   );

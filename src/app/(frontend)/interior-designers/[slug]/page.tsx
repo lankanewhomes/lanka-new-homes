@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getAllInteriorDesigners, getInteriorDesignerBySlug } from "@/lib/interior-designer-store";
 import { getAllProjects } from "@/lib/project-store";
+import { getApprovedReviewsByEntity } from "@/lib/review-store";
 import { CompanyProfileDetailView } from "@/components/marketplace/company-profile-views";
 
 // Regenerate at most once a minute so admin edits (e.g. status changes)
@@ -36,10 +37,11 @@ export default async function InteriorDesignerPage({ params }: InteriorDesignerP
 
   const allProjects = await getAllProjects();
   const projects = allProjects.filter((project) => project.interiorDesignerSlug === slug);
+  const reviews = await getApprovedReviewsByEntity("interior-designer", slug);
 
   return (
     <div className="developer-page">
-      <CompanyProfileDetailView company={designer} entityLabel="Interior Designer" projects={projects} />
+      <CompanyProfileDetailView company={designer} entityType="interior-designer" entityLabel="Interior Designer" projects={projects} reviews={reviews} />
     </div>
   );
 }

@@ -187,6 +187,22 @@ function isHotDealActive(project: Project) {
   return Boolean(project.hotDeal?.enabled && hasDisplayValue(project.hotDeal?.title));
 }
 
+// "Move in 2022" on a building finished years ago is noise, not a selling
+// point — the badge only makes sense for a move-in date a buyer can still
+// plan around: this year onward. Past years show nothing (the year is still
+// in the fact sheet as "Move-in year"). Asked for on 2026-09-07.
+export function isUpcomingMoveIn(project: Pick<Project, "completionYear">) {
+  return project.completionYear >= new Date().getFullYear();
+}
+
+// Developers quote short distances in metres ("10 m to Marine Drive"), and
+// distanceKm stores that as 0.01 — show it back as metres rather than
+// "0.01 km".
+function formatDistanceKm(distanceKm: number) {
+  if (distanceKm < 1) return `${Math.round(distanceKm * 1000)} m`;
+  return `${distanceKm} km`;
+}
+
 function hasQuickMoveIn(project: Project) {
   return project.floorPlans.some((plan) => plan.quickMoveIn);
 }
@@ -1226,10 +1242,10 @@ export function ProjectHero({
         </div>
       </div>
 
-      {(hasDisplayValue(project.status) || hasDisplayValue(project.completionYear) || project.isFeatured || project.isMoveInNow || hasQuickMoveIn(project) || Boolean(project.paymentPlanBadge) || extraBadges.length > 0) ? (
+      {(hasDisplayValue(project.status) || isUpcomingMoveIn(project) || project.isFeatured || project.isMoveInNow || hasQuickMoveIn(project) || Boolean(project.paymentPlanBadge) || extraBadges.length > 0) ? (
         <div className="listing-hero-tags" aria-label="Listing status tags">
           {hasDisplayValue(project.status) ? <span className="listing-hero-tag-status">{statusLabelOverride ?? project.status}</span> : null}
-          {hasDisplayValue(project.completionYear) ? <span className="listing-hero-tag-move-in">Move in {project.completionYear}</span> : null}
+          {isUpcomingMoveIn(project) ? <span className="listing-hero-tag-move-in">Move in {project.completionYear}</span> : null}
           {project.isMoveInNow ? <span className="listing-badge-pill badge-move-in-now">Move-In Now</span> : null}
           {hasQuickMoveIn(project) ? <span className="listing-badge-pill badge-quick-move-in">Quick Move-In</span> : null}
           {project.isFeatured ? <span className="listing-badge-pill badge-featured">Featured</span> : null}
@@ -1358,29 +1374,35 @@ const statDisplayLabel = (key: string) => STAT_DISPLAY_LABEL[key] ?? key;
 // chip when a project's picker explicitly selects it (long text like an
 // address or a security note wraps badly in a chip; derived numbers like
 // the old "Per SqFt (Avg)" — price ÷ first plan's size — are gone for good).
-// "Total Units" / "Floors" are alternatives: Floors only fills in when the
-// project has no unit count. See docs/design.md "Stats chips vs fact sheet".
-const DEFAULT_PROJECT_STAT_KEYS = ["Price range", "Property type", "Beds", "Baths", "SqFt", "Listing status", "Move in", "Total Units", "Floors"];
+// When a default has no data on a project, the overflow list fills the slot
+// in order (asked for 2026-09-08) so the row stays full: 8 on desktop, the
+// first 6 of the same list on mobile. See docs/design.md "Stats chips vs
+// fact sheet".
+const DEFAULT_PROJECT_STAT_KEYS = ["Price range", "Property type", "Beds", "Baths", "SqFt", "Listing status", "Move in", "Total Units"];
+const PROJECT_STAT_OVERFLOW_KEYS = ["Floors", "Building status", "Ownership", "Parking", "Units available", "Floor plans", "Sales started"];
+// Land plots (the only remaining ProjectStatsChips floor-plan caller —
+// project floor-plan pages use FloorPlanStatsChips).
 const DEFAULT_FLOOR_PLAN_STAT_KEYS = ["Price", "Project type", "Plan type", "Beds", "Baths", "SqFt", "Status", "Move in"];
+const FLOOR_PLAN_STAT_OVERFLOW_KEYS = ["Ownership", "Interior size", "Balcony", "Parking"];
 const DEFAULT_DESKTOP_CHIP_CAP = 8;
 const DEFAULT_MOBILE_CHIP_CAP = 6;
 const PICKER_CHIP_CAP = 10;
 
 type StatChip = { key: string; value: string; label?: string };
 
-function pickDefaultChips(candidates: StatChip[], defaultKeys: string[]): StatChip[] {
+function pickDefaultChips(candidates: StatChip[], defaultKeys: string[], overflowKeys: string[]): StatChip[] {
   const byKey = new Map(candidates.map((item) => [item.key, item]));
-  const picked = defaultKeys.map((key) => byKey.get(key)).filter((item): item is StatChip => Boolean(item));
-  const hasUnitCount = picked.some((item) => item.key === "Total Units");
-  return picked.filter((item) => !(hasUnitCount && item.key === "Floors")).slice(0, DEFAULT_DESKTOP_CHIP_CAP);
+  return [...defaultKeys, ...overflowKeys]
+    .map((key) => byKey.get(key))
+    .filter((item): item is StatChip => Boolean(item))
+    .slice(0, DEFAULT_DESKTOP_CHIP_CAP);
 }
 
 export function ProjectStatsChips({ project, floorPlan, areaUnit = "SqFt" }: { project: Project; floorPlan?: FloorPlan; areaUnit?: "SqFt" | "perches" }) {
-  const soldCount = project.floorPlans.filter((plan) => plan.availability === "Sold Out").length;
-  const availableCount = project.floorPlans.filter((plan) => plan.availability === "Available").length;
-  const hasSoldAvailableData = project.floorPlans.length > 0;
   const formatArea = (value: number) => value.toLocaleString("en-US");
-  const moveInYear = project.completionYear > 0 ? String(project.completionYear) : "";
+  // Same rule as the badge: a move-in year is a chip only while it's still
+  // ahead (this year onward) — the fact sheet keeps past years as "Completed in".
+  const moveInYear = isUpcomingMoveIn(project) ? String(project.completionYear) : "";
 
   const candidates: StatChip[] = floorPlan
     ? [
@@ -1423,8 +1445,9 @@ export function ProjectStatsChips({ project, floorPlan, areaUnit = "SqFt" }: { p
         // Picker-only
         { key: "Building status", value: project.constructionStatus },
         { key: "Address", value: project.location },
-        ...(hasSoldAvailableData ? [{ key: "Units sold", value: String(soldCount) }] : []),
-        ...(hasSoldAvailableData ? [{ key: "Units available", value: String(availableCount) }] : []),
+        // Developer-entered counts (never a count of plan types).
+        ...((project.soldUnits ?? 0) > 0 ? [{ key: "Units sold", value: String(project.soldUnits) }] : []),
+        ...((project.availableUnits ?? 0) > 0 ? [{ key: "Units available", value: String(project.availableUnits) }] : []),
         ...(project.floorPlans.length > 0 ? [{ key: "Floor plans", value: String(project.floorPlans.length) }] : []),
         { key: "Road", value: project.road ?? "" },
         { key: "Area", value: project.area ?? "" },
@@ -1448,7 +1471,11 @@ export function ProjectStatsChips({ project, floorPlan, areaUnit = "SqFt" }: { p
   const picker: string[] | undefined = floorPlan ? project.floorPlanVisibleStats : project.desktopVisibleStats;
   const stats = picker?.length
     ? available.filter((item) => picker.includes(item.key)).slice(0, PICKER_CHIP_CAP)
-    : pickDefaultChips(available, floorPlan ? DEFAULT_FLOOR_PLAN_STAT_KEYS : DEFAULT_PROJECT_STAT_KEYS);
+    : pickDefaultChips(
+        available,
+        floorPlan ? DEFAULT_FLOOR_PLAN_STAT_KEYS : DEFAULT_PROJECT_STAT_KEYS,
+        floorPlan ? FLOOR_PLAN_STAT_OVERFLOW_KEYS : PROJECT_STAT_OVERFLOW_KEYS,
+      );
 
   const mobileVisibleKeys = new Set<string>(
     project.mobileVisibleStats?.length
@@ -2586,8 +2613,13 @@ export function ProjectDescriptionSection({ project, floorPlan, headingOverride 
       floorPlan.startingPriceLkr > 0 ? `Priced from ${formatLkr(floorPlan.startingPriceLkr)}.` : "",
       hasDisplayValue(floorPlan.availability) ? `Currently ${floorPlan.availability.toLowerCase()}.` : "",
       floorPlan.quickMoveIn ? "Available for quick move-in." : "",
+      // "The project is completed, completed in 2022" read badly — a finished
+      // building gets one clean sentence; anything else gets its status plus
+      // a move-in year only when that year is still ahead.
       hasDisplayValue(project.constructionStatus)
-        ? `The project is ${project.constructionStatus.toLowerCase()}${hasDisplayValue(project.completionYear) ? `, with move-in expected in ${project.completionYear}` : ""}.`
+        ? (/complete/i.test(project.constructionStatus) && project.completionYear > 0 && !isUpcomingMoveIn(project)
+          ? `The project was completed in ${project.completionYear}.`
+          : `The project is ${project.constructionStatus.toLowerCase()}${isUpcomingMoveIn(project) ? `, with move-in expected in ${project.completionYear}` : ""}.`)
         : "",
     ].filter(Boolean);
 
@@ -2657,7 +2689,9 @@ export function ProjectNarrativeDetails({ project }: { project: Project }) {
     { label: "Listing status", show: isFact(project.status), value: project.status },
     { label: "Construction status", show: isFact(project.constructionStatus), value: project.constructionStatus },
     { label: "Sales started", show: isFact(salesStarted), value: salesStarted },
-    { label: "Move-in year", show: isFact(completionMonth), value: completionMonth },
+    // A year still ahead is a move-in date; a past one is simply when the
+    // building was finished (rule of 2026-09-07 — no "Move in 2022").
+    { label: isUpcomingMoveIn(project) ? "Move-in year" : "Completed in", show: isFact(completionMonth), value: completionMonth },
     { label: "Price range", show: project.startingPriceLkr > 0, value: `From ${formatLkr(project.startingPriceLkr)}` },
     { label: "Avg unit price", show: Boolean(project.averageUnitPriceLkr), value: project.averageUnitPriceLkr ? formatLkr(project.averageUnitPriceLkr) : "" },
     { label: "Per SqFt (Avg)", show: isFact(project.averagePricePerSqft), value: project.averagePricePerSqft ?? "" },
@@ -2722,6 +2756,7 @@ const MOBILE_FACT_SHEET_ORDER = [
   "Listing status",
   "Construction status",
   "Move-in year",
+  "Completed in",
   "Price range",
   "Per SqFt (Avg)",
   "Beds",
@@ -2740,7 +2775,7 @@ const MOBILE_FACT_SHEET_ORDER = [
 // ordered list runs down the LEFT column (highest priority), the second half
 // down the RIGHT (lowest) — so the eye reads the list in priority order by
 // scanning down, then across.
-function FactSheetTable({ rows, className }: { rows: { label: string; value: React.ReactNode }[]; className: string }) {
+export function FactSheetTable({ rows, className }: { rows: { label: string; value: React.ReactNode }[]; className: string }) {
   if (!rows.length) return null;
   const split = Math.ceil(rows.length / 2);
   const left = rows.slice(0, split);
@@ -2935,8 +2970,9 @@ export function Header() {
     <header className="site-header">
       <div className="site-header-inner">
         <div className="site-brand-group">
-          <Link href="/" className="site-logo">
-            <Image src="/logo.svg" alt="LankaNewHomes" width={220} height={40} className="site-logo-img" priority />
+          <Link href="/" className="site-logo site-wordmark" aria-label="LankaNewHomes home">
+            <span className="wordmark-line">Lanka</span>
+            <span className="wordmark-line">NewHomes</span>
           </Link>
           <div className="language-segmented" role="group" aria-label="Language switcher">
             <button type="button" className={language === "en" ? "active" : undefined} onClick={() => setLanguage("en")}>EN</button>
@@ -3050,47 +3086,61 @@ export function Header() {
   );
 }
 
+// Footer brand is the plain-text wordmark (Lanka·New·Homes with "New" in
+// brand orange), not /logo.svg — the old approach inverted the whole SVG to
+// white for the dark background, which turned the orange house badge into a
+// blank white square. The same wordmark exists as a standalone asset at
+// public/logo-wordmark.svg / logo-wordmark-white.svg (Archivo 700 outlined
+// to paths) for use outside the site.
 export function Footer() {
   return (
     <footer className="site-footer">
-      <div className="footer-top">
-        <div className="footer-brand">
-          <Image src="/logo.svg" alt="LankaNewHomes" width={220} height={40} className="footer-logo-img" />
+      <div className="footer-inner">
+        <div className="footer-top">
+          <div className="footer-brand">
+            <Link href="/" className="footer-wordmark" aria-label="LankaNewHomes home">
+              <span className="wordmark-line">Lanka</span>
+              <span className="wordmark-line">NewHomes</span>
+            </Link>
+            <p className="footer-tagline">Find new homes, apartments and land for sale across Sri Lanka — with floor plans, pricing and developer details in one place.</p>
+            <Link href="/developers/register" className="footer-cta">List your project</Link>
+          </div>
+
+          <div className="footer-columns">
+            <div className="footer-column">
+              <p className="footer-column-title">Explore</p>
+              <Link href="/projects">New homes for sale</Link>
+              <Link href="/land">Land for sale</Link>
+              <Link href="/developers">Developers</Link>
+              <Link href="/construction-companies">Construction companies</Link>
+            </div>
+
+            <div className="footer-column">
+              <p className="footer-column-title">For developers</p>
+              <Link href="/developers/register">List your project</Link>
+              <Link href="/developers/login">Developer login</Link>
+            </div>
+
+            <div className="footer-column">
+              <p className="footer-column-title">Company</p>
+              <Link href="/about">About</Link>
+              <Link href="/contact">Contact</Link>
+              <Link href="/blog">Blog</Link>
+            </div>
+
+            <div className="footer-column">
+              <p className="footer-column-title">Legal</p>
+              <Link href="/privacy">Privacy Policy</Link>
+              <Link href="/terms">Terms of Service</Link>
+              <Link href="/sitemap">Sitemap</Link>
+            </div>
+          </div>
         </div>
 
-        <div className="footer-columns">
-          <div className="footer-column">
-            <p className="footer-column-title">For Developers</p>
-            <Link href="/developers/login">Developer Login</Link>
-            <Link href="/developers/register">Developer Register</Link>
-          </div>
-
-          <div className="footer-column">
-            <p className="footer-column-title">Company</p>
-            <Link href="/about">About</Link>
-            <Link href="/contact">Contact</Link>
-            <Link href="/blog">Blog</Link>
-          </div>
-
-          <div className="footer-column">
-            <p className="footer-column-title">Explore</p>
-            <Link href="/developers">Developers</Link>
-            <Link href="/projects">Projects</Link>
-            <Link href="/construction-companies">Construction Companies</Link>
-          </div>
-
-          <div className="footer-column">
-            <p className="footer-column-title">Legal</p>
-            <Link href="/privacy">Privacy Policy</Link>
-            <Link href="/terms">Terms of Service</Link>
-            <Link href="/sitemap">Sitemap</Link>
-          </div>
+        <div className="footer-bottom">
+          <p className="copyright">© {new Date().getFullYear()} LankaNewHomes. All rights reserved.</p>
+          <Link href="/admin-login" className="footer-admin-link">Admin</Link>
         </div>
-      </div>
-
-      <div className="footer-bottom">
-        <p className="copyright">© 2026 LankaNewHomes</p>
-        <Link href="/admin-login" className="footer-admin-link">Admin</Link>
       </div>
     </footer>
   );
@@ -3209,7 +3259,7 @@ export function NearbyPlacesAccordion({ groups }: { groups: ReturnType<typeof gr
               <div className="key-features-row-body">
                 {group.items.map((place) => (
                   <span key={place.name} className="key-features-item">
-                    <span className="key-features-item-label">{place.name}:</span> {hasDisplayValue(place.distanceKm) ? `${place.distanceKm} km` : "Nearby"}
+                    <span className="key-features-item-label">{place.name}:</span> {hasDisplayValue(place.distanceKm) ? formatDistanceKm(place.distanceKm ?? 0) : "Nearby"}
                   </span>
                 ))}
               </div>
@@ -3285,7 +3335,7 @@ export function KnownLandmarksSection({ nearby, title = "Known Landmarks" }: { n
                 <span className="amenities-showcase-item-icon" aria-hidden="true">✓</span>
                 <span className="amenities-showcase-item-copy">
                   <strong>{place.name}</strong>
-                  {place.distanceKm ? ` — ${place.distanceKm} km away` : ""}
+                  {place.distanceKm ? ` — ${formatDistanceKm(place.distanceKm)} away` : ""}
                 </span>
               </button>
             );

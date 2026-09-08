@@ -32,6 +32,50 @@ these rules whenever the data model changes.
    from. Skip the derived field entirely rather than compute it in that
    case.
 
+## Media uploads (Cloudflare R2)
+
+Files uploaded through Payload's Media collection (the "upload a file"
+option beside every URL field in /cms) are stored in a Cloudflare R2 bucket
+and served from its public URL. Setup (once per Cloudflare account):
+
+1. Cloudflare dashboard → **R2 Object Storage → Create bucket**. Name it
+   (e.g. `lankanewhomes-media`), location hint Asia-Pacific.
+2. Bucket → **Settings → Public access**: either connect a custom domain
+   (e.g. `media.lankanewhomes.com` — recommended, gets Cloudflare caching)
+   or enable the `pub-….r2.dev` subdomain. That URL is `R2_PUBLIC_URL`.
+3. R2 → **Manage R2 API Tokens → Create API token**: permission *Object
+   Read & Write*, scoped to that bucket. Copy the Access Key ID and Secret
+   Access Key; the Account ID is shown on the same page / in the R2 overview.
+4. Put the five values in `.env.local`, Vercel (Project → Settings →
+   Environment Variables, all environments) and the GitHub Actions secrets
+   (the CI build job reads them):
+
+   ```
+   R2_ACCOUNT_ID=…
+   R2_ACCESS_KEY_ID=…
+   R2_SECRET_ACCESS_KEY=…
+   R2_BUCKET=lankanewhomes-media
+   R2_PUBLIC_URL=https://media.lankanewhomes.com
+   ```
+
+While any of the five is missing, `payload.config.ts` falls back to the
+older Supabase Storage adapter (`supabase-storage-adapter.ts`, bucket
+`media`), so an unconfigured environment still boots. `next.config.ts`
+allow-lists the `R2_PUBLIC_URL` host (and `*.r2.dev`) for `next/image`.
+Project photos under `public/` are a separate matter — they're still
+committed to the repo and served by Vercel.
+
+## Applying a schema change
+
+Write it as an idempotent file in `supabase/migrations/` (`if not exists`,
+`drop policy if exists …`), apply it with
+`npx tsx scripts/run-migration.ts supabase/migrations/<file>.sql` (needs
+`SUPABASE_DB_URL` in `.env.local`), then mirror it in
+`docs/supabase-schema.sql`. Payload-side fields (in `src/collections/*`)
+are pushed by Drizzle the next time Payload boots in dev mode — e.g. run
+any `scripts/*.ts` that calls `getPayload` *without* `NODE_ENV=production`
+— and `npx payload generate:types` regenerates `src/payload-types.ts`.
+
 ## Connection
 
 - Credentials live in `.env.local` (git-ignored, never commit):
@@ -57,6 +101,9 @@ See `docs/supabase-schema.sql` for the full schema. Summary:
 | `architects` | `Architect` — linked from a project's Connected Pages |
 | `interior_designers` | `InteriorDesigner` — linked from a project's Connected Pages |
 | `lands` | `Land` — land parcels for sale, separate from `projects` (see `src/lib/land-store.ts`) |
+| `reviews` | `Review` — a review of any profile page: `entity_type` (developer / marketing-company / sales-company / architect / interior-designer / construction-company) + `entity_slug`; `developer_slug` kept for developer reviews |
+| `saved_developers` | a signed-in buyer following a developer (account dashboard "Saved Developments") |
+| `saved_companies` | a signed-in buyer following any non-developer profile — `(entity_type, entity_slug)`, no FK |
 | `leads` | contact form submissions (was `data/tracking.sqlite`) |
 | `project_views` | view-count analytics (was `data/tracking.sqlite`) |
 

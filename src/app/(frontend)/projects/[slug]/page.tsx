@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { projects } from "@/data/projects";
-import { getProjectBySlug } from "@/lib/project-store";
+import { getAllProjects, getProjectBySlug } from "@/lib/project-store";
 import { getNeighborhoodBySlug } from "@/lib/neighborhood-store";
 import { getDeveloperBySlug } from "@/lib/developer-store";
+import { pickSimilarListings } from "@/lib/similar-listings";
+import { SimilarListingsSection } from "@/components/marketplace/similar-listings";
 import {
   AmenitiesShowcaseSection,
   CommercialAreasSection,
@@ -77,8 +79,12 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
   const project = await getProjectBySlug(slug);
   if (!project) return notFound();
 
-  const neighborhood = project.neighborhoodSlug ? await getNeighborhoodBySlug(project.neighborhoodSlug) : undefined;
-  const developer = await getDeveloperBySlug(project.developerSlug);
+  const [neighborhood, developer, allProjects] = await Promise.all([
+    project.neighborhoodSlug ? getNeighborhoodBySlug(project.neighborhoodSlug) : Promise.resolve(undefined),
+    getDeveloperBySlug(project.developerSlug),
+    getAllProjects(),
+  ]);
+  const similarListings = pickSimilarListings(project, allProjects, 4);
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -148,6 +154,8 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
         <NeighborhoodSection nearby={project.nearby} neighborhoodName={project.neighborhood} neighborhoodSlug={project.neighborhoodSlug} neighborhoodPageExists={Boolean(neighborhood)} />
 
         <StatsContactCard project={project} developer={developer} />
+
+        <SimilarListingsSection listings={similarListings} />
       </div>
     </div>
   );

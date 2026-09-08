@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getAllArchitects, getArchitectBySlug } from "@/lib/architect-store";
 import { getAllProjects } from "@/lib/project-store";
+import { getApprovedReviewsByEntity } from "@/lib/review-store";
 import { CompanyProfileDetailView } from "@/components/marketplace/company-profile-views";
 
 // Regenerate at most once a minute so admin edits (e.g. status changes)
@@ -36,10 +37,11 @@ export default async function ArchitectPage({ params }: ArchitectPageProps) {
 
   const allProjects = await getAllProjects();
   const projects = allProjects.filter((project) => project.architectSlug === slug);
+  const reviews = await getApprovedReviewsByEntity("architect", slug);
 
   return (
     <div className="developer-page">
-      <CompanyProfileDetailView company={architect} entityLabel="Architect" projects={projects} />
+      <CompanyProfileDetailView company={architect} entityType="architect" entityLabel="Architect" projects={projects} reviews={reviews} />
     </div>
   );
 }

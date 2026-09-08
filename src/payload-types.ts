@@ -3126,19 +3126,55 @@ export interface Project {
         planType_other?: string | null;
         bedrooms: number;
         bathrooms: number;
+        ensuiteBaths?: number | null;
+        powderRooms?: number | null;
         floorAreaSqFt: number;
         interiorSizeSqFt?: number | null;
         balconySizeSqFt?: number | null;
-        basement?: ('None' | 'Unfinished' | 'Finished' | 'Walkout' | 'Partial') | null;
+        terraceSqFt?: number | null;
         /**
-         * Custom value, used when Basement above doesn't have the right option.
+         * As published, e.g. "3.0 m" or "10 ft".
          */
-        basement_other?: string | null;
-        garage?: ('None' | 'Attached' | 'Detached' | 'Carport' | 'Underground') | null;
+        ceilingHeight?: string | null;
         /**
-         * Custom value, used when Garage above doesn't have the right option.
+         * Which floors this plan sits on, e.g. "5–12" or "Ground".
          */
-        garage_other?: string | null;
+        floorRange?: string | null;
+        aspect?:
+          ('North' | 'North-East' | 'East' | 'South-East' | 'South' | 'South-West' | 'West' | 'North-West') | null;
+        /**
+         * Custom value, used when Aspect above doesn't have the right option.
+         */
+        aspect_other?: string | null;
+        view?:
+          | (
+              | 'Sea View'
+              | 'Ocean View'
+              | 'City View'
+              | 'Skyline View'
+              | 'Garden View'
+              | 'Pool View'
+              | 'Lake View'
+              | 'Mountain View'
+              | 'Golf View'
+              | 'Courtyard View'
+            )
+          | null;
+        /**
+         * Custom value, used when View above doesn't have the right option.
+         */
+        view_other?: string | null;
+        cornerUnit?: boolean | null;
+        startingPriceLkr: number;
+        /**
+         * Only if the developer publishes it — don't divide price by size.
+         */
+        pricePerSqFtLkr?: number | null;
+        maintenancePerMonthLkr?: number | null;
+        /**
+         * As published, e.g. "30% on reservation".
+         */
+        deposit?: string | null;
         parkingSpaces?: number | null;
         parkingType?:
           | (
@@ -3158,7 +3194,65 @@ export interface Project {
          * Custom value, used when Parking Type above doesn't have the right option.
          */
         parkingType_other?: string | null;
-        startingPriceLkr: number;
+        basement?: ('None' | 'Unfinished' | 'Finished' | 'Walkout' | 'Partial') | null;
+        /**
+         * Custom value, used when Basement above doesn't have the right option.
+         */
+        basement_other?: string | null;
+        garage?: ('None' | 'Attached' | 'Detached' | 'Carport' | 'Underground') | null;
+        /**
+         * Custom value, used when Garage above doesn't have the right option.
+         */
+        garage_other?: string | null;
+        storage?: ('Yes' | 'No') | null;
+        /**
+         * Custom value, used when Storage above doesn't have the right option.
+         */
+        storage_other?: string | null;
+        utilityArea?: ('Yes' | 'No') | null;
+        /**
+         * Custom value, used when Utility Area above doesn't have the right option.
+         */
+        utilityArea_other?: string | null;
+        maidsRoom?: ('Yes' | 'No') | null;
+        /**
+         * Custom value, used when Maid's Room above doesn't have the right option.
+         */
+        maidsRoom_other?: string | null;
+        pantry?: ('Yes' | 'No') | null;
+        /**
+         * Custom value, used when Pantry above doesn't have the right option.
+         */
+        pantry_other?: string | null;
+        handoverCondition?: ('Bare Shell' | 'Semi-Finished' | 'Fully Fitted' | 'Fully Furnished') | null;
+        /**
+         * Custom value, used when Handover Condition above doesn't have the right option.
+         */
+        handoverCondition_other?: string | null;
+        furnishing?: ('Unfurnished' | 'Semi-Furnished' | 'Fully Furnished') | null;
+        /**
+         * Custom value, used when Furnishing above doesn't have the right option.
+         */
+        furnishing_other?: string | null;
+        acProvision?: ('Provision Only' | 'Split Units Included' | 'Central AC' | 'None') | null;
+        /**
+         * Custom value, used when AC Provision above doesn't have the right option.
+         */
+        acProvision_other?: string | null;
+        hotWater?: ('Solar' | 'Electric Geyser' | 'Gas' | 'Central' | 'None') | null;
+        /**
+         * Custom value, used when Hot Water above doesn't have the right option.
+         */
+        hotWater_other?: string | null;
+        /**
+         * e.g. "Porcelain tiles", "Engineered timber".
+         */
+        floorFinish?: string | null;
+        /**
+         * How many units in the building use this plan.
+         */
+        unitsInPlan?: number | null;
+        unitsAvailable?: number | null;
         /**
          * Image URL — or upload a file in Media and paste its URL here.
          */
@@ -3173,7 +3267,7 @@ export interface Project {
       }[]
     | null;
   /**
-   * Which detail chips show on each floor plan page. Maximum 10. Leave empty for the default set: Price, Property type, Plan type, Beds, Baths, SqFt, Status, Move-in year.
+   * Legacy — floor plan pages now use a fixed chip set (docs/design.md "Floor plan page facts & chips"); this only still affects land plot pages. Maximum 10.
    */
   floorPlanVisibleStats?:
     | (
@@ -6410,7 +6504,33 @@ export interface Lead {
  */
 export interface Review {
   id: number;
-  developer: number | Developer;
+  entity_type:
+    'developer' | 'marketing-company' | 'sales-company' | 'architect' | 'interior-designer' | 'construction-company';
+  developer?: (number | null) | Developer;
+  /**
+   * The marketing/sales company, architect, interior designer or construction company being reviewed.
+   */
+  company?:
+    | ({
+        relationTo: 'marketing-companies';
+        value: number | MarketingCompany;
+      } | null)
+    | ({
+        relationTo: 'sales-companies';
+        value: number | SalesCompany;
+      } | null)
+    | ({
+        relationTo: 'architects';
+        value: number | Architect;
+      } | null)
+    | ({
+        relationTo: 'interior-designers';
+        value: number | InteriorDesigner;
+      } | null)
+    | ({
+        relationTo: 'construction-companies';
+        value: number | ConstructionCompany;
+      } | null);
   project?: (number | null) | Project;
   rating: number;
   comment: string;
@@ -7026,17 +7146,49 @@ export interface ProjectsSelect<T extends boolean = true> {
         planType_other?: T;
         bedrooms?: T;
         bathrooms?: T;
+        ensuiteBaths?: T;
+        powderRooms?: T;
         floorAreaSqFt?: T;
         interiorSizeSqFt?: T;
         balconySizeSqFt?: T;
+        terraceSqFt?: T;
+        ceilingHeight?: T;
+        floorRange?: T;
+        aspect?: T;
+        aspect_other?: T;
+        view?: T;
+        view_other?: T;
+        cornerUnit?: T;
+        startingPriceLkr?: T;
+        pricePerSqFtLkr?: T;
+        maintenancePerMonthLkr?: T;
+        deposit?: T;
+        parkingSpaces?: T;
+        parkingType?: T;
+        parkingType_other?: T;
         basement?: T;
         basement_other?: T;
         garage?: T;
         garage_other?: T;
-        parkingSpaces?: T;
-        parkingType?: T;
-        parkingType_other?: T;
-        startingPriceLkr?: T;
+        storage?: T;
+        storage_other?: T;
+        utilityArea?: T;
+        utilityArea_other?: T;
+        maidsRoom?: T;
+        maidsRoom_other?: T;
+        pantry?: T;
+        pantry_other?: T;
+        handoverCondition?: T;
+        handoverCondition_other?: T;
+        furnishing?: T;
+        furnishing_other?: T;
+        acProvision?: T;
+        acProvision_other?: T;
+        hotWater?: T;
+        hotWater_other?: T;
+        floorFinish?: T;
+        unitsInPlan?: T;
+        unitsAvailable?: T;
         image?: T;
         image3d?: T;
         availability?: T;
@@ -7628,7 +7780,9 @@ export interface LeadsSelect<T extends boolean = true> {
  * via the `definition` "reviews_select".
  */
 export interface ReviewsSelect<T extends boolean = true> {
+  entity_type?: T;
   developer?: T;
+  company?: T;
   project?: T;
   rating?: T;
   comment?: T;

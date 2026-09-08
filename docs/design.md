@@ -9,13 +9,30 @@ whenever a new convention is set or an existing one changes.
 
 Site brand is "LankaNewHomes" (contact: lankanewhomes@gmail.com, canonical
 domain: lankanewhomes.com — set as `FALLBACK_SITE_URL` in `src/lib/seo.ts`).
-Logo is an
-image asset at `public/logo.svg` (orange house-badge icon + wordmark),
-rendered via `next/image` in the Header (`.site-logo-img`, dark wordmark) and
-Footer (`.footer-logo-img`, inverted to white via CSS `filter` for the dark
-footer background) in `src/components/marketplace/components.tsx`. Replace
-`public/logo.svg` directly to change the mark; both header/footer pull from
-the same file.
+The brand mark is a **plain-text wordmark, stacked on two lines, one
+colour, no icon** (set by the owner 2026-09-07):
+
+    Lanka
+    NewHomes
+
+Archivo 700, letter-spacing −0.02em, `#1d1d22` on light backgrounds, white
+on dark. No orange, no house badge. Both the Header (`.site-wordmark`, 17px)
+and the Footer (`.footer-wordmark`, 24px) render it as live text — two
+`<span class="wordmark-line">` inside the home link — never as an image. The
+standalone asset (outlined to paths, no font dependency) is at
+`public/logo-wordmark.svg` (dark) and `public/logo-wordmark-white.svg`
+(white); regenerate with fontkit from the Archivo TTF if the text changes.
+`public/logo.svg` (the old orange house badge + wordmark) is no longer used
+in the site chrome; it's kept only because OG/social images still reference
+it — replace those before deleting it.
+
+Footer (`Footer` in `components.tsx`, `.site-footer` / `.footer-inner` in
+globals.css): dark `#1c1c20`, content in the sitewide 1290px container so it
+shares the header's left edge; brand block (wordmark, tagline, "List your
+project" pill CTA — no contact email, removed on request) left, four link
+columns (Explore / For
+developers / Company / Legal) right, thin legal bar below. Columns collapse
+to 2 under 980px and the brand block goes full-width.
 
 ## Section navigation bar (project / floor plan pages)
 
@@ -486,9 +503,13 @@ hero (`ProjectStatsChips`, `.listing-hero-stats-chips`) and the 2-per-row
 - **Chips = the listing-card facts** a buyer filters on — short, one-line
   values only. Project default (max 8 desktop, first 6 on mobile, in this
   order): Price range · Property type · Beds · Baths · SqFt · Listing status ·
-  Move-in year · Total units (Floors fills in only when there's no unit
-  count). Floor-plan/plot page default: Price · Property type · Plan type ·
-  Beds · Baths · SqFt (exact, no "From") · Status · Move-in year.
+  Move-in year · Total units. **Overflow** (added 2026-09-08): when a default
+  has no data the next of Floors · Construction status · Ownership · Parking
+  · Units available · Floor plans · Sales started fills the slot, so the row
+  stays full. Land plot pages: Price · Property type · Plan type · Beds ·
+  Baths · Perches · Status · Move-in year, overflow Ownership · Interior size
+  · Balcony · Parking. (Project floor-plan pages have their own set — see
+  "Floor plan page facts & chips".)
 - **Fact sheet = the full reference table**, in this fixed order (set by the
   owner 2026-09-07): Property type · Listing status · Construction status ·
   Sales started · Move-in year · Price range · Avg unit price · Per SqFt
@@ -531,6 +552,52 @@ hero (`ProjectStatsChips`, `.listing-hero-stats-chips`) and the 2-per-row
 - Mobile: `.stats-chips-mobile-limited` on the wrapper hides chips without
   `.mobile-stat-visible` at ≤980px. The land page's hand-built chip row
   doesn't use the wrapper class and is unaffected.
+
+## Floor plan page facts & chips
+
+The floor-plan detail page (`/projects/{slug}/floor-plans/{plan}`) shows
+*plan-level* facts, not the project's — `FloorPlanStatsChips` +
+`FloorPlanFactSheet` in `src/components/marketplace/floor-plan-facts.tsx`,
+set by the owner 2026-09-08. Every value is a field on the plan in Payload
+(Projects → Floor Plans); empty fields drop out; nothing is derived (Price
+per SqFt is the developer's own figure, never price ÷ size).
+
+- **Chips** — desktop max 8: Plan type · Beds · Baths · View · Aspect ·
+  Furnishing · Quick move-in · Availability. Mobile max 6: Plan type · Beds ·
+  Baths · View ("Sea", not "Sea View") · Quick move-in ("Quick MI") ·
+  Availability — aspect is desktop-only because view already says what a
+  buyer cares about. When a primary chip has no data the overflow list
+  fills in, in order: Handover condition · Parking · Maid's room · Corner
+  unit. Two rows render; CSS shows one per breakpoint
+  (`.stats-chips-desktop-only` / `.stats-chips-mobile-only`).
+- **Fact sheet** — desktop order: Plan type · Beds · Baths · Ensuite baths ·
+  Powder room · Total SqFt · Interior SqFt · Balcony SqFt · Terrace SqFt ·
+  Ceiling height · Floor range · Aspect · View · Price LKR · Per SqFt ·
+  Maintenance / mo · Deposit · Parking · Parking type · Storage · Utility
+  area · Maid's room · Pantry · Handover condition · Furnishing · AC
+  provision · Hot water · Floor finish · Units in plan · Units available ·
+  Availability. Mobile order: Total SqFt · Interior SqFt · Balcony SqFt ·
+  Per SqFt · Maintenance / mo · Floor range · View · Ceiling height ·
+  Parking · Storage · Utility area · Maid's room · Handover condition ·
+  Furnishing · Units available · Availability. Column-major, same table
+  shell as the project fact sheet.
+- The admin `floorPlanVisibleStats` picker no longer affects these pages
+  (only land plot pages, which still use `ProjectStatsChips`).
+
+## Similar listings (bottom of every detail page)
+
+The last section on the project, floor-plan, land and plot pages, directly
+under the builder/contact card (`StatsContactCard`), is
+`SimilarListingsSection` (`src/components/marketplace/similar-listings.tsx`):
+the same boxed shell and 4-up card grid as the neighborhood page's "New homes
+in …" (`.developer-projects-section` + `ListingGridCard`), titled "Similar
+listings". Projects show similar projects, land pages show similar land
+(`basePath="/land"`). Ranking lives in `src/lib/similar-listings.ts`
+(`pickSimilarListings`): same neighborhood > same city/district > same type >
+starting price within ±35% > same status, ties broken by Featured then name,
+padded with other published listings so the grid fills. It is pure selection
+over existing fields — nothing is computed about a listing — and renders
+nothing when there is no other listing to show.
 
 ## Land detail page (`/land/{slug}`)
 

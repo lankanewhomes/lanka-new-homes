@@ -25,6 +25,7 @@ import { Projects } from './src/collections/Projects'
 import { Reviews } from './src/collections/Reviews'
 import { SalesCompanies } from './src/collections/SalesCompanies'
 import { SavedListings } from './src/collections/SavedListings'
+import { isR2Configured, r2Storage } from './src/collections/storage/r2-storage'
 import { supabaseStorageAdapter } from './src/collections/storage/supabase-storage-adapter'
 import { TeamMembers } from './src/collections/TeamMembers'
 import { Users } from './src/collections/Users'
@@ -106,17 +107,21 @@ export default buildConfig({
     schemaName: 'payload',
   }),
   plugins: [
-    cloudStoragePlugin({
-      collections: {
-        media: {
-          adapter: supabaseStorageAdapter(),
-          // Files live only in Supabase Storage, not also on local disk —
-          // needed for this to work on Vercel's read-only/ephemeral
-          // filesystem in production.
-          disableLocalStorage: true,
-        },
-      },
-    }),
+    // Media uploads go to Cloudflare R2 once the R2_* env vars are set
+    // (src/collections/storage/r2-storage.ts); until then the original
+    // Supabase Storage adapter stays in place so an unconfigured
+    // environment still boots. Either way files live only in the bucket,
+    // never on local disk — Vercel's filesystem is read-only/ephemeral.
+    isR2Configured()
+      ? r2Storage()
+      : cloudStoragePlugin({
+          collections: {
+            media: {
+              adapter: supabaseStorageAdapter(),
+              disableLocalStorage: true,
+            },
+          },
+        }),
   ],
   email: nodemailerAdapter({
     defaultFromAddress: process.env.EMAIL_FROM || 'no-reply@lankanewhomes.com',

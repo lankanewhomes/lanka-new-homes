@@ -157,6 +157,12 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
 .site-brand-group { display: flex; align-items: center; gap: 14px; }
 .site-logo { display: flex; align-items: center; }
 .site-logo-img { height: 32px; width: auto; }
+/* Plain-text brand mark (header + footer share the line markup): two stacked
+   lines, "Lanka" over "NewHomes", one colour, no icon — set 2026-09-07.
+   Header is dark on white; the footer variant below flips to white. */
+.site-wordmark { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 1px; font-family: var(--font-ref-sans); font-weight: 700; font-size: 17px; line-height: 1; letter-spacing: -0.02em; color: #1d1d22; text-decoration: none; }
+.site-wordmark:hover { text-decoration: none; }
+.wordmark-line { display: block; white-space: nowrap; }
 .footer-logo-img { height: 32px; width: auto; filter: brightness(0) invert(1); }
 .site-header nav, .header-actions { display: flex; gap: 39px; align-items: center; font-size: 14px; font-weight: 550; }.site-header a:hover { text-decoration: underline; }
 .header-actions { gap: 14px; }.sign-up { padding: 11px 21px; background: #f47b36; border: 1px solid #f47b36; color: #24221e; }
@@ -2497,8 +2503,10 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 
 /* ProjectNarrativeDetails renders two fact-sheet tables — the full desktop
    order and the shorter mobile order — and this picks one per breakpoint
-   (mobile rules in the ≤980px block below). */
-.project-fact-sheet-mobile {
+   (mobile rules in the ≤980px block below). FloorPlanStatsChips does the
+   same with two chip rows (.stats-chips-desktop-only / -mobile-only). */
+.project-fact-sheet-mobile,
+.stats-chips-mobile-only {
   display: none;
 }
 
@@ -2737,6 +2745,14 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 
   .project-fact-sheet-mobile {
     display: table;
+  }
+
+  .stats-chips-desktop-only {
+    display: none;
+  }
+
+  .stats-chips-mobile-only {
+    display: grid;
   }
 
   /* Was targeting .listing-hero-stat-label/-value (no "-chip-") — those
@@ -6547,45 +6563,122 @@ a.developer-profile-press-title {
   text-decoration: none;
 }
 
+/* Site footer (Footer in components.tsx). Later in the file than the
+   minified .site-footer/.copyright rules near the top, so these win: the
+   footer content sits in the sitewide 1290px container (.footer-inner) —
+   same left edge as the header and breadcrumb — instead of the old
+   full-bleed padding formula. Brand block (text wordmark, tagline, contact,
+   CTA) on the left, four link columns on the right, thin legal bar below. */
 .site-footer {
   display: block;
+  min-height: 0;
+  padding: 60px 0 28px;
+  background: #1c1c20;
+  color: #fff;
+}
+
+.footer-inner {
+  width: min(1290px, calc(100% - 48px));
+  margin: 0 auto;
 }
 
 .footer-top {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 40px;
+  display: grid;
+  grid-template-columns: minmax(260px, 1.1fr) 2fr;
+  gap: 48px 72px;
+  align-items: start;
 }
 
 .footer-brand {
-  max-width: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  max-width: 380px;
+}
+
+.footer-wordmark {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  font-family: var(--font-ref-sans);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: #fff;
+  text-decoration: none;
+}
+
+.footer-wordmark:hover {
+  text-decoration: none;
+}
+
+.footer-tagline {
+  margin: 4px 0 0;
+  font-size: 14px;
+  line-height: 1.65;
+  color: #b4b4bb;
+}
+
+.footer-contact {
+  font-size: 14px;
+  color: #e4e4e8;
+  text-decoration: none;
+}
+
+.footer-contact:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.footer-cta {
+  margin-top: 6px;
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  text-decoration: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.footer-cta:hover {
+  background: #f47b36;
+  border-color: #f47b36;
+  text-decoration: none;
 }
 
 .footer-columns {
   display: grid;
-  grid-template-columns: repeat(4, minmax(140px, 1fr));
-  gap: 32px 48px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 32px 40px;
 }
 
 .footer-column {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 11px;
 }
 
 .footer-column-title {
-  margin: 0 0 4px;
-  font-size: 12px;
+  margin: 0 0 6px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #8a8a90;
+  color: #8f8f96;
 }
 
 .footer-column a {
   font-size: 14px;
+  line-height: 1.4;
   color: #d8d8dc;
+  text-decoration: none;
 }
 
 .footer-column a:hover {
@@ -6594,17 +6687,25 @@ a.developer-profile-press-title {
 }
 
 .footer-bottom {
-  margin-top: 40px;
+  margin-top: 48px;
   padding-top: 20px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
+}
+
+.site-footer .copyright {
+  margin: 0;
+  font-size: 12px;
+  color: #8f8f96;
 }
 
 .footer-admin-link {
   font-size: 12px;
-  color: #8a8a90;
+  color: #6f6f76;
+  text-decoration: none;
 }
 
 .footer-admin-link:hover {
@@ -6612,9 +6713,28 @@ a.developer-profile-press-title {
   text-decoration: underline;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 980px) {
+  .footer-top {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+
   .footer-columns {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px 24px;
+  }
+}
+
+@media (max-width: 760px) {
+  .site-footer {
+    padding: 44px 0 24px;
+  }
+
+  .footer-bottom {
+    margin-top: 36px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
   }
 }
 

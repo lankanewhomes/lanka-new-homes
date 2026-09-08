@@ -6,8 +6,10 @@ import { authenticatedCreate, publicRead } from './access'
 // tours, logos...) — those fields stay plain URL text fields (matching what
 // the existing Supabase-reading frontend already expects), so uploading
 // here just gives you a URL to paste into one of them, same as any other
-// image host. See src/collections/storage/supabase-storage-adapter.ts for
-// where the files actually land (Supabase Storage's "media" bucket).
+// image host. Files land in Cloudflare R2 (src/collections/storage/
+// r2-storage.ts) when the R2_* env vars are set, otherwise in Supabase
+// Storage's "media" bucket (supabase-storage-adapter.ts) — see
+// payload.config.ts.
 export const Media: CollectionConfig = {
   slug: 'media',
   admin: { useAsTitle: 'filename' },

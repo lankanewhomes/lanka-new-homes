@@ -96,6 +96,19 @@ export const PARKING_TYPE_OPTIONS = [
   'Indoor', 'Outdoor', 'Covered', 'Underground', 'Garage', 'Driveway', 'Street', 'Assigned', 'Visitor', 'Private (Dedicated)',
 ]
 
+// Per-floor-plan descriptors (Projects.ts floorPlans array, added
+// 2026-09-08). Every one is selectWithOther so a developer's own wording
+// still fits when the preset list doesn't.
+export const FLOOR_PLAN_VIEW_OPTIONS = [
+  'Sea View', 'Ocean View', 'City View', 'Skyline View', 'Garden View', 'Pool View', 'Lake View', 'Mountain View', 'Golf View', 'Courtyard View',
+]
+export const ASPECT_OPTIONS = ['North', 'North-East', 'East', 'South-East', 'South', 'South-West', 'West', 'North-West']
+export const HANDOVER_CONDITION_OPTIONS = ['Bare Shell', 'Semi-Finished', 'Fully Fitted', 'Fully Furnished']
+export const FURNISHING_OPTIONS = ['Unfurnished', 'Semi-Furnished', 'Fully Furnished']
+export const AC_PROVISION_OPTIONS = ['Provision Only', 'Split Units Included', 'Central AC', 'None']
+export const HOT_WATER_OPTIONS = ['Solar', 'Electric Geyser', 'Gas', 'Central', 'None']
+export const YES_NO_OPTIONS = ['Yes', 'No']
+
 export const SECURITY_OPTIONS = [
   '24/7 Security Guard', 'CCTV Surveillance', 'Gated Entry', 'Access Control System',
   'Intercom / Video Phone', 'Alarm System', 'Perimeter Fencing', 'Security Patrol',

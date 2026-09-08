@@ -84,9 +84,16 @@ create index if not exists idx_hero_ads_developer_slug on hero_ads (developer_sl
 -- collection (syncReviewToSupabase) — same shape/id convention as hero_ads.
 -- Reviewer email is intentionally never synced here; it stays in Payload
 -- only as moderation contact info.
+-- A review targets any profile page: entity_type is one of developer /
+-- marketing-company / sales-company / architect / interior-designer /
+-- construction-company and entity_slug is the profile's slug in its own
+-- directory. developer_slug is kept (nullable) for developer reviews and
+-- older readers. See supabase/migrations/20260908090000_company_reviews_and_follows.sql.
 create table if not exists reviews (
   id text primary key,
-  developer_slug text not null,
+  developer_slug text,
+  entity_type text not null default 'developer',
+  entity_slug text,
   project_slug text,
   status text,
   data jsonb not null default '{}'::jsonb,
@@ -96,6 +103,7 @@ create table if not exists reviews (
 
 create index if not exists idx_reviews_status on reviews (status);
 create index if not exists idx_reviews_developer_slug on reviews (developer_slug);
+create index if not exists idx_reviews_entity on reviews (entity_type, entity_slug);
 
 -- Construction companies, and the lighter-weight partner directories linked
 -- from a project's "Connected Pages" section (marketing companies, sales
@@ -505,3 +513,25 @@ drop policy if exists "saved_developers: insert own" on saved_developers;
 create policy "saved_developers: insert own" on saved_developers for insert with check (auth.uid() = user_id);
 drop policy if exists "saved_developers: delete own" on saved_developers;
 create policy "saved_developers: delete own" on saved_developers for delete using (auth.uid() = user_id);
+
+-- Follows for the non-developer profile pages (marketing/sales companies,
+-- architects, interior designers, construction companies) — keyed by
+-- (entity_type, entity_slug) rather than a foreign key, since the slug
+-- lives in one of five tables. Developers stay in saved_developers above.
+create table if not exists saved_companies (
+  id bigint generated always as identity primary key,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  entity_type text not null,
+  entity_slug text not null,
+  created_at timestamptz not null default now(),
+  unique (user_id, entity_type, entity_slug)
+);
+create index if not exists idx_saved_companies_user on saved_companies (user_id, created_at);
+
+alter table saved_companies enable row level security;
+drop policy if exists "saved_companies: read own" on saved_companies;
+create policy "saved_companies: read own" on saved_companies for select using (auth.uid() = user_id);
+drop policy if exists "saved_companies: insert own" on saved_companies;
+create policy "saved_companies: insert own" on saved_companies for insert with check (auth.uid() = user_id);
+drop policy if exists "saved_companies: delete own" on saved_companies;
+create policy "saved_companies: delete own" on saved_companies for delete using (auth.uid() = user_id);

@@ -140,7 +140,7 @@ export async function sendWeeklyAnalyticsDigests(payload: Payload, period: Diges
   let sent = 0;
   let skipped = 0;
   let failed = 0;
-  const serverURL = payload.config.serverURL || "https://lankanewhomes.com";
+  const serverURL = payload.config.serverURL || "https://www.lankanewhomes.com";
 
   for (const developer of developersRes.docs) {
     const user = typeof developer.user === "object" ? developer.user : null;

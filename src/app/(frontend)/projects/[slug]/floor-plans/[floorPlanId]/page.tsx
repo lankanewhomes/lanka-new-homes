@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { projects } from "@/data/projects";
-import { getProjectBySlug } from "@/lib/project-store";
+import { getAllProjects, getProjectBySlug } from "@/lib/project-store";
 import { getDeveloperBySlug } from "@/lib/developer-store";
+import { pickSimilarListings } from "@/lib/similar-listings";
+import { SimilarListingsSection } from "@/components/marketplace/similar-listings";
+import { FloorPlanFactSheet, FloorPlanStatsChips } from "@/components/marketplace/floor-plan-facts";
 import {
   AmenitiesShowcaseSection,
   KeyFeaturesSection,
@@ -10,8 +13,6 @@ import {
   PricingInformationLayout,
   ProjectDescriptionSection,
   ProjectHero,
-  ProjectNarrativeDetails,
-  ProjectStatsChips,
   StatsContactCard,
 } from "@/components/marketplace/components";
 
@@ -59,7 +60,8 @@ export default async function FloorPlanDetailPage({ params }: FloorPlanPageProps
 
   if (!project || !floorPlan) return notFound();
 
-  const developer = await getDeveloperBySlug(project.developerSlug);
+  const [developer, allProjects] = await Promise.all([getDeveloperBySlug(project.developerSlug), getAllProjects()]);
+  const similarListings = pickSimilarListings(project, allProjects, 4);
 
   return (
     <div className="space-y-8">
@@ -75,10 +77,10 @@ export default async function FloorPlanDetailPage({ params }: FloorPlanPageProps
       />
 
       <div className="project-page-content">
-        <ProjectStatsChips project={project} floorPlan={floorPlan} />
+        <FloorPlanStatsChips floorPlan={floorPlan} />
         <ProjectDescriptionSection project={project} floorPlan={floorPlan} />
 
-        <ProjectNarrativeDetails project={project} />
+        <FloorPlanFactSheet floorPlan={floorPlan} />
 
         <section id="pricing" className="space-y-3">
           <PricingInformationLayout project={project} />
@@ -91,6 +93,8 @@ export default async function FloorPlanDetailPage({ params }: FloorPlanPageProps
         <PlansAndHomesSection project={project} title="Other floor plans" excludeFloorPlanId={floorPlan.id} />
 
         <StatsContactCard project={project} developer={developer} />
+
+        <SimilarListingsSection listings={similarListings} />
       </div>
     </div>
   );

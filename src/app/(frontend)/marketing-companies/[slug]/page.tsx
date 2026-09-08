@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getAllMarketingCompanies, getMarketingCompanyBySlug } from "@/lib/marketing-company-store";
 import { getAllProjects } from "@/lib/project-store";
+import { getApprovedReviewsByEntity } from "@/lib/review-store";
 import { CompanyProfileDetailView } from "@/components/marketplace/company-profile-views";
 
 // Regenerate at most once a minute so admin edits (e.g. status changes)
@@ -36,10 +37,11 @@ export default async function MarketingCompanyPage({ params }: MarketingCompanyP
 
   const allProjects = await getAllProjects();
   const projects = allProjects.filter((project) => project.marketingCompanySlug === slug);
+  const reviews = await getApprovedReviewsByEntity("marketing-company", slug);
 
   return (
     <div className="developer-page">
-      <CompanyProfileDetailView company={company} entityLabel="Marketing Company" projects={projects} />
+      <CompanyProfileDetailView company={company} entityType="marketing-company" entityLabel="Marketing Company" projects={projects} reviews={reviews} />
     </div>
   );
 }

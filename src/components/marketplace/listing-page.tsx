@@ -27,13 +27,30 @@ const SORT_OPTIONS = [
 type SortValue = typeof SORT_OPTIONS[number]["value"];
 type ViewMode = "split" | "list" | "map";
 
+const MOVE_IN_FILTER_LABEL = "Move-in";
+const MOVE_IN_NOW_OPTION = "Move in now";
+
 const FILTER_GROUPS = [
   { label: "For sale", options: ["For sale", "Any"] },
   { label: "Home type", options: ["Any", "Condominium", "Apartments", "Villas", "Townhouse", "Housing"] },
   { label: "Any price", options: ["Any price", "Under Rs. 30M", "Rs. 30M - 60M", "Rs. 60M+"] },
   { label: "0+ beds", options: ["0+ beds", "1+", "2+", "3+", "4+"] },
-  { label: "Construction status", options: ["Any", "Now Selling", "Coming Soon", "Under Construction", "Nearly Complete"] },
+  { label: "Construction status", options: ["Any", "Now Selling", "Coming Soon", "Under Construction", "Nearly Complete", "Completed"] },
+  // Year options are filled in per page from the listings themselves (see
+  // resolvedFilterGroups in ListingPageBody): only this year onward, because
+  // a buyer can't plan around a move-in date that has already passed —
+  // "Move in 2022" is noise, not a filter (rule set 2026-09-07).
+  { label: MOVE_IN_FILTER_LABEL, options: ["Any", MOVE_IN_NOW_OPTION] },
 ];
+
+function upcomingMoveInYears(projects: Project[]): string[] {
+  const currentYear = new Date().getFullYear();
+  const years = new Set<number>();
+  for (const project of projects) {
+    if (project.completionYear >= currentYear) years.add(project.completionYear);
+  }
+  return Array.from(years).sort((a, b) => a - b).map(String);
+}
 
 function matchesFilters(project: Project, selections: Record<string, string>): boolean {
   for (const [label, value] of Object.entries(selections)) {
@@ -65,6 +82,14 @@ function matchesFilters(project: Project, selections: Record<string, string>): b
       case "Status":
         if (value !== "Any" && project.status !== value) return false;
         break;
+      case MOVE_IN_FILTER_LABEL:
+        if (value === "Any") break;
+        if (value === MOVE_IN_NOW_OPTION) {
+          if (!project.isMoveInNow) return false;
+          break;
+        }
+        if (String(project.completionYear) !== value) return false;
+        break;
       case "Any size": {
         if (value === "Any size") break;
         const perches = parseFloat(project.floorAreaRange);
@@ -83,7 +108,10 @@ function matchesFilters(project: Project, selections: Record<string, string>): b
 function statusPillLabel(project: Project) {
   if (project.status === "Coming Soon" || project.status === "Launching Soon") return "Preconstruction";
   if (project.isMoveInNow) return "Move In Now";
-  if (project.completionYear) return `Move In ${project.completionYear}`;
+  // Only a move-in date a buyer can still plan around (this year onward) —
+  // "Move In 2022" on a finished building says nothing useful, so those fall
+  // through to the plain status. Mirrors isUpcomingMoveIn in components.tsx.
+  if (project.completionYear >= new Date().getFullYear()) return `Move In ${project.completionYear}`;
   return project.status;
 }
 
@@ -244,6 +272,18 @@ export function ListingPageBody({
     return ["All of Sri Lanka", ...cities.sort()];
   }, [projects]);
 
+  // The Move-in group's year options come from the listings on this page
+  // (upcoming years only); every other group is used as given. Pages that
+  // pass their own groups without a Move-in entry (land) are unaffected.
+  const resolvedFilterGroups = useMemo(
+    () => filterGroups.map((group) => (
+      group.label === MOVE_IN_FILTER_LABEL
+        ? { ...group, options: [...group.options, ...upcomingMoveInYears(projects)] }
+        : group
+    )),
+    [filterGroups, projects],
+  );
+
   const activeSelection = selectedArea;
   const trimmedQuery = searchQuery.trim().toLowerCase();
   const matchingPages = useMemo(() => {
@@ -291,7 +331,7 @@ export function ListingPageBody({
           <p>Filters</p>
           <button type="button" aria-label="Close" onClick={() => setMoreFiltersOpen(false)}><X className="h-4 w-4" /></button>
         </div>
-        {filterGroups.map((group) => (
+        {resolvedFilterGroups.map((group) => (
           <div key={group.label} className="listing-filter-more-group">
             <p className="listing-filter-more-group-label">{group.label}</p>
             <div className="listing-filter-more-options">
@@ -366,7 +406,7 @@ export function ListingPageBody({
             </button>
 
             <div className="listing-filter-pills-center">
-              {filterGroups.map((group) => (
+              {resolvedFilterGroups.map((group) => (
                 <label key={group.label} className="listing-filter-pill">
                   {filterSelections[group.label] && filterSelections[group.label] !== group.options[0] ? filterSelections[group.label] : group.label}
                   <ChevronDown className="h-3 w-3" aria-hidden="true" />

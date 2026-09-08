@@ -60,18 +60,21 @@ type AnyDoc = Record<string, unknown>
 // floorPlans' planType/basement/garage are each selectWithOther pairs (see
 // Projects.ts) — collapse each down to a flat value the frontend's
 // FloorPlan type expects.
+// Every selectWithOther pair on a floor plan collapses to one value.
+const FLOOR_PLAN_SELECT_WITH_OTHER = [
+  'planType', 'basement', 'garage', 'parkingType',
+  'aspect', 'view', 'storage', 'utilityArea', 'maidsRoom', 'pantry',
+  'handoverCondition', 'furnishing', 'acProvision', 'hotWater',
+]
+
 function resolveFloorPlans(raw: unknown): AnyDoc[] {
   if (!Array.isArray(raw)) return []
   return raw.map((plan) => {
     const p = { ...(plan as AnyDoc) }
-    p.planType = resolveOther(p.planType, p.planType_other)
-    p.basement = resolveOther(p.basement, p.basement_other)
-    p.garage = resolveOther(p.garage, p.garage_other)
-    p.parkingType = resolveOther(p.parkingType, p.parkingType_other)
-    delete p.planType_other
-    delete p.basement_other
-    delete p.garage_other
-    delete p.parkingType_other
+    for (const field of FLOOR_PLAN_SELECT_WITH_OTHER) {
+      p[field] = resolveOther(p[field], p[`${field}_other`])
+      delete p[`${field}_other`]
+    }
     return p
   })
 }
@@ -303,14 +306,22 @@ export const syncHeroSlideToSupabase: CollectionAfterChangeHook = async ({ doc, 
 export const syncReviewToSupabase: CollectionAfterChangeHook = async ({ doc, req }) => {
   const d = doc as AnyDoc
   await safeSync(req, `review ${d.id}`, async () => {
-    const [developer, project] = await Promise.all([
+    // Developer reviews point at `developer`; every other profile type uses
+    // the polymorphic `company` relationship ({ relationTo, value }).
+    const entityType = (d.entity_type as string) || 'developer'
+    const companyRef = (d.company ?? null) as { relationTo?: string; value?: unknown } | null
+    const [developer, company, project] = await Promise.all([
       resolveSlugName(req, 'developers', d.developer),
+      entityType !== 'developer' && companyRef?.relationTo ? resolveSlugName(req, companyRef.relationTo, companyRef.value) : Promise.resolve({} as { slug?: string }),
       resolveSlugName(req, 'projects', d.project),
     ])
-    if (!developer.slug) return
+    const entitySlug = entityType === 'developer' ? developer.slug : company.slug
+    if (!entitySlug) return
 
     const review: AnyDoc = {
       id: `payload-${d.id}`,
+      entityType,
+      entitySlug,
       developerSlug: developer.slug,
       projectSlug: project.slug,
       rating: d.rating,
@@ -322,7 +333,9 @@ export const syncReviewToSupabase: CollectionAfterChangeHook = async ({ doc, req
 
     const row = {
       id: review.id,
-      developer_slug: review.developerSlug,
+      developer_slug: review.developerSlug ?? null,
+      entity_type: entityType,
+      entity_slug: entitySlug,
       project_slug: review.projectSlug ?? null,
       status: review.status,
       data: review,

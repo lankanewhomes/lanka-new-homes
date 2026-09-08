@@ -57,14 +57,39 @@ export type FloorPlan = {
   planType?: string;
   bedrooms: number;
   bathrooms: number;
+  ensuiteBaths?: number;
+  powderRooms?: number;
   floorAreaSqFt: number;
   interiorSizeSqFt?: number;
   balconySizeSqFt?: number;
+  terraceSqFt?: number;
+  /** As published, e.g. "3.0 m". */
+  ceilingHeight?: string;
+  /** Which floors this plan sits on, e.g. "5–12". */
+  floorRange?: string;
+  aspect?: string;
+  view?: string;
+  cornerUnit?: boolean;
   basement?: string;
   garage?: string;
   parkingSpaces?: number;
   parkingType?: string;
   startingPriceLkr: number;
+  /** Developer-published only — never derived from price ÷ size. */
+  pricePerSqFtLkr?: number;
+  maintenancePerMonthLkr?: number;
+  deposit?: string;
+  storage?: string;
+  utilityArea?: string;
+  maidsRoom?: string;
+  pantry?: string;
+  handoverCondition?: string;
+  furnishing?: string;
+  acProvision?: string;
+  hotWater?: string;
+  floorFinish?: string;
+  unitsInPlan?: number;
+  unitsAvailable?: number;
   image: string;
   /** Optional 3D render of the same plan — shown alongside the 2D drawing. */
   image3d?: string;
@@ -468,9 +493,26 @@ export type DeveloperSubscription = {
   createdAt: string;
 };
 
+// Every public profile page that can be reviewed and followed. The value is
+// what `reviews.entity_type` / `saved_companies.entity_type` store; the
+// Payload collection and URL for each live in src/lib/profile-entities.ts.
+export type ProfileEntityType =
+  | "developer"
+  | "marketing-company"
+  | "sales-company"
+  | "architect"
+  | "interior-designer"
+  | "construction-company";
+
 export type Review = {
   id: string;
-  developerSlug: string;
+  /** Which kind of profile was reviewed. Rows written before 2026-09-08 have
+   * no value and are developer reviews. */
+  entityType?: ProfileEntityType;
+  /** Slug of the reviewed profile within its own directory. */
+  entitySlug?: string;
+  /** Kept for developer reviews (and older rows); same as entitySlug there. */
+  developerSlug?: string;
   projectSlug?: string;
   rating: number;
   comment: string;

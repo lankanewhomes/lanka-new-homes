@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { getAllLands, getLandBySlug } from "@/lib/land-store";
 import { landToProjectShape } from "@/lib/land-to-project";
 import { getDeveloperBySlug } from "@/lib/developer-store";
+import { pickSimilarListings } from "@/lib/similar-listings";
+import { SimilarListingsSection } from "@/components/marketplace/similar-listings";
 import {
   AmenitiesShowcaseSection,
   KeyFeaturesSection,
@@ -65,6 +67,9 @@ export default async function LandPlotDetailPage({ params }: PlotPageProps) {
     developer = await getDeveloperBySlug(land.sellerSlug);
   }
 
+  const otherLands = (await getAllLands()).filter((item) => item.slug !== land.slug).map(landToProjectShape);
+  const similarListings = pickSimilarListings(project, otherLands, 4);
+
   return (
     <div className="space-y-8">
       <ProjectHero
@@ -97,6 +102,8 @@ export default async function LandPlotDetailPage({ params }: PlotPageProps) {
         <PlansAndHomesSection project={project} title="Other plots" excludeFloorPlanId={plot.id} showQuickMoveIns={false} showBedBath={false} planHrefBase={`/land/${land.slug}/plots`} />
 
         <StatsContactCard project={project} developer={developer} requestInfoVariant="inquiry" />
+
+        <SimilarListingsSection listings={similarListings} basePath="/land" />
       </div>
     </div>
   );
