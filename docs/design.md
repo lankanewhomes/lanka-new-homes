@@ -534,6 +534,21 @@ Closed). The `/cms` Analytics dashboard shows the pipeline counts, leads
 awaiting reply, average and median first response and the share answered
 within an hour (`src/lib/lead-pipeline.ts`, added to `/analytics-summary`).
 
+**"Responds within 1 hour" badge** (`src/lib/response-badge.ts`). Earned,
+never entered: over the last 90 days, every lead on the developer's
+projects that is at least an hour old is judged; the badge holds when at
+least 5 such leads exist and 80%+ were answered (moved off New) within 60
+minutes. Unanswered leads count against it once they pass the hour, so
+ignoring inquiries loses it. Stored on Developers → `response_stats`
+(read-only, admin-only update; mirrored to Supabase as
+`respondsWithinHour` / `responseStats`), recomputed when a lead is first
+answered (`stampFirstResponse`) and weekly by the analytics-digest cron.
+Shown as an emerald pill (`.badge-responder`, kind `responder` in the
+hero's `extraBadges`) on project / floor-plan / land heroes, on the
+builder card, and on the developer profile header; the Analytics
+dashboard shows the standing ("3 of 5 leads judged · 100% within the
+hour"). Thresholds are the constants at the top of that file.
+
 ## Listing completeness to-do
 
 `src/lib/completeness.ts` is the single checklist (28 checks, equal

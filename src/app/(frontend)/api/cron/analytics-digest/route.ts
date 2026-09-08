@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { sendWeeklyAnalyticsDigests } from "@/lib/analytics-digest";
+import { recomputeAllDeveloperResponseStats } from "@/lib/response-badge";
 
 // Triggered by Vercel Cron (see vercel.json — weekly, Mondays 08:00 UTC).
 // Vercel signs its own cron requests with `Authorization: Bearer $CRON_SECRET`
@@ -18,5 +19,11 @@ export async function GET(request: Request) {
   const payload = await getPayload({ config: payloadConfig });
 
   const result = await sendWeeklyAnalyticsDigests(payload);
-  return NextResponse.json(result);
+  // Same weekly tick re-judges every developer's "Responds within 1 hour"
+  // badge, so it decays as the 90-day window slides and unanswered leads age.
+  const responseBadges = await recomputeAllDeveloperResponseStats(payload).catch((error) => {
+    console.error("Response badge sweep failed", error);
+    return null;
+  });
+  return NextResponse.json({ ...result, responseBadges });
 }

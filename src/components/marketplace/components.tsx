@@ -465,7 +465,7 @@ export function ProjectHero({
   // Plain strings render with the generic .badge-extra color; pass an
   // object with `kind` to get a per-category color (availability /
   // marketing / location) so the badge groups are visually distinct.
-  extraBadges?: (string | { label: string; kind?: "availability" | "marketing" | "location" })[];
+  extraBadges?: (string | { label: string; kind?: "availability" | "marketing" | "location" | "responder" })[];
   /** Land-only media that doesn't fit the Project shape: multiple road map
    * images, multiple block plan images, and a list of video links (rather
    * than the single gallery-label-matched road map image / single embed
@@ -1285,7 +1285,7 @@ export function ProjectHero({
           {extraBadges.map((badge) => {
             const label = typeof badge === "string" ? badge : badge.label;
             const kind = typeof badge === "string" ? undefined : badge.kind;
-            return <span key={`${kind ?? "extra"}-${label}`} className={`listing-badge-pill ${kind ? `badge-${kind}` : "badge-extra"}`}>{label}</span>;
+            return <span key={`${kind ?? "extra"}-${label}`} className={`listing-badge-pill ${kind ? `badge-${kind}` : "badge-extra"}`}>{t(label)}</span>;
           })}
         </div>
       ) : null}
@@ -1550,6 +1550,7 @@ export function ProjectStatsChips({ project, floorPlan, areaUnit = "SqFt" }: { p
 }
 
 export function StatsContactCard({ project, developer, requestInfoVariant = "standard" }: { project: Project; developer?: Developer; requestInfoVariant?: "standard" | "inquiry" }) {
+  const { t } = useListingT();
   const [requestInfoOpen, setRequestInfoOpen] = useState(false);
   const name = developer?.name ?? project.developerName ?? project.contact.name;
   const email = hasDisplayValue(project.contact?.email) ? project.contact.email : developer?.email;
@@ -1572,6 +1573,11 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
         <Link href={developer ? `/developers/${developer.slug}` : `/projects/${project.slug}`} className="stats-contact-card-name">
           {name}
         </Link>
+        {developer?.respondsWithinHour ? (
+          <span className="listing-badge-pill badge-responder stats-contact-card-badge" title="Answered at least 80% of inquiries within an hour over the last 90 days">
+            <Zap className="h-3 w-3" aria-hidden="true" /> {t("Responds within 1 hour")}
+          </span>
+        ) : null}
 
         {hasDisplayValue(email) ? (
           <a href={`mailto:${email}`} className="stats-contact-card-row">

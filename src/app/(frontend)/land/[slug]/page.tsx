@@ -122,7 +122,10 @@ export default async function LandDetailPage({ params }: LandPageProps) {
         backHref="/land"
         backLabel="Land for Sale"
         statusLabelOverride={land.status}
-        extraBadges={land.badges ?? []}
+        extraBadges={[
+          ...(developer?.respondsWithinHour ? [{ label: "Responds within 1 hour", kind: "responder" as const }] : []),
+          ...(land.badges ?? []),
+        ]}
         plansHomesNavLabel="Plots"
         amenitiesNavLabel="Facilities"
         roadMapImages={land.roadMapImages ?? []}

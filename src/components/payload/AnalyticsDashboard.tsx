@@ -238,8 +238,18 @@ export function AnalyticsDashboard() {
                   </div>
                 ))}
               </div>
+              <div style={{ marginTop: 10, padding: "10px 12px", borderRadius: 6, border: "1px solid var(--theme-elevation-150)", background: "var(--theme-elevation-0)", fontSize: 13, display: "flex", gap: 10, alignItems: "baseline", flexWrap: "wrap" }}>
+                <strong style={{ color: data.leads.badge.earned ? "var(--theme-success-500)" : "inherit" }}>
+                  {data.leads.badge.earned ? "✓ “Responds within 1 hour” badge earned" : "“Responds within 1 hour” badge: not yet"}
+                </strong>
+                <span style={{ opacity: 0.7 }}>
+                  {data.leads.badge.sampleSize} of {data.leads.badge.minSample} leads judged in the last {data.leads.badge.windowDays} days
+                  {data.leads.badge.withinHourRatePercent !== null ? ` · ${data.leads.badge.withinHourRatePercent}% answered within the hour (need ${data.leads.badge.minRatePercent}%)` : ""}
+                  . Shows on your profile and every listing while it holds.
+                </span>
+              </div>
               <p style={{ margin: "8px 0 0", fontSize: 12, opacity: 0.65 }}>
-                Response time is measured from when a lead arrives to the first time you move it off &ldquo;New&rdquo; in <Link href="/cms/collections/leads">Leads</Link>. Fast, consistent replies will earn a &ldquo;responds within 1 hour&rdquo; badge on your listings.
+                Response time is measured from when a lead arrives to the first time you move it off &ldquo;New&rdquo; in <Link href="/cms/collections/leads">Leads</Link>. A lead left unanswered for over an hour counts against the badge.
               </p>
             </div>
           ) : null}

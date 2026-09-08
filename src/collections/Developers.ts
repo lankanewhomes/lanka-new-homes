@@ -105,6 +105,25 @@ export const Developers: CollectionConfig = {
       ],
     },
     {
+      // Written only by src/lib/response-badge.ts (recomputed when a lead is
+      // first answered and weekly) — never by hand, that's the point of it.
+      name: 'response_stats',
+      type: 'group',
+      label: 'Response time (auto)',
+      access: { update: adminOnlyField },
+      admin: {
+        description:
+          'Earned, not entered: over the last 90 days, at least 5 leads old enough to judge and 80% of them answered (moved off "New") within an hour. Shows as a "Responds within 1 hour" badge on the profile and every listing.',
+      },
+      fields: [
+        { name: 'responds_within_hour', type: 'checkbox', label: 'Responds within 1 hour badge', defaultValue: false, admin: { readOnly: true } },
+        { name: 'within_hour_rate', type: 'number', label: 'Answered within 1 hour (%)', admin: { readOnly: true } },
+        { name: 'median_minutes', type: 'number', label: 'Median first response (minutes)', admin: { readOnly: true } },
+        { name: 'sample_size', type: 'number', label: 'Leads judged (last 90 days)', admin: { readOnly: true } },
+        { name: 'computed_at', type: 'date', label: 'Last computed', admin: { readOnly: true, date: { pickerAppearance: 'dayAndTime' } } },
+      ],
+    },
+    {
       name: 'user',
       type: 'relationship',
       relationTo: 'users',

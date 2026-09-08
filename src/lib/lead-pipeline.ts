@@ -1,5 +1,6 @@
 import type { Payload, Where } from 'payload'
 import { LEAD_STATUS_OPTIONS } from '@/collections/Leads'
+import { computeResponseStats, type ResponseStats } from '@/lib/response-badge'
 
 // Lead pipeline + response-time summary for the /cms Analytics dashboard
 // (and, later, the "responds within 1 hour" developer badge). All-time,
@@ -15,6 +16,8 @@ export type LeadPipelineSummary = {
   /** Share of responded leads answered within an hour, 0–100; null when none. */
   respondedWithinHourPercent: number | null
   respondedCount: number
+  /** "Responds within 1 hour" standing over the badge window (src/lib/response-badge.ts). */
+  badge: ResponseStats
 }
 
 export async function buildLeadPipelineSummary(payload: Payload, projectIds?: (string | number)[]): Promise<LeadPipelineSummary> {
@@ -44,5 +47,6 @@ export async function buildLeadPipelineSummary(payload: Payload, projectIds?: (s
     medianResponseMinutes: median,
     respondedWithinHourPercent: withinHour,
     respondedCount,
+    badge: computeResponseStats(docs),
   }
 }

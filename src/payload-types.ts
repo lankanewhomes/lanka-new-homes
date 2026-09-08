@@ -268,6 +268,16 @@ export interface Developer {
     whatsapp?: string | null;
   };
   /**
+   * Earned, not entered: over the last 90 days, at least 5 leads old enough to judge and 80% of them answered (moved off "New") within an hour. Shows as a "Responds within 1 hour" badge on the profile and every listing.
+   */
+  response_stats?: {
+    responds_within_hour?: boolean | null;
+    within_hour_rate?: number | null;
+    median_minutes?: number | null;
+    sample_size?: number | null;
+    computed_at?: string | null;
+  };
+  /**
    * The developer-role account that manages this company profile. Leave blank when pre-building a profile before the developer has an account — if they later sign up with this Contact Email, they auto-claim it (and everything created under it, including projects); otherwise set this manually once they exist.
    */
   user?: (number | null) | User;
@@ -6965,6 +6975,15 @@ export interface DevelopersSelect<T extends boolean = true> {
         enabled?: T;
         email?: T;
         whatsapp?: T;
+      };
+  response_stats?:
+    | T
+    | {
+        responds_within_hour?: T;
+        within_hour_rate?: T;
+        median_minutes?: T;
+        sample_size?: T;
+        computed_at?: T;
       };
   user?: T;
   projects?: T;

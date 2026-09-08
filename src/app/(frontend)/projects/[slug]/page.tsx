@@ -129,6 +129,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
         backLabel="New Projects"
         whatsappHref={listingWhatsAppHref(developer?.socialLinks?.whatsapp, project.name)}
         extraBadges={[
+          ...(developer?.respondsWithinHour ? [{ label: "Responds within 1 hour", kind: "responder" as const }] : []),
           ...(project.availabilityBadge ? [{ label: project.availabilityBadge, kind: "availability" as const }] : []),
           ...(project.marketingBadges ?? []).map((label) => ({ label, kind: "marketing" as const })),
           ...(project.locationBadges ?? []).map((label) => ({ label, kind: "location" as const })),

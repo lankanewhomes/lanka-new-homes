@@ -1,6 +1,12 @@
 import type { CollectionAfterChangeHook } from 'payload'
 import { supabaseAdmin } from '@/lib/supabase'
 import { sendLeadAlerts } from '@/lib/lead-alerts'
+import { recomputeDeveloperResponseStats } from '@/lib/response-badge'
+
+function relId(value: unknown): string | number | undefined {
+  if (value && typeof value === 'object' && 'id' in value) return (value as { id: string | number }).id
+  return value as string | number | undefined
+}
 
 // Lead status values in Payload → the label stored on the Supabase `leads`
 // row the buyer sees under Account → My enquiries.
@@ -42,6 +48,15 @@ export const stampFirstResponse: CollectionAfterChangeHook = async ({ doc, previ
     context: { skipLeadHooks: true, skipSupabaseSync: true },
     req,
   })
+  // A reply changes the developer's "Responds within 1 hour" standing.
+  try {
+    const projectId = relId(doc.project)
+    const project = projectId ? await req.payload.findByID({ collection: 'projects', id: projectId, depth: 0, overrideAccess: true, req }) : null
+    const developerId = relId(project?.developer)
+    if (developerId) await recomputeDeveloperResponseStats(req.payload, developerId)
+  } catch (error) {
+    req.payload.logger.error({ err: error, leadId: doc.id }, 'Response badge recompute failed')
+  }
   return { ...doc, first_response_at: now.toISOString(), response_minutes }
 }
 

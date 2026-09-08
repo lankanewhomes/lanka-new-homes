@@ -171,6 +171,7 @@ const si: Dictionary = {
   "Sales Center": "විකුණුම් මධ්‍යස්ථානය",
   "Register now": "දැන් ලියාපදිංචි වන්න",
   "Corner unit": "කොන් ඒකකය",
+  "Responds within 1 hour": "පැයක් ඇතුළත පිළිතුරු දෙයි",
 };
 
 const ta: Dictionary = {
@@ -330,6 +331,7 @@ const ta: Dictionary = {
   "Sales Center": "விற்பனை மையம்",
   "Register now": "இப்போது பதிவு செய்யுங்கள்",
   "Corner unit": "மூலை அலகு",
+  "Responds within 1 hour": "ஒரு மணி நேரத்திற்குள் பதிலளிக்கிறார்",
 };
 
 const DICTIONARIES: Record<SiteLanguage, Dictionary> = { en: {}, si, ta };

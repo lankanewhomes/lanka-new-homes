@@ -76,6 +76,7 @@ export default async function FloorPlanDetailPage({ params }: FloorPlanPageProps
         backLabel={project.name}
         plansHomesNavLabel="Other floor plans"
         whatsappHref={listingWhatsAppHref(developer?.socialLinks?.whatsapp, project.name, floorPlan.planName)}
+        extraBadges={developer?.respondsWithinHour ? [{ label: "Responds within 1 hour", kind: "responder" as const }] : []}
       />
 
       <div className="project-page-content">
