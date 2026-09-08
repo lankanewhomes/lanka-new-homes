@@ -1624,9 +1624,22 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
         </div>
       ) : null}
 
-      <button type="button" className="stats-contact-card-btn" onClick={() => setRequestInfoOpen(true)}>
-        Request info
-      </button>
+      <div className="stats-contact-card-ctas">
+        {contactWhatsAppHref ? (
+          <a
+            href={contactWhatsAppHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="stats-contact-card-btn stats-contact-card-btn-whatsapp"
+            onClick={() => logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project.slug, project.name)}
+          >
+            <MessageCircle className="h-4 w-4" aria-hidden="true" /> WhatsApp
+          </a>
+        ) : null}
+        <button type="button" className="stats-contact-card-btn" onClick={() => setRequestInfoOpen(true)}>
+          {t("Request info")}
+        </button>
+      </div>
 
       <RequestInfoDialog open={requestInfoOpen} onClose={() => setRequestInfoOpen(false)} project={project} variant={requestInfoVariant} />
     </div>

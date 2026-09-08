@@ -9411,3 +9411,38 @@ a.developer-profile-press-title {
   font-size: 12px;
   font-weight: 700;
 }
+
+/* Builder card CTAs (2026-09-08): WhatsApp button stacked above Request
+   info at the right end of the card; side by side, full width, on mobile. */
+.stats-contact-card-ctas {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.stats-contact-card-btn-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  background: #25d366;
+  border-color: #25d366;
+  text-decoration: none;
+}
+
+.stats-contact-card-btn-whatsapp:hover {
+  background: #1ebe5a;
+  border-color: #1ebe5a;
+}
+
+@media (max-width: 980px) {
+  /* One column on mobile — WhatsApp above Request info, both full width. */
+  .stats-contact-card-ctas {
+    width: 100%;
+  }
+
+  .stats-contact-card-ctas .stats-contact-card-btn {
+    width: 100%;
+  }
+}
