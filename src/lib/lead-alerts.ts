@@ -167,6 +167,17 @@ export async function sendLeadAlerts(payload: Payload, lead: LeadLike, opts: { r
         from: process.env.EMAIL_FROM,
         subject: `${subjectPrefix}${sourceLabel}: ${planName ? `${planName} · ` : ''}${projectName} — ${buyerName}${buyerPhone ? ` (${buyerPhone})` : ''}`,
         html: renderLeadAlertEmailHTML({ projectName, planName, sourceLabel, buyerName, buyerPhone, buyerEmail, preferredContact: preferred, message, receivedAt, replyLinks, dashboardUrl }),
+        text: [
+          `${sourceLabel}: ${planName ? `${planName} · ` : ''}${projectName}`,
+          '',
+          `Name: ${buyerName}`,
+          buyerPhone ? `Phone: ${buyerPhone}` : null,
+          buyerEmail ? `Email: ${buyerEmail}` : null,
+          preferred ? `Preferred contact: ${preferred}` : null,
+          message ? `Message: ${message}` : null,
+          '',
+          `View in dashboard: ${dashboardUrl}`,
+        ].filter(Boolean).join('\n'),
       })
       outcome.email = 'sent'
     } catch (error) {
@@ -226,6 +237,16 @@ export async function sendLeadAlerts(payload: Payload, lead: LeadLike, opts: { r
           message,
           enquiriesUrl: `${serverURL}/account/enquiries`,
         }),
+        text: [
+          `Hi ${buyerName},`,
+          '',
+          `Your request about ${planName ? `${planName} at ` : ''}${projectName} was sent to ${text(developer.name) || 'the developer'}.`,
+          developerPhone ? `Phone: ${developerPhone}` : null,
+          developerEmail ? `Email: ${developerEmail}` : null,
+          '',
+          `View the project: ${serverURL}/projects/${text(project.slug)}`,
+          `Your enquiries: ${serverURL}/account/enquiries`,
+        ].filter(Boolean).join('\n'),
       })
       outcome.buyer = 'sent'
     } catch (error) {

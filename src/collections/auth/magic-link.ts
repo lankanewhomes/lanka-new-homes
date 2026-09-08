@@ -63,6 +63,7 @@ const requestMagicLink: Endpoint = {
           from: process.env.EMAIL_FROM,
           subject: 'Your LankaNewHomes sign-in link',
           html: `<p>Click below to sign in. This link expires in 15 minutes.</p><p><a href="${link}">${link}</a></p>`,
+          text: `Sign in to LankaNewHomes: ${link}\n\nThis link expires in 15 minutes.`,
         })
       }
     }

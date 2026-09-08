@@ -124,6 +124,7 @@ export async function POST(req: Request) {
               from: process.env.EMAIL_FROM,
               subject: `Your ${projectDoc.name} brochure`,
               html: renderBrochureEmailHTML({ projectName: String(projectDoc.name), brochureUrl: absoluteBrochureUrl }),
+              text: `Here's your brochure for ${projectDoc.name}: ${absoluteBrochureUrl}`,
             })
           }
         }

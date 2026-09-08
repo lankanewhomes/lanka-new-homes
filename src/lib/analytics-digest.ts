@@ -162,6 +162,14 @@ export async function sendWeeklyAnalyticsDigests(payload: Payload, period: Diges
         from: process.env.EMAIL_FROM,
         subject: `LankaNewHomes weekly summary — ${digest.totalViews} views, ${digest.totalInquiries} inquiries`,
         html: digestEmailHtml(digest, period, `${serverURL}/developers/dashboard`),
+        text: [
+          'LankaNewHomes weekly summary',
+          `Views: ${digest.totalViews}`,
+          `Inquiries: ${digest.totalInquiries}`,
+          `Top traffic source: ${digest.topTrafficSource ?? '—'}`,
+          `Lead pipeline: ${digest.leadStatusCounts.new} new, ${digest.leadStatusCounts.contacted} contacted, ${digest.leadStatusCounts.site_visit} site visits, ${digest.leadStatusCounts.closed} closed.`,
+          `Dashboard: ${serverURL}/developers/dashboard`,
+        ].join('\n'),
       });
       sent += 1;
     } catch (error) {
