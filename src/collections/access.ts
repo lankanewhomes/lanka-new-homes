@@ -150,8 +150,15 @@ export function ownDeveloperAccess(relationField: string): Access {
     if (ownedIds.length === 0) return false
 
     // Create: no existing document to scope a Where against yet, so check
-    // the relationship value being submitted directly.
-    if (data) {
+    // the relationship value being submitted directly — but only when one
+    // is actually being submitted. The admin "create" view asks for
+    // permission with an empty `data: {}` before the form exists; treating
+    // that as "developer not owned" sent every developer to an Unauthorized
+    // page instead of the form (found 2026-09-08). With no relation in the
+    // data, fall through to the Where: the real create call carries the
+    // developer id and is checked again here, and the collection's
+    // beforeValidate hook fills it in for developer users who leave it blank.
+    if (data && data[relationField] !== undefined && data[relationField] !== null) {
       const targetId = relatedId(data[relationField])
       return ownedIds.some((id) => String(id) === String(targetId))
     }

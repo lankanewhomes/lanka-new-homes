@@ -475,6 +475,27 @@ false`, so ownership rules still apply. Image-only PDFs (most brochures)
 yield nothing but are stored as the brochure. Route handler has
 `maxDuration = 60`.
 
+## Move-In Year picker (CMS)
+
+`completionYear` on Projects is still a plain number in the database, but
+the admin form renders it with `YearPickerField`
+(`src/components/payload/YearPickerField.tsx`) — Payload's own `DatePicker`
+element in react-datepicker's year-grid mode, so it looks like the
+Sales-started / Construction-started pickers beside it. It stores `2030`,
+not a date, so the Supabase sync, `isUpcomingMoveIn` and the "Move in 2030"
+badge are untouched. The grid pages in blocks of 15 years (2026–2040 first,
+earlier years one "previous" click back); range 2000 to this year + 15.
+Reuse it for any other field that stores a bare year: point
+`admin.components.Field` at it and regenerate the import map
+(`npx tsx scripts/generate-payload-importmap.ts`).
+
+Related fix (2026-09-08): the admin "create" view asks collection `create`
+access for permission with an empty `data: {}`; `ownDeveloperAccess` used to
+read that as "developer not owned" and every developer got an Unauthorized
+page instead of the project form. It now only checks the relation when one
+is actually submitted, and Projects' `beforeValidate` fills `developer` in
+for developer users who leave it blank.
+
 ## Project wizard step isolation (admin, `ProjectWizard`)
 
 `ProjectWizard` (`src/components/dashboard/components.tsx`) shows exactly one

@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { adminOnly, adminOnlyField, getOwnedDeveloperIds, isAdmin, ownDeveloperAccess, publicRead } from './access'
+import { adminOnly, adminOnlyField, getOwnedDeveloperIds, getRole, isAdmin, ownDeveloperAccess, publicRead } from './access'
 import {
   amenitiesField,
   BASEMENT_OPTIONS,
@@ -155,6 +155,17 @@ export const Projects: CollectionConfig = {
     delete: ownDeveloperAccess('developer'),
   },
   hooks: {
+    beforeValidate: [
+      // A developer creating a project from /cms belongs to exactly one
+      // company, so fill `developer` in for them when it's left blank
+      // (pairs with ownDeveloperAccess, which only checks the relation
+      // when one is submitted). Admins choose freely.
+      async ({ data, operation, req }) => {
+        if (operation !== 'create' || !data || data.developer || isAdmin(req) || getRole(req) !== 'developer') return data
+        const [ownedId] = await getOwnedDeveloperIds(req)
+        return ownedId ? { ...data, developer: ownedId } : data
+      },
+    ],
     beforeChange: [scoreProjectBeforeChange],
     afterChange: [syncProjectToSupabase],
   },
@@ -238,7 +249,16 @@ export const Projects: CollectionConfig = {
           label: 'Status & Badges',
           fields: [
             { name: 'status', type: 'select', options: PROJECT_STATUS_OPTIONS, index: true },
-            { name: 'completionYear', type: 'number', label: 'Move-In Year', admin: { description: 'Shown as a "Move in {year}" badge on the listing.' } },
+            {
+              name: 'completionYear',
+              type: 'number',
+              label: 'Move-In Year',
+              admin: {
+                description: 'Shown as a "Move in {year}" badge on the listing while the year is still ahead.',
+                // Year-grid picker instead of a bare number box (YearPickerField).
+                components: { Field: '@/components/payload/YearPickerField#YearPickerField' },
+              },
+            },
             { name: 'featured', type: 'checkbox', defaultValue: false },
             { name: 'isMoveInNow', type: 'checkbox', label: 'Move in now', defaultValue: false },
             { name: 'isDesignBuild', type: 'checkbox', label: 'Design & Build', defaultValue: false, admin: { description: 'This project was delivered under a Design & Build contract model.' } },
