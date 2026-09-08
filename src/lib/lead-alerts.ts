@@ -9,8 +9,18 @@
 // Recipients come from the developer record: Lead alerts → Alert email
 // (fallback: Contact Email, then the linked account's login email) and
 // Lead alerts → Alert WhatsApp number (fallback: Social Links → WhatsApp).
-// Set LEAD_ALERTS_OVERRIDE_TO / LEAD_ALERTS_OVERRIDE_WHATSAPP to route every
-// alert to a test inbox / number instead (staging, dry runs).
+//
+// Test routing — so a trial inquiry can never reach a real developer
+// (resolveLeadAlertRouting): the email is redirected to the test inbox and
+// WhatsApp is skipped when
+//   • this isn't the production deployment (local dev, Vercel preview;
+//     VERCEL_ENV !== 'production', unless LEAD_ALERTS_LIVE=true),
+//   • the admin switch Lead alert settings → Mode is "Test",
+//   • the lead's email belongs to an admin account, or is on a known test
+//     domain (resend.dev, example.com, …),
+//   • LEAD_ALERTS_OVERRIDE_TO is set (goes there instead; overrides all).
+// The test inbox is Lead alert settings → Test inbox, else
+// LEAD_ALERTS_TEST_INBOX, else delivered@resend.dev (accepts + discards).
 
 import type { Payload } from 'payload'
 import { renderLeadAlertEmailHTML } from '@/lib/lead-alert-email'
@@ -36,7 +46,40 @@ export type LeadAlertOutcome = {
   email: 'sent' | 'skipped' | 'failed'
   whatsapp: 'sent' | 'skipped' | 'failed'
   to: { email: string | null; whatsapp: string | null }
+  /** 'live' = the developer; otherwise why the alert was redirected. */
+  routing: LeadAlertRouting['reason']
   detail?: string
+}
+
+export type LeadAlertRouting =
+  | { mode: 'live'; reason: 'live' }
+  | { mode: 'test'; reason: 'non-production' | 'settings-test-mode' | 'test-email' | 'admin-email' | 'env-override'; testInbox: string }
+
+const TEST_EMAIL_DOMAINS = new Set(['resend.dev', 'example.com', 'example.org', 'example.net', 'test.com', 'mailinator.com', 'localhost'])
+const DEFAULT_TEST_INBOX = 'delivered@resend.dev'
+
+function isProductionDeployment(): boolean {
+  if (process.env.LEAD_ALERTS_LIVE === 'true') return true
+  return process.env.VERCEL_ENV === 'production'
+}
+
+/** Decide whether this lead's alert may reach the real developer. */
+export async function resolveLeadAlertRouting(payload: Payload, buyerEmail: string | null): Promise<LeadAlertRouting> {
+  const settings = (await payload.findGlobal({ slug: 'lead-alert-settings', depth: 0, overrideAccess: true }).catch(() => null)) as AnyDoc | null
+  const testInbox = process.env.LEAD_ALERTS_OVERRIDE_TO || text(settings?.testInbox) || process.env.LEAD_ALERTS_TEST_INBOX || DEFAULT_TEST_INBOX
+
+  if (process.env.LEAD_ALERTS_OVERRIDE_TO) return { mode: 'test', reason: 'env-override', testInbox }
+  if (!isProductionDeployment()) return { mode: 'test', reason: 'non-production', testInbox }
+  if (settings?.mode === 'test') return { mode: 'test', reason: 'settings-test-mode', testInbox }
+
+  const email = (buyerEmail ?? '').trim().toLowerCase()
+  if (email) {
+    const domain = email.split('@')[1] ?? ''
+    if (TEST_EMAIL_DOMAINS.has(domain)) return { mode: 'test', reason: 'test-email', testInbox }
+    const admins = await payload.find({ collection: 'users', where: { and: [{ email: { equals: email } }, { role: { equals: 'admin' } }] }, limit: 1, depth: 0, overrideAccess: true })
+    if (admins.totalDocs > 0) return { mode: 'test', reason: 'admin-email', testInbox }
+  }
+  return { mode: 'live', reason: 'live' }
 }
 
 const SOURCE_LABEL: Record<string, string> = {
@@ -53,7 +96,8 @@ function relId(value: unknown): string | number | undefined {
 const text = (value: unknown): string => (typeof value === 'string' ? value.trim() : '')
 
 export async function sendLeadAlerts(payload: Payload, lead: LeadLike): Promise<LeadAlertOutcome> {
-  const outcome: LeadAlertOutcome = { email: 'skipped', whatsapp: 'skipped', to: { email: null, whatsapp: null } }
+  const routing = await resolveLeadAlertRouting(payload, text(lead.email) || null)
+  const outcome: LeadAlertOutcome = { email: 'skipped', whatsapp: 'skipped', to: { email: null, whatsapp: null }, routing: routing.reason }
 
   const projectId = relId(lead.project)
   if (!projectId) return { ...outcome, detail: 'lead has no project' }
@@ -78,9 +122,14 @@ export async function sendLeadAlerts(payload: Payload, lead: LeadLike): Promise<
   }
   const social = (developer.socialLinks as AnyDoc | undefined) ?? {}
   let alertWhatsApp = toWhatsAppNumber(text(alerts.whatsapp) || text(social.whatsapp))
-  if (process.env.LEAD_ALERTS_OVERRIDE_TO) alertEmail = process.env.LEAD_ALERTS_OVERRIDE_TO
-  if (process.env.LEAD_ALERTS_OVERRIDE_WHATSAPP) alertWhatsApp = toWhatsAppNumber(process.env.LEAD_ALERTS_OVERRIDE_WHATSAPP)
+  // Test routing: the developer's address is replaced by the test inbox and
+  // WhatsApp is dropped (a WhatsApp override number is the one exception).
+  if (routing.mode === 'test') {
+    alertEmail = routing.testInbox
+    alertWhatsApp = process.env.LEAD_ALERTS_OVERRIDE_WHATSAPP ? toWhatsAppNumber(process.env.LEAD_ALERTS_OVERRIDE_WHATSAPP) : null
+  }
   outcome.to = { email: alertEmail || null, whatsapp: alertWhatsApp }
+  const subjectPrefix = routing.mode === 'test' ? `[TEST — not sent to ${text(developer.name) || 'the developer'}] ` : ''
 
   // Content shared by both channels.
   const projectName = text(project.name) || 'your project'
@@ -104,7 +153,7 @@ export async function sendLeadAlerts(payload: Payload, lead: LeadLike): Promise<
       await payload.sendEmail({
         to: alertEmail,
         from: process.env.EMAIL_FROM,
-        subject: `${sourceLabel}: ${planName ? `${planName} · ` : ''}${projectName} — ${buyerName}${buyerPhone ? ` (${buyerPhone})` : ''}`,
+        subject: `${subjectPrefix}${sourceLabel}: ${planName ? `${planName} · ` : ''}${projectName} — ${buyerName}${buyerPhone ? ` (${buyerPhone})` : ''}`,
         html: renderLeadAlertEmailHTML({ projectName, planName, sourceLabel, buyerName, buyerPhone, buyerEmail, preferredContact: preferred, message, receivedAt, whatsappHref, dashboardUrl }),
       })
       outcome.email = 'sent'
@@ -135,6 +184,6 @@ export async function sendLeadAlerts(payload: Payload, lead: LeadLike): Promise<
     }
   }
 
-  payload.logger.info({ leadId: lead.id, email: outcome.email, whatsapp: outcome.whatsapp }, 'Lead alert')
+  payload.logger.info({ leadId: lead.id, routing: routing.reason, to: outcome.to.email, email: outcome.email, whatsapp: outcome.whatsapp }, 'Lead alert')
   return outcome
 }

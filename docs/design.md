@@ -492,9 +492,19 @@ account's login email) and Alert WhatsApp number (fallback Social Links →
 WhatsApp); the "Send instant lead alerts" checkbox turns them off. Alerts
 never throw — a failed send is logged, the lead is still saved.
 
-Testing: `LEAD_ALERTS_OVERRIDE_TO` / `LEAD_ALERTS_OVERRIDE_WHATSAPP` route
-every alert to one inbox / number. Never post a test lead at a live
-project without the override set — the real developer gets it.
+**Test routing — a trial inquiry can't reach a real developer.**
+`resolveLeadAlertRouting` redirects the email to the test inbox, prefixes
+the subject `[TEST — not sent to <developer>]` and skips WhatsApp when any
+of these hold: not the production deployment (local dev and Vercel
+previews — `VERCEL_ENV !== 'production'`; `LEAD_ALERTS_LIVE=true` forces
+live); the admin switch **Lead alert settings → Mode = Test** (`/cms`
+Settings; a red banner sits on the dashboard while it's on); the buyer
+email is an admin account's email or on a test domain (resend.dev,
+example.com, example.org/.net, test.com, mailinator.com); or
+`LEAD_ALERTS_OVERRIDE_TO` is set. Test inbox: Lead alert settings → Test
+inbox, else `LEAD_ALERTS_TEST_INBOX`, else delivered@resend.dev. So to QA
+on the live site either flip the switch, or submit with your admin email
+or a resend.dev / example.com address.
 
 **WhatsApp Cloud API setup** (`src/lib/whatsapp-cloud.ts`; email works
 without it): in Meta Business Suite create an app with the WhatsApp

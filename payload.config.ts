@@ -32,6 +32,7 @@ import { supabaseStorageAdapter } from './src/collections/storage/supabase-stora
 import { TeamMembers } from './src/collections/TeamMembers'
 import { Users } from './src/collections/Users'
 import { SiteSettings } from './src/globals/SiteSettings'
+import { LeadAlertSettings } from './src/globals/LeadAlertSettings'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -56,7 +57,11 @@ export default buildConfig({
       // landing page itself, so it's obvious at a glance which account
       // you're signed in as — same list of collections either way, just a
       // label (the real scoping is baseListFilter/hiddenUnlessAdmin).
-      beforeDashboard: ['@/components/payload/DashboardHeading#DashboardHeading', '@/components/payload/ListingTodoPanel#ListingTodoPanel'],
+      beforeDashboard: [
+        '@/components/payload/DashboardHeading#DashboardHeading',
+        '@/components/payload/LeadAlertModeBanner#LeadAlertModeBanner',
+        '@/components/payload/ListingTodoPanel#ListingTodoPanel',
+      ],
       // "✨ Get Featured" link into the placements wizard below — developer
       // accounts only (see NavPlacementLink.tsx).
       afterNavLinks: ['@/components/payload/NavPlacementLink#NavPlacementLink', '@/components/payload/NavImportLink#NavImportLink'],
@@ -106,7 +111,7 @@ export default buildConfig({
     Articles,
     Media,
   ],
-  globals: [SiteSettings],
+  globals: [SiteSettings, LeadAlertSettings],
   endpoints: [analyticsEndpoint, analyticsSummaryEndpoint, importListingEndpoint, listingTodoEndpoint],
   editor: lexicalEditor(),
   db: postgresAdapter({
