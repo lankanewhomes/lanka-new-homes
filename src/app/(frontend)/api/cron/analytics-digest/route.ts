@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { sendWeeklyAnalyticsDigests } from "@/lib/analytics-digest";
 import { recomputeAllDeveloperResponseStats } from "@/lib/response-badge";
+import { sendFollowerDigests } from "@/lib/follower-digest";
 
 // Triggered by Vercel Cron (see vercel.json — weekly, Mondays 08:00 UTC).
 // Vercel signs its own cron requests with `Authorization: Bearer $CRON_SECRET`
@@ -25,5 +26,12 @@ export async function GET(request: Request) {
     console.error("Response badge sweep failed", error);
     return null;
   });
-  return NextResponse.json({ ...result, responseBadges });
+  // Supabase-native (no Payload instance needed) — emails buyers who follow
+  // a developer about new floor plans, price changes, or construction
+  // updates since last week.
+  const followerDigests = await sendFollowerDigests().catch((error) => {
+    console.error("Follower digest run failed", error);
+    return null;
+  });
+  return NextResponse.json({ ...result, responseBadges, followerDigests });
 }

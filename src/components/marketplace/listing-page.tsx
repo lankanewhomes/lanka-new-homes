@@ -123,7 +123,17 @@ export function ListingGridCard({ project, basePath = "/projects" }: { project: 
   const hasPrice = project.startingPriceLkr > 0;
   const hasLandSize = project.floorAreaRange && project.floorAreaRange !== "-";
   const href = `${basePath}/${project.slug}`;
-  const photos = project.gallery.length > 0 ? project.gallery.map((item) => item.image) : [project.heroImage];
+  // Same filter as ProjectHero's photo grid: amenity, floor-plan, road-map
+  // and block-plan images live in their own bucket folders and aren't
+  // property photos — without this, a card's default (first) photo could
+  // be a pool/interior/map shot instead of the building itself, depending
+  // on gallery array order. heroImage always leads; gallery photos (minus
+  // whichever one duplicates heroImage) fill in behind it.
+  const nonPropertyPhoto = /\/(amenities|floor-plans|road-map|block-plan)\//;
+  const galleryPhotos = project.gallery
+    .map((item) => item.image)
+    .filter((image) => image !== project.heroImage && !nonPropertyPhoto.test(image));
+  const photos = project.heroImage ? [project.heroImage, ...galleryPhotos] : galleryPhotos.length > 0 ? galleryPhotos : [project.heroImage];
   const [photoIndex, setPhotoIndex] = useState(0);
 
   const showPrevPhoto = (event: React.MouseEvent) => {
@@ -184,8 +194,8 @@ export function ListingGridCard({ project, basePath = "/projects" }: { project: 
         <Link href={href} className="listing-grid-card-name">{project.name}</Link>
         <p className="listing-grid-card-price">
           {isLand
-            ? (hasLandSize ? tPrice(`From ${project.floorAreaRange}`) : t(project.status))
-            : (hasPrice ? tPrice(`From ${formatLkr(project.startingPriceLkr)}`) : t(project.status))}
+            ? (hasLandSize ? tPrice(`From ${project.floorAreaRange}`) : <span className="badge-contact-pricing">{t("Contact for pricing")}</span>)
+            : (hasPrice ? tPrice(`From ${formatLkr(project.startingPriceLkr)}`) : <span className="badge-contact-pricing">{t("Contact for pricing")}</span>)}
         </p>
         <p className="listing-grid-card-agency">{project.developerName}</p>
         <p className="listing-grid-card-address">{project.location}</p>

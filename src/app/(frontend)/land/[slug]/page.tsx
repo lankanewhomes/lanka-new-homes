@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import { CircleDollarSign, Compass, HousePlus, Layers, MapPin, Ruler } from "lucide-react";
 import { getAllLands, getLandBySlug } from "@/lib/land-store";
 import { landToProjectShape } from "@/lib/land-to-project";
@@ -124,6 +123,8 @@ export default async function LandDetailPage({ params }: LandPageProps) {
         statusLabelOverride={land.status}
         extraBadges={[
           ...(developer?.respondsWithinHour ? [{ label: "Responds within 1 hour", kind: "responder" as const }] : []),
+          ...(developer?.verificationStatus === "approved" ? [{ label: "Verified", kind: "verified" as const }] : []),
+          ...(project.startingPriceLkr === 0 ? [{ label: "Contact for pricing", kind: "contact-pricing" as const }] : []),
           ...(land.badges ?? []),
         ]}
         plansHomesNavLabel="Plots"
@@ -184,19 +185,6 @@ export default async function LandDetailPage({ params }: LandPageProps) {
         <KeyFeaturesSection unitFeatures={project.unitFeatures} />
 
         <AmenitiesShowcaseSection amenities={project.amenities} gallery={project.gallery} heroImage={project.heroImage} title="Facilities" />
-
-        {land.gallery.length > 0 ? (
-          <section id="gallery" className="project-description-shell" aria-label="Gallery">
-            <h2>Gallery</h2>
-            <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
-              {land.gallery.map((item, index) => (
-                <div key={`${item.image}-${index}`} className="relative aspect-4/3 overflow-hidden bg-stone-100">
-                  <Image src={item.image} alt={item.label || land.title} fill className="object-cover" />
-                </div>
-              ))}
-            </div>
-          </section>
-        ) : null}
 
         <NeighborhoodSection nearby={project.nearby} neighborhoodName={project.neighborhood} neighborhoodSlug={undefined} neighborhoodPageExists={false} />
 

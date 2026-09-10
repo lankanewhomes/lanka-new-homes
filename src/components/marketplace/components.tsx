@@ -5,6 +5,7 @@ import Link from "next/link";
 import { AccountMenu } from "@/components/auth/account-menu";
 import { IconChevronRight as TablerChevronRight, IconMenu2, IconX as TablerX } from "@tabler/icons-react";
 import { useSavedListing } from "@/lib/use-saved-listing";
+import { useSavedDeveloper } from "@/lib/use-saved-developer";
 import { getStoredUtmParams, getTrafficSource, trackEvent } from "@/lib/ga4";
 import { getSessionId } from "@/components/marketplace/view-tracker";
 import {
@@ -88,6 +89,7 @@ import { localizedProjectCopy, useListingT } from "@/lib/i18n/use-listing-t";
 import { floorPlanSummarySentence } from "@/lib/i18n/floor-plan-sentence";
 import { formatWhatsAppNumber, listingWhatsAppHref } from "@/lib/whatsapp";
 import { groupNearbyPlaces } from "@/lib/nearby-places";
+import { sortConstructionUpdates } from "@/lib/construction-updates";
 
 const amenityIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   Pool: Waves,
@@ -465,7 +467,7 @@ export function ProjectHero({
   // Plain strings render with the generic .badge-extra color; pass an
   // object with `kind` to get a per-category color (availability /
   // marketing / location) so the badge groups are visually distinct.
-  extraBadges?: (string | { label: string; kind?: "availability" | "marketing" | "location" | "responder" })[];
+  extraBadges?: (string | { label: string; kind?: "availability" | "marketing" | "location" | "responder" | "verified" | "contact-pricing" })[];
   /** Land-only media that doesn't fit the Project shape: multiple road map
    * images, multiple block plan images, and a list of video links (rather
    * than the single gallery-label-matched road map image / single embed
@@ -481,6 +483,12 @@ export function ProjectHero({
   whatsappHref?: string | null;
 }) {
   const { saved: savedListing, toggle: toggleSaved } = useSavedListing(project.slug);
+  // "Get updates" follows the project's developer (saved_developers), not
+  // the listing itself — that's the table the weekly follower-digest cron
+  // (src/lib/follower-digest.ts) actually reads to email price/floor-plan/
+  // construction-update changes. Same table, same toggle the developer's
+  // own profile page "Follow" button uses (use-saved-profile.ts).
+  const { saved: followingDeveloper, toggle: toggleFollowDeveloper } = useSavedDeveloper(project.developerSlug);
   const hasKeyFeatures = normalizeUnitFeaturesForDisplay(project.unitFeatures).some((group) => group.items.length > 0);
   const hasCommercialAreas = (project.commercialAreas?.length ?? 0) > 0;
   const fallbackPhotoLabels = [
@@ -498,10 +506,29 @@ export function ProjectHero({
 
   const photoItems = heroImageOverride
     ? [
-        { label: floorPlan?.image3d ? `${floorPlan.planName} — 2D Floor Plan` : (floorPlan?.planName ?? "Floor Plan"), image: heroImageOverride },
+        {
+          label: floorPlan?.image3d
+            ? `${floorPlan.planName} — 2D Floor Plan`
+            : floorPlan?.imageMetric
+              ? `${floorPlan.planName} — Floor Plan (ft²)`
+              : (floorPlan?.planName ?? "Floor Plan"),
+          image: heroImageOverride,
+        },
+        // The same plan drawn in metres, when the developer publishes both.
+        ...(floorPlan?.imageMetric ? [{ label: `${floorPlan.planName} — Floor Plan (m²)`, image: floorPlan.imageMetric }] : []),
         // A 3D render of the same plan, when the developer provides one —
-        // becomes the second lightbox item so 2D/3D flip via the arrows.
+        // becomes the next lightbox item so 2D/3D flip via the arrows.
         ...(floorPlan?.image3d ? [{ label: `${floorPlan.planName} — 3D View`, image: floorPlan.image3d }] : []),
+        // Multi-storey units (Ground/First/Second floor, each its own real
+        // drawing) get stored in planDocuments — there's no dedicated field
+        // for "this unit spans N floors", so it's reused for that alongside
+        // its original purpose (real downloadable PDFs, e.g. Oceana's ft²/m²
+        // plan sheets). Only the image ones belong here, in the lightbox a
+        // buyer actually browses; the PDF ones stay purely a Downloads link
+        // in the fact sheet (floor-plan-facts.tsx applies the same test).
+        ...(floorPlan?.planDocuments ?? [])
+          .filter((doc) => /\.(jpe?g|png|webp|avif)(\?|$)/i.test(doc.url) && doc.url !== heroImageOverride && doc.url !== floorPlan?.imageMetric && doc.url !== floorPlan?.image3d)
+          .map((doc) => ({ label: `${floorPlan?.planName ?? "Floor Plan"} — ${doc.label}`, image: doc.url })),
       ]
     : [
         { label: "Exterior", image: project.heroImage },
@@ -510,8 +537,13 @@ export function ProjectHero({
         // grid (once as the main photo via heroImage, once again as a side
         // thumbnail via gallery), while a genuinely different photo never
         // gets its slot.
+        // Amenity, floor-plan, road-map and block-plan images live in their
+        // own bucket folders (projects/<slug>/amenities|floor-plans|road-map|
+        // block-plan/…) and are picked up by the Amenities / Floor Plans
+        // sections and the Map / Block Plan pills by label — they aren't
+        // property photos, so they stay out of the hero grid and lightbox.
         ...project.gallery
-          .filter((item) => item.image !== project.heroImage)
+          .filter((item) => item.image !== project.heroImage && !/\/(amenities|floor-plans|road-map|block-plan)\//.test(item.image))
           .map((item, index) => ({
             ...item,
             label: item.label?.trim() || fallbackPhotoLabels[index % fallbackPhotoLabels.length],
@@ -852,12 +884,25 @@ export function ProjectHero({
   // Street View is the least essential of the set, so it always sorts last
   // and is the first (only) thing dropped when the bar is already full —
   // never bumps a more useful pill out to make room for itself.
-  const quickjumpOtherPills = visibleHeroMediaPills.filter((pill) => pill.key !== "street-view");
+  //
+  // Photos and Floor Plans are the opposite case — the two sections a buyer
+  // is most likely to want — but "floor-plans" is defined last in
+  // heroMediaPills above, so a plain positional slice(0, 6) was silently
+  // dropping it on any well-populated listing (brochure + road map + block
+  // plan + a video already fills the first 6 slots before floor-plans is
+  // ever reached). Pulling both out and placing them first, same way
+  // street-view is pulled out and placed last, so neither can be bumped by
+  // array position alone.
+  const essentialKeys = new Set(["photos", "floor-plans"]);
+  const quickjumpEssentialPills = visibleHeroMediaPills.filter((pill) => essentialKeys.has(pill.key));
+  const quickjumpOtherPills = visibleHeroMediaPills.filter((pill) => !essentialKeys.has(pill.key) && pill.key !== "street-view");
   const quickjumpStreetViewPill = visibleHeroMediaPills.find((pill) => pill.key === "street-view");
-  const quickjumpPills =
-    quickjumpOtherPills.length < 6 && quickjumpStreetViewPill
-      ? [...quickjumpOtherPills.slice(0, 6), quickjumpStreetViewPill]
-      : quickjumpOtherPills.slice(0, 6);
+  const quickjumpRemainingSlots = Math.max(0, 6 - quickjumpEssentialPills.length);
+  const quickjumpPills = [
+    ...quickjumpEssentialPills,
+    ...quickjumpOtherPills.slice(0, quickjumpStreetViewPill ? quickjumpRemainingSlots - 1 : quickjumpRemainingSlots),
+    ...(quickjumpStreetViewPill && quickjumpEssentialPills.length + quickjumpOtherPills.length < 6 ? [quickjumpStreetViewPill] : []),
+  ];
 
   return (
     <>
@@ -887,7 +932,10 @@ export function ProjectHero({
         </nav>
 
         <div className="listing-hero-actions">
-          <button type="button" className="action-link"><Bell className="h-4 w-4" aria-hidden="true" />{t("Get updates")}</button>
+          <button type="button" className="action-link" aria-pressed={followingDeveloper} onClick={toggleFollowDeveloper} title={`Get a weekly email when ${project.developerName} changes pricing or posts a construction update`}>
+            <Bell className="h-4 w-4" aria-hidden="true" fill={followingDeveloper ? "currentColor" : "none"} />
+            {followingDeveloper ? t("Following") : t("Get updates")}
+          </button>
           <button type="button" className="action-link" onClick={toggleSaved}>
             <Heart className={`h-4 w-4${savedListing ? " text-[#d94f4f]" : ""}`} aria-hidden="true" fill={savedListing ? "currentColor" : "none"} />
             {savedListing ? t("Saved") : t("Save")}
@@ -997,9 +1045,9 @@ export function ProjectHero({
               </div>
 
               <div className="listing-photo-lightbox-actions">
-                <button type="button" className="listing-photo-lightbox-action-btn">
-                  <Bell className="h-4 w-4" aria-hidden="true" />
-                  {t("Get updates")}
+                <button type="button" className="listing-photo-lightbox-action-btn" aria-pressed={followingDeveloper} onClick={toggleFollowDeveloper}>
+                  <Bell className="h-4 w-4" aria-hidden="true" fill={followingDeveloper ? "currentColor" : "none"} />
+                  {followingDeveloper ? t("Following") : t("Get updates")}
                 </button>
                 <button type="button" className="listing-photo-lightbox-action-btn" onClick={toggleSaved}>
                   <Heart className={`h-4 w-4${savedListing ? " text-[#d94f4f]" : ""}`} aria-hidden="true" fill={savedListing ? "currentColor" : "none"} />
@@ -1285,7 +1333,18 @@ export function ProjectHero({
           {extraBadges.map((badge) => {
             const label = typeof badge === "string" ? badge : badge.label;
             const kind = typeof badge === "string" ? undefined : badge.kind;
-            return <span key={`${kind ?? "extra"}-${label}`} className={`listing-badge-pill ${kind ? `badge-${kind}` : "badge-extra"}`}>{t(label)}</span>;
+            const className = `listing-badge-pill ${kind ? `badge-${kind}` : "badge-extra"}`;
+            // "Limited Units" / "Last Few Units" jumps to the Plans & Homes
+            // section, where per-plan availability (Available/Limited/Sold
+            // Out) is already shown.
+            if (kind === "availability") {
+              return (
+                <a key={`${kind}-${label}`} href="#plans-homes" className={className}>
+                  {t(label)}
+                </a>
+              );
+            }
+            return <span key={`${kind ?? "extra"}-${label}`} className={className}>{t(label)}</span>;
           })}
         </div>
       ) : null}
@@ -1293,9 +1352,9 @@ export function ProjectHero({
       {isHotDealActive(project) ? <HotDealCard hotDeal={project.hotDeal!} /> : null}
 
         <div className={`listing-hero-mobile-ctas${scrolledPastTitle ? " is-visible" : ""}${whatsappHref ? " has-whatsapp" : ""}`} aria-label="Mobile quick actions">
-          <button type="button" className="listing-hero-mobile-btn listing-hero-mobile-btn-updates">
-            <Bell className="h-4 w-4" aria-hidden="true" />
-            {t("Get updates")}
+          <button type="button" className="listing-hero-mobile-btn listing-hero-mobile-btn-updates" aria-pressed={followingDeveloper} onClick={toggleFollowDeveloper}>
+            <Bell className="h-4 w-4" aria-hidden="true" fill={followingDeveloper ? "currentColor" : "none"} />
+            {followingDeveloper ? t("Following") : t("Get updates")}
           </button>
           {whatsappHref ? (
             <a
@@ -1576,6 +1635,11 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
         {developer?.respondsWithinHour ? (
           <span className="listing-badge-pill badge-responder stats-contact-card-badge" title="Answered at least 80% of inquiries within an hour over the last 90 days">
             <Zap className="h-3 w-3" aria-hidden="true" /> {t("Responds within 1 hour")}
+          </span>
+        ) : null}
+        {developer?.verificationStatus === "approved" ? (
+          <span className="listing-badge-pill badge-verified stats-contact-card-badge" title="Verified by LankaNewHomes">
+            <ShieldCheck className="h-3 w-3" aria-hidden="true" /> {t("Verified")}
           </span>
         ) : null}
 
@@ -2129,6 +2193,8 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
   const [availabilityFilter, setAvailabilityFilter] = useState<Set<string>>(new Set());
   const [bedroomFilter, setBedroomFilter] = useState<Set<number>>(new Set());
   const [sortBy, setSortBy] = useState<PlanSortValue>("default");
+  const [showAllPlans, setShowAllPlans] = useState(false);
+  const PLANS_INITIAL_COUNT = 6;
 
   const floorPlans = useMemo(
     () => (excludeFloorPlanId ? project.floorPlans.filter((plan) => plan.id !== excludeFloorPlanId) : project.floorPlans),
@@ -2193,7 +2259,7 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
             role="tab"
             className={activeTab === "all" ? "active" : undefined}
             aria-selected={activeTab === "all"}
-            onClick={() => setActiveTab("all")}
+            onClick={() => { setActiveTab("all"); setShowAllPlans(false); }}
           >
             All ({floorPlans.length})
           </button>
@@ -2204,7 +2270,7 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
               role="tab"
               className={activeTab === option ? "active" : undefined}
               aria-selected={activeTab === option}
-              onClick={() => setActiveTab(option)}
+              onClick={() => { setActiveTab(option); setShowAllPlans(false); }}
             >
               {option} ({floorPlans.filter((plan) => plan.availability === option).length})
             </button>
@@ -2215,7 +2281,7 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
               role="tab"
               className={activeTab === "quickMoveIns" ? "active" : undefined}
               aria-selected={activeTab === "quickMoveIns"}
-              onClick={() => setActiveTab("quickMoveIns")}
+              onClick={() => { setActiveTab("quickMoveIns"); setShowAllPlans(false); }}
             >
               Quick move ins ({quickMoveIns.length})
             </button>
@@ -2282,7 +2348,7 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
       </div>
 
       <div className="plans-homes-grid">
-        {visiblePlans.map((plan) => (
+        {(showAllPlans ? visiblePlans : visiblePlans.slice(0, PLANS_INITIAL_COUNT)).map((plan) => (
           <Link key={plan.id} href={`${hrefBase}/${plan.slug ?? plan.id}`} className="plans-home-card">
             <figure>
               <Image src={plan.image || project.heroImage} alt={plan.planName} width={960} height={620} className="plans-home-image" />
@@ -2300,7 +2366,7 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
                 </div>
               ) : null}
               <h4>{plan.planName}</h4>
-              <p className="plans-home-price">{plan.startingPriceLkr > 0 ? tPrice(`From ${formatLkr(plan.startingPriceLkr)}`) : t("Contact for pricing")}</p>
+              <p className="plans-home-price">{plan.startingPriceLkr > 0 ? tPrice(`From ${formatLkr(plan.startingPriceLkr)}`) : <span className="badge-contact-pricing">{t("Contact for pricing")}</span>}</p>
               <p className="plans-home-type">{plan.planType || project.type}</p>
               <div className="plans-home-facts">
                 {showBedBath ? (
@@ -2316,11 +2382,13 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
         ))}
       </div>
 
-      <div className="plans-more-wrap">
-        <button type="button" className="plans-more-btn">
-          Show all plans &amp; homes <span aria-hidden="true">+</span>
-        </button>
-      </div>
+      {!showAllPlans && visiblePlans.length > PLANS_INITIAL_COUNT ? (
+        <div className="plans-more-wrap">
+          <button type="button" className="plans-more-btn" onClick={() => setShowAllPlans(true)}>
+            Show all plans &amp; homes ({visiblePlans.length}) <span aria-hidden="true">+</span>
+          </button>
+        </div>
+      ) : null}
     </section>
   );
 }
@@ -2419,7 +2487,16 @@ export function AmenitiesShowcaseSection({ amenities, gallery, heroImage, title 
     };
 
     return amenities.slice(0, 8).map((amenity) => {
-      const imageMatch = gallery.find((item) => item.label.toLowerCase().includes(amenity.name.toLowerCase()));
+      // Prefer a photo filed under the amenities/ folder with the exact
+      // amenity name, then any amenities/ photo mentioning it, and only then
+      // a general gallery photo — so "Beachfront Villa" (a property photo)
+      // doesn't get borrowed as the "Beachfront" amenity image.
+      const name = amenity.name.toLowerCase();
+      const isAmenityPhoto = (item: { image: string }) => /\/amenities\//.test(item.image);
+      const imageMatch =
+        gallery.find((item) => isAmenityPhoto(item) && item.label.toLowerCase() === name) ??
+        gallery.find((item) => isAmenityPhoto(item) && item.label.toLowerCase().includes(name)) ??
+        gallery.find((item) => item.label.toLowerCase().includes(name));
 
       return {
         name: amenity.name,
@@ -2530,6 +2607,35 @@ export function CommercialAreasSection({ commercialAreas, title = "Commercial Ar
             );
           })}
         </div>
+      </div>
+    </section>
+  );
+}
+
+export function ConstructionTimelineSection({ updates, title = "Construction Updates" }: { updates: { date: string; image: string; note: string }[]; title?: string }) {
+  const { t } = useListingT();
+  const sorted = sortConstructionUpdates(updates);
+
+  if (!sorted.length) return null;
+
+  return (
+    <section id="construction-updates" className="construction-timeline-shell" aria-label={title}>
+      <h2>{t(title)}</h2>
+      <div className="construction-timeline-list">
+        {sorted.map((entry) => (
+          <article key={`${entry.date}-${entry.image}`} className="construction-timeline-item">
+            <span className="construction-timeline-dot" aria-hidden="true" />
+            <figure className="construction-timeline-image-wrap">
+              <Image src={entry.image} alt={entry.note || title} width={640} height={420} className="construction-timeline-image" />
+            </figure>
+            <div className="construction-timeline-copy">
+              <p className="construction-timeline-date">
+                {new Date(entry.date).toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" })}
+              </p>
+              {entry.note ? <p className="construction-timeline-note">{entry.note}</p> : null}
+            </div>
+          </article>
+        ))}
       </div>
     </section>
   );
@@ -3226,7 +3332,7 @@ export function Footer() {
               <span className="wordmark-line">NewHomes</span>
             </Link>
             <p className="footer-tagline">Find new homes, apartments and land for sale across Sri Lanka — with floor plans, pricing and developer details in one place.</p>
-            <Link href="/developers/register" className="footer-cta">List your project</Link>
+            <Link href="/for-developers" className="footer-cta">List your project</Link>
           </div>
 
           <div className="footer-columns">
@@ -3240,7 +3346,9 @@ export function Footer() {
 
             <div className="footer-column">
               <p className="footer-column-title">For developers</p>
-              <Link href="/developers/register">List your project</Link>
+              <Link href="/for-developers">Why list with us</Link>
+              <Link href="/web-design">Website design</Link>
+              <Link href="/developers/register">Register</Link>
               <Link href="/developers/login">Developer login</Link>
             </div>
 

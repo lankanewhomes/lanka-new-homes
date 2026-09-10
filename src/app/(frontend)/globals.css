@@ -1125,6 +1125,16 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
 .location-links .show-more-cities .rotate { transform: rotate(180deg); }
 @media (max-width: 760px) { .site-header { height: 76px; }.site-header-inner { width: calc(100% - 32px); }.site-header nav, .header-actions { display: none; }.mobile-menu { display: flex; }.site-brand-group { gap: 10px; }.language-segmented button { min-height: 32px; padding: 0 10px; font-size: 12px; }.home-hero { height: 430px; }.hero-content { padding: 105px 18px 0; }.hero-search { min-height: 0; flex-direction: column; padding: 9px; }.hero-region-picker { width: 100%; justify-content: space-between; min-height: 46px; }.hero-search label { width: 100%; height: 46px; background: #f0f0ef; border-radius: 4px; }.hero-search a { width: 100%; height: 45px; justify-content: center; }.home-content { padding: 68px 18px 0; }.section-title h2 { font-size: 31px; }.community-intro { margin-bottom: 42px; }.featured-communities-block { margin: -68px -18px 64px; padding: 52px 18px 20px; }.villa-developments-block { margin: 0 -18px 64px; padding: 44px 18px 2px; }.home-card-grid, .builder-grid { grid-template-columns: repeat(2, 1fr); gap: 22px 15px; }.home-project-card img { height: 115px; }.home-exclusive-card { padding: 10px 10px 12px; }.home-exclusive-card h3 { font-size: 20px; max-width: 170px; }.home-shelf { margin-bottom: 65px; }.shelf-heading h2 { font-size: 23px; }.home-ad-banner { margin: -12px 0 52px; padding: 16px; }.home-ad-banner .ad-body { display: grid; gap: 10px; }.home-ad-banner a { margin-left: 0; width: fit-content; }.trust-panel { margin: 20px -18px 67px; padding: 48px 28px; gap: 28px; flex-direction: column; align-items: flex-start; }.trust-graphic { transform: scale(.82); transform-origin: left top; height: 165px; }.trust-panel p { font-size: 25px; }.feature-articles, .article-grid { grid-template-columns: 1fr; }.feature-articles h3 { font-size: 25px; }.article-grid { margin-top: 45px; }.article-grid img { height: 190px; }.more-section { margin: 60px -18px 0; padding: 56px 18px 6px; }.link-columns { grid-template-columns: 1fr 1fr; gap: 18px; }.site-footer { min-height: 300px; display: block; }.footer-links { gap: 19px 35px; }.copyright { margin-top: 40px; }.orange-swoop { display: none; } }
 
+/* Similar listings (bottom of every detail page): one card per row on
+   mobile, not the shared .home-card-grid's 2-column default — scoped to
+   this section only so the homepage/neighborhood/builder grids keep their
+   2-column mobile layout (owner's call, 2026-09-09). */
+@media (max-width: 760px) {
+  .similar-listings-section .home-card-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Typography scale */
 h1 { font-size: 32px; line-height: 40px; font-weight: 700; }
 h2 { font-size: 24px; line-height: 32px; font-weight: 700; }
@@ -1991,13 +2001,15 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   padding-left: 40px;
 }
 
-.listing-hero-tags span {
+.listing-hero-tags span,
+.listing-hero-tags a {
   border-radius: 3px;
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   padding: 3px 7px;
   font-weight: 700;
+  text-decoration: none;
 }
 
 .listing-hero-tags span.listing-hero-tag-status {
@@ -2653,7 +2665,8 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
     padding-left: 14px;
   }
 
-  .listing-hero-tags span {
+  .listing-hero-tags span,
+  .listing-hero-tags a {
     padding: 6px 9px;
   }
 
@@ -4178,9 +4191,13 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 
 .plans-home-price {
   margin-top: 8px;
+  margin-bottom: 2px;
   font-size: 13px;
   font-weight: 400;
   line-height: 18px;
+  display: flex;
+  align-items: center;
+  min-height: 24px;
   color: #303030;
 }
 
@@ -4611,6 +4628,98 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   font-size: 15px;
   line-height: 1.4;
   font-weight: 400;
+}
+
+.construction-timeline-shell {
+  position: relative;
+  width: min(1160px, 100%);
+  margin: 0 auto;
+  border: 1px solid #e5e5e4;
+  background: #f7f7f6;
+  padding: 32px;
+}
+
+.construction-timeline-shell h2 {
+  margin: 0 0 20px;
+  font-family: var(--font-ref-sans);
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.15;
+  color: #1f1f1f;
+}
+
+.construction-timeline-list {
+  display: grid;
+  gap: 28px;
+}
+
+.construction-timeline-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 20px;
+  padding-left: 24px;
+  border-left: 2px solid #e4e0d6;
+}
+
+.construction-timeline-item:last-child {
+  border-left-color: transparent;
+}
+
+.construction-timeline-dot {
+  position: absolute;
+  left: -7px;
+  top: 4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #f47b36;
+  border: 2px solid #f7f7f6;
+}
+
+.construction-timeline-image-wrap {
+  margin: 0;
+  border: 1px solid #e7e7e7;
+  overflow: hidden;
+}
+
+.construction-timeline-image {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  display: block;
+}
+
+.construction-timeline-copy {
+  display: grid;
+  gap: 6px;
+  align-content: start;
+}
+
+.construction-timeline-date {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #92670c;
+}
+
+.construction-timeline-note {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #3a3a3a;
+}
+
+@media (max-width: 640px) {
+  .construction-timeline-item {
+    grid-template-columns: 1fr;
+  }
+
+  .construction-timeline-image {
+    height: 200px;
+  }
 }
 
 .sales-center-shell {
@@ -7900,6 +8009,10 @@ a.developer-profile-press-title {
 .listing-columns[data-view="list"] .listing-list-pane {
   max-height: none;
   overflow-y: visible;
+  /* Full list view flows with the page (no sticky map beside it), so
+     without its own bottom padding the last row of cards sits flush
+     against the footer. */
+  padding-bottom: 64px;
 }
 
 .listing-columns[data-view="map"] {
@@ -8417,13 +8530,22 @@ a.developer-profile-press-title {
 
 .listing-grid-card-price {
   margin-top: 8px;
+  margin-bottom: 2px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   font-size: 13px;
   font-weight: 400;
   font-style: normal;
+  /* Was a fixed 18px, sized for plain price text only — the
+     .badge-contact-pricing pill inside this line (padding + border) renders
+     taller than that, so the fixed line-height was clipping/crowding it
+     against the developer name right below. display:flex sizes the line to
+     the pill's real height instead of fighting it. */
   line-height: 18px;
+  display: flex;
+  align-items: center;
+  min-height: 24px;
   letter-spacing: normal;
   color: #303030;
 }
@@ -9412,6 +9534,45 @@ a.developer-profile-press-title {
   font-weight: 700;
 }
 
+/* "Verified" badge — Developers -> verification_status = 'approved', set
+   directly via the admin select in /cms (no separate approve/reject UI).
+   Cyan so it doesn't collide with the indigo Move-In-Now pill or either
+   blue move-in/quick-move-in pill. Comes after .developer-profile-badge
+   in the cascade so its colors win when both classes are applied together. */
+.badge-verified {
+  background: #ecfeff;
+  border: 1px solid #67e8f9;
+  color: #0e7490;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* "Contact for pricing" badge — shown instead of a from-price on listing
+   cards and floor-plan cards when startingPriceLkr is 0 (not published).
+   Slate/neutral so it reads as "no data yet", not a marketing highlight
+   like the gold Featured or green status pills. */
+/* Self-contained (not just a color) because this badge is used in three
+   different containers — the hero's .listing-hero-tags, listing grid cards,
+   and floor-plan cards — that don't share a common pill-shape ancestor rule.
+   Box model (radius/padding/font-size/weight/letter-spacing) is copied
+   verbatim from `.listing-hero-tags span, .listing-hero-tags a` so it's
+   pixel-identical to the other hero badges even outside that container. */
+.badge-contact-pricing {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  border-radius: 3px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 3px 7px;
+  font-weight: 700;
+}
+
 /* Builder card CTAs (2026-09-08): WhatsApp button stacked above Request
    info at the right end of the card; side by side, full width, on mobile. */
 .stats-contact-card-ctas {
@@ -9444,5 +9605,465 @@ a.developer-profile-press-title {
 
   .stats-contact-card-ctas .stats-contact-card-btn {
     width: 100%;
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+/* /for-developers — developer-acquisition landing page (2026-09-09,      */
+/* redesigned same day to borrow real listing-page visual language:       */
+/* a real listing photo in the hero, the exact .listing-hero-stat-chip    */
+/* pills a listing's own hero uses, the same Key Features accordion       */
+/* component every project page has (for-developers-features.tsx, the     */
+/* only client-JS piece here), and real ListingGridCards in the           */
+/* "what a listing looks like" section — not recreations of any of these. */
+/* Dark hero + dark closing CTA band still bookend the page, matching the */
+/* footer's #1c1c20; middle sections reuse the site's `.{feature}-shell`  */
+/* light-card convention (#f7f7f6 / #e5e5e4 border) from docs/design.md.  */
+/* ---------------------------------------------------------------------- */
+
+.fd-hero {
+  background: #1c1c20;
+  color: #fff;
+  padding: 72px 22px 56px;
+}
+
+.fd-hero-grid {
+  width: min(1160px, calc(100% - 44px));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 48px;
+  align-items: center;
+  padding-bottom: 56px;
+}
+
+/* Used by pages with no hero photo (e.g. /web-design) — single centered
+   column instead of the copy+photo split. */
+.fd-hero-grid-single {
+  grid-template-columns: 1fr;
+  max-width: 720px;
+  text-align: center;
+}
+
+.fd-hero-grid-single .fd-hero-sub {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.fd-hero-grid-single .fd-hero-ctas {
+  justify-content: center;
+}
+
+.fd-eyebrow {
+  margin: 0 0 14px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #f47b36;
+}
+
+.fd-hero h1 {
+  margin: 0 0 18px;
+  font-family: var(--font-ref-sans);
+  font-size: 40px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: #fff;
+}
+
+.fd-hero-sub {
+  margin: 0 0 32px;
+  max-width: 500px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #b4b4bb;
+}
+
+.fd-hero-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+}
+
+/* The real listing photo beside the pitch — an actual published listing's
+   heroImage, linked to that listing, not a stock/generic image. */
+.fd-hero-photo {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 3;
+  border-radius: 6px;
+  overflow: hidden;
+  text-decoration: none;
+}
+
+.fd-hero-photo-img {
+  object-fit: cover;
+}
+
+.fd-hero-photo-tag {
+  position: absolute;
+  left: 14px;
+  bottom: 14px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(28, 28, 32, 0.82);
+  backdrop-filter: blur(2px);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.fd-hero-stats {
+  width: min(1160px, calc(100% - 44px));
+  margin: 0 auto;
+  padding-top: 32px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+/* .listing-hero-stat-chip is normally a plain off-white pill sitting on a
+   light page background (#fbfaf9) — kept as-is here rather than re-colored
+   for the dark hero, so it's a literal, recognizable reuse of the same
+   chip a listing's own hero uses, not a dark-mode variant of it. */
+
+@media (max-width: 900px) {
+  .fd-hero-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .fd-hero-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .fd-hero-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+.fd-cta-primary {
+  display: inline-flex;
+  align-items: center;
+  padding: 13px 26px;
+  background: #f47b36;
+  border: 1px solid #f47b36;
+  border-radius: 3px;
+  font-size: 14px;
+  font-weight: 650;
+  color: #1c1c20;
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+
+.fd-cta-primary:hover {
+  opacity: 0.88;
+  text-decoration: none;
+}
+
+.fd-cta-secondary {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 22px;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  border-radius: 3px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  text-decoration: none;
+  transition: border-color 0.15s ease;
+}
+
+.fd-cta-secondary:hover {
+  border-color: #f47b36;
+  text-decoration: none;
+}
+
+.fd-section {
+  width: min(1160px, calc(100% - 44px));
+  margin: 0 auto;
+  padding: 72px 0;
+}
+
+.fd-section-head {
+  width: min(640px, 100%);
+  margin: 0 auto 40px;
+  text-align: center;
+}
+
+.fd-section-head h2 {
+  margin: 0 0 10px;
+  font-family: var(--font-ref-sans);
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.15;
+  color: #1f1f1f;
+}
+
+.fd-section-head p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #57534e;
+}
+
+/* "From click to conversation" — 4-step lead-alert walkthrough. */
+.fd-lead-steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.fd-lead-step {
+  position: relative;
+  border: 1px solid #e5e5e4;
+  background: #f7f7f6;
+  border-radius: 4px;
+  padding: 28px 20px 22px;
+}
+
+.fd-lead-step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  margin-bottom: 14px;
+  border-radius: 999px;
+  background: #f47b36;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.fd-lead-step-icon {
+  display: block;
+  width: 22px;
+  height: 22px;
+  margin-bottom: 10px;
+  color: #f47b36;
+}
+
+.fd-lead-step h3 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1.35;
+  color: #1f1f1f;
+}
+
+.fd-lead-step p {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: #57534e;
+}
+
+.fd-badge-preview {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 32px auto 0;
+  padding: 16px 20px;
+  width: fit-content;
+  max-width: 100%;
+  border: 1px dashed #d6d3d1;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.fd-badge-preview-label {
+  font-size: 12.5px;
+  color: #78716c;
+  margin-right: 4px;
+}
+
+/* Feature groups — real KeyFeaturesSection accordion (for-developers-
+   features.tsx), same .key-features-* classes a listing page uses. These
+   three rules adapt just the item layout: the original .key-features-item
+   is inline "field: value" text; here each item stacks an icon, a bold
+   label (reusing .key-features-item-label), and a description line. */
+.fd-key-features-body {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.fd-key-features-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 12px;
+}
+
+.fd-key-features-item .key-features-item-label {
+  display: block;
+  font-size: 15px;
+}
+
+.fd-key-features-item-icon {
+  width: 20px;
+  height: 20px;
+  margin-bottom: 4px;
+  color: #f47b36;
+}
+
+@media (max-width: 900px) {
+  .fd-key-features-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* "This is what a listing looks like" — real ListingGridCards, 3 across
+   to match the 3 example projects rather than home-card-grid's default 4. */
+.fd-showcase-grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 900px) {
+  .fd-showcase-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .fd-showcase-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* How it works — light-gray full-bleed band. */
+.fd-how-section {
+  background: #f7f7f6;
+  border-top: 1px solid #e5e5e4;
+  border-bottom: 1px solid #e5e5e4;
+  padding: 72px 22px;
+}
+
+.fd-how-list {
+  width: min(680px, 100%);
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.fd-how-item {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.fd-how-number {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid #f47b36;
+  color: #f47b36;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.fd-how-item h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 650;
+  color: #1f1f1f;
+}
+
+.fd-how-item p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #57534e;
+}
+
+/* Closing CTA band — orange, not the hero's dark, so the page doesn't
+   bookend with the same color twice (dark hero -> light content -> dark
+   band read as flat/repetitive). Buttons get a scoped override right
+   below since `.fd-cta-primary`/`.fd-cta-secondary` were built assuming a
+   dark background. */
+.fd-cta-band {
+  background: #f47b36;
+  color: #1c1c20;
+  text-align: center;
+  padding: 80px 22px;
+}
+
+.fd-cta-band-icon {
+  width: 32px;
+  height: 32px;
+  margin: 0 auto 18px;
+  color: #1c1c20;
+}
+
+.fd-cta-band h2 {
+  margin: 0 0 10px;
+  font-family: var(--font-ref-sans);
+  font-size: 30px;
+  font-weight: 400;
+  color: #1c1c20;
+}
+
+.fd-cta-band p {
+  margin: 0 0 28px;
+  font-size: 15px;
+  color: rgba(28, 28, 32, 0.75);
+}
+
+.fd-cta-band .fd-cta-primary {
+  background: #1c1c20;
+  border-color: #1c1c20;
+  color: #fff;
+}
+
+.fd-cta-band .fd-cta-secondary {
+  border-color: rgba(28, 28, 32, 0.4);
+  color: #1c1c20;
+}
+
+.fd-cta-band .fd-cta-secondary:hover {
+  border-color: #1c1c20;
+}
+
+@media (max-width: 900px) {
+  .fd-lead-steps,
+  .fd-feature-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .fd-hero {
+    padding: 64px 20px 56px;
+  }
+
+  .fd-hero h1 {
+    font-size: 28px;
+  }
+
+  .fd-section-head h2,
+  .fd-cta-band h2 {
+    font-size: 26px;
+  }
+
+  .fd-lead-steps,
+  .fd-feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fd-how-item {
+    gap: 14px;
   }
 }

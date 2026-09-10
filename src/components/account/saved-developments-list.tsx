@@ -46,7 +46,11 @@ export function SavedDevelopmentsList({ userId, initialItems }: { userId: string
           <div className="min-w-0 space-y-1">
             <p className="font-semibold text-stone-900">{item.name}</p>
             <p className="text-sm text-stone-600">{item.label}{item.meta && item.meta !== item.label ? ` · ${item.meta}` : ""}</p>
-            {item.kind === "developer" ? <p className="text-xs text-stone-400">New units and price changes will show here once notifications launch.</p> : null}
+            {item.kind === "developer" ? (
+              <p className="text-xs text-stone-400">
+                You&apos;ll get an email when this developer adds units, changes prices, or posts a construction update — as long as email notifications are on in your account settings.
+              </p>
+            ) : null}
           </div>
           <div className="flex flex-row flex-wrap items-start gap-2 sm:flex-col sm:justify-start">
             <Link href={item.href} className="border border-stone-900 bg-stone-900 px-3 py-1.5 text-center text-xs font-medium text-white hover:bg-stone-800">

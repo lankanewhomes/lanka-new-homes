@@ -24,16 +24,25 @@ const yesNoValue = (value: unknown) => (hasText(value) ? value : undefined);
 type FactRow = { label: string; value: React.ReactNode };
 
 const FLOOR_PLAN_FACTS_DESKTOP = [
-  "Plan type", "Beds", "Baths", "Ensuite baths", "Powder room", "Total SqFt", "Interior SqFt", "Balcony SqFt", "Terrace SqFt",
+  "Plan type", "Beds", "Baths", "Ensuite baths", "Powder room", "Total SqFt", "Interior SqFt", "Balcony SqFt", "Terrace SqFt", "Land extent",
   "Ceiling height", "Floor range", "Aspect", "View", "Price LKR", "Per SqFt", "Maintenance / mo", "Deposit", "Parking", "Parking type",
   "Storage", "Utility area", "Maid's room", "Pantry", "Handover condition", "Furnishing", "AC provision", "Hot water", "Floor finish",
-  "Units in plan", "Units available", "Availability",
+  "Units in plan", "Units available", "Availability", "Available floors", "Downloads",
 ];
 
 const FLOOR_PLAN_FACTS_MOBILE = [
-  "Total SqFt", "Interior SqFt", "Balcony SqFt", "Per SqFt", "Maintenance / mo", "Floor range", "View", "Ceiling height", "Parking",
-  "Storage", "Utility area", "Maid's room", "Handover condition", "Furnishing", "Units available", "Availability",
+  "Total SqFt", "Interior SqFt", "Balcony SqFt", "Land extent", "Per SqFt", "Maintenance / mo", "Floor range", "View", "Ceiling height", "Parking",
+  "Storage", "Utility area", "Maid's room", "Handover condition", "Furnishing", "Units available", "Availability", "Available floors", "Downloads",
 ];
+
+// Developer's per-floor tracker (FloorPlan.floorAvailability) → "2, 28 of 28
+// floors" or "None — all sold". Only rendered when the developer publishes it.
+function availableFloorsValue(plan: FloorPlan): string | undefined {
+  const floors = plan.floorAvailability ?? [];
+  if (!floors.length) return undefined;
+  const open = floors.filter((f) => f.available).map((f) => f.floor);
+  return open.length ? `${open.join(", ")} (of ${floors.length} floors)` : `None — all ${floors.length} floors sold`;
+}
 
 function floorPlanFactRows(plan: FloorPlan): Map<string, FactRow> {
   const rows = new Map<string, FactRow>();
@@ -51,6 +60,7 @@ function floorPlanFactRows(plan: FloorPlan): Map<string, FactRow> {
   add("Interior SqFt", hasNumber(plan.interiorSizeSqFt) ? sqft(plan.interiorSizeSqFt) : undefined);
   add("Balcony SqFt", hasNumber(plan.balconySizeSqFt) ? sqft(plan.balconySizeSqFt) : undefined);
   add("Terrace SqFt", hasNumber(plan.terraceSqFt) ? sqft(plan.terraceSqFt) : undefined);
+  add("Land extent", hasNumber(plan.landPerches) ? `${plan.landPerches} perches` : undefined);
   add("Ceiling height", hasText(plan.ceilingHeight) ? plan.ceilingHeight : undefined);
   add("Floor range", hasText(plan.floorRange) ? plan.floorRange : undefined);
   add("Aspect", hasText(plan.aspect) ? plan.aspect : undefined);
@@ -73,6 +83,24 @@ function floorPlanFactRows(plan: FloorPlan): Map<string, FactRow> {
   add("Units in plan", hasNumber(plan.unitsInPlan) ? plan.unitsInPlan : undefined);
   add("Units available", hasNumber(plan.unitsAvailable) ? plan.unitsAvailable : undefined);
   add("Availability", hasText(plan.availability) ? plan.availability : undefined);
+  add("Available floors", availableFloorsValue(plan));
+  // Ground/First/Second-floor images for a multi-storey unit are shown as
+  // browsable lightbox photos on the plan's hero (components.tsx) instead —
+  // this row is only for genuinely downloadable files (PDFs), so it doesn't
+  // duplicate them under a misleading "Downloads" label.
+  const downloadableDocs = (plan.planDocuments ?? []).filter((doc) => !/\.(jpe?g|png|webp|avif)(\?|$)/i.test(doc.url));
+  add(
+    "Downloads",
+    downloadableDocs.length ? (
+      <span className="floor-plan-downloads">
+        {downloadableDocs.map((doc, index) => (
+          <a key={`${doc.url}-${index}`} href={doc.url} target="_blank" rel="noreferrer">
+            {doc.label}
+          </a>
+        ))}
+      </span>
+    ) : undefined,
+  );
   return rows;
 }
 

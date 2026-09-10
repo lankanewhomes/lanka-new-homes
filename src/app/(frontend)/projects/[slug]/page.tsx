@@ -10,6 +10,7 @@ import { SimilarListingsSection } from "@/components/marketplace/similar-listing
 import {
   AmenitiesShowcaseSection,
   CommercialAreasSection,
+  ConstructionTimelineSection,
   KeyFeaturesSection,
   NeighborhoodSection,
   PlansAndHomesSection,
@@ -130,6 +131,8 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
         whatsappHref={listingWhatsAppHref(developer?.socialLinks?.whatsapp, project.name)}
         extraBadges={[
           ...(developer?.respondsWithinHour ? [{ label: "Responds within 1 hour", kind: "responder" as const }] : []),
+          ...(developer?.verificationStatus === "approved" ? [{ label: "Verified", kind: "verified" as const }] : []),
+          ...(project.startingPriceLkr === 0 ? [{ label: "Contact for pricing", kind: "contact-pricing" as const }] : []),
           ...(project.availabilityBadge ? [{ label: project.availabilityBadge, kind: "availability" as const }] : []),
           ...(project.marketingBadges ?? []).map((label) => ({ label, kind: "marketing" as const })),
           ...(project.locationBadges ?? []).map((label) => ({ label, kind: "location" as const })),
@@ -153,6 +156,8 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
         <CommercialAreasSection commercialAreas={project.commercialAreas ?? []} />
 
         <PlansAndHomesSection project={project} />
+
+        <ConstructionTimelineSection updates={project.constructionUpdates ?? []} />
 
         <NeighborhoodSection nearby={project.nearby} neighborhoodName={project.neighborhood} neighborhoodSlug={project.neighborhoodSlug} neighborhoodPageExists={Boolean(neighborhood)} />
 

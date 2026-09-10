@@ -2720,6 +2720,20 @@ export interface Project {
    */
   constructionStagePercent?: ('0%' | '10%' | '25%' | '50%' | '75%' | '90%' | '100%') | null;
   constructionStarted?: string | null;
+  /**
+   * A dated photo + note showing construction progress — shown as a timeline on the project page.
+   */
+  constructionUpdates?:
+    | {
+        date: string;
+        /**
+         * Image URL — or upload a file in Media and paste its URL here.
+         */
+        image: string;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   statusHistory?:
     | {
         date?: string | null;
@@ -3171,6 +3185,10 @@ export interface Project {
         balconySizeSqFt?: number | null;
         terraceSqFt?: number | null;
         /**
+         * For villas / houses with their own plot — as published, e.g. 8.15.
+         */
+        landPerches?: number | null;
+        /**
          * As published, e.g. "3.0 m" or "10 ft".
          */
         ceilingHeight?: string | null;
@@ -3299,8 +3317,35 @@ export interface Project {
          * Optional 3D render of this plan. When set, the plan page shows a 2D/3D pair in the hero and lightbox.
          */
         image3d?: string | null;
+        /**
+         * Optional second drawing of the same plan in metres (some developers publish ft² and m² versions). Shown after the main drawing on the plan page.
+         */
+        imageMetric?: string | null;
+        /**
+         * Downloadable versions of this plan the developer publishes — e.g. "Floor plan (ft²)" and "Floor plan (m²)" PDFs or images.
+         */
+        planDocuments?:
+          | {
+              label: string;
+              /**
+               * File URL — or upload a file in Media and paste its URL here.
+               */
+              url: string;
+              id?: string | null;
+            }[]
+          | null;
         availability?: ('Available' | 'Limited' | 'Sold Out') | null;
         quickMoveIn?: boolean | null;
+        /**
+         * One row per floor this plan sits on — tick the ones still available.
+         */
+        floorAvailability?:
+          | {
+              floor: string;
+              available?: boolean | null;
+              id?: string | null;
+            }[]
+          | null;
         id?: string | null;
       }[]
     | null;
@@ -7108,6 +7153,14 @@ export interface ProjectsSelect<T extends boolean = true> {
   constructionStatus_other?: T;
   constructionStagePercent?: T;
   constructionStarted?: T;
+  constructionUpdates?:
+    | T
+    | {
+        date?: T;
+        image?: T;
+        note?: T;
+        id?: T;
+      };
   statusHistory?:
     | T
     | {
@@ -7282,6 +7335,7 @@ export interface ProjectsSelect<T extends boolean = true> {
         interiorSizeSqFt?: T;
         balconySizeSqFt?: T;
         terraceSqFt?: T;
+        landPerches?: T;
         ceilingHeight?: T;
         floorRange?: T;
         aspect?: T;
@@ -7321,8 +7375,23 @@ export interface ProjectsSelect<T extends boolean = true> {
         unitsAvailable?: T;
         image?: T;
         image3d?: T;
+        imageMetric?: T;
+        planDocuments?:
+          | T
+          | {
+              label?: T;
+              url?: T;
+              id?: T;
+            };
         availability?: T;
         quickMoveIn?: T;
+        floorAvailability?:
+          | T
+          | {
+              floor?: T;
+              available?: T;
+              id?: T;
+            };
         id?: T;
       };
   floorPlanVisibleStats?: T;

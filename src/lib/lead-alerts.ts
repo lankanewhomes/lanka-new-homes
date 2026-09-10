@@ -60,9 +60,12 @@ export type LeadAlertRouting =
   | { mode: 'test'; reason: 'non-production' | 'settings-test-mode' | 'test-email' | 'admin-email' | 'env-override'; testInbox: string }
 
 const TEST_EMAIL_DOMAINS = new Set(['resend.dev', 'example.com', 'example.org', 'example.net', 'test.com', 'mailinator.com', 'localhost'])
-const DEFAULT_TEST_INBOX = 'delivered@resend.dev'
+export const DEFAULT_TEST_INBOX = 'delivered@resend.dev'
 
-function isProductionDeployment(): boolean {
+// Shared with src/lib/follower-digest.ts — any outbound email channel added
+// to this codebase routes through this same non-production guard, not just
+// lead alerts, so a local/preview test run can never reach a real inbox.
+export function isProductionDeployment(): boolean {
   if (process.env.LEAD_ALERTS_LIVE === 'true') return true
   return process.env.VERCEL_ENV === 'production'
 }

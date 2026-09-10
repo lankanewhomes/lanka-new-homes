@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronDown, Heart, House, Star, X, Zap } from "lucide-react";
+import { ChevronDown, Heart, House, ShieldCheck, Star, X, Zap } from "lucide-react";
 import type { CoDeveloperEntry, CompanyProfile, Developer, ProfileEntityType, Project, Review } from "@/types";
 import { formatLkr, formatOfficeHours } from "@/lib/format";
 import { SOCIAL_ICON } from "@/components/marketplace/components";
@@ -73,6 +73,11 @@ export function ProfileView({
         {"respondsWithinHour" in entity && entity.respondsWithinHour ? (
           <p className="developer-profile-badge" title="Answered at least 80% of inquiries within an hour over the last 90 days">
             <Zap size={13} aria-hidden="true" /> {t("Responds within 1 hour")}
+          </p>
+        ) : null}
+        {"verificationStatus" in entity && entity.verificationStatus === "approved" ? (
+          <p className="developer-profile-badge badge-verified" title="Verified by LankaNewHomes">
+            <ShieldCheck size={13} aria-hidden="true" /> {t("Verified")}
           </p>
         ) : null}
         <p className="developer-profile-reviews">

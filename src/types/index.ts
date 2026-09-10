@@ -63,6 +63,8 @@ export type FloorPlan = {
   interiorSizeSqFt?: number;
   balconySizeSqFt?: number;
   terraceSqFt?: number;
+  /** Plot size for villas / houses, in perches, as published. */
+  landPerches?: number;
   /** As published, e.g. "3.0 m". */
   ceilingHeight?: string;
   /** Which floors this plan sits on, e.g. "5–12". */
@@ -93,8 +95,15 @@ export type FloorPlan = {
   image: string;
   /** Optional 3D render of the same plan — shown alongside the 2D drawing. */
   image3d?: string;
+  /** Same plan drawn in metres, when the developer publishes both ft² and m² versions. */
+  imageMetric?: string;
+  /** Developer-published downloads for this plan (ft² / m² PDFs or images). */
+  planDocuments?: { label: string; url: string }[];
   availability: "Available" | "Limited" | "Sold Out";
   quickMoveIn?: boolean;
+  /** Developer-published per-floor tracker (Rush Lanka's "View Availability"
+   * popup): which floors this plan sits on and which are still available. */
+  floorAvailability?: { floor: string; available: boolean }[];
 };
 
 export type NearbyPlace = {
@@ -288,6 +297,10 @@ export type Project = SeoFields & {
   statusHistory?: PricingHistoryEntry[];
   /** Same shape as pricingHistory — a dated log of completion-date changes. */
   completionDateHistory?: PricingHistoryEntry[];
+  /** Dated photo + note showing construction progress — unlike statusHistory/
+   * availabilityHistory/completionDateHistory (unused, ambiguous), this one is
+   * rendered (ConstructionTimelineSection). */
+  constructionUpdates?: { date: string; image: string; note: string }[];
   depositPaymentStructure?: string;
   incentives?: string[];
   /** Sinhala / Tamil prose entered on the project's Translations tab; each

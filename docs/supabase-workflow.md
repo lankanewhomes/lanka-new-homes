@@ -126,6 +126,7 @@ See `docs/supabase-schema.sql` for the full schema. Summary:
 | `saved_companies` | a signed-in buyer following any non-developer profile — `(entity_type, entity_slug)`, no FK |
 | `leads` | contact form submissions (was `data/tracking.sqlite`) |
 | `project_views` | view-count analytics (was `data/tracking.sqlite`) |
+| `project_notification_snapshots` | last-notified values per project, diffed weekly by the follower-digest cron — service-role only, no buyer-facing reads |
 
 Not migrated (static reference data, no admin editing): Sri Lanka
 provinces/districts/cities geo lookups.

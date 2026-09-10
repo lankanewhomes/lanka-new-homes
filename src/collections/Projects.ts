@@ -135,6 +135,7 @@ export const Projects: CollectionConfig = {
   slug: 'projects',
   admin: {
     useAsTitle: 'name',
+    group: 'Properties',
     defaultColumns: ['name', 'developer', 'status', 'startingPriceLkr', 'featured', 'final_score'],
     // `read` access below is deliberately public (the live site needs
     // anonymous access to project data) — that alone would let a developer
@@ -328,6 +329,17 @@ export const Projects: CollectionConfig = {
               admin: { description: 'How far along construction is, shown alongside Construction Status.' },
             },
             { name: 'constructionStarted', type: 'date', label: 'Construction Started', admin: { date: { pickerAppearance: 'monthOnly' } } },
+            {
+              name: 'constructionUpdates',
+              type: 'array',
+              label: 'Construction Updates',
+              admin: { description: 'A dated photo + note showing construction progress — shown as a timeline on the project page.' },
+              fields: [
+                { name: 'date', type: 'date', required: true, admin: { date: { pickerAppearance: 'dayOnly' } } },
+                { name: 'image', type: 'text', required: true, admin: { description: 'Image URL — or upload a file in Media and paste its URL here.' } },
+                { name: 'note', type: 'text' },
+              ],
+            },
             historyLogField('statusHistory', 'Status History'),
             historyLogField('completionDateHistory', 'Completion Date History'),
             historyLogField('availabilityHistory', 'Availability History'),
@@ -488,6 +500,7 @@ export const Projects: CollectionConfig = {
                 { name: 'interiorSizeSqFt', type: 'number', label: 'Interior SqFt' },
                 { name: 'balconySizeSqFt', type: 'number', label: 'Balcony SqFt' },
                 { name: 'terraceSqFt', type: 'number', label: 'Terrace SqFt' },
+                { name: 'landPerches', type: 'number', label: 'Land Extent (perches)', admin: { description: 'For villas / houses with their own plot — as published, e.g. 8.15.' } },
                 { name: 'ceilingHeight', type: 'text', label: 'Ceiling Height', admin: { description: 'As published, e.g. "3.0 m" or "10 ft".' } },
                 { name: 'floorRange', type: 'text', label: 'Floor Range', admin: { description: 'Which floors this plan sits on, e.g. "5–12" or "Ground".' } },
                 ...selectWithOther('aspect', 'Aspect', ASPECT_OPTIONS),
@@ -514,6 +527,17 @@ export const Projects: CollectionConfig = {
                 { name: 'unitsAvailable', type: 'number', label: 'Units Available' },
                 { name: 'image', type: 'text', admin: { description: 'Image URL — or upload a file in Media and paste its URL here.' } },
                 { name: 'image3d', type: 'text', label: '3D View Image', admin: { description: 'Optional 3D render of this plan. When set, the plan page shows a 2D/3D pair in the hero and lightbox.' } },
+                { name: 'imageMetric', type: 'text', label: 'Floor Plan Image (m²)', admin: { description: 'Optional second drawing of the same plan in metres (some developers publish ft² and m² versions). Shown after the main drawing on the plan page.' } },
+                {
+                  name: 'planDocuments',
+                  type: 'array',
+                  label: 'Plan Downloads',
+                  admin: { description: 'Downloadable versions of this plan the developer publishes — e.g. "Floor plan (ft²)" and "Floor plan (m²)" PDFs or images.' },
+                  fields: [
+                    { name: 'label', type: 'text', required: true },
+                    { name: 'url', type: 'text', required: true, admin: { description: 'File URL — or upload a file in Media and paste its URL here.' } },
+                  ],
+                },
                 {
                   name: 'availability',
                   type: 'select',
@@ -521,6 +545,19 @@ export const Projects: CollectionConfig = {
                   defaultValue: 'Available',
                 },
                 { name: 'quickMoveIn', type: 'checkbox', defaultValue: false },
+                {
+                  // Developer's own per-floor sold/available tracker for this
+                  // plan (e.g. Rush Lanka's "View Availability" popup). Feeds
+                  // the "Available on floors" line on the plan page.
+                  name: 'floorAvailability',
+                  type: 'array',
+                  label: 'Floor Availability',
+                  admin: { description: 'One row per floor this plan sits on — tick the ones still available.' },
+                  fields: [
+                    { name: 'floor', type: 'text', required: true },
+                    { name: 'available', type: 'checkbox', defaultValue: true },
+                  ],
+                },
               ],
             },
             {
