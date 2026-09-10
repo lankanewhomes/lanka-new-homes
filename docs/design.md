@@ -1039,10 +1039,27 @@ updates both automatically.
   (`ProjectHero`, `ProjectDescriptionSection`, etc. — most take override
   props rather than being duplicated per page). `ProjectHero`'s media pill
   bar (Photos/Videos/Map/Plots/Road Map/Block Plan/Street View) is the
-  pattern for "extra media that isn't a whole page section" — land's Block
-  Plan images, Road Map images, and video links surface there via optional
-  `roadMapImages`/`blockPlanImages`/`videoLinks` props (each opens the
-  shared lightbox) rather than as standalone sections lower on the page.
+  pattern for "extra media that isn't a whole page section" — Block Plan
+  images, Road Map images, and (land-only) video links surface there via
+  optional `roadMapImages`/`blockPlanImages`/`videoLinks` props (each opens
+  the shared lightbox) rather than as standalone sections lower on the page.
+  Projects also have their own `blockPlanImages`/`roadMapImages` array
+  fields (same shape as Land's, added 2026-09-10) — pass them the same way
+  (`roadMapImages={project.roadMapImages ?? []}`) at every `ProjectHero` call
+  site for a real project (`projects/[slug]/page.tsx`,
+  `components/listing-preview/listing-preview.tsx`; the per-floor-plan
+  sub-page deliberately doesn't, same as Land's plot sub-page). When the prop
+  is empty, `ProjectHero` falls back to scanning `project.gallery` for a
+  single item labeled `/block\s*plan/i` / `/road\s*map/i` — a project with
+  older, label-matched gallery photos (rather than the dedicated fields)
+  still gets one pill each this way, just not more than one image per type.
+  Prefer the dedicated fields for anything new: they support multiple images
+  and don't depend on an exact label string. A gallery photo sitting under a
+  `/block-plan/` or `/road-map/` R2 folder isn't picked up by either
+  mechanism automatically — folder placement is just a storage convention,
+  someone still has to either label it correctly or move it into the
+  dedicated field (`scripts/_tmp-migrate-blockplan-roadmap.ts`, since
+  deleted, did this in bulk for the Prime Lands/Rush batch).
 - Listing/category page system: `src/lib/listing-categories.ts`,
   `src/components/marketplace/listing-shell.tsx`,
   `src/components/marketplace/listing-page.tsx`,
@@ -1145,3 +1162,44 @@ Linked from: footer brand-column CTA, footer "For developers" column (new
 "Why list with us" link, above "Register"/"Developer login"), and
 `/about`'s developer paragraph. All three used to jump straight to the bare
 `/developers/register` form.
+
+**`/web-design`** (2026-09-10) reuses this same `.fd-*` system for a second,
+unrelated offer — custom project websites, separate from a marketplace
+listing. New `.fd-hero-grid-single` variant (single centered column, no
+photo) for pages with no real listing image to show. Linked from the
+`/for-developers` and `/web-design` CTA bands into each other ("List your
+project instead" / "See what we do for websites") and from the footer
+"For developers" column.
+
+**`.fd-feature-grid`/`.fd-feature-card`/`.fd-feature-icon`** (service/feature
+cards — same look as `.fd-lead-step`: `#f7f7f6` background, `#e5e5e4`
+border, `4px` radius, orange `#f47b36` icon) is the reusable grid for a
+plain "here's what's included" list on any `.fd-*` page. It briefly existed
+only as responsive overrides with no base rule — `/for-developers` moved its
+own feature list to the `ForDevelopersFeatures` accordion component and the
+base `.fd-feature-grid` CSS was deleted in that pass, silently breaking
+`/web-design` (still using the old plain grid) until caught and restored
+2026-09-10. `.fd-feature-grid.fd-compare-grid` is a 2-column variant for a
+short side-by-side (e.g. "a listing vs. a website").
+
+**CSS Grid + `white-space: nowrap` gotcha**: `.fd-hero-stats` reuses
+`.listing-hero-stat-chip`, whose label is `white-space: nowrap` (by design —
+it's meant to ellipsis-truncate on the listing hero's own light background).
+A grid track sized as bare `1fr` still respects each item's *default*
+`min-width: auto`, which for a nowrap label is its full unwrapped text
+width — so a long stat label (fine on the listing hero's 5-column
+`minmax(0, 1fr)` grid) forced `.fd-hero-stats`' `repeat(4, 1fr)` grid to
+overflow the whole page horizontally on mobile once a longer label was
+used here. Fixed by switching every `.fd-hero-stats` track to
+`minmax(0, 1fr)` (base + both breakpoints). Applies generally: any grid
+column holding `white-space: nowrap` content needs `minmax(0, 1fr)`, not
+bare `1fr` — `.listing-hero-stats-chips` already did this correctly; this
+`.fd-*` copy didn't.
+
+**Mobile nav menu breathing room** (`.mobile-menu-panel`, `globals.css`):
+panel padding is `28px 20px 32px` (was `16px 20px 24px` — too tight right
+below the header divider), and `.mobile-menu-actions` /
+`.mobile-menu-language.language-segmented` padding/margin around Log
+in/Sign up and the language switcher is `22px` (was `16px`) — those two sit
+back-to-back at the bottom of the panel and read as cramped together at the
+tighter spacing.
