@@ -28,6 +28,7 @@ export const Analytics: CollectionConfig = {
   slug: 'analytics',
   admin: {
     useAsTitle: 'event_type',
+    group: 'Business',
     defaultColumns: ['event_type', 'project', 'traffic_source', 'device_type', 'is_duplicate', 'timestamp'],
     // Raw per-event rows aren't useful to look at directly — this replaces
     // the default list table with an aggregated dashboard (stat cards,

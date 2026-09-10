@@ -442,7 +442,7 @@ export function historyLogField(name: string, label: string): Field {
 export function directoryCollection(slug: string, extraFields: Field[], afterChangeHooks: CollectionAfterChangeHook[] = []): CollectionConfig {
   return {
     slug,
-    admin: { useAsTitle: 'name', defaultColumns: ['name', 'slug', 'contact_email'], hidden: hiddenUnlessAdmin },
+    admin: { useAsTitle: 'name', group: 'Companies & Professionals', defaultColumns: ['name', 'slug', 'contact_email'], hidden: hiddenUnlessAdmin },
     access: {
       read: publicRead,
       create: adminOnly,

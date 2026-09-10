@@ -12,6 +12,7 @@ export const TeamMembers: CollectionConfig = {
   admin: {
     useAsTitle: 'role',
     defaultColumns: ['company', 'user', 'role'],
+    group: 'Users & Team',
   },
   access: {
     read: ownPayerAccess('company'),

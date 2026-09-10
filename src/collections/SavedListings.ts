@@ -4,7 +4,7 @@ import { logSaveEvent } from './hooks/increment-counts'
 
 export const SavedListings: CollectionConfig = {
   slug: 'saved-listings',
-  admin: { defaultColumns: ['user', 'project', 'createdAt'], hidden: hiddenUnlessAdmin },
+  admin: { group: 'Leads & Engagement', defaultColumns: ['user', 'project', 'createdAt'], hidden: hiddenUnlessAdmin },
   access: {
     create: authenticatedCreate,
     read: ownerOrAdmin,

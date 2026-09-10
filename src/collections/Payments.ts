@@ -33,6 +33,7 @@ export const Payments: CollectionConfig = {
   slug: 'payments',
   admin: {
     useAsTitle: 'id',
+    group: 'Business',
     defaultColumns: ['payer', 'payment_type', 'amount', 'currency', 'status', 'payment_date'],
   },
   access: {

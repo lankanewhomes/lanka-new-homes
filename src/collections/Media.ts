@@ -12,7 +12,7 @@ import { authenticatedCreate, publicRead } from './access'
 // payload.config.ts.
 export const Media: CollectionConfig = {
   slug: 'media',
-  admin: { useAsTitle: 'filename' },
+  admin: { useAsTitle: 'filename', group: 'Content' },
   access: {
     read: publicRead,
     create: authenticatedCreate,

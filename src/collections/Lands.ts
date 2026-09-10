@@ -31,6 +31,7 @@ export const Lands: CollectionConfig = {
   slug: 'lands',
   admin: {
     useAsTitle: 'title',
+    group: 'Properties',
     defaultColumns: ['title', 'sellerName', 'status', 'priceLkr', 'district'],
     hidden: hiddenUnlessAdmin,
   },

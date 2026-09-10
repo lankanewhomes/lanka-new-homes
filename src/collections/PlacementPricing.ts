@@ -14,6 +14,7 @@ export const PlacementPricing: CollectionConfig = {
   slug: 'placement-pricing',
   admin: {
     useAsTitle: 'tier_name',
+    group: 'Business',
     defaultColumns: ['payment_type', 'tier_name', 'featured_page', 'price', 'currency', 'duration_days'],
     // Hidden from a developer's /cms nav — they browse pricing through the
     // "Get Featured" wizard (PlacementPicker.tsx), not this raw admin-style

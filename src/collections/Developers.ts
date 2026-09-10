@@ -7,6 +7,7 @@ export const Developers: CollectionConfig = {
   slug: 'developers',
   admin: {
     useAsTitle: 'name',
+    group: 'Companies & Professionals',
     defaultColumns: ['name', 'slug', 'user'],
     // Same idea as Projects' baseListFilter — read access is public (real
     // visitors need the whole directory), but a developer's own /cms list

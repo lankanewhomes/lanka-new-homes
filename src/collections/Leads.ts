@@ -23,6 +23,7 @@ export const LEAD_SOURCE_OPTIONS = [
 export const Leads: CollectionConfig = {
   slug: 'leads',
   admin: {
+    group: 'Leads & Engagement',
     defaultColumns: ['name', 'project', 'status', 'first_reply_via', 'response_minutes', 'alert_summary', 'createdAt'],
     listSearchableFields: ['name', 'email', 'phone'],
   },

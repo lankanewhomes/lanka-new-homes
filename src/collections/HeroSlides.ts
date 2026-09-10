@@ -11,6 +11,7 @@ export const HeroSlides: CollectionConfig = {
   slug: 'hero-slides',
   admin: {
     useAsTitle: 'page_target',
+    group: 'Content',
     defaultColumns: ['page_target', 'display_order', 'status', 'is_paid_placement'],
   },
   access: {

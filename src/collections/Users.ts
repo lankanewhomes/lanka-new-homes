@@ -55,6 +55,7 @@ export const Users: CollectionConfig = {
     useAsTitle: 'email',
     defaultColumns: ['email', 'full_name', 'role'],
     hidden: hiddenUnlessAdmin,
+    group: 'Users & Team',
   },
   access: {
     // Public so buyers/developers can self-register; the `role` field below

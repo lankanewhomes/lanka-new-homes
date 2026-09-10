@@ -5,7 +5,7 @@ import { syncNeighborhoodToSupabase } from './hooks/sync-to-supabase'
 
 export const Neighborhoods: CollectionConfig = {
   slug: 'neighborhoods',
-  admin: { useAsTitle: 'name', defaultColumns: ['name', 'slug', 'city'], hidden: hiddenUnlessAdmin },
+  admin: { useAsTitle: 'name', group: 'Properties', defaultColumns: ['name', 'slug', 'city'], hidden: hiddenUnlessAdmin },
   access: {
     read: publicRead,
     create: adminOnly,

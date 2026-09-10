@@ -28,7 +28,7 @@ const ENTITY_TYPE_OPTIONS = [
 
 export const Reviews: CollectionConfig = {
   slug: 'reviews',
-  admin: { defaultColumns: ['entity_type', 'developer', 'company', 'rating', 'reviewer_name', 'status', 'createdAt'] },
+  admin: { group: 'Leads & Engagement', defaultColumns: ['entity_type', 'developer', 'company', 'rating', 'reviewer_name', 'status', 'createdAt'] },
   access: {
     create: () => true,
     read: ownDeveloperAccess('developer'),

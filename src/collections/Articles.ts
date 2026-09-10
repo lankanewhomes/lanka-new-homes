@@ -8,6 +8,7 @@ export const Articles: CollectionConfig = {
   slug: 'articles',
   admin: {
     useAsTitle: 'title',
+    group: 'Content',
     defaultColumns: ['title', 'category', 'publishedDate'],
     hidden: hiddenUnlessAdmin,
   },

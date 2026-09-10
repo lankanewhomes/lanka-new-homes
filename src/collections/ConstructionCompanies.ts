@@ -9,7 +9,7 @@ import { syncConstructionCompanyToSupabase } from './hooks/sync-to-supabase'
 // profile record itself stays admin-only to create/edit.
 export const ConstructionCompanies: CollectionConfig = {
   slug: 'construction-companies',
-  admin: { useAsTitle: 'name', defaultColumns: ['name', 'slug', 'user'], hidden: hiddenUnlessAdmin },
+  admin: { useAsTitle: 'name', group: 'Companies & Professionals', defaultColumns: ['name', 'slug', 'user'], hidden: hiddenUnlessAdmin },
   access: {
     read: publicRead,
     create: adminOnly,
