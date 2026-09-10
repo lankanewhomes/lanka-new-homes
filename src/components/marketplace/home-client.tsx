@@ -32,7 +32,7 @@ const fallbackHeroSlides = [
   "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?q=85&w=2600&auto=format&fit=crop",
 ];
 
-export function HomeClient({ projects }: { projects: Project[] }) {
+export function HomeClient({ projects, lands = [] }: { projects: Project[]; lands?: Project[] }) {
   const { language } = useLanguage();
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
@@ -157,6 +157,11 @@ export function HomeClient({ projects }: { projects: Project[] }) {
       .sort((a, b) => (b.launchDate ?? "").localeCompare(a.launchDate ?? ""))
       .slice(0, 4);
   }, [projects, featuredProjects]);
+  const upcomingProjects = useMemo(
+    () => projects.filter((project) => project.status === "Coming Soon" || project.status === "Launching Soon").slice(0, 4),
+    [projects]
+  );
+  const landListings = useMemo(() => lands.slice(0, 4), [lands]);
   const searchSuggestions = useMemo(() => {
     const query = searchTerm.trim().toLowerCase();
     if (!query) return [];
@@ -293,6 +298,44 @@ export function HomeClient({ projects }: { projects: Project[] }) {
           </div>
         </div>
       </section>
+
+      {upcomingProjects.length > 0 ? (
+        <section className="new-listings-section" aria-label="Upcoming projects">
+          <div className="featured-listings-head">
+            <h2>Upcoming Projects</h2>
+            <p className="featured-listings-subhead">New developments launching soon across Sri Lanka — reserve early.</p>
+          </div>
+          <div className="featured-listings-shell">
+            <div className="home-card-grid featured-listings-grid">
+              {upcomingProjects.map((project) => (
+                <ListingGridCard key={`upcoming-${project.slug}`} project={project} />
+              ))}
+            </div>
+            <div className="featured-listings-footer new-listings-footer">
+              <Link href="/search" className="featured-listings-button">View all upcoming projects</Link>
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      {landListings.length > 0 ? (
+        <section className="new-listings-section" aria-label="Land for sale in Sri Lanka">
+          <div className="featured-listings-head">
+            <h2>Land for sale sri lanka</h2>
+            <p className="featured-listings-subhead">Residential, commercial, and agricultural land parcels for sale, listed by developers and landowners.</p>
+          </div>
+          <div className="featured-listings-shell">
+            <div className="home-card-grid featured-listings-grid">
+              {landListings.map((land) => (
+                <ListingGridCard key={`land-${land.slug}`} project={land} basePath="/land" />
+              ))}
+            </div>
+            <div className="featured-listings-footer new-listings-footer">
+              <Link href="/land" className="featured-listings-button">View all land listings</Link>
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       <section className="neighborhoods-section" aria-label="Find the city for you">
         <div className="featured-listings-head">

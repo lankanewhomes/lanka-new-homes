@@ -163,6 +163,16 @@ Swimming pool construction companies in sri lanka
 ### /construction-companies/consulting
 Construction consultant companies in sri lanka
 
+### /for-developers
+List your project on lankanewhomes, developer registration sri lanka, list
+new development sri lanka. B2B page — targets a developer/builder searching
+for where to list, not a buyer. Pitches the platform (instant lead alerts,
+Verified badge, analytics, free WhatsApp click-to-chat, brochure-import
+onboarding) and funnels to `/developers/register`. Linked from the footer's
+"List your project" CTA (both the brand-column button and the "For
+developers" column) and from `/about`'s developer section — those used to
+jump straight to the bare registration form.
+
 **Adding new keywords:** map each new keyword to the closest existing page
 above (add it to that page's H1/intro/meta in the relevant config file). Flag
 a keyword for a new page only if none of the existing pages are a reasonable
