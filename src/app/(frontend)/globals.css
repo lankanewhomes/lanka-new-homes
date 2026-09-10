@@ -9932,6 +9932,19 @@ a.developer-profile-press-title {
   margin-right: 4px;
 }
 
+/* .listing-badge-pill has no shape of its own everywhere it's used — a
+   sibling class in the same element (.stats-contact-card-badge on the
+   contact card, .listing-hero-tags span in the hero) supplies padding/
+   radius/font-size there. This preview uses neither, so without this it
+   renders as bare colored text with no pill shape at all. Values copied
+   from .stats-contact-card-badge for an accurate preview of the real thing. */
+.fd-badge-preview .listing-badge-pill {
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
 /* Feature groups — real KeyFeaturesSection accordion (for-developers-
    features.tsx), same .key-features-* classes a listing page uses. These
    three rules adapt just the item layout: the original .key-features-item

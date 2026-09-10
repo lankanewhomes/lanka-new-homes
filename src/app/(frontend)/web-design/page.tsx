@@ -125,6 +125,20 @@ export default function WebDesignPage() {
           </p>
         </div>
 
+        <div className="fd-badge-preview" aria-hidden="true">
+          <span className="fd-badge-preview-label">Every site includes:</span>
+          {[
+            "Custom design",
+            "Mobile-first",
+            "SEO-ready",
+            "Lead capture",
+            "Fast hosting",
+            "Your own domain",
+          ].map((label) => (
+            <span className="listing-badge-pill badge-extra" key={label}>{label}</span>
+          ))}
+        </div>
+
         <div className="fd-feature-grid">
           {SERVICES.map((item) => (
             <div className="fd-feature-card" key={item.title}>
