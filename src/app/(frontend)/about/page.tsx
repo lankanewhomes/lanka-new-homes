@@ -17,7 +17,7 @@ export default function AboutPage() {
       <p>We bring together new condominium, apartment, and villa developments from across the island in one place, so buyers can compare pricing, floor plans, amenities, and availability without chasing down individual developer websites.</p>
 
       <h2>For developers</h2>
-      <p>Developers get a public profile page, project listings management, and a homepage hero placement to reach active buyers. Visit the <Link href="/developers/register">developer registration page</Link> to get started.</p>
+      <p>Developers get a public profile page, project listings management, instant lead alerts, and a homepage hero placement to reach active buyers. See <Link href="/for-developers">why developers list with us</Link>, or go straight to the <Link href="/developers/register">developer registration page</Link>.</p>
 
       <h2>For buyers</h2>
       <p>Browse new homes by location or project type, save the ones you like, and request more information directly from the sales team behind each project.</p>
