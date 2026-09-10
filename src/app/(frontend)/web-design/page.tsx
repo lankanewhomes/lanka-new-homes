@@ -82,6 +82,37 @@ export default function WebDesignPage() {
             </div>
           </div>
         </div>
+
+        <div className="fd-hero-stats">
+          <div className="listing-hero-stat-chip">
+            <LayoutTemplate className="listing-hero-stat-chip-icon" aria-hidden="true" />
+            <div className="listing-hero-stat-chip-content">
+              <span className="listing-hero-stat-chip-value">Custom</span>
+              <span className="listing-hero-stat-chip-label">designed for this project, not a template</span>
+            </div>
+          </div>
+          <div className="listing-hero-stat-chip">
+            <Smartphone className="listing-hero-stat-chip-icon" aria-hidden="true" />
+            <div className="listing-hero-stat-chip-content">
+              <span className="listing-hero-stat-chip-value">Mobile-first</span>
+              <span className="listing-hero-stat-chip-label">designed for a phone, then scaled up</span>
+            </div>
+          </div>
+          <div className="listing-hero-stat-chip">
+            <Search className="listing-hero-stat-chip-icon" aria-hidden="true" />
+            <div className="listing-hero-stat-chip-content">
+              <span className="listing-hero-stat-chip-value">SEO-ready</span>
+              <span className="listing-hero-stat-chip-label">built in from day one, not bolted on</span>
+            </div>
+          </div>
+          <div className="listing-hero-stat-chip">
+            <Gauge className="listing-hero-stat-chip-icon" aria-hidden="true" />
+            <div className="listing-hero-stat-chip-content">
+              <span className="listing-hero-stat-chip-value">Fast</span>
+              <span className="listing-hero-stat-chip-label">loads quickly, even on an average connection</span>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section className="fd-section" aria-label="Why a dedicated site" id="what-we-do">
@@ -126,8 +157,25 @@ export default function WebDesignPage() {
       <section className="fd-section" aria-label="Not sure which one you need">
         <div className="fd-section-head">
           <h2>Not sure if you need a listing, a site, or both?</h2>
-          <p>Most developers end up with both — a listing to get discovered, a site to close the sale. Happy to talk through what makes sense for your project specifically.</p>
+          <p>Most developers end up with both — a listing to get discovered, a site to close the sale.</p>
         </div>
+
+        <div className="fd-feature-grid fd-compare-grid">
+          <div className="fd-feature-card">
+            <Search className="fd-feature-icon" aria-hidden="true" />
+            <h3>A LankaNewHomes listing</h3>
+            <p>Puts your project in front of buyers already searching. Free to list, live in minutes — no design work needed from you.</p>
+          </div>
+          <div className="fd-feature-card">
+            <LayoutTemplate className="fd-feature-icon" aria-hidden="true" />
+            <h3>A dedicated project website</h3>
+            <p>Your own domain and brand, built around this project specifically — where every other lead you generate (ads, signboards, referrals) ends up.</p>
+          </div>
+        </div>
+
+        <p style={{ textAlign: "center", marginTop: 24, fontSize: 14, color: "#57534e" }}>
+          Not sure which fits? <Link href="/contact" style={{ color: "#f47b36", fontWeight: 600 }}>Talk it through with us</Link> — or see <Link href="/for-developers" style={{ color: "#f47b36", fontWeight: 600 }}>why developers list with us</Link>.
+        </p>
       </section>
 
       <section className="fd-cta-band" aria-label="Get started">

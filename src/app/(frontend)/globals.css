@@ -200,7 +200,7 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
     background: #fff;
     border-top: 1px solid #e5e2dc;
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
-    padding: 16px 20px 24px;
+    padding: 28px 20px 32px;
     height: calc(100vh - 76px);
     height: calc(100dvh - 76px);
     overflow-y: auto;
@@ -266,8 +266,8 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
 
   .mobile-menu-actions {
     display: flex;
-    padding-top: 16px;
-    padding-bottom: 16px;
+    padding-top: 22px;
+    padding-bottom: 22px;
     border-bottom: 1px solid #f0ede6;
   }
 
@@ -292,8 +292,8 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
   .mobile-menu-language.language-segmented {
     display: flex;
     width: 100%;
-    margin-top: 16px;
-    padding-top: 16px;
+    margin-top: 22px;
+    padding-top: 22px;
     border-top: 1px solid #f0ede6;
   }
 
@@ -9721,7 +9721,10 @@ a.developer-profile-press-title {
   padding-top: 32px;
   border-top: 1px solid rgba(255, 255, 255, 0.14);
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  /* minmax(0, 1fr), not bare 1fr — a track with no explicit min lets a
+     chip's nowrap label (min-content = its full unwrapped width) force the
+     whole row, and with it the page, to overflow horizontally on mobile. */
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -9737,13 +9740,13 @@ a.developer-profile-press-title {
   }
 
   .fd-hero-stats {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 640px) {
   .fd-hero-stats {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -9858,6 +9861,50 @@ a.developer-profile-press-title {
 }
 
 .fd-lead-step p {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: #57534e;
+}
+
+/* Service/feature cards — same card look as .fd-lead-step. Used by
+   /web-design's "what's included" grid and its listing-vs-site comparison. */
+.fd-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.fd-feature-grid.fd-compare-grid {
+  grid-template-columns: repeat(2, 1fr);
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.fd-feature-card {
+  border: 1px solid #e5e5e4;
+  background: #f7f7f6;
+  border-radius: 4px;
+  padding: 28px 20px 24px;
+}
+
+.fd-feature-icon {
+  display: block;
+  width: 24px;
+  height: 24px;
+  margin-bottom: 14px;
+  color: #f47b36;
+}
+
+.fd-feature-card h3 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1.35;
+  color: #1f1f1f;
+}
+
+.fd-feature-card p {
   margin: 0;
   font-size: 13.5px;
   line-height: 1.55;
@@ -10059,7 +10106,8 @@ a.developer-profile-press-title {
   }
 
   .fd-lead-steps,
-  .fd-feature-grid {
+  .fd-feature-grid,
+  .fd-feature-grid.fd-compare-grid {
     grid-template-columns: 1fr;
   }
 
