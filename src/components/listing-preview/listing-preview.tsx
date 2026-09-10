@@ -43,7 +43,13 @@ export function ListingPreviewPage({
       </p>
 
       <div className="space-y-8">
-        <ProjectHero project={project} backHref="/projects" backLabel="New Projects" />
+        <ProjectHero
+          project={project}
+          backHref="/projects"
+          backLabel="New Projects"
+          roadMapImages={project.roadMapImages ?? []}
+          blockPlanImages={project.blockPlanImages ?? []}
+        />
 
         <div className="project-page-content">
           <ProjectStatsChips project={project} />

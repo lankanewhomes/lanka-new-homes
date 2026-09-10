@@ -2861,6 +2861,26 @@ export interface Project {
         id?: string | null;
       }[]
     | null;
+  blockPlanImages?:
+    | {
+        label?: string | null;
+        /**
+         * Image URL — or upload a file in Media and paste its URL here.
+         */
+        image: string;
+        id?: string | null;
+      }[]
+    | null;
+  roadMapImages?:
+    | {
+        label?: string | null;
+        /**
+         * Image URL — or upload a file in Media and paste its URL here.
+         */
+        image: string;
+        id?: string | null;
+      }[]
+    | null;
   /**
    * PDF URL — or upload a file in Media and paste its URL here.
    */
@@ -7235,6 +7255,20 @@ export interface ProjectsSelect<T extends boolean = true> {
   highlights?: T;
   heroImage?: T;
   gallery?:
+    | T
+    | {
+        label?: T;
+        image?: T;
+        id?: T;
+      };
+  blockPlanImages?:
+    | T
+    | {
+        label?: T;
+        image?: T;
+        id?: T;
+      };
+  roadMapImages?:
     | T
     | {
         label?: T;

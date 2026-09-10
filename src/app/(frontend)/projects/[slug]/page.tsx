@@ -129,6 +129,8 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
         backHref="/projects"
         backLabel="New Projects"
         whatsappHref={listingWhatsAppHref(developer?.socialLinks?.whatsapp, project.name)}
+        roadMapImages={project.roadMapImages ?? []}
+        blockPlanImages={project.blockPlanImages ?? []}
         extraBadges={[
           ...(developer?.respondsWithinHour ? [{ label: "Responds within 1 hour", kind: "responder" as const }] : []),
           ...(developer?.verificationStatus === "approved" ? [{ label: "Verified", kind: "verified" as const }] : []),

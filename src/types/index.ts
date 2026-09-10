@@ -311,6 +311,9 @@ export type Project = SeoFields & {
   description: string;
   heroImage: string;
   gallery: { label: string; image: string }[];
+  /** Site/subdivision layout diagrams — a separate slot from the general gallery so more than one can be entered without relying on label-text matching. */
+  blockPlanImages?: { label: string; image: string }[];
+  roadMapImages?: { label: string; image: string }[];
   brochureUrl?: string;
   videos?: { label: string; embedUrl?: string; thumbnail?: string }[];
   virtualTours?: { label: string; url: string }[];

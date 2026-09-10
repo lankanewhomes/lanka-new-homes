@@ -129,6 +129,8 @@ const STAT_PICKER_DEFAULTS_NOTE =
   'Leave empty for the default set: Price range, Property type, Beds, Baths, SqFt, Listing status, Move-in year, Total units (or Floors). Everything else shows in the details table under Overview; pick it here only if it must also be a chip.'
 
 const galleryField = galleryLikeField('gallery')
+const blockPlanImagesField = galleryLikeField('blockPlanImages', 'Block Plan Images')
+const roadMapImagesField = galleryLikeField('roadMapImages', 'Road Map Images')
 const commercialAreasField = galleryLikeField('commercialAreas', 'Commercial Areas')
 
 export const Projects: CollectionConfig = {
@@ -405,6 +407,8 @@ export const Projects: CollectionConfig = {
             { name: 'highlights', type: 'text', hasMany: true, label: 'Key Highlights', admin: { description: '3-5 short standout points shown above the Overview text (e.g. "South Asia\'s highest sky bridge").' } },
             { name: 'heroImage', type: 'text', admin: { description: 'Image URL — or upload a file in Media and paste its URL here.' } },
             galleryField,
+            blockPlanImagesField,
+            roadMapImagesField,
             { name: 'brochureUrl', type: 'text', label: 'Brochure URL', admin: { description: 'PDF URL — or upload a file in Media and paste its URL here.' } },
             {
               name: 'videos',
