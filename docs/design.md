@@ -81,6 +81,32 @@ documented alternate.
   (`.plans-home-type` / `.listing-grid-card-agency`) `12px` / `#303030`.
   Keep any new project/plan card's name+price text at these same values.
 
+## Construction updates timeline (project detail page)
+
+`ConstructionTimelineSection` (`src/components/marketplace/components.tsx`)
+renders a dated photo-and-note timeline from `Project.constructionUpdates`
+(`{ date, image, note }[]`, edited on the Timeline tab in `/cms`, right after
+Construction Started). This is a deliberately separate, clean field from the
+older `statusHistory`/`availabilityHistory`/`completionDateHistory` arrays —
+those are unused/ambiguous leftovers, never repurposed for this.
+
+- Renders nothing when the array is empty — a project with no updates yet
+  shows no section at all.
+- Always sorted newest-first by `date` (`sortConstructionUpdates` in
+  `src/lib/construction-updates.ts`), never by array/entry order — an admin
+  can add an update out of sequence and it still lands in the right place.
+  The follower-digest cron (see "Lead alerts, pipeline and response time"
+  below) reuses the same sort helper so "the newest update" means the same
+  thing in the email as it does on the page.
+- Visual: `.construction-timeline-shell` box (same model as
+  `.key-features-shell` — bordered, `#f7f7f6`, `32px` padding), a vertical
+  rail (`border-left` on `.construction-timeline-item`) with a dot per entry,
+  photo + date + note per row. Stacks to one column under 640px.
+- Rendered identically on the real page (`/projects/[slug]/page.tsx`, right
+  after `PlansAndHomesSection`) and on `/listing-preview/[slug]` — keep both
+  in sync if this section ever moves, since the preview link's whole point is
+  to match production exactly.
+
 ## Hero media (project detail page)
 
 The top media area of `ProjectHero` (`src/components/marketplace/components.tsx`)
@@ -154,6 +180,12 @@ per project and order isn't stable.
 | Marketing badges (Premium, BOI Approved Project…) | `.listing-badge-pill.badge-marketing` | Rose |
 | Location badges (Ocean View, Beachfront…) | `.listing-badge-pill.badge-location` | Teal |
 | Untyped extra badges (e.g. `land.badges` strings) | `.listing-badge-pill.badge-extra` | Teal (same as location) |
+
+The availability pill ("Limited Units" / "Last Few Units", kind
+`availability` in `ProjectHero`'s `extraBadges`) is the one pill that is a
+link, not a `<span>`: it jumps to `#plans-homes`, where per-plan
+Available / Limited / Sold Out is already shown. `.listing-hero-tags a`
+shares the `span` pill rules so it looks identical.
 
 Badges are driven by `Project.isFeatured`, `Project.isMoveInNow`, and
 per-floor-plan `FloorPlan.quickMoveIn` — set in the project editor's
@@ -585,6 +617,66 @@ builder card, and on the developer profile header; the Analytics
 dashboard shows the standing ("3 of 5 leads judged · 100% within the
 hour"). Thresholds are the constants at the top of that file.
 
+**"Verified" badge.** Set, not earned: an admin sets `Developer →
+Verification Status` to `approved` directly via the existing select field
+in `/cms` (already mirrored to Supabase as `verificationStatus`; no
+separate approve/reject UI was built — the select is the whole workflow).
+Shown as a cyan pill (`.badge-verified`, kind `verified` in the hero's
+`extraBadges`) in the exact same three spots as "Responds within 1 hour" —
+project / floor-plan / land heroes, the builder card
+(`StatsContactCard`), and the developer profile header — deliberately a
+different hue (cyan, not indigo/blue) since indigo is already
+`.badge-move-in-now` and blue is already used twice
+(`.listing-hero-tag-move-in`, `.badge-quick-move-in`). Note this is
+distinct from `Project.isVerified` (a separate, unrelated 7-item
+per-listing verification checklist on the Verification tab) — this badge
+reads `Developer.verificationStatus` only. No filter for verified
+developers exists yet — `/developers` is a bare A–Z directory with no
+filter UI at all today; left on `docs/todo.md` as a follow-up.
+
+## Follow -> notification digest (weekly, buyer-facing)
+
+Completes the promise on `/account/developments` ("see their new units and
+price changes here" — was previously just placeholder copy, nothing was
+ever sent). Runs from `src/lib/follower-digest.ts`, called from the
+existing weekly analytics-digest cron (`/api/cron/analytics-digest`, same
+Monday-08:00-UTC trigger as the developer digest and the response-badge
+sweep) — no separate `vercel.json` cron entry, and no Payload instance:
+followers are Supabase Auth buyers (`public.saved_developers`), not
+Payload accounts, so this whole feature reads/writes Supabase directly and
+sends mail via a plain `nodemailer` transport (the same `SMTP_*`/
+`EMAIL_FROM` env vars Payload's adapter uses).
+
+**Mechanism**: `project_notification_snapshots` (one row per project)
+stores the last-notified `starting_price_lkr` / floor-plan count /
+available-units / construction-update count. Each run diffs current
+values against the snapshot — a project with no snapshot yet is seeded
+silently (first run never "changes" against nothing) — then every project
+gets its snapshot refreshed at the end, changed or not, so next week
+diffs against today's reality.
+
+**What counts as a change**: price change (either direction); floor-plan
+count or available-units *increase* only (a decrease means units sold,
+not newsworthy); a `constructionUpdates` count increase (newest 1–2
+entries included, via the same `sortConstructionUpdates` helper the
+timeline section uses, so "newest" means the same thing in both places).
+
+**Preferences**: `profiles.notify_email` gates whether a follower gets
+anything at all; `notify_price_changes`/`notify_new_properties` further
+gate those specific lines. Construction-update lines have no dedicated
+preference flag — always included once `notify_email` is on (a
+deliberate default, since there's nowhere in Settings to toggle that
+specifically). One email per follower per week, not one per project —
+all of a buyer's followed developers' changes are grouped into a single
+digest (`renderFollowerDigestEmailHTML`, `src/lib/follower-digest-email.ts`).
+
+**Test routing**: reuses the same non-production guard as lead alerts
+(`isProductionDeployment`, exported from `src/lib/lead-alerts.ts`) — a
+local/preview run redirects every send to the test inbox
+(`LEAD_ALERTS_OVERRIDE_TO`/`LEAD_ALERTS_TEST_INBOX`/`delivered@resend.dev`)
+with a `[TEST — would go to …]` subject prefix, same as a lead alert would.
+No new alert channel in this codebase is exempt from that guard.
+
 ## Listing completeness to-do
 
 `src/lib/completeness.ts` is the single checklist (28 checks, equal
@@ -738,7 +830,26 @@ hero (`ProjectStatsChips`, `.listing-hero-stats-chips`) and the 2-per-row
   `.mobile-stat-visible` at ≤980px. The land page's hand-built chip row
   doesn't use the wrapper class and is unaffected.
 
+## Hero grid vs. amenity / plan images
+
+`ProjectHero` builds its photo grid and lightbox from `heroImage` + `gallery`,
+but skips any gallery item whose URL is under `projects/<slug>/amenities/` or
+`projects/<slug>/floor-plans/`. Those folders are for images the Amenities
+section (matched by label) and the Floor Plans section pick up — a pool
+table or a gym render is not a property photo (owner's call, 2026-09-08).
+So when mirroring a developer's images: exterior / interior / beach / street
+photos → `gallery/`, facility photos → `amenities/` with the amenity name as
+the label, plan drawings → `floor-plans/`.
+
 ## Floor plan page facts & chips
+
+Three developer-published extras added 2026-09-08, all on `FloorPlan` and
+all rendered as fact-sheet rows only when set: `floorAvailability`
+(per-floor sold/available → "Available floors: 2, 28 (of 28 floors)"; skip
+it when a tracker shows every floor sold on a project that is still
+selling — that's a placeholder), `planDocuments` (the developer's own
+"Download floor plan ft² / m²" files → "Downloads" links) and `landPerches`
+(villa plot size → "Land extent: 8.15 perches").
 
 The floor-plan detail page (`/projects/{slug}/floor-plans/{plan}`) shows
 *plan-level* facts, not the project's — `FloorPlanStatsChips` +
@@ -782,7 +893,10 @@ listings". Projects show similar projects, land pages show similar land
 starting price within ±35% > same status, ties broken by Featured then name,
 padded with other published listings so the grid fills. It is pure selection
 over existing fields — nothing is computed about a listing — and renders
-nothing when there is no other listing to show.
+nothing when there is no other listing to show. On mobile it's one card per
+row (`.similar-listings-section .home-card-grid` overrides the shared
+`.home-card-grid`'s 2-column mobile default, scoped to this section only —
+the homepage/neighborhood/builder grids keep 2 columns).
 
 ## Languages (Sinhala / Tamil listing content)
 
@@ -976,3 +1090,58 @@ updates both automatically.
   sub-pages) — don't fold them in without asking.
 - SEO/keyword conventions: `docs/seo-strategy.md` (separate file — that one
   is about metadata/keywords/URLs, this one is about visual/UI patterns).
+
+## Payload admin (/cms) sidebar groups
+
+Every collection sets `admin.group` so the `/cms` sidebar reads as named
+sections instead of one flat alphabetical list:
+- **Users & Team**: Users, Team Members
+- **Properties**: Projects, Lands, Neighborhoods
+- **Companies & Professionals**: Developers, Construction Companies, and the
+  four `directoryCollection()`-built directories (Marketing Companies, Sales
+  Companies, Architects, Interior Designers) — the group is set once on the
+  shared helper (`shared-fields.ts`) rather than per file for those four.
+- **Leads & Engagement**: Leads, Saved Listings, Reviews
+- **Business**: Payments, Placement Pricing, Analytics
+- **Content**: Articles, Media, Hero Slides
+
+Globals aren't part of this — Payload lists them in their own sidebar
+section regardless of collection groups. `LeadAlertSettings` already sets
+`admin.group: 'Settings'` (predates this pass); `SiteSettings` stays
+ungrouped, which is what puts it under the default "Globals" heading. When
+adding a new collection, put it in the matching group above rather than
+leaving it ungrouped (ungrouped collections get dumped in an unlabeled
+overflow section above the named groups).
+
+## /for-developers (developer-acquisition landing page)
+
+First standalone marketing/B2B page on the site (2026-09-09) — not a
+filtered listing page, so it doesn't follow the config-driven
+category-page factory pattern; it's plain server-rendered JSX with no
+client component (the page has no interactivity that needs JS — a small
+CSS-only badge preview is the only "demo" element).
+
+**Visual pattern, new for this page but meant to be reused** for any future
+marketing/landing page: a dark hero (`#1c1c20`, matching the footer, white
+text, orange `#f47b36` eyebrow/CTA) bookended by a matching dark closing CTA
+band, with light `.fd-section` content bands in between reusing the
+existing `.{feature}-shell` light-card look (`#f7f7f6` background, `#e5e5e4`
+border) rather than inventing a new palette. Class prefix `.fd-*`.
+
+**Content rule for any future page like this**: no invented statistics,
+testimonials, "trusted by" logos, or dollar figures — there's no
+authoritative live count of developers/projects/leads anywhere in the
+codebase to cite, and `PlacementPricing`'s current rows are seed-script
+placeholder prices, not real rates (see `scripts/seed-placement-pricing.ts`
+header comment). Every claim on the page traces to a real, currently-live
+mechanic (lead alerts with one-tap reply links, the `Developer.verification_status`
+badge, `response_stats`-driven "Responds within 1 hour" badge, the
+Analytics dashboard, free WhatsApp click-to-chat, the brochure/website
+import tool, the completeness-score ranking boost, the follower digest) —
+lean on specific real mechanics instead of social proof that doesn't exist
+yet.
+
+Linked from: footer brand-column CTA, footer "For developers" column (new
+"Why list with us" link, above "Register"/"Developer login"), and
+`/about`'s developer paragraph. All three used to jump straight to the bare
+`/developers/register` form.
