@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { AccountMenu } from "@/components/auth/account-menu";
-import { IconChevronRight as TablerChevronRight, IconMenu2, IconX as TablerX } from "@tabler/icons-react";
+import { IconBrandFacebook, IconBrandInstagram, IconChevronRight as TablerChevronRight, IconMenu2, IconX as TablerX } from "@tabler/icons-react";
 import { useSavedListing } from "@/lib/use-saved-listing";
 import { useSavedDeveloper } from "@/lib/use-saved-developer";
 import { getStoredUtmParams, getTrafficSource, trackEvent } from "@/lib/ga4";
@@ -3353,48 +3353,43 @@ export function Footer() {
   return (
     <footer className="site-footer">
       <div className="footer-inner">
-        <div className="footer-top">
-          <div className="footer-brand">
-            <Link href="/" className="footer-wordmark" aria-label="LankaNewHomes home">
-              <span className="wordmark-line">Lanka</span>
-              <span className="wordmark-line">NewHomes</span>
-            </Link>
-            <p className="footer-tagline">Find new homes, apartments and land for sale across Sri Lanka — with floor plans, pricing and developer details in one place.</p>
-            <Link href="/for-developers" className="footer-cta">List your project</Link>
-          </div>
-
-          <div className="footer-columns">
-            <div className="footer-column">
-              <p className="footer-column-title">Explore</p>
-              <Link href="/projects">New homes for sale</Link>
-              <Link href="/land">Land for sale</Link>
-              <Link href="/developers">Developers</Link>
-              <Link href="/construction-companies">Construction companies</Link>
-            </div>
-
-            <div className="footer-column">
-              <p className="footer-column-title">For developers</p>
-              <Link href="/for-developers">Why list with us</Link>
-              <Link href="/web-design">Website design</Link>
-              <Link href="/developers/register">Register</Link>
-              <Link href="/developers/login">Developer login</Link>
-            </div>
-
-            <div className="footer-column">
-              <p className="footer-column-title">Company</p>
-              <Link href="/about">About</Link>
-              <Link href="/contact">Contact</Link>
-              <Link href="/blog">Blog</Link>
-            </div>
-
-            <div className="footer-column">
-              <p className="footer-column-title">Legal</p>
-              <Link href="/privacy">Privacy Policy</Link>
-              <Link href="/terms">Terms of Service</Link>
-              <Link href="/sitemap">Sitemap</Link>
-            </div>
-          </div>
+        <div className="footer-social-row" aria-label="Follow LankaNewHomes">
+          <a href="https://www.facebook.com/lankanewhomes" target="_blank" rel="noopener noreferrer" className="footer-social-icon" aria-label="LankaNewHomes on Facebook">
+            <IconBrandFacebook size={18} stroke={1.75} aria-hidden="true" />
+          </a>
+          <a href="https://www.instagram.com/lankanewhomes/" target="_blank" rel="noopener noreferrer" className="footer-social-icon" aria-label="LankaNewHomes on Instagram">
+            <IconBrandInstagram size={18} stroke={1.75} aria-hidden="true" />
+          </a>
         </div>
+
+        <div className="footer-brand-row">
+          <Link href="/" className="footer-wordmark" aria-label="LankaNewHomes home">
+            <span className="wordmark-line">Lanka</span>
+            <span className="wordmark-line">NewHomes</span>
+          </Link>
+          <Link href="/for-developers" className="footer-cta">List your project</Link>
+        </div>
+        <p className="footer-tagline">Find new homes, apartments and land for sale across Sri Lanka — with floor plans, pricing and developer details in one place.</p>
+
+        <nav className="footer-link-row" aria-label="Explore listings">
+          <Link href="/projects">New homes for sale</Link>
+          <Link href="/land">Land for sale</Link>
+          <Link href="/developers">Developers</Link>
+          <Link href="/construction-companies">Construction companies</Link>
+          <Link href="/for-developers">Why list with us</Link>
+          <Link href="/web-design">Website design</Link>
+        </nav>
+
+        <nav className="footer-link-row" aria-label="Company">
+          <Link href="/about">About</Link>
+          <Link href="/contact">Contact</Link>
+          <Link href="/blog">Blog</Link>
+          <Link href="/developers/register">Register</Link>
+          <Link href="/developers/login">Developer login</Link>
+          <Link href="/privacy">Privacy Policy</Link>
+          <Link href="/terms">Terms of Service</Link>
+          <Link href="/sitemap">Sitemap</Link>
+        </nav>
 
         <div className="footer-bottom">
           <p className="copyright">© {new Date().getFullYear()} LankaNewHomes. All rights reserved.</p>
