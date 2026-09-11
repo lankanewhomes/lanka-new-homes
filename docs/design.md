@@ -136,6 +136,13 @@ the affordance — rather than squeezing every label onto one screen (the
 old `is-compact` mode, removed 2026-09-11). Don't reintroduce per-pill
 "essential"/"always last" special cases; change the order in one place.
 
+**Lightbox top bar carries Brochure too** (2026-09-11): the photo lightbox's
+tab row (Photos / Videos / Map / Road Map / Block Plan / 360° / Street View)
+ends with a Brochure button that opens the same brochure-request dialog as
+the hero pill — it isn't a viewer tab, it's `.listing-photo-lightbox-
+brochure`. For that to work `.request-info-overlay` sits at z-index 250,
+above the lightbox's 200 and below the auth modal's 300.
+
 **Desktop floating bar is scroll-gated.** It gets `.is-visible` from the
 same `titlePanelRef` IntersectionObserver flag as `.listing-hero-mobile-
 ctas`, and the base rule keeps it `opacity: 0; visibility: hidden` until

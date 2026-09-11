@@ -6165,7 +6165,10 @@ a.developer-profile-press-title {
 .request-info-overlay {
   position: fixed;
   inset: 0;
-  z-index: 100;
+  /* Above .listing-photo-lightbox (200) — the lightbox top bar has its own
+     Brochure button, so this dialog must be able to open on top of it.
+     Still below .auth-modal-backdrop (300). */
+  z-index: 250;
   display: flex;
   align-items: stretch;
   justify-content: flex-end;
