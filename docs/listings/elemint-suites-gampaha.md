@@ -28,7 +28,7 @@
 
 ## Data captured
 
-- Amenities: Outdoor Gym, Jogging Track, Children's Area
+- Amenities: Outdoor Gym, Jogging Track, Children's Area, Lake View
 - Key Features groups: —
 - Nearby places: 2
 - Contact: — · — · —

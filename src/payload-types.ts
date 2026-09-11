@@ -3062,7 +3062,8 @@ export interface Project {
           | 'Hotel'
           | 'Gated Community'
           | 'Beachfront'
-          | 'Sea View';
+          | 'Sea View'
+          | 'Lake View';
         id?: string | null;
       }[]
     | null;
@@ -6462,7 +6463,8 @@ export interface Land {
           | 'Hotel'
           | 'Gated Community'
           | 'Beachfront'
-          | 'Sea View';
+          | 'Sea View'
+          | 'Lake View';
         id?: string | null;
       }[]
     | null;

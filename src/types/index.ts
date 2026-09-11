@@ -57,7 +57,8 @@ export type Amenity = {
     | "Hotel"
     | "Gated Community"
     | "Beachfront"
-    | "Sea View";
+    | "Sea View"
+    | "Lake View";
   icon: string;
 };
 

@@ -89,6 +89,7 @@ const AMENITY_SYNONYMS: Record<string, RegExp> = {
   "Gated Community": /\bgated\b/i,
   Beachfront: /\bbeach ?front\b/i,
   "Sea View": /\b(sea|ocean) ?view/i,
+  "Lake View": /\blake ?view/i,
 };
 
 const TYPE_KEYWORDS: [RegExp, string][] = [

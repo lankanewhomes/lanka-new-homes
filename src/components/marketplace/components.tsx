@@ -154,6 +154,7 @@ const amenityIcons: Record<string, React.ComponentType<{ className?: string }>> 
   "Gated Community": ShieldCheck,
   Beachfront: Waves,
   "Sea View": Waves,
+  "Lake View": Waves,
 };
 
 function renderEntityLink(name: string, slug: string | undefined, basePath: string, className?: string) {

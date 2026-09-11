@@ -207,6 +207,7 @@ export const AMENITY_NAME_OPTIONS = [
   'Gated Community',
   'Beachfront',
   'Sea View',
+  'Lake View',
 ]
 
 export const amenitiesField: Field = {
