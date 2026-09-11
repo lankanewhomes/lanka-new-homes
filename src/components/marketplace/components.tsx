@@ -2461,7 +2461,9 @@ export function KeyFeaturesSection({ unitFeatures }: { unitFeatures: unknown }) 
   const { t } = useListingT();
   const groups = normalizeUnitFeaturesForDisplay(unitFeatures).filter((group) => group.items.length > 0);
 
-  const [openKey, setOpenKey] = useState<string | null>(groups[0]?.key ?? null);
+  // Every row starts collapsed (owner, 2026-09-11) — the first group used
+  // to open by default.
+  const [openKey, setOpenKey] = useState<string | null>(null);
 
   if (!groups.length) return null;
 
@@ -3559,7 +3561,9 @@ const NEARBY_CATEGORY_ICON: Record<NearbyPlace["category"], React.ComponentType<
 // resolves icons here on the client — a resolved icon *component* can't
 // itself be passed as a server->client prop.
 export function NearbyPlacesAccordion({ groups }: { groups: ReturnType<typeof groupNearbyPlaces> }) {
-  const [openKey, setOpenKey] = useState<string | null>(groups[0]?.key ?? null);
+  // Every row starts collapsed (owner, 2026-09-11) — the first group used
+  // to open by default.
+  const [openKey, setOpenKey] = useState<string | null>(null);
 
   if (groups.length === 0) return null;
 
