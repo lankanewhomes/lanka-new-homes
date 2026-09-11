@@ -29,8 +29,8 @@
 
 ## Data captured
 
-- Amenities: Gym, Parking, Security
-- Key Features groups: Highlights (10), Specifications (22), General Features (21)
+- Amenities: Gym, Parking, Security, Roof Terrace
+- Key Features groups: Highlights (6), Specifications (22), General Features (21)
 - Nearby places: 4
 - Contact: — · 077 770 7874 · sales@rushlankagroup.com
 - Project verification checklist: not yet

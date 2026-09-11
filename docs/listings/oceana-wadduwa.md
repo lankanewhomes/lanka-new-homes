@@ -31,7 +31,7 @@
 
 ## Data captured
 
-- Amenities: Pool, Gym, Security, Concierge, Beachfront, Sea View, Children's Area, Clubhouse, Games Room, Outdoor Kitchen
+- Amenities: Pool, Gym, Security, Concierge, Beachfront, Sea View, Children's Area, Clubhouse, Games Room, Outdoor Kitchen, Kids Pool, BBQ Area, Yoga & Meditation Area, Multifunctional Room
 - Key Features groups: Indoor Features (4), Outdoor Features (15), Wellness & Recreation (19), Resort Services (12), Specifications (8)
 - Nearby places: 21
 - Contact: Harsha Senadeera (Head of Sales) · +94 710 299 089 · info@oceana.lk

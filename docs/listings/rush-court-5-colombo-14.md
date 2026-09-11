@@ -36,7 +36,7 @@
 ## Data captured
 
 - Amenities: Parking, Security, Rooftop
-- Key Features groups: Highlights (7), Specifications (12), General Features (22)
+- Key Features groups: Highlights (5), Specifications (12), General Features (22)
 - Nearby places: 2
 - Contact: — · 077 770 7874 · sales@rushlankagroup.com
 - Project verification checklist: not yet

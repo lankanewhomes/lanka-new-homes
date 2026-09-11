@@ -39,8 +39,8 @@
 
 ## Data captured
 
-- Amenities: Pool, Gym, Children's Area, Parking
-- Key Features groups: Highlights (10), Specifications (20), General Features (24)
+- Amenities: Pool, Gym, Children's Area, Parking, Security
+- Key Features groups: Highlights (5), Specifications (20), General Features (24)
 - Nearby places: 16
 - Contact: — · 077 770 7874 · sales@rushlankagroup.com
 - Project verification checklist: not yet
