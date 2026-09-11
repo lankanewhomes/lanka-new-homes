@@ -1256,3 +1256,24 @@ below the header divider), and `.mobile-menu-actions` /
 in/Sign up and the language switcher is `22px` (was `16px`) — those two sit
 back-to-back at the bottom of the panel and read as cramped together at the
 tighter spacing.
+
+## Social publishing (Project → Social tab)
+
+Full guide: `docs/social-publishing.md`. In short: `npm run social:generate
+-- <slug>` renders a 9:16 story reel (real floor plan → 3D site hologram from
+the real block plan → aerial reveal → depth-parallax walkthrough → end card)
+and 4:5 carousel cards from the listing's own photos, uploads them to
+`projects/<slug>/social/` in R2 and records them in the `social-assets`
+collection. The project's **Social** tab (`SocialPanel`, reading
+`/payload-api/social-post`, never form state) previews them, shows the
+default caption (`src/lib/social/caption.ts` — built only from listing
+fields), posts to the Facebook Page + Instagram (`src/lib/social/meta.ts`),
+and lists every attempt from `social-posts`. An *auto-post on publish*
+toggle in the Social group fires once when `isPublished` flips on and Meta
+is connected. Without `META_*` env the whole path runs as a dry run.
+
+Design rules that carry over: reel/cards use the site's Archivo type and
+`#f47b36` orange, the on-screen copy is the owner's four lines plus factual
+captions, and no invented scenes — if a listing has no floor plan or block
+plan, those scenes are skipped rather than faked. Stories can't be published
+by API (Meta limit), only feed posts and Reels.

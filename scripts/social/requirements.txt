@@ -1,0 +1,8 @@
+# Renderer (always)
+pillow>=10
+numpy>=1.26
+scipy>=1.11
+# Depth-based parallax (optional but recommended — ~2 GB; without it the reel
+# still renders, just with plain zoom/pan instead of 2.5D parallax)
+torch>=2.2
+transformers>=4.40

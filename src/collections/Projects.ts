@@ -33,6 +33,7 @@ import {
   TAP_WATER_OPTIONS,
   unitFeaturesField,
 } from './shared-fields'
+import { autoPostSocialAfterChange } from './hooks/auto-post-social'
 import { scoreProjectBeforeChange } from './hooks/project-scoring'
 import { syncProjectToSupabase } from './hooks/sync-to-supabase'
 
@@ -170,7 +171,7 @@ export const Projects: CollectionConfig = {
       },
     ],
     beforeChange: [scoreProjectBeforeChange],
-    afterChange: [syncProjectToSupabase],
+    afterChange: [syncProjectToSupabase, autoPostSocialAfterChange],
   },
   fields: [
     {
@@ -645,6 +646,24 @@ export const Projects: CollectionConfig = {
               admin: {
                 components: { Field: '@/components/payload/ListingAnalyticsPanel#ListingAnalyticsPanel' },
               },
+            },
+          ],
+        },
+        {
+          label: 'Social',
+          fields: [
+            // Generated reel + carousel cards, caption preview, "Post now"
+            // and the per-platform log — all read from SocialAssets /
+            // SocialPosts via /payload-api/social-post (docs/social-publishing.md).
+            { name: 'socialPanel', type: 'ui', admin: { components: { Field: '@/components/payload/SocialPanel#SocialPanel' } } },
+            {
+              name: 'social',
+              type: 'group',
+              label: 'Social posting',
+              fields: [
+                { name: 'caption', type: 'textarea', label: 'Caption', admin: { description: 'Leave blank to use the default caption built from this listing (shown above). Instagram does not link URLs in captions — the site link is for Facebook and copy-paste.' } },
+                { name: 'autoPost', type: 'checkbox', label: 'Post to Facebook & Instagram automatically when this listing is published', defaultValue: false, admin: { description: 'Fires once, on the save that publishes the listing, and only when the Meta accounts are connected. Assets must be generated first.' } },
+              ],
             },
           ],
         },

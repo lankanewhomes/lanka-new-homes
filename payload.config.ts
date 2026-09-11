@@ -11,6 +11,7 @@ import { analyticsEndpoint, analyticsSummaryEndpoint } from './src/collections/e
 import { importListingEndpoint } from './src/collections/endpoints/import-listing'
 import { listingTodoEndpoint } from './src/collections/endpoints/listing-todo'
 import { leadActivityEndpoint } from './src/collections/endpoints/lead-activity'
+import { socialPostEndpoint, socialStatusEndpoint } from './src/collections/endpoints/social-post'
 import { Architects } from './src/collections/Architects'
 import { Articles } from './src/collections/Articles'
 import { ConstructionCompanies } from './src/collections/ConstructionCompanies'
@@ -28,6 +29,8 @@ import { Projects } from './src/collections/Projects'
 import { Reviews } from './src/collections/Reviews'
 import { SalesCompanies } from './src/collections/SalesCompanies'
 import { SavedListings } from './src/collections/SavedListings'
+import { SocialAssets } from './src/collections/SocialAssets'
+import { SocialPosts } from './src/collections/SocialPosts'
 import { isR2Configured, r2Storage } from './src/collections/storage/r2-storage'
 import { supabaseStorageAdapter } from './src/collections/storage/supabase-storage-adapter'
 import { TeamMembers } from './src/collections/TeamMembers'
@@ -114,6 +117,8 @@ export default buildConfig({
     Neighborhoods,
     HeroSlides,
     SavedListings,
+    SocialAssets,
+    SocialPosts,
     Leads,
     Reviews,
     Analytics,
@@ -124,7 +129,7 @@ export default buildConfig({
     Media,
   ],
   globals: [SiteSettings, LeadAlertSettings],
-  endpoints: [analyticsEndpoint, analyticsSummaryEndpoint, importListingEndpoint, listingTodoEndpoint, leadActivityEndpoint],
+  endpoints: [analyticsEndpoint, analyticsSummaryEndpoint, importListingEndpoint, listingTodoEndpoint, leadActivityEndpoint, socialStatusEndpoint, socialPostEndpoint],
   editor: lexicalEditor(),
   db: postgresAdapter({
     pool: { connectionString: process.env.DATABASE_URI },

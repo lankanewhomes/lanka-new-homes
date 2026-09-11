@@ -343,6 +343,8 @@ export type Project = SeoFields & {
   roadMapImages?: { label: string; image: string }[];
   brochureUrl?: string;
   videos?: { label: string; embedUrl?: string; thumbnail?: string }[];
+  /** Social posting (Project → Social tab): an optional caption override and the publish-time auto-post toggle. Generated assets and the post log live in their own collections. */
+  social?: { caption?: string; autoPost?: boolean };
   virtualTours?: { label: string; url: string }[];
   interactiveMapUrl?: string;
   view360Url?: string;

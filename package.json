@@ -9,7 +9,9 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "next typegen --webpack && tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "social:setup": "bash scripts/social/setup.sh",
+    "social:generate": "NODE_ENV=production tsx --env-file=.env.local scripts/social/generate.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

@@ -96,6 +96,13 @@ are pushed by Drizzle the next time Payload boots in dev mode — e.g. run
 any `scripts/*.ts` that calls `getPayload` *without* `NODE_ENV=production`
 — and `npx payload generate:types` regenerates `src/payload-types.ts`.
 
+Payload-only collections (no Supabase mirror, by design): `leads`,
+`analytics`, `payments`, `saved-listings`, and — added 2026-09-11 —
+`social-assets` and `social-posts` (generated reel/carousel URLs and the
+Facebook/Instagram post log; see `docs/social-publishing.md`). The public
+site never reads these, so nothing in `docs/supabase-schema.sql` changes
+when they do.
+
 ## Connection
 
 - Credentials live in `.env.local` (git-ignored, never commit):
