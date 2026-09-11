@@ -2879,6 +2879,34 @@ export function ProjectDescriptionSection({ project, floorPlan, headingOverride 
 }
 
 
+// Land-appropriate equivalent of ProjectNarrativeDetails below — used by
+// both the land detail page and the plot detail page (buildLandDetailRows,
+// src/lib/land-to-project.ts) so the two stay identical rather than one
+// drifting from the other.
+export function LandDetailsTable({ rows }: { rows: { label: string; value: string }[] }) {
+  if (rows.length === 0) return null;
+  const PER_ROW = 2;
+  const groups: (typeof rows)[number][][] = [];
+  for (let i = 0; i < rows.length; i += PER_ROW) groups.push(rows.slice(i, i + PER_ROW));
+
+  return (
+    <section className="project-narrative-shell" aria-label="Land details">
+      <table className="project-fact-sheet">
+        <tbody>
+          {groups.map((group) => (
+            <tr key={group[0].label}>
+              {group.map(({ label, value }) => (
+                <td key={label}><span className="project-fact-label">{label}:</span> {value}</td>
+              ))}
+              {group.length < PER_ROW ? <td aria-hidden="true" /> : null}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+  );
+}
+
 export function ProjectNarrativeDetails({ project }: { project: Project }) {
   const launchDate = project.launchDate ? new Date(project.launchDate) : null;
   const salesStarted = launchDate && !Number.isNaN(launchDate.getTime())

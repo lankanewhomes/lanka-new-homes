@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getAllLands, getLandBySlug } from "@/lib/land-store";
-import { landToProjectShape } from "@/lib/land-to-project";
+import { buildLandDetailRows, landToProjectShape } from "@/lib/land-to-project";
 import { getDeveloperBySlug } from "@/lib/developer-store";
 import { pickSimilarListings } from "@/lib/similar-listings";
 import { SimilarListingsSection } from "@/components/marketplace/similar-listings";
 import {
   AmenitiesShowcaseSection,
   KeyFeaturesSection,
+  LandDetailsTable,
   PlansAndHomesSection,
   PricingInformationLayout,
   ProjectDescriptionSection,
   ProjectHero,
-  ProjectNarrativeDetails,
   ProjectStatsChips,
   StatsContactCard,
 } from "@/components/marketplace/components";
@@ -89,7 +89,7 @@ export default async function LandPlotDetailPage({ params }: PlotPageProps) {
         <ProjectStatsChips project={project} floorPlan={plot} areaUnit="perches" />
         <ProjectDescriptionSection project={project} floorPlan={plot} />
 
-        <ProjectNarrativeDetails project={project} />
+        <LandDetailsTable rows={buildLandDetailRows(land)} />
 
         <section id="pricing" className="space-y-3">
           <PricingInformationLayout project={project} />

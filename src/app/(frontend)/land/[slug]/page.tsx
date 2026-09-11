@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CircleDollarSign, Compass, HousePlus, Layers, MapPin, Ruler } from "lucide-react";
 import { getAllLands, getLandBySlug } from "@/lib/land-store";
-import { landToProjectShape } from "@/lib/land-to-project";
+import { buildLandDetailRows, landToProjectShape } from "@/lib/land-to-project";
 import { pickSimilarListings } from "@/lib/similar-listings";
 import { SimilarListingsSection } from "@/components/marketplace/similar-listings";
 import { formatLkr } from "@/lib/format";
@@ -12,6 +12,7 @@ import { getAllConstructionCompanies } from "@/lib/construction-company-store";
 import {
   AmenitiesShowcaseSection,
   KeyFeaturesSection,
+  LandDetailsTable,
   NeighborhoodSection,
   PlansAndHomesSection,
   PricingInformationLayout,
@@ -92,27 +93,7 @@ export default async function LandDetailPage({ params }: LandPageProps) {
     { icon: Compass, label: "Land use", value: land.landUse.join(" & ") },
   ];
 
-  const detailRows = [
-    { label: "Land use", value: land.landUse.join(", ") },
-    { label: "Land type", value: land.landType },
-    { label: "Shape of land", value: land.landShape },
-    { label: "Status", value: land.status },
-    { label: "Plots", value: totalPlots > 0 ? `${plotsAvailable} available of ${totalPlots} total` : undefined },
-    { label: "District", value: land.district },
-    { label: "City", value: land.city },
-    { label: "Province", value: land.province },
-    { label: "Road access", value: land.roadAccess },
-    { label: "Road width", value: land.roadWidthFt ? `${land.roadWidthFt} ft` : undefined },
-    { label: "Electricity", value: land.electricity },
-    { label: "Water", value: land.water },
-    { label: "Title / deed", value: land.titleType },
-    { label: "Survey plan", value: land.surveyPlanStatus },
-    { label: "Seller", value: land.sellerName },
-  ].filter((row): row is { label: string; value: string } => Boolean(row.value));
-
-  const DETAIL_PER_ROW = 2;
-  const detailRowGroups: (typeof detailRows)[number][][] = [];
-  for (let i = 0; i < detailRows.length; i += DETAIL_PER_ROW) detailRowGroups.push(detailRows.slice(i, i + DETAIL_PER_ROW));
+  const detailRows = buildLandDetailRows(land);
 
   return (
     <div className="space-y-8">
@@ -159,22 +140,7 @@ export default async function LandDetailPage({ params }: LandPageProps) {
           </section>
         ) : null}
 
-        {detailRows.length > 0 ? (
-          <section className="project-narrative-shell" aria-label="Land details">
-            <table className="project-fact-sheet">
-              <tbody>
-                {detailRowGroups.map((group) => (
-                  <tr key={group[0].label}>
-                    {group.map(({ label, value }) => (
-                      <td key={label}><span className="project-fact-label">{label}:</span> {value}</td>
-                    ))}
-                    {group.length < DETAIL_PER_ROW ? <td aria-hidden="true" /> : null}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </section>
-        ) : null}
+        <LandDetailsTable rows={detailRows} />
 
         <PlansAndHomesSection project={project} title="Plots" showQuickMoveIns={false} showBedBath={false} planHrefBase={`/land/${land.slug}/plots`} />
 

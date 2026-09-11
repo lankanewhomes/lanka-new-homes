@@ -92,3 +92,35 @@ export function landToProjectShape(land: Land): Project {
     contact: land.contact,
   };
 }
+
+// Land-appropriate "Details" table rows — used by both the land detail page
+// and the plot detail page. Deliberately NOT `ProjectNarrativeDetails`
+// (Property type/Total units/Developer/SqFt labels, built for a real
+// Project): that component read Land's landToProjectShape() fields
+// (`units`, `floorAreaRange` as a pre-formatted "10 perches" string, etc.)
+// and produced nonsensical rows on the plot page ("Total units: 26",
+// "Floor plans: 26" duplicating the same count under two wrong labels,
+// "SqFt: 10 perches SqFt" double-unitized) — caught 2026-09-10.
+export function buildLandDetailRows(land: Land): { label: string; value: string }[] {
+  const plots = land.plots ?? [];
+  const totalPlots = plots.length;
+  const plotsAvailable = plots.filter((plot) => plot.status === "Available").length;
+
+  return [
+    { label: "Land use", value: land.landUse.join(", ") },
+    { label: "Land type", value: land.landType },
+    { label: "Shape of land", value: land.landShape },
+    { label: "Status", value: land.status },
+    { label: "Plots", value: totalPlots > 0 ? `${plotsAvailable} available of ${totalPlots} total` : undefined },
+    { label: "District", value: land.district },
+    { label: "City", value: land.city },
+    { label: "Province", value: land.province },
+    { label: "Road access", value: land.roadAccess },
+    { label: "Road width", value: land.roadWidthFt ? `${land.roadWidthFt} ft` : undefined },
+    { label: "Electricity", value: land.electricity },
+    { label: "Water", value: land.water },
+    { label: "Title / deed", value: land.titleType },
+    { label: "Survey plan", value: land.surveyPlanStatus },
+    { label: "Seller", value: land.sellerName },
+  ].filter((row): row is { label: string; value: string } => Boolean(row.value));
+}
