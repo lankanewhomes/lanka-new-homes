@@ -2132,6 +2132,22 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   border-radius: 999px;
   border: 1px solid rgba(0, 0, 0, 0.08);
   box-shadow: 0 10px 28px rgba(15, 23, 42, 0.16);
+  /* Desktop: hidden until the hero title has scrolled out of view
+     (.is-visible, same IntersectionObserver flag as .listing-hero-mobile-
+     ctas). At the top of the page the hero renders this exact pill row
+     itself, and the floating copy landed directly on top of it and the
+     title line beneath. Mobile overrides this below — there the bar is the
+     page's bottom tab nav and is always shown. */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.18s ease, visibility 0.18s ease;
+}
+
+.listing-hero-quickjump-bar.is-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }
 
 .listing-hero-quickjump-btn {
@@ -2156,12 +2172,19 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   color: #fff;
 }
 
+/* Desktop floating pill: first 6 only (the hero's own row above shows the
+   full set). The mobile tab bar below re-shows the rest and scrolls. */
+.listing-hero-quickjump-btn:nth-child(n + 7) {
+  display: none;
+}
+
 @media (max-width: 760px) {
   /* On mobile the pills bar isn't a floating action button — it becomes an
      underline-tab bar fixed to the bottom of the viewport, taking over the
      role of the (hidden-on-mobile) .listing-hero-sticky-bar tab row.
      Always visible (unlike .listing-hero-mobile-ctas at the top, this has
-     nothing above it to overlap, so it doesn't need scroll-gating). */
+     nothing above it to overlap, so it doesn't need scroll-gating) — which
+     is why the desktop-only .is-visible gating is undone here. */
   .listing-hero-quickjump-bar {
     position: fixed;
     top: auto;
@@ -2170,6 +2193,10 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
     right: 0;
     transform: none;
     z-index: 45;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: none;
     width: 100%;
     margin: 0;
     max-width: none;
@@ -2187,6 +2214,20 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 
   .listing-hero-quickjump-bar::-webkit-scrollbar {
     display: none;
+  }
+
+  /* 7+ tabs (the full Photos…Street View set): keep every tab at its
+     natural width and let the bar slide sideways, instead of squeezing all
+     of them onto one screen. flex-start so the first tab is never clipped
+     off the left edge by the overflowing row; the partly-visible last tab
+     is the cue that it scrolls. */
+  .listing-hero-quickjump-bar.is-scrollable {
+    justify-content: flex-start;
+    gap: 0;
+  }
+
+  .listing-hero-quickjump-btn:nth-child(n + 7) {
+    display: inline-flex;
   }
 
   .listing-hero-quickjump-btn {
@@ -2229,30 +2270,11 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
     display: block;
   }
 
-  /* Stays inline beside the label ("Photos 29") when there's room for
-     every tab on one line — only drops to its own line under is-compact
-     below, where two-word labels are already wrapping and a trailing
-     inline count would sit unevenly from tab to tab. */
+  /* Stays inline beside the label ("Photos 29") — tabs never shrink to
+     fit now (the bar slides instead), so labels don't wrap. */
   .listing-hero-quickjump-count {
     font-size: 10px;
     font-weight: 500;
-  }
-
-  /* Only kicks in with the full set of 7 tabs (see the is-compact class
-     applied in ProjectHero) — every two-word label ("Road Map", "Block
-     Plan", "Floor Plans", "Street View") stacks onto two lines together,
-     rather than leaving it to organic flex-shrink math that could wrap
-     some labels but not others. */
-  .listing-hero-quickjump-bar.is-compact .listing-hero-quickjump-btn {
-    flex: 1 1 auto;
-    min-width: 0;
-    padding: 0 4px;
-    white-space: normal;
-  }
-
-  .listing-hero-quickjump-bar.is-compact .listing-hero-quickjump-count {
-    display: block;
-    line-height: 1;
   }
 }
 
@@ -6782,14 +6804,29 @@ a.developer-profile-press-title {
   text-decoration: none;
 }
 
-.footer-link-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px 32px;
-  margin-top: 28px;
+.footer-link-groups {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px 32px;
+  margin-top: 32px;
   padding-top: 28px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-link-row-label {
+  margin: 0 0 12px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8f8f96;
+}
+
+.footer-link-row {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .footer-link-row a {
@@ -6797,7 +6834,6 @@ a.developer-profile-press-title {
   line-height: 1.4;
   color: #d8d8dc;
   text-decoration: none;
-  white-space: nowrap;
 }
 
 .footer-link-row a:hover {
@@ -6843,8 +6879,9 @@ a.developer-profile-press-title {
     gap: 14px;
   }
 
-  .footer-link-row {
-    gap: 10px 20px;
+  .footer-link-groups {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px 24px;
   }
 
   .footer-bottom {

@@ -169,6 +169,8 @@ export const AMENITY_NAME_OPTIONS = [
   'EV Charging',
   'Concierge',
   'Padel Court',
+  'Basketball Court',
+  'Badminton Court',
   'Resident Lounge',
   'Private Elevator',
   'Utility Area',

@@ -32,6 +32,7 @@ import {
 } from "@/components/icons/stat-icons";
 import { Fragment, FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import {
+  Activity,
   Bath,
   BedDouble,
   Bell,
@@ -108,6 +109,15 @@ const amenityIcons: Record<string, React.ComponentType<{ className?: string }>> 
   "Sky Lounge": Building2,
   "Retail Mall": Building,
   Hotel: HousePlus,
+  "Padel Court": Activity,
+  "Basketball Court": Activity,
+  "Badminton Court": Activity,
+  "Resident Lounge": Users,
+  "Utility Area": Layers,
+  "Outdoor Kitchen": UtensilsCrossed,
+  "Gated Community": ShieldCheck,
+  Beachfront: Waves,
+  "Sea View": Waves,
 };
 
 function renderEntityLink(name: string, slug: string | undefined, basePath: string, className?: string) {
@@ -641,8 +651,11 @@ export function ProjectHero({
   // would scroll away with that section instead of staying pinned through
   // the rest of the page. Gate its visibility on having scrolled past the
   // title instead, so it doesn't overlap the site header at the top of the
-  // page before that. The bottom quick-jump tab bar doesn't need this —
-  // nothing else occupies the bottom of the viewport for it to overlap.
+  // page before that. The same flag gates the desktop floating quick-jump
+  // bar: at the top of the page it sat right on top of the hero's own pill
+  // row and the title line (the two rows of pills visibly touched), and it
+  // duplicates that row anyway until the hero has scrolled away. The mobile
+  // bottom tab bar ignores the flag — it's a fixed nav with nothing under it.
   useEffect(() => {
     const target = titlePanelRef.current;
     if (!target) return;
@@ -866,10 +879,7 @@ export function ProjectHero({
       ),
     },
     {
-      // Last among the regular pills (only Street View, which always sorts
-      // after everything else, can come after it) — moved here from right
-      // after Map, per an explicit request to push it to the end of the
-      // mobile sticky bar.
+      // Display order is set by HERO_PILL_ORDER below, not by position here.
       key: "floor-plans",
       show: hasBlockPlan,
       render: (className) => (
@@ -879,30 +889,23 @@ export function ProjectHero({
       ),
     },
   ];
-  const visibleHeroMediaPills = heroMediaPills.filter((pill) => pill.show);
-  // The mobile sticky-to-bottom quick-jump bar has room for 6 icons max.
-  // Street View is the least essential of the set, so it always sorts last
-  // and is the first (only) thing dropped when the bar is already full —
-  // never bumps a more useful pill out to make room for itself.
-  //
-  // Photos and Floor Plans are the opposite case — the two sections a buyer
-  // is most likely to want — but "floor-plans" is defined last in
-  // heroMediaPills above, so a plain positional slice(0, 6) was silently
-  // dropping it on any well-populated listing (brochure + road map + block
-  // plan + a video already fills the first 6 slots before floor-plans is
-  // ever reached). Pulling both out and placing them first, same way
-  // street-view is pulled out and placed last, so neither can be bumped by
-  // array position alone.
-  const essentialKeys = new Set(["photos", "floor-plans"]);
-  const quickjumpEssentialPills = visibleHeroMediaPills.filter((pill) => essentialKeys.has(pill.key));
-  const quickjumpOtherPills = visibleHeroMediaPills.filter((pill) => !essentialKeys.has(pill.key) && pill.key !== "street-view");
-  const quickjumpStreetViewPill = visibleHeroMediaPills.find((pill) => pill.key === "street-view");
-  const quickjumpRemainingSlots = Math.max(0, 6 - quickjumpEssentialPills.length);
-  const quickjumpPills = [
-    ...quickjumpEssentialPills,
-    ...quickjumpOtherPills.slice(0, quickjumpStreetViewPill ? quickjumpRemainingSlots - 1 : quickjumpRemainingSlots),
-    ...(quickjumpStreetViewPill && quickjumpEssentialPills.length + quickjumpOtherPills.length < 6 ? [quickjumpStreetViewPill] : []),
-  ];
+  // One canonical order for both the hero pill row and the floating bar
+  // (set by the owner, 2026-09-11): most-wanted first, so the 6-pill cap on
+  // the floating bar drops Map / Street View before anything a buyer is
+  // more likely to reach for. Anything not listed sorts after, in
+  // definition order.
+  const HERO_PILL_ORDER = ["photos", "floor-plans", "videos", "brochure", "road-map", "block-plan", "map", "street-view"];
+  const pillRank = (key: string) => {
+    const index = HERO_PILL_ORDER.indexOf(key);
+    return index === -1 ? HERO_PILL_ORDER.length : index;
+  };
+  const visibleHeroMediaPills = heroMediaPills
+    .filter((pill) => pill.show)
+    .sort((a, b) => pillRank(a.key) - pillRank(b.key));
+  // Every pill is rendered in the bar. The desktop floating pill keeps only
+  // the first 6 (CSS hides :nth-child(n+7)); the mobile bottom tab bar shows
+  // all of them and slides horizontally when they don't fit (.is-scrollable).
+  const quickjumpPills = visibleHeroMediaPills;
 
   return (
     <>
@@ -1381,13 +1384,11 @@ export function ProjectHero({
         hero section it would scroll away with the section instead of
         staying pinned through the rest of the page on mobile. */}
     {quickjumpPills.length > 0 && (
-      // Mobile only: two-word labels ("Road Map", "Block Plan", "Floor
-      // Plans", "Street View") stack onto two lines — but only once there
-      // are enough tabs (the full set of 7) that they need the room; with
-      // fewer tabs every label stays on its natural single line. Capped at
-      // 6 pills now (see quickjumpPills above), so this can no longer
-      // actually trigger — left in place in case the cap changes later.
-      <div className={`listing-hero-quickjump-bar${quickjumpPills.length >= 7 ? " is-compact" : ""}`} aria-label="Quick jump">
+      // is-scrollable: more than 6 pills — the mobile tab bar keeps every tab
+      // at natural width and slides sideways (desktop hides the 7th onward
+      // in CSS either way). is-visible: desktop-only scroll gating, see the
+      // titlePanelRef observer above.
+      <div className={`listing-hero-quickjump-bar${quickjumpPills.length > 6 ? " is-scrollable" : ""}${scrolledPastTitle ? " is-visible" : ""}`} aria-label="Quick jump">
         {quickjumpPills.map((pill) => (
           <Fragment key={pill.key}>
             {pill.render(`listing-hero-quickjump-btn${pill.lightboxKey && pill.lightboxKey === lightboxView ? " is-active" : ""}`)}
@@ -3371,25 +3372,45 @@ export function Footer() {
         </div>
         <p className="footer-tagline">Find new homes, apartments and land for sale across Sri Lanka — with floor plans, pricing and developer details in one place.</p>
 
-        <nav className="footer-link-row" aria-label="Explore listings">
-          <Link href="/projects">New homes for sale</Link>
-          <Link href="/land">Land for sale</Link>
-          <Link href="/developers">Developers</Link>
-          <Link href="/construction-companies">Construction companies</Link>
-          <Link href="/for-developers">Why list with us</Link>
-          <Link href="/web-design">Website design</Link>
-        </nav>
+        <div className="footer-link-groups">
+          <div className="footer-link-group">
+            <p className="footer-link-row-label">Explore</p>
+            <nav className="footer-link-row" aria-label="Explore listings">
+              <Link href="/projects">New homes for sale</Link>
+              <Link href="/land">Land for sale</Link>
+              <Link href="/developers">Developers</Link>
+              <Link href="/construction-companies">Construction companies</Link>
+            </nav>
+          </div>
 
-        <nav className="footer-link-row" aria-label="Company">
-          <Link href="/about">About</Link>
-          <Link href="/contact">Contact</Link>
-          <Link href="/blog">Blog</Link>
-          <Link href="/developers/register">Register</Link>
-          <Link href="/developers/login">Developer login</Link>
-          <Link href="/privacy">Privacy Policy</Link>
-          <Link href="/terms">Terms of Service</Link>
-          <Link href="/sitemap">Sitemap</Link>
-        </nav>
+          <div className="footer-link-group">
+            <p className="footer-link-row-label">For developers</p>
+            <nav className="footer-link-row" aria-label="For developers">
+              <Link href="/for-developers">Why list with us</Link>
+              <Link href="/web-design">Website design</Link>
+              <Link href="/developers/register">Register</Link>
+              <Link href="/developers/login">Developer login</Link>
+            </nav>
+          </div>
+
+          <div className="footer-link-group">
+            <p className="footer-link-row-label">Company</p>
+            <nav className="footer-link-row" aria-label="Company">
+              <Link href="/about">About</Link>
+              <Link href="/contact">Contact</Link>
+              <Link href="/blog">Blog</Link>
+            </nav>
+          </div>
+
+          <div className="footer-link-group">
+            <p className="footer-link-row-label">Legal</p>
+            <nav className="footer-link-row" aria-label="Legal">
+              <Link href="/privacy">Privacy Policy</Link>
+              <Link href="/terms">Terms of Service</Link>
+              <Link href="/sitemap">Sitemap</Link>
+            </nav>
+          </div>
+        </div>
 
         <div className="footer-bottom">
           <p className="copyright">© {new Date().getFullYear()} LankaNewHomes. All rights reserved.</p>

@@ -20,6 +20,8 @@ export type Amenity = {
     | "EV Charging"
     | "Concierge"
     | "Padel Court"
+    | "Basketball Court"
+    | "Badminton Court"
     | "Resident Lounge"
     | "Private Elevator"
     | "Utility Area"

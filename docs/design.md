@@ -121,6 +121,30 @@ disabled/greyed-out — a field with no content just doesn't get a pill.
 Clicking Photos or Map opens the lightbox gallery; the rest switch the hero
 media area the same way the tab bar below it always has.
 
+**Pill order (owner-set, 2026-09-11)** — one canonical order drives both
+the hero pill row and the floating/mobile bar (`HERO_PILL_ORDER` in
+`ProjectHero`): Photos, Floor Plans (or "Plots" on land), Videos, Brochure,
+Road Map, Block Plan, Map, Street View; anything else (360° View,
+Interactive map, Virtual tours) sorts after in definition order. Every
+pill is rendered into the bar; the desktop floating pill shows only the
+first 6 (`:nth-child(n + 7)` hidden in CSS), so on a fully populated
+listing Map and Street View are what drop off it — not Floor Plans, which
+an earlier positional `slice(0, 6)` used to lose. The mobile bottom tab
+bar re-shows all of them and, with 7+ (`.is-scrollable`), keeps each tab
+at natural width and slides horizontally — the partly visible last tab is
+the affordance — rather than squeezing every label onto one screen (the
+old `is-compact` mode, removed 2026-09-11). Don't reintroduce per-pill
+"essential"/"always last" special cases; change the order in one place.
+
+**Desktop floating bar is scroll-gated.** It gets `.is-visible` from the
+same `titlePanelRef` IntersectionObserver flag as `.listing-hero-mobile-
+ctas`, and the base rule keeps it `opacity: 0; visibility: hidden` until
+then. At the top of the page the hero already renders this exact pill row,
+and the always-on floating copy sat directly on top of it and the title
+line beneath (two rows of pills visibly touching). The ≤760px override
+forces it visible again — on mobile it's the page's bottom tab nav, not a
+duplicate of anything.
+
 The single wide-photo view (`.listing-hero-image-trigger` / `.listing-hero-image`)
 is no longer the default but is still used by the explicit "Photos" tab
 browse mode (clicking that tab in the toolbar below the hero) — that markup
