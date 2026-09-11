@@ -1,4 +1,4 @@
-# Elemint Suites
+# Elemint Suites - Gampaha
 
 - **Slug:** `elemint-suites-gampaha` · **Developer:** Prime Lands · **Published:** yes
 - **Source:** https://www.primelands.lk/house/ELEMINT-SUITES-GAMPAHA/en
@@ -23,13 +23,13 @@
 ## Media (Cloudflare R2, media.lankanewhomes.com)
 
 - Hero: https://media.lankanewhomes.com/projects/elemint-suites-gampaha/gallery/elemint-suites-gampaha_photo-3.jpg
-- Property photos (gallery/): 7 · amenity photos (amenities/): 0 · road map: yes
+- Property photos (gallery/): 7 · amenity photos (amenities/): 0 · road map: —
 - Construction updates (dated photos): 0
 
 ## Data captured
 
-- Amenities: Gym
-- Key Features groups: Outdoor Features (2)
+- Amenities: Outdoor Gym, Jogging Track, Children's Area
+- Key Features groups: —
 - Nearby places: 2
 - Contact: — · — · —
 - Project verification checklist: not yet
@@ -44,4 +44,4 @@
 - Key Features (jogging track, kids' play area) and 2 nearby points (Colombo–Kandy road, Gampaha town) added.
 - Payment plan published: 40% down within 12 months, bank loan available for the balance.
 
-_Generated 2026-09-09 from the live Payload record._
+_Generated 2026-09-11 from the live Payload record._

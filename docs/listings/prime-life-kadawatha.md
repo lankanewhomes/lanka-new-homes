@@ -1,4 +1,4 @@
-# Prime Life
+# Prime Life - Kadawatha
 
 - **Slug:** `prime-life-kadawatha` · **Developer:** Prime Lands · **Published:** yes
 - **Source:** https://www.primelands.lk/house/PRIME-LIFE-KADAWATHA/en
@@ -13,18 +13,18 @@
 | Plan | Beds | Baths | SqFt | Perches | 2D | m² | 3D | Downloads | Availability | Available floors |
 |---|---|---|---|---|---|---|---|---|---|---|
 | TYPE A | 3 | 2 | 1355 | — | ✅ | — | — | 2 | Available | — |
-| TYPE B | 3 | 2 | 1355 | — | ✅ | — | — | 2 | Available | — |
+| TYPE B | 3 | 2 | 1355 | — | ✅ | — | — | 3 | Available | — |
 
 ## Media (Cloudflare R2, media.lankanewhomes.com)
 
 - Hero: https://media.lankanewhomes.com/projects/prime-life-kadawatha/gallery/prime-life-kadawatha_exterior-01.jpg
-- Property photos (gallery/): 8 · amenity photos (amenities/): 0 · road map: yes
+- Property photos (gallery/): 8 · amenity photos (amenities/): 0 · road map: —
 - Construction updates (dated photos): 0
 
 ## Data captured
 
-- Amenities: Pool
-- Key Features groups: Specifications (1), Outdoor Features (1)
+- Amenities: Pool, Security, Gym, Clubhouse, Roof Terrace
+- Key Features groups: Specifications (18)
 - Nearby places: 3
 - Contact: — · — · —
 - Project verification checklist: not yet
@@ -39,4 +39,4 @@
 - Key Features (10-year structural warranty, scenic roof terrace) and 3 nearby points (Mankada road, Kadawatha town, highway entrance) added.
 - No price published ("Contact for pricing"); title has no city suffix on the source site — city inferred from the project location and confirmed against the page address.
 
-_Generated 2026-09-09 from the live Payload record._
+_Generated 2026-09-11 from the live Payload record._

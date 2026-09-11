@@ -23,7 +23,7 @@
 ## Media (Cloudflare R2, media.lankanewhomes.com)
 
 - Hero: https://media.lankanewhomes.com/projects/rush-metropolis-dehiwala/gallery/rush-metropolis-dehiwala_exterior-01.jpg
-- Property photos (gallery/): 5 · amenity photos (amenities/): 0 · road map: yes
+- Property photos (gallery/): 5 · amenity photos (amenities/): 0 · road map: —
 - Construction updates (dated photos): 6
 
 | Date | Milestone |
@@ -53,4 +53,4 @@
 - Per-floor tracker shows EVERY floor sold while marketed as selling — hidden as a placeholder; confirm.
 - Construction: 6 milestones with photos. Sales & marketing partner Rush2Homes.
 
-_Generated 2026-09-09 from the live Payload record._
+_Generated 2026-09-11 from the live Payload record._

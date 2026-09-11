@@ -1,4 +1,4 @@
-# Clover
+# Clover - Thalawathugoda
 
 - **Slug:** `clover-thalawathugoda` · **Developer:** Prime Lands · **Published:** yes
 - **Source:** https://www.primelands.lk/house/CLOVER-THALAWATHUGODA/en
@@ -32,13 +32,13 @@
 ## Media (Cloudflare R2, media.lankanewhomes.com)
 
 - Hero: https://media.lankanewhomes.com/projects/clover-thalawathugoda/gallery/clover-thalawathugoda_photo-2.jpg
-- Property photos (gallery/): 7 · amenity photos (amenities/): 0 · road map: yes
+- Property photos (gallery/): 7 · amenity photos (amenities/): 0 · road map: —
 - Construction updates (dated photos): 0
 
 ## Data captured
 
-- Amenities: —
-- Key Features groups: Specifications (7), Outdoor Features (1)
+- Amenities: Roof Terrace, Pool
+- Key Features groups: Specifications (7)
 - Nearby places: 0
 - Contact: — · — · —
 - Project verification checklist: not yet
@@ -53,4 +53,4 @@
 - Key Features (Specifications: A/C, timber flooring, European toilet fittings, teak/mahogany doors, etc.) added from the brand's standard-fittings bullet list.
 - No payment-plan bullets published on this page (price Rs 118.5M is a "from" figure). No nearby-distance bullets published either.
 
-_Generated 2026-09-09 from the live Payload record._
+_Generated 2026-09-11 from the live Payload record._

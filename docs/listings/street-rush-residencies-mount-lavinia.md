@@ -21,7 +21,7 @@
 ## Media (Cloudflare R2, media.lankanewhomes.com)
 
 - Hero: https://media.lankanewhomes.com/projects/street-rush-residencies-mount-lavinia/gallery/street-rush-residencies-mount-lavinia_exterior-01.jpg
-- Property photos (gallery/): 9 · amenity photos (amenities/): 0 · road map: yes
+- Property photos (gallery/): 9 · amenity photos (amenities/): 0 · road map: —
 - Construction updates (dated photos): 4
 
 | Date | Milestone |
@@ -48,4 +48,4 @@
 - Units A–E (1–4 bed) from page unit data; available floors per unit from the tracker. Handover 2028.
 - Construction: 4 milestones with photos (Nov 2024 → foundation in progress).
 
-_Generated 2026-09-09 from the live Payload record._
+_Generated 2026-09-11 from the live Payload record._

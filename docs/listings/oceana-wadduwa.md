@@ -50,4 +50,4 @@
 - Generic interior renders removed from the gallery at the owner's request; facility/activity photos live under amenities/ (never in the hero). Hero = beach-villa-01 by the owner's choice.
 - Developer Home Lands created new (verification pending); email/socials supplied by the owner (the site masks the address).
 
-_Generated 2026-09-09 from the live Payload record._
+_Generated 2026-09-11 from the live Payload record._

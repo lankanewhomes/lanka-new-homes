@@ -20,7 +20,7 @@
 ## Media (Cloudflare R2, media.lankanewhomes.com)
 
 - Hero: https://media.lankanewhomes.com/projects/rush-residencies-allen-dehiwala/gallery/rush-residencies-allen-dehiwala_exterior-01.jpg
-- Property photos (gallery/): 7 · amenity photos (amenities/): 0 · road map: yes
+- Property photos (gallery/): 7 · amenity photos (amenities/): 0 · road map: —
 - Construction updates (dated photos): 1
 
 | Date | Milestone |
@@ -44,4 +44,4 @@
 - Units A–D from page unit data; only Unit A floor 14 shows available. Handover 2029.
 - Construction: site clearing ongoing (2026).
 
-_Generated 2026-09-09 from the live Payload record._
+_Generated 2026-09-11 from the live Payload record._

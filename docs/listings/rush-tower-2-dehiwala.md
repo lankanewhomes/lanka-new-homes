@@ -22,7 +22,7 @@
 ## Media (Cloudflare R2, media.lankanewhomes.com)
 
 - Hero: https://media.lankanewhomes.com/projects/rush-tower-2-dehiwala/gallery/rush-tower-2-dehiwala_exterior-01.jpg
-- Property photos (gallery/): 8 · amenity photos (amenities/): 0 · road map: yes
+- Property photos (gallery/): 8 · amenity photos (amenities/): 0 · road map: —
 - Construction updates (dated photos): 9
 
 | Date | Milestone |
@@ -54,4 +54,4 @@
 - Units A–F from page unit data (A and F: 3 bathrooms per the developer). Only Unit A floor 1 available. Handover 2026.
 - Construction: 9 milestones with photos (Dec 2021 → MEP in progress).
 
-_Generated 2026-09-09 from the live Payload record._
+_Generated 2026-09-11 from the live Payload record._

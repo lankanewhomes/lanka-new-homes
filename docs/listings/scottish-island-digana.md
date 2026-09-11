@@ -1,4 +1,4 @@
-# Scottish Island
+# Scottish Island - Digana
 
 - **Slug:** `scottish-island-digana` · **Developer:** Prime Lands · **Published:** yes
 - **Source:** https://www.primelands.lk/house/SCOTTISH-ISLAND-DIGANA/en
@@ -12,20 +12,20 @@
 
 | Plan | Beds | Baths | SqFt | Perches | 2D | m² | 3D | Downloads | Availability | Available floors |
 |---|---|---|---|---|---|---|---|---|---|---|
-| TYPE A | 3 | 2 | 1856 | — | ✅ | — | — | — | Available | — |
-| TYPE B | 3 | 3 | 0 | — | ✅ | — | — | — | Available | — |
-| TYPE C | 3 | 3 | 0 | — | ✅ | — | — | — | Available | — |
+| TYPE A | 3 | 2 | 1856 | — | ✅ | — | — | 2 | Available | — |
+| TYPE B | 3 | 3 | 0 | — | ✅ | — | — | 2 | Available | — |
+| TYPE C | 3 | 3 | 0 | — | ✅ | — | — | 2 | Available | — |
 
 ## Media (Cloudflare R2, media.lankanewhomes.com)
 
 - Hero: https://media.lankanewhomes.com/projects/scottish-island-digana/gallery/scottish-island-digana_photo-3.jpg
-- Property photos (gallery/): 7 · amenity photos (amenities/): 0 · road map: yes
+- Property photos (gallery/): 7 · amenity photos (amenities/): 0 · road map: —
 - Construction updates (dated photos): 0
 
 ## Data captured
 
-- Amenities: —
-- Key Features groups: Specifications (8), Outdoor Features (1)
+- Amenities: Clubhouse, Pool, Roof Terrace
+- Key Features groups: Specifications (17)
 - Nearby places: 0
 - Contact: — · — · —
 - Project verification checklist: not yet
@@ -40,4 +40,4 @@
 - Key Features (A/C, timber flooring, European fittings, teak/mahogany doors) added — same standard-fittings template as Clover.
 - Only project in this batch outside Colombo/Gampaha/Kalutara — Digana is Kandy District, Central Province.
 
-_Generated 2026-09-09 from the live Payload record._
+_Generated 2026-09-11 from the live Payload record._

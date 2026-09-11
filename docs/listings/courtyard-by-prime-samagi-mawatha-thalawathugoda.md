@@ -1,4 +1,4 @@
-# Courtyard by Prime
+# Courtyard by Prime - Samagi Mawatha Thalawathugoda
 
 - **Slug:** `courtyard-by-prime-samagi-mawatha-thalawathugoda` · **Developer:** Prime Lands · **Published:** yes
 - **Source:** https://www.primelands.lk/house/COURTYARD-BY-PRIME-SAMAGI-MAWATHA-THALAWATHUGODA/en
@@ -31,8 +31,8 @@
 
 ## Data captured
 
-- Amenities: Security, Pool, Gym
-- Key Features groups: Specifications (1), Outdoor Features (5)
+- Amenities: Security, Pool, Gym, Utility Area, Padel Court, Private Elevator, Resident Lounge, Garden, Outdoor Kitchen, Gated Community, Clubhouse, Kids Pool, Roof Terrace
+- Key Features groups: Specifications (17)
 - Nearby places: 3
 - Contact: — · — · —
 - Project verification checklist: not yet
@@ -47,4 +47,4 @@
 - Key Features (private elevator, Padel Court, resident lounge, outdoor kitchen) and 3 nearby places (Thalawathugoda Town, bus route, Vidura College) added from the page's bullet list.
 - Payment plan published: 25% down, 1% monthly ×30, 5% at months 12 & 24, 35% at handover.
 
-_Generated 2026-09-09 from the live Payload record._
+_Generated 2026-09-11 from the live Payload record._

@@ -1,4 +1,4 @@
-# Prime Evoke
+# Prime Evoke - Kadawatha
 
 - **Slug:** `prime-evoke-kadawatha` · **Developer:** Prime Lands · **Published:** yes
 - **Source:** https://www.primelands.lk/house/PRIME-EVOKE-KADAWATHA/en
@@ -30,8 +30,8 @@
 
 ## Data captured
 
-- Amenities: Security, Gym, Pool, Garden
-- Key Features groups: Outdoor Features (1)
+- Amenities: Security, Gym, Pool, Garden, Children's Area
+- Key Features groups: —
 - Nearby places: 2
 - Contact: — · — · —
 - Project verification checklist: not yet
@@ -45,4 +45,4 @@
 - All 9 types confirmed: B (2bd/1ba/752), C (2/1/774), D (2/1/761), E (2/1/774), F (2/1/765), F1 (3/1/1,142 — 2-storey), G (2/1/731), H (2/1/761), H1 (3/2/1,165 — 2-storey). No "Type A" exists on this site — B is the first type published.
 - Key Features (kids' play area) and 2 nearby points (Kadawatha/Kandy highway) added.
 
-_Generated 2026-09-09 from the live Payload record._
+_Generated 2026-09-11 from the live Payload record._

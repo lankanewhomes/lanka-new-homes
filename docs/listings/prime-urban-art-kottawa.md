@@ -1,4 +1,4 @@
-# Prime Urban Art
+# Prime Urban Art - Kottawa
 
 - **Slug:** `prime-urban-art-kottawa` · **Developer:** Prime Lands · **Published:** yes
 - **Source:** https://www.primelands.lk/house/PRIME-URBAN-ART-KOTTAWA/en
@@ -14,17 +14,23 @@
 |---|---|---|---|---|---|---|---|---|---|---|
 | TYPE A1 | 2 | 2 | 1383 | — | ✅ | — | — | — | Available | — |
 | TYPE A2 | 3 | 2 | 1433 | — | ✅ | — | — | — | Available | — |
+| TYPE B | 3 | 2 | 1432 | — | ✅ | — | — | — | Available | — |
+| TYPE C | 3 | 2 | 1309 | — | ✅ | — | — | — | Available | — |
+| TYPE D | 2 | 2 | 1840 | — | ✅ | — | — | — | Available | — |
+| TYPE E | 3 | 2 | 1591 | — | ✅ | — | — | — | Available | — |
+| TYPE SS-A | 2 | 2 | 713 | — | ✅ | — | — | — | Available | — |
+| TYPE SS-D | 3 | 2 | 932 | — | ✅ | — | — | — | Available | — |
 
 ## Media (Cloudflare R2, media.lankanewhomes.com)
 
 - Hero: https://media.lankanewhomes.com/projects/prime-urban-art-kottawa/gallery/prime-urban-art-kottawa_photo-3.jpg
-- Property photos (gallery/): 7 · amenity photos (amenities/): 0 · road map: yes
+- Property photos (gallery/): 7 · amenity photos (amenities/): 0 · road map: —
 - Construction updates (dated photos): 0
 
 ## Data captured
 
-- Amenities: Security, Gym, Pool, Garden
-- Key Features groups: Specifications (4), Outdoor Features (3)
+- Amenities: Security, Gym, Pool, Garden, Basketball Court, Badminton Court, Roof Terrace, Kids Pool, Children's Area
+- Key Features groups: Specifications (18)
 - Nearby places: 0
 - Contact: — · — · —
 - Project verification checklist: not yet
@@ -39,4 +45,4 @@
 - Key Features (servant toilet, 1000L water tank, basketball/badminton courts, roof terrace) added.
 - No price published ("Contact for pricing").
 
-_Generated 2026-09-09 from the live Payload record._
+_Generated 2026-09-11 from the live Payload record._

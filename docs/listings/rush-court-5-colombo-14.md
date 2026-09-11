@@ -19,7 +19,7 @@
 ## Media (Cloudflare R2, media.lankanewhomes.com)
 
 - Hero: https://media.lankanewhomes.com/projects/rush-court-5-colombo-14/gallery/rush-court-5-colombo-14_exterior-01.jpg
-- Property photos (gallery/): 7 · amenity photos (amenities/): 0 · road map: yes
+- Property photos (gallery/): 7 · amenity photos (amenities/): 0 · road map: —
 - Construction updates (dated photos): 8
 
 | Date | Milestone |
@@ -50,4 +50,4 @@
 - Units A–C from page unit data; tracker: Unit A all 7 floors sold, B/C floors 1–2 available. Handover 2026.
 - Construction: 8 milestones with photos (Sep 2023 → roof slab / brickwork ongoing).
 
-_Generated 2026-09-09 from the live Payload record._
+_Generated 2026-09-11 from the live Payload record._

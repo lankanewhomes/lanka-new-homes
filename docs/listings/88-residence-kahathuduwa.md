@@ -1,4 +1,4 @@
-# 88 Residence
+# 88 Residence - Kahathuduwa
 
 - **Slug:** `88-residence-kahathuduwa` · **Developer:** Prime Lands · **Published:** yes
 - **Source:** https://www.primelands.lk/house/88-RESIDENCE-KAHATHUDUWA/en
@@ -19,13 +19,13 @@
 ## Media (Cloudflare R2, media.lankanewhomes.com)
 
 - Hero: https://media.lankanewhomes.com/projects/88-residence-kahathuduwa/gallery/88-residence-kahathuduwa_photo-3.jpg
-- Property photos (gallery/): 8 · amenity photos (amenities/): 0 · road map: yes
+- Property photos (gallery/): 8 · amenity photos (amenities/): 0 · road map: —
 - Construction updates (dated photos): 0
 
 ## Data captured
 
-- Amenities: Security, Pool, Gym, Children's Area
-- Key Features groups: —
+- Amenities: Security, Pool, Gym, Children's Area, Gated Community
+- Key Features groups: Specifications (16)
 - Nearby places: 3
 - Contact: — · — · —
 - Project verification checklist: not yet
@@ -40,4 +40,4 @@
 - Payment plan published: Rs. 10M down payment to move in today, balance over 10 years via bank loan.
 - 3 nearby transport points from the page (bus route, proposed highway entrance).
 
-_Generated 2026-09-09 from the live Payload record._
+_Generated 2026-09-11 from the live Payload record._

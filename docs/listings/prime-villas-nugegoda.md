@@ -1,4 +1,4 @@
-# Prime Villas (Nugegoda)
+# Prime Villas - Nugegoda
 
 - **Slug:** `prime-villas-nugegoda` · **Developer:** Prime Lands · **Published:** yes
 - **Source:** https://www.primelands.lk/house/PRIME-VILLAS-NUGEGODA/en
@@ -29,13 +29,13 @@
 ## Media (Cloudflare R2, media.lankanewhomes.com)
 
 - Hero: https://media.lankanewhomes.com/projects/prime-villas-nugegoda/gallery/prime-villas-nugegoda_photo-2.jpg
-- Property photos (gallery/): 4 · amenity photos (amenities/): 0 · road map: yes
+- Property photos (gallery/): 4 · amenity photos (amenities/): 0 · road map: —
 - Construction updates (dated photos): 0
 
 ## Data captured
 
-- Amenities: —
-- Key Features groups: —
+- Amenities: Parking
+- Key Features groups: Specifications (17)
 - Nearby places: 0
 - Contact: — · — · —
 - Project verification checklist: not yet
@@ -49,4 +49,4 @@
 - All 13 lots (01, 02, 04, 06–12, 14, 16, 17 — the site skips 03, 05, 13, 15) confirmed from their drawings, 1,516–2,002 sqft, all 3-bedroom.
 - No price published ("Contact for pricing"); no Key Features or nearby-distance bullets published on this page.
 
-_Generated 2026-09-09 from the live Payload record._
+_Generated 2026-09-11 from the live Payload record._

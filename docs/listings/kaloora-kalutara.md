@@ -1,4 +1,4 @@
-# Kaloora
+# Kaloora - Kalutara
 
 - **Slug:** `kaloora-kalutara` · **Developer:** Prime Lands · **Published:** yes
 - **Source:** https://www.primelands.lk/house/KALOORA-KALUTARA/en
@@ -22,13 +22,13 @@
 ## Media (Cloudflare R2, media.lankanewhomes.com)
 
 - Hero: https://media.lankanewhomes.com/projects/kaloora-kalutara/gallery/kaloora-kalutara_photo-2.jpg
-- Property photos (gallery/): 7 · amenity photos (amenities/): 0 · road map: yes
+- Property photos (gallery/): 7 · amenity photos (amenities/): 0 · road map: —
 - Construction updates (dated photos): 0
 
 ## Data captured
 
-- Amenities: Security, Pool, Gym, Children's Area
-- Key Features groups: Outdoor Features (2)
+- Amenities: Security, Pool, Gym, Children's Area, Indoor Cricket, Multifunctional Room, Gated Community
+- Key Features groups: —
 - Nearby places: 0
 - Contact: — · — · —
 - Project verification checklist: not yet
@@ -43,4 +43,4 @@
 - Key Features (indoor cricket area, multifunctional room) added.
 - Payment plan published: 30% down (90 days), 1% monthly ×33, 10% bullet payments (months 12 & 24), 22% balance at handover (month 34).
 
-_Generated 2026-09-09 from the live Payload record._
+_Generated 2026-09-11 from the live Payload record._

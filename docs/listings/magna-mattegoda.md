@@ -1,4 +1,4 @@
-# Magna
+# Magna - Mattegoda
 
 - **Slug:** `magna-mattegoda` · **Developer:** Prime Lands · **Published:** yes
 - **Source:** https://www.primelands.lk/house/MAGNA-MATTEGODA/en
@@ -19,7 +19,7 @@
 ## Media (Cloudflare R2, media.lankanewhomes.com)
 
 - Hero: https://media.lankanewhomes.com/projects/magna-mattegoda/gallery/magna-mattegoda_exterior-01.jpg
-- Property photos (gallery/): 1 · amenity photos (amenities/): 0 · road map: yes
+- Property photos (gallery/): 0 · amenity photos (amenities/): 0 · road map: —
 - Construction updates (dated photos): 0
 
 ## Data captured
@@ -40,4 +40,4 @@
 - 4 nearby transport points added (transport hub, two bus routes, highway entrance, all with stated minutes rather than km).
 - No price or payment-plan terms published ("Contact for pricing").
 
-_Generated 2026-09-09 from the live Payload record._
+_Generated 2026-09-11 from the live Payload record._

@@ -1,4 +1,4 @@
-# Prime Villas (Dalugama)
+# Prime Villas - Dalugama
 
 - **Slug:** `prime-villas-dalugama` · **Developer:** Prime Lands · **Published:** yes
 - **Source:** https://www.primelands.lk/house/PRIME-VILLAS-DALUGAMA/en
@@ -19,13 +19,13 @@
 ## Media (Cloudflare R2, media.lankanewhomes.com)
 
 - Hero: https://media.lankanewhomes.com/projects/prime-villas-dalugama/gallery/prime-villas-dalugama_photo-2.jpg
-- Property photos (gallery/): 7 · amenity photos (amenities/): 0 · road map: yes
+- Property photos (gallery/): 7 · amenity photos (amenities/): 0 · road map: —
 - Construction updates (dated photos): 0
 
 ## Data captured
 
-- Amenities: Parking, Garden, Security, Pool, Children's Area
-- Key Features groups: Specifications (1), Outdoor Features (1)
+- Amenities: Parking, Garden, Security, Pool, Children's Area, Pet Friendly
+- Key Features groups: Specifications (18)
 - Nearby places: 0
 - Contact: — · — · —
 - Project verification checklist: not yet
@@ -40,4 +40,4 @@
 - Key Features (hot water facility, pet friendly) added.
 - Payment plan published: Rs 1,000,000 reservation fee, 30% down within 3 months, bank loan available for the balance.
 
-_Generated 2026-09-09 from the live Payload record._
+_Generated 2026-09-11 from the live Payload record._

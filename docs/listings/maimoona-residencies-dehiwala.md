@@ -19,7 +19,7 @@
 ## Media (Cloudflare R2, media.lankanewhomes.com)
 
 - Hero: https://media.lankanewhomes.com/projects/maimoona-residencies-dehiwala/gallery/maimoona-residencies-dehiwala_exterior-01.jpg
-- Property photos (gallery/): 6 · amenity photos (amenities/): 0 · road map: yes
+- Property photos (gallery/): 6 · amenity photos (amenities/): 0 · road map: —
 - Construction updates (dated photos): 0
 
 ## Data captured
@@ -39,4 +39,4 @@
 - Units A–C (2BR 1,280 / 1BR 618 / 3BR 1,898 sqft) from page unit data. 12 apartments, handover 2027. Tracker shows every floor sold — hidden as placeholder.
 - Milestones exist (Feb 2024 → ground floor slab in progress) but carry no photos — description text only.
 
-_Generated 2026-09-09 from the live Payload record._
+_Generated 2026-09-11 from the live Payload record._

@@ -20,7 +20,7 @@
 ## Media (Cloudflare R2, media.lankanewhomes.com)
 
 - Hero: https://media.lankanewhomes.com/projects/rush-city-dematagoda/gallery/rush-city-dematagoda_exterior-01.jpg
-- Property photos (gallery/): 0 · amenity photos (amenities/): 0 · road map: yes
+- Property photos (gallery/): 0 · amenity photos (amenities/): 0 · road map: —
 - Construction updates (dated photos): 0
 
 ## Data captured
@@ -43,4 +43,4 @@
 - Units A–D specs, 2D/3D images and per-floor availability from the page's unit data. Expected handover 2030 (page).
 - Some S3 gallery images returned 403 intermittently — 6 extra exterior/interior shots not mirrored. No construction tracker yet.
 
-_Generated 2026-09-09 from the live Payload record._
+_Generated 2026-09-11 from the live Payload record._
