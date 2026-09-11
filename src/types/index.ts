@@ -44,6 +44,7 @@ export type Amenity = {
     | "Compost System"
     | "Solar-Powered Lighting"
     | "Multifunctional Room"
+    | "Mini Mart"
     | "Pet Friendly"
     | "Resident Lounge"
     | "Private Elevator"

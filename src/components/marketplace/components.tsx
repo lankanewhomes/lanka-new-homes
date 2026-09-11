@@ -146,6 +146,7 @@ const amenityIcons: Record<string, React.ComponentType<{ className?: string }>> 
   "Compost System": Sprout,
   "Solar-Powered Lighting": Sun,
   "Multifunctional Room": LayoutGrid,
+  "Mini Mart": Building,
   "Pet Friendly": PawPrint,
   "Resident Lounge": Users,
   "Utility Area": Layers,
@@ -2522,7 +2523,7 @@ export function AmenitiesShowcaseSection({ amenities, gallery, heroImage, title 
       "Sea View": "Open sea views add lasting value and a standout setting for the parcel.",
     };
 
-    return amenities.slice(0, 8).map((amenity) => {
+    return amenities.map((amenity) => {
       // Prefer a photo filed under the amenities/ folder with the exact
       // amenity name, then any amenities/ photo mentioning it, and only then
       // a general gallery photo — so "Beachfront Villa" (a property photo)
@@ -2546,6 +2547,12 @@ export function AmenitiesShowcaseSection({ amenities, gallery, heroImage, title 
   }, [amenities, gallery]);
 
   const [activeAmenityIndex, setActiveAmenityIndex] = useState(0);
+  // Same show-more pattern as PlansAndHomesSection: the first 8 render, the
+  // rest sit behind a "Show all" button. Used to be a silent slice(0, 8) —
+  // a listing with 21 published amenities (Waterfall Residencies) showed 8
+  // with no hint the others existed.
+  const [showAllAmenities, setShowAllAmenities] = useState(false);
+  const visibleAmenityItems = showAllAmenities ? amenityItems : amenityItems.slice(0, AMENITIES_INITIAL_COUNT);
   const activeAmenity = amenityItems[Math.max(0, Math.min(activeAmenityIndex, amenityItems.length - 1))];
 
   if (!amenityItems.length || !activeAmenity) {
@@ -2574,7 +2581,7 @@ export function AmenitiesShowcaseSection({ amenities, gallery, heroImage, title 
         </figure>
 
         <div className="amenities-showcase-list" role="list" aria-label="Amenity details">
-          {amenityItems.map((amenity, index) => {
+          {visibleAmenityItems.map((amenity, index) => {
             const isActive = index === activeAmenityIndex;
 
             return (
@@ -2594,11 +2601,19 @@ export function AmenitiesShowcaseSection({ amenities, gallery, heroImage, title 
               </button>
             );
           })}
+
+          {!showAllAmenities && amenityItems.length > AMENITIES_INITIAL_COUNT ? (
+            <button type="button" className="plans-more-btn amenities-more-btn" onClick={() => setShowAllAmenities(true)}>
+              Show all amenities ({amenityItems.length}) <span aria-hidden="true">+</span>
+            </button>
+          ) : null}
         </div>
       </div>
     </section>
   );
 }
+
+const AMENITIES_INITIAL_COUNT = 8;
 
 // Simpler sibling of AmenitiesShowcaseSection — commercial areas are named
 // tenants with their own photo already paired (not generic tags matched

@@ -4603,6 +4603,13 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   gap: 10px;
 }
 
+/* Sits as the last grid item in the (scrollable) amenity list — same
+   button as the plans "Show all" (.plans-more-btn), just self-centred. */
+.amenities-more-btn {
+  justify-self: center;
+  margin-top: 4px;
+}
+
 .amenities-showcase-list::-webkit-scrollbar {
   width: 6px;
 }

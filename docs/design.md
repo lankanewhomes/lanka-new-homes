@@ -854,6 +854,28 @@ hero (`ProjectStatsChips`, `.listing-hero-stats-chips`) and the 2-per-row
   `.mobile-stat-visible` at ≤980px. The land page's hand-built chip row
   doesn't use the wrapper class and is unaffected.
 
+## Amenities section — show-all, and what counts as an amenity
+
+`AmenitiesShowcaseSection` renders the first 8 amenities and a "Show all
+amenities (N)" button (same `.plans-more-btn` as the floor-plans section)
+for the rest — it used to be a silent `slice(0, 8)`, so a listing with 21
+published amenities (Waterfall Residencies) showed 8 with no hint the
+others existed. The list column is already `max-height: 540px; overflow-y:
+auto`, so the expanded list scrolls rather than stretching the section.
+
+**Amenity vs. Key Feature (owner rule, 2026-09-11):** any shared or on-site
+facility — pool, kids pool, gym, roof terrace, jogging track, BBQ area,
+clubhouse, courts, playground, concierge, pet-friendly, etc. — is an
+*Amenity* (the fixed `AMENITY_NAME_OPTIONS` vocabulary in
+`shared-fields.ts`; extend it when a developer publishes a real facility
+that isn't there, keeping the type union, `amenityIcons` map and
+`AMENITY_SYNONYMS` in step). Key Features is for per-unit build/finish
+content, and each item must be `Field: value` — the source is the
+brochure's "Specifications" page (Sub Structure / Roof & Ceiling / Finishes
+/ Plumbing / Doors & Windows / …), not the website's loose bullet list.
+Enum values can't contain an apostrophe (Drizzle's `ALTER TYPE … ADD VALUE`
+emits it unescaped and fails) — hence "Kids Pool", not "Kids' Pool".
+
 ## Hero grid vs. amenity / plan images
 
 `ProjectHero` builds its photo grid and lightbox from `heroImage` + `gallery`,
