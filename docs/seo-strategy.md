@@ -173,6 +173,20 @@ onboarding) and funnels to `/developers/register`. Linked from the footer's
 developers" column) and from `/about`'s developer section — those used to
 jump straight to the bare registration form.
 
+### Homepage "Popular searches" links
+
+`src/components/marketplace/home-client.tsx` (`SEO_LINK_GROUPS`) renders a
+footer-style block of "{type} for sale in {place}" links at the end of the
+homepage, categorized Land / Houses / Apartments & condominiums / New
+developments — content pulled from `SEO_KEYWORDS.md`. Every link is a real
+page: existing `/projects/*` category pages, or `/projects`/`/land` with
+their `type`/`location`/`landUse` query filters (a `location` filter was
+added to both pages for this — same pattern as the existing `type`/`landUse`
+params). Some target cities (Kandy, Wattala) have no listings yet; those
+links still land on a real filtered page with an honest empty state rather
+than a fabricated result — same as how the homepage's "Explore by city"
+tiles already treat those cities as real destinations.
+
 **Adding new keywords:** map each new keyword to the closest existing page
 above (add it to that page's H1/intro/meta in the relevant config file). Flag
 a keyword for a new page only if none of the existing pages are a reasonable
