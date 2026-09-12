@@ -24,20 +24,39 @@ export const metadata: Metadata = {
   },
 };
 
-type ProjectsPageProps = { searchParams: Promise<{ type?: string }> };
+type ProjectsPageProps = { searchParams: Promise<{ type?: string; location?: string }> };
+
+function matchesLocation(project: { location: string; city: string; district: string }, location: string) {
+  const needle = location.toLowerCase();
+  return (
+    project.location.toLowerCase().includes(needle) ||
+    project.city.toLowerCase().includes(needle) ||
+    project.district.toLowerCase().includes(needle)
+  );
+}
 
 export default async function ProjectsPage({ searchParams }: ProjectsPageProps) {
-  const { type } = await searchParams;
+  const { type, location } = await searchParams;
   const allProjects = await getAllProjects();
-  const projects = type ? allProjects.filter((project) => project.type === type) : allProjects;
+  let projects = type ? allProjects.filter((project) => project.type === type) : allProjects;
+  projects = location ? projects.filter((project) => matchesLocation(project, location)) : projects;
+
+  const h1 = type && location
+    ? `New ${type} projects in ${location}`
+    : location
+      ? `New projects in ${location}`
+      : type
+        ? `New ${type} projects in Sri Lanka`
+        : "New projects in Sri Lanka";
 
   return (
     <ProjectListingShell
       breadcrumbs={[{ label: "Home", href: "/" }, { label: "New Projects" }]}
-      h1={type ? `New ${type} projects in Sri Lanka` : "New projects in Sri Lanka"}
+      h1={h1}
       intro="Browse new condominium, apartment, and housing projects in Sri Lanka. This is the full list of new development projects and ongoing projects across the island — use the category pages below to narrow down by location or property type."
       projects={projects}
       relatedPaths={["/projects/pre-construction", "/projects/colombo", "/projects/villas", "/projects/beachfront"]}
+      emptyStateText={location ? `No ${type ? `${type.toLowerCase()} ` : ""}projects in ${location} yet — browse all new projects in Sri Lanka below.` : undefined}
     />
   );
 }

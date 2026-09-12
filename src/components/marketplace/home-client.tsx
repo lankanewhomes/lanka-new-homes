@@ -25,6 +25,57 @@ const neighborhoods = [
   { name: "Kurunegala", image: "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?q=80&w=900&auto=format&fit=crop" },
 ];
 
+// Popular-searches SEO footer block — realcommercial.com.au-style columns of
+// "{type} for sale in {place}" links. Every href is a real, server-filtered
+// page (either an existing /projects/* category page, or /projects and
+// /land's `type`/`location`/`landUse` query filters) — never a page with
+// invented results. Some target cities (Kandy, Wattala) have no listings
+// yet; those links still land on a real filtered page with an honest empty
+// state, the same way the homepage's own "Explore by city" tiles already
+// treat those cities as legitimate destinations via /search.
+const SEO_LINK_GROUPS: { title: string; links: { label: string; href: string }[] }[] = [
+  {
+    title: "Land",
+    links: [
+      { label: "Land for sale in Sri Lanka", href: "/land" },
+      { label: "Land for sale in Nuwara Eliya", href: "/land?location=Nuwara+Eliya" },
+      { label: "Residential land for sale", href: "/land?landUse=Residential" },
+      { label: "Agricultural land for sale", href: "/land?landUse=Agricultural" },
+      { label: "Beachfront land for sale in Sri Lanka", href: "/land" },
+    ],
+  },
+  {
+    title: "Houses",
+    links: [
+      { label: "Houses for sale in Sri Lanka", href: "/projects?type=House" },
+      { label: "House for sale in Kandy", href: "/projects?type=House&location=Kandy" },
+      { label: "Houses for sale in Wattala", href: "/projects?type=House&location=Wattala" },
+      { label: "Houses for sale in Kottawa", href: "/projects?type=House&location=Kottawa" },
+      { label: "Houses for sale in Thalawathugoda", href: "/projects?type=House&location=Thalawathugoda" },
+    ],
+  },
+  {
+    title: "Apartments & condominiums",
+    links: [
+      { label: "Apartments for sale in Colombo", href: "/projects/colombo" },
+      { label: "New luxury apartments in Colombo", href: "/projects/colombo/luxury" },
+      { label: "Port City Colombo apartments", href: "/projects/port-city-colombo" },
+      { label: "Apartments for sale in Dehiwala", href: "/projects?type=Apartments&location=Dehiwala" },
+      { label: "Serviced apartments in Sri Lanka", href: "/projects/serviced-apartments" },
+    ],
+  },
+  {
+    title: "New developments",
+    links: [
+      { label: "New projects in Sri Lanka", href: "/projects" },
+      { label: "New villa developments in Sri Lanka", href: "/projects/villas" },
+      { label: "Beachfront condo developments", href: "/projects/beachfront" },
+      { label: "Branded residences in Sri Lanka", href: "/projects/branded-residences" },
+      { label: "Pre-construction & off-plan projects", href: "/projects/pre-construction" },
+    ],
+  },
+];
+
 const fallbackHeroSlides = [
   "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=85&w=2600&auto=format&fit=crop",
   "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=85&w=2600&auto=format&fit=crop",
@@ -352,6 +403,27 @@ export function HomeClient({ projects, lands = [] }: { projects: Project[]; land
           ))}
         </div>
         <Link href="/search" className="neighborhood-section-explore">View more cities</Link>
+      </section>
+
+      <section className="seo-links-section" aria-label="Popular searches">
+        <div className="featured-listings-head">
+          <h2>Popular searches</h2>
+          <p className="featured-listings-subhead">Browse new homes, apartments, and land for sale across Sri Lanka by type and location.</p>
+        </div>
+        <div className="seo-links-grid">
+          {SEO_LINK_GROUPS.map((group) => (
+            <div className="seo-links-column" key={group.title}>
+              <h3>{group.title}</h3>
+              <ul>
+                {group.links.map((link) => (
+                  <li key={link.href + link.label}>
+                    <Link href={link.href}>{link.label}</Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
       </section>
 
     </main>

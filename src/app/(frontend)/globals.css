@@ -5728,6 +5728,65 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   }
 }
 
+.seo-links-section {
+  position: relative;
+  padding: 56px 30px 52px;
+  margin: 0 auto 34px;
+  max-width: 1280px;
+  background: #f7f6f4;
+  border-radius: 0;
+}
+
+.seo-links-grid {
+  margin-top: 28px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 28px 32px;
+}
+
+.seo-links-column h3 {
+  margin: 0 0 14px;
+  font-family: var(--font-ref-sans);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #1f1f1f;
+}
+
+.seo-links-column ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.seo-links-column a {
+  font-size: 14px;
+  line-height: 1.4;
+  color: #6b6355;
+  text-decoration: none;
+}
+
+.seo-links-column a:hover {
+  color: #f47b36;
+  text-decoration: underline;
+}
+
+@media (max-width: 760px) {
+  .seo-links-section {
+    margin: 0 -8px 28px;
+    padding: 28px 14px 30px;
+  }
+
+  .seo-links-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px 20px;
+  }
+}
+
 .developer-page {
   width: min(1290px, calc(100% - 48px));
   margin: 0 auto;

@@ -29,18 +29,30 @@ const LAND_FILTER_GROUPS = [
   { label: "Status", options: ["Any", "Now Selling", "Under Construction", "Nearly Sold Out"] },
 ];
 
-type LandListingPageProps = { searchParams: Promise<{ landUse?: string }> };
+type LandListingPageProps = { searchParams: Promise<{ landUse?: string; location?: string }> };
+
+function matchesLandLocation(land: Land, location: string) {
+  const needle = location.toLowerCase();
+  return (
+    land.location.toLowerCase().includes(needle) ||
+    land.city.toLowerCase().includes(needle) ||
+    land.district.toLowerCase().includes(needle)
+  );
+}
 
 export default async function LandListingPage({ searchParams }: LandListingPageProps) {
-  const { landUse } = await searchParams;
+  const { landUse, location } = await searchParams;
   const lands = await getAllLands();
-  const filteredLands = landUse ? lands.filter((land) => land.landUse.includes(landUse as Land["landUse"][number])) : lands;
+  let filteredLands = landUse ? lands.filter((land) => land.landUse.includes(landUse as Land["landUse"][number])) : lands;
+  filteredLands = location ? filteredLands.filter((land) => matchesLandLocation(land, location)) : filteredLands;
   const projects = filteredLands.map(landToProjectShape);
+
+  const h1 = location ? `Land for Sale in ${location}` : landUse ? `${landUse} land for sale in Sri Lanka` : "Land for Sale in Sri Lanka";
 
   return (
     <ProjectListingShell
       breadcrumbs={[{ label: "Home", href: "/" }, { label: "Land" }]}
-      h1={landUse ? `${landUse} land for sale in Sri Lanka` : "Land for Sale in Sri Lanka"}
+      h1={h1}
       intro="Raw land parcels for sale across Sri Lanka, listed by developers, construction companies, and independent builders — separate from new-construction projects."
       projects={projects}
       relatedPaths={[]}
@@ -48,7 +60,7 @@ export default async function LandListingPage({ searchParams }: LandListingPageP
       eyebrow="land listings"
       singularEyebrow="land listing"
       filterGroups={LAND_FILTER_GROUPS}
-      emptyStateText="No land listings yet — check back soon."
+      emptyStateText={location ? `No land listings in ${location} yet — browse all land for sale in Sri Lanka below.` : "No land listings yet — check back soon."}
     />
   );
 }
