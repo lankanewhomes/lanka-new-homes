@@ -1333,9 +1333,9 @@ Change a price or feature gate there, nowhere else.
   mounted as the Project edit form's new "Package" tab. Selecting
   Featured/Premium creates a pending Subscription; an admin confirms it in
   `/cms` (`Subscriptions` list) today.
-- **Currency**: `packages.ts` uses CAD (C$0/99/199) — the only place CAD is
-  used; everything else on the site (Payments, PlacementPricing) stays
-  LKR/USD, untouched.
+- **Currency**: `packages.ts` uses LKR (Rs. 0 / 25,000 / 50,000 per month) —
+  placeholder round numbers, same spirit as PlacementPricing's own seed
+  data ("adjust freely"); change them in `packages.ts`, nowhere else.
 - **Not built**: live PayHere/Stripe checkout, pay-per-lead, multi-listing
   bundle pricing — architecture leaves room for all three without a schema
   change, none implemented yet.

@@ -93,7 +93,7 @@ export const Subscriptions: CollectionConfig = {
       admin: { description: 'Set to "active" once payment is confirmed — activates the project automatically (see hooks/sync-subscription-package.ts). No live gateway yet, so this is a manual step, same as Payments today.' },
     },
     { name: 'amount', type: 'number', required: true, access: { update: adminOnlyField }, admin: { readOnly: true, description: 'Snapshot of the price at signup, from src/lib/packages.ts — never edited by hand.' } },
-    { name: 'currency', type: 'select', options: ['CAD', 'USD', 'LKR'], defaultValue: 'CAD', required: true, access: { update: adminOnlyField } },
+    { name: 'currency', type: 'select', options: ['LKR', 'USD', 'CAD'], defaultValue: 'LKR', required: true, access: { update: adminOnlyField } },
     { name: 'current_period_start', type: 'date', label: 'Start Date', access: { update: adminOnlyField } },
     { name: 'current_period_end', type: 'date', label: 'Renewal Date', access: { update: adminOnlyField } },
     { name: 'cancel_at_period_end', type: 'checkbox', label: 'Cancel at period end', defaultValue: false, admin: { description: 'A developer can check this to cancel — stays active (and featured) until the renewal date, then reverts to Free.' } },
