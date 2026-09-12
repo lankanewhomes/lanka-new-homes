@@ -81,6 +81,7 @@ export interface Config {
     'saved-listings': SavedListing;
     'social-assets': SocialAsset;
     'social-posts': SocialPost;
+    'seo-keywords': SeoKeyword;
     leads: Lead;
     reviews: Review;
     analytics: Analytics;
@@ -118,6 +119,7 @@ export interface Config {
     'saved-listings': SavedListingsSelect<false> | SavedListingsSelect<true>;
     'social-assets': SocialAssetsSelect<false> | SocialAssetsSelect<true>;
     'social-posts': SocialPostsSelect<false> | SocialPostsSelect<true>;
+    'seo-keywords': SeoKeywordsSelect<false> | SeoKeywordsSelect<true>;
     leads: LeadsSelect<false> | LeadsSelect<true>;
     reviews: ReviewsSelect<false> | ReviewsSelect<true>;
     analytics: AnalyticsSelect<false> | AnalyticsSelect<true>;
@@ -6731,6 +6733,55 @@ export interface SocialPost {
   createdAt: string;
 }
 /**
+ * Keyword research — volumes/positions from tools like Ubersuggest, mapped to the page on our site that should target them.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "seo-keywords".
+ */
+export interface SeoKeyword {
+  id: number;
+  keyword: string;
+  category?: ('primary' | 'land' | 'house-apartment' | 'new-development' | 'other') | null;
+  /**
+   * e.g. "transactional, commercial" — as reported by the research tool.
+   */
+  searchIntent?: string | null;
+  /**
+   * Estimated monthly search volume.
+   */
+  volume?: number | null;
+  /**
+   * SEO difficulty score (0-100) as reported by the tool.
+   */
+  searchDifficulty?: number | null;
+  /**
+   * Ranking position of the source URL below for this keyword.
+   */
+  position?: number | null;
+  estimatedVisits?: number | null;
+  /**
+   * Cost per click (USD).
+   */
+  cpc?: number | null;
+  trafficValueUsd?: number | null;
+  /**
+   * The competitor/reference URL this data was pulled for.
+   */
+  sourceUrl?: string | null;
+  /**
+   * e.g. Ubersuggest, Ahrefs, manual web research.
+   */
+  sourceTool?: string | null;
+  /**
+   * Path on our site this keyword should target, e.g. /projects/colombo — mirrors docs/seo-strategy.md's keyword-to-page mapping.
+   */
+  targetPage?: string | null;
+  notes?: string | null;
+  dateAdded?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "leads".
  */
@@ -7079,6 +7130,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'social-posts';
         value: number | SocialPost;
+      } | null)
+    | ({
+        relationTo: 'seo-keywords';
+        value: number | SeoKeyword;
       } | null)
     | ({
         relationTo: 'leads';
@@ -8189,6 +8244,28 @@ export interface SocialPostsSelect<T extends boolean = true> {
   triggeredBy?: T;
   details?: T;
   postedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "seo-keywords_select".
+ */
+export interface SeoKeywordsSelect<T extends boolean = true> {
+  keyword?: T;
+  category?: T;
+  searchIntent?: T;
+  volume?: T;
+  searchDifficulty?: T;
+  position?: T;
+  estimatedVisits?: T;
+  cpc?: T;
+  trafficValueUsd?: T;
+  sourceUrl?: T;
+  sourceTool?: T;
+  targetPage?: T;
+  notes?: T;
+  dateAdded?: T;
   updatedAt?: T;
   createdAt?: T;
 }

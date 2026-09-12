@@ -61,6 +61,56 @@ use — focused on new construction/development, not resale classifieds:
 - New residential development Colombo
 - Affordable new housing Sri Lanka
 
+## House & Apartment Keywords (Ubersuggest, propertyguide.lk, added 2026-09-12)
+
+Real competitor keyword data (volume/position/difficulty all stored with
+the source in the `seo-keywords` CMS collection — this is just the
+phrase list). Project/building names (e.g. "Greenpath Residencies"),
+street addresses, and competitor brand names were filtered out — see
+"Other / Unqualified" below for those.
+
+- Apartments for sale in Colombo (4,400/mo)
+- Lanka property
+- House for sale Sri Lanka (multiple word-order variants, ~590/mo each: house sale in Sri Lanka, Sri Lanka house for sale, sale house Sri Lanka, houses for sale Sri Lanka, Sri Lanka houses for sale, house for sale in Sri Lanka, house sell in Sri Lanka, house sri lanka sale, Sri Lanka for sale house, home sale Sri Lanka)
+- House in Sri Lanka for sale
+- Houses for sale srilanka / House for sale srilanka (no space)
+- Properties to buy in Sri Lanka
+- Rent a house in Sri Lanka
+- Houses in Sri Lanka Colombo
+- Buy house Sri Lanka
+- Sri Lanka homes for sale
+- House and property for sale in Sri Lanka
+- Property for sale Sri Lanka (multiple word-order variants, ~480/mo each: property sale Sri Lanka, property buy Sri Lanka, Sri Lanka property sale, property for sale in Sri Lanka, buy a property in Sri Lanka, property sales in Sri Lanka, property sale in Sri Lanka, sale property in Sri Lanka)
+- Rental homes
+- Apartments in Sri Lanka
+- Real estate companies Sri Lanka
+- Houses in Sri Lanka
+- Sri Lankan house
+- Villa for sale in Sri Lanka
+- Properties for sale Colombo
+- Apartment buildings / Apartment building
+- House for sale Sri Lanka Colombo
+- Houses for sale Colombo
+- Flats for sale in Colombo (Sri Lanka) — "flats" is a real, distinct wording used here
+- Apartments for sale in Sri Lanka Colombo
+- Buy property Sri Lanka / Buy property in Sri Lanka
+- Sri Lanka property developers
+- Apartment price in Sri Lanka
+- House for sale and land / Land and house for sale
+- Sri Lanka real estate Colombo
+- Property Sri Lanka / Sri Lanka property
+- Apartments in Colombo for sale
+- Sri Lanka apartments for sale
+- Rent house in Sri Lanka / Lanka property house for rent / Sri Lanka property for rent / Sri Lanka property rental
+- Sri Lanka home
+- House to buy in Sri Lanka
+- Home prices in Sri Lanka
+- Residential apartments / Residential property / Residential property sale
+- Sri Lanka housing projects
+- New house in Sri Lanka
+- Houses to sell in Sri Lanka
+- Sri Lanka house for rent
+
 ## Land Keywords
 
 - Buying land in sri lanka
@@ -164,6 +214,27 @@ search data, or off-topic (kept here for reference, not action):
 - Sherry land negombo
 - Emerald land
 - Housing in iceland for sale
+
+Competitor project/building names and street addresses spotted in the
+2026-09-12 propertyguide.lk keyword pull (people searching for a specific
+existing building, not generic demand) — not real targets for us:
+Metro Homes Residencies, Metro Homes Colombo 2, Country Homes Residencies,
+Kurinchi Homes, Manning Town Flats, Prince Alfred Tower, Iceland Residencies,
+Span Tower 27, Orchid Nivasie, Cressida Athurugiriya, Iconic 110, Crescat
+Residencies, Viyathpura Apartments, Torrington Flats Ground, Alfred House
+Gardens, Elibank Residencies, Nobel Tower Colombo 5, Fairline Residencies,
+Iddamal Apartments, Fairfield Residencies Borella, Suncity Apartments, Nemra
+Apartments, Vishnu Residencies Colombo 4, Greenpath Residencies, Saraj
+Tower, Kings Garden Residencies, 7th Sense Apartment, Barnes Residencies,
+Prime Bella Rajagiriya, Silk Apartments Rajagiriya, The Fath Residencies,
+Crescendo Apartments Malabe, Colombo Homes, Reid Avenue, Fife Road Colombo
+5, Thalakotuwa Gardens Colombo 5, Kinross Avenue Colombo, Mattakkuliya
+Colombo, Mattakkuliya Farm Road, Skelton Road Colombo, Poorwarama Road,
+Thimbirigasyaya Road, Viman Ja Ela.
+
+Competitor/portal brand names (same pull) — never target another company's
+name: iProperty, PropertyGuru, Ceylon Property, Ceylon Properties, Lanka
+Property Web, Property LK, RIL Property.
 
 ## Implementation Notes
 

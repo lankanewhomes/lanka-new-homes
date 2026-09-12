@@ -29,6 +29,7 @@ import { Projects } from './src/collections/Projects'
 import { Reviews } from './src/collections/Reviews'
 import { SalesCompanies } from './src/collections/SalesCompanies'
 import { SavedListings } from './src/collections/SavedListings'
+import { SeoKeywords } from './src/collections/SeoKeywords'
 import { SocialAssets } from './src/collections/SocialAssets'
 import { SocialPosts } from './src/collections/SocialPosts'
 import { isR2Configured, r2Storage } from './src/collections/storage/r2-storage'
@@ -119,6 +120,7 @@ export default buildConfig({
     SavedListings,
     SocialAssets,
     SocialPosts,
+    SeoKeywords,
     Leads,
     Reviews,
     Analytics,
