@@ -25,5 +25,5 @@ export default async function ListingPreviewRoute({ params }: Props) {
   const neighborhood = project.neighborhoodSlug ? await getNeighborhoodBySlug(project.neighborhoodSlug) : undefined;
   const developer = await getDeveloperBySlug(project.developerSlug);
 
-  return <ListingPreviewPage project={project} developer={developer} neighborhoodPageExists={Boolean(neighborhood)} />;
+  return <ListingPreviewPage project={project} developer={developer} neighborhood={neighborhood} neighborhoodPageExists={Boolean(neighborhood)} />;
 }

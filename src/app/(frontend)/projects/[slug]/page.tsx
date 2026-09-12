@@ -13,6 +13,7 @@ import {
   ConstructionProgressSection,
   ConstructionTimelineSection,
   KeyFeaturesSection,
+  NeighborhoodInsightsSection,
   NeighborhoodSection,
   PlansAndHomesSection,
   PricingInformationLayout,
@@ -165,6 +166,17 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
         <ConstructionTimelineSection updates={project.constructionUpdates ?? []} />
 
         <NeighborhoodSection nearby={project.nearby} neighborhoodName={project.neighborhood} neighborhoodSlug={project.neighborhoodSlug} neighborhoodPageExists={Boolean(neighborhood)} />
+
+        <NeighborhoodInsightsSection
+          projectName={project.name}
+          nearby={project.nearby}
+          neighborhood={neighborhood}
+          city={project.city}
+          district={project.district}
+          province={project.province}
+          coordinates={project.coordinates}
+          location={project.location}
+        />
 
         <StatsContactCard project={project} developer={developer} />
 
