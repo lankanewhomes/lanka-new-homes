@@ -1,6 +1,6 @@
 # SEO Keyword Bank
 
-Updated: 2026-08-21
+Updated: 2026-09-12
 
 Use these target phrases naturally across page titles, meta descriptions, H1/H2 headings, internal links, and long-form content.
 
@@ -108,6 +108,16 @@ use — focused on new construction/development, not resale classifieds:
 - House for sale sri lanka
 - Sri lanka house
 - House sri lanka
+- Houses sales in sri lanka
+- Sale for house in sri lanka
+- Sri lanka sales house
+- Property sales in sri lanka
+- Sri lanka houses sale
+- Home sell in sri lanka
+- House property sale sri lanka
+- Property sale sri lanka
+- Realestate in sri lanka
+- Sale house in sri lanka
 - Houses for sale in kandy
 - Lanka property for sale
 - Apartments in colombo
