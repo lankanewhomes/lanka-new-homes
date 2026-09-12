@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getProjectBySlugRaw } from "@/lib/project-store";
+import { getAllProjects, getProjectBySlugRaw } from "@/lib/project-store";
 import { getNeighborhoodBySlug } from "@/lib/neighborhood-store";
 import { getDeveloperBySlug } from "@/lib/developer-store";
+import { buildProjectTeam } from "@/lib/project-team";
 import { ListingPreviewPage } from "@/components/listing-preview/listing-preview";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -24,6 +25,8 @@ export default async function ListingPreviewRoute({ params }: Props) {
 
   const neighborhood = project.neighborhoodSlug ? await getNeighborhoodBySlug(project.neighborhoodSlug) : undefined;
   const developer = await getDeveloperBySlug(project.developerSlug);
+  const allProjects = await getAllProjects();
+  const team = await buildProjectTeam(project, allProjects);
 
-  return <ListingPreviewPage project={project} developer={developer} neighborhoodPageExists={Boolean(neighborhood)} />;
+  return <ListingPreviewPage project={project} developer={developer} team={team} neighborhoodPageExists={Boolean(neighborhood)} />;
 }
