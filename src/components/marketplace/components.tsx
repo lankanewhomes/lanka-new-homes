@@ -3752,9 +3752,6 @@ export function NeighborhoodInsightsSection({
 }) {
   const { t } = useListingT();
   const bands = groupNearbyByDistance(nearby);
-  // Every row starts collapsed, one open at a time — same convention as
-  // NearbyPlacesAccordion just above (owner, 2026-09-11).
-  const [openBand, setOpenBand] = useState<string | null>(null);
   if (bands.length === 0) return null;
 
   const nearest = [...nearby].filter((p) => hasDisplayValue(p.distanceKm)).sort((a, b) => (a.distanceKm ?? 0) - (b.distanceKm ?? 0))[0];
@@ -3779,36 +3776,25 @@ export function NeighborhoodInsightsSection({
 
       <div className="neighborhood-insights-grid">
         <div className="neighborhood-insights-rail">
-          {bands.map((band) => {
-            const isOpen = openBand === band.label;
-            return (
-              <div key={band.label} className={`neighborhood-insights-band${isOpen ? " is-open" : ""}`}>
-                <button
-                  type="button"
-                  className="neighborhood-insights-band-trigger"
-                  aria-expanded={isOpen}
-                  onClick={() => setOpenBand(isOpen ? null : band.label)}
-                >
+          {bands.map((band) => (
+              <div key={band.label} className="neighborhood-insights-band">
+                <div className="neighborhood-insights-band-head">
                   <span className="neighborhood-insights-band-pill">{t(band.label)}</span>
                   <span className="neighborhood-insights-band-count">{band.items.length} {band.items.length === 1 ? t("place") : t("places")}</span>
-                  <ChevronDown className="neighborhood-insights-band-chevron h-4 w-4" aria-hidden="true" />
-                </button>
-                {isOpen ? (
-                  <div className="neighborhood-insights-band-items">
-                    {band.items.map((place) => {
-                      const Icon = NEARBY_CATEGORY_ICON[place.category];
-                      return (
-                        <div key={`${place.category}-${place.name}`} className="neighborhood-insights-item">
-                          <p className="neighborhood-insights-item-category"><Icon className="h-3.5 w-3.5" aria-hidden="true" /> {t(place.category)}</p>
-                          <p className="neighborhood-insights-item-name">{place.name}</p>
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : null}
+                </div>
+                <div className="neighborhood-insights-band-items">
+                  {band.items.map((place) => {
+                    const Icon = NEARBY_CATEGORY_ICON[place.category];
+                    return (
+                      <div key={`${place.category}-${place.name}`} className="neighborhood-insights-item">
+                        <p className="neighborhood-insights-item-category"><Icon className="h-3.5 w-3.5" aria-hidden="true" /> {t(place.category)}</p>
+                        <p className="neighborhood-insights-item-name">{place.name}</p>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            );
-          })}
+            ))}
         </div>
 
         {hasDisplayValue(neighborhood?.description) || hasDisplayValue(areaLine) ? (
