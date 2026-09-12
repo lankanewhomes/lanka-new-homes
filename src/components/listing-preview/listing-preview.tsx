@@ -1,6 +1,7 @@
 import {
   AmenitiesShowcaseSection,
   CommercialAreasSection,
+  ConstructionProgressSection,
   ConstructionTimelineSection,
   KeyFeaturesSection,
   NeighborhoodSection,
@@ -56,6 +57,8 @@ export function ListingPreviewPage({
           <ProjectDescriptionSection project={project} />
 
           <ProjectNarrativeDetails project={project} />
+
+          <ConstructionProgressSection project={project} />
 
           <section id="pricing" className="space-y-3">
             <PricingInformationLayout project={project} />

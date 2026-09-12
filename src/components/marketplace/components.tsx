@@ -52,6 +52,7 @@ import {
   Building2,
   Camera,
   Car,
+  Check,
   ChevronLeft,
   ChevronDown,
   ChevronRight,
@@ -2669,6 +2670,72 @@ export function CommercialAreasSection({ commercialAreas, title = "Commercial Ar
           })}
         </div>
       </div>
+    </section>
+  );
+}
+
+// Order of src/collections/shared-fields.ts CONSTRUCTION_STATUS_OPTIONS.
+// Milestone labels below are the literal enum values (nothing invented) —
+// a project on a custom "(Other)" status text isn't in this list, so its
+// index is -1 and the whole stepper is skipped rather than guessing where
+// a made-up status sits.
+const CONSTRUCTION_STATUS_ORDER = ["Not Started", "Foundation", "Under Construction", "Structure Complete", "Finishing", "Completed", "Ready to Move In"];
+
+const CONSTRUCTION_STATUS_SENTENCE: Record<string, string> = {
+  "Not Started": "Construction has not started yet.",
+  "Foundation": "Foundation work is underway.",
+  "Under Construction": "Construction is currently underway.",
+  "Structure Complete": "The structure is complete — finishing work is underway.",
+  "Finishing": "In the finishing stage, with final interior and exterior work underway.",
+  "Completed": "Construction is complete.",
+  "Ready to Move In": "Construction is complete and ready to move in.",
+};
+
+// Four checkpoints collapsed from the 7-value status enum — "Foundation"/
+// "Under Construction" both just mean checkpoint 1 (construction started) is
+// reached but checkpoint 2 isn't yet, same as the enum's own granularity
+// intends. Checkpoint 4's label carries the same "Move-in <year> vs.
+// Completed <year>" distinction as the fact sheet (isUpcomingMoveIn) rather
+// than always saying "Completed" for a year that hasn't arrived yet.
+export function ConstructionProgressSection({ project, title = "Construction Progress" }: { project: Pick<Project, "constructionStatus" | "constructionStarted" | "completionYear" | "isVerified">; title?: string }) {
+  const { t } = useListingT();
+  const statusIndex = CONSTRUCTION_STATUS_ORDER.indexOf(project.constructionStatus);
+  if (statusIndex === -1) return null;
+
+  const hasYear = project.completionYear > 0;
+  const finalLabel = hasYear ? (isUpcomingMoveIn(project) ? `Move-in ${project.completionYear}` : `Completed ${project.completionYear}`) : "Completed";
+  const milestones = [
+    { label: "Construction Started", reached: statusIndex >= 1 },
+    { label: "Structure Complete", reached: statusIndex >= 3 },
+    { label: "Finishing", reached: statusIndex >= 4 },
+    { label: finalLabel, reached: statusIndex >= 5 },
+  ];
+  const sentence = CONSTRUCTION_STATUS_SENTENCE[project.constructionStatus];
+
+  return (
+    <section id="construction-progress" className="construction-progress-shell" aria-label={title}>
+      <div className="construction-progress-head">
+        {project.isVerified ? (
+          <p className="construction-progress-verified"><ShieldCheck className="h-4 w-4" aria-hidden="true" /> {t("Progress verified")}</p>
+        ) : (
+          <p className="construction-progress-heading">{t(title)}</p>
+        )}
+        {hasYear ? <span className="construction-progress-year-pill">{t(isUpcomingMoveIn(project) ? "Move-in year" : "Year completed")} {project.completionYear}</span> : null}
+      </div>
+
+      <div className="construction-progress-track" role="list">
+        {milestones.map((m, i) => (
+          <div key={m.label} className={`construction-progress-step${m.reached ? " is-reached" : ""}`} role="listitem">
+            <span className="construction-progress-dot" aria-hidden="true">{m.reached ? <Check className="h-3.5 w-3.5" aria-hidden="true" /> : null}</span>
+            {i < milestones.length - 1 ? <span className={`construction-progress-line${milestones[i + 1].reached ? " is-reached" : ""}`} aria-hidden="true" /> : null}
+            <span className="construction-progress-step-label">{t(m.label)}</span>
+          </div>
+        ))}
+      </div>
+
+      {sentence ? (
+        <p className="construction-progress-caption"><Construction className="h-4 w-4" aria-hidden="true" /> {t(sentence)}</p>
+      ) : null}
     </section>
   );
 }
