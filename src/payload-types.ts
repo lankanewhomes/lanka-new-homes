@@ -2696,7 +2696,16 @@ export interface Project {
    * Pick any that apply — shows alongside the other badges on the listing.
    */
   locationBadges?:
-    ('Beachfront' | 'Ocean View' | 'City View' | 'Mountain View' | 'Nature View' | 'Prime Location')[] | null;
+    | (
+        | 'Beachfront'
+        | 'Ocean View'
+        | 'City View'
+        | 'Mountain View'
+        | 'Nature View'
+        | 'Prime Location'
+        | 'Gated Community'
+      )[]
+    | null;
   hotDeal?: {
     enabled?: boolean | null;
     badge?: string | null;

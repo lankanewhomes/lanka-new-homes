@@ -79,7 +79,7 @@ const MARKETING_BADGE_OPTIONS = [
   'BOI Approved Project',
 ]
 
-const LOCATION_BADGE_OPTIONS = ['Beachfront', 'Ocean View', 'City View', 'Mountain View', 'Nature View', 'Prime Location']
+const LOCATION_BADGE_OPTIONS = ['Beachfront', 'Ocean View', 'City View', 'Mountain View', 'Nature View', 'Prime Location', 'Gated Community']
 
 // Values match ProjectStatLabel in src/types/index.ts verbatim (they are a
 // Postgres enum — never rename a value, only its label). Labels are the
