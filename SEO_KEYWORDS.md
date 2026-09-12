@@ -216,25 +216,48 @@ search data, or off-topic (kept here for reference, not action):
 - Housing in iceland for sale
 
 Competitor project/building names and street addresses spotted in the
-2026-09-12 propertyguide.lk keyword pull (people searching for a specific
-existing building, not generic demand) — not real targets for us:
+2026-09-12 propertyguide.lk keyword pull (checked online — these are old
+or already-completed buildings, short-stay/hotel-style accommodation, or
+too generic/unconfirmed to be a specific building — not real targets):
 Metro Homes Residencies, Metro Homes Colombo 2, Country Homes Residencies,
 Kurinchi Homes, Manning Town Flats, Prince Alfred Tower, Iceland Residencies,
-Span Tower 27, Orchid Nivasie, Cressida Athurugiriya, Iconic 110, Crescat
-Residencies, Viyathpura Apartments, Torrington Flats Ground, Alfred House
-Gardens, Elibank Residencies, Nobel Tower Colombo 5, Fairline Residencies,
-Iddamal Apartments, Fairfield Residencies Borella, Suncity Apartments, Nemra
-Apartments, Vishnu Residencies Colombo 4, Greenpath Residencies, Saraj
-Tower, Kings Garden Residencies, 7th Sense Apartment, Barnes Residencies,
-Prime Bella Rajagiriya, Silk Apartments Rajagiriya, The Fath Residencies,
-Crescendo Apartments Malabe, Colombo Homes, Reid Avenue, Fife Road Colombo
-5, Thalakotuwa Gardens Colombo 5, Kinross Avenue Colombo, Mattakkuliya
-Colombo, Mattakkuliya Farm Road, Skelton Road Colombo, Poorwarama Road,
-Thimbirigasyaya Road, Viman Ja Ela.
+Span Tower 27, Orchid Nivasie (Orchid Apartments Malabe, completed 2016-18),
+Crescat Residencies, Torrington Flats Ground, Alfred House Gardens (a street,
+not one building), Elibank Residencies, Fairline Residencies, Iddamal
+Apartments (a hotel, not a residential development), Fairfield Residencies
+Borella, Vishnu Residencies Colombo 4, 7th Sense Apartment (John Keells'
+own site lists it as a "past project"), Barnes Residencies (hotel-style
+stays), Colombo Homes (no specific project found), Reid Avenue, Fife Road
+Colombo 5, Thalakotuwa Gardens Colombo 5, Kinross Avenue Colombo,
+Mattakkuliya Colombo, Mattakkuliya Farm Road, Skelton Road Colombo,
+Poorwarama Road, Thimbirigasyaya Road, Viman Ja Ela.
 
 Competitor/portal brand names (same pull) — never target another company's
 name: iProperty, PropertyGuru, Ceylon Property, Ceylon Properties, Lanka
 Property Web, Property LK, RIL Property.
+
+## Named New Developments (verified via web research, 2026-09-12)
+
+Building names from the same keyword pull that turned out to be genuine,
+currently-marketed new developments by other companies — not LankaNewHomes
+listings, but real demand worth knowing about for editorial/roundup content
+("New apartment developments in Colombo" style) rather than for our own
+project pages. Full details (developer, unit count, status) are in the
+`seo-keywords` CMS collection, category "New Development":
+
+- Greenpath Residencies (Colombo 3) — 1,000/mo
+- Viyathpura Apartments (Pannipitiya) — 4,400/mo
+- Nemra Apartment (NEMRA Properties, multiple ongoing projects) — 720/mo
+- Saraj Tower (Peterson Lane & Fussel's Lane) — 720/mo
+- Kings Garden Residencies (Colombo 5) — 720/mo
+- The Fath Residencies (Dehiwala) — 590/mo
+- Crescendo Apartments Malabe (UDA, 85% complete, handover due late 2026) — 480/mo
+- Iconic 110 (Rajagiriya) — 260/mo
+- Suncity Apartments / Suncity Towers (Malabe) — 110/mo
+- Cressida Athurugiriya (Cressida Resort Apartments, 392 units) — 90/mo
+- Prime Bella Rajagiriya (Prime Residencies) — 70/mo
+- Silk Apartments Rajagiriya (Silk Residencies, mixed-use) — 70/mo
+- Nobel Tower Colombo 5 (Modern Housing) — 50/mo
 
 ## Implementation Notes
 
