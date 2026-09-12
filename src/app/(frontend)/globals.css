@@ -4444,9 +4444,9 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   width: min(1160px, 100%);
   margin: 0 auto;
   border: 1px solid #e5e5e4;
-  border-radius: 12px;
   background: #fff;
   padding: 24px 28px 28px;
+  font-family: var(--font-ref-sans);
 }
 
 .construction-progress-head {
@@ -4549,7 +4549,6 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   margin: 0;
   padding: 12px 16px;
   border: 1px solid #e5e5e4;
-  border-radius: 8px;
   font-size: 13px;
   color: #4a4a48;
 }
