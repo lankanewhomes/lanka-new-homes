@@ -4465,7 +4465,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   align-items: center;
   gap: 6px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 400;
   color: #3a3a38;
 }
 
@@ -4479,7 +4479,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   background: #eef2ff;
   color: #4338ca;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 400;
 }
 
 .construction-progress-track {
@@ -4532,14 +4532,14 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 .construction-progress-step-label {
   margin-top: 10px;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 400;
   color: #6b6b68;
   max-width: 110px;
 }
 
 .construction-progress-step.is-reached .construction-progress-step-label {
   color: #1f1f1f;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .construction-progress-caption {
