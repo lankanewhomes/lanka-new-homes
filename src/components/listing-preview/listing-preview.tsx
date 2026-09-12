@@ -11,10 +11,8 @@ import {
   ProjectHero,
   ProjectNarrativeDetails,
   ProjectStatsChips,
-  ProjectTeamSection,
   StatsContactCard,
 } from "@/components/marketplace/components";
-import type { ProjectTeamRole } from "@/lib/project-team";
 import type { Developer, Project } from "@/types";
 
 // Renders with the exact same components as the real /projects/[slug] page,
@@ -24,12 +22,10 @@ import type { Developer, Project } from "@/types";
 export function ListingPreviewPage({
   project,
   developer,
-  team,
   neighborhoodPageExists,
 }: {
   project: Project;
   developer?: Developer;
-  team: ProjectTeamRole[];
   neighborhoodPageExists: boolean;
 }) {
   return (
@@ -84,8 +80,6 @@ export function ListingPreviewPage({
             neighborhoodSlug={project.neighborhoodSlug}
             neighborhoodPageExists={neighborhoodPageExists}
           />
-
-          <ProjectTeamSection projectName={project.name} team={team} />
 
           <StatsContactCard project={project} developer={developer} />
         </div>

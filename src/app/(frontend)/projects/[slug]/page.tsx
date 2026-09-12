@@ -6,7 +6,6 @@ import { getNeighborhoodBySlug } from "@/lib/neighborhood-store";
 import { getDeveloperBySlug } from "@/lib/developer-store";
 import { listingWhatsAppHref } from "@/lib/whatsapp";
 import { pickSimilarListings } from "@/lib/similar-listings";
-import { buildProjectTeam } from "@/lib/project-team";
 import { SimilarListingsSection } from "@/components/marketplace/similar-listings";
 import {
   AmenitiesShowcaseSection,
@@ -21,7 +20,6 @@ import {
   ProjectHero,
   ProjectNarrativeDetails,
   ProjectStatsChips,
-  ProjectTeamSection,
   StatsContactCard,
 } from "@/components/marketplace/components";
 import { ProjectViewTracker } from "@/components/marketplace/view-tracker";
@@ -90,7 +88,6 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
     getAllProjects(),
   ]);
   const similarListings = pickSimilarListings(project, allProjects, 4);
-  const team = await buildProjectTeam(project, allProjects);
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -168,8 +165,6 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
         <ConstructionTimelineSection updates={project.constructionUpdates ?? []} />
 
         <NeighborhoodSection nearby={project.nearby} neighborhoodName={project.neighborhood} neighborhoodSlug={project.neighborhoodSlug} neighborhoodPageExists={Boolean(neighborhood)} />
-
-        <ProjectTeamSection projectName={project.name} team={team} />
 
         <StatsContactCard project={project} developer={developer} />
 

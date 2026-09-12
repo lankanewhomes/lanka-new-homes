@@ -34,7 +34,6 @@ import { Fragment, FormEvent, useEffect, useMemo, useRef, useState } from "react
 import {
   Activity,
   Bath,
-  Calendar,
   BedDouble,
   Bell,
   Bike,
@@ -105,8 +104,6 @@ import { floorPlanSummarySentence } from "@/lib/i18n/floor-plan-sentence";
 import { formatWhatsAppNumber, listingWhatsAppHref } from "@/lib/whatsapp";
 import { groupNearbyPlaces } from "@/lib/nearby-places";
 import { sortConstructionUpdates } from "@/lib/construction-updates";
-import type { ProjectTeamRole } from "@/lib/project-team";
-import { ListingGridCard } from "@/components/marketplace/listing-page";
 
 const amenityIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   Pool: Waves,
@@ -2767,74 +2764,6 @@ export function ConstructionTimelineSection({ updates, title = "Construction Upd
             </div>
           </article>
         ))}
-      </div>
-    </section>
-  );
-}
-
-// "Meet the team" — one tab per company actually linked to this project
-// (Developer/Architect/Project Marketer/Sales Company/Interior Designer;
-// see src/lib/project-team.ts — a role with no name+slug on the project
-// never gets a tab, nothing here is invented). "Other projects" per role
-// is a real count of matching projects on this site, not a self-reported
-// or estimated figure, shown with the same ListingGridCard used by
-// SimilarListingsSection so it looks like every other project card.
-export function ProjectTeamSection({ projectName, team, title = "Meet the Team" }: { projectName: string; team: ProjectTeamRole[]; title?: string }) {
-  const { t } = useListingT();
-  const [activeKey, setActiveKey] = useState<string | undefined>(team[0]?.key);
-  if (team.length === 0) return null;
-
-  const active = team.find((role) => role.key === activeKey) ?? team[0];
-  const profile = active.profile;
-
-  return (
-    <section id="project-team" className="project-team-shell" aria-label={title}>
-      <h2>{t("Meet the team behind")} {projectName}</h2>
-
-      <div className="project-team-tabs" role="tablist">
-        {team.map((role) => (
-          <button
-            key={role.key}
-            type="button"
-            role="tab"
-            aria-selected={role.key === active.key}
-            className={`project-team-tab${role.key === active.key ? " is-active" : ""}`}
-            onClick={() => setActiveKey(role.key)}
-          >
-            {t(role.label)}
-          </button>
-        ))}
-      </div>
-
-      <div className={`project-team-body${active.otherProjects.length === 0 ? " is-solo" : ""}`}>
-        <div className="project-team-info">
-          <p className="project-team-name">{profile.name}</p>
-
-          <div className="project-team-facts">
-            {hasDisplayValue(profile.establishedYear) ? (
-              <span className="project-team-fact"><Calendar className="h-3.5 w-3.5" aria-hidden="true" /> {profile.establishedYear}</span>
-            ) : null}
-            {active.otherProjects.length > 0 ? (
-              <span className="project-team-fact">
-                <Building className="h-3.5 w-3.5" aria-hidden="true" /> {active.otherProjects.length} {t(active.otherProjects.length === 1 ? "other project listed" : "other projects listed")}
-              </span>
-            ) : null}
-          </div>
-
-          {hasDisplayValue(profile.description) ? <p className="project-team-description">{profile.description}</p> : null}
-
-          <Link href={active.profileHref} className="project-team-view-profile">
-            {t("View profile")} <ChevronRight className="h-4 w-4" aria-hidden="true" />
-          </Link>
-        </div>
-
-        {active.otherProjects.length > 0 ? (
-          <div className="project-team-projects">
-            {active.otherProjects.slice(0, 4).map((p) => (
-              <ListingGridCard key={p.slug} project={p} />
-            ))}
-          </div>
-        ) : null}
       </div>
     </section>
   );
