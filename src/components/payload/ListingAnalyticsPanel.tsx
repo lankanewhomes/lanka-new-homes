@@ -13,6 +13,7 @@ import {
   YAxis,
 } from "recharts";
 import type { ListingAnalyticsResponse } from "@/lib/analytics-types";
+import { getPackage, type PackageTier } from "@/lib/packages";
 
 const RANGE_PRESETS = [
   { label: "Last 7 days", days: 7, bucket: "week" as const },
@@ -44,8 +45,18 @@ export function ListingAnalyticsPanel() {
   const [data, setData] = useState<ListingAnalyticsResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [packageTier, setPackageTier] = useState<PackageTier>("free");
 
   const preset = RANGE_PRESETS[presetIndex];
+  const analyticsLevel = getPackage(packageTier).analyticsLevel;
+
+  useEffect(() => {
+    if (!id || collectionSlug !== "projects") return;
+    fetch(`/payload-api/projects/${id}?depth=0`, { credentials: "include" })
+      .then((res) => res.json())
+      .then((body) => setPackageTier((body?.package as PackageTier) || "free"))
+      .catch(() => setPackageTier("free"));
+  }, [id, collectionSlug]);
 
   useEffect(() => {
     if (!id || collectionSlug !== "projects") return;
@@ -120,16 +131,26 @@ export function ListingAnalyticsPanel() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 10, marginBottom: 16 }}>
             <StatCard label="Views" value={data.summary.views.toLocaleString()} />
             <StatCard label="Inquiries" value={data.summary.inquiries.toLocaleString()} />
-            <StatCard
-              label="Inquiry rate"
-              value={`${formatPercent(data.summary.inquiryRate)} · avg ${formatPercent(data.platformAverage.inquiryRate)}`}
-            />
-            <StatCard label="Avg. time on page" value={data.summary.avgTimeOnPageSeconds != null ? `${data.summary.avgTimeOnPageSeconds}s` : "—"} />
-            <StatCard label="Pages / session" value={data.summary.pagesPerSession != null ? String(data.summary.pagesPerSession) : "—"} />
-            <StatCard label="Top city" value={data.summary.topCity ?? "—"} />
+            {analyticsLevel !== "none" && (
+              <>
+                <StatCard
+                  label="Inquiry rate"
+                  value={`${formatPercent(data.summary.inquiryRate)} · avg ${formatPercent(data.platformAverage.inquiryRate)}`}
+                />
+                <StatCard label="Avg. time on page" value={data.summary.avgTimeOnPageSeconds != null ? `${data.summary.avgTimeOnPageSeconds}s` : "—"} />
+                <StatCard label="Pages / session" value={data.summary.pagesPerSession != null ? String(data.summary.pagesPerSession) : "—"} />
+              </>
+            )}
+            {analyticsLevel === "advanced" && <StatCard label="Top city" value={data.summary.topCity ?? "—"} />}
           </div>
 
-          {(data.insights.topTrafficSource || data.insights.bestDayOfWeek) && (
+          {analyticsLevel === "none" && (
+            <p style={{ fontSize: 13, padding: "10px 12px", background: "var(--theme-warning-100)", borderRadius: 4, marginBottom: 16 }}>
+              Upgrade to Featured or Premium (see the Package tab) for inquiry rate, traffic sources, lead status, and trend charts.
+            </p>
+          )}
+
+          {analyticsLevel === "advanced" && (data.insights.topTrafficSource || data.insights.bestDayOfWeek) && (
             <div style={{ display: "grid", gap: 8, marginBottom: 16 }}>
               {data.insights.topTrafficSource && (
                 <div style={{ fontSize: 13, padding: "8px 12px", background: "var(--theme-success-100)", borderRadius: 4 }}>
@@ -144,63 +165,69 @@ export function ListingAnalyticsPanel() {
             </div>
           )}
 
-          <div style={{ marginBottom: 16 }}>
-            <h5 style={{ marginBottom: 8 }}>Traffic Source</h5>
-            {data.trafficSources.length === 0 ? (
-              <p style={{ fontSize: 13, opacity: 0.65 }}>No sessions recorded for this period yet.</p>
-            ) : (
-              <table style={{ width: "100%", fontSize: 13, borderCollapse: "collapse" }}>
-                <thead>
-                  <tr style={{ textAlign: "left", opacity: 0.65 }}>
-                    <th style={{ padding: "4px 0" }}>Source</th>
-                    <th style={{ padding: "4px 0" }}>Sessions</th>
-                    <th style={{ padding: "4px 0" }}>Share</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.trafficSources.map((row) => (
-                    <tr key={row.channel} style={{ borderTop: "1px solid var(--theme-elevation-150)" }}>
-                      <td style={{ padding: "6px 0" }}>{row.label}</td>
-                      <td style={{ padding: "6px 0" }}>{row.sessions.toLocaleString()}</td>
-                      <td style={{ padding: "6px 0" }}>{row.percent}%</td>
+          {analyticsLevel === "advanced" && (
+            <div style={{ marginBottom: 16 }}>
+              <h5 style={{ marginBottom: 8 }}>Traffic Source</h5>
+              {data.trafficSources.length === 0 ? (
+                <p style={{ fontSize: 13, opacity: 0.65 }}>No sessions recorded for this period yet.</p>
+              ) : (
+                <table style={{ width: "100%", fontSize: 13, borderCollapse: "collapse" }}>
+                  <thead>
+                    <tr style={{ textAlign: "left", opacity: 0.65 }}>
+                      <th style={{ padding: "4px 0" }}>Source</th>
+                      <th style={{ padding: "4px 0" }}>Sessions</th>
+                      <th style={{ padding: "4px 0" }}>Share</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
-
-          <div style={{ marginBottom: 16 }}>
-            <h5 style={{ marginBottom: 8 }}>Lead Status</h5>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              {data.leadStatus.map((row) => (
-                <div key={row.status} style={{ fontSize: 13, padding: "6px 12px", border: "1px solid var(--theme-elevation-150)", borderRadius: 999 }}>
-                  {row.label}: <strong>{row.count}</strong>
-                </div>
-              ))}
+                  </thead>
+                  <tbody>
+                    {data.trafficSources.map((row) => (
+                      <tr key={row.channel} style={{ borderTop: "1px solid var(--theme-elevation-150)" }}>
+                        <td style={{ padding: "6px 0" }}>{row.label}</td>
+                        <td style={{ padding: "6px 0" }}>{row.sessions.toLocaleString()}</td>
+                        <td style={{ padding: "6px 0" }}>{row.percent}%</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
-          </div>
+          )}
 
-          <div>
-            <h5 style={{ marginBottom: 8 }}>Trend</h5>
-            {chartData.length === 0 ? (
-              <p style={{ fontSize: 13, opacity: 0.65 }}>Not enough data yet for a trend chart.</p>
-            ) : (
-              <div style={{ width: "100%", height: 220 }}>
-                <ResponsiveContainer>
-                  <LineChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="period" tick={{ fontSize: 11 }} />
-                    <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
-                    <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="views" stroke="#f47b36" strokeWidth={2} dot={false} />
-                    <Line type="monotone" dataKey="inquiries" stroke="#1a6b2f" strokeWidth={2} dot={false} />
-                  </LineChart>
-                </ResponsiveContainer>
+          {analyticsLevel !== "none" && (
+            <div style={{ marginBottom: 16 }}>
+              <h5 style={{ marginBottom: 8 }}>Lead Status</h5>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                {data.leadStatus.map((row) => (
+                  <div key={row.status} style={{ fontSize: 13, padding: "6px 12px", border: "1px solid var(--theme-elevation-150)", borderRadius: 999 }}>
+                    {row.label}: <strong>{row.count}</strong>
+                  </div>
+                ))}
               </div>
-            )}
-          </div>
+            </div>
+          )}
+
+          {analyticsLevel === "advanced" && (
+            <div>
+              <h5 style={{ marginBottom: 8 }}>Trend</h5>
+              {chartData.length === 0 ? (
+                <p style={{ fontSize: 13, opacity: 0.65 }}>Not enough data yet for a trend chart.</p>
+              ) : (
+                <div style={{ width: "100%", height: 220 }}>
+                  <ResponsiveContainer>
+                    <LineChart data={chartData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="period" tick={{ fontSize: 11 }} />
+                      <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
+                      <Tooltip />
+                      <Legend />
+                      <Line type="monotone" dataKey="views" stroke="#f47b36" strokeWidth={2} dot={false} />
+                      <Line type="monotone" dataKey="inquiries" stroke="#1a6b2f" strokeWidth={2} dot={false} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+            </div>
+          )}
         </>
       )}
     </div>

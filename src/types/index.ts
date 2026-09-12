@@ -396,6 +396,10 @@ export type Project = SeoFields & {
   leadCount?: number;
   paidBoost?: number;
   finalScore?: number;
+  /** Free/Featured/Premium listing package (src/lib/packages.ts) — set from
+   * the linked Subscriptions record, not hand-edited. Drives the .badge-featured
+   * / .badge-premium pills and a small ranking boost in finalScore. */
+  package?: "free" | "featured" | "premium";
   verification?: {
     developerVerified?: boolean;
     addressVerified?: boolean;

@@ -71,7 +71,7 @@ Status against what's in the codebase today:
 | Images / Documents | not separate | Currently just image URL fields inline in project/developer forms |
 | Leads | not built | Lead data is captured (`leads` table, `src/lib/tracking-db.ts`) but has no admin list/view page |
 | Users | not built | No buyer/developer account management UI (auth accounts exist as of this session, but no admin list) |
-| Subscriptions | not built | No billing/subscription model exists yet |
+| Subscriptions | exists (`Subscriptions` collection, `/cms`) | Free/Featured/Premium per-project packages — see `docs/design.md` "Listing packages". No payment gateway wired yet (admin confirms manually) |
 | Featured Listings | exists as "Hero Ads" (`/admin/hero-ads`) | |
 | Payments | not built | |
 | Reports | not built | |
@@ -169,7 +169,7 @@ Status:
 | Leads | not built | Dashboard shows lead *counts* only, no leads list/detail |
 | Analytics | exists, basic | Views/leads stats on the dashboard |
 | Company Profile | partial | Editable via `/developers/register` (creation) but no dedicated "edit my profile" page in the portal itself |
-| Subscription | not built | No billing model yet |
+| Subscription | exists, via `/cms` | Project → Package tab (`PackagePicker.tsx`) — pick Free/Featured/Premium per listing; see `docs/design.md` "Listing packages" |
 | Team Members | not built | One auth account per developer company today — no multi-user team support |
 
 ### Developer dashboard — target spec

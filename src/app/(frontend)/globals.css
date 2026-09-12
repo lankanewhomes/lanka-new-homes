@@ -2066,6 +2066,12 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   color: #92670c;
 }
 
+.badge-premium {
+  background: #fef1e8;
+  border: 1px solid #f4b48a;
+  color: #c65a1e;
+}
+
 /* extraBadges — one color per category so the groups are distinct from each
    other and from the existing pills (status green, move-in-year blue,
    move-in-now purple, featured gold, hot-deal red). Plain-string badges

@@ -1,6 +1,7 @@
 import { CompletenessTodo as CompletenessTodo_e02911b42e48821b16fd5d9e40cf5034 } from '@/components/payload/CompletenessTodo'
 import { PreviewLinkPanel as PreviewLinkPanel_58de2ef0318e59b9fbb2898773569633 } from '@/components/payload/PreviewLinkPanel'
 import { YearPickerField as YearPickerField_4dc9f7e903015cdc77733f6107aaaf6d } from '@/components/payload/YearPickerField'
+import { PackagePicker as PackagePicker_b6fb5efff34773d65c795651027fa81f } from '@/components/payload/PackagePicker'
 import { ListingAnalyticsPanel as ListingAnalyticsPanel_aef927c4ceb2652d7f7abf8ef0fcf2e5 } from '@/components/payload/ListingAnalyticsPanel'
 import { SocialPanel as SocialPanel_e89e5c6e27d995476e5b50bf9943be69 } from '@/components/payload/SocialPanel'
 import { AnalyticsDashboard as AnalyticsDashboard_16ddde46401d8b8f0e062ed5c8fb8520 } from '@/components/payload/AnalyticsDashboard'
@@ -47,6 +48,7 @@ export const importMap = {
   "@/components/payload/CompletenessTodo#CompletenessTodo": CompletenessTodo_e02911b42e48821b16fd5d9e40cf5034,
   "@/components/payload/PreviewLinkPanel#PreviewLinkPanel": PreviewLinkPanel_58de2ef0318e59b9fbb2898773569633,
   "@/components/payload/YearPickerField#YearPickerField": YearPickerField_4dc9f7e903015cdc77733f6107aaaf6d,
+  "@/components/payload/PackagePicker#PackagePicker": PackagePicker_b6fb5efff34773d65c795651027fa81f,
   "@/components/payload/ListingAnalyticsPanel#ListingAnalyticsPanel": ListingAnalyticsPanel_aef927c4ceb2652d7f7abf8ef0fcf2e5,
   "@/components/payload/SocialPanel#SocialPanel": SocialPanel_e89e5c6e27d995476e5b50bf9943be69,
   "@/components/payload/AnalyticsDashboard#AnalyticsDashboard": AnalyticsDashboard_16ddde46401d8b8f0e062ed5c8fb8520,

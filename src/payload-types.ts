@@ -82,6 +82,7 @@ export interface Config {
     'social-assets': SocialAsset;
     'social-posts': SocialPost;
     'seo-keywords': SeoKeyword;
+    subscriptions: Subscription;
     leads: Lead;
     reviews: Review;
     analytics: Analytics;
@@ -120,6 +121,7 @@ export interface Config {
     'social-assets': SocialAssetsSelect<false> | SocialAssetsSelect<true>;
     'social-posts': SocialPostsSelect<false> | SocialPostsSelect<true>;
     'seo-keywords': SeoKeywordsSelect<false> | SeoKeywordsSelect<true>;
+    subscriptions: SubscriptionsSelect<false> | SubscriptionsSelect<true>;
     leads: LeadsSelect<false> | LeadsSelect<true>;
     reviews: ReviewsSelect<false> | ReviewsSelect<true>;
     analytics: AnalyticsSelect<false> | AnalyticsSelect<true>;
@@ -3520,6 +3522,10 @@ export interface Project {
       }[]
     | null;
   /**
+   * Set automatically from the linked Subscriptions record (see src/collections/hooks/sync-subscription-package.ts) when a developer picks Featured/Premium and payment is confirmed — not meant to be hand-edited except for an admin manually granting/adjusting a package.
+   */
+  package?: ('free' | 'featured' | 'premium') | null;
+  /**
    * Manually set by admin — added into final_score to rank this project higher.
    */
   paid_boost?: number | null;
@@ -6783,6 +6789,39 @@ export interface SeoKeyword {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subscriptions".
+ */
+export interface Subscription {
+  id: number;
+  project: number | Project;
+  developer: number | Developer;
+  package: 'featured' | 'premium';
+  /**
+   * Set to "active" once payment is confirmed — activates the project automatically (see hooks/sync-subscription-package.ts). No live gateway yet, so this is a manual step, same as Payments today.
+   */
+  status: 'active' | 'past_due' | 'canceled' | 'incomplete' | 'unpaid';
+  /**
+   * Snapshot of the price at signup, from src/lib/packages.ts — never edited by hand.
+   */
+  amount: number;
+  currency: 'CAD' | 'USD' | 'LKR';
+  current_period_start?: string | null;
+  current_period_end?: string | null;
+  /**
+   * A developer can check this to cancel — stays active (and featured) until the renewal date, then reverts to Free.
+   */
+  cancel_at_period_end?: boolean | null;
+  provider?: ('manual' | 'payhere' | 'stripe') | null;
+  /**
+   * Placeholder for a future payment gateway (e.g. PayHere) subscription reference.
+   */
+  provider_subscription_id?: string | null;
+  provider_customer_id?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "leads".
  */
 export interface Lead {
@@ -7134,6 +7173,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'seo-keywords';
         value: number | SeoKeyword;
+      } | null)
+    | ({
+        relationTo: 'subscriptions';
+        value: number | Subscription;
       } | null)
     | ({
         relationTo: 'leads';
@@ -7673,6 +7716,7 @@ export interface ProjectsSelect<T extends boolean = true> {
         source_payment?: T;
         id?: T;
       };
+  package?: T;
   paid_boost?: T;
   final_score?: T;
   social?:
@@ -8266,6 +8310,26 @@ export interface SeoKeywordsSelect<T extends boolean = true> {
   targetPage?: T;
   notes?: T;
   dateAdded?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subscriptions_select".
+ */
+export interface SubscriptionsSelect<T extends boolean = true> {
+  project?: T;
+  developer?: T;
+  package?: T;
+  status?: T;
+  amount?: T;
+  currency?: T;
+  current_period_start?: T;
+  current_period_end?: T;
+  cancel_at_period_end?: T;
+  provider?: T;
+  provider_subscription_id?: T;
+  provider_customer_id?: T;
   updatedAt?: T;
   createdAt?: T;
 }

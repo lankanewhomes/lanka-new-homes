@@ -1277,3 +1277,65 @@ Design rules that carry over: reel/cards use the site's Archivo type and
 captions, and no invented scenes — if a listing has no floor plan or block
 plan, those scenes are skipped rather than faked. Stories can't be published
 by API (Meta limit), only feed posts and Reels.
+
+## Listing packages (Free / Featured / Premium, Project → Package tab)
+
+One package per project (a developer with several projects sets each
+independently) — Free is the default, no data needed; Featured/Premium are
+recurring, one `Subscriptions` doc per paid project. Single source of truth
+for pricing/features: `src/lib/packages.ts` (`PACKAGES` — name, price,
+ranking boost, featured/badge flags, analytics level, weekly-reports flag).
+Change a price or feature gate there, nowhere else.
+
+- **Data**: `Subscriptions` collection (`src/collections/Subscriptions.ts`,
+  admin group Business) — `project`, `developer`, `package`
+  (featured/premium), `status` (active/past_due/canceled/incomplete/
+  unpaid), `amount`/`currency` (server-set snapshot, never trusted from the
+  client), `current_period_start`/`end`, `cancel_at_period_end`, and
+  `provider`/`provider_subscription_id`/`provider_customer_id` placeholders
+  for whichever gateway gets wired later (**PayHere**, per `docs/todo.md` —
+  not Stripe; no gateway is live yet, so `status` is flipped to `active` by
+  an admin today, same manual-confirm step `Payments` already uses).
+  `Projects.package` (new field, default `free`) is the denormalized
+  current tier, kept in sync by `hooks/sync-subscription-package.ts`
+  whenever a Subscription's status changes — the only thing this system
+  ever writes on a Project besides `featured`; listing content is never
+  touched. Rides the existing `data jsonb` sync to Supabase — no new
+  migration needed.
+- **Ranking**: `computeFinalScore` (`hooks/project-scoring.ts`) adds a small
+  package boost (Featured +15, Premium +35 — tuned so a strong, complete,
+  relevant Free listing can still outrank a thin Premium one) into the same
+  formula that already blends completeness/engagement/recency/admin
+  `paid_boost`. This is the one ranking function everything reads —
+  `listing-page.tsx`'s default "Recommended" sort already sorts by it.
+- **Badge/homepage**: Featured/Premium both set `Projects.featured = true`
+  (the existing `.badge-featured` pill + homepage "Featured listings" shelf
+  — zero new UI); Premium additionally shows `.badge-premium` (same pill
+  shape, brand-orange palette) on `ListingGridCard`.
+- **Analytics gating**: `ListingAnalyticsPanel` reads the project's package
+  and hides inquiry-rate/traffic-source/lead-status/trend-chart sections
+  unless `analyticsLevel` is `basic` (Featured) or `advanced` (Premium,
+  adds top-city/traffic-source/trend chart back). Free sees Views +
+  Inquiries only, with an upgrade prompt.
+- **Weekly reports**: `analytics-digest.ts`'s existing weekly developer
+  email/cron (Mondays) gets a new per-project section
+  (`src/lib/project-package-digest.ts`) for any project with
+  `weeklyReports: true` — views/inquiries/saves/downloads this week vs
+  last, top visitor locations — all read from the existing `Analytics`
+  event log (same `is_duplicate`/`is_bot` exclusion `increment-counts.ts`
+  already uses), no new tracking.
+- **Expiry**: a new daily cron (`/api/cron/subscription-expiry`, added to
+  `vercel.json`) cancels any `active` subscription past its
+  `current_period_end` (no gateway to auto-renew yet) — the same
+  afterChange hook reverts the project to Free.
+- **UI**: `PackagePicker.tsx` (Payload admin component, same
+  `var(--theme-elevation-*)` visual language as `PlacementPicker.tsx`) —
+  mounted as the Project edit form's new "Package" tab. Selecting
+  Featured/Premium creates a pending Subscription; an admin confirms it in
+  `/cms` (`Subscriptions` list) today.
+- **Currency**: `packages.ts` uses CAD (C$0/99/199) — the only place CAD is
+  used; everything else on the site (Payments, PlacementPricing) stays
+  LKR/USD, untouched.
+- **Not built**: live PayHere/Stripe checkout, pay-per-lead, multi-listing
+  bundle pricing — architecture leaves room for all three without a schema
+  change, none implemented yet.

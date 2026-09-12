@@ -1,14 +1,18 @@
 import type { CollectionBeforeChangeHook } from 'payload'
 import { COMPLETENESS_WEIGHT, computeCompletenessScore, type CompletenessData } from '@/lib/completeness'
+import { getPackage } from '@/lib/packages'
 
 // Named weights so the formula is easy to retune later without hunting
 // through the hook body:
 //   final_score = completeness_score * COMPLETENESS_WEIGHT
 //                + (view_count * VIEW_WEIGHT + save_count * SAVE_WEIGHT + lead_count * LEAD_WEIGHT)
 //                + recencyScore (decays RECENCY_MAX_POINTS -> 0 over RECENCY_WINDOW_DAYS)
-//                + paid_boost
+//                + paid_boost + packageBoost (Featured/Premium subscription, src/lib/packages.ts)
 // COMPLETENESS_WEIGHT and the checklist itself live in src/lib/completeness.ts
 // so the developer-facing to-do list shows exactly what this hook scores.
+// packageBoost is deliberately modest relative to completeness/engagement —
+// a thin Premium listing still shouldn't outrank a strong, relevant Free
+// one; it's a thumb on the scale, not the whole scale.
 const VIEW_WEIGHT = 0.1
 const SAVE_WEIGHT = 1
 const LEAD_WEIGHT = 3
@@ -20,6 +24,7 @@ type ScoredProjectData = CompletenessData & {
   save_count?: unknown
   lead_count?: unknown
   paid_boost?: unknown
+  package?: unknown
   createdAt?: unknown
 }
 
@@ -37,11 +42,12 @@ export function computeFinalScore(data: ScoredProjectData, completenessScore: nu
   const saveCount = typeof data.save_count === 'number' ? data.save_count : 0
   const leadCount = typeof data.lead_count === 'number' ? data.lead_count : 0
   const paidBoost = typeof data.paid_boost === 'number' ? data.paid_boost : 0
+  const packageBoost = getPackage(typeof data.package === 'string' ? data.package : undefined).rankingBoost
 
   const engagementScore = viewCount * VIEW_WEIGHT + saveCount * SAVE_WEIGHT + leadCount * LEAD_WEIGHT
   const recencyScore = computeRecencyScore(data.createdAt)
 
-  return Math.round(completenessScore * COMPLETENESS_WEIGHT + engagementScore + recencyScore + paidBoost)
+  return Math.round(completenessScore * COMPLETENESS_WEIGHT + engagementScore + recencyScore + paidBoost + packageBoost)
 }
 
 const VERIFICATION_CHECKLIST_FIELDS = [

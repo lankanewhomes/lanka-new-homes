@@ -187,7 +187,11 @@ export function ListingGridCard({ project, basePath = "/projects" }: { project: 
       <div className="listing-grid-card-body">
         {project.isFeatured || project.paymentPlanBadge ? (
           <div className="home-card-badge-row">
-            {project.isFeatured ? <span className="badge-featured">{t("Featured")}</span> : null}
+            {project.package === "premium" ? (
+              <span className="badge-premium">{t("Premium")}</span>
+            ) : project.isFeatured ? (
+              <span className="badge-featured">{t("Featured")}</span>
+            ) : null}
             {project.paymentPlanBadge ? <span className="badge-featured">{project.paymentPlanBadge}</span> : null}
           </div>
         ) : null}

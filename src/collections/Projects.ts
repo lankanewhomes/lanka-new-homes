@@ -139,7 +139,7 @@ export const Projects: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     group: 'Properties',
-    defaultColumns: ['name', 'developer', 'status', 'startingPriceLkr', 'featured', 'final_score'],
+    defaultColumns: ['name', 'developer', 'status', 'startingPriceLkr', 'package', 'final_score'],
     // `read` access below is deliberately public (the live site needs
     // anonymous access to project data) — that alone would let a developer
     // browsing /cms see every other developer's projects in the list, not
@@ -622,6 +622,18 @@ export const Projects: CollectionConfig = {
               ],
             },
             {
+              name: 'package',
+              type: 'select',
+              label: 'Package',
+              options: ['free', 'featured', 'premium'],
+              defaultValue: 'free',
+              access: { update: adminOnlyField },
+              admin: {
+                description:
+                  'Set automatically from the linked Subscriptions record (see src/collections/hooks/sync-subscription-package.ts) when a developer picks Featured/Premium and payment is confirmed — not meant to be hand-edited except for an admin manually granting/adjusting a package.',
+              },
+            },
+            {
               name: 'paid_boost',
               type: 'number',
               label: 'Paid Boost',
@@ -635,6 +647,18 @@ export const Projects: CollectionConfig = {
               defaultValue: 0,
               admin: { readOnly: true, description: 'Auto-calculated: completeness + engagement + recency + paid_boost.' },
             },
+          ],
+        },
+        {
+          label: 'Package',
+          fields: [
+            // Free/Featured/Premium picker for this specific listing — see
+            // src/lib/packages.ts (pricing/features) and
+            // src/collections/Subscriptions.ts (the recurring-package
+            // record this creates). Confirming payment (no gateway wired
+            // yet, same manual step Payments already requires) flips
+            // `package`/`featured` above automatically.
+            { name: 'packagePanel', type: 'ui', admin: { components: { Field: '@/components/payload/PackagePicker#PackagePicker' } } },
           ],
         },
         {

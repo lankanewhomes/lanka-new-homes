@@ -32,6 +32,7 @@ import { SavedListings } from './src/collections/SavedListings'
 import { SeoKeywords } from './src/collections/SeoKeywords'
 import { SocialAssets } from './src/collections/SocialAssets'
 import { SocialPosts } from './src/collections/SocialPosts'
+import { Subscriptions } from './src/collections/Subscriptions'
 import { isR2Configured, r2Storage } from './src/collections/storage/r2-storage'
 import { supabaseStorageAdapter } from './src/collections/storage/supabase-storage-adapter'
 import { TeamMembers } from './src/collections/TeamMembers'
@@ -121,6 +122,7 @@ export default buildConfig({
     SocialAssets,
     SocialPosts,
     SeoKeywords,
+    Subscriptions,
     Leads,
     Reviews,
     Analytics,

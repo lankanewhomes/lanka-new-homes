@@ -1,5 +1,6 @@
 import type { Payload } from "payload";
 import { runGa4Report } from "@/lib/ga4-data-client";
+import { buildProjectWeeklySummaries, formatWeeklyChange, type ProjectWeeklySummary } from "@/lib/project-package-digest";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -19,6 +20,8 @@ type DeveloperDigest = {
   totalInquiries: number;
   topTrafficSource: string | null;
   leadStatusCounts: Record<string, number>;
+  /** One entry per Featured/Premium project — Free listings don't get this (packages.ts weeklyReports gate). */
+  paidProjectSummaries: ProjectWeeklySummary[];
 };
 
 async function buildDeveloperDigest(payload: Payload, developer: { id: string | number; name: string; email: string }, period: DigestPeriod): Promise<DeveloperDigest | null> {
@@ -99,15 +102,48 @@ async function buildDeveloperDigest(payload: Payload, developer: { id: string | 
     leadStatusCounts[status] = (leadStatusCounts[status] ?? 0) + 1;
   }
 
+  const paidProjectSummaries = await buildProjectWeeklySummaries(
+    payload,
+    projects.map((p) => ({ id: p.id, name: p.name as string, package: p.package as string | undefined })),
+    period,
+  );
+
   return {
     developerId: developer.id,
     developerName: developer.name,
     email: developer.email,
     totalViews,
     totalInquiries: leadsInRange.totalDocs,
+    paidProjectSummaries,
     topTrafficSource,
     leadStatusCounts,
   };
+}
+
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char] ?? char);
+}
+
+function paidProjectSectionHtml(summaries: ProjectWeeklySummary[]): string {
+  if (summaries.length === 0) return "";
+  const rows = summaries
+    .map(
+      (s) => `
+        <div style="border: 1px solid #e5e5e4; padding: 12px 14px; margin-bottom: 10px;">
+          <p style="margin: 0 0 6px; font-weight: 700;">${escapeHtml(s.projectName)} <span style="font-weight: 400; color: #6b6355; font-size: 12px; text-transform: capitalize;">(${escapeHtml(s.packageTier)})</span></p>
+          <p style="margin: 0; font-size: 13px; color: #4a4a48;">
+            Views: <strong>${s.views}</strong> (${formatWeeklyChange(s.views, s.previousViews)}) ·
+            Inquiries: <strong>${s.inquiries}</strong> (${formatWeeklyChange(s.inquiries, s.previousInquiries)}) ·
+            Saves: <strong>${s.saves}</strong> · Brochure downloads: <strong>${s.downloads}</strong>
+          </p>
+          ${s.topLocations.length > 0 ? `<p style="margin: 6px 0 0; font-size: 12px; color: #6b6355;">Top visitor locations: ${s.topLocations.map(escapeHtml).join(", ")}</p>` : ""}
+        </div>`,
+    )
+    .join("");
+  return `
+    <h3 style="margin: 24px 0 10px;">Paid listing performance</h3>
+    ${rows}
+  `;
 }
 
 function digestEmailHtml(digest: DeveloperDigest, period: DigestPeriod, dashboardUrl: string): string {
@@ -121,6 +157,7 @@ function digestEmailHtml(digest: DeveloperDigest, period: DigestPeriod, dashboar
         <tr><td style="padding: 6px 0;">Top traffic source</td><td style="padding: 6px 0; text-align: right;"><strong>${digest.topTrafficSource ?? "—"}</strong></td></tr>
       </table>
       <p>Lead pipeline right now: ${digest.leadStatusCounts.new} new, ${digest.leadStatusCounts.contacted} contacted, ${digest.leadStatusCounts.site_visit} site visits, ${digest.leadStatusCounts.closed} closed.</p>
+      ${paidProjectSectionHtml(digest.paidProjectSummaries)}
       <p><a href="${dashboardUrl}">View your full dashboard</a></p>
     </div>
   `;
@@ -168,6 +205,16 @@ export async function sendWeeklyAnalyticsDigests(payload: Payload, period: Diges
           `Inquiries: ${digest.totalInquiries}`,
           `Top traffic source: ${digest.topTrafficSource ?? '—'}`,
           `Lead pipeline: ${digest.leadStatusCounts.new} new, ${digest.leadStatusCounts.contacted} contacted, ${digest.leadStatusCounts.site_visit} site visits, ${digest.leadStatusCounts.closed} closed.`,
+          ...digest.paidProjectSummaries.length > 0
+            ? [
+                '',
+                'Paid listing performance:',
+                ...digest.paidProjectSummaries.map(
+                  (s) =>
+                    `- ${s.projectName} (${s.packageTier}): ${s.views} views (${formatWeeklyChange(s.views, s.previousViews)}), ${s.inquiries} inquiries (${formatWeeklyChange(s.inquiries, s.previousInquiries)}), ${s.saves} saves, ${s.downloads} brochure downloads${s.topLocations.length > 0 ? ` — top locations: ${s.topLocations.join(', ')}` : ''}`,
+                ),
+              ]
+            : [],
           `Dashboard: ${serverURL}/developers/dashboard`,
         ].join('\n'),
       });

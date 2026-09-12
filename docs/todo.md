@@ -48,7 +48,12 @@ been raised but not yet done.
   `docs/design.md` "Verified badge". **Not done**: a "Verified" filter on
   `/developers` — that page has no filter UI of any kind today (bare A–Z
   directory), so adding one is a separate, larger redesign.
-- [ ] Wire a payment gateway (PayHere) for placements + invoices.
+- [ ] Wire a payment gateway (PayHere) for placements + invoices, and for
+  the Free/Featured/Premium listing packages (`docs/design.md` "Listing
+  packages") — the `Subscriptions` collection's `provider`/
+  `provider_subscription_id`/`provider_customer_id` fields are ready for
+  this; today a subscription is activated manually by an admin, same as
+  `Payments`.
 - [ ] Add a "Verified" filter to `/developers` (needs the page redesigned
   with filter UI first — see note above).
 
