@@ -5733,8 +5733,16 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   padding: 56px 30px 52px;
   margin: 0 auto 34px;
   max-width: 1280px;
-  background: #f7f6f4;
+  background: #1c1c20;
   border-radius: 0;
+}
+
+.seo-links-section .featured-listings-head h2 {
+  color: #fff;
+}
+
+.seo-links-section .featured-listings-subhead {
+  color: #b4b4bb;
 }
 
 .seo-links-grid {
@@ -5751,7 +5759,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #1f1f1f;
+  color: #8f8f96;
 }
 
 .seo-links-column ul {
@@ -5760,13 +5768,13 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 16px;
 }
 
 .seo-links-column a {
   font-size: 14px;
-  line-height: 1.4;
-  color: #6b6355;
+  line-height: 1.8;
+  color: #fff;
   text-decoration: none;
 }
 

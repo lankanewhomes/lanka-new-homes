@@ -37,7 +37,6 @@ const SEO_LINK_GROUPS: { title: string; links: { label: string; href: string }[]
   {
     title: "Land",
     links: [
-      { label: "Land for sale in Sri Lanka", href: "/land" },
       { label: "Land for sale in Nuwara Eliya", href: "/land?location=Nuwara+Eliya" },
       { label: "Residential land for sale", href: "/land?landUse=Residential" },
       { label: "Agricultural land for sale", href: "/land?landUse=Agricultural" },
@@ -47,7 +46,6 @@ const SEO_LINK_GROUPS: { title: string; links: { label: string; href: string }[]
   {
     title: "Houses",
     links: [
-      { label: "Houses for sale in Sri Lanka", href: "/projects?type=House" },
       { label: "House for sale in Kandy", href: "/projects?type=House&location=Kandy" },
       { label: "Houses for sale in Wattala", href: "/projects?type=House&location=Wattala" },
       { label: "Houses for sale in Kottawa", href: "/projects?type=House&location=Kottawa" },
