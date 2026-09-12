@@ -46,6 +46,21 @@ Use these target phrases naturally across page titles, meta descriptions, H1/H2 
 - Swimming pool construction companies in sri lanka
 - Construction consultant companies in sri lanka
 
+## New Development Keywords (added 2026-09-12, web research)
+
+Found researching what new-build developers/portals in Sri Lanka actually
+use — focused on new construction/development, not resale classifieds:
+
+- New housing development Sri Lanka
+- New gated community Sri Lanka
+- Gated community homes for sale Sri Lanka
+- New condominium launch Colombo
+- Mixed development Sri Lanka
+- New housing scheme Sri Lanka
+- New apartment complex Sri Lanka
+- New residential development Colombo
+- Affordable new housing Sri Lanka
+
 ## Land Keywords
 
 - Buying land in sri lanka
