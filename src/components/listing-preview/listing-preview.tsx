@@ -4,7 +4,6 @@ import {
   ConstructionProgressSection,
   ConstructionTimelineSection,
   KeyFeaturesSection,
-  NeighborhoodInsightsSection,
   NeighborhoodSection,
   PlansAndHomesSection,
   PricingInformationLayout,
@@ -14,7 +13,7 @@ import {
   ProjectStatsChips,
   StatsContactCard,
 } from "@/components/marketplace/components";
-import type { Developer, Neighborhood, Project } from "@/types";
+import type { Developer, Project } from "@/types";
 
 // Renders with the exact same components as the real /projects/[slug] page,
 // so what a developer previews here is what buyers will see once
@@ -23,12 +22,10 @@ import type { Developer, Neighborhood, Project } from "@/types";
 export function ListingPreviewPage({
   project,
   developer,
-  neighborhood,
   neighborhoodPageExists,
 }: {
   project: Project;
   developer?: Developer;
-  neighborhood?: Neighborhood;
   neighborhoodPageExists: boolean;
 }) {
   return (
@@ -82,17 +79,6 @@ export function ListingPreviewPage({
             neighborhoodName={project.neighborhood}
             neighborhoodSlug={project.neighborhoodSlug}
             neighborhoodPageExists={neighborhoodPageExists}
-          />
-
-          <NeighborhoodInsightsSection
-            projectName={project.name}
-            nearby={project.nearby}
-            neighborhood={neighborhood}
-            city={project.city}
-            district={project.district}
-            province={project.province}
-            coordinates={project.coordinates}
-            location={project.location}
           />
 
           <StatsContactCard project={project} developer={developer} />

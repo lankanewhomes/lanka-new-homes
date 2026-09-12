@@ -33,7 +33,6 @@ import {
 import { Fragment, FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import {
   Activity,
-  ArrowUpRight,
   Bath,
   BedDouble,
   Bell,
@@ -99,7 +98,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { SiteLanguage, useLanguage } from "@/components/layout/language-provider";
 import { compactLkr, formatLkr, formatOfficeHours } from "@/lib/format";
-import { Amenity, Article, Developer, FloorPlan, Lead, Location, NearbyPlace, Neighborhood, Project } from "@/types";
+import { Amenity, Article, Developer, FloorPlan, Lead, Location, NearbyPlace, Project } from "@/types";
 import { localizedProjectCopy, useListingT } from "@/lib/i18n/use-listing-t";
 import { floorPlanSummarySentence } from "@/lib/i18n/floor-plan-sentence";
 import { formatWhatsAppNumber, listingWhatsAppHref } from "@/lib/whatsapp";
@@ -3694,132 +3693,6 @@ export function NeighborhoodSection({ nearby, neighborhoodName, neighborhoodSlug
           View neighbourhood
         </Link>
       ) : null}
-    </section>
-  );
-}
-
-// Distance-band buckets for NeighborhoodInsightsSection's rail — same
-// distanceKm field NeighborhoodSection/NearbyPlacesAccordion already use,
-// just grouped by proximity instead of by category. An item with no
-// distanceKm goes in "Nearby" with no distance claim attached to it.
-const DISTANCE_BANDS: { label: string; maxKm: number }[] = [
-  { label: "Under 500m", maxKm: 0.5 },
-  { label: "Under 1km", maxKm: 1 },
-  { label: "Under 2km", maxKm: 2 },
-  { label: "Under 5km", maxKm: 5 },
-  { label: "Nearby", maxKm: Infinity },
-];
-
-function groupNearbyByDistance(nearby: NearbyPlace[]) {
-  const bands = DISTANCE_BANDS.map((band) => ({ ...band, items: [] as NearbyPlace[] }));
-  for (const place of nearby) {
-    const km = place.distanceKm;
-    const band = hasDisplayValue(km) ? bands.find((b) => (km as number) <= b.maxKm) ?? bands[bands.length - 1] : bands[bands.length - 1];
-    band.items.push(place);
-  }
-  return bands.filter((b) => b.items.length > 0);
-}
-
-// A distinct, additive companion to NeighborhoodSection above (untouched) —
-// same underlying nearby[] data, presented as a proximity-banded rail (à la
-// a "landmark intelligence" panel) instead of a by-category accordion. Every
-// figure here is a real field already on the project/neighborhood record:
-// no per-place description text exists in the data model, so unlike the
-// inspiration layout this doesn't invent one — it shows name + real
-// distance and nothing else per item. The right-hand write-up only appears
-// when a real Neighborhood record backs this project (its own description/
-// highlights, not project-specific prose).
-export function NeighborhoodInsightsSection({
-  projectName,
-  nearby,
-  neighborhood,
-  city,
-  district,
-  province,
-  coordinates,
-  location,
-  title = "Neighbourhood Insights",
-}: {
-  projectName: string;
-  nearby: NearbyPlace[];
-  neighborhood?: Neighborhood;
-  city?: string;
-  district?: string;
-  province?: string;
-  coordinates?: { lat?: number | null; lng?: number | null };
-  location?: string;
-  title?: string;
-}) {
-  const { t } = useListingT();
-  const bands = groupNearbyByDistance(nearby);
-  if (bands.length === 0) return null;
-
-  const nearest = [...nearby].filter((p) => hasDisplayValue(p.distanceKm)).sort((a, b) => (a.distanceKm ?? 0) - (b.distanceKm ?? 0))[0];
-  const areaLine = [neighborhood?.city ?? city, neighborhood?.province ?? province].filter(hasDisplayValue).join(", ");
-  const hasCoords = hasDisplayValue(coordinates?.lat) && hasDisplayValue(coordinates?.lng);
-  const mapHref = hasCoords
-    ? `https://www.google.com/maps?q=${coordinates!.lat},${coordinates!.lng}`
-    : `https://www.google.com/maps?q=${encodeURIComponent([projectName, location].filter(hasDisplayValue).join(" "))}`;
-
-  return (
-    <section id="neighborhood-insights" className="neighborhood-insights-shell" aria-label={title}>
-      <div className="neighborhood-insights-header">
-        <Building2 className="h-5 w-5" aria-hidden="true" />
-        <h2>{t("What's near")} {projectName}</h2>
-      </div>
-
-      {nearest ? (
-        <p className="neighborhood-insights-quote">
-          “{t("Just")} {formatDistanceKm(nearest.distanceKm ?? 0)} {t("from")} {nearest.name}.”
-        </p>
-      ) : null}
-
-      <div className="neighborhood-insights-grid">
-        <div className="neighborhood-insights-rail">
-          {bands.map((band) => (
-              <div key={band.label} className="neighborhood-insights-band">
-                <div className="neighborhood-insights-band-head">
-                  <span className="neighborhood-insights-band-pill">{t(band.label)}</span>
-                  <span className="neighborhood-insights-band-count">{band.items.length} {band.items.length === 1 ? t("place") : t("places")}</span>
-                </div>
-                <div className="neighborhood-insights-band-items">
-                  {band.items.map((place) => {
-                    const Icon = NEARBY_CATEGORY_ICON[place.category];
-                    return (
-                      <div key={`${place.category}-${place.name}`} className="neighborhood-insights-item">
-                        <p className="neighborhood-insights-item-category"><Icon className="h-3.5 w-3.5" aria-hidden="true" /> {t(place.category)}</p>
-                        <p className="neighborhood-insights-item-name">{place.name}</p>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-        </div>
-
-        {hasDisplayValue(neighborhood?.description) || hasDisplayValue(areaLine) ? (
-          <aside className="neighborhood-insights-panel">
-            {hasDisplayValue(areaLine) ? <p className="neighborhood-insights-panel-eyebrow">{areaLine}</p> : null}
-            {hasDisplayValue(district) ? <p className="neighborhood-insights-panel-fact"><strong>{t("District")}:</strong> {district}</p> : null}
-            {hasDisplayValue(neighborhood?.description) ? <p className="neighborhood-insights-panel-copy">{neighborhood!.description}</p> : null}
-            {neighborhood?.highlights?.length ? (
-              <>
-                <p className="neighborhood-insights-panel-subhead">{t("Neighbourhood highlights")}</p>
-                <ul className="neighborhood-insights-panel-list">
-                  {neighborhood.highlights.map((h) => <li key={h}>{h}</li>)}
-                </ul>
-              </>
-            ) : null}
-          </aside>
-        ) : null}
-      </div>
-
-      <div className="neighborhood-insights-footer">
-        <span>{t("Amenities near")} {projectName}</span>
-        <a href={mapHref} target="_blank" rel="noreferrer" className="neighborhood-insights-map-link">
-          {t("View on map")} <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
-        </a>
-      </div>
     </section>
   );
 }
