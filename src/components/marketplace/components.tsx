@@ -1376,7 +1376,11 @@ export function ProjectHero({
           {isUpcomingMoveIn(project) ? <span className="listing-hero-tag-move-in">{t("Move in")} {project.completionYear}</span> : null}
           {project.isMoveInNow ? <span className="listing-badge-pill badge-move-in-now">{t("Move-In Now")}</span> : null}
           {hasQuickMoveIn(project) ? <span className="listing-badge-pill badge-quick-move-in">{t("Quick Move-In")}</span> : null}
-          {project.isFeatured ? <span className="listing-badge-pill badge-featured">{t("Featured")}</span> : null}
+          {project.package === "premium" ? (
+            <span className="listing-badge-pill badge-premium">{t("Premium")}</span>
+          ) : project.isFeatured ? (
+            <span className="listing-badge-pill badge-featured">{t("Featured")}</span>
+          ) : null}
           {project.paymentPlanBadge ? <span className="listing-badge-pill badge-featured">{project.paymentPlanBadge}</span> : null}
           {extraBadges.map((badge) => {
             const label = typeof badge === "string" ? badge : badge.label;

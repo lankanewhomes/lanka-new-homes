@@ -103,7 +103,11 @@ export const Subscriptions: CollectionConfig = {
       filterOptions: async ({ req }) => {
         if (isAdmin(req)) return true
         const ownedDeveloperIds = await getOwnedDeveloperIds(req)
-        return { developer: { in: ownedDeveloperIds.length ? ownedDeveloperIds : ['__none__'] } }
+        // developer_id is an integer column — a non-numeric sentinel like
+        // '__none__' fails client-side ("invalid input syntax for type
+        // integer: NaN") before the query even reaches Postgres. -1 is a
+        // safe "never matches a real row" sentinel for an integer FK.
+        return { developer: { in: ownedDeveloperIds.length ? ownedDeveloperIds : [-1] } }
       },
     },
     {
@@ -120,7 +124,7 @@ export const Subscriptions: CollectionConfig = {
       filterOptions: async ({ req }) => {
         if (isAdmin(req)) return true
         const ownedIds = await getOwnedDeveloperIds(req)
-        return { id: { in: ownedIds.length ? ownedIds : ['__none__'] } }
+        return { id: { in: ownedIds.length ? ownedIds : [-1] } }
       },
     },
     { name: 'package', type: 'select', options: [...SUBSCRIPTION_PACKAGE_OPTIONS], required: true, access: { update: adminOnlyField } },
