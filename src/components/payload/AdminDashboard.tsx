@@ -1,4 +1,4 @@
-import type { AdminViewServerProps } from "payload";
+import type { AdminViewServerProps, Where } from "payload";
 import Link from "next/link";
 import { Building2, MapPin, MessageCircle, Plus } from "lucide-react";
 import { LEAD_STATUS_OPTIONS } from "@/collections/Leads";
@@ -45,19 +45,45 @@ export async function AdminDashboard(props: AdminViewServerProps) {
   const role = (user as { role?: string } | null)?.role;
   const isAdmin = role === "admin";
 
-  const [totalProjects, publishedProjects, developersCount, newLeadsCount, recentLeadsRes, recentProjectsRes] = await Promise.all([
-    payload.count({ collection: "projects", overrideAccess: false, user: user ?? undefined }),
-    payload.count({ collection: "projects", where: { isPublished: { equals: true } }, overrideAccess: false, user: user ?? undefined }),
-    payload.count({ collection: "developers", overrideAccess: false, user: user ?? undefined }),
-    payload.count({ collection: "leads", where: { status: { equals: "new" } }, overrideAccess: false, user: user ?? undefined }),
-    payload.find({ collection: "leads", sort: "-createdAt", limit: 8, depth: 2, overrideAccess: false, user: user ?? undefined }),
-    payload.find({ collection: "projects", sort: "-updatedAt", limit: 8, depth: 1, overrideAccess: false, user: user ?? undefined }),
+  // Projects/Developers have public read access (the live site needs to
+  // read published projects/the developer directory) — that's correct and
+  // untouched, but it means a raw payload.count()/find() here would show
+  // every developer's platform-wide numbers to a developer account too.
+  // Scope this dashboard's own queries down to "my projects" the same way
+  // MyBilling.tsx already does, so a developer sees their own activity,
+  // not the whole platform's.
+  let projectWhere: Where = {};
+  let leadWhere: Where = {};
+  let ownedDeveloperIds: (string | number)[] = [];
+  if (!isAdmin && user) {
+    const developersRes = await payload.find({ collection: "developers", where: { user: { equals: user.id } }, limit: 10, depth: 0, overrideAccess: true });
+    ownedDeveloperIds = developersRes.docs.map((d) => d.id);
+    projectWhere = { developer: { in: ownedDeveloperIds.length ? ownedDeveloperIds : ["__none__"] } };
+    const ownedProjectsRes = ownedDeveloperIds.length
+      ? await payload.find({ collection: "projects", where: projectWhere, limit: 500, depth: 0, overrideAccess: true })
+      : { docs: [] };
+    const projectIds = ownedProjectsRes.docs.map((p) => p.id);
+    leadWhere = { project: { in: projectIds.length ? projectIds : ["__none__"] } };
+  }
+
+  const [totalProjects, publishedProjects, thirdStat, newLeadsCount, recentLeadsRes, recentProjectsRes] = await Promise.all([
+    payload.count({ collection: "projects", where: projectWhere, overrideAccess: false, user: user ?? undefined }),
+    payload.count({ collection: "projects", where: { ...projectWhere, isPublished: { equals: true } }, overrideAccess: false, user: user ?? undefined }),
+    // Admin: platform-wide developer count. Developer: their own paid
+    // (Featured/Premium) listings, from the real Subscriptions collection —
+    // more relevant to them than "how many developers are on the platform."
+    isAdmin
+      ? payload.count({ collection: "developers", overrideAccess: false, user: user ?? undefined })
+      : payload.count({ collection: "subscriptions", where: { developer: { in: ownedDeveloperIds.length ? ownedDeveloperIds : ["__none__"] }, status: { equals: "active" } }, overrideAccess: true }),
+    payload.count({ collection: "leads", where: { ...leadWhere, status: { equals: "new" } }, overrideAccess: false, user: user ?? undefined }),
+    payload.find({ collection: "leads", where: leadWhere, sort: "-createdAt", limit: 8, depth: 2, overrideAccess: false, user: user ?? undefined }),
+    payload.find({ collection: "projects", where: projectWhere, sort: "-updatedAt", limit: 8, depth: 1, overrideAccess: false, user: user ?? undefined }),
   ]);
 
   const stats = [
-    { label: "Total Projects", value: totalProjects.totalDocs },
+    { label: isAdmin ? "Total Projects" : "My Projects", value: totalProjects.totalDocs },
     { label: "Published Projects", value: publishedProjects.totalDocs },
-    { label: "Developers", value: developersCount.totalDocs },
+    { label: isAdmin ? "Developers" : "Active Paid Listings", value: thirdStat.totalDocs },
     { label: "New Leads", value: newLeadsCount.totalDocs },
   ];
 
@@ -83,8 +109,12 @@ export async function AdminDashboard(props: AdminViewServerProps) {
         </div>
         <div className="ln-quick-actions">
           <Link href="/cms/collections/projects/create" className="ln-quick-action"><Plus size={15} /> Add Project</Link>
-          <Link href="/cms/collections/lands/create" className="ln-quick-action"><Plus size={15} /> Add Land</Link>
-          <Link href="/cms/collections/developers/create" className="ln-quick-action"><Plus size={15} /> Add Developer</Link>
+          {isAdmin ? (
+            <>
+              <Link href="/cms/collections/lands/create" className="ln-quick-action"><Plus size={15} /> Add Land</Link>
+              <Link href="/cms/collections/developers/create" className="ln-quick-action"><Plus size={15} /> Add Developer</Link>
+            </>
+          ) : null}
           <Link href="/cms/collections/leads" className="ln-quick-action"><MessageCircle size={15} /> View Leads</Link>
         </div>
       </div>
