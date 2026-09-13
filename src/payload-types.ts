@@ -6804,7 +6804,7 @@ export interface Subscription {
    * Snapshot of the price at signup, from src/lib/packages.ts — never edited by hand.
    */
   amount: number;
-  currency: 'CAD' | 'USD' | 'LKR';
+  currency: 'LKR' | 'USD' | 'CAD';
   current_period_start?: string | null;
   current_period_end?: string | null;
   /**

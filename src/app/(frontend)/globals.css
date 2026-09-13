@@ -10169,6 +10169,54 @@ a.developer-profile-press-title {
   color: #57534e;
 }
 
+.fd-pricing-grid {
+  align-items: stretch;
+}
+
+.fd-pricing-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.fd-pricing-card-highlight {
+  border: 2px solid #f47b36;
+}
+
+.fd-pricing-card-tag {
+  position: absolute;
+  top: -11px;
+  right: 16px;
+  background: #f47b36;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 650;
+  padding: 3px 10px;
+  border-radius: 2px;
+}
+
+.fd-pricing-card-price {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1f1f1f;
+  margin: 0 0 14px;
+}
+
+.fd-pricing-card-features {
+  margin: 0;
+  padding: 0 0 0 16px;
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: #57534e;
+}
+
+.fd-pricing-note {
+  margin: 20px 0 0;
+  text-align: center;
+  font-size: 13px;
+  color: #78716c;
+}
+
 .fd-badge-preview {
   display: flex;
   flex-wrap: wrap;

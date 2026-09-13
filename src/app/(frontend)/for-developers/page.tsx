@@ -14,6 +14,7 @@ import {
 import { getProjectBySlug } from "@/lib/project-store";
 import { ListingGridCard } from "@/components/marketplace/listing-page";
 import { ForDevelopersFeatures } from "@/components/marketplace/for-developers-features";
+import { PACKAGE_LIST, formatPackagePrice } from "@/lib/packages";
 
 export const revalidate = 300;
 
@@ -194,6 +195,28 @@ export default async function ForDevelopersPage() {
             </li>
           ))}
         </ol>
+      </section>
+
+      <section className="fd-section" aria-label="Pricing">
+        <div className="fd-section-head">
+          <h2>Listing is always free. Upgrade any project for more reach.</h2>
+          <p>Every listing gets the full page, photos, floor plans, and brochure at no cost. Featured and Premium are optional, per project — pick one after your listing is live.</p>
+        </div>
+
+        <div className="fd-feature-grid fd-pricing-grid">
+          {PACKAGE_LIST.map((pkg) => (
+            <div className={`fd-feature-card fd-pricing-card${pkg.tier === "premium" ? " fd-pricing-card-highlight" : ""}`} key={pkg.tier}>
+              {pkg.tier === "premium" ? <span className="fd-pricing-card-tag">Most visibility</span> : null}
+              <h3>{pkg.name}</h3>
+              <p className="fd-pricing-card-price">{formatPackagePrice(pkg)}</p>
+              <ul className="fd-pricing-card-features">
+                {pkg.features.map((feature) => <li key={feature}>{feature}</li>)}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        <p className="fd-pricing-note">Pick a package for any project from your dashboard once it's listed — no separate sign-up.</p>
       </section>
 
       <section className="fd-cta-band" aria-label="Get started">
