@@ -12,6 +12,41 @@
   --font-body: "Archivo", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
+/* ===== Colored tabs on the Project edit form (and Land, which shares the
+   same .tabs-field__tab-button markup) — each tab gets a distinct
+   background when active, so which section you're editing is obvious at a
+   glance. Order matches Projects.ts's real tab order exactly: Overview,
+   Status & Badges, Timeline, Pricing, Building Details, Content & Media,
+   Amenities & Features, Translations, Floor Plans, Neighborhood, Location
+   & Contact, Scoring & Placement, Package, Analytics, Social, SEO,
+   Verification. Land has fewer tabs sharing some of the same labels
+   (Overview, Content & Media, etc.) — its tabs pick up colors by position
+   too, just not hand-matched to its own labels; still a real, distinct
+   color per tab there. */
+.tabs-field__tab-button--active {
+  padding: 6px 14px 8px !important;
+  border-radius: 6px 6px 0 0 !important;
+  margin-bottom: -1px;
+}
+
+.tabs-field__tab-button:nth-child(1).tabs-field__tab-button--active { background: #eaf2fb; color: #1d5fa8; }
+.tabs-field__tab-button:nth-child(2).tabs-field__tab-button--active { background: #e6f4f3; color: #0d6b63; }
+.tabs-field__tab-button:nth-child(3).tabs-field__tab-button--active { background: #eef0fd; color: #3f4a9e; }
+.tabs-field__tab-button:nth-child(4).tabs-field__tab-button--active { background: #e8f5e9; color: #1a6b2f; }
+.tabs-field__tab-button:nth-child(5).tabs-field__tab-button--active { background: #fdf3e0; color: #92670c; }
+.tabs-field__tab-button:nth-child(6).tabs-field__tab-button--active { background: #f3ecfa; color: #6b3fa0; }
+.tabs-field__tab-button:nth-child(7).tabs-field__tab-button--active { background: #e6f7fa; color: #0e7490; }
+.tabs-field__tab-button:nth-child(8).tabs-field__tab-button--active { background: #fdf2f8; color: #a6316f; }
+.tabs-field__tab-button:nth-child(9).tabs-field__tab-button--active { background: #f3f8e3; color: #5a7527; }
+.tabs-field__tab-button:nth-child(10).tabs-field__tab-button--active { background: #f3ece4; color: #7a5230; }
+.tabs-field__tab-button:nth-child(11).tabs-field__tab-button--active { background: #e7f1fb; color: #2564a8; }
+.tabs-field__tab-button:nth-child(12).tabs-field__tab-button--active { background: #fef1e8; color: #c65a1e; }
+.tabs-field__tab-button:nth-child(13).tabs-field__tab-button--active { background: #fdf6df; color: #8a6d1a; }
+.tabs-field__tab-button:nth-child(14).tabs-field__tab-button--active { background: #f2edfc; color: #5b3fa6; }
+.tabs-field__tab-button:nth-child(15).tabs-field__tab-button--active { background: #fde9ee; color: #b03457; }
+.tabs-field__tab-button:nth-child(16).tabs-field__tab-button--active { background: #e6f6ee; color: #157347; }
+.tabs-field__tab-button:nth-child(17).tabs-field__tab-button--active { background: #eef1f4; color: #445468; }
+
 /* ===== Custom sidebar (AdminNav.tsx) ===== */
 
 .ln-nav {

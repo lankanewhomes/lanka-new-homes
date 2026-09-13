@@ -133,7 +133,7 @@ export function ListingGridCard({ project, basePath = "/projects" }: { project: 
   const galleryPhotos = project.gallery
     .map((item) => item.image)
     .filter((image) => image !== project.heroImage && !nonPropertyPhoto.test(image));
-  const photos = project.heroImage ? [project.heroImage, ...galleryPhotos] : galleryPhotos.length > 0 ? galleryPhotos : [project.heroImage];
+  const photos = project.heroImage ? [project.heroImage, ...galleryPhotos] : galleryPhotos;
   const [photoIndex, setPhotoIndex] = useState(0);
 
   const showPrevPhoto = (event: React.MouseEvent) => {
@@ -151,13 +151,17 @@ export function ListingGridCard({ project, basePath = "/projects" }: { project: 
   return (
     <article className="listing-grid-card">
       <Link href={href} className="listing-grid-card-media">
-        <Image
-          src={photos[photoIndex]}
-          alt={`${project.name} in ${project.location}`}
-          width={480}
-          height={340}
-          className="listing-grid-card-image"
-        />
+        {photos[photoIndex] ? (
+          <Image
+            src={photos[photoIndex]}
+            alt={`${project.name} in ${project.location}`}
+            width={480}
+            height={340}
+            className="listing-grid-card-image"
+          />
+        ) : (
+          <div className="listing-grid-card-image listing-grid-card-image-placeholder" aria-hidden="true" />
+        )}
         <span className="listing-grid-card-status">{t(statusPillLabel(project))}</span>
         <button
           type="button"

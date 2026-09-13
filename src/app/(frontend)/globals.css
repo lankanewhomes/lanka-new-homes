@@ -8702,6 +8702,10 @@ a.developer-profile-press-title {
   transform: scale(1.05);
 }
 
+.listing-grid-card-image-placeholder {
+  background: #ececea;
+}
+
 .listing-grid-card-status {
   position: absolute;
   left: 8px;

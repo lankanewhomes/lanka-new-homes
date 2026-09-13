@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { adminOnly, adminOnlyField, ownDeveloperAccess } from './access'
+import { adminOnly, adminOnlyField, getOwnedDeveloperIds, isAdmin, ownDeveloperAccess } from './access'
 import { getPackage } from '@/lib/packages'
 import { syncProjectPackageFromSubscription } from './hooks/sync-subscription-package'
 
@@ -91,8 +91,38 @@ export const Subscriptions: CollectionConfig = {
     afterChange: [syncProjectPackageFromSubscription],
   },
   fields: [
-    { name: 'project', type: 'relationship', relationTo: 'projects', required: true, index: true },
-    { name: 'developer', type: 'relationship', relationTo: 'developers', required: true, index: true, access: { update: adminOnlyField } },
+    {
+      name: 'project',
+      type: 'relationship',
+      relationTo: 'projects',
+      required: true,
+      index: true,
+      // Same reasoning as the developer field below — a developer picking a
+      // project for their own subscription should only see their own
+      // listings, not every project on the platform.
+      filterOptions: async ({ req }) => {
+        if (isAdmin(req)) return true
+        const ownedDeveloperIds = await getOwnedDeveloperIds(req)
+        return { developer: { in: ownedDeveloperIds.length ? ownedDeveloperIds : ['__none__'] } }
+      },
+    },
+    {
+      name: 'developer',
+      type: 'relationship',
+      relationTo: 'developers',
+      required: true,
+      index: true,
+      access: { update: adminOnlyField },
+      // Without this, the relationship picker lists every developer on the
+      // platform — a developer-role account creating their own subscription
+      // (e.g. via the "+ Create" button on the Subscriptions list) would see
+      // every other company's name. Admin still sees everyone.
+      filterOptions: async ({ req }) => {
+        if (isAdmin(req)) return true
+        const ownedIds = await getOwnedDeveloperIds(req)
+        return { id: { in: ownedIds.length ? ownedIds : ['__none__'] } }
+      },
+    },
     { name: 'package', type: 'select', options: [...SUBSCRIPTION_PACKAGE_OPTIONS], required: true, access: { update: adminOnlyField } },
     {
       name: 'status',
