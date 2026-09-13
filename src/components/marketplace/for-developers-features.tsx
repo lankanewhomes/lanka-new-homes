@@ -1,8 +1,5 @@
-"use client";
-
-import { useState } from "react";
 import type { ComponentType } from "react";
-import { BarChart3, Building2, ChevronDown, Clock, Globe2, Layers, Phone, ShieldCheck, Sparkles, UploadCloud } from "lucide-react";
+import { BarChart3, Building2, Clock, Globe2, Layers, Phone, ShieldCheck, Sparkles, UploadCloud } from "lucide-react";
 
 type FeatureItem = { icon: ComponentType<{ className?: string }>; label: string; body: string };
 type FeatureGroup = { key: string; label: string; items: FeatureItem[] };
@@ -37,43 +34,30 @@ const GROUPS: FeatureGroup[] = [
   },
 ];
 
-// Same accordion pattern as a real listing's Key Features section
-// (KeyFeaturesSection in components.tsx) — reusing its exact CSS classes
-// (.key-features-shell/-row/-row-trigger/-chevron/-row-body/-item) so this
-// page's own "features" read like a native part of the site, not a
-// separate marketing template.
+// All 9 features visible at once, in the same .fd-feature-grid/.fd-feature-card
+// language the pricing section and /web-design already use on this site —
+// bolder and more scannable than hiding them behind a click-to-expand
+// accordion.
 export function ForDevelopersFeatures() {
-  const [openKey, setOpenKey] = useState<string>(GROUPS[0]!.key);
-
   return (
-    <section id="key-features" className="key-features-shell fd-key-features">
-      <div className="key-features-pattern" aria-hidden="true" />
-      <h2>Everything that comes with a listing</h2>
-
-      <div className="key-features-list">
-        {GROUPS.map((group) => {
-          const isOpen = openKey === group.key;
-          return (
-            <div key={group.key} className={`key-features-row ${isOpen ? "open" : ""}`}>
-              <button type="button" className="key-features-row-trigger" aria-expanded={isOpen} onClick={() => setOpenKey(isOpen ? "" : group.key)}>
-                <span>{group.label}</span>
-                <ChevronDown className="key-features-chevron h-6 w-6" aria-hidden="true" />
-              </button>
-              {isOpen ? (
-                <div className="key-features-row-body fd-key-features-body">
-                  {group.items.map((item) => (
-                    <span key={item.label} className="key-features-item fd-key-features-item">
-                      <item.icon className="fd-key-features-item-icon" aria-hidden="true" />
-                      <span className="key-features-item-label">{item.label}</span>
-                      {item.body}
-                    </span>
-                  ))}
-                </div>
-              ) : null}
-            </div>
-          );
-        })}
+    <>
+      <div className="fd-section-head">
+        <h2>Everything that comes with a listing</h2>
       </div>
-    </section>
+      {GROUPS.map((group) => (
+        <div className="fd-feature-group" key={group.key}>
+          <h3 className="fd-feature-group-label">{group.label}</h3>
+          <div className="fd-feature-grid">
+            {group.items.map((item) => (
+              <div className="fd-feature-card" key={item.label}>
+                <item.icon className="fd-feature-icon" aria-hidden="true" />
+                <h3>{item.label}</h3>
+                <p>{item.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </>
   );
 }

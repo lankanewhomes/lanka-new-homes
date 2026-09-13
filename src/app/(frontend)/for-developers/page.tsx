@@ -75,25 +75,29 @@ export default async function ForDevelopersPage() {
 
   return (
     <div className="fd-page">
-      <section className="fd-hero" aria-label="For developers and builders">
-        <div className="fd-hero-grid">
-          <div className="fd-hero-copy">
-            <p className="fd-eyebrow">For developers &amp; builders</p>
-            <h1>Your buyers are already searching for new homes.<br />Make sure it's your project they find.</h1>
-            <p className="fd-hero-sub">
-              Publish your development on Sri Lanka's newest homes marketplace — free to list, live in minutes,
-              with instant lead alerts the moment a buyer reaches out.
-            </p>
-            <div className="fd-hero-ctas">
-              <Link href="/developers/register" className="fd-cta-primary">Register your company — it's free</Link>
-              <a href="#how-it-works" className="fd-cta-secondary">See how it works</a>
-            </div>
+      <section className="fd-hero fd-hero-visual" aria-label="For developers and builders">
+        {heroProject ? (
+          <div className="fd-hero-media" aria-hidden="true">
+            <Image src={heroProject.heroImage} alt="" fill priority sizes="100vw" className="fd-hero-media-img" />
+            <div className="fd-hero-media-overlay" />
+          </div>
+        ) : null}
+
+        <div className="fd-hero-content">
+          <p className="fd-eyebrow">For developers &amp; builders</p>
+          <h1>Your buyers are already searching for new homes.<br />Make sure it&apos;s your project they find.</h1>
+          <p className="fd-hero-sub">
+            Publish your development on Sri Lanka&apos;s newest homes marketplace — free to list, live in minutes,
+            with instant lead alerts the moment a buyer reaches out.
+          </p>
+          <div className="fd-hero-ctas">
+            <Link href="/developers/register" className="fd-cta-primary">Register your company — it&apos;s free</Link>
+            <a href="#how-it-works" className="fd-cta-secondary">See how it works</a>
           </div>
 
           {heroProject ? (
-            <Link href={`/projects/${heroProject.slug}`} className="fd-hero-photo" aria-label={`View the real ${heroProject.name} listing`}>
-              <Image src={heroProject.heroImage} alt={heroProject.name} fill sizes="(max-width: 900px) 100vw, 46vw" className="fd-hero-photo-img" />
-              <span className="fd-hero-photo-tag">A real listing on LankaNewHomes →</span>
+            <Link href={`/projects/${heroProject.slug}`} className="fd-hero-photo-tag-link">
+              A real listing on LankaNewHomes: <strong>{heroProject.name}</strong> →
             </Link>
           ) : null}
         </div>
@@ -136,7 +140,7 @@ export default async function ForDevelopersPage() {
       <section className="fd-section" aria-label="What happens when a buyer reaches out">
         <div className="fd-section-head">
           <h2>From click to conversation, tracked automatically</h2>
-          <p>This is the part most listing sites don't build — what actually happens after a buyer hits submit.</p>
+          <p>This is the part most listing sites don&apos;t build — what actually happens after a buyer hits submit.</p>
         </div>
 
         <div className="fd-lead-steps">
@@ -184,14 +188,13 @@ export default async function ForDevelopersPage() {
           <h2>How it works</h2>
           <p>Four steps between where you are now and your project in front of active buyers.</p>
         </div>
-        <ol className="fd-how-list">
+        <ol className="fd-how-list fd-how-list-visual">
           {HOW_IT_WORKS.map((step, index) => (
-            <li className="fd-how-item" key={step.title}>
-              <span className="fd-how-number">{index + 1}</span>
-              <div>
-                <h3>{step.title}</h3>
-                <p>{step.body}</p>
-              </div>
+            <li className="fd-how-item fd-how-item-visual" key={step.title}>
+              {index < HOW_IT_WORKS.length - 1 ? <span className="fd-how-line" aria-hidden="true" /> : null}
+              <span className="fd-how-number fd-how-number-visual">{index + 1}</span>
+              <h3>{step.title}</h3>
+              <p>{step.body}</p>
             </li>
           ))}
         </ol>
@@ -216,13 +219,13 @@ export default async function ForDevelopersPage() {
           ))}
         </div>
 
-        <p className="fd-pricing-note">Pick a package for any project from your dashboard once it's listed — no separate sign-up.</p>
+        <p className="fd-pricing-note">Pick a package for any project from your dashboard once it&apos;s listed — no separate sign-up.</p>
       </section>
 
       <section className="fd-cta-band" aria-label="Get started">
         <Rocket className="fd-cta-band-icon" aria-hidden="true" />
         <h2>Ready to put your project in front of active buyers?</h2>
-        <p>Registration is free, and there's no minimum to keep listing.</p>
+        <p>Registration is free, and there&apos;s no minimum to keep listing.</p>
         <div className="fd-hero-ctas">
           <Link href="/developers/register" className="fd-cta-primary">Register your company</Link>
           <Link href="/developers/login" className="fd-cta-secondary">Already have an account? Log in</Link>

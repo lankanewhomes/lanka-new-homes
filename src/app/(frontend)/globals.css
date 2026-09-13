@@ -9973,6 +9973,93 @@ a.developer-profile-press-title {
   font-weight: 600;
 }
 
+/* Bolder full-bleed variant (for-developers only) — a real listing photo
+   fills the whole hero with a dark scrim, copy sits on top of it, instead
+   of the boxed photo-beside-copy split .fd-hero-grid uses elsewhere
+   (/web-design keeps that original layout, untouched). */
+.fd-hero-visual {
+  position: relative;
+  overflow: hidden;
+  padding: 96px 22px 56px;
+  min-height: 560px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.fd-hero-media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.fd-hero-media-img {
+  object-fit: cover;
+}
+
+.fd-hero-media-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, rgba(20, 20, 23, 0.94) 0%, rgba(20, 20, 23, 0.86) 42%, rgba(20, 20, 23, 0.55) 100%);
+}
+
+.fd-hero-content {
+  position: relative;
+  z-index: 1;
+  width: min(1160px, calc(100% - 44px));
+  margin: 0 auto;
+  padding-bottom: 56px;
+  max-width: 640px;
+}
+
+.fd-hero-visual .fd-hero-sub {
+  color: #d8d6d2;
+}
+
+.fd-hero-visual h1 {
+  font-size: 48px;
+}
+
+.fd-hero-photo-tag-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 24px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(2px);
+  color: #fff;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.fd-hero-photo-tag-link:hover {
+  border-color: #f47b36;
+  text-decoration: none;
+}
+
+/* .fd-hero-media is position:absolute with z-index:0, which — per normal
+   CSS stacking order — paints above non-positioned in-flow siblings, so
+   .fd-hero-stats needs its own stacking context here or it renders behind
+   the photo. */
+.fd-hero-visual .fd-hero-stats {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 900px) {
+  .fd-hero-visual {
+    min-height: 0;
+    padding: 64px 18px 40px;
+  }
+
+  .fd-hero-visual h1 {
+    font-size: 32px;
+  }
+}
+
 .fd-hero-stats {
   width: min(1160px, calc(100% - 44px));
   margin: 0 auto;
@@ -10251,38 +10338,25 @@ a.developer-profile-press-title {
   font-weight: 700;
 }
 
-/* Feature groups — real KeyFeaturesSection accordion (for-developers-
-   features.tsx), same .key-features-* classes a listing page uses. These
-   three rules adapt just the item layout: the original .key-features-item
-   is inline "field: value" text; here each item stacks an icon, a bold
-   label (reusing .key-features-item-label), and a description line. */
-.fd-key-features-body {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+/* Feature groups (for-developers-features.tsx) — three always-visible rows
+   of .fd-feature-card (same card language as the pricing section and
+   /web-design), each under its own bold group label, instead of hiding
+   two-thirds of them behind a click-to-expand accordion. */
+.fd-feature-group {
+  margin-top: 36px;
 }
 
-.fd-key-features-item {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 14px 12px;
+.fd-feature-group:first-of-type {
+  margin-top: 0;
 }
 
-.fd-key-features-item .key-features-item-label {
-  display: block;
-  font-size: 15px;
-}
-
-.fd-key-features-item-icon {
-  width: 20px;
-  height: 20px;
-  margin-bottom: 4px;
+.fd-feature-group-label {
+  margin: 0 0 16px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   color: #f47b36;
-}
-
-@media (max-width: 900px) {
-  .fd-key-features-body {
-    grid-template-columns: 1fr;
-  }
 }
 
 /* "This is what a listing looks like" — real ListingGridCards, 3 across
@@ -10353,6 +10427,73 @@ a.developer-profile-press-title {
   font-size: 14px;
   line-height: 1.6;
   color: #57534e;
+}
+
+/* Bolder horizontal-stepper variant (for-developers only) — same connecting-
+   line-behind-dots technique as .construction-progress-track/-line, so the
+   site's "steps" visual language stays consistent. /web-design keeps the
+   original stacked .fd-how-list layout untouched. */
+.fd-how-list-visual {
+  width: min(1160px, calc(100% - 44px));
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.fd-how-item-visual {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+}
+
+.fd-how-line {
+  position: absolute;
+  top: 19px;
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  background: #f47b36;
+  opacity: 0.35;
+}
+
+.fd-how-number-visual {
+  position: relative;
+  z-index: 1;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 6px;
+  background: #f47b36;
+  border-color: #f47b36;
+  color: #fff;
+  font-size: 16px;
+}
+
+.fd-how-item-visual h3 {
+  margin: 0 0 4px;
+}
+
+@media (max-width: 900px) {
+  .fd-how-list-visual {
+    grid-template-columns: repeat(2, 1fr);
+    row-gap: 40px;
+  }
+
+  .fd-how-item-visual:nth-child(2n) .fd-how-line {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .fd-how-list-visual {
+    grid-template-columns: 1fr;
+  }
+
+  .fd-how-line {
+    display: none;
+  }
 }
 
 /* Closing CTA band — orange, not the hero's dark, so the page doesn't
