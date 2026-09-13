@@ -1,181 +1,384 @@
 import type { Metadata } from "next";
+import { Fraunces } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  BadgeCheck,
-  CheckCircle2,
-  Clock3,
-  MessageCircle,
-  Rocket,
-  ShieldCheck,
-  Sparkles,
-  Zap,
-} from "lucide-react";
+import { ShieldCheck, Zap } from "lucide-react";
 import { getProjectBySlug } from "@/lib/project-store";
 import { ListingGridCard } from "@/components/marketplace/listing-page";
-import { ForDevelopersFeatures } from "@/components/marketplace/for-developers-features";
+import { ScrollReveal } from "@/components/marketplace/scroll-reveal";
 import { PACKAGE_LIST, formatPackagePrice } from "@/lib/packages";
+import { formatLkr } from "@/lib/format";
 
 export const revalidate = 300;
+
+// Serif is scoped to this page only (see docs/design.md "Colors & type" —
+// the rest of the site is deliberately sans-only). This redesign's brief
+// explicitly asked for an editorial serif on major headlines "if the
+// existing brand system allows it" — it doesn't, site-wide, so this is a
+// one-page exception, not a change to that convention.
+//
+// This page also uses its own `fdv-` class namespace rather than the
+// site's existing `.fd-*` classes below — those are shared with
+// /web-design (hero, cards, CTA band, etc.), and this redesign only
+// touches /for-developers, so it gets a fully separate set of styles.
+const displaySerif = Fraunces({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
+  style: ["normal", "italic"],
+  variable: "--fdv-font-serif",
+});
 
 export const metadata: Metadata = {
   title: "List Your Development on LankaNewHomes | For Developers & Builders",
   description:
-    "Publish your project free on Sri Lanka's newest homes marketplace — instant lead alerts with one-tap replies, a Verified badge, built-in analytics, and no approval wait.",
+    "A premium platform for discovering new property in Sri Lanka. Publish your development, present it beautifully, and reach buyers actively searching — free to list.",
   alternates: { canonical: "/for-developers" },
   openGraph: {
     title: "List Your Development on LankaNewHomes | For Developers & Builders",
     description:
-      "Publish your project free on Sri Lanka's newest homes marketplace — instant lead alerts with one-tap replies, a Verified badge, and built-in analytics.",
+      "A premium platform for discovering new property in Sri Lanka. Publish your development, present it beautifully, and reach buyers actively searching.",
     url: "/for-developers",
     type: "website",
   },
 };
 
-const LEAD_STEPS = [
-  {
-    icon: MessageCircle,
-    title: "A buyer taps “Request Info”",
-    body: "On your listing, your floor-plan page, or straight from your builder profile — whichever one they were looking at.",
-  },
-  {
-    icon: Zap,
-    title: "You get it instantly — with reply buttons built in",
-    body: "An email lands in your inbox the moment they submit: their name, number, and message, plus one-tap buttons to reply on WhatsApp, call, or email.",
-  },
-  {
-    icon: CheckCircle2,
-    title: "Tap one, and it's logged — automatically",
-    body: "The instant you reply through one of those buttons, the lead is marked contacted and your response time is captured.",
-  },
-  {
-    icon: BadgeCheck,
-    title: "Reply fast enough, earn the badge",
-    body: "Answer at least 80% of inquiries within an hour over a rolling 90 days and a “Responds within 1 hour” badge appears next to your name.",
-  },
-];
-
-const HOW_IT_WORKS = [
-  { title: "Register your company", body: "Two minutes, one email to confirm. Free — no subscription required to start." },
-  { title: "Build your listing", body: "Start from your own brochure or website, or fill it in yourself with the completeness checklist guiding you." },
-  { title: "Publish instantly", body: "No approval queue standing between you and going live — publish the moment you're ready." },
-  { title: "Get discovered, and reply in one tap", body: "Buyers search, save, and message you directly. Every step shows up on your dashboard." },
-];
-
-// Real, currently-published listings — the most honest way to show "what a
-// listing looks like here" is to show an actual one, using the exact same
-// ListingGridCard every /projects and homepage grid uses. Not a mockup.
+// Real, currently-published listings — every image and figure on this page
+// comes from an actual project already on the site, not a mockup.
+const HERO_SLUG = "capitol-twinpeaks";
+const PRODUCT_PREVIEW_SLUG = "viva-la-vida";
+const IMMERSIVE_SLUG = "oceana-wadduwa";
 const SHOWCASE_SLUGS = ["capitol-twinpeaks", "viva-la-vida", "imaarat-bambalapitiya"];
 
+const LOCATIONS = ["Sri Lanka", "Canada", "United Kingdom", "Australia", "United States", "UAE"];
+
 export default async function ForDevelopersPage() {
-  const showcaseProjects = (await Promise.all(SHOWCASE_SLUGS.map((slug) => getProjectBySlug(slug)))).filter(
-    (p): p is NonNullable<typeof p> => Boolean(p)
-  );
-  const heroProject = showcaseProjects[0];
+  const [heroProject, productProject, immersiveProject, showcaseProjects] = await Promise.all([
+    getProjectBySlug(HERO_SLUG),
+    getProjectBySlug(PRODUCT_PREVIEW_SLUG),
+    getProjectBySlug(IMMERSIVE_SLUG),
+    Promise.all(SHOWCASE_SLUGS.map((slug) => getProjectBySlug(slug))).then((list) =>
+      list.filter((p): p is NonNullable<typeof p> => Boolean(p))
+    ),
+  ]);
+
+  const presentationPhotos = [
+    ...(productProject?.gallery ?? []).slice(0, 2),
+    ...(heroProject?.gallery ?? []).slice(0, 2),
+  ];
+  const presentationFloorPlan = productProject?.floorPlans?.[0];
+  const presentationRoadMap = productProject?.roadMapImages?.[0];
 
   return (
-    <div className="fd-page">
-      <section className="fd-hero fd-hero-visual" aria-label="For developers and builders">
+    <div className={`fdv-page ${displaySerif.variable}`}>
+      <ScrollReveal />
+
+      {/* 1 — HERO */}
+      <section className="fdv-hero" aria-label="For property developers">
         {heroProject ? (
-          <div className="fd-hero-media" aria-hidden="true">
-            <Image src={heroProject.heroImage} alt="" fill priority sizes="100vw" className="fd-hero-media-img" />
-            <div className="fd-hero-media-overlay" />
+          <div className="fdv-hero-media">
+            <Image
+              src={heroProject.heroImage}
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              className="fdv-hero-media-img"
+            />
+            <div className="fdv-hero-media-overlay" />
           </div>
         ) : null}
 
-        <div className="fd-hero-content">
-          <p className="fd-eyebrow">For developers &amp; builders</p>
-          <h1>Your buyers are already searching for new homes.<br />Make sure it&apos;s your project they find.</h1>
-          <p className="fd-hero-sub">
-            Publish your development on Sri Lanka&apos;s newest homes marketplace — free to list, live in minutes,
-            with instant lead alerts the moment a buyer reaches out.
+        <div className="fdv-hero-content">
+          <p className="fdv-eyebrow">For property developers</p>
+          <h1 className="fdv-hero-headline">
+            Put your projects in front<br />of the right buyers.
+          </h1>
+          <p className="fdv-hero-sub">
+            A premium platform built to showcase Sri Lanka&apos;s newest homes, developments and land projects.
           </p>
-          <div className="fd-hero-ctas">
-            <Link href="/developers/register" className="fd-cta-primary">Register your company — it&apos;s free</Link>
-            <a href="#how-it-works" className="fd-cta-secondary">See how it works</a>
+          <div className="fdv-hero-ctas">
+            <Link href="/developers/register" className="fdv-cta-primary">Register as a Developer</Link>
+            <a href="#introduction" className="fdv-cta-secondary">Explore the platform</a>
           </div>
-
-          {heroProject ? (
-            <Link href={`/projects/${heroProject.slug}`} className="fd-hero-photo-tag-link">
-              A real listing on LankaNewHomes: <strong>{heroProject.name}</strong> →
-            </Link>
-          ) : null}
+          <p className="fdv-hero-fineprint">Free to list at the moment.</p>
         </div>
+      </section>
 
-        {/* Same stat-chip look a real listing's hero uses (.listing-hero-stat-chip)
-            — reused verbatim, not a new style, so this reads like the site's own
-            language rather than a bolted-on marketing band. */}
-        <div className="fd-hero-stats">
-          <div className="listing-hero-stat-chip">
-            <Sparkles className="listing-hero-stat-chip-icon" aria-hidden="true" />
-            <div className="listing-hero-stat-chip-content">
-              <span className="listing-hero-stat-chip-value">Free</span>
-              <span className="listing-hero-stat-chip-label">to list, no minimum</span>
-            </div>
-          </div>
-          <div className="listing-hero-stat-chip">
-            <Clock3 className="listing-hero-stat-chip-icon" aria-hidden="true" />
-            <div className="listing-hero-stat-chip-content">
-              <span className="listing-hero-stat-chip-value">Minutes</span>
-              <span className="listing-hero-stat-chip-label">to publish, no approval wait</span>
-            </div>
-          </div>
-          <div className="listing-hero-stat-chip">
-            <Zap className="listing-hero-stat-chip-icon" aria-hidden="true" />
-            <div className="listing-hero-stat-chip-content">
-              <span className="listing-hero-stat-chip-value">Instant</span>
-              <span className="listing-hero-stat-chip-label">lead alerts, one-tap reply</span>
-            </div>
-          </div>
-          <div className="listing-hero-stat-chip">
-            <ShieldCheck className="listing-hero-stat-chip-icon" aria-hidden="true" />
-            <div className="listing-hero-stat-chip-content">
-              <span className="listing-hero-stat-chip-value">Verified</span>
-              <span className="listing-hero-stat-chip-label">badge, earned not applied for</span>
-            </div>
+      {/* 2 — INTRODUCTION */}
+      <section className="fdv-intro" id="introduction" aria-label="Introduction">
+        <div className="fdv-intro-grid">
+          <h2 className="fdv-intro-statement" data-reveal>Your development deserves more than a listing.</h2>
+          <div className="fdv-intro-copy" data-reveal>
+            <p>
+              LankaNewHomes gives developers a dedicated place to present their projects beautifully, reach
+              active property buyers, and generate direct enquiries.
+            </p>
+            <Link href="/developers/register" className="fdv-text-link">Register as a developer →</Link>
           </div>
         </div>
       </section>
 
-      <section className="fd-section" aria-label="What happens when a buyer reaches out">
-        <div className="fd-section-head">
-          <h2>From click to conversation, tracked automatically</h2>
-          <p>This is the part most listing sites don&apos;t build — what actually happens after a buyer hits submit.</p>
+      {/* 3 — THREE BIG REASONS */}
+      <section className="fdv-reasons" aria-label="Why developers list here">
+        <div className="fdv-reason" data-reveal>
+          <div className="fdv-reason-media">
+            {showcaseProjects[1] ? (
+              <Image src={showcaseProjects[1].heroImage} alt="" fill sizes="(min-width: 900px) 46vw, 100vw" className="fdv-reason-img" />
+            ) : null}
+          </div>
+          <div className="fdv-reason-copy">
+            <span className="fdv-reason-number">01</span>
+            <p className="fdv-reason-kicker">Be discovered</p>
+            <h3>Reach buyers actively searching for new property.</h3>
+            <p className="fdv-reason-body">
+              Your projects appear alongside other new developments, homes, apartments, villas and land
+              projects being researched by buyers right now.
+            </p>
+          </div>
         </div>
 
-        <div className="fd-lead-steps">
-          {LEAD_STEPS.map((step, index) => (
-            <div className="fd-lead-step" key={step.title}>
-              <div className="fd-lead-step-number" aria-hidden="true">{index + 1}</div>
-              <step.icon className="fd-lead-step-icon" aria-hidden="true" />
-              <h3>{step.title}</h3>
-              <p>{step.body}</p>
+        <div className="fdv-reason fdv-reason-reverse" data-reveal>
+          <div className="fdv-reason-media">
+            {presentationFloorPlan ? (
+              <Image src={presentationFloorPlan.image} alt="" fill sizes="(min-width: 900px) 46vw, 100vw" className="fdv-reason-img fdv-reason-img-plan" />
+            ) : null}
+          </div>
+          <div className="fdv-reason-copy">
+            <span className="fdv-reason-number">02</span>
+            <p className="fdv-reason-kicker">Be presented</p>
+            <h3>Give every project the presentation it deserves.</h3>
+            <p className="fdv-reason-body">
+              Photography, floor plans, pricing, amenities, videos, brochures, maps and virtual tours come
+              together in one premium project page.
+            </p>
+          </div>
+        </div>
+
+        <div className="fdv-reason" data-reveal>
+          <div className="fdv-reason-media fdv-reason-media-dark">
+            <div className="fdv-reason-contact-preview" aria-hidden="true">
+              <span className="listing-badge-pill badge-responder">
+                <Zap className="h-3 w-3" aria-hidden="true" /> Responds within 1 hour
+              </span>
+              <p className="fdv-reason-contact-line">&ldquo;Hi, I&apos;d like more information on the 3 bedroom unit.&rdquo;</p>
+              <span className="fdv-reason-contact-tag">Request received — reply in one tap</span>
+            </div>
+          </div>
+          <div className="fdv-reason-copy">
+            <span className="fdv-reason-number">03</span>
+            <p className="fdv-reason-kicker">Be contacted</p>
+            <h3>Turn interest into direct enquiries.</h3>
+            <p className="fdv-reason-body">
+              Make it easy for interested buyers to request information and connect with your development
+              team — the moment they submit, you have it.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* 4 — SHOW THE PRODUCT */}
+      {productProject ? (
+        <section className="fdv-showcase-product" aria-label="A real project page">
+          <div className="fdv-section-head" data-reveal>
+            <p className="fdv-eyebrow">The presentation</p>
+            <h2>A better way to present your developments.</h2>
+          </div>
+
+          <div className="fdv-product-frame" data-reveal>
+            <div className="fdv-product-photo">
+              <Image
+                src={productProject.heroImage}
+                alt=""
+                fill
+                sizes="(min-width: 1100px) 1100px, 100vw"
+                className="fdv-product-photo-img"
+              />
+              <div className="fdv-product-photo-overlay" />
+              <div className="fdv-product-photo-caption">
+                <span className="fdv-product-status">{productProject.status}</span>
+                <h3>{productProject.name}</h3>
+                <p>{productProject.location}</p>
+              </div>
+            </div>
+
+            <div className="fdv-product-rows">
+              <div className="fdv-product-row">
+                <span className="fdv-product-row-label">Pricing</span>
+                <span className="fdv-product-row-value">{formatLkr(productProject.startingPriceLkr)} onward</span>
+              </div>
+              <div className="fdv-product-row">
+                <span className="fdv-product-row-label">Floor plans</span>
+                <span className="fdv-product-row-value">{productProject.floorPlans?.length ?? 0} unit types</span>
+              </div>
+              <div className="fdv-product-row">
+                <span className="fdv-product-row-label">Amenities</span>
+                <span className="fdv-product-row-value">{productProject.amenities?.length ?? 0} listed</span>
+              </div>
+              <div className="fdv-product-row">
+                <span className="fdv-product-row-label">Media</span>
+                <span className="fdv-product-row-value">
+                  {productProject.gallery?.length ?? 0} photos
+                  {productProject.videos?.length ? `, ${productProject.videos.length} videos` : ""}
+                  {productProject.brochureUrl ? ", brochure" : ""}
+                </span>
+              </div>
+              <div className="fdv-product-row">
+                <span className="fdv-product-row-label">Map</span>
+                <span className="fdv-product-row-value">Location &amp; road map</span>
+              </div>
+              <Link href={`/projects/${productProject.slug}`} className="fdv-cta-secondary fdv-product-cta">
+                View the live page →
+              </Link>
+            </div>
+          </div>
+          <p className="fdv-caption" data-reveal>Every project gets a dedicated presentation.</p>
+        </section>
+      ) : null}
+
+      {/* 5 — LARGE IMAGE + TEXT */}
+      {immersiveProject ? (
+        <section className="fdv-immersive" aria-label="Buyers everywhere">
+          <Image
+            src={immersiveProject.heroImage}
+            alt=""
+            fill
+            sizes="100vw"
+            className="fdv-immersive-img"
+          />
+          <div className="fdv-immersive-overlay" />
+          <div className="fdv-immersive-content" data-reveal>
+            <h2>Reach buyers wherever they are.</h2>
+            <p>Your next buyer may be in Colombo, Toronto, London, Dubai, Melbourne or elsewhere around the world.</p>
+          </div>
+        </section>
+      ) : null}
+
+      {/* 6 — INTERNATIONAL BUYERS */}
+      <section className="fdv-international" aria-label="International reach">
+        <h2 data-reveal>Sri Lankan property doesn&apos;t stop at Sri Lanka.</h2>
+        <p data-reveal>
+          LankaNewHomes makes it easier for people researching property from Sri Lanka and overseas to
+          discover new developments in one place.
+        </p>
+        <ul className="fdv-locations" data-reveal>
+          {LOCATIONS.map((location) => (
+            <li key={location}>{location}</li>
+          ))}
+        </ul>
+      </section>
+
+      {/* 7 — PROJECT PRESENTATION composition */}
+      <section className="fdv-composition" aria-label="Everything buyers need">
+        <div className="fdv-section-head" data-reveal>
+          <p className="fdv-eyebrow">The details</p>
+          <h2>Everything buyers need to make a decision.</h2>
+        </div>
+        <div className="fdv-composition-grid" data-reveal>
+          {presentationPhotos[0] ? (
+            <div className="fdv-composition-tile fdv-composition-tile-large">
+              <Image src={presentationPhotos[0].image} alt="" fill sizes="(min-width: 900px) 40vw, 100vw" className="fdv-reason-img" />
+              <span className="fdv-composition-tag">Photography</span>
+            </div>
+          ) : null}
+          {presentationFloorPlan ? (
+            <div className="fdv-composition-tile fdv-composition-tile-plan">
+              <Image src={presentationFloorPlan.image} alt="" fill sizes="(min-width: 900px) 22vw, 100vw" className="fdv-reason-img fdv-reason-img-plan" />
+              <span className="fdv-composition-tag">Floor plans</span>
+            </div>
+          ) : null}
+          {presentationPhotos[1] ? (
+            <div className="fdv-composition-tile">
+              <Image src={presentationPhotos[1].image} alt="" fill sizes="(min-width: 900px) 22vw, 100vw" className="fdv-reason-img" />
+              <span className="fdv-composition-tag">Amenities</span>
+            </div>
+          ) : null}
+          {presentationRoadMap ? (
+            <div className="fdv-composition-tile">
+              <Image src={presentationRoadMap.image} alt="" fill sizes="(min-width: 900px) 22vw, 100vw" className="fdv-reason-img" />
+              <span className="fdv-composition-tag">Road map</span>
+            </div>
+          ) : null}
+          {presentationPhotos[2] ? (
+            <div className="fdv-composition-tile">
+              <Image src={presentationPhotos[2].image} alt="" fill sizes="(min-width: 900px) 22vw, 100vw" className="fdv-reason-img" />
+              <span className="fdv-composition-tag">Virtual walkthrough</span>
+            </div>
+          ) : null}
+        </div>
+      </section>
+
+      {/* 8 — DEVELOPER CONTROL */}
+      <section className="fdv-control" aria-label="Developer dashboard">
+        <div className="fdv-control-copy" data-reveal>
+          <p className="fdv-eyebrow">The dashboard</p>
+          <h2>Your projects. Your information. Your control.</h2>
+          <p>Keep your project information current and give buyers a clear, reliable source of information.</p>
+        </div>
+        <div className="fdv-control-panel" data-reveal aria-hidden="true">
+          {[
+            { label: "Projects" },
+            { label: "Project views" },
+            { label: "Enquiries" },
+            { label: "Active projects" },
+          ].map((row) => (
+            <div className="fdv-control-row" key={row.label}>
+              <span className="fdv-control-row-label">{row.label}</span>
+              <span className="fdv-control-row-bar" />
             </div>
           ))}
         </div>
+      </section>
 
-        <div className="fd-badge-preview" aria-hidden="true">
-          <span className="fd-badge-preview-label">Earned automatically, shown on your listings:</span>
-          <span className="listing-badge-pill badge-verified">
-            <ShieldCheck className="h-3 w-3" aria-hidden="true" /> Verified
-          </span>
-          <span className="listing-badge-pill badge-responder">
-            <Zap className="h-3 w-3" aria-hidden="true" /> Responds within 1 hour
-          </span>
+      {/* 9 — HOW IT WORKS */}
+      <section className="fdv-how" id="how-it-works" aria-label="How it works">
+        <div className="fdv-how-step" data-reveal>
+          <span className="fdv-how-number">01</span>
+          <h3>Register</h3>
+          <p>Create your developer account.</p>
+        </div>
+        <div className="fdv-how-step" data-reveal>
+          <span className="fdv-how-number">02</span>
+          <h3>Showcase</h3>
+          <p>Add your developments and project information.</p>
+        </div>
+        <div className="fdv-how-step" data-reveal>
+          <span className="fdv-how-number">03</span>
+          <h3>Connect</h3>
+          <p>Receive enquiries from interested buyers.</p>
         </div>
       </section>
 
-      <section className="fd-section" aria-label="Everything that comes with a listing">
-        <ForDevelopersFeatures />
+      {/* Pricing — kept factual and undramatized, folded in ahead of the closing CTA */}
+      <section className="fdv-pricing" aria-label="Pricing">
+        <div className="fdv-section-head" data-reveal>
+          <p className="fdv-eyebrow">Pricing</p>
+          <h2>Listing is always free. Upgrade any project for more reach.</h2>
+        </div>
+        <div className="fdv-pricing-grid" data-reveal>
+          {PACKAGE_LIST.map((pkg) => (
+            <div className={`fdv-pricing-card${pkg.tier === "premium" ? " fdv-pricing-card-highlight" : ""}`} key={pkg.tier}>
+              {pkg.tier === "premium" ? <span className="fdv-pricing-card-tag">Most visibility</span> : null}
+              <h3>{pkg.name}</h3>
+              <p className="fdv-pricing-card-price">{formatPackagePrice(pkg)}</p>
+              <ul>
+                {pkg.features.map((feature) => <li key={feature}>{feature}</li>)}
+              </ul>
+            </div>
+          ))}
+        </div>
+        <p className="fdv-pricing-note" data-reveal>
+          <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" /> A Verified badge appears automatically once a project has an active Featured or Premium package.
+        </p>
       </section>
 
       {showcaseProjects.length > 0 ? (
-        <section className="fd-section" aria-label="What a finished listing looks like">
-          <div className="fd-section-head">
-            <h2>This is what a listing looks like</h2>
-            <p>Not a mockup — three real, currently-published listings, shown the exact way buyers browse them on /projects and the homepage.</p>
+        <section className="fdv-live-listings" aria-label="Live listings">
+          <div className="fdv-section-head" data-reveal>
+            <p className="fdv-eyebrow">Live on the platform</p>
+            <h2>This is what a listing looks like.</h2>
+            <p className="fdv-section-sub">Not a mockup — real, currently-published listings, shown the exact way buyers browse them.</p>
           </div>
-          <div className="home-card-grid fd-showcase-grid">
+          <div className="home-card-grid fdv-showcase-grid" data-reveal>
             {showcaseProjects.map((project) => (
               <ListingGridCard key={project.slug} project={project} />
             ))}
@@ -183,52 +386,19 @@ export default async function ForDevelopersPage() {
         </section>
       ) : null}
 
-      <section className="fd-how-section" id="how-it-works" aria-label="How it works">
-        <div className="fd-section-head">
-          <h2>How it works</h2>
-          <p>Four steps between where you are now and your project in front of active buyers.</p>
-        </div>
-        <ol className="fd-how-list fd-how-list-visual">
-          {HOW_IT_WORKS.map((step, index) => (
-            <li className="fd-how-item fd-how-item-visual" key={step.title}>
-              {index < HOW_IT_WORKS.length - 1 ? <span className="fd-how-line" aria-hidden="true" /> : null}
-              <span className="fd-how-number fd-how-number-visual">{index + 1}</span>
-              <h3>{step.title}</h3>
-              <p>{step.body}</p>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <section className="fd-section" aria-label="Pricing">
-        <div className="fd-section-head">
-          <h2>Listing is always free. Upgrade any project for more reach.</h2>
-          <p>Every listing gets the full page, photos, floor plans, and brochure at no cost. Featured and Premium are optional, per project — pick one after your listing is live.</p>
-        </div>
-
-        <div className="fd-feature-grid fd-pricing-grid">
-          {PACKAGE_LIST.map((pkg) => (
-            <div className={`fd-feature-card fd-pricing-card${pkg.tier === "premium" ? " fd-pricing-card-highlight" : ""}`} key={pkg.tier}>
-              {pkg.tier === "premium" ? <span className="fd-pricing-card-tag">Most visibility</span> : null}
-              <h3>{pkg.name}</h3>
-              <p className="fd-pricing-card-price">{formatPackagePrice(pkg)}</p>
-              <ul className="fd-pricing-card-features">
-                {pkg.features.map((feature) => <li key={feature}>{feature}</li>)}
-              </ul>
-            </div>
-          ))}
-        </div>
-
-        <p className="fd-pricing-note">Pick a package for any project from your dashboard once it&apos;s listed — no separate sign-up.</p>
-      </section>
-
-      <section className="fd-cta-band" aria-label="Get started">
-        <Rocket className="fd-cta-band-icon" aria-hidden="true" />
-        <h2>Ready to put your project in front of active buyers?</h2>
-        <p>Registration is free, and there&apos;s no minimum to keep listing.</p>
-        <div className="fd-hero-ctas">
-          <Link href="/developers/register" className="fd-cta-primary">Register your company</Link>
-          <Link href="/developers/login" className="fd-cta-secondary">Already have an account? Log in</Link>
+      {/* 10 — PREMIUM CTA */}
+      <section className="fdv-cta-final" aria-label="Get started">
+        {heroProject ? (
+          <div className="fdv-cta-final-media">
+            <Image src={heroProject.heroImage} alt="" fill sizes="100vw" className="fdv-immersive-img" />
+            <div className="fdv-immersive-overlay fdv-cta-final-overlay" />
+          </div>
+        ) : null}
+        <div className="fdv-cta-final-content" data-reveal>
+          <h2>Let&apos;s put your projects on the map.</h2>
+          <p>Join LankaNewHomes and give your developments the visibility and presentation they deserve.</p>
+          <Link href="/developers/register" className="fdv-cta-primary">Register as a Developer</Link>
+          <p className="fdv-hero-fineprint">Free to list at the moment.</p>
         </div>
       </section>
     </div>
