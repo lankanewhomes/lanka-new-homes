@@ -78,6 +78,9 @@ export async function buildProjectWeeklySummaries(
 
   return Promise.all(
     paidProjects.map(async (project) => {
+      // Buyer location analytics is a Premium-only line in packages.ts —
+      // don't compute/send it for Featured.
+      const isAdvanced = getPackage(project.package).analyticsLevel === "advanced";
       const [views, previousViews, inquiries, previousInquiries, saves, downloads, topLocations] = await Promise.all([
         countEvents(payload, project.id, "view", currentStart, currentEnd),
         countEvents(payload, project.id, "view", previousStart, currentStart),
@@ -85,7 +88,7 @@ export async function buildProjectWeeklySummaries(
         countEvents(payload, project.id, "lead_submitted", previousStart, currentStart),
         countEvents(payload, project.id, "save", currentStart, currentEnd),
         countEvents(payload, project.id, "brochure_download", currentStart, currentEnd),
-        topLocationsForProject(payload, project.id, currentStart, currentEnd),
+        isAdvanced ? topLocationsForProject(payload, project.id, currentStart, currentEnd) : Promise.resolve([]),
       ]);
       return {
         projectId: project.id,

@@ -198,7 +198,16 @@ export function HomeClient({ projects, lands = [] }: { projects: Project[]; land
 
   const t = copy[language];
 
-  const featuredProjects = useMemo(() => projects.filter((project) => project.isFeatured).slice(0, 4), [projects]);
+  // Sorted by finalScore (completeness + engagement + recency + package
+  // boost — same field the site's default "Recommended" search sort
+  // already uses, computeFinalScore in project-scoring.ts) before slicing
+  // to 4, so a Premium project's stronger boost actually earns it a spot
+  // here over a Featured one when there are more than 4 featured listings
+  // — not just "featured vs not."
+  const featuredProjects = useMemo(
+    () => [...projects].filter((project) => project.isFeatured).sort((a, b) => (b.finalScore ?? 0) - (a.finalScore ?? 0)).slice(0, 4),
+    [projects]
+  );
   const newListings = useMemo(() => {
     const featuredSlugs = new Set(featuredProjects.map((project) => project.slug));
     return [...projects]
