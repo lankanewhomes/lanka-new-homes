@@ -6387,7 +6387,16 @@ a.developer-profile-press-title {
   width: 420px;
   max-width: 100%;
   height: 100%;
+  /* svh (not vh/dvh) — the modal locks body scroll while open, so the
+     browser chrome's shown/hidden state never changes after opening;
+     svh always measures against chrome shown (the worst case), so the
+     dialog is sized to what's actually visible instead of the taller
+     "chrome hidden" viewport iOS Safari's vh reports, which pushed the
+     bottom of the dialog under the address bar and forced a scroll that
+     shouldn't have been needed. Old browsers without svh support just
+     keep the vh value above. */
   max-height: 100vh;
+  max-height: 100svh;
   overflow-y: auto;
   background: #fff;
   border-radius: 0;
@@ -6721,10 +6730,83 @@ a.developer-profile-press-title {
     width: 100%;
     max-width: 100%;
     height: auto;
-    max-height: 92vh;
+    max-height: 94vh;
+    max-height: 94svh;
     border-radius: 14px 14px 0 0;
     box-shadow: 0 -12px 40px rgba(10, 15, 23, 0.2);
     animation: requestInfoSlideInBottom 0.3s ease-out;
+  }
+
+  /* Everything below tightens the form so the whole thing — topbar through
+     the submit button — fits on one screen without scrolling on a typical
+     phone. The smallest phones, or the on-screen keyboard being open,
+     can still push it past one screen — overflow-y: auto on the dialog
+     itself is the deliberate fallback for that, not a layout bug. */
+  .request-info-topbar {
+    padding: 14px 16px;
+  }
+
+  .request-info-listing {
+    padding: 10px 16px;
+    gap: 10px;
+  }
+
+  .request-info-listing-image {
+    width: 40px;
+    height: 40px;
+  }
+
+  .request-info-body,
+  .request-info-success {
+    padding: 14px 18px 18px;
+  }
+
+  .request-info-dialog h2 {
+    margin: 0 0 10px;
+    font-size: 16px;
+  }
+
+  .request-info-required-note {
+    margin: 0 0 8px;
+  }
+
+  .request-info-field {
+    margin-bottom: 10px;
+  }
+
+  .request-info-field > span {
+    margin-bottom: 4px;
+    font-size: 13px;
+  }
+
+  .request-info-field input,
+  .request-info-field textarea,
+  .request-info-phone-flag {
+    min-height: 40px;
+  }
+
+  .request-info-field textarea {
+    min-height: 44px;
+    padding: 10px 16px;
+  }
+
+  /* A running character count is a nice-to-have, not essential — cut on
+     the smallest screens rather than the message field itself. */
+  .request-info-char-count {
+    display: none;
+  }
+
+  .request-info-radio-row {
+    gap: 18px;
+    margin-top: 4px;
+  }
+
+  .request-info-consent {
+    margin: 4px 0 10px;
+  }
+
+  .request-info-consent span {
+    font-size: 11.5px;
   }
 }
 
@@ -7404,7 +7486,12 @@ a.developer-profile-press-title {
   position: relative;
   width: 100%;
   max-width: 420px;
+  /* svh, not vh — see the matching comment on .request-info-dialog. This
+     modal also locks body scroll while open, so svh (measured against the
+     browser chrome being shown, the worst case) is what's actually
+     visible, instead of vh's taller "chrome hidden" iOS Safari figure. */
   max-height: 90vh;
+  max-height: 90svh;
   overflow-y: auto;
   background: #fff;
   border-radius: 16px;
@@ -7562,6 +7649,58 @@ a.developer-profile-press-title {
 .auth-modal-legal a {
   color: #4a4536;
   text-decoration: underline;
+}
+
+/* Tightened so login/signup fits one screen on a real phone without
+   scrolling in the normal case — the smallest phones, or the on-screen
+   keyboard being open, can still push it past one screen; overflow-y:
+   auto above is the deliberate fallback for that. */
+@media (max-width: 520px) {
+  .auth-modal-backdrop {
+    padding: 12px;
+    align-items: flex-end;
+  }
+
+  .auth-modal-card {
+    max-height: 94vh;
+    max-height: 94svh;
+    border-radius: 16px 16px 0 0;
+    padding: 28px 20px 20px;
+  }
+
+  .auth-modal-title {
+    margin: 0 0 16px;
+    font-size: 21px;
+  }
+
+  .auth-modal-form {
+    gap: 10px;
+  }
+
+  .auth-modal-form input {
+    min-height: 46px;
+  }
+
+  .auth-modal-form button[type="submit"] {
+    min-height: 46px;
+  }
+
+  .auth-modal-card .auth-divider {
+    margin: 14px 0;
+  }
+
+  .auth-modal-social-button {
+    min-height: 46px;
+  }
+
+  .auth-modal-note {
+    margin: 14px 0 0;
+  }
+
+  .auth-modal-legal {
+    margin: 10px 0 0;
+    font-size: 11px;
+  }
 }
 
 /* Category listing pages (/projects/*, guides, construction-companies) */
