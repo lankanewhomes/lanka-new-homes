@@ -9871,16 +9871,15 @@ a.developer-profile-press-title {
 }
 
 /* ---------------------------------------------------------------------- */
-/* /for-developers — developer-acquisition landing page (2026-09-09,      */
-/* redesigned same day to borrow real listing-page visual language:       */
-/* a real listing photo in the hero, the exact .listing-hero-stat-chip    */
-/* pills a listing's own hero uses, the same Key Features accordion       */
-/* component every project page has (for-developers-features.tsx, the     */
-/* only client-JS piece here), and real ListingGridCards in the           */
-/* "what a listing looks like" section — not recreations of any of these. */
-/* Dark hero + dark closing CTA band still bookend the page, matching the */
-/* footer's #1c1c20; middle sections reuse the site's `.{feature}-shell`  */
-/* light-card convention (#f7f7f6 / #e5e5e4 border) from docs/design.md.  */
+/* Shared `.fd-*` classes — originally built for /for-developers, that     */
+/* page was fully rewritten on 2026-09-13 with its own `.fdv-*` namespace  */
+/* (below, near the bottom of this file) and no longer uses any class in   */
+/* this block. /web-design still does (its hero, feature cards, pricing   */
+/* CTA band, and "how it works" list) — this block exists for that page   */
+/* now, not for-developers. Some rules here (the old for-developers-only  */
+/* hero-photo/lead-steps/pricing-card/etc. variants) are dead weight left  */
+/* from before the rewrite; left in place rather than pulled out alongside */
+/* it, since untangling them isn't a /web-design visual change.           */
 /* ---------------------------------------------------------------------- */
 
 .fd-hero {
@@ -10340,27 +10339,6 @@ a.developer-profile-press-title {
   border-radius: 999px;
   font-size: 12px;
   font-weight: 700;
-}
-
-/* Feature groups (for-developers-features.tsx) — three always-visible rows
-   of .fd-feature-card (same card language as the pricing section and
-   /web-design), each under its own bold group label, instead of hiding
-   two-thirds of them behind a click-to-expand accordion. */
-.fd-feature-group {
-  margin-top: 36px;
-}
-
-.fd-feature-group:first-of-type {
-  margin-top: 0;
-}
-
-.fd-feature-group-label {
-  margin: 0 0 16px;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: #f47b36;
 }
 
 /* "This is what a listing looks like" — real ListingGridCards, 3 across
