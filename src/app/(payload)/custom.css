@@ -47,6 +47,29 @@
 .tabs-field__tab-button:nth-child(16).tabs-field__tab-button--active { background: #e6f6ee; color: #157347; }
 .tabs-field__tab-button:nth-child(17).tabs-field__tab-button--active { background: #eef1f4; color: #445468; }
 
+/* ===== Field cards — every leaf field (Bedrooms, Bathrooms, Parking Type,
+   etc.) gets its own boxed background instead of sitting flat against the
+   page, so the area you're actually editing/filling in is visually
+   distinct. Scoped to leaf fields only (:not(...) excludes group/array/
+   blocks/row/tabs/collapsible containers and custom `ui` panels like
+   PackagePicker, which already have their own styling) — so a field
+   inside a row or group gets one box, not a box-inside-a-box. */
+.field-type:not(.row):not(.group-field):not(.array-field):not(.blocks-field):not(.collapsible-field):not(.tabs-field):not(.ui):not(.checkbox):not(.hidden-field) {
+  background: var(--theme-elevation-50);
+  border: 1px solid var(--theme-elevation-100);
+  border-radius: 6px;
+  padding: 12px 14px;
+}
+
+/* Row fields lay their children out side by side as one .field-type.row —
+   give each child its own card too, same as a top-level field would get. */
+.field-type.row > .field-type:not(.checkbox) {
+  background: var(--theme-elevation-50);
+  border: 1px solid var(--theme-elevation-100);
+  border-radius: 6px;
+  padding: 12px 14px;
+}
+
 /* ===== Custom sidebar (AdminNav.tsx) ===== */
 
 .ln-nav {
