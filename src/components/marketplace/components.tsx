@@ -1687,7 +1687,7 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
             <Zap className="h-3 w-3" aria-hidden="true" /> {t("Responds within 1 hour")}
           </span>
         ) : null}
-        {developer?.verificationStatus === "approved" ? (
+        {project.package === "featured" || project.package === "premium" ? (
           <span className="listing-badge-pill badge-verified stats-contact-card-badge" title="Verified by LankaNewHomes">
             <ShieldCheck className="h-3 w-3" aria-hidden="true" /> {t("Verified")}
           </span>

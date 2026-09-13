@@ -6355,9 +6355,6 @@ export interface Land {
   isTrending?: boolean | null;
   landSizePerches: number;
   landSizeAcres?: number | null;
-  priceLkr: number;
-  pricePerPerchLkrMin?: number | null;
-  pricePerPerchLkrMax?: number | null;
   /**
    * Choose one, or two for a mixed-use parcel (e.g. Residential + Commercial).
    */
@@ -6387,6 +6384,9 @@ export interface Land {
    */
   titleType?: string | null;
   surveyPlanStatus?: string | null;
+  priceLkr: number;
+  pricePerPerchLkrMin?: number | null;
+  pricePerPerchLkrMax?: number | null;
   paymentPlanItems?: string[] | null;
   summary?: string | null;
   description?: string | null;
@@ -7766,9 +7766,6 @@ export interface LandsSelect<T extends boolean = true> {
   isTrending?: T;
   landSizePerches?: T;
   landSizeAcres?: T;
-  priceLkr?: T;
-  pricePerPerchLkrMin?: T;
-  pricePerPerchLkrMax?: T;
   landUse?: T;
   landType?: T;
   landShape?: T;
@@ -7780,6 +7777,9 @@ export interface LandsSelect<T extends boolean = true> {
   water?: T;
   titleType?: T;
   surveyPlanStatus?: T;
+  priceLkr?: T;
+  pricePerPerchLkrMin?: T;
+  pricePerPerchLkrMax?: T;
   paymentPlanItems?: T;
   summary?: T;
   description?: T;

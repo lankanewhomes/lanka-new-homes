@@ -76,13 +76,10 @@ export const Lands: CollectionConfig = {
           ],
         },
         {
-          label: 'Size & Pricing',
+          label: 'Size & Land Details',
           fields: [
             { name: 'landSizePerches', type: 'number', required: true },
             { name: 'landSizeAcres', type: 'number' },
-            { name: 'priceLkr', type: 'number', required: true },
-            { name: 'pricePerPerchLkrMin', type: 'number' },
-            { name: 'pricePerPerchLkrMax', type: 'number' },
             { name: 'landUse', type: 'select', hasMany: true, options: LAND_USE_OPTIONS, admin: { description: 'Choose one, or two for a mixed-use parcel (e.g. Residential + Commercial).' } },
             { name: 'landType', type: 'text', admin: { description: 'e.g. Bare Land, Land with House, Paddy Land, Coconut Land' } },
             { name: 'landShape', type: 'text', admin: { description: 'e.g. Rectangular, Square, Irregular, L-Shaped' } },
@@ -92,6 +89,17 @@ export const Lands: CollectionConfig = {
             { name: 'water', type: 'text' },
             { name: 'titleType', type: 'text', admin: { description: 'e.g. Freehold - Sinhala Deed, Freehold - Swarnabhoomi, Torrens Title' } },
             { name: 'surveyPlanStatus', type: 'text' },
+          ],
+        },
+        {
+          // Split out of "Size & Pricing" so pricing/payment fields aren't
+          // mixed with physical land attributes — matches Projects.ts's own
+          // separate Pricing tab.
+          label: 'Pricing',
+          fields: [
+            { name: 'priceLkr', type: 'number', required: true },
+            { name: 'pricePerPerchLkrMin', type: 'number' },
+            { name: 'pricePerPerchLkrMax', type: 'number' },
             { name: 'paymentPlanItems', type: 'text', hasMany: true },
           ],
         },

@@ -75,7 +75,9 @@ export function ProfileView({
             <Zap size={13} aria-hidden="true" /> {t("Responds within 1 hour")}
           </p>
         ) : null}
-        {"verificationStatus" in entity && entity.verificationStatus === "approved" ? (
+        {/* Verified is gated behind at least one project having an active
+            paid (Featured/Premium) package, not admin approval anymore. */}
+        {projects.some((project) => project.package === "featured" || project.package === "premium") ? (
           <p className="developer-profile-badge badge-verified" title="Verified by LankaNewHomes">
             <ShieldCheck size={13} aria-hidden="true" /> {t("Verified")}
           </p>

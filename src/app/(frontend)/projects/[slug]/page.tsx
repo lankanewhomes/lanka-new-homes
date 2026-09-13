@@ -134,7 +134,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
         blockPlanImages={project.blockPlanImages ?? []}
         extraBadges={[
           ...(developer?.respondsWithinHour ? [{ label: "Responds within 1 hour", kind: "responder" as const }] : []),
-          ...(developer?.verificationStatus === "approved" ? [{ label: "Verified", kind: "verified" as const }] : []),
+          ...(project.package === "featured" || project.package === "premium" ? [{ label: "Verified", kind: "verified" as const }] : []),
           ...(project.startingPriceLkr === 0 ? [{ label: "Contact for pricing", kind: "contact-pricing" as const }] : []),
           ...(project.availabilityBadge ? [{ label: project.availabilityBadge, kind: "availability" as const }] : []),
           ...(project.marketingBadges ?? []).map((label) => ({ label, kind: "marketing" as const })),
