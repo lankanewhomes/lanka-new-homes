@@ -19,22 +19,46 @@ const COUNTER_FIELD_BY_EVENT: Record<string, CounterField | undefined> = {
   whatsapp_click: 'whatsapp_click_count',
 }
 
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+// Read-then-write, so two concurrent views on the same project (a real
+// visitor + a crawler, two tabs, etc.) can race: both read the same
+// current value, both write current+1, and one increment is silently
+// lost — or, under enough contention, Postgres detects a genuine deadlock
+// (error code 40P01) between the two UPDATEs and kills one. Payload's
+// Local API has no atomic "$inc" primitive, and doing a raw SQL increment
+// would skip scoreProjectBeforeChange (final_score would go stale for
+// view-driven ranking, the most frequent event type) — so this retries
+// with a fresh read instead, which is Postgres's own documented remedy
+// for 40P01 and keeps every existing hook in the normal update path.
 async function bumpProjectCount(
   req: PayloadRequest,
   projectId: string | number | undefined,
   field: CounterField,
+  attempt = 1,
 ) {
   if (!projectId) return
   const project = await req.payload.findByID({ collection: 'projects', id: projectId, depth: 0, overrideAccess: true, req })
   if (!project) return
   const current = typeof project[field] === 'number' ? project[field] : 0
-  await req.payload.update({
-    collection: 'projects',
-    id: projectId,
-    data: { [field]: current + 1 },
-    overrideAccess: true,
-    req,
-  })
+  try {
+    await req.payload.update({
+      collection: 'projects',
+      id: projectId,
+      data: { [field]: current + 1 },
+      overrideAccess: true,
+      req,
+    })
+  } catch (error) {
+    const isDeadlock = (error as { cause?: { code?: string }; code?: string })?.cause?.code === '40P01' || (error as { code?: string })?.code === '40P01'
+    if (isDeadlock && attempt < 4) {
+      await sleep(25 * attempt + Math.random() * 50)
+      return bumpProjectCount(req, projectId, field, attempt + 1)
+    }
+    throw error
+  }
 }
 
 // Analytics is the single source of truth for these counters — see
