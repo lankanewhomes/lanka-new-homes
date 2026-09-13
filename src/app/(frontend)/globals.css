@@ -5184,6 +5184,22 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
     gap: 14px;
   }
 
+  /* Missing here before — every sibling card section on this page
+     (Overview, Key Features, Amenities, above) scales its padding down on
+     mobile; these two didn't, so they sat noticeably more inset than the
+     rest of the page instead of matching it. */
+  .construction-progress-shell {
+    padding: 18px;
+  }
+
+  .construction-timeline-shell {
+    padding: 18px;
+  }
+
+  .construction-timeline-shell h2 {
+    font-size: 26px;
+  }
+
   .amenities-showcase-image-wrap,
   .amenities-showcase-image {
     min-height: 270px;
