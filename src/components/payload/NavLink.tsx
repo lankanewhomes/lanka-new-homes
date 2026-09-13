@@ -2,11 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { ComponentType } from "react";
+import type { ReactNode } from "react";
 
 // Client-only for active-state highlighting (usePathname) — everything
-// else about AdminNav stays a server component.
-export function NavLink({ href, label, icon: Icon }: { href: string; label: string; icon: ComponentType<{ size?: number; className?: string }> }) {
+// else about AdminNav stays a server component. `icon` is a rendered
+// element (e.g. `<LayoutDashboard size={16} />`), not a component
+// reference — a server component can't pass a component/function as a
+// prop across the client boundary (only already-rendered elements/nodes),
+// so AdminNav renders the icon itself before handing it to this component.
+export function NavLink({ href, label, icon }: { href: string; label: string; icon: ReactNode }) {
   const pathname = usePathname();
   // Exact match for the dashboard root; prefix match for everything else
   // so a filtered link (e.g. .../leads?where...) and its plain collection
@@ -16,7 +20,7 @@ export function NavLink({ href, label, icon: Icon }: { href: string; label: stri
 
   return (
     <Link href={href} className={`ln-nav-link${isActive ? " is-active" : ""}`}>
-      <Icon size={16} className="ln-nav-link-icon" />
+      {icon}
       <span>{label}</span>
     </Link>
   );

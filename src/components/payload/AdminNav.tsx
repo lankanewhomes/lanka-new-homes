@@ -164,13 +164,13 @@ export const AdminNav = async (props: NavProps) => {
       </div>
 
       <nav className="ln-nav-scroll">
-        <NavLink href="/cms" label="Dashboard" icon={LayoutDashboard} />
+        <NavLink href="/cms" label="Dashboard" icon={<LayoutDashboard size={16} className="ln-nav-link-icon" />} />
 
         {sections.map((section) => (
           <div className="ln-nav-section" key={section.label}>
             <p className="ln-nav-section-label">{section.label}</p>
             {section.items.map((item) => (
-              <NavLink key={item.href} href={item.href} label={item.label} icon={item.icon} />
+              <NavLink key={item.href} href={item.href} label={item.label} icon={<item.icon size={16} className="ln-nav-link-icon" />} />
             ))}
           </div>
         ))}
