@@ -7455,7 +7455,7 @@ a.developer-profile-press-title {
   min-height: 52px;
   padding: 0 16px;
   border: 1.5px solid #1f1f1f;
-  border-radius: 10px;
+  border-radius: 0;
   font-size: 15px;
   font-family: var(--font-ref-sans);
   color: #1f1f1f;
