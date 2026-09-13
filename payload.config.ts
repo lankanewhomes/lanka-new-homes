@@ -51,6 +51,12 @@ export default buildConfig({
     user: Users.slug,
     importMap: { baseDir: dirname },
     components: {
+      // Full custom sidebar (see docs/design.md "LankaNewHomes admin
+      // redesign") — regroups every existing collection/global into the
+      // requested IA. Reads Payload's own `visibleEntities` (already
+      // permission-filtered by each collection's existing access/hidden
+      // rules) rather than reimplementing any access logic.
+      Nav: '@/components/payload/AdminNav#AdminNav',
       // Payload's default logout is a small icon at the bottom of the left
       // sidebar — this adds a conventional top-right "Account / Log out"
       // menu alongside it (doesn't replace the sidebar one).
@@ -76,6 +82,13 @@ export default buildConfig({
         '@/components/payload/NavLeadActivityLink#NavLeadActivityLink',
       ],
       views: {
+        // Replaces Payload's default dashboard entirely — see AdminDashboard.tsx.
+        // Renders LeadAlertModeBanner/ListingTodoPanel itself (they normally
+        // come from the beforeDashboard slot below, which only the *default*
+        // dashboard composes) — nothing from beforeDashboard is lost.
+        dashboard: {
+          Component: '@/components/payload/AdminDashboard#AdminDashboard',
+        },
         // "Import from your website": paste a project URL / upload a
         // brochure, get an unpublished draft — see ImportListing.tsx and
         // src/collections/endpoints/import-listing.ts.
@@ -97,6 +110,18 @@ export default buildConfig({
         placements: {
           Component: '@/components/payload/PlacementPicker#PlacementPicker',
           path: '/placements',
+        },
+        // Real billing summary (Subscriptions collection + packages.ts) —
+        // admin-only, see BillingOverview.tsx.
+        billingOverview: {
+          Component: '@/components/payload/BillingOverview#BillingOverview',
+          path: '/billing',
+        },
+        // A developer's own subscriptions across all their projects — see
+        // MyBilling.tsx.
+        myBilling: {
+          Component: '@/components/payload/MyBilling#MyBilling',
+          path: '/my-billing',
         },
       },
     },

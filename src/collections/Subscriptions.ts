@@ -24,6 +24,17 @@ export const Subscriptions: CollectionConfig = {
     useAsTitle: 'id',
     group: 'Business',
     defaultColumns: ['project', 'developer', 'package', 'status', 'current_period_start', 'current_period_end'],
+    // Readable table (developer/project names, status badges, formatted
+    // amounts) instead of the raw document grid — same pattern as
+    // Analytics -> AnalyticsDashboard. The real create/edit routes this
+    // links to are untouched.
+    components: {
+      views: {
+        list: {
+          Component: '@/components/payload/SubscriptionsList#SubscriptionsList',
+        },
+      },
+    },
   },
   access: {
     read: ownDeveloperAccess('developer'),

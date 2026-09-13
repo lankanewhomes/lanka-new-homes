@@ -1339,3 +1339,46 @@ Change a price or feature gate there, nowhere else.
 - **Not built**: live PayHere/Stripe checkout, pay-per-lead, multi-listing
   bundle pricing — architecture leaves room for all three without a schema
   change, none implemented yet.
+
+## Payload admin redesign (`/cms`)
+
+Rebrands the admin shell without touching schema/access/auth — three
+customization points, all from `payload.config.ts`'s `admin.components`
+(Payload 3.88's supported API, nothing internal):
+
+- **`src/app/(payload)/custom.css`** — was an empty placeholder file, now
+  loads Archivo (the admin route is isolated from the main site's font
+  tree, so it needs its own `@import`) and overrides `--font-body`, plus
+  every `.ln-*` class below. Payload's own semantic colors (success/
+  warning/error) are untouched — retheming them would blur real status
+  meaning (draft/published, validation errors), so brand orange (`#f47b36`/
+  `#c65a1e`) is applied only inside components this pass fully controls
+  (nav active state, stat cards, badges), not globally.
+- **`AdminNav.tsx`** (`admin.components.Nav`, full replacement) — regroups
+  every existing collection/global into Listings/Developers/Leads/Content/
+  Marketing/Billing/Analytics/Users/Settings. Reads Payload's own
+  `visibleEntities` prop (already permission-filtered by each collection's
+  existing access/`hidden` rules) — no new permission logic. A slug not in
+  the explicit map still gets a link under "Other" (safety net for future
+  collections). Two items are role-gated views rather than collections
+  (Billing → Overview for admin, My Billing for developer).
+- **`AdminDashboard.tsx`** (`admin.components.views.dashboard`, full
+  replacement) — real stat cards (`payload.count()`), Recent Leads/Recent
+  Projects tables, Quick Actions. Renders `LeadAlertModeBanner` and
+  `ListingTodoPanel` directly (they used to come from the `beforeDashboard`
+  slot, which only Payload's *default* dashboard composes — replacing the
+  view means composing them here instead). `DashboardHeading`'s old plain
+  heading is superseded by the new time-aware greeting, not lost.
+- **Billing views**: `BillingOverview.tsx` (admin-only — active
+  subscriptions, MRR, expiring-soon, all from real `Subscriptions` rows; a
+  "Plans" panel reads `packages.ts` directly since there's no separate
+  database Plans table) and `MyBilling.tsx` (developer-only — every
+  subscription across all of that developer's projects, since packages are
+  per-project not per-account). `Subscriptions.ts`'s list view is also
+  overridden (`SubscriptionsList.tsx`, same pattern as `Analytics.ts` →
+  `AnalyticsDashboard.tsx`) with a readable table instead of the raw grid.
+- **Deferred, not done here**: visual rebuild of the Projects/Developers/
+  Leads list tables themselves (thumbnails, richer columns — same
+  `views.list.Component` pattern, one collection at a time next), further
+  Project edit-form tab reorganization, a real database-editable Plans
+  collection, media library UX, deeper Analytics work.

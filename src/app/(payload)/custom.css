@@ -1,1 +1,283 @@
-/* Admin-panel style overrides go here — intentionally empty for now. */
+/* Admin-panel style overrides — LankaNewHomes admin redesign
+   (docs/design.md "Payload admin redesign"). This file is imported after
+   @payloadcms/next/css in layout.tsx, so these rules win for the same
+   selector specificity — no Payload SCSS/source is edited, upgrade-safe. */
+
+/* This admin route group is isolated from the main site's layout (its own
+   font/theme tree), so Archivo — the site's brand font — needs its own
+   load here rather than reusing the main site's next/font instance. */
+@import url("https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap");
+
+:root {
+  --font-body: "Archivo", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* ===== Custom sidebar (AdminNav.tsx) ===== */
+
+.ln-nav {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.ln-nav-brand {
+  padding: 22px 20px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ln-nav-brand-name {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--theme-elevation-1000);
+}
+
+.ln-nav-brand-role {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #f47b36;
+}
+
+.ln-nav-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 12px 16px;
+}
+
+.ln-nav-section {
+  margin-top: 20px;
+}
+
+.ln-nav-section-label {
+  margin: 0 0 4px;
+  padding: 0 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--theme-elevation-450);
+}
+
+.ln-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  border-radius: 4px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--theme-elevation-700);
+  text-decoration: none;
+}
+
+.ln-nav-link:hover {
+  background: var(--theme-elevation-100);
+  color: var(--theme-elevation-1000);
+  text-decoration: none;
+}
+
+.ln-nav-link.is-active {
+  background: #fef1e8;
+  color: #c65a1e;
+  font-weight: 650;
+}
+
+.ln-nav-link-icon {
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.ln-nav-footer {
+  padding: 12px 20px 18px;
+  border-top: 1px solid var(--theme-elevation-100);
+}
+
+/* ===== Custom dashboard (AdminDashboard.tsx) ===== */
+
+.ln-dash {
+  padding: 32px;
+  max-width: 1280px;
+}
+
+.ln-dash-greeting {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--theme-elevation-500);
+  margin: 0 0 4px;
+}
+
+.ln-dash-title {
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0 0 28px;
+  color: var(--theme-elevation-1000);
+}
+
+.ln-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  margin-bottom: 32px;
+}
+
+.ln-stat-card {
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 6px;
+  background: var(--theme-elevation-0);
+  padding: 18px 20px;
+}
+
+.ln-stat-card-value {
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--theme-elevation-1000);
+}
+
+.ln-stat-card-label {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--theme-elevation-500);
+}
+
+.ln-dash-section {
+  margin-bottom: 32px;
+}
+
+.ln-dash-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.ln-dash-section-head h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.ln-dash-section-head a {
+  font-size: 13px;
+  font-weight: 600;
+  color: #c65a1e;
+  text-decoration: none;
+}
+
+.ln-dash-section-head a:hover {
+  text-decoration: underline;
+}
+
+.ln-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 6px;
+  overflow: hidden;
+  font-size: 13.5px;
+}
+
+.ln-table th {
+  text-align: left;
+  padding: 9px 14px;
+  background: var(--theme-elevation-50);
+  color: var(--theme-elevation-500);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.ln-table td {
+  padding: 10px 14px;
+  border-top: 1px solid var(--theme-elevation-100);
+}
+
+.ln-table tr:hover td {
+  background: var(--theme-elevation-50);
+}
+
+.ln-table a {
+  color: var(--theme-elevation-1000);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.ln-table a:hover {
+  text-decoration: underline;
+}
+
+.ln-empty {
+  padding: 24px;
+  text-align: center;
+  color: var(--theme-elevation-450);
+  font-size: 13.5px;
+  border: 1px dashed var(--theme-elevation-150);
+  border-radius: 6px;
+}
+
+/* Status badges — shared by dashboard tables, Subscriptions list, Leads. */
+.ln-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.ln-badge-neutral {
+  background: var(--theme-elevation-100);
+  color: var(--theme-elevation-700);
+}
+
+.ln-badge-info {
+  background: #e6f0fb;
+  color: #1d5fa8;
+}
+
+.ln-badge-warning {
+  background: #fdf3e0;
+  color: #92670c;
+}
+
+.ln-badge-success {
+  background: #e8f5e9;
+  color: #1a6b2f;
+}
+
+.ln-badge-danger {
+  background: #fbe9e7;
+  color: #a33a2f;
+}
+
+.ln-quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ln-quick-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 6px;
+  background: var(--theme-elevation-0);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--theme-elevation-800);
+  text-decoration: none;
+}
+
+.ln-quick-action:hover {
+  border-color: #f47b36;
+  color: #c65a1e;
+  text-decoration: none;
+}
