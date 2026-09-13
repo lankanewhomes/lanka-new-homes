@@ -12,7 +12,7 @@ export const HeroSlides: CollectionConfig = {
   admin: {
     useAsTitle: 'page_target',
     group: 'Content',
-    defaultColumns: ['page_target', 'display_order', 'status', 'is_paid_placement'],
+    defaultColumns: ['page_target', 'display_order', 'status', 'is_paid_placement', 'auto_generated'],
   },
   access: {
     read: publicRead,
@@ -42,6 +42,16 @@ export const HeroSlides: CollectionConfig = {
     { name: 'start_date', type: 'date', label: 'Start Date' },
     { name: 'end_date', type: 'date', label: 'End Date' },
     { name: 'is_paid_placement', type: 'checkbox', label: 'Is Paid Placement', defaultValue: true, admin: { readOnly: true, description: 'Homepage hero placements are paid inventory.' } },
+    {
+      name: 'auto_generated',
+      type: 'checkbox',
+      label: 'Auto Generated',
+      defaultValue: false,
+      admin: {
+        readOnly: true,
+        description: 'Created and kept active automatically by a Premium subscription (see hooks/sync-subscription-package.ts). It archives itself when that subscription ends — edit the headline/image/order here like any other slide, or set Status to Archived to remove it early.',
+      },
+    },
     { name: 'payment', type: 'relationship', relationTo: 'payments', label: 'Payment Record', admin: { description: 'Attach the completed Hero Slide or Hero Image payment before activating this placement — set automatically once that payment is confirmed.' } },
     {
       name: 'status',

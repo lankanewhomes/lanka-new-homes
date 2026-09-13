@@ -4093,6 +4093,10 @@ export interface HeroSlide {
    */
   is_paid_placement?: boolean | null;
   /**
+   * Created and kept active automatically by a Premium subscription (see hooks/sync-subscription-package.ts). It archives itself when that subscription ends — edit the headline/image/order here like any other slide, or set Status to Archived to remove it early.
+   */
+  auto_generated?: boolean | null;
+  /**
    * Attach the completed Hero Slide or Hero Image payment before activating this placement — set automatically once that payment is confirmed.
    */
   payment?: (number | null) | Payment;
@@ -8235,6 +8239,7 @@ export interface HeroSlidesSelect<T extends boolean = true> {
   start_date?: T;
   end_date?: T;
   is_paid_placement?: T;
+  auto_generated?: T;
   payment?: T;
   status?: T;
   review_note?: T;
