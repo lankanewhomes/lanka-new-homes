@@ -8825,6 +8825,14 @@ a.developer-profile-press-title {
   display: flex;
   flex-direction: column;
   height: 100%;
+  /* Grid/flex items default to min-width: auto, so a long project name or
+     address with white-space: nowrap (below) could still force this card
+     wider than its own grid track/column, pushing it (and the whole page)
+     past the viewport instead of the ellipsis truncating it — most visible
+     in the mobile Similar Listings grid, where the single column left no
+     slack for it to hide in. min-width: 0 lets the card actually shrink to
+     its track's width so the ellipsis rules do their job. */
+  min-width: 0;
   background: #fff;
   border-radius: 6px;
   transition: box-shadow 0.15s ease, transform 0.15s ease;
