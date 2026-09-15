@@ -1002,70 +1002,43 @@ export function ProjectHero({
       <div className="listing-hero-media">
         {activeMedia === null && (
           <div className={`listing-hero-grid${photoItems.length === 1 ? " single-photo" : photoItems.length === 2 ? " two-photo" : ""}`}>
-            {/* When a video exists, it takes the main hero slot instead of the
-                first photo — a plain div, not the photo button, so the
-                embed's own play controls get pointer events instead of a
-                click-to-zoom overlay stealing them. Photos are untouched:
-                still browsable via the side thumbnails (now starting at
-                photoItems[0] since the video took the slot they'd otherwise
-                lead with), the Photos pill, and the full lightbox. */}
-            {videoItems.length > 0 ? (
-              <div className="listing-hero-grid-main listing-hero-grid-main-video">
-                {isDirectVideoFile(videoItems[0].url) ? (
-                  <video src={videoItems[0].url} controls className="listing-hero-grid-main-video-el" />
-                ) : (
-                  <iframe
-                    className="listing-hero-grid-main-video-el"
-                    title={videoItems[0].label}
-                    src={toEmbeddableVideoUrl(videoItems[0].url)}
-                    loading="lazy"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  />
-                )}
-              </div>
-            ) : (
-              <button
-                type="button"
-                className="listing-hero-grid-main"
-                onClick={() => {
-                  setPhotoIndex(0);
-                  setLightboxView("photos");
-                  setIsLightboxOpen(true);
-                }}
-                aria-label="Open photo gallery"
-              >
-                <Image
-                  src={photoItems[0].image}
-                  alt={`${project.name} ${photoItems[0].label}`}
-                  width={1200}
-                  height={900}
-                  className={`listing-hero-grid-main-image${heroImageOverride ? " is-floor-plan" : ""}`}
-                  priority
-                />
-              </button>
-            )}
+            <button
+              type="button"
+              className="listing-hero-grid-main"
+              onClick={() => {
+                setPhotoIndex(0);
+                setLightboxView("photos");
+                setIsLightboxOpen(true);
+              }}
+              aria-label="Open photo gallery"
+            >
+              <Image
+                src={photoItems[0].image}
+                alt={`${project.name} ${photoItems[0].label}`}
+                width={1200}
+                height={900}
+                className={`listing-hero-grid-main-image${heroImageOverride ? " is-floor-plan" : ""}`}
+                priority
+              />
+            </button>
 
-            {(videoItems.length > 0 ? photoItems.length > 0 : photoItems.length > 1) && (
+            {photoItems.length > 1 && (
               <div className="listing-hero-grid-side">
-                {photoItems.slice(videoItems.length > 0 ? 0 : 1, videoItems.length > 0 ? 2 : 3).map((item, index) => {
-                  const realIndex = videoItems.length > 0 ? index : index + 1;
-                  return (
-                    <button
-                      key={item.image}
-                      type="button"
-                      className="listing-hero-grid-side-item"
-                      onClick={() => {
-                        setPhotoIndex(realIndex);
-                        setLightboxView("photos");
-                        setIsLightboxOpen(true);
-                      }}
-                      aria-label={`Open photo: ${item.label}`}
-                    >
-                      <Image src={item.image} alt={`${project.name} ${item.label}`} width={700} height={440} className="listing-hero-grid-side-image" />
-                    </button>
-                  );
-                })}
+                {photoItems.slice(1, 3).map((item, index) => (
+                  <button
+                    key={item.image}
+                    type="button"
+                    className="listing-hero-grid-side-item"
+                    onClick={() => {
+                      setPhotoIndex(index + 1);
+                      setLightboxView("photos");
+                      setIsLightboxOpen(true);
+                    }}
+                    aria-label={`Open photo: ${item.label}`}
+                  >
+                    <Image src={item.image} alt={`${project.name} ${item.label}`} width={700} height={440} className="listing-hero-grid-side-image" />
+                  </button>
+                ))}
               </div>
             )}
 
