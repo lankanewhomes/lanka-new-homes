@@ -1497,10 +1497,13 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 }
 
 .listing-photo-lightbox-topbar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+  /* Normal flow (not absolute) so it actually takes up space in the
+     lightbox's flex column instead of floating on top of the stage below
+     — the stage was height:100vh, the full viewport, so this bar (and its
+     opaque white background) sat directly over the top of the image,
+     hiding whatever fell behind it. Same reasoning as the stage's height
+     fix right below. */
+  flex-shrink: 0;
   z-index: 2;
   background: #ffffff;
   border-top: 1px solid #e2e2e2;
@@ -1638,18 +1641,31 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 .listing-photo-lightbox-stage {
   position: relative;
   width: 100%;
-  height: 100vh;
+  /* Was height: 100vh — the full viewport, ignoring the topbar's real
+     height above it, so a contain-fitted image's top (and, for a tall
+     photo, its bottom under the caption pill) ended up hidden behind that
+     bar instead of actually visible. flex: 1 in the lightbox's own flex
+     column fills exactly what's left below the topbar, so object-fit:
+     contain has the real available space to fit the whole image into.
+     min-height: 0 overrides flex's own default min-height: auto, which
+     would otherwise refuse to shrink this below the image's intrinsic
+     size and reintroduce the same overflow. */
+  flex: 1;
+  min-height: 0;
 }
 
 .listing-photo-lightbox-media-wrap {
   position: relative;
   width: 100%;
-  height: 100vh;
+  /* 100%, not 100vh — this fills .listing-photo-lightbox-stage, which is
+     already the exact space below the topbar (see its own comment), not
+     the full viewport. */
+  height: 100%;
 }
 
 .listing-photo-lightbox-image {
   width: 100%;
-  height: 100vh;
+  height: 100%;
   /* Was cover — for a normal wide photo, cover scales it up to fill the
      full viewport height, which for a modest-resolution source (e.g.
      1200x540) means visible upscaling/blur ("quality is bad"). contain
@@ -1666,7 +1682,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 
 .listing-photo-lightbox-map {
   width: 100%;
-  height: 100vh;
+  height: 100%;
   border: 0;
 }
 
