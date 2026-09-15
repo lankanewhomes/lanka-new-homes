@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode as RNode } from "react";
 import Link from "next/link";
-import { X } from "lucide-react";
+import { Bell, Building2, ShieldCheck, X } from "lucide-react";
 import { AuthForm } from "@/components/auth/auth-form";
 
 type ModalMode = "login" | "signup";
@@ -28,7 +28,14 @@ export function useAuthModal() {
 // Buyer-only modal — developers and admin log in through Payload directly
 // now (/developers/login, /admin-login), not through this Supabase-backed
 // modal, so it no longer needs a "developer" intent branch.
-const TITLES: Record<ModalMode, string> = { login: "Log in", signup: "Sign up" };
+// Question-style headline for signup (matches the reference redesign —
+// leads with "why sign up" instead of a bare label); login keeps a plain
+// statement since "what's the best email" doesn't make sense for someone
+// who already has an account.
+const TITLES: Record<ModalMode, string> = {
+  login: "Log in to LankaNewHomes",
+  signup: "What's the best email for instant alerts on new listings?",
+};
 
 export function AuthModalProvider({ children }: { children: RNode }) {
   const [state, setState] = useState<{ open: boolean; mode: ModalMode; redirectTo: string }>({
@@ -100,6 +107,17 @@ export function AuthModalProvider({ children }: { children: RNode }) {
               <strong>By clicking continue</strong> you agree to LankaNewHomes&apos;s <a href="/terms">Terms of Service</a> and{" "}
               <a href="/privacy">Privacy Policy</a>.
             </p>
+
+            {state.mode === "signup" ? (
+              <div className="auth-modal-tagline">
+                <div className="auth-modal-tagline-icons">
+                  <Bell className="h-4 w-4" aria-hidden="true" />
+                  <Building2 className="h-4 w-4" aria-hidden="true" />
+                  <ShieldCheck className="h-4 w-4" aria-hidden="true" />
+                </div>
+                <p>Get instant alerts on new listings, price changes, and construction updates across Sri Lanka.</p>
+              </div>
+            ) : null}
           </div>
         </div>
       )}

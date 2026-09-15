@@ -238,9 +238,9 @@ export function AuthForm({
   if (variant === "modal") {
     return (
       <div>
-        {formFields}
-        <div className="auth-divider">Or continue with</div>
         {socialButtons}
+        <div className="auth-divider">or continue with your email</div>
+        {formFields}
       </div>
     );
   }
