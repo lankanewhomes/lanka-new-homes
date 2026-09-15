@@ -1088,15 +1088,15 @@ export function ProjectHero({
               <div className="listing-photo-lightbox-actions">
                 <button type="button" className="listing-photo-lightbox-action-btn" aria-pressed={followingDeveloper} onClick={toggleFollowDeveloper}>
                   <Bell className="h-4 w-4" aria-hidden="true" fill={followingDeveloper ? "currentColor" : "none"} />
-                  {followingDeveloper ? t("Following") : t("Get updates")}
+                  <span className="listing-photo-lightbox-action-label">{followingDeveloper ? t("Following") : t("Get updates")}</span>
                 </button>
                 <button type="button" className="listing-photo-lightbox-action-btn" onClick={toggleSaved}>
                   <Heart className={`h-4 w-4${savedListing ? " text-[#d94f4f]" : ""}`} aria-hidden="true" fill={savedListing ? "currentColor" : "none"} />
-                  {savedListing ? t("Saved") : t("Save")}
+                  <span className="listing-photo-lightbox-action-label">{savedListing ? t("Saved") : t("Save")}</span>
                 </button>
                 <button type="button" className="listing-photo-lightbox-action-btn">
                   <Share2 className="h-4 w-4" aria-hidden="true" />
-                  {t("Share")}
+                  <span className="listing-photo-lightbox-action-label">{t("Share")}</span>
                 </button>
                 <button
                   type="button"

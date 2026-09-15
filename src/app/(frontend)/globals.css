@@ -1813,27 +1813,70 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 }
 
 @media (max-width: 640px) {
-  /* Below ~640px, the title/address column and the 4 action buttons
-     (Get updates / Save / Share / close) no longer fit side by side —
-     shrinking their fonts (the 980px block above) wasn't enough, both
-     sides were still wrapping into a cramped narrow column. Stack them:
-     title+address gets the full width on its own row, then every action
-     button gets its own full-width row below with normal spacing. */
-  .listing-photo-lightbox-toprow {
-    flex-wrap: wrap;
+  /* This topbar sits in normal flow now (see .listing-photo-lightbox-stage's
+     own comment on why), so on a short phone screen its own height directly
+     eats into the image's — stacking title/address and every action
+     button onto their own full-width rows (the previous fix here) made a
+     tall bar that was fine while it silently overlaid the image, but once
+     it actually took its own space, it left barely any room for the photo.
+     Kept to one compact row instead: address truncates with an ellipsis
+     rather than wrapping, and the action buttons drop their text labels
+     for icon-only circles (still labelled for screen readers via the
+     buttons' own accessible names) so all three plus Close fit alongside
+     the title without wrapping. */
+  .listing-photo-lightbox-topbar {
+    padding: 12px 10px 0;
   }
 
-  .listing-photo-lightbox-meta {
-    flex: 1 1 100%;
-    padding-right: 46px;
+  .listing-photo-lightbox-meta .primary-line {
+    font-size: 15px;
+  }
+
+  .listing-photo-lightbox-meta .secondary-line {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .listing-photo-lightbox-actions {
-    flex: 1 1 100%;
-    flex-wrap: wrap;
+    gap: 2px;
+    padding-right: 40px;
+  }
+
+  .listing-photo-lightbox-action-btn {
+    gap: 0;
+    min-height: 32px;
+    width: 32px;
+    padding: 0;
     justify-content: center;
+  }
+
+  .listing-photo-lightbox-action-label {
+    display: none;
+  }
+
+  .listing-photo-lightbox-close {
+    top: 12px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .listing-photo-lightbox-tabs {
     margin-top: 10px;
-    padding-right: 0;
+    padding-top: 10px;
+    justify-content: flex-start;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .listing-photo-lightbox-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .listing-photo-lightbox-tabs button {
+    flex-shrink: 0;
+    white-space: nowrap;
   }
 }
 
