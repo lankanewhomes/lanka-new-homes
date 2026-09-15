@@ -7567,6 +7567,33 @@ a.developer-profile-press-title {
   gap: 12px;
 }
 
+/* Progressive signup step 2 — shows the email captured on step 1 (with a
+   way back to change it) instead of asking for it again. */
+.auth-modal-email-step {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: -4px 0 0;
+  padding: 12px 16px;
+  border: 1.5px solid #ececea;
+  background: #faf9f6;
+  font-size: 14px;
+  color: #1f1f1f;
+}
+
+.auth-modal-email-step button {
+  flex-shrink: 0;
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 700;
+  color: #f47b36;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .auth-modal-form label {
   display: block;
 }

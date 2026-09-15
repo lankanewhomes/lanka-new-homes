@@ -32,10 +32,14 @@ export function useAuthModal() {
 // leads with "why sign up" instead of a bare label); login keeps a plain
 // statement since "what's the best email" doesn't make sense for someone
 // who already has an account.
+// Signup's step-2 (name/password, once the email is captured) gets its own
+// plain headline — "what's the best email" no longer makes sense once
+// that email is already on screen with a Change link.
 const TITLES: Record<ModalMode, string> = {
   login: "Log in to LankaNewHomes",
   signup: "What's the best email for instant alerts on new listings?",
 };
+const SIGNUP_DETAILS_TITLE = "Almost done — set a password";
 
 export function AuthModalProvider({ children }: { children: RNode }) {
   const [state, setState] = useState<{ open: boolean; mode: ModalMode; redirectTo: string }>({
@@ -43,8 +47,10 @@ export function AuthModalProvider({ children }: { children: RNode }) {
     mode: "login",
     redirectTo: "/account",
   });
+  const [signupStep, setSignupStep] = useState<"email" | "details">("email");
 
   const openAuthModal = useCallback((options?: OpenOptions) => {
+    setSignupStep("email");
     setState((prev) => ({
       ...prev,
       open: true,
@@ -69,13 +75,16 @@ export function AuthModalProvider({ children }: { children: RNode }) {
               <X className="h-5 w-5" aria-hidden="true" />
             </button>
 
-            <h2 className="auth-modal-title">{TITLES[state.mode]}</h2>
+            <h2 className="auth-modal-title">
+              {state.mode === "signup" && signupStep === "details" ? SIGNUP_DETAILS_TITLE : TITLES[state.mode]}
+            </h2>
 
             <AuthForm
               key={state.mode}
               mode={state.mode}
               redirectTo={state.redirectTo}
               variant="modal"
+              onStepChange={setSignupStep}
               onAuthenticated={() => {
                 closeAuthModal();
                 window.location.href = state.redirectTo;
@@ -86,7 +95,13 @@ export function AuthModalProvider({ children }: { children: RNode }) {
               {state.mode === "login" ? (
                 <>
                   Don&apos;t have an account?{" "}
-                  <button type="button" onClick={() => setState((prev) => ({ ...prev, mode: "signup" }))}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSignupStep("email");
+                      setState((prev) => ({ ...prev, mode: "signup" }));
+                    }}
+                  >
                     Sign up
                   </button>
                   .
@@ -94,7 +109,13 @@ export function AuthModalProvider({ children }: { children: RNode }) {
               ) : (
                 <>
                   Already have an account?{" "}
-                  <button type="button" onClick={() => setState((prev) => ({ ...prev, mode: "login" }))}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSignupStep("email");
+                      setState((prev) => ({ ...prev, mode: "login" }));
+                    }}
+                  >
                     Log in
                   </button>
                   .
@@ -108,7 +129,7 @@ export function AuthModalProvider({ children }: { children: RNode }) {
               <a href="/privacy">Privacy Policy</a>.
             </p>
 
-            {state.mode === "signup" ? (
+            {state.mode === "signup" && signupStep === "email" ? (
               <div className="auth-modal-tagline">
                 <div className="auth-modal-tagline-icons">
                   <Bell className="h-4 w-4" aria-hidden="true" />
