@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { CircleDollarSign, Compass, HousePlus, Layers, MapPin, Ruler } from "lucide-react";
+import { CheckCircle2, CircleDollarSign, Compass, HousePlus, Layers, MapPin, Ruler, Tag } from "lucide-react";
 import { getAllLands, getLandBySlug } from "@/lib/land-store";
 import { buildLandDetailRows, landToProjectShape } from "@/lib/land-to-project";
 import { pickSimilarListings } from "@/lib/similar-listings";
@@ -87,8 +87,8 @@ export default async function LandDetailPage({ params }: LandPageProps) {
     { icon: CircleDollarSign, label: "Price range", value: land.priceLkr > 0 ? formatLkr(land.priceLkr) : (project.priceRange || "Contact for pricing") },
     { icon: MapPin, label: "Address", value: land.location },
     ...(totalPlots > 0 ? [{ icon: Layers, label: "Total plots", value: String(totalPlots) }] : []),
-    ...(totalPlots > 0 ? [{ icon: Compass, label: "Plots available", value: String(plotsAvailable) }] : []),
-    ...(totalPlots > 0 ? [{ icon: Layers, label: "Plots sold", value: String(plotsSold) }] : []),
+    ...(totalPlots > 0 ? [{ icon: CheckCircle2, label: "Plots available", value: String(plotsAvailable) }] : []),
+    ...(totalPlots > 0 ? [{ icon: Tag, label: "Plots sold", value: String(plotsSold) }] : []),
     ...(land.landSizePerches > 0 ? [{ icon: Ruler, label: "Land size", value: `${land.landSizePerches} perches` }] : []),
     { icon: Compass, label: "Land use", value: land.landUse.join(" & ") },
   ];

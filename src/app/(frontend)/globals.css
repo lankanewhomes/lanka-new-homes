@@ -9239,7 +9239,16 @@ a.developer-profile-press-title {
   min-height: calc(100vh - 90px);
   border: 1px solid #e4e4e4;
   background: #d9ecd4;
-  overflow: visible;
+  /* Was `visible` so a tall ProjectPopup near the map's top/bottom edge
+     wouldn't get clipped — but that let markers whose projected pixel
+     position drifts outside the map's own box (e.g. during a resize/route
+     transition, before MapLibre re-measures the container) render on top
+     of unrelated page content instead of being clipped, which is the far
+     worse failure mode (pins scattered across listing cards). Clipping
+     here again accepts that a popup very close to the map's edge may get
+     its bottom cut off — a real but contained regression, revisit with a
+     portal-rendered popup if that resurfaces. */
+  overflow: hidden;
 }
 
 /* Covers the map style's raw background color while vector tiles for the
@@ -9268,10 +9277,9 @@ a.developer-profile-press-title {
   width: 100%;
   height: 100%;
   font-family: var(--font-ref-sans);
-  /* MapLibre's own CSS sets overflow: hidden here by default, which clips
-     the ProjectPopup card whenever it's taller than the space below its
-     anchor point — let the popup escape the map's own bounding box. */
-  overflow: visible;
+  /* Back to MapLibre's own default (see .listing-map's comment above for
+     why this was briefly set to `visible` and why that's reverted). */
+  overflow: hidden;
 }
 
 /* Custom marker replacing the default MapLibre pin — matches the site's
