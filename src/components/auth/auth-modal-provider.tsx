@@ -37,7 +37,7 @@ export function useAuthModal() {
 // that email is already on screen with a Change link.
 const TITLES: Record<ModalMode, string> = {
   login: "Log in to LankaNewHomes",
-  signup: "What's the best email for instant alerts on new listings?",
+  signup: "Get instant alerts on new listings",
 };
 const SIGNUP_DETAILS_TITLE = "Almost done — set a password";
 
