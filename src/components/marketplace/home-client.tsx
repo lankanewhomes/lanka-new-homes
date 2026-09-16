@@ -323,23 +323,6 @@ export function HomeClient({ projects, lands = [] }: { projects: Project[]; land
     ) : null}
 
     <main className="home-content">
-      <section className="featured-listings-section" aria-label="Featured listings">
-        <div className="featured-listings-head">
-          <h2>Featured listings</h2>
-          <p className="featured-listings-subhead">The newest and best-performing new developments across Sri Lanka, updated daily.</p>
-        </div>
-        <div className="featured-listings-shell">
-          <div className="home-card-grid featured-listings-grid">
-            {featuredProjects.map((project) => (
-              <ListingGridCard key={`featured-${project.slug}`} project={project} />
-            ))}
-          </div>
-          <div className="featured-listings-footer">
-            <Link href="/search" className="featured-listings-button">View all listings</Link>
-          </div>
-        </div>
-      </section>
-
       <section className="new-listings-section" aria-label="New listings">
         <div className="featured-listings-head">
           <h2>New listings</h2>
