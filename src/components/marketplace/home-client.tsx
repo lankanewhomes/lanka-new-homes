@@ -329,6 +329,10 @@ export function HomeClient({ projects, lands = [] }: { projects: Project[]; land
             {newListings.map((project) => (
               <ListingGridCard key={`new-${project.slug}`} project={project} />
             ))}
+            <Link href="/search" className="view-all-card" aria-label="View all new listings">
+              <span>View all listings</span>
+              <ArrowUpRight className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
+            </Link>
           </div>
           <div className="featured-listings-footer new-listings-footer">
             <Link href="/search" className="featured-listings-button">View all new listings</Link>
@@ -347,6 +351,10 @@ export function HomeClient({ projects, lands = [] }: { projects: Project[]; land
               {landListings.map((land) => (
                 <ListingGridCard key={`land-${land.slug}`} project={land} basePath="/land" />
               ))}
+              <Link href="/land" className="view-all-card" aria-label="View all land listings">
+                <span>View all listings</span>
+                <ArrowUpRight className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
+              </Link>
             </div>
             <div className="featured-listings-footer new-listings-footer">
               <Link href="/land" className="featured-listings-button">View all land listings</Link>

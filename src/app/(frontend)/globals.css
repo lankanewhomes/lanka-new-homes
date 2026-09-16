@@ -8991,6 +8991,47 @@ a.developer-profile-press-title {
   background: transparent;
 }
 
+/* "View all listings" closing card — mobile only. Desktop keeps the
+   separate .featured-listings-button below the grid; on mobile, New
+   listings/Land for sale are a swipeable one-card-at-a-time carousel (see
+   .new-listings-section .featured-listings-grid above), so swiping past
+   the last real card to a black "View all listings" slide is a clearer
+   "you've reached the end" cue than the plain button sitting below the
+   whole carousel. */
+.view-all-card {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .view-all-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #1a1a1a;
+    color: #fff;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+  }
+
+  .view-all-card:hover {
+    background: #000;
+    text-decoration: none;
+    color: #fff;
+  }
+
+  /* Match the real cards' carousel sizing exactly (flex: 0 0 82%, snap
+     alignment) so the closing card is a proper slide of its own instead
+     of getting squeezed into the leftover space next to the first card. */
+  .new-listings-section .featured-listings-grid .view-all-card {
+    flex: 0 0 82%;
+    scroll-snap-align: start;
+  }
+}
+
 .listing-grid-card-media {
   position: relative;
   display: block;
