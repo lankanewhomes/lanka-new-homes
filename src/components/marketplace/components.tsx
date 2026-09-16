@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { AccountMenu } from "@/components/auth/account-menu";
-import { IconBrandFacebook, IconBrandInstagram, IconChevronRight as TablerChevronRight, IconMenu2, IconX as TablerX } from "@tabler/icons-react";
+import { IconBrandFacebook, IconBrandInstagram, IconChevronRight as TablerChevronRight, IconMenu2, IconSearch, IconX as TablerX } from "@tabler/icons-react";
 import { useSavedListing } from "@/lib/use-saved-listing";
 import { useSavedDeveloper } from "@/lib/use-saved-developer";
 import { getStoredUtmParams, getTrafficSource, trackEvent } from "@/lib/ga4";
@@ -3335,13 +3335,14 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openMobileGroup, setOpenMobileGroup] = useState<"homes" | "land" | null>(null);
 
-  const labels: Record<SiteLanguage, { homes: string; company: string; login: string; signup: string; menu: string }> = {
+  const labels: Record<SiteLanguage, { homes: string; company: string; login: string; signup: string; menu: string; search: string }> = {
     en: {
       homes: "New Homes for Sale",
       company: "Company",
       login: "Log in",
       signup: "Sign up",
       menu: "Menu",
+      search: "Search",
     },
     ta: {
       homes: "விற்பனைக்கு புதிய வீடுகள்",
@@ -3349,6 +3350,7 @@ export function Header() {
       login: "உள்நுழை",
       signup: "பதிவுபெறு",
       menu: "மெனு",
+      search: "தேடல்",
     },
     si: {
       homes: "විකිණීමට නව නිවාස",
@@ -3356,6 +3358,7 @@ export function Header() {
       login: "පිවිසෙන්න",
       signup: "ලියාපදිංචි වන්න",
       menu: "මෙනුව",
+      search: "සොයන්න",
     },
   };
 
@@ -3412,9 +3415,14 @@ export function Header() {
         <div className="header-actions">
           <AccountMenu loginLabel={text.login} signupLabel={text.signup} />
         </div>
-        <button className="mobile-menu" onClick={() => setMobileMenuOpen((v) => !v)} aria-expanded={mobileMenuOpen} aria-label={text.menu}>
-          {mobileMenuOpen ? <TablerX size={26} stroke={1} /> : <IconMenu2 size={26} stroke={1} />}
-        </button>
+        <div className="mobile-header-actions">
+          <Link href="/search" className="mobile-search-trigger" aria-label={text.search}>
+            <IconSearch size={20} stroke={1.75} />
+          </Link>
+          <button className="mobile-menu" onClick={() => setMobileMenuOpen((v) => !v)} aria-expanded={mobileMenuOpen} aria-label={text.menu}>
+            {mobileMenuOpen ? <TablerX size={26} stroke={1} /> : <IconMenu2 size={26} stroke={1} />}
+          </button>
+        </div>
       </div>
       <div className={`mobile-menu-panel${mobileMenuOpen ? " is-open" : ""}`}>
           <div className="mobile-menu-group mobile-menu-group-link">
