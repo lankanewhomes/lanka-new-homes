@@ -350,10 +350,10 @@ export function ListingPageBody({
     let list = regionFilter === "All of Sri Lanka" ? projects : projects.filter((project) => project.city === regionFilter);
     if (trimmedQuery) {
       list = list.filter((project) =>
-        project.name.toLowerCase().includes(trimmedQuery) ||
-        project.location.toLowerCase().includes(trimmedQuery) ||
-        project.city.toLowerCase().includes(trimmedQuery) ||
-        project.district.toLowerCase().includes(trimmedQuery)
+        (project.name ?? "").toLowerCase().includes(trimmedQuery) ||
+        (project.location ?? "").toLowerCase().includes(trimmedQuery) ||
+        (project.city ?? "").toLowerCase().includes(trimmedQuery) ||
+        (project.district ?? "").toLowerCase().includes(trimmedQuery)
       );
     }
     list = list.filter((project) => matchesFilters(project, filterSelections));

@@ -34,9 +34,9 @@ type LandListingPageProps = { searchParams: Promise<{ landUse?: string; location
 function matchesLandLocation(land: Land, location: string) {
   const needle = location.toLowerCase();
   return (
-    land.location.toLowerCase().includes(needle) ||
-    land.city.toLowerCase().includes(needle) ||
-    land.district.toLowerCase().includes(needle)
+    (land.location ?? "").toLowerCase().includes(needle) ||
+    (land.city ?? "").toLowerCase().includes(needle) ||
+    (land.district ?? "").toLowerCase().includes(needle)
   );
 }
 

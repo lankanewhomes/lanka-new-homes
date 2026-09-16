@@ -29,9 +29,9 @@ type ProjectsPageProps = { searchParams: Promise<{ type?: string; location?: str
 function matchesLocation(project: { location: string; city: string; district: string }, location: string) {
   const needle = location.toLowerCase();
   return (
-    project.location.toLowerCase().includes(needle) ||
-    project.city.toLowerCase().includes(needle) ||
-    project.district.toLowerCase().includes(needle)
+    (project.location ?? "").toLowerCase().includes(needle) ||
+    (project.city ?? "").toLowerCase().includes(needle) ||
+    (project.district ?? "").toLowerCase().includes(needle)
   );
 }
 
