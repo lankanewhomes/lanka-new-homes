@@ -3561,7 +3561,6 @@ export function Footer() {
 
         <div className="footer-bottom">
           <p className="copyright">© {new Date().getFullYear()} LankaNewHomes. All rights reserved.</p>
-          <Link href="/admin-login" className="footer-admin-link">Admin</Link>
         </div>
       </div>
     </footer>

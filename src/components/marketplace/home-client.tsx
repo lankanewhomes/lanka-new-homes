@@ -215,10 +215,6 @@ export function HomeClient({ projects, lands = [] }: { projects: Project[]; land
       .sort((a, b) => (b.launchDate ?? "").localeCompare(a.launchDate ?? ""))
       .slice(0, 8);
   }, [projects, featuredProjects]);
-  const upcomingProjects = useMemo(
-    () => projects.filter((project) => project.status === "Coming Soon" || project.status === "Launching Soon").slice(0, 8),
-    [projects]
-  );
   const landListings = useMemo(() => lands.slice(0, 8), [lands]);
   const searchSuggestions = useMemo(() => {
     const query = searchTerm.trim().toLowerCase();
@@ -339,25 +335,6 @@ export function HomeClient({ projects, lands = [] }: { projects: Project[]; land
           </div>
         </div>
       </section>
-
-      {upcomingProjects.length > 0 ? (
-        <section className="new-listings-section" aria-label="Upcoming projects">
-          <div className="featured-listings-head">
-            <h2>Upcoming Projects</h2>
-            <p className="featured-listings-subhead">New developments launching soon across Sri Lanka — reserve early.</p>
-          </div>
-          <div className="featured-listings-shell">
-            <div className="home-card-grid featured-listings-grid">
-              {upcomingProjects.map((project) => (
-                <ListingGridCard key={`upcoming-${project.slug}`} project={project} />
-              ))}
-            </div>
-            <div className="featured-listings-footer new-listings-footer">
-              <Link href="/search" className="featured-listings-button">View all upcoming projects</Link>
-            </div>
-          </div>
-        </section>
-      ) : null}
 
       {landListings.length > 0 ? (
         <section className="new-listings-section" aria-label="Land for sale in Sri Lanka">
