@@ -274,6 +274,41 @@ export function ListingPageBody({
   const [filterSelections, setFilterSelections] = useState<Record<string, string>>({});
   const [regionFilter, setRegionFilter] = useState("All of Sri Lanka");
   const [searchFocused, setSearchFocused] = useState(false);
+  // Hides the search bar while scrolling down (past its own height, so a tiny
+  // wobble at the very top doesn't flicker it) and brings it back the moment
+  // the user scrolls up, so the title/listings get more room while browsing.
+  const [searchBarHidden, setSearchBarHidden] = useState(false);
+
+  useEffect(() => {
+    let lastScrollY = window.scrollY;
+    let hidden = false;
+    let ignoreUntil = 0;
+    const HIDE_THRESHOLD = 120;
+    // Collapsing the bar changes the document's height, which the browser's
+    // own scroll-anchoring then "corrects" by nudging window.scrollY — that
+    // correction fires as its own scroll event and, read naively, looks like
+    // the opposite scroll direction, flipping the bar back and forth forever.
+    // Ignoring scroll events for one animation-length after we toggle avoids
+    // reacting to that self-inflicted jump.
+    const onScroll = () => {
+      const currentScrollY = window.scrollY;
+      const now = Date.now();
+      if (now >= ignoreUntil) {
+        let next = hidden;
+        if (currentScrollY <= HIDE_THRESHOLD) next = false;
+        else if (currentScrollY > lastScrollY) next = true;
+        else if (currentScrollY < lastScrollY) next = false;
+        if (next !== hidden) {
+          hidden = next;
+          ignoreUntil = now + 300;
+          setSearchBarHidden(hidden);
+        }
+      }
+      lastScrollY = currentScrollY;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -382,7 +417,7 @@ export function ListingPageBody({
       <MapSidebar basePath={basePath} />
       <div className="listing-page">
         <div className="listing-content-shade" data-view={viewMode}>
-          <div className="listing-search-bar">
+          <div className={`listing-search-bar${searchBarHidden ? " is-hidden" : ""}`}>
             <div className="listing-search-input-wrap">
               <Search className="h-4 w-4" aria-hidden="true" />
               <input

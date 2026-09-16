@@ -213,13 +213,13 @@ export function HomeClient({ projects, lands = [] }: { projects: Project[]; land
     return [...projects]
       .filter((project) => !featuredSlugs.has(project.slug))
       .sort((a, b) => (b.launchDate ?? "").localeCompare(a.launchDate ?? ""))
-      .slice(0, 4);
+      .slice(0, 8);
   }, [projects, featuredProjects]);
   const upcomingProjects = useMemo(
-    () => projects.filter((project) => project.status === "Coming Soon" || project.status === "Launching Soon").slice(0, 4),
+    () => projects.filter((project) => project.status === "Coming Soon" || project.status === "Launching Soon").slice(0, 8),
     [projects]
   );
-  const landListings = useMemo(() => lands.slice(0, 4), [lands]);
+  const landListings = useMemo(() => lands.slice(0, 8), [lands]);
   const searchSuggestions = useMemo(() => {
     const query = searchTerm.trim().toLowerCase();
     if (!query) return [];

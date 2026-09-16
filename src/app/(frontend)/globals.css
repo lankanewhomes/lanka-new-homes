@@ -7885,6 +7885,19 @@ a.developer-profile-press-title {
   flex-wrap: wrap;
   padding-bottom: 16px;
   border-bottom: 1px solid #e5e2dc;
+  max-height: 200px;
+  opacity: 1;
+  overflow: hidden;
+  transition: max-height 0.25s ease, opacity 0.2s ease, padding-bottom 0.25s ease, margin-bottom 0.25s ease, border-color 0.25s ease;
+}
+
+.listing-search-bar.is-hidden {
+  max-height: 0;
+  opacity: 0;
+  padding-bottom: 0;
+  margin-bottom: 0;
+  border-bottom-color: transparent;
+  pointer-events: none;
 }
 
 .listing-filter-pills-center {
