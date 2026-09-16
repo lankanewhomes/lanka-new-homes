@@ -11889,3 +11889,180 @@ a.developer-profile-press-title {
     transform: none;
   }
 }
+
+/* /pricing — public Free/Featured/Premium package page. Matches the main
+   site's own marketplace look (Archivo, orange accent, white cards) rather
+   than /for-developers' separate editorial design system, since this page
+   sits alongside the rest of the buyer/marketplace site. */
+.pricing-page {
+  background: #faf8f5;
+  padding: 56px 24px 100px;
+}
+
+.pricing-page-shell {
+  width: min(1080px, 100%);
+  margin: 0 auto;
+}
+
+.pricing-page-head {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto 48px;
+}
+
+.pricing-page-head h1 {
+  margin: 0;
+  font-family: var(--font-ref-sans);
+  font-weight: 700;
+  font-size: 38px;
+  line-height: 1.15;
+  color: #1f1f1f;
+}
+
+.pricing-page-lede {
+  margin: 14px 0 0;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #55524c;
+}
+
+.pricing-page-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+  align-items: stretch;
+}
+
+.pricing-page-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid #e7e2d8;
+  border-radius: 16px;
+  padding: 32px 28px;
+}
+
+.pricing-page-card-highlight {
+  border-color: #f47b36;
+  box-shadow: 0 16px 40px rgba(244, 123, 54, 0.16);
+}
+
+.pricing-page-card-tag {
+  position: absolute;
+  top: -13px;
+  left: 28px;
+  background: #f47b36;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 999px;
+}
+
+.pricing-page-card h2 {
+  margin: 6px 0 4px;
+  font-family: var(--font-ref-sans);
+  font-weight: 700;
+  font-size: 21px;
+  color: #1f1f1f;
+}
+
+.pricing-page-card-price {
+  margin: 0 0 24px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #6f6b62;
+}
+
+.pricing-page-card ul {
+  margin: 0 0 28px;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+
+.pricing-page-card li {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #45423c;
+}
+
+.pricing-page-card li svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: #f47b36;
+}
+
+.pricing-page-card-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 46px;
+  border-radius: 999px;
+  border: 1px solid #1f1f1f;
+  color: #1f1f1f;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.pricing-page-card-cta:hover {
+  background: #1f1f1f;
+  color: #fff;
+  text-decoration: none;
+}
+
+.pricing-page-card-cta-solid {
+  background: #f47b36;
+  border-color: #f47b36;
+  color: #fff;
+}
+
+.pricing-page-card-cta-solid:hover {
+  background: #d9601f;
+  border-color: #d9601f;
+  color: #fff;
+}
+
+.pricing-page-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 36px 0 0;
+  text-align: center;
+  font-size: 13.5px;
+  color: #6f6b62;
+}
+
+.pricing-page-note svg {
+  flex-shrink: 0;
+  color: #f47b36;
+}
+
+.pricing-page-footer-note {
+  margin: 18px 0 0;
+  text-align: center;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: #8a8680;
+}
+
+@media (max-width: 900px) {
+  .pricing-page-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pricing-page-head h1 {
+    font-size: 28px;
+  }
+}

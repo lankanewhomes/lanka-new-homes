@@ -3534,6 +3534,7 @@ export function Footer() {
             <p className="footer-link-row-label">For developers</p>
             <nav className="footer-link-row" aria-label="For developers">
               <Link href="/for-developers">Why list with us</Link>
+              <Link href="/pricing">Pricing</Link>
               <Link href="/web-design">Website design</Link>
               <Link href="/developers/register">Register</Link>
               <Link href="/developers/login">Developer login</Link>
