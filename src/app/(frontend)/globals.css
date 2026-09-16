@@ -5400,29 +5400,32 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 
 .featured-listings-button {
   font-family: var(--font-ref-sans);
-  font-weight: 400;
+  font-weight: 600;
   font-style: normal;
-  font-size: 16px;
+  font-size: 14px;
   line-height: 20px;
   vertical-align: baseline;
   letter-spacing: normal;
   word-spacing: 0;
   text-transform: none;
-  text-align: left;
+  text-align: center;
   text-indent: 0;
-  display: inline-block;
-  min-height: 0;
-  padding: 0;
-  border: 0;
-  border-radius: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 26px;
+  border: 1px solid #1e1e1e;
+  border-radius: 999px;
   background: transparent;
   color: #1e1e1e;
   text-decoration: none;
 }
 
 .featured-listings-button:hover {
-  background: transparent;
-  color: #000;
+  background: #1e1e1e;
+  color: #fff;
+  text-decoration: none;
 }
 
 
