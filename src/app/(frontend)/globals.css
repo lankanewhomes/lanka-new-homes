@@ -5417,7 +5417,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   min-height: 48px;
   padding: 0 26px;
   border: 0;
-  border-radius: 6px;
+  border-radius: 0;
   /* Same black/white as .view-all-card (the carousel's closing slide) so
      both "see everything" affordances read as one visual language. */
   background: #1a1a1a;
