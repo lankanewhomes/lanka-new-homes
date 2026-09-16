@@ -329,10 +329,6 @@ export function HomeClient({ projects, lands = [] }: { projects: Project[]; land
             {newListings.map((project) => (
               <ListingGridCard key={`new-${project.slug}`} project={project} />
             ))}
-            <Link href="/search" className="view-all-card" aria-label="View all new listings">
-              <span>View all listings</span>
-              <ArrowUpRight className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
-            </Link>
           </div>
           <div className="featured-listings-footer new-listings-footer">
             <Link href="/search" className="featured-listings-button">
@@ -354,10 +350,6 @@ export function HomeClient({ projects, lands = [] }: { projects: Project[]; land
               {landListings.map((land) => (
                 <ListingGridCard key={`land-${land.slug}`} project={land} basePath="/land" />
               ))}
-              <Link href="/land" className="view-all-card" aria-label="View all land listings">
-                <span>View all listings</span>
-                <ArrowUpRight className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
-              </Link>
             </div>
             <div className="featured-listings-footer new-listings-footer">
               <Link href="/land" className="featured-listings-button">
@@ -383,7 +375,10 @@ export function HomeClient({ projects, lands = [] }: { projects: Project[]; land
             </Link>
           ))}
         </div>
-        <Link href="/search" className="neighborhood-section-explore">View more cities</Link>
+        <Link href="/search" className="featured-listings-button neighborhood-section-explore">
+          View more cities
+          <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+        </Link>
       </section>
 
       <section className="seo-links-section" aria-label="Popular searches">

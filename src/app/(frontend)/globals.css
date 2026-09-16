@@ -5418,8 +5418,6 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   padding: 0 26px;
   border: 0;
   border-radius: 0;
-  /* Same black/white as .view-all-card (the carousel's closing slide) so
-     both "see everything" affordances read as one visual language. */
   background: #1a1a1a;
   color: #fff;
   text-decoration: none;
@@ -6905,21 +6903,10 @@ a.developer-profile-press-title {
   }
 }
 
+/* Layout only (spacing above the button) — visual styling comes from
+   .featured-listings-button, which this link also carries. */
 .neighborhood-section-explore {
-  display: inline-block;
   margin-top: 52px;
-  font-family: var(--font-ref-sans);
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 20px;
-  letter-spacing: normal;
-  text-transform: none;
-  color: #1e1e1e;
-  text-decoration: none;
-}
-
-.neighborhood-section-explore:hover {
-  color: #000;
 }
 
 .neighborhood-hero {
@@ -8997,46 +8984,6 @@ a.developer-profile-press-title {
   background: transparent;
 }
 
-/* "View all listings" closing card — mobile only. Desktop keeps the
-   separate .featured-listings-button below the grid; on mobile, New
-   listings/Land for sale are a swipeable one-card-at-a-time carousel (see
-   .new-listings-section .featured-listings-grid above), so swiping past
-   the last real card to a black "View all listings" slide is a clearer
-   "you've reached the end" cue than the plain button sitting below the
-   whole carousel. */
-.view-all-card {
-  display: none;
-}
-
-@media (max-width: 760px) {
-  .view-all-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    background: #1a1a1a;
-    color: #fff;
-    border-radius: 6px;
-    font-weight: 600;
-    font-size: 14px;
-    text-decoration: none;
-  }
-
-  .view-all-card:hover {
-    background: #000;
-    text-decoration: none;
-    color: #fff;
-  }
-
-  /* Match the real cards' carousel sizing exactly (flex: 0 0 82%, snap
-     alignment) so the closing card is a proper slide of its own instead
-     of getting squeezed into the leftover space next to the first card. */
-  .new-listings-section .featured-listings-grid .view-all-card {
-    flex: 0 0 82%;
-    scroll-snap-align: start;
-  }
-}
 
 .listing-grid-card-media {
   position: relative;
