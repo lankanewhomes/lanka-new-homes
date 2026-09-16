@@ -5413,17 +5413,20 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
   min-height: 48px;
   padding: 0 26px;
-  border: 1px solid #1e1e1e;
-  border-radius: 999px;
-  background: transparent;
-  color: #1e1e1e;
+  border: 0;
+  border-radius: 6px;
+  /* Same black/white as .view-all-card (the carousel's closing slide) so
+     both "see everything" affordances read as one visual language. */
+  background: #1a1a1a;
+  color: #fff;
   text-decoration: none;
 }
 
 .featured-listings-button:hover {
-  background: #1e1e1e;
+  background: #000;
   color: #fff;
   text-decoration: none;
 }

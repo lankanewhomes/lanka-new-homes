@@ -335,7 +335,10 @@ export function HomeClient({ projects, lands = [] }: { projects: Project[]; land
             </Link>
           </div>
           <div className="featured-listings-footer new-listings-footer">
-            <Link href="/search" className="featured-listings-button">View all new listings</Link>
+            <Link href="/search" className="featured-listings-button">
+              View all new listings
+              <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+            </Link>
           </div>
         </div>
       </section>
@@ -357,7 +360,10 @@ export function HomeClient({ projects, lands = [] }: { projects: Project[]; land
               </Link>
             </div>
             <div className="featured-listings-footer new-listings-footer">
-              <Link href="/land" className="featured-listings-button">View all land listings</Link>
+              <Link href="/land" className="featured-listings-button">
+                View all land listings
+                <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+              </Link>
             </div>
           </div>
         </section>
