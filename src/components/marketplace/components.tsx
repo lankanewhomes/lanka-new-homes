@@ -3021,7 +3021,7 @@ export function ProjectDescriptionSection({ project, floorPlan, headingOverride 
 // both the land detail page and the plot detail page (buildLandDetailRows,
 // src/lib/land-to-project.ts) so the two stay identical rather than one
 // drifting from the other.
-export function LandDetailsTable({ rows }: { rows: { label: string; value: string }[] }) {
+export function LandDetailsTable({ rows }: { rows: { label: string; value: string; href?: string }[] }) {
   if (rows.length === 0) return null;
   const PER_ROW = 2;
   const groups: (typeof rows)[number][][] = [];
@@ -3033,8 +3033,10 @@ export function LandDetailsTable({ rows }: { rows: { label: string; value: strin
         <tbody>
           {groups.map((group) => (
             <tr key={group[0].label}>
-              {group.map(({ label, value }) => (
-                <td key={label}><span className="project-fact-label">{label}:</span> {value}</td>
+              {group.map(({ label, value, href }) => (
+                <td key={label}>
+                  <span className="project-fact-label">{label}:</span> {href ? <Link href={href} className="overview-link">{value}</Link> : value}
+                </td>
               ))}
               {group.length < PER_ROW ? <td aria-hidden="true" /> : null}
             </tr>

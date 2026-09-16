@@ -101,7 +101,17 @@ export function landToProjectShape(land: Land): Project {
 // and produced nonsensical rows on the plot page ("Total units: 26",
 // "Floor plans: 26" duplicating the same count under two wrong labels,
 // "SqFt: 10 perches SqFt" double-unitized) — caught 2026-09-10.
-export function buildLandDetailRows(land: Land): { label: string; value: string }[] {
+// Only "developer" and "construction_company" sellers have a real profile
+// page on the site — "builder" has no slug/profile, sellerName is the only
+// identifier for those (see the `sellerSlug` comment on the Land type).
+function sellerHref(land: Land): string | undefined {
+  if (!land.sellerSlug) return undefined;
+  if (land.sellerType === "developer") return `/developers/${land.sellerSlug}`;
+  if (land.sellerType === "construction_company") return `/construction-companies/${land.sellerSlug}`;
+  return undefined;
+}
+
+export function buildLandDetailRows(land: Land): { label: string; value: string; href?: string }[] {
   const plots = land.plots ?? [];
   const totalPlots = plots.length;
   const plotsAvailable = plots.filter((plot) => plot.status === "Available").length;
@@ -121,6 +131,6 @@ export function buildLandDetailRows(land: Land): { label: string; value: string 
     { label: "Water", value: land.water },
     { label: "Title / deed", value: land.titleType },
     { label: "Survey plan", value: land.surveyPlanStatus },
-    { label: "Seller", value: land.sellerName },
-  ].filter((row): row is { label: string; value: string } => Boolean(row.value));
+    { label: "Seller", value: land.sellerName, href: sellerHref(land) },
+  ].filter((row): row is { label: string; value: string; href?: string } => Boolean(row.value));
 }
