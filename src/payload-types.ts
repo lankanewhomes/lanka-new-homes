@@ -6432,6 +6432,10 @@ export interface Land {
         id?: string | null;
       }[]
     | null;
+  /**
+   * PDF URL — or upload a file in Media and paste its URL here.
+   */
+  brochureUrl?: string | null;
   videos?:
     | {
         label?: string | null;
@@ -7818,6 +7822,7 @@ export interface LandsSelect<T extends boolean = true> {
         image?: T;
         id?: T;
       };
+  brochureUrl?: T;
   videos?:
     | T
     | {

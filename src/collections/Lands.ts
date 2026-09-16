@@ -112,6 +112,7 @@ export const Lands: CollectionConfig = {
             galleryLikeField('gallery'),
             galleryLikeField('blockPlanImages', 'Block Plan Images'),
             galleryLikeField('roadMapImages', 'Road Map Images'),
+            { name: 'brochureUrl', type: 'text', label: 'Brochure URL', admin: { description: 'PDF URL — or upload a file in Media and paste its URL here.' } },
             {
               name: 'videos',
               type: 'array',
