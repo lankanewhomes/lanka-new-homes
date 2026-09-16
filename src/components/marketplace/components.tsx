@@ -632,7 +632,13 @@ export function ProjectHero({
   const blockPlanImage = project.gallery.find((item) => /block\s*plan/i.test(item.label))?.image;
   const blockPlanImages = blockPlanImagesProp.length > 0 ? blockPlanImagesProp : (blockPlanImage ? [{ label: "Block Plan", image: blockPlanImage }] : []);
   const hasBlockPlanImages = blockPlanImages.length > 0;
-  const hasStreetView = hasMap;
+  // Street View has no coverage on most Sri Lankan roads — when there's
+  // none at these exact coordinates the embed silently falls back to a
+  // zoomed-out world map instead of hiding itself. coordinates.streetViewAvailable
+  // is a manual flag (no live API check wired up, see shared-fields.ts'
+  // own comment on it) set to false once that's been confirmed on a given
+  // listing; defaults to true so nothing regresses for anything not yet checked.
+  const hasStreetView = hasMap && project.coordinates.streetViewAvailable !== false;
 
   const [roadMapIndex, setRoadMapIndex] = useState(0);
   const [blockPlanIndex, setBlockPlanIndex] = useState(0);

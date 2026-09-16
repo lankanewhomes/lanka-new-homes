@@ -368,7 +368,7 @@ export type Project = SeoFields & {
     title: string;
     description: string;
   };
-  coordinates: { lat: number; lng: number };
+  coordinates: { lat: number; lng: number; streetViewAvailable?: boolean };
   contact: {
     name: string;
     email: string;
@@ -475,7 +475,7 @@ export type Land = SeoFields & {
   roadMapImages?: { label: string; image: string }[];
   videos?: { label: string; url: string }[];
   nearby: NearbyPlace[];
-  coordinates: { lat: number; lng: number };
+  coordinates: { lat: number; lng: number; streetViewAvailable?: boolean };
   contact: {
     name: string;
     email: string;

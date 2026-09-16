@@ -339,6 +339,16 @@ export const coordinatesField: Field = {
   fields: [
     { name: 'lat', type: 'number' },
     { name: 'lng', type: 'number' },
+    {
+      name: 'streetViewAvailable',
+      type: 'checkbox',
+      defaultValue: true,
+      label: 'Street View Available',
+      admin: {
+        description:
+          'Google Street View has no coverage on most roads in Sri Lanka — when there is none at these exact coordinates, the embed silently falls back to a zoomed-out world map instead of hiding itself. There is no live API check wired up (would need a Google Maps API key with billing enabled, which was declined), so this is set manually: uncheck it once you\'ve confirmed (by opening the Street View tab on the live listing) that it just shows the world map, and the tab will stop showing for this listing. Leave checked (the default) for coordinates not yet checked, or already confirmed to have real coverage. Re-check any time the coordinates above change.',
+      },
+    },
   ],
 }
 
