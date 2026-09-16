@@ -22,7 +22,7 @@ function textIncludes(project: Project, needle: string) {
 }
 
 function isInColombo(project: Project) {
-  return project.district.toLowerCase() === "colombo" || project.city.toLowerCase().includes("colombo") || project.location.toLowerCase().includes("colombo");
+  return (project.district ?? "").toLowerCase() === "colombo" || (project.city ?? "").toLowerCase().includes("colombo") || (project.location ?? "").toLowerCase().includes("colombo");
 }
 
 export const projectCategories: Record<string, ProjectCategory> = {
@@ -90,7 +90,7 @@ export const projectCategories: Record<string, ProjectCategory> = {
     h1: "Beachfront Condo Developments in Sri Lanka",
     intro: "From the south coast to the east, these beachfront condo developments and new resort residences in Sri Lanka offer ocean views, resort-style amenities, and strong rental potential for investors.",
     relatedPaths: ["/projects/villas", "/guides/investment-property", "/guides/foreigners-buying-property"],
-    filter: (project) => BEACH_LOCATIONS.some((town) => project.city.toLowerCase().includes(town) || project.location.toLowerCase().includes(town)) || textIncludes(project, "beach") || textIncludes(project, "resort"),
+    filter: (project) => BEACH_LOCATIONS.some((town) => (project.city ?? "").toLowerCase().includes(town) || (project.location ?? "").toLowerCase().includes(town)) || textIncludes(project, "beach") || textIncludes(project, "resort"),
   },
   "serviced-apartments": {
     path: "/projects/serviced-apartments",
