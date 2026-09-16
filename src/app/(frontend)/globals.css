@@ -906,7 +906,7 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
     border: 0;
     backdrop-filter: none;
     box-shadow: none;
-    padding: 0 4px;
+    padding: 0 18px;
     text-align: center;
   }
 
@@ -2294,11 +2294,15 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   /* 7+ tabs (the full Photos…Street View set): keep every tab at its
      natural width and let the bar slide sideways, instead of squeezing all
      of them onto one screen. flex-start so the first tab is never clipped
-     off the left edge by the overflowing row; the partly-visible last tab
-     is the cue that it scrolls. */
+     off the left edge by the overflowing row. A partly-visible last tab
+     alone wasn't a clear enough "there's more" cue, so the right edge also
+     fades the row out via a mask — a familiar hint for scrollable content
+     that doesn't need JS to track scroll position. */
   .listing-hero-quickjump-bar.is-scrollable {
     justify-content: flex-start;
     gap: 0;
+    mask-image: linear-gradient(to right, black calc(100% - 36px), transparent);
+    -webkit-mask-image: linear-gradient(to right, black calc(100% - 36px), transparent);
   }
 
   .listing-hero-quickjump-btn:nth-child(n + 7) {
@@ -7304,7 +7308,19 @@ a.developer-profile-press-title {
 
 /* /admin-login, /developers/login, /developers/register only — the buyer
    /login and /signup pages share .auth-page but keep their own bold H1 and
-   off-center divider untouched. */
+   off-center divider untouched. Styled as a floating card matching the
+   buyer-facing login/signup popup (.auth-modal-card) — same width, radius,
+   shadow and padding — instead of the form sitting bare on the page. */
+.payload-auth-page {
+  width: 100%;
+  max-width: 420px;
+  margin: 56px auto 90px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 44px 32px 32px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
+}
+
 .payload-auth-page h1 {
   font-weight: 400;
 }
@@ -7865,6 +7881,7 @@ a.developer-profile-press-title {
   display: flex;
   flex-direction: column;
   gap: 18px;
+  padding-bottom: 48px;
 }
 
 /* Search bar — address search + filter pills */
