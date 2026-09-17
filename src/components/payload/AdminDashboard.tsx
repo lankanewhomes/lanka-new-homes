@@ -58,12 +58,17 @@ export async function AdminDashboard(props: AdminViewServerProps) {
   if (!isAdmin && user) {
     const developersRes = await payload.find({ collection: "developers", where: { user: { equals: user.id } }, limit: 10, depth: 0, overrideAccess: true });
     ownedDeveloperIds = developersRes.docs.map((d) => d.id);
-    projectWhere = { developer: { in: ownedDeveloperIds.length ? ownedDeveloperIds : ["__none__"] } };
+    // developer_id/project_id are integer columns — a non-numeric sentinel
+    // like '__none__' fails ("invalid input syntax for type integer: NaN")
+    // before the query reaches Postgres. -1 is a safe "never matches a
+    // real row" sentinel for an integer FK (same fix as Subscriptions.ts's
+    // filterOptions).
+    projectWhere = { developer: { in: ownedDeveloperIds.length ? ownedDeveloperIds : [-1] } };
     const ownedProjectsRes = ownedDeveloperIds.length
       ? await payload.find({ collection: "projects", where: projectWhere, limit: 500, depth: 0, overrideAccess: true })
       : { docs: [] };
     const projectIds = ownedProjectsRes.docs.map((p) => p.id);
-    leadWhere = { project: { in: projectIds.length ? projectIds : ["__none__"] } };
+    leadWhere = { project: { in: projectIds.length ? projectIds : [-1] } };
   }
 
   const [totalProjects, publishedProjects, thirdStat, newLeadsCount, recentLeadsRes, recentProjectsRes] = await Promise.all([
@@ -74,7 +79,7 @@ export async function AdminDashboard(props: AdminViewServerProps) {
     // more relevant to them than "how many developers are on the platform."
     isAdmin
       ? payload.count({ collection: "developers", overrideAccess: false, user: user ?? undefined })
-      : payload.count({ collection: "subscriptions", where: { developer: { in: ownedDeveloperIds.length ? ownedDeveloperIds : ["__none__"] }, status: { equals: "active" } }, overrideAccess: true }),
+      : payload.count({ collection: "subscriptions", where: { developer: { in: ownedDeveloperIds.length ? ownedDeveloperIds : [-1] }, status: { equals: "active" } }, overrideAccess: true }),
     payload.count({ collection: "leads", where: { ...leadWhere, status: { equals: "new" } }, overrideAccess: false, user: user ?? undefined }),
     payload.find({ collection: "leads", where: leadWhere, sort: "-createdAt", limit: 8, depth: 2, overrideAccess: false, user: user ?? undefined }),
     payload.find({ collection: "projects", where: projectWhere, sort: "-updatedAt", limit: 8, depth: 1, overrideAccess: false, user: user ?? undefined }),
