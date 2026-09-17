@@ -177,6 +177,10 @@ function PayloadLoginFormInner({ mode = "login" }: { mode?: "login" | "signup" }
                 window.location.href = `/api/auth/admin-google?from=${encodeURIComponent(window.location.pathname)}`;
                 return;
               }
+              if (provider.id === "facebook") {
+                window.location.href = `/api/auth/admin-facebook?from=${encodeURIComponent(window.location.pathname)}`;
+                return;
+              }
               setSocialNotice(true);
             }}
           >
