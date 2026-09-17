@@ -3537,7 +3537,7 @@ export function Footer() {
               <Link href="/for-developers">Why list with us</Link>
               <Link href="/pricing">Pricing</Link>
               <Link href="/web-design">Website design</Link>
-              <Link href="/developers/register">Register</Link>
+              <Link href="/developers/register">Developer register</Link>
               <Link href="/developers/login">Developer login</Link>
             </nav>
           </div>
