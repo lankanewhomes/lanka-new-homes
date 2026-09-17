@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { CheckCircle2, CircleDollarSign, Compass, HousePlus, Layers, MapPin, Ruler, Tag } from "lucide-react";
 import { getAllLands, getLandBySlug } from "@/lib/land-store";
 import { buildLandDetailRows, landToProjectShape } from "@/lib/land-to-project";
+import { getNeighborhoodBySlug } from "@/lib/neighborhood-store";
 import { pickSimilarListings } from "@/lib/similar-listings";
 import { SimilarListingsSection } from "@/components/marketplace/similar-listings";
 import { formatLkr } from "@/lib/format";
@@ -51,6 +52,14 @@ export default async function LandDetailPage({ params }: LandPageProps) {
   const project = landToProjectShape(land);
   const otherLands = (await getAllLands()).filter((item) => item.slug !== land.slug).map(landToProjectShape);
   const similarListings = pickSimilarListings(project, otherLands, 4);
+
+  // Land has no dedicated neighborhood relationship field (unlike Project) — its
+  // "neighborhood" is already just the city (see landToProjectShape), so a
+  // matching Neighborhoods page is looked up by slugifying that city name.
+  const cityNeighborhoodSlug = land.city
+    ? land.city.toLowerCase().trim().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-")
+    : undefined;
+  const neighborhood = cityNeighborhoodSlug ? await getNeighborhoodBySlug(cityNeighborhoodSlug) : undefined;
 
   let developer: Developer | undefined;
   if (land.sellerType === "developer" && land.sellerSlug) {
@@ -169,7 +178,7 @@ export default async function LandDetailPage({ params }: LandPageProps) {
 
         <AmenitiesShowcaseSection amenities={project.amenities} gallery={project.gallery} heroImage={project.heroImage} title="Facilities" />
 
-        <NeighborhoodSection nearby={project.nearby} neighborhoodName={project.neighborhood} neighborhoodSlug={undefined} neighborhoodPageExists={false} />
+        <NeighborhoodSection nearby={project.nearby} neighborhoodName={project.neighborhood} neighborhoodSlug={cityNeighborhoodSlug} neighborhoodPageExists={Boolean(neighborhood)} />
 
         <StatsContactCard project={project} developer={developer} requestInfoVariant="inquiry" />
 
