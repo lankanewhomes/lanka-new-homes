@@ -12043,6 +12043,13 @@ a.developer-profile-press-title {
   color: #f47b36;
 }
 
+/* Match the small, mostly-square radius real status/marketing badges use
+   in the listing hero (.listing-hero-tags span) rather than the fully
+   round pill .fd-badge-preview defaults to for the contact-card variant. */
+.pricing-page-note .listing-badge-pill {
+  border-radius: 3px;
+}
+
 .pricing-page-footer-note {
   margin: 18px 0 0;
   text-align: center;
