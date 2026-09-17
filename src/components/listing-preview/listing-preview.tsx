@@ -2,7 +2,6 @@ import {
   AmenitiesShowcaseSection,
   CommercialAreasSection,
   ConstructionProgressSection,
-  ConstructionTimelineSection,
   KeyFeaturesSection,
   NeighborhoodSection,
   PlansAndHomesSection,
@@ -71,8 +70,6 @@ export function ListingPreviewPage({
           <CommercialAreasSection commercialAreas={project.commercialAreas ?? []} />
 
           <PlansAndHomesSection project={project} />
-
-          <ConstructionTimelineSection updates={project.constructionUpdates ?? []} />
 
           <NeighborhoodSection
             nearby={project.nearby}

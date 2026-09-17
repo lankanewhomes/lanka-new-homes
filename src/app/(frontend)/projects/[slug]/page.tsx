@@ -11,7 +11,6 @@ import {
   AmenitiesShowcaseSection,
   CommercialAreasSection,
   ConstructionProgressSection,
-  ConstructionTimelineSection,
   KeyFeaturesSection,
   NeighborhoodSection,
   PlansAndHomesSection,
@@ -161,8 +160,6 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
         <CommercialAreasSection commercialAreas={project.commercialAreas ?? []} />
 
         <PlansAndHomesSection project={project} />
-
-        <ConstructionTimelineSection updates={project.constructionUpdates ?? []} />
 
         <NeighborhoodSection nearby={project.nearby} neighborhoodName={project.neighborhood} neighborhoodSlug={project.neighborhoodSlug} neighborhoodPageExists={Boolean(neighborhood)} />
 
