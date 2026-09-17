@@ -8,6 +8,10 @@ import { AuthForm } from "@/components/auth/auth-form";
 type ModalMode = "login" | "signup";
 
 type OpenOptions = {
+  /** Cosmetic only since the unified email-first flow shipped — every open
+   * starts at the same "email" step regardless of this value. Kept so
+   * existing openAuthModal({ mode: "signup" }) call sites (header buttons,
+   * map sidebar, etc.) still read clearly and don't need touching. */
   mode?: ModalMode;
   redirectTo?: string;
 };
@@ -28,18 +32,20 @@ export function useAuthModal() {
 // Buyer-only modal — developers and admin log in through Payload directly
 // now (/developers/login, /admin-login), not through this Supabase-backed
 // modal, so it no longer needs a "developer" intent branch.
-// Question-style headline for signup (matches the reference redesign —
-// leads with "why sign up" instead of a bare label); login keeps a plain
-// statement since "what's the best email" doesn't make sense for someone
-// who already has an account.
-// Signup's step-2 (name/password, once the email is captured) gets its own
-// plain headline — "what's the best email" no longer makes sense once
-// that email is already on screen with a Change link.
-const TITLES: Record<ModalMode, string> = {
+//
+// One email field decides login vs. signup — no upfront tab to pick wrong.
+// Every open starts at "email" (regardless of whether a "Log in" or "Sign
+// up" button triggered it) with the same enticing headline; submitting
+// that field looks the address up and the form becomes a login or signup
+// screen accordingly. See AuthForm's ModalStep type for the step names.
+type ModalStep = "email" | "login" | "signup" | "oauth-only";
+const EMAIL_STEP_TITLE = "Get instant alerts on new listings";
+const STEP_TITLES: Record<ModalStep, string> = {
+  email: EMAIL_STEP_TITLE,
   login: "Log in to LankaNewHomes",
-  signup: "Get instant alerts on new listings",
+  signup: "Almost done — set a password",
+  "oauth-only": "Log in to LankaNewHomes",
 };
-const SIGNUP_DETAILS_TITLE = "Almost done — set a password";
 
 export function AuthModalProvider({ children }: { children: RNode }) {
   const [state, setState] = useState<{ open: boolean; mode: ModalMode; redirectTo: string }>({
@@ -47,10 +53,10 @@ export function AuthModalProvider({ children }: { children: RNode }) {
     mode: "login",
     redirectTo: "/account",
   });
-  const [signupStep, setSignupStep] = useState<"email" | "details">("email");
+  const [modalStep, setModalStep] = useState<ModalStep>("email");
 
   const openAuthModal = useCallback((options?: OpenOptions) => {
-    setSignupStep("email");
+    setModalStep("email");
     setState((prev) => ({
       ...prev,
       open: true,
@@ -75,16 +81,13 @@ export function AuthModalProvider({ children }: { children: RNode }) {
               <X className="h-5 w-5" aria-hidden="true" />
             </button>
 
-            <h2 className="auth-modal-title">
-              {state.mode === "signup" && signupStep === "details" ? SIGNUP_DETAILS_TITLE : TITLES[state.mode]}
-            </h2>
+            <h2 className="auth-modal-title">{STEP_TITLES[modalStep]}</h2>
 
             <AuthForm
-              key={state.mode}
               mode={state.mode}
               redirectTo={state.redirectTo}
               variant="modal"
-              onStepChange={setSignupStep}
+              onStepChange={setModalStep}
               onAuthenticated={() => {
                 closeAuthModal();
                 window.location.href = state.redirectTo;
@@ -92,35 +95,6 @@ export function AuthModalProvider({ children }: { children: RNode }) {
             />
 
             <p className="auth-modal-note">
-              {state.mode === "login" ? (
-                <>
-                  Don&apos;t have an account?{" "}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSignupStep("email");
-                      setState((prev) => ({ ...prev, mode: "signup" }));
-                    }}
-                  >
-                    Sign up
-                  </button>
-                  .
-                </>
-              ) : (
-                <>
-                  Already have an account?{" "}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSignupStep("email");
-                      setState((prev) => ({ ...prev, mode: "login" }));
-                    }}
-                  >
-                    Log in
-                  </button>
-                  .
-                </>
-              )}{" "}
               Registering a development company? <Link href="/developers/login">Developer login</Link>.
             </p>
 
@@ -129,7 +103,7 @@ export function AuthModalProvider({ children }: { children: RNode }) {
               <a href="/privacy">Privacy Policy</a>.
             </p>
 
-            {state.mode === "signup" && signupStep === "email" ? (
+            {modalStep === "email" ? (
               <div className="auth-modal-tagline">
                 <div className="auth-modal-tagline-icons">
                   <Bell className="h-4 w-4" aria-hidden="true" />

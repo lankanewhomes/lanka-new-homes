@@ -73,6 +73,17 @@ async function getOAuthOnlyHint(attemptedEmail: string): Promise<string | null> 
 }
 
 type Mode = "login" | "signup";
+// The modal doesn't ask "log in or sign up" upfront anymore — one email
+// field decides it. "email" is always the first screen; submitting it looks
+// the address up (via /api/auth/account-providers) and branches:
+// no account → "signup" (name+password), a password-based account →
+// "login" (password only), an OAuth-only account → "oauth-only" (no
+// fields, just point at the right "Continue with X" button above). The
+// `mode` prop passed in from outside (still used by the plain page variant
+// at /login and /signup, which keeps its original two-page design) is
+// ignored here — every modal open starts at "email" regardless of which
+// button (Log in / Sign up) triggered it.
+type ModalStep = "email" | "login" | "signup" | "oauth-only";
 
 export function AuthForm({
   mode,
@@ -92,9 +103,9 @@ export function AuthForm({
   variant?: "page" | "modal";
   /** Modal only: called instead of a router redirect once signed in. */
   onAuthenticated?: () => void;
-  /** Modal signup only: fires when the email/details step changes, so the
-   * modal chrome around this form (headline, tagline) can react to it. */
-  onStepChange?: (step: "email" | "details") => void;
+  /** Modal only: fires whenever the step changes, so the modal chrome
+   * around this form (headline, tagline) can react to it. */
+  onStepChange?: (step: ModalStep) => void;
 }) {
   const router = useRouter();
   const [name, setName] = useState("");
@@ -104,13 +115,13 @@ export function AuthForm({
   const [oauthLoading, setOauthLoading] = useState<Provider | null>(null);
   const [error, setError] = useState("");
   const [checkEmail, setCheckEmail] = useState(false);
-  // Modal signup only: email first (with the social buttons), password/name
-  // on a second screen once that email is captured — matches the
-  // progressive "just the email, then continue" flow that was asked for.
-  // Login keeps a single step (email+password together) since there's no
-  // "first step" to defer there.
-  const isProgressiveSignup = mode === "signup" && variant === "modal";
-  const [signupStep, setSignupStep] = useState<"email" | "details">("email");
+  const isModal = variant === "modal";
+  const [modalStep, setModalStepState] = useState<ModalStep>("email");
+  const [existingProviders, setExistingProviders] = useState<string[]>([]);
+  const setModalStep = (step: ModalStep) => {
+    setModalStepState(step);
+    onStepChange?.(step);
+  };
 
   const callbackUrl = () => {
     const url = new URL("/auth/callback", window.location.origin);
@@ -134,14 +145,43 @@ export function AuthForm({
     // On success the browser navigates away to the provider, so no further state change needed here.
   };
 
-  // Step 1 of progressive modal signup: just captures/validates the email
-  // (native "required type=email" validity, same as every other input
-  // here) and advances to the password/name screen — no Supabase call yet.
-  const onEmailStepSubmit = (event: FormEvent<HTMLFormElement>) => {
+  // Modal only, step 1: the one field that decides everything. Looks up
+  // which providers (if any) this email is already registered with via the
+  // same endpoint getOAuthOnlyHint uses after a failed login — reused here
+  // to make that determination up front instead of after a wasted password
+  // attempt. No account found → signup step; a password-based account →
+  // login step; an OAuth-only account → point at the right button instead
+  // of showing a password field that can't work.
+  const onEmailStepSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSignupStep("details");
-    onStepChange?.("details");
+    setError("");
+    setLoading(true);
+    try {
+      const response = await fetch("/api/auth/account-providers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const { providers } = response.ok ? ((await response.json()) as { providers: string[] }) : { providers: [] };
+      setExistingProviders(providers);
+      if (providers.length === 0) {
+        setModalStep("signup");
+      } else if (providers.includes("email")) {
+        setModalStep("login");
+      } else {
+        setModalStep("oauth-only");
+      }
+    } catch {
+      // Couldn't check — default to signup, the more common case for a
+      // popup opened from a listing page; a real existing-account email
+      // will just get a clear "already registered" error from signUp below.
+      setModalStep("signup");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const effectiveMode: Mode = isModal ? (modalStep === "login" ? "login" : "signup") : mode;
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -149,7 +189,7 @@ export function AuthForm({
     setLoading(true);
     const supabase = createSupabaseBrowserClient();
 
-    if (mode === "signup") {
+    if (effectiveMode === "signup") {
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
@@ -222,17 +262,31 @@ export function AuthForm({
     </div>
   );
 
-  // Progressive modal signup, step 1: just the email, then Continue, then
-  // the social buttons below it — the flow that was actually asked for.
-  // Nothing here calls Supabase; onEmailStepSubmit only advances the step.
-  if (isProgressiveSignup && signupStep === "email") {
+  const changeEmailButton = (
+    <button
+      type="button"
+      onClick={() => {
+        setError("");
+        setModalStep("email");
+      }}
+    >
+      Change
+    </button>
+  );
+
+  // Modal, step 1: just the email, then Continue, then the social buttons
+  // below it. Nothing here calls Supabase directly — onEmailStepSubmit
+  // looks the email up first and decides what comes next.
+  if (isModal && modalStep === "email") {
     return (
       <div>
         <form className="auth-modal-form" onSubmit={onEmailStepSubmit}>
           <label>
             <input type="email" placeholder="Email address" required value={email} onChange={(e) => setEmail(e.target.value)} />
           </label>
-          <button type="submit">Continue</button>
+          <button type="submit" disabled={loading}>
+            {loading ? "Checking…" : "Continue"}
+          </button>
         </form>
         <div className="auth-divider">or continue with</div>
         {socialButtons}
@@ -240,34 +294,40 @@ export function AuthForm({
     );
   }
 
-  // Progressive modal signup, step 2: the email from step 1 is shown (with
-  // a way back to change it) instead of asking for it again; this is the
-  // step that actually calls Supabase.
-  const emailStepHeader = isProgressiveSignup && signupStep === "details" && (
+  // Modal, "oauth-only" step: this email only has Google/Facebook/LinkedIn
+  // sign-in on file — no password to collect, so just point at the right
+  // button instead of showing a form that can't work.
+  if (isModal && modalStep === "oauth-only") {
+    const names = existingProviders.map((provider) => PROVIDER_LABELS[provider] ?? provider).join(" or ");
+    return (
+      <div>
+        <p className="auth-modal-email-step">
+          {email} {changeEmailButton}
+        </p>
+        <p className="auth-error">This email uses {names} sign-in — use the button below.</p>
+        {socialButtons}
+      </div>
+    );
+  }
+
+  // Modal, steps "login"/"signup": the email from step 1 is shown (with a
+  // way back to change it) instead of asking for it again.
+  const emailStepHeader = isModal && (
     <p className="auth-modal-email-step">
-      {email}{" "}
-      <button
-        type="button"
-        onClick={() => {
-          setSignupStep("email");
-          onStepChange?.("email");
-        }}
-      >
-        Change
-      </button>
+      {email} {changeEmailButton}
     </p>
   );
 
   const formFields = (
     <form className={variant === "modal" ? "auth-modal-form" : "static-page-form"} onSubmit={onSubmit}>
       {emailStepHeader}
-      {mode === "signup" && (
+      {effectiveMode === "signup" && (
         <label>
           {variant === "page" && "Full name"}
           <input type="text" placeholder="Full name" required value={name} onChange={(e) => setName(e.target.value)} />
         </label>
       )}
-      {!isProgressiveSignup && (
+      {!isModal && (
         <label>
           {variant === "page" && "Email"}
           <input type="email" placeholder="Email address" required value={email} onChange={(e) => setEmail(e.target.value)} />
@@ -284,31 +344,22 @@ export function AuthForm({
           onChange={(e) => setPassword(e.target.value)}
         />
       </label>
-      {mode === "login" && (
+      {effectiveMode === "login" && (
         <p className="auth-forgot-password">
           <a href="/forgot-password">Forgot password?</a>
         </p>
       )}
       {error && <p className="auth-error">{error}</p>}
       <button type="submit" disabled={loading}>
-        {loading ? "Please wait…" : variant === "modal" ? "Continue" : mode === "signup" ? "Create account" : "Log in"}
+        {loading ? "Please wait…" : effectiveMode === "signup" ? (isModal ? "Continue" : "Create account") : "Log in"}
       </button>
     </form>
   );
 
   if (variant === "modal") {
-    // isProgressiveSignup's step 2 lands here too — just the details form,
-    // no social buttons repeated a second time.
-    if (isProgressiveSignup) {
-      return <div>{formFields}</div>;
-    }
-    return (
-      <div>
-        {socialButtons}
-        <div className="auth-divider">or continue with your email</div>
-        {formFields}
-      </div>
-    );
+    // modalStep "login"/"signup" land here — just the details form, no
+    // social buttons repeated a second time (already shown at the email step).
+    return <div>{formFields}</div>;
   }
 
   return (

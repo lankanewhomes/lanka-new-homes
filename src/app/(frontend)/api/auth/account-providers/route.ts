@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 
-// Called only after a failed password login, to turn Supabase's generic
-// "Invalid login credentials" into a specific "use Google sign-in instead"
-// hint when the email belongs to an OAuth-only account. Never used to
-// confirm account existence up front — a failed login already implies that.
+// Two callers: the page-variant login form, after a failed password
+// attempt, to turn Supabase's generic "Invalid login credentials" into a
+// specific "use Google sign-in instead" hint; and the buyer popup's unified
+// email-first step (auth-form.tsx), which calls this immediately after the
+// email is typed to decide whether the next screen is a login, a signup,
+// or an "use your other sign-in method" notice — see ModalStep there.
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
   const email = typeof body?.email === "string" ? body.email : null;
