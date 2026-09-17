@@ -33,6 +33,7 @@ import {
 import { Fragment, FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import {
   Activity,
+  ArrowUpRight,
   Bath,
   BedDouble,
   Bell,
@@ -3709,8 +3710,9 @@ export function NeighborhoodSection({ nearby, neighborhoodName, neighborhoodSlug
       <NearbyPlacesAccordion groups={groups} />
 
       {hasDisplayValue(neighborhoodName) ? (
-        <Link href={neighborhoodPageExists && neighborhoodSlug ? `/neighborhoods/${neighborhoodSlug}` : `/search?q=${encodeURIComponent(neighborhoodName!)}`} className="neighborhood-section-explore">
+        <Link href={neighborhoodPageExists && neighborhoodSlug ? `/neighborhoods/${neighborhoodSlug}` : `/search?q=${encodeURIComponent(neighborhoodName!)}`} className="featured-listings-button neighborhood-section-explore">
           View neighbourhood
+          <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
         </Link>
       ) : null}
     </section>
