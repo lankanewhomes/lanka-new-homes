@@ -11933,7 +11933,7 @@ a.developer-profile-press-title {
   flex-direction: column;
   background: #fff;
   border: 1px solid #e7e2d8;
-  border-radius: 16px;
+  border-radius: 0;
   padding: 32px 28px;
 }
 
@@ -11953,7 +11953,7 @@ a.developer-profile-press-title {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   padding: 5px 12px;
-  border-radius: 999px;
+  border-radius: 0;
 }
 
 .pricing-page-card h2 {
@@ -12001,7 +12001,7 @@ a.developer-profile-press-title {
   align-items: center;
   justify-content: center;
   height: 46px;
-  border-radius: 999px;
+  border-radius: 0;
   border: 1px solid #1f1f1f;
   color: #1f1f1f;
   font-weight: 600;

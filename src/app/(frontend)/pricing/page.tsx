@@ -41,9 +41,11 @@ export default function PricingPage() {
           ))}
         </div>
 
-        <p className="pricing-page-note">
-          <ShieldCheck className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
-          A Verified badge appears automatically once a project has an active Featured or Premium package.
+        <p className="pricing-page-note fd-badge-preview">
+          <span className="listing-badge-pill badge-verified" title="Verified by LankaNewHomes">
+            <ShieldCheck className="h-3 w-3" aria-hidden="true" /> Verified
+          </span>
+          appears automatically once a project has an active Featured or Premium package.
         </p>
 
         <p className="pricing-page-footer-note">
