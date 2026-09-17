@@ -462,6 +462,8 @@ export type Land = SeoFields & {
   unitFeatures?: KeyFeatureCategory[];
   /** Individual plots/lots within this land development — the "Floor Plans" equivalent for a subdivided parcel. Omit when the listing is a single, unsubdivided parcel. */
   plots?: LandPlot[];
+  /** Total plot count when the developer publishes only a number (e.g. "Only 12 exclusive plots"), not individual plot data — falls back to plots.length when both are set. */
+  plotCount?: number;
   status: "Available" | "Reserved" | "Sold";
   isFeatured?: boolean;
   isTrending?: boolean;

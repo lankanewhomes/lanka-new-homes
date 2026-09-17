@@ -136,6 +136,15 @@ export const Lands: CollectionConfig = {
           label: 'Plots & Nearby',
           fields: [
             {
+              name: 'plotCount',
+              type: 'number',
+              label: 'Total Plots (count only)',
+              admin: {
+                description:
+                  'Use this when the developer publishes only a total plot count, not individual plot numbers/sizes/prices (e.g. "Only 12 exclusive plots") — populating the Plots array below would mean inventing per-plot data that was never published. Falls back to the Plots array\'s own length when both are set.',
+              },
+            },
+            {
               name: 'plots',
               type: 'array',
               admin: { description: 'Individual plots/lots within this land development — omit for a single unsubdivided parcel.' },

@@ -6627,6 +6627,10 @@ export interface Land {
       }[]
     | null;
   /**
+   * Use this when the developer publishes only a total plot count, not individual plot numbers/sizes/prices (e.g. "Only 12 exclusive plots") — populating the Plots array below would mean inventing per-plot data that was never published. Falls back to the Plots array's own length when both are set.
+   */
+  plotCount?: number | null;
+  /**
    * Individual plots/lots within this land development — omit for a single unsubdivided parcel.
    */
   plots?:
@@ -7855,6 +7859,7 @@ export interface LandsSelect<T extends boolean = true> {
             };
         id?: T;
       };
+  plotCount?: T;
   plots?:
     | T
     | {

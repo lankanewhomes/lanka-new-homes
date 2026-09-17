@@ -81,14 +81,21 @@ export default async function LandDetailPage({ params }: LandPageProps) {
   const totalPlots = plots.length;
   const plotsAvailable = plots.filter((plot) => plot.status === "Available").length;
   const plotsSold = plots.filter((plot) => plot.status === "Sold").length;
+  // Some developers publish only a total plot count ("Only 12 exclusive
+  // plots"), never individual plot numbers/sizes/prices — plotCount covers
+  // that case without inventing a fake available/sold breakdown we don't
+  // actually have (see plotCount's own admin description on Lands.ts).
+  const hasPlotBreakdown = totalPlots > 0;
+  const plotCountOnly = !hasPlotBreakdown && (land.plotCount ?? 0) > 0;
 
   const stats: { icon: React.ComponentType<{ className?: string }>; label: string; value: string }[] = [
     { icon: HousePlus, label: "Listing status", value: land.status },
     { icon: CircleDollarSign, label: "Price range", value: land.priceLkr > 0 ? formatLkr(land.priceLkr) : (project.priceRange || "Contact for pricing") },
     { icon: MapPin, label: "Address", value: land.location },
-    ...(totalPlots > 0 ? [{ icon: Layers, label: "Total plots", value: String(totalPlots) }] : []),
-    ...(totalPlots > 0 ? [{ icon: CheckCircle2, label: "Plots available", value: String(plotsAvailable) }] : []),
-    ...(totalPlots > 0 ? [{ icon: Tag, label: "Plots sold", value: String(plotsSold) }] : []),
+    ...(hasPlotBreakdown ? [{ icon: Layers, label: "Total plots", value: String(totalPlots) }] : []),
+    ...(hasPlotBreakdown ? [{ icon: CheckCircle2, label: "Plots available", value: String(plotsAvailable) }] : []),
+    ...(hasPlotBreakdown ? [{ icon: Tag, label: "Plots sold", value: String(plotsSold) }] : []),
+    ...(plotCountOnly ? [{ icon: Layers, label: "Total plots", value: String(land.plotCount) }] : []),
     ...(land.landSizePerches > 0 ? [{ icon: Ruler, label: "Land size", value: `${land.landSizePerches} perches` }] : []),
     { icon: Compass, label: "Land use", value: land.landUse.join(" & ") },
   ];
@@ -139,6 +146,13 @@ export default async function LandDetailPage({ params }: LandPageProps) {
         {land.description ? (
           <section id="overview" className="project-description-shell" aria-label="Overview">
             <h2>Overview</h2>
+            {land.facilities && land.facilities.length > 0 ? (
+              <ul className="project-description-highlights">
+                {land.facilities.map((facility) => (
+                  <li key={facility}>{facility}</li>
+                ))}
+              </ul>
+            ) : null}
             <p style={{ whiteSpace: "pre-line" }}>{land.description}</p>
           </section>
         ) : null}

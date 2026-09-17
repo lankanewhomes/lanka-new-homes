@@ -81,6 +81,11 @@ export function landToProjectShape(land: Land): Project {
     tapWater: land.water,
     summary: land.summary,
     description: land.description,
+    // Land has no highlights field of its own — facilities (general parcel
+    // characteristics like "Electricity Supply", "Sewage System") is the
+    // closest match, and otherwise had no display path on the frontend at
+    // all despite being a real, editable field.
+    highlights: land.facilities ?? [],
     heroImage: land.heroImage,
     gallery: land.gallery,
     brochureUrl: land.brochureUrl,
