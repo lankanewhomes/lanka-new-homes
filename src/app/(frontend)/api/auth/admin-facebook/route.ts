@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 
-// Mirrors admin-google/route.ts — same allowlist, same CSRF-state-cookie
-// pattern, same two login pages. Kept as a near-identical twin on purpose so
-// the two providers stay easy to compare/maintain together.
-const ALLOWED_RETURN_PATHS = ["/admin-login", "/developers/login"];
+// Mirrors admin-google/route.ts's allowlist and CSRF-state-cookie pattern,
+// plus /developers/register — Facebook is the only admin-side provider that
+// can also create a new developer account (see callback/route.ts), so it
+// needs the register page in its allowlist too. admin-login and
+// developers/login stay login-only.
+const ALLOWED_RETURN_PATHS = ["/admin-login", "/developers/login", "/developers/register"];
 
 export async function GET(req: Request) {
   const appId = process.env.FACEBOOK_ADMIN_OAUTH_APP_ID;

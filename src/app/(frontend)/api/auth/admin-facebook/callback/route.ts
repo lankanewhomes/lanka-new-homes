@@ -4,7 +4,7 @@ import { mintPayloadSessionCookie } from "@/collections/auth/mint-session";
 type FacebookTokenResponse = { access_token?: string; error?: { message?: string } };
 type FacebookUserInfo = { email?: string; name?: string; error?: { message?: string } };
 
-const ALLOWED_RETURN_PATHS = ["/admin-login", "/developers/login"];
+const ALLOWED_RETURN_PATHS = ["/admin-login", "/developers/login", "/developers/register"];
 
 function loginErrorRedirect(origin: string, returnPath: string, message: string) {
   return NextResponse.redirect(`${origin}${returnPath}?error=${encodeURIComponent(message)}`);
@@ -72,6 +72,28 @@ export async function GET(req: Request) {
     });
     const user = docs[0];
     if (!user) {
+      // /developers/register is the one place Facebook is allowed to create
+      // a brand-new account (never /admin-login or /developers/login — a
+      // random Facebook account signing in there must never self-grant a
+      // role). Payload's signup form collects a company name alongside
+      // email/password to auto-create the linked company profile
+      // (Users.ts's afterChange hook) — Facebook only gives us email + name,
+      // so the email is stashed in a short-lived cookie and the user is sent
+      // to finish signup with just that one missing field.
+      if (returnPath === "/developers/register") {
+        const pending = Buffer.from(JSON.stringify({ email, name: userInfo.name ?? "" })).toString("base64url");
+        const response = NextResponse.redirect(`${origin}/developers/register?fb_pending=1&fb_name=${encodeURIComponent(userInfo.name ?? "")}`);
+        response.cookies.set("pending_facebook_signup", pending, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          maxAge: 1800,
+          path: "/",
+        });
+        response.cookies.set("admin_facebook_oauth_state", "", { maxAge: 0, path: "/" });
+        response.cookies.set("admin_facebook_oauth_return", "", { maxAge: 0, path: "/" });
+        return response;
+      }
       return loginErrorRedirect(origin, returnPath, `No account found for ${email}. Sign up first, then Facebook sign-in will work.`);
     }
     if ((user as { _verified?: boolean })._verified === false) {
@@ -82,9 +104,13 @@ export async function GET(req: Request) {
 
     const adminRoute = payload.config.routes.admin || "/admin";
     const response = NextResponse.redirect(`${origin}${adminRoute}`);
-    response.headers.append("Set-Cookie", cookie);
+    // Order matters: response.cookies.set()/.delete() re-serializes the
+    // Set-Cookie header from its own internal state, wiping any cookie
+    // added via a plain headers.append() beforehand. Clear the short-lived
+    // cookies first, append the real session cookie last.
     response.cookies.set("admin_facebook_oauth_state", "", { maxAge: 0, path: "/" });
     response.cookies.set("admin_facebook_oauth_return", "", { maxAge: 0, path: "/" });
+    response.headers.append("Set-Cookie", cookie);
     return response;
   } catch {
     return loginErrorRedirect(origin, returnPath, "Something went wrong signing in with Facebook. Please try again.");
