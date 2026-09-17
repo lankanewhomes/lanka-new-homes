@@ -1,7 +1,7 @@
 import { APIError } from 'payload'
 import type { CollectionConfig } from 'payload'
 import { adminOnly, adminOnlyField, ownDeveloperAccess } from './access'
-import { syncReviewToSupabase } from './hooks/sync-to-supabase'
+import { syncReviewDeleteToSupabase, syncReviewToSupabase } from './hooks/sync-to-supabase'
 
 // Public buyer reviews on a profile page — a developer's, or (since
 // 2026-09-08) any partner directory profile: marketing/sales company,
@@ -49,6 +49,7 @@ export const Reviews: CollectionConfig = {
       },
     ],
     afterChange: [syncReviewToSupabase],
+    afterDelete: [syncReviewDeleteToSupabase],
   },
   fields: [
     // Everything about the submitted review itself is locked to admin-only

@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 import { adminOnly, hiddenUnlessAdmin, publicRead } from './access'
 import { businessProfileExtraFields, companyProfileFields } from './shared-fields'
-import { syncConstructionCompanyToSupabase } from './hooks/sync-to-supabase'
+import { syncConstructionCompanyDeleteToSupabase, syncConstructionCompanyToSupabase } from './hooks/sync-to-supabase'
 
 // Unlike Marketing/Sales Companies and Architects, Construction Companies
 // can have a linked user account (construction_company role, self-
@@ -16,7 +16,7 @@ export const ConstructionCompanies: CollectionConfig = {
     update: adminOnly,
     delete: adminOnly,
   },
-  hooks: { afterChange: [syncConstructionCompanyToSupabase] },
+  hooks: { afterChange: [syncConstructionCompanyToSupabase], afterDelete: [syncConstructionCompanyDeleteToSupabase] },
   fields: [
     ...companyProfileFields([
       { name: 'services', type: 'text', hasMany: true },

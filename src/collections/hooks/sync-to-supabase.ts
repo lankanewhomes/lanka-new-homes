@@ -1,4 +1,4 @@
-import type { CollectionAfterChangeHook, PayloadRequest } from 'payload'
+import type { CollectionAfterChangeHook, CollectionAfterDeleteHook, PayloadRequest } from 'payload'
 import { supabaseAdmin } from '@/lib/supabase'
 import { insertLead } from '@/lib/tracking-db'
 
@@ -12,6 +12,26 @@ async function safeSync(req: PayloadRequest, label: string, fn: () => Promise<vo
     await fn()
   } catch (err) {
     req.payload.logger.error(`Supabase sync failed (${label}): ${err instanceof Error ? err.message : err}`)
+  }
+}
+
+// Deleting a doc in Payload only removes it from Payload's own tables —
+// nothing tells the mirrored Supabase row (what the live site/sitemap
+// actually reads) to go away too, so it stays live forever, orphaned.
+// Found 2026-09-17: deleted test developer profiles and an old test
+// project kept showing up on the live site and in the sitemap (Google
+// Search Console flagged the latter as broken <image:loc>null</image:loc>
+// entries). Every collection with a slug-keyed upsert above needs the
+// matching delete here — same table, same slug.
+function slugDeleteHook(table: string): CollectionAfterDeleteHook {
+  return async ({ doc, req }) => {
+    const slug = (doc as AnyDoc).slug as string | undefined
+    if (!slug) return doc
+    await safeSync(req, `delete ${table} ${slug}`, async () => {
+      const { error } = await supabaseAdmin.from(table).delete().eq('slug', slug)
+      if (error) throw new Error(error.message)
+    })
+    return doc
   }
 }
 
@@ -201,6 +221,8 @@ export const syncProjectToSupabase: CollectionAfterChangeHook = async ({ doc, re
   return doc
 }
 
+export const syncProjectDeleteToSupabase = slugDeleteHook('projects')
+
 export const syncDeveloperToSupabase: CollectionAfterChangeHook = async ({ doc, req }) => {
   const d = doc as AnyDoc
   await safeSync(req, `developer ${d.slug}`, async () => {
@@ -244,6 +266,8 @@ export const syncDeveloperToSupabase: CollectionAfterChangeHook = async ({ doc, 
   })
   return doc
 }
+
+export const syncDeveloperDeleteToSupabase = slugDeleteHook('developers')
 
 // Payload date fields store a full ISO datetime ("2026-09-10T00:00:00.000Z")
 // but the live homepage's active-window check (src/lib/hero-ad-store.ts)
@@ -310,6 +334,15 @@ export const syncHeroSlideToSupabase: CollectionAfterChangeHook = async ({ doc, 
   return doc
 }
 
+export const syncHeroSlideDeleteToSupabase: CollectionAfterDeleteHook = async ({ doc, req }) => {
+  const d = doc as AnyDoc
+  await safeSync(req, `delete hero slide ${d.id}`, async () => {
+    const { error } = await supabaseAdmin.from('hero_ads').delete().eq('id', `payload-${d.id}`)
+    if (error) throw new Error(error.message)
+  })
+  return doc
+}
+
 // Reviewer email is intentionally never synced here — it stays in Payload
 // only (moderation contact info), keeping the public-facing mirror down to
 // exactly what the developer profile page needs to display.
@@ -356,6 +389,15 @@ export const syncReviewToSupabase: CollectionAfterChangeHook = async ({ doc, req
   return doc
 }
 
+export const syncReviewDeleteToSupabase: CollectionAfterDeleteHook = async ({ doc, req }) => {
+  const d = doc as AnyDoc
+  await safeSync(req, `delete review ${d.id}`, async () => {
+    const { error } = await supabaseAdmin.from('reviews').delete().eq('id', `payload-${d.id}`)
+    if (error) throw new Error(error.message)
+  })
+  return doc
+}
+
 export const syncNeighborhoodToSupabase: CollectionAfterChangeHook = async ({ doc, req }) => {
   const d = doc as AnyDoc
   await safeSync(req, `neighborhood ${d.slug}`, async () => {
@@ -381,6 +423,8 @@ export const syncNeighborhoodToSupabase: CollectionAfterChangeHook = async ({ do
   })
   return doc
 }
+
+export const syncNeighborhoodDeleteToSupabase = slugDeleteHook('neighborhoods')
 
 export const syncConstructionCompanyToSupabase: CollectionAfterChangeHook = async ({ doc, req }) => {
   const d = doc as AnyDoc
@@ -413,6 +457,8 @@ export const syncConstructionCompanyToSupabase: CollectionAfterChangeHook = asyn
   })
   return doc
 }
+
+export const syncConstructionCompanyDeleteToSupabase = slugDeleteHook('construction_companies')
 
 function companyProfileSyncHook(table: string): CollectionAfterChangeHook {
   return async ({ doc, req }) => {
@@ -449,6 +495,11 @@ export const syncMarketingCompanyToSupabase = companyProfileSyncHook('marketing_
 export const syncSalesCompanyToSupabase = companyProfileSyncHook('sales_companies')
 export const syncArchitectToSupabase = companyProfileSyncHook('architects')
 export const syncInteriorDesignerToSupabase = companyProfileSyncHook('interior_designers')
+
+export const syncMarketingCompanyDeleteToSupabase = slugDeleteHook('marketing_companies')
+export const syncSalesCompanyDeleteToSupabase = slugDeleteHook('sales_companies')
+export const syncArchitectDeleteToSupabase = slugDeleteHook('architects')
+export const syncInteriorDesignerDeleteToSupabase = slugDeleteHook('interior_designers')
 
 // Polymorphic relationship (relationTo: ['developers', 'construction-companies'])
 // -> its slug, whichever collection it actually points at. Unpopulated
@@ -505,6 +556,8 @@ export const syncLandToSupabase: CollectionAfterChangeHook = async ({ doc, req }
   })
   return doc
 }
+
+export const syncLandDeleteToSupabase = slugDeleteHook('lands')
 
 export const syncLeadToSupabase: CollectionAfterChangeHook = async ({ doc, operation, req }) => {
   if (operation !== 'create') return doc

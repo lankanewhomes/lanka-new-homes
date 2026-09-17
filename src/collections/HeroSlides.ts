@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { adminOnly, adminOnlyField, isAdmin, ownDeveloperAccess, publicRead } from './access'
-import { syncHeroSlideToSupabase } from './hooks/sync-to-supabase'
+import { syncHeroSlideDeleteToSupabase, syncHeroSlideToSupabase } from './hooks/sync-to-supabase'
 
 // "Only admins can create/edit; developers can request a slot but admin
 // approves/activates it" — a developer CAN create (tied to their own
@@ -30,6 +30,7 @@ export const HeroSlides: CollectionConfig = {
       },
     ],
     afterChange: [syncHeroSlideToSupabase],
+    afterDelete: [syncHeroSlideDeleteToSupabase],
   },
   fields: [
     { name: 'headline', type: 'text', required: true, admin: { description: 'Shown over the banner image, e.g. "Now Selling: Colombo Heights".' } },

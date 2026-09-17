@@ -1,4 +1,4 @@
-import type { CollectionAfterChangeHook, CollectionConfig, Field } from 'payload'
+import type { CollectionAfterChangeHook, CollectionAfterDeleteHook, CollectionConfig, Field } from 'payload'
 import { adminOnly, hiddenUnlessAdmin, publicRead } from './access'
 import cities from '../data/cities.json'
 
@@ -476,7 +476,12 @@ export function historyLogField(name: string, label: string): Field {
 // Construction/Marketing/Sales Companies and Architects are all "admin-
 // entered only" directories sharing the CompanyProfile shape, differing
 // only in slug and one trailing field (services vs. portfolio_link).
-export function directoryCollection(slug: string, extraFields: Field[], afterChangeHooks: CollectionAfterChangeHook[] = []): CollectionConfig {
+export function directoryCollection(
+  slug: string,
+  extraFields: Field[],
+  afterChangeHooks: CollectionAfterChangeHook[] = [],
+  afterDeleteHooks: CollectionAfterDeleteHook[] = [],
+): CollectionConfig {
   return {
     slug,
     admin: { useAsTitle: 'name', group: 'Companies & Professionals', defaultColumns: ['name', 'slug', 'contact_email'], hidden: hiddenUnlessAdmin },
@@ -486,7 +491,7 @@ export function directoryCollection(slug: string, extraFields: Field[], afterCha
       update: adminOnly,
       delete: adminOnly,
     },
-    hooks: { afterChange: afterChangeHooks },
+    hooks: { afterChange: afterChangeHooks, afterDelete: afterDeleteHooks },
     fields: companyProfileFields(extraFields),
   }
 }

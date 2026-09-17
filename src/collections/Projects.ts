@@ -35,7 +35,7 @@ import {
 } from './shared-fields'
 import { autoPostSocialAfterChange } from './hooks/auto-post-social'
 import { scoreProjectBeforeChange } from './hooks/project-scoring'
-import { syncProjectToSupabase } from './hooks/sync-to-supabase'
+import { syncProjectDeleteToSupabase, syncProjectToSupabase } from './hooks/sync-to-supabase'
 
 const MAX_VISIBLE_STATS = 10
 const maxSelections = (value: unknown) =>
@@ -172,6 +172,7 @@ export const Projects: CollectionConfig = {
     ],
     beforeChange: [scoreProjectBeforeChange],
     afterChange: [syncProjectToSupabase, autoPostSocialAfterChange],
+    afterDelete: [syncProjectDeleteToSupabase],
   },
   fields: [
     {

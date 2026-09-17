@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 import { adminOnly, hiddenUnlessAdmin, publicRead } from './access'
 import { nearbyField, seoFields } from './shared-fields'
-import { syncNeighborhoodToSupabase } from './hooks/sync-to-supabase'
+import { syncNeighborhoodDeleteToSupabase, syncNeighborhoodToSupabase } from './hooks/sync-to-supabase'
 
 export const Neighborhoods: CollectionConfig = {
   slug: 'neighborhoods',
@@ -12,7 +12,7 @@ export const Neighborhoods: CollectionConfig = {
     update: adminOnly,
     delete: adminOnly,
   },
-  hooks: { afterChange: [syncNeighborhoodToSupabase] },
+  hooks: { afterChange: [syncNeighborhoodToSupabase], afterDelete: [syncNeighborhoodDeleteToSupabase] },
   fields: [
     { name: 'slug', type: 'text', required: true, unique: true, index: true },
     { name: 'name', type: 'text', required: true },

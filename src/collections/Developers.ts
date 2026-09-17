@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 import { adminOnly, adminOnlyField, getOwnedDeveloperIds, getRole, isAdmin, publicRead } from './access'
 import { companyProfileFields, seoFields, socialLinksField } from './shared-fields'
-import { syncDeveloperToSupabase } from './hooks/sync-to-supabase'
+import { syncDeveloperDeleteToSupabase, syncDeveloperToSupabase } from './hooks/sync-to-supabase'
 
 export const Developers: CollectionConfig = {
   slug: 'developers',
@@ -52,6 +52,7 @@ export const Developers: CollectionConfig = {
       },
     ],
     afterChange: [syncDeveloperToSupabase],
+    afterDelete: [syncDeveloperDeleteToSupabase],
   },
   fields: [
     ...companyProfileFields([{ name: 'website', type: 'text' }, { name: 'location', type: 'text', label: 'Primary Location', admin: { description: 'e.g. Colombo 03' } }]),
