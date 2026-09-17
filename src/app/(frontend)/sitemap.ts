@@ -28,6 +28,14 @@ export const revalidate = 3600;
 // "/construction-companies" URL is already in constructionCompanyRoutes
 // below (constructionCompanyPages has its own config entry for it), so
 // adding it again here would duplicate that sitemap entry.
+// A record with no photo yet (null/undefined heroImage/logo) must not
+// produce an <image:loc>null</image:loc> — Google Search Console flagged
+// exactly this as an "Invalid URL" parsing error (2026-09-17) on projects,
+// developers, and neighborhoods with a missing image.
+function imagesOrEmpty(image: string | null | undefined): string[] {
+  return image ? [image] : [];
+}
+
 function companyProfileRoutes(basePath: string, companies: CompanyProfile[], now: Date, includeBasePath = true): MetadataRoute.Sitemap {
   return [
     ...(includeBasePath ? [{ url: toAbsoluteUrl(basePath), lastModified: now, changeFrequency: "weekly" as const, priority: 0.5 }] : []),
@@ -128,7 +136,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: now,
     changeFrequency: "monthly",
     priority: 0.6,
-    images: [neighborhood.heroImage],
+    images: imagesOrEmpty(neighborhood.heroImage),
   }));
 
   // Architects, interior designers, marketing/sales companies, and
@@ -171,7 +179,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: now,
     changeFrequency: "weekly",
     priority: project.status === "Now Selling" ? 0.8 : 0.7,
-    images: [project.heroImage],
+    images: imagesOrEmpty(project.heroImage),
   }));
 
   const developerRoutes: MetadataRoute.Sitemap = developers.map((developer) => ({
@@ -179,7 +187,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: now,
     changeFrequency: "monthly",
     priority: 0.7,
-    images: [developer.logo],
+    images: imagesOrEmpty(developer.logo),
   }));
 
   const landRoutes: MetadataRoute.Sitemap = lands.map((land) => ({
@@ -187,7 +195,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: now,
     changeFrequency: "weekly",
     priority: land.status === "Available" ? 0.7 : 0.5,
-    images: [land.heroImage],
+    images: imagesOrEmpty(land.heroImage),
   }));
 
   return [...staticRoutes, ...projectCategoryRoutes, ...guideRoutes, ...constructionCompanyRoutes, ...projectRoutes, ...developerRoutes, ...landRoutes, ...neighborhoodRoutes, ...partnerDirectoryRoutes];
