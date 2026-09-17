@@ -137,21 +137,21 @@ function PayloadLoginFormInner({ mode = "login" }: { mode?: "login" | "signup" }
         {mode === "signup" && (
           <>
             <label>
-              Your name
+              <span className="sr-only">Your name</span>
               <input type="text" placeholder="Full name" required value={fullName} onChange={(e) => setFullName(e.target.value)} />
             </label>
             <label>
-              Company name
+              <span className="sr-only">Company name</span>
               <input type="text" placeholder="Company name" required value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
             </label>
           </>
         )}
         <label>
-          Email
+          <span className="sr-only">Email</span>
           <input type="email" placeholder="Email address" required value={email} onChange={(e) => setEmail(e.target.value)} />
         </label>
         <label>
-          Password
+          <span className="sr-only">Password</span>
           <input type="password" placeholder="Password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
         </label>
         {mode === "login" && (

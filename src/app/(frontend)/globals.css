@@ -7385,7 +7385,7 @@ a.developer-profile-press-title {
 .static-page-form input,
 .static-page-form textarea {
   border: 1px solid #d8d8d8;
-  border-radius: 6px;
+  border-radius: 0;
   padding: 10px 14px;
   font-size: 14px;
   font-family: var(--font-ref-sans);
@@ -7429,7 +7429,7 @@ a.developer-profile-press-title {
   justify-content: center;
   gap: 10px;
   min-height: 46px;
-  border-radius: 8px;
+  border-radius: 999px;
   border: 1px solid #d8d8d8;
   background: #fff;
   font-size: 14px;
