@@ -58,6 +58,36 @@ export function buildFaqJsonLd(faqs: { question: string; answer: string }[]) {
   };
 }
 
+// Sitewide identity schema — read once by Google to associate the domain
+// with the LankaNewHomes brand/logo (drives the Knowledge Panel logo and
+// sitelinks search box eligibility). Social links match the footer's real
+// icons (src/components/marketplace/components.tsx's Footer) — only
+// Facebook and Instagram are real, live LankaNewHomes accounts.
+export function buildOrganizationJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "LankaNewHomes",
+    url: getSiteUrl(),
+    logo: toAbsoluteUrl("/logo-wordmark.svg"),
+    sameAs: ["https://www.facebook.com/lankanewhomes", "https://www.instagram.com/lankanewhomes/"],
+  };
+}
+
+export function buildWebsiteJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "LankaNewHomes",
+    url: getSiteUrl(),
+    potentialAction: {
+      "@type": "SearchAction",
+      target: `${getSiteUrl()}/search?q={search_term_string}`,
+      "query-input": "required name=search_term_string",
+    },
+  };
+}
+
 export function jsonLdScriptProps(data: object) {
   return {
     type: "application/ld+json",

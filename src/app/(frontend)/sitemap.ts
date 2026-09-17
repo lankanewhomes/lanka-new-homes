@@ -14,6 +14,13 @@ import { guides } from "@/lib/guides";
 import { constructionCompanyPages } from "@/lib/construction-company-categories";
 import type { CompanyProfile } from "@/types";
 
+// Without this, a route with no dynamic API calls is generated once at
+// build time and frozen — confirmed live (2026-09-17): production served
+// only 5 of 11 real neighborhoods because none had been added since the
+// last deploy. Revalidating hourly keeps the sitemap in sync with CMS
+// changes between deploys without hitting the DB on every crawl.
+export const revalidate = 3600;
+
 // Shared by every partner-directory family (architects, interior designers,
 // marketing/sales companies, construction companies) — same list-page +
 // profile-page shape (see docs/design.md's "Partner directories" convention).
@@ -92,6 +99,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     {
       url: toAbsoluteUrl("/contact"),
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.4,
+    },
+    {
+      url: toAbsoluteUrl("/for-developers"),
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
+      url: toAbsoluteUrl("/pricing"),
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
+    {
+      url: toAbsoluteUrl("/web-design"),
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.4,

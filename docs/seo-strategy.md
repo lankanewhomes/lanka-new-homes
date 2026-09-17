@@ -273,6 +273,55 @@ fields (e.g. a `tags: string[]` on `Project`) instead of text matching.
     URLs crawlable (canonical tags keep them out of the index without
     blocking crawl entirely).
 
+## Indexing-readiness pass (2026-09-17)
+
+Audited the live site against standard technical-SEO requirements before the
+user submits it to Google Search Console. Found and fixed:
+
+1. **Sitemap was frozen at build time** — `sitemap.ts` had no `revalidate`
+   export, so on a route with no dynamic API usage, Next.js generates it once
+   at build and serves that same output until the next deploy. Confirmed live:
+   production served only 5 of the 11 real `/neighborhoods/*` pages because
+   none had been added since the last deploy. Fixed with
+   `export const revalidate = 3600` — keeps it in sync with CMS changes
+   between deploys without querying the DB on every crawl.
+2. **Three real, indexable pages were missing from the sitemap** —
+   `/for-developers`, `/pricing`, `/web-design` all have real content and
+   proper metadata/canonicals already, but were never added to `sitemap.ts`'s
+   `staticRoutes`. This is the same class of gap called out in the "Sitemap"
+   tactic below (good on-page metadata ≠ actually in the sitemap) — now fixed,
+   but re-check this any time a new static page is added.
+3. **`/blog` is a placeholder** ("check back soon", no real posts) and had no
+   `robots` directive, so it was indexable by default. Added
+   `robots: { index: false, follow: true }` until real content exists —
+   thin/placeholder pages shouldn't compete for crawl budget or dilute
+   perceived site quality. Remove once real posts are published.
+4. **No sitewide Organization/WebSite structured data** — added
+   `buildOrganizationJsonLd()`/`buildWebsiteJsonLd()` (`src/lib/seo.ts`),
+   rendered once in the root layout (`src/app/(frontend)/layout.tsx`).
+   Organization's `sameAs` links to the two real, live social accounts
+   (Facebook, Instagram — matches the footer, no LinkedIn/Twitter since those
+   don't exist). WebSite includes a `SearchAction` targeting `/search?q=`,
+   Google's sitelinks-search-box requirement.
+5. **No default share-preview image** — project/developer/profile pages
+   already set their own `openGraph.images` from real photos, but the
+   homepage and every static page (`/about`, `/pricing`, etc.) had none, so
+   sharing those links showed no preview image anywhere. Added
+   `src/app/(frontend)/opengraph-image.tsx` (Next's `next/og` convention file)
+   rendering a branded 1200×630 card at request time — applies automatically
+   to any page that doesn't set its own.
+6. **No Google Search Console verification wired up** — root layout now reads
+   `metadata.verification.google` from `process.env.GOOGLE_SITE_VERIFICATION`
+   when present (renders nothing if unset — no fabricated placeholder). The
+   user needs to add that env var with the real code from Search Console
+   before the verification meta tag will appear; this only wires up the
+   mechanism.
+
+Not fixed here — flagged only: the site's language switcher (English/Sinhala/
+Tamil, `src/components/layout/language-provider.tsx`) is client-side only, no
+locale-specific URLs, so there's no hreflang requirement today. If it ever
+gets real per-locale routes, hreflang tags become necessary at that point.
+
 ## Known limitations / follow-ups
 
 - **Map is a visual placeholder**, not a real map SDK (no Mapbox/Google Maps
