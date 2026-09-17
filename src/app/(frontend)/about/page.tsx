@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "About",
-  description: "LankaNewHomes connects buyers with new construction homes and trusted developers across Sri Lanka.",
+  description: "LankaNewHomes is Sri Lanka's marketplace for new homes, developments, and developer-led land projects — connecting buyers directly with developers and builders across the island.",
   alternates: { canonical: "/about" },
 };
 
@@ -11,16 +11,32 @@ export default function AboutPage() {
   return (
     <div className="static-page-shell">
       <h1>About LankaNewHomes</h1>
-      <p className="static-page-lede">LankaNewHomes is Sri Lanka&apos;s marketplace for new construction homes, connecting buyers with verified developers, ongoing projects, and the neighborhoods they&apos;re built in.</p>
+      <p className="static-page-lede">
+        LankaNewHomes is Sri Lanka&apos;s marketplace for new homes, developments, and developer-led land projects — connecting buyers directly with developers and builders across the island.
+      </p>
 
-      <h2>What we do</h2>
-      <p>We bring together new condominium, apartment, and villa developments from across the island in one place, so buyers can compare pricing, floor plans, amenities, and availability without chasing down individual developer websites.</p>
+      <h2>What We Do</h2>
+      <p>We bring Sri Lanka&apos;s new residential developments and developer land projects together in one place.</p>
+      <p>
+        Explore <strong>condominiums, apartments, villas, houses, and residential land projects</strong> from developers across the country. Buyers can compare locations, pricing, floor plans, amenities, project details, and availability without having to search across multiple developer websites.
+      </p>
+      <p>LankaNewHomes is built specifically around <strong>new developer and builder projects</strong>, giving buyers a dedicated place to discover what&apos;s being developed across Sri Lanka.</p>
 
-      <h2>For developers</h2>
-      <p>Developers get a public profile page, project listings management, instant lead alerts, and a homepage hero placement to reach active buyers. See <Link href="/for-developers">why developers list with us</Link>, or go straight to the <Link href="/developers/register">developer registration page</Link>.</p>
+      <h2>For Developers</h2>
+      <p>LankaNewHomes gives developers and builders a dedicated platform to showcase their projects and connect with people actively looking to buy.</p>
+      <p>Developers can create a public profile, manage their project listings, receive lead alerts, and showcase their developments to buyers on LankaNewHomes.</p>
+      <p>
+        Whether you&apos;re selling <strong>new apartments, condominiums, villas, houses, or developer-owned residential land</strong>, LankaNewHomes provides one place to present your projects and reach potential buyers.
+      </p>
+      <p>
+        <Link href="/for-developers">Why developers list with us</Link> · <Link href="/pricing">Pricing</Link> · <Link href="/developers/register">Register as a developer</Link>
+      </p>
 
-      <h2>For buyers</h2>
-      <p>Browse new homes by location or project type, save the ones you like, and request more information directly from the sales team behind each project.</p>
+      <h2>For Buyers</h2>
+      <p>Discover new homes and developer land projects by location or property type.</p>
+      <p>Explore project details, view floor plans, amenities, locations, and available land, save your favourites, and request information directly from the developer or sales team behind each project.</p>
+
+      <p className="static-page-lede">One place to discover what&apos;s being built — and what&apos;s being developed — in Sri Lanka.</p>
     </div>
   );
 }
