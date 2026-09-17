@@ -3555,6 +3555,7 @@ export function Footer() {
             <p className="footer-link-row-label">Legal</p>
             <nav className="footer-link-row" aria-label="Legal">
               <Link href="/privacy">Privacy Policy</Link>
+              <Link href="/cookies">Cookie Policy</Link>
               <Link href="/terms">Terms of Service</Link>
               <Link href="/sitemap">Sitemap</Link>
             </nav>
