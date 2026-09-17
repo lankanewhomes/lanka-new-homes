@@ -82,9 +82,16 @@ export async function GET(req: Request) {
 
     const adminRoute = payload.config.routes.admin || "/admin";
     const response = NextResponse.redirect(`${origin}${adminRoute}`);
-    response.headers.append("Set-Cookie", cookie);
+    // Order matters: response.cookies.set()/.delete() re-serializes the
+    // Set-Cookie header from its own internal state, wiping any cookie
+    // added via a plain headers.append() beforehand (confirmed empirically
+    // 2026-09-17 while building the Facebook twin of this route — this bug
+    // was already live here, meaning Google admin login likely never
+    // actually set a working session cookie). Clear the short-lived cookies
+    // first, append the real session cookie last so nothing erases it.
     response.cookies.set("admin_google_oauth_state", "", { maxAge: 0, path: "/" });
     response.cookies.set("admin_google_oauth_return", "", { maxAge: 0, path: "/" });
+    response.headers.append("Set-Cookie", cookie);
     return response;
   } catch {
     return loginErrorRedirect(origin, returnPath, "Something went wrong signing in with Google. Please try again.");
