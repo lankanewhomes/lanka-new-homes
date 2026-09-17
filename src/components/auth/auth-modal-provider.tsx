@@ -39,7 +39,7 @@ export function useAuthModal() {
 // that field looks the address up and the form becomes a login or signup
 // screen accordingly. See AuthForm's ModalStep type for the step names.
 type ModalStep = "email" | "login" | "signup" | "oauth-only";
-const EMAIL_STEP_TITLE = "Get instant alerts on new listings";
+const EMAIL_STEP_TITLE = "Register/Sign In";
 const STEP_TITLES: Record<ModalStep, string> = {
   email: EMAIL_STEP_TITLE,
   login: "Log in to LankaNewHomes",
