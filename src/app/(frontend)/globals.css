@@ -9902,6 +9902,84 @@ a.developer-profile-press-title {
   color: #f47b36;
 }
 
+/* /about (2026-09-18) — reuses the .guide-page long-form container/eyebrow/
+   answer-box/numbered-section system built for /guides rather than a fourth
+   visual language, plus two page-only additions: a real live-counts strip
+   (no invented numbers — same .length-of-real-data-array approach as the
+   /cms dashboard's stat cards) and .about-page-links, a lighter version of
+   .guide-page-related's pill links for use *inside* a numbered section
+   (no top divider/margin, since .guide-page-related's are meant to close
+   out the whole page, not sit mid-section). */
+.about-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin: 0 0 8px;
+  padding: 28px 0;
+  border-top: 1px solid #eee8db;
+  border-bottom: 1px solid #eee8db;
+}
+
+.about-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.about-stat dd {
+  order: 1;
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+  color: #1f1f1f;
+  font-variant-numeric: tabular-nums;
+}
+
+.about-stat dt {
+  order: 2;
+  margin-top: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #6b6355;
+}
+
+.about-page-links {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.about-page-links a {
+  display: inline-block;
+  padding: 9px 16px;
+  border: 1px solid #e4e2db;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #1f1f1f;
+  text-decoration: none;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.about-page-links a:hover {
+  border-color: #f47b36;
+  color: #f47b36;
+}
+
+@media (max-width: 560px) {
+  .about-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 22px 16px;
+  }
+
+  .about-stat dd {
+    font-size: 26px;
+  }
+}
+
 /* Admin field info tooltips */
 
 .field-tooltip {
