@@ -12236,9 +12236,13 @@ a.developer-profile-press-title {
   }
 }
 
-/* Live listings — reuses the site's own .home-card-grid/ListingGridCard. */
+/* Live listings — reuses the site's own .home-card-grid/ListingGridCard
+   (already white, unchanged sitewide). The section itself gets an explicit
+   white band, full-bleed, so this "proof" showcase reads as a clean break
+   from the page's warm cream background instead of blending into it. */
 .fdv-live-listings {
-  padding: 40px 0 130px;
+  background: #fff;
+  padding: 60px 0 130px;
 }
 
 .fdv-showcase-grid {
