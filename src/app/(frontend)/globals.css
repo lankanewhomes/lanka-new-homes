@@ -6032,7 +6032,11 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   width: min(1290px, calc(100% - 48px));
   margin: 14px auto 90px;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  /* A fixed 2-column split stretched a lone card (or a page with just one
+     or two companies) to half the full 1290px width — way too wide for a
+     small amount of text. auto-fill + a capped max lets each card size
+     itself naturally instead of always stretching to fill its track. */
+  grid-template-columns: repeat(auto-fill, minmax(320px, 460px));
   gap: 16px;
 }
 
@@ -6177,6 +6181,11 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 .developer-profile-sidebar h1 {
   font-family: var(--font-ref-sans);
   font-size: 20px;
+  /* The sitewide `h1 { line-height: 40px }` rule (globals.css) is never
+     overridden here, so a wrapped two-line name (e.g. "Kandy Home
+     Construction Co.") sat in a 40px line box despite 20px text — twice
+     the gap it needed between lines. */
+  line-height: 1.3;
   font-weight: 700;
   color: #1f1f1f;
   margin: 0;
