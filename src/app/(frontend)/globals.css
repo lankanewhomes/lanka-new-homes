@@ -1875,7 +1875,12 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
     margin-top: 18px;
     padding-top: 18px;
     padding-bottom: 12px;
-    justify-content: flex-start;
+    /* space-evenly spreads a handful of tabs across the full width instead
+       of leaving them bunched on the left with empty space (reported on a
+       listing with only Photos/Videos/Brochure) — and degrades gracefully
+       to normal left-aligned overflow scrolling once there are enough tabs
+       to actually fill the row, so it doesn't break the many-tabs case. */
+    justify-content: space-evenly;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;

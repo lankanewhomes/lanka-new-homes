@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AuthForm } from "@/components/auth/auth-form";
+import { PageAuthShell } from "@/components/auth/page-auth-shell";
 
 export const metadata: Metadata = {
   title: "Log In",
@@ -11,10 +11,7 @@ export const metadata: Metadata = {
 export default function LoginPage() {
   return (
     <div className="static-page-shell auth-page">
-      <h1>Log in</h1>
-      <p className="static-page-lede auth-page-lede">Sign in to see your saved listings and inquiries.</p>
-
-      <AuthForm mode="login" redirectTo="/account" />
+      <PageAuthShell redirectTo="/account" />
 
       <p className="static-page-note auth-page-note">
         Don&apos;t have an account? <a href="/signup">Sign up</a>. Registered as a developer?{" "}

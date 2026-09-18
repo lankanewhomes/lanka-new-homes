@@ -73,20 +73,27 @@ async function getOAuthOnlyHint(attemptedEmail: string): Promise<string | null> 
 }
 
 type Mode = "login" | "signup";
-// The modal doesn't ask "log in or sign up" upfront anymore — one email
-// field decides it. "email" is always the first screen; submitting it looks
-// the address up (via /api/auth/account-providers) and branches:
-// no account → "signup" (name+password), a password-based account →
-// "login" (password only), an OAuth-only account → "oauth-only" (no
-// fields, just point at the right "Continue with X" button above). The
-// `mode` prop passed in from outside (still used by the plain page variant
-// at /login and /signup, which keeps its original two-page design) is
-// ignored here — every modal open starts at "email" regardless of which
-// button (Log in / Sign up) triggered it.
-type ModalStep = "email" | "login" | "signup" | "oauth-only";
+// Neither the popup nor the standalone /login and /signup pages ask "log in
+// or sign up" upfront anymore — one email field decides it, for both
+// variants. "email" is always the first screen; submitting it looks the
+// address up (via /api/auth/account-providers) and branches: no account →
+// "signup" (name+password), a password-based account → "login" (password
+// only), an OAuth-only account → "oauth-only" (no fields, just point at the
+// right "Continue with X" button above).
+export type ModalStep = "email" | "login" | "signup" | "oauth-only";
+
+// Single source of truth for the heading shown at each step — shared by the
+// popup (auth-modal-provider.tsx) and the standalone /login and /signup
+// pages (page-auth-shell.tsx), so both surfaces genuinely show the same
+// title at the same step instead of two hand-copied strings drifting apart.
+export const AUTH_STEP_TITLES: Record<ModalStep, string> = {
+  email: "Register/Sign In",
+  login: "Log in to LankaNewHomes",
+  signup: "Almost done — set a password",
+  "oauth-only": "Log in to LankaNewHomes",
+};
 
 export function AuthForm({
-  mode,
   intent,
   redirectTo,
   onDeveloperRoleCheck,
@@ -94,7 +101,6 @@ export function AuthForm({
   onAuthenticated,
   onStepChange,
 }: {
-  mode: Mode;
   intent?: "developer";
   redirectTo: string;
   /** Login only: reject the sign-in if the account isn't a developer account. */
@@ -115,7 +121,6 @@ export function AuthForm({
   const [oauthLoading, setOauthLoading] = useState<Provider | null>(null);
   const [error, setError] = useState("");
   const [checkEmail, setCheckEmail] = useState(false);
-  const isModal = variant === "modal";
   const [modalStep, setModalStepState] = useState<ModalStep>("email");
   const [existingProviders, setExistingProviders] = useState<string[]>([]);
   const setModalStep = (step: ModalStep) => {
@@ -181,7 +186,11 @@ export function AuthForm({
     }
   };
 
-  const effectiveMode: Mode = isModal ? (modalStep === "login" ? "login" : "signup") : mode;
+  // The email-first flow now drives both variants (previously modal-only) —
+  // the standalone /login and /signup pages used to keep the old fixed
+  // mode/two-field form regardless of what the popup already did, which is
+  // exactly the "why doesn't this look the same" gap reported 2026-09-18.
+  const effectiveMode: Mode = modalStep === "login" ? "login" : "signup";
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -274,14 +283,15 @@ export function AuthForm({
     </button>
   );
 
-  // Modal, step 1: just the email, then Continue, then the social buttons
-  // below it. Nothing here calls Supabase directly — onEmailStepSubmit
-  // looks the email up first and decides what comes next.
-  if (isModal && modalStep === "email") {
+  // Step 1 (both variants): just the email, then Continue, then the social
+  // buttons below it. Nothing here calls Supabase directly —
+  // onEmailStepSubmit looks the email up first and decides what comes next.
+  if (modalStep === "email") {
     return (
       <div>
-        <form className="auth-modal-form" onSubmit={onEmailStepSubmit}>
+        <form className={variant === "modal" ? "auth-modal-form" : "static-page-form"} onSubmit={onEmailStepSubmit}>
           <label>
+            <span className="sr-only">Email</span>
             <input type="email" placeholder="Email address" required value={email} onChange={(e) => setEmail(e.target.value)} />
           </label>
           <button type="submit" disabled={loading}>
@@ -294,10 +304,10 @@ export function AuthForm({
     );
   }
 
-  // Modal, "oauth-only" step: this email only has Google/Facebook/LinkedIn
-  // sign-in on file — no password to collect, so just point at the right
-  // button instead of showing a form that can't work.
-  if (isModal && modalStep === "oauth-only") {
+  // "oauth-only" step (both variants): this email only has Google/Facebook/
+  // LinkedIn sign-in on file — no password to collect, so just point at the
+  // right button instead of showing a form that can't work.
+  if (modalStep === "oauth-only") {
     const names = existingProviders.map((provider) => PROVIDER_LABELS[provider] ?? provider).join(" or ");
     return (
       <div>
@@ -310,9 +320,9 @@ export function AuthForm({
     );
   }
 
-  // Modal, steps "login"/"signup": the email from step 1 is shown (with a
-  // way back to change it) instead of asking for it again.
-  const emailStepHeader = isModal && (
+  // Steps "login"/"signup" (both variants): the email from step 1 is shown
+  // (with a way back to change it) instead of asking for it again.
+  const emailStepHeader = (
     <p className="auth-modal-email-step">
       {email} {changeEmailButton}
     </p>
@@ -323,18 +333,12 @@ export function AuthForm({
       {emailStepHeader}
       {effectiveMode === "signup" && (
         <label>
-          {variant === "page" && "Full name"}
+          <span className="sr-only">Full name</span>
           <input type="text" placeholder="Full name" required value={name} onChange={(e) => setName(e.target.value)} />
         </label>
       )}
-      {!isModal && (
-        <label>
-          {variant === "page" && "Email"}
-          <input type="email" placeholder="Email address" required value={email} onChange={(e) => setEmail(e.target.value)} />
-        </label>
-      )}
       <label>
-        {variant === "page" && "Password"}
+        <span className="sr-only">Password</span>
         <input
           type="password"
           placeholder="Password"
@@ -351,22 +355,12 @@ export function AuthForm({
       )}
       {error && <p className="auth-error">{error}</p>}
       <button type="submit" disabled={loading}>
-        {loading ? "Please wait…" : effectiveMode === "signup" ? (isModal ? "Continue" : "Create account") : "Log in"}
+        {loading ? "Please wait…" : effectiveMode === "signup" ? "Continue" : "Log in"}
       </button>
     </form>
   );
 
-  if (variant === "modal") {
-    // modalStep "login"/"signup" land here — just the details form, no
-    // social buttons repeated a second time (already shown at the email step).
-    return <div>{formFields}</div>;
-  }
-
-  return (
-    <div>
-      {formFields}
-      <div className="auth-divider">Or continue with</div>
-      {socialButtons}
-    </div>
-  );
+  // No social buttons repeated a second time here for either variant —
+  // already shown once at the email step above.
+  return <div>{formFields}</div>;
 }

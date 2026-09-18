@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode as RNode } from "react";
 import Link from "next/link";
 import { Bell, Building2, ShieldCheck, X } from "lucide-react";
-import { AuthForm } from "@/components/auth/auth-form";
+import { AUTH_STEP_TITLES, AuthForm, type ModalStep } from "@/components/auth/auth-form";
 
 type ModalMode = "login" | "signup";
 
@@ -37,15 +37,8 @@ export function useAuthModal() {
 // Every open starts at "email" (regardless of whether a "Log in" or "Sign
 // up" button triggered it) with the same enticing headline; submitting
 // that field looks the address up and the form becomes a login or signup
-// screen accordingly. See AuthForm's ModalStep type for the step names.
-type ModalStep = "email" | "login" | "signup" | "oauth-only";
-const EMAIL_STEP_TITLE = "Register/Sign In";
-const STEP_TITLES: Record<ModalStep, string> = {
-  email: EMAIL_STEP_TITLE,
-  login: "Log in to LankaNewHomes",
-  signup: "Almost done — set a password",
-  "oauth-only": "Log in to LankaNewHomes",
-};
+// screen accordingly. Step names/titles come from auth-form.tsx — shared
+// with the standalone /login and /signup pages (page-auth-shell.tsx).
 
 export function AuthModalProvider({ children }: { children: RNode }) {
   const [state, setState] = useState<{ open: boolean; mode: ModalMode; redirectTo: string }>({
@@ -81,10 +74,9 @@ export function AuthModalProvider({ children }: { children: RNode }) {
               <X className="h-5 w-5" aria-hidden="true" />
             </button>
 
-            <h2 className="auth-modal-title">{STEP_TITLES[modalStep]}</h2>
+            <h2 className="auth-modal-title">{AUTH_STEP_TITLES[modalStep]}</h2>
 
             <AuthForm
-              mode={state.mode}
               redirectTo={state.redirectTo}
               variant="modal"
               onStepChange={setModalStep}
