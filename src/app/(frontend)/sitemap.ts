@@ -28,12 +28,24 @@ export const revalidate = 3600;
 // "/construction-companies" URL is already in constructionCompanyRoutes
 // below (constructionCompanyPages has its own config entry for it), so
 // adding it again here would duplicate that sitemap entry.
+// Next.js's own sitemap serializer drops <image:loc>${image}</image:loc>
+// straight into the XML with zero escaping (confirmed in
+// next/dist/build/webpack/loaders/metadata/resolve-route-data.js) — any
+// unescaped "&" breaks the whole document. Every Unsplash neighborhood
+// hero URL has "&" in its query string (?q=85&w=2400&auto=format...),
+// which is exactly what Google Search Console flagged as a parsing error
+// (2026-09-18, line 603). Escaping it ourselves is the only fix available
+// short of patching Next.js.
+function escapeXml(value: string): string {
+  return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
+}
+
 // A record with no photo yet (null/undefined heroImage/logo) must not
 // produce an <image:loc>null</image:loc> — Google Search Console flagged
 // exactly this as an "Invalid URL" parsing error (2026-09-17) on projects,
 // developers, and neighborhoods with a missing image.
 function imagesOrEmpty(image: string | null | undefined): string[] {
-  return image ? [image] : [];
+  return image ? [escapeXml(image)] : [];
 }
 
 function companyProfileRoutes(basePath: string, companies: CompanyProfile[], now: Date, includeBasePath = true): MetadataRoute.Sitemap {
