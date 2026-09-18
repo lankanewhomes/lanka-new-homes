@@ -10,19 +10,24 @@ import { ListingGridCard } from "@/components/marketplace/listing-page";
 import { allProjectCategories } from "@/lib/listing-categories";
 import type { HeroAd, Project } from "@/types";
 
+// Real photos of each city (Wikimedia Commons), replacing generic Unsplash
+// stock photos that weren't actually of these places. Kandy's original
+// requested filename ("Sri Lanka -029- Kandy Temple of the Tooth.jpg")
+// no longer exists on Commons — substituted a real Temple of the Tooth
+// photo instead (same subject, different upload).
 const neighborhoods = [
-  { name: "Colombo", image: "https://images.unsplash.com/photo-1590490360182-c33d57733427?q=80&w=900&auto=format&fit=crop" },
-  { name: "Kandy", image: "https://images.unsplash.com/photo-1546708973-b339540b5162?q=80&w=900&auto=format&fit=crop" },
-  { name: "Galle", image: "https://images.unsplash.com/photo-1531572753322-ad063cecc140?q=80&w=900&auto=format&fit=crop" },
-  { name: "Negombo", image: "https://images.unsplash.com/photo-1519046904884-53103b34b206?q=80&w=900&auto=format&fit=crop" },
-  { name: "Ella", image: "https://images.unsplash.com/photo-1587474260584-136574528ed5?q=80&w=900&auto=format&fit=crop" },
-  { name: "Jaffna", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=900&auto=format&fit=crop" },
-  { name: "Nuwara Eliya", image: "https://images.unsplash.com/photo-1566296314736-6eaac1ca0cb9?q=80&w=900&auto=format&fit=crop" },
-  { name: "Trincomalee", image: "https://images.unsplash.com/photo-1610641818989-c2051b5e2cfd?q=80&w=900&auto=format&fit=crop" },
-  { name: "Bentota", image: "https://images.unsplash.com/photo-1586861203927-800a5acdcc4d?q=80&w=900&auto=format&fit=crop" },
-  { name: "Matara", image: "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?q=80&w=900&auto=format&fit=crop" },
-  { name: "Anuradhapura", image: "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?q=80&w=900&auto=format&fit=crop" },
-  { name: "Kurunegala", image: "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?q=80&w=900&auto=format&fit=crop" },
+  { name: "Colombo", image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/06/Colombo_City%2C_Sri_Lanka.jpg/960px-Colombo_City%2C_Sri_Lanka.jpg" },
+  { name: "Kandy", image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f3/SL_Kandy_asv2020-01_img34_Sacred_Tooth_Temple.jpg/960px-SL_Kandy_asv2020-01_img34_Sacred_Tooth_Temple.jpg" },
+  { name: "Galle", image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/ce/Galle_Sri_Lanka.jpg/960px-Galle_Sri_Lanka.jpg" },
+  { name: "Negombo", image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/97/Negombo_Beach%2C_Sri_Lanka.jpg/960px-Negombo_Beach%2C_Sri_Lanka.jpg" },
+  { name: "Ella", image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0e/Nine_Arches_Bridge_in_Ella.jpg/960px-Nine_Arches_Bridge_in_Ella.jpg" },
+  { name: "Jaffna", image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/95/Jaffna_Fort.jpg/960px-Jaffna_Fort.jpg" },
+  { name: "Nuwara Eliya", image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2e/Nuwara_Eliya_Gregory_Lake.jpg/960px-Nuwara_Eliya_Gregory_Lake.jpg" },
+  { name: "Trincomalee", image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/91/Tricomalee_Sri_Lanka.jpg/960px-Tricomalee_Sri_Lanka.jpg" },
+  { name: "Bentota", image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/79/Bentota_River_in_Dharga%2C_Sri_Lanka.jpg/960px-Bentota_River_in_Dharga%2C_Sri_Lanka.jpg" },
+  { name: "Matara", image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5a/StarfortMatara.jpg/960px-StarfortMatara.jpg" },
+  { name: "Anuradhapura", image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ad/Ruwanwelisaya_Stupa_Anuradhapura.jpg/960px-Ruwanwelisaya_Stupa_Anuradhapura.jpg" },
+  { name: "Kurunegala", image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bb/Kurunegala_Sri_Lanka.JPG/960px-Kurunegala_Sri_Lanka.JPG" },
 ];
 
 // Popular-searches SEO footer block — realcommercial.com.au-style columns of

@@ -45,6 +45,11 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "*.supabase.co",
       },
+      {
+        // Homepage "Explore by city" tiles' real city photos.
+        protocol: "https",
+        hostname: "thumb.wikimedia.org",
+      },
     ],
   },
   // /projects/colombo/luxury was already live and possibly indexed/bookmarked
