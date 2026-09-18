@@ -15,7 +15,13 @@ export const Developers: CollectionConfig = {
     baseListFilter: async ({ req }) => {
       if (isAdmin(req)) return null
       const ownedIds = await getOwnedDeveloperIds(req)
-      return ownedIds.length > 0 ? { id: { in: ownedIds } } : null
+      // A `null` filter means "no restriction" to Payload — returning it for
+      // an account with zero owned companies (e.g. a developer account not
+      // yet linked to one) exposed every developer's profile in the /cms
+      // list view. -1 is the established "matches no real row" sentinel for
+      // an integer id column (same convention as AdminDashboard.tsx/
+      // Subscriptions.ts) — the safe default is to show nothing, not everything.
+      return { id: { in: ownedIds.length > 0 ? ownedIds : [-1] } }
     },
   },
   access: {
