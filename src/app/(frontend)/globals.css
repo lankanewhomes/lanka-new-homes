@@ -1872,9 +1872,9 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   }
 
   .listing-photo-lightbox-tabs {
-    margin-top: 22px;
-    padding-top: 22px;
-    padding-bottom: 18px;
+    margin-top: 18px;
+    padding-top: 18px;
+    padding-bottom: 12px;
     justify-content: flex-start;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;

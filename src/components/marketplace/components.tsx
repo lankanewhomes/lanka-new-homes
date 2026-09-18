@@ -1137,6 +1137,15 @@ export function ProjectHero({
                   {t("Videos")} <span className="listing-photo-lightbox-tab-count">{videoCount}</span>
                 </button>
               )}
+              {/* Not a viewer tab — opens the brochure request dialog over the
+                  lightbox, same as the hero's Brochure pill. Always shown, for
+                  the same reason that pill is (lead capture with or without a
+                  real PDF behind it). Owner's requested tab order: Photos,
+                  Videos, Brochure, Maps, then everything else, Street View
+                  last. */}
+              <button type="button" className="listing-photo-lightbox-brochure" onClick={openBrochureRequest}>
+                <FileText className="h-4 w-4" aria-hidden="true" /> {t("Brochure")}
+              </button>
               {hasMap && (
                 <button
                   type="button"
@@ -1192,13 +1201,6 @@ export function ProjectHero({
                   Street View
                 </button>
               )}
-              {/* Not a viewer tab — opens the brochure request dialog over the
-                  lightbox, same as the hero's Brochure pill. Always shown, for
-                  the same reason that pill is (lead capture with or without a
-                  real PDF behind it). */}
-              <button type="button" className="listing-photo-lightbox-brochure" onClick={openBrochureRequest}>
-                <FileText className="h-4 w-4" aria-hidden="true" /> {t("Brochure")}
-              </button>
             </div>
           </div>
 
