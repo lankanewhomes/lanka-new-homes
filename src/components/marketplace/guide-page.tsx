@@ -6,7 +6,7 @@ const PAGE_LABELS: Record<string, string> = {
   "/projects": "All New Projects",
   "/projects/pre-construction": "Pre-Construction",
   "/projects/colombo": "Colombo",
-  "/projects/colombo/luxury": "Colombo Luxury",
+  "/projects/luxury": "Luxury Projects",
   "/projects/branded-residences": "Branded Residences",
   "/projects/villas": "Villas",
   "/projects/beachfront": "Beachfront",

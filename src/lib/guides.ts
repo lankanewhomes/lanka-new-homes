@@ -45,7 +45,7 @@ export const guides: Record<string, Guide> = {
       { question: "Can foreigners buy an apartment below the 4th floor?", answer: "Direct freehold ownership below the 4th floor is restricted, but foreign buyers can still access these units through a locally incorporated company or a long-term lease structure." },
       { question: "How do foreign buyers pay for property in Sri Lanka?", answer: "Funds are typically remitted in foreign currency through an Inward Investment Account (IIA) opened at a licensed commercial bank in Sri Lanka." },
     ],
-    relatedPaths: ["/guides/investment-property", "/guides/golden-visa", "/projects/colombo/luxury"],
+    relatedPaths: ["/guides/investment-property", "/guides/golden-visa", "/projects/luxury"],
   },
   "investment-property": {
     slug: "investment-property",
@@ -97,7 +97,7 @@ export const guides: Record<string, Guide> = {
       { question: "Does buying property in Sri Lanka grant residency?", answer: "Qualifying property investment above the government-set threshold can support a residency application under Sri Lanka's investment-based visa routes — confirm current thresholds with an immigration advisor, as policy can change." },
       { question: "What property qualifies for the golden visa route?", answer: "New condominium units eligible for foreign freehold ownership are the most common qualifying purchase; land and lower-floor units generally do not qualify directly." },
     ],
-    relatedPaths: ["/guides/foreigners-buying-property", "/projects/colombo/luxury", "/projects/port-city-colombo"],
+    relatedPaths: ["/guides/foreigners-buying-property", "/projects/luxury", "/projects/port-city-colombo"],
   },
 };
 

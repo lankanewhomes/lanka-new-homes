@@ -2,10 +2,10 @@ import { getAllProjects } from "@/lib/project-store";
 import { ProjectListingShell } from "@/components/marketplace/listing-shell";
 import { projectCategories, buildCategoryMetadata } from "@/lib/listing-categories";
 
-const category = projectCategories["colombo-luxury"];
+const category = projectCategories["luxury"];
 export const metadata = buildCategoryMetadata(category);
 
-export default async function ColomboLuxuryPage() {
+export default async function LuxuryProjectsPage() {
   const projects = (await getAllProjects()).filter(category.filter);
 
   return (

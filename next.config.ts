@@ -47,6 +47,18 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // /projects/colombo/luxury was already live and possibly indexed/bookmarked
+  // before the "luxury" category was broadened to cover all of Sri Lanka
+  // (2026-09-18), not just Colombo, and moved to /projects/luxury.
+  async redirects() {
+    return [
+      {
+        source: "/projects/colombo/luxury",
+        destination: "/projects/luxury",
+        permanent: true,
+      },
+    ];
+  },
   /* config options here */
 };
 

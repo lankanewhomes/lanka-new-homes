@@ -11,7 +11,7 @@ Update this file whenever a new keyword group or page is added.
 | `/projects` | All new projects, Sri Lanka wide | existing, rebuilt |
 | `/projects/pre-construction` | Pre-construction / off-plan / upcoming projects | new |
 | `/projects/colombo` | Colombo-specific projects | new |
-| `/projects/colombo/luxury` | Colombo luxury apartments/condos | new |
+| `/projects/luxury` | Luxury apartments/condos across Sri Lanka (was Colombo-only until 2026-09-18) | new |
 | `/projects/branded-residences` | Branded residences | new |
 | `/projects/villas` | New villa developments | new |
 | `/projects/beachfront` | Beachfront/resort residences | new |
@@ -120,9 +120,9 @@ property sri lanka
 New apartment projects in colombo, Ongoing apartment projects in colombo,
 Colombo new development real estate
 
-### /projects/colombo/luxury
-New luxury apartments colombo, New condominiums colombo, New apartments for
-sale colombo
+### /projects/luxury
+New luxury apartments sri lanka, New luxury condominiums sri lanka, New
+luxury apartments for sale sri lanka
 
 ### /projects/branded-residences
 Branded residences sri lanka
@@ -200,9 +200,10 @@ every other page — no separate data source. Defined in
 
 - **pre-construction** — status is "Coming Soon" or "Launching Soon"
 - **colombo** — district is Colombo, or city/location contains "Colombo"
-- **colombo/luxury** — Colombo filter AND (type is Condominium/Apartments OR
-  starting price ≥ Rs. 40M) — a heuristic since there's no explicit "luxury"
-  field; adjust the threshold in code as real inventory comes in
+- **luxury** — type is Condominium/Apartments OR starting price ≥ Rs. 40M,
+  anywhere in Sri Lanka (was Colombo-only until 2026-09-18, broadened on the
+  owner's request) — a heuristic since there's no explicit "luxury" field;
+  adjust the threshold in code as real inventory comes in
 - **branded-residences** — name/description/type contains "branded residence"
 - **villas** — type is "Villas"
 - **beachfront** — city/location matches a known beach town, or
@@ -254,7 +255,7 @@ fields (e.g. a `tags: string[]` on `Project`) instead of text matching.
      pages (`src/app/projects/[slug]/page.tsx`) — left as-is.
 7. **Internal linking** — every category/guide/company page renders a
    "related pages" block linking to semantically adjacent pages (e.g.
-   `/projects/colombo` links to `/projects/colombo/luxury` and
+   `/projects/colombo` links to `/projects/luxury` and
    `/projects/pre-construction`). Edit `relatedPaths` in each config file to
    change these.
 8. **Breadcrumbs** — every new page renders visible breadcrumbs

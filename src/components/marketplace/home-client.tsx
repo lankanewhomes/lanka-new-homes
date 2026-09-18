@@ -56,7 +56,7 @@ const SEO_LINK_GROUPS: { title: string; links: { label: string; href: string }[]
     title: "Apartments & condominiums",
     links: [
       { label: "Apartments for sale in Colombo", href: "/projects/colombo" },
-      { label: "New luxury apartments in Colombo", href: "/projects/colombo/luxury" },
+      { label: "New luxury apartments in Sri Lanka", href: "/projects/luxury" },
       { label: "Port City Colombo apartments", href: "/projects/port-city-colombo" },
       { label: "Apartments for sale in Dehiwala", href: "/projects?type=Apartments&location=Dehiwala" },
       { label: "Serviced apartments in Sri Lanka", href: "/projects/serviced-apartments" },
