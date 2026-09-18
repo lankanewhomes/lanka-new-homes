@@ -17,25 +17,37 @@ const PAGE_LABELS: Record<string, string> = {
   "/guides/golden-visa": "Golden Visa Guide",
 };
 
+const GUIDE_EYEBROWS: Record<string, string> = {
+  "foreigners-buying-property": "Buyer's Guide",
+  "investment-property": "Investor's Guide",
+  "golden-visa": "Residency Guide",
+};
+
 export function GuidePageShell({ guide }: { guide: Guide }) {
   const breadcrumbJsonLd = buildBreadcrumbJsonLd(guide.breadcrumbs);
   const faqJsonLd = buildFaqJsonLd(guide.faqs);
 
   return (
-    <article className="guide-page space-y-6">
+    <article className="guide-page">
       <script {...jsonLdScriptProps(breadcrumbJsonLd)} />
       {guide.faqs.length > 0 ? <script {...jsonLdScriptProps(faqJsonLd)} /> : null}
 
       <div className="guide-page-intro">
+        <p className="guide-page-eyebrow">{GUIDE_EYEBROWS[guide.slug] ?? "Guide"}</p>
         <h1>{guide.h1}</h1>
-        <p>{guide.intro}</p>
+        <div className="guide-page-answer">
+          <p>{guide.intro}</p>
+        </div>
       </div>
 
       <div className="guide-page-sections">
-        {guide.sections.map((section) => (
+        {guide.sections.map((section, index) => (
           <section key={section.heading} className="guide-page-section">
-            <h2>{section.heading}</h2>
-            <p>{section.body}</p>
+            <span className="guide-page-section-number">{String(index + 1).padStart(2, "0")}</span>
+            <div>
+              <h2>{section.heading}</h2>
+              <p>{section.body}</p>
+            </div>
           </section>
         ))}
       </div>
@@ -53,8 +65,8 @@ export function GuidePageShell({ guide }: { guide: Guide }) {
       ) : null}
 
       {guide.relatedPaths.length > 0 ? (
-        <nav className="listing-related-links" aria-label="Related pages">
-          <p>Related pages:</p>
+        <nav className="guide-page-related" aria-label="Related pages">
+          <p>Keep exploring</p>
           <ul>
             {guide.relatedPaths.map((path) => (
               <li key={path}>

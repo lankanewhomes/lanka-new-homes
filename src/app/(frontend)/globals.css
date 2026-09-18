@@ -9700,38 +9700,73 @@ a.developer-profile-press-title {
    stacked text with minimal hierarchy. */
 .guide-page {
   width: min(820px, calc(100% - 48px));
-  margin: 40px auto 90px;
+  margin: 48px auto 90px;
+}
+
+.guide-page-eyebrow {
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #f47b36;
+  margin-bottom: 14px;
 }
 
 .guide-page-intro h1 {
-  font-size: 34px;
+  font-size: 40px;
   font-weight: 700;
-  line-height: 1.2;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
   color: #1f1f1f;
-  margin-bottom: 12px;
+  margin-bottom: 24px;
+  text-wrap: balance;
 }
 
-.guide-page-intro p {
+/* Every guide's intro paragraph is already a direct answer to the H1
+   question ("Yes - foreigners can buy...") — pulling it into a visually
+   distinct callout instead of a plain gray paragraph puts the actual
+   answer where a skimming reader looks first. */
+.guide-page-answer {
+  background: #faf7f0;
+  border-left: 3px solid #f47b36;
+  padding: 20px 24px;
+  margin-bottom: 8px;
+}
+
+.guide-page-answer p {
   font-size: 17px;
   line-height: 1.6;
-  color: #6b6355;
+  color: #3a382f;
+  font-weight: 500;
 }
 
 .guide-page-sections {
   display: grid;
-  gap: 8px;
+  margin-top: 12px;
 }
 
 .guide-page-section {
-  padding: 28px 0;
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 20px;
+  padding: 30px 0;
   border-top: 1px solid #eee8db;
 }
 
+.guide-page-section-number {
+  font-size: 22px;
+  font-weight: 700;
+  color: #e4cdb8;
+  line-height: 1.3;
+  font-variant-numeric: tabular-nums;
+}
+
 .guide-page-section h2 {
-  font-size: 21px;
+  font-size: 22px;
   font-weight: 700;
   color: #1f1f1f;
   margin-bottom: 10px;
+  text-wrap: balance;
 }
 
 .guide-page-section p {
@@ -9740,9 +9775,22 @@ a.developer-profile-press-title {
   color: #4a4a4a;
 }
 
+@media (max-width: 560px) {
+  .guide-page-intro h1 {
+    font-size: 30px;
+  }
+  .guide-page-section {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  .guide-page-section-number {
+    color: #f47b36;
+  }
+}
+
 .guide-page-faq {
   margin-top: 12px;
-  padding-top: 28px;
+  padding-top: 30px;
   border-top: 1px solid #eee8db;
 }
 
@@ -9802,12 +9850,43 @@ a.developer-profile-press-title {
   color: #4a4a4a;
 }
 
-/* Guide pages keep the narrow reading width for related links too — the
-   1290px directory-grid width from .listing-related-links's base rule
-   would look oddly wide sitting under a 820px column of prose. */
-.guide-page .listing-related-links {
-  width: 100%;
-  margin: 0;
+.guide-page-related {
+  margin-top: 44px;
+  padding-top: 30px;
+  border-top: 1px solid #eee8db;
+}
+
+.guide-page-related p {
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #9a9282;
+  margin-bottom: 12px;
+}
+
+.guide-page-related ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+}
+
+.guide-page-related a {
+  display: inline-block;
+  padding: 9px 16px;
+  border: 1px solid #e4e2db;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #1f1f1f;
+  text-decoration: none;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.guide-page-related a:hover {
+  border-color: #f47b36;
+  color: #f47b36;
 }
 
 /* Admin field info tooltips */
