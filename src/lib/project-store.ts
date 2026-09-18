@@ -28,6 +28,7 @@ function withFloorPlanSlugs(floorPlans: FloorPlan[]): FloorPlan[] {
 type ProjectRow = {
   slug: string;
   data: Project;
+  created_at: string;
 };
 
 // Smallest–largest floor-plan size, e.g. "1,300–1,700" (bare — the "SqFt"
@@ -51,6 +52,12 @@ function rowToProject(row: ProjectRow): Project {
     slug: row.slug,
     floorPlans,
     floorAreaRange: typedRange && typedRange !== "-" ? typedRange : deriveFloorAreaRange(floorPlans) || "-",
+    // Row's own created_at (when this listing was actually added to the
+    // platform), not row.data — the JSON blob never carried this, so the
+    // homepage's "new listings" shelf was sorting by launchDate (the
+    // developer's own marketed launch date, often unset) instead, which
+    // left it showing the same handful of listings indefinitely.
+    createdAt: row.created_at,
   };
 }
 
@@ -83,7 +90,7 @@ function isPublished(project: Project): boolean {
 }
 
 export async function getAllProjects(): Promise<Project[]> {
-  const { data, error } = await supabaseAdmin.from("projects").select("slug, data");
+  const { data, error } = await supabaseAdmin.from("projects").select("slug, data, created_at");
   if (error) throw new Error(`Failed to load projects: ${error.message}`);
   return (data ?? []).map((row) => rowToProject(row as ProjectRow)).filter(isPublished);
 }
@@ -91,7 +98,7 @@ export async function getAllProjects(): Promise<Project[]> {
 // Unfiltered — includes drafts. Only for internal use (the developer preview
 // link, and update/create below where a draft must still be readable/writable).
 export async function getProjectBySlugRaw(slug: string): Promise<Project | undefined> {
-  const { data, error } = await supabaseAdmin.from("projects").select("slug, data").eq("slug", slug).maybeSingle();
+  const { data, error } = await supabaseAdmin.from("projects").select("slug, data, created_at").eq("slug", slug).maybeSingle();
   if (error) throw new Error(`Failed to load project ${slug}: ${error.message}`);
   return data ? rowToProject(data as ProjectRow) : undefined;
 }

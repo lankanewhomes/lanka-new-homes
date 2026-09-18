@@ -208,14 +208,22 @@ export function HomeClient({ projects, lands = [] }: { projects: Project[]; land
     () => [...projects].filter((project) => project.isFeatured).sort((a, b) => (b.finalScore ?? 0) - (a.finalScore ?? 0)).slice(0, 4),
     [projects]
   );
+  // Sorted by createdAt (when the row was actually added here), not
+  // launchDate (the developer's own marketed date, often unset) — sorting
+  // by launchDate meant a project with no launchDate could never surface on
+  // this shelf, and the same handful of projects with one set showed up
+  // indefinitely regardless of what was actually added recently.
   const newListings = useMemo(() => {
     const featuredSlugs = new Set(featuredProjects.map((project) => project.slug));
     return [...projects]
       .filter((project) => !featuredSlugs.has(project.slug))
-      .sort((a, b) => (b.launchDate ?? "").localeCompare(a.launchDate ?? ""))
+      .sort((a, b) => (b.createdAt ?? "").localeCompare(a.createdAt ?? ""))
       .slice(0, 8);
   }, [projects, featuredProjects]);
-  const landListings = useMemo(() => lands.slice(0, 8), [lands]);
+  const landListings = useMemo(
+    () => [...lands].sort((a, b) => (b.createdAt ?? "").localeCompare(a.createdAt ?? "")).slice(0, 8),
+    [lands]
+  );
   const searchSuggestions = useMemo(() => {
     const query = searchTerm.trim().toLowerCase();
     if (!query) return [];

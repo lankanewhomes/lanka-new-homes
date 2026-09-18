@@ -244,6 +244,10 @@ export type OfficeHoursEntry = {
 export type Project = SeoFields & {
   slug: string;
   name: string;
+  /** When this row was actually created in the database — not shown on the
+   * public listing page, used only to sort "new listings" shelves by real
+   * recency instead of the developer's own (often-unset) launchDate. */
+  createdAt?: string;
   developerSlug: string;
   developerName: string;
   architectName?: string;
@@ -421,6 +425,9 @@ export type LandSellerType = "developer" | "construction_company" | "builder";
 export type Land = SeoFields & {
   slug: string;
   title: string;
+  /** When this row was actually created in the database — used only to sort
+   * "new land listings" shelves by real recency. */
+  createdAt?: string;
   sellerType: LandSellerType;
   /** developers.slug or construction_companies.slug when sellerType links to
    * a real profile page; omitted when sellerType is "builder" with no

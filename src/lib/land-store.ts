@@ -13,10 +13,11 @@ function toSlug(value: string) {
 type LandRow = {
   slug: string;
   data: Land;
+  created_at: string;
 };
 
 function rowToLand(row: LandRow): Land {
-  return { ...row.data, slug: row.slug };
+  return { ...row.data, slug: row.slug, createdAt: row.created_at };
 }
 
 function landToRow(land: Land) {
@@ -37,13 +38,13 @@ function landToRow(land: Land) {
 }
 
 export async function getAllLands(): Promise<Land[]> {
-  const { data, error } = await supabaseAdmin.from("lands").select("slug, data");
+  const { data, error } = await supabaseAdmin.from("lands").select("slug, data, created_at");
   if (error) throw new Error(`Failed to load lands: ${error.message}`);
   return (data ?? []).map((row) => rowToLand(row as LandRow));
 }
 
 export async function getLandBySlug(slug: string): Promise<Land | undefined> {
-  const { data, error } = await supabaseAdmin.from("lands").select("slug, data").eq("slug", slug).maybeSingle();
+  const { data, error } = await supabaseAdmin.from("lands").select("slug, data, created_at").eq("slug", slug).maybeSingle();
   if (error) throw new Error(`Failed to load land ${slug}: ${error.message}`);
   return data ? rowToLand(data as LandRow) : undefined;
 }
