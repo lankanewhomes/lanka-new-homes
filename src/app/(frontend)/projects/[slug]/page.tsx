@@ -135,8 +135,10 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
           ...(developer?.respondsWithinHour ? [{ label: "Responds within 1 hour", kind: "responder" as const }] : []),
           ...(project.package === "featured" || project.package === "premium" ? [{ label: "Verified", kind: "verified" as const }] : []),
           ...(project.startingPriceLkr === 0 ? [{ label: "Contact for pricing", kind: "contact-pricing" as const }] : []),
-          ...(project.availabilityBadge ? [{ label: project.availabilityBadge, kind: "availability" as const }] : []),
-          ...(project.marketingBadges ?? []).map((label) => ({ label, kind: "marketing" as const })),
+          // availabilityBadge/marketingBadges (Limited Units, Popular, BOI
+          // Approved Project, etc.) are deliberately NOT rendered here
+          // (2026-09-18) — kept as editable /cms fields for internal
+          // record-keeping, but the front-end no longer shows them.
           ...(project.locationBadges ?? []).map((label) => ({ label, kind: "location" as const })),
         ]}
       />
