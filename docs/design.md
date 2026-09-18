@@ -1216,6 +1216,41 @@ Linked from: footer brand-column CTA, footer "For developers" column (new
 `/about`'s developer paragraph. All three used to jump straight to the bare
 `/developers/register` form.
 
+**Superseded 2026-09-13**: `/for-developers` was rebuilt as a fully separate
+premium/editorial page — warm paper background, near-black text, the same
+brand orange used sparingly, Fraunces serif (scoped via the page's own
+`next/font` variable) for headlines only. New, unrelated `.fdv-*` class
+namespace; the `.fd-*` system above is untouched and still used as-is by
+`/web-design`. Every photo on the page is a real project's own image
+(hero/gallery/floor-plan/road-map assets pulled live via `getProjectBySlug`
+for a few named real slugs), never stock or a mockup graphic, and the
+closing "live listings" section renders actual `ListingGridCard`s for real
+published projects, not fabricated examples — same "no invented stats"
+rule as above, just applied to a new visual system.
+
+**2026-09-18 addition**: two sections that had been present but too plain
+to be persuasive were rebuilt to actually make the case to a builder:
+- `.fdv-badges`/`.fdv-badge-grid`/`.fdv-badge-card` — a real showcase of
+  the site's actual badge pills (Verified, Responds within 1 hour,
+  Featured, Premium, Move-In Now, Quick Move-In), rendered with their real
+  production CSS classes plus one shared `.fdv-badge-pill` helper that
+  supplies pill shape (those classes normally get their shape from a
+  parent row like `.stats-contact-card-badge`/`.home-card-badge-row`, so
+  they render as bare colored text without it) — each with a one-line,
+  factually accurate description of how it's actually earned. No invented
+  badges.
+- The old "Developer control" panel (`.fdv-control-panel`/`.fdv-control-row`)
+  was a set of labeled bars with hand-picked, meaningless widths and no
+  numbers — replaced with `.fdv-analytics-frame`, a mockup styled to
+  closely resemble the real `ListingAnalyticsPanel.tsx` (same range-preset
+  labels, same stat-card layout, same orange/green line-chart colors used
+  by the real Recharts trend line). Because the numbers in it are
+  illustrative, not a real project's actual figures, it's explicitly
+  captioned "Illustrative example" directly under the panel — the one
+  place on this page that isn't a real screenshot, so it's labeled as such
+  rather than presented as real data (see the "no invented stats" rule
+  above; this is the graphical equivalent of that same rule).
+
 **`/web-design`** (2026-09-10) reuses this same `.fd-*` system for a second,
 unrelated offer — custom project websites, separate from a marketplace
 listing. New `.fd-hero-grid-single` variant (single centered column, no

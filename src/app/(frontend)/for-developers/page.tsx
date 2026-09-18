@@ -307,25 +307,103 @@ export default async function ForDevelopersPage() {
         </div>
       </section>
 
-      {/* 8 — DEVELOPER CONTROL */}
-      <section className="fdv-control" aria-label="Developer dashboard">
+      {/* 7.5 — BADGES */}
+      <section className="fdv-badges" aria-label="Trust badges">
+        <div className="fdv-section-head" data-reveal>
+          <p className="fdv-eyebrow">Trust signals</p>
+          <h2>Badges that make buyers click through.</h2>
+          <p className="fdv-section-sub">
+            Earned automatically from real activity on your listing — never sold, never assigned by hand.
+          </p>
+        </div>
+        <div className="fdv-badge-grid" data-reveal>
+          <div className="fdv-badge-card">
+            <span className="listing-badge-pill badge-verified fdv-badge-pill">
+              <ShieldCheck className="h-3 w-3" aria-hidden="true" /> Verified
+            </span>
+            <p>Shown automatically once a project has an active Featured or Premium package.</p>
+          </div>
+          <div className="fdv-badge-card">
+            <span className="listing-badge-pill badge-responder fdv-badge-pill">
+              <Zap className="h-3 w-3" aria-hidden="true" /> Responds within 1 hour
+            </span>
+            <p>Earned when you reply to at least 80% of inquiries within an hour, over the last 90 days.</p>
+          </div>
+          <div className="fdv-badge-card">
+            <span className="badge-featured fdv-badge-pill">Featured</span>
+            <p>Boosts your project into featured placements across the homepage and search.</p>
+          </div>
+          <div className="fdv-badge-card">
+            <span className="badge-premium fdv-badge-pill">Premium</span>
+            <p>Our highest tier — top placement plus the full analytics dashboard below.</p>
+          </div>
+          <div className="fdv-badge-card">
+            <span className="badge-move-in-now fdv-badge-pill">Move-In Now</span>
+            <p>Marked when a project is fully complete and ready for immediate handover.</p>
+          </div>
+          <div className="fdv-badge-card">
+            <span className="badge-quick-move-in fdv-badge-pill">Quick Move-In</span>
+            <p>Shown automatically when one of your unit types is flagged as quick move-in.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* 8 — ANALYTICS DASHBOARD */}
+      <section className="fdv-control" aria-label="Developer analytics dashboard">
         <div className="fdv-control-copy" data-reveal>
           <p className="fdv-eyebrow">The dashboard</p>
-          <h2>Your projects. Your information. Your control.</h2>
-          <p>Keep your project information current and give buyers a clear, reliable source of information.</p>
+          <h2>See exactly how buyers find your listing.</h2>
+          <p>
+            Views, inquiries, response performance and traffic sources — the same Listing Analytics tab
+            included on every one of your projects from day one.
+          </p>
         </div>
-        <div className="fdv-control-panel" data-reveal aria-hidden="true">
-          {[
-            { label: "Projects" },
-            { label: "Project views" },
-            { label: "Enquiries" },
-            { label: "Active projects" },
-          ].map((row) => (
-            <div className="fdv-control-row" key={row.label}>
-              <span className="fdv-control-row-label">{row.label}</span>
-              <span className="fdv-control-row-bar" />
+        <div className="fdv-control-panel-wrap" data-reveal>
+          <div className="fdv-analytics-frame" aria-hidden="true">
+            <div className="fdv-analytics-toolbar">
+              <span className="fdv-analytics-title">Listing Analytics</span>
+              <div className="fdv-analytics-ranges">
+                <span className="fdv-analytics-range">Last 7 days</span>
+                <span className="fdv-analytics-range fdv-analytics-range-active">Last 28 days</span>
+                <span className="fdv-analytics-range">Last 90 days</span>
+              </div>
             </div>
-          ))}
+            <div className="fdv-analytics-stats">
+              <div className="fdv-analytics-stat">
+                <span className="fdv-analytics-stat-label">Views</span>
+                <span className="fdv-analytics-stat-value">2,145</span>
+              </div>
+              <div className="fdv-analytics-stat">
+                <span className="fdv-analytics-stat-label">Inquiries</span>
+                <span className="fdv-analytics-stat-value">38</span>
+              </div>
+              <div className="fdv-analytics-stat">
+                <span className="fdv-analytics-stat-label">Inquiry rate</span>
+                <span className="fdv-analytics-stat-value">1.8%</span>
+              </div>
+              <div className="fdv-analytics-stat">
+                <span className="fdv-analytics-stat-label">Avg. time on page</span>
+                <span className="fdv-analytics-stat-value">96s</span>
+              </div>
+            </div>
+            <svg className="fdv-analytics-chart" viewBox="0 0 320 90" preserveAspectRatio="none">
+              <polyline
+                className="fdv-analytics-chart-line fdv-analytics-chart-line-views"
+                points="0,60 40,55 80,48 120,50 160,35 200,30 240,20 280,18 320,10"
+              />
+              <polyline
+                className="fdv-analytics-chart-line fdv-analytics-chart-line-inquiries"
+                points="0,82 40,80 80,78 120,75 160,72 200,68 240,60 280,58 320,50"
+              />
+            </svg>
+            <div className="fdv-analytics-legend">
+              <span><i className="fdv-analytics-dot fdv-analytics-dot-views" aria-hidden="true" />Views</span>
+              <span><i className="fdv-analytics-dot fdv-analytics-dot-inquiries" aria-hidden="true" />Inquiries</span>
+            </div>
+          </div>
+          <p className="fdv-analytics-caption">
+            Illustrative example — every developer gets this exact dashboard, live, for each of their own projects.
+          </p>
         </div>
       </section>
 
