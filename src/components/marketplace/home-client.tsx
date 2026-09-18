@@ -74,13 +74,6 @@ const SEO_LINK_GROUPS: { title: string; links: { label: string; href: string }[]
   },
 ];
 
-const fallbackHeroSlides = [
-  "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=85&w=2600&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=85&w=2600&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?q=85&w=2600&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?q=85&w=2600&auto=format&fit=crop",
-];
-
 export function HomeClient({ projects, lands = [] }: { projects: Project[]; lands?: Project[] }) {
   const { language } = useLanguage();
   const router = useRouter();
@@ -106,11 +99,25 @@ export function HomeClient({ projects, lands = [] }: { projects: Project[]; land
       .catch(() => setHeroAds([]));
   }, []);
 
+  // Falls back to real listings (their own hero photo, linking to their own
+  // page) whenever there's no paid hero ad slide to show — previously this
+  // was 4 hardcoded generic Unsplash lifestyle photos all pointing at
+  // /search, none of them an actual project on the site.
+  const fallbackProjectSlides = useMemo(
+    () =>
+      [...projects]
+        .filter((project) => project.heroImage)
+        .sort((a, b) => (b.finalScore ?? 0) - (a.finalScore ?? 0))
+        .slice(0, 4)
+        .map((project) => ({ src: project.heroImage, href: `/projects/${project.slug}`, alt: project.name })),
+    [projects]
+  );
+
   const heroSlides = useMemo(() => (
     heroAds.length > 0
       ? heroAds.map((ad) => ({ src: ad.image, href: ad.linkUrl, alt: ad.headline }))
-      : fallbackHeroSlides.map((src) => ({ src, href: "/search", alt: "Luxury property lifestyle hero image" }))
-  ), [heroAds]);
+      : fallbackProjectSlides
+  ), [heroAds, fallbackProjectSlides]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
