@@ -252,6 +252,23 @@ export interface Developer {
         id?: string | null;
       }[]
     | null;
+  awards?:
+    | {
+        title: string;
+        issuer?: string | null;
+        year?: string | null;
+        description?: string | null;
+        /**
+         * Image URL — or upload a file in Media and paste its URL here.
+         */
+        imageUrl?: string | null;
+        /**
+         * Optional — link to the award announcement/press release.
+         */
+        url?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   socialLinks?: {
     facebook?: string | null;
     instagram?: string | null;
@@ -2694,6 +2711,7 @@ export interface Project {
         | 'Investor Friendly'
         | 'High Rental Potential'
         | 'BOI Approved Project'
+        | 'Hospitality'
       )[]
     | null;
   /**
@@ -7331,6 +7349,17 @@ export interface DevelopersSelect<T extends boolean = true> {
         open?: T;
         from?: T;
         to?: T;
+        id?: T;
+      };
+  awards?:
+    | T
+    | {
+        title?: T;
+        issuer?: T;
+        year?: T;
+        description?: T;
+        imageUrl?: T;
+        url?: T;
         id?: T;
       };
   socialLinks?:

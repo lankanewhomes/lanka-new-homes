@@ -87,6 +87,23 @@ export const Developers: CollectionConfig = {
         { name: 'to', type: 'text', admin: { condition: (_, siblingData) => Boolean(siblingData?.open) } },
       ],
     },
+    {
+      // Same shape as the awards block the other directory collections already
+      // have (businessProfileExtraFields) — added to Developers 2026-09-21 so
+      // credentials (CIDA grade, ISO, Great Place to Work…) show on the
+      // profile's Awards tab, which already renders `awards`.
+      name: 'awards',
+      type: 'array',
+      label: 'Awards & Certifications',
+      fields: [
+        { name: 'title', type: 'text', required: true },
+        { name: 'issuer', type: 'text' },
+        { name: 'year', type: 'text' },
+        { name: 'description', type: 'textarea' },
+        { name: 'imageUrl', type: 'text', label: 'Image URL', admin: { description: 'Image URL — or upload a file in Media and paste its URL here.' } },
+        { name: 'url', type: 'text', label: 'Learn More Link', admin: { description: 'Optional — link to the award announcement/press release.' } },
+      ],
+    },
     socialLinksField,
     {
       name: 'lead_alerts',

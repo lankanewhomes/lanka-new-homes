@@ -77,6 +77,9 @@ const MARKETING_BADGE_OPTIONS = [
   'Investor Friendly',
   'High Rental Potential',
   'BOI Approved Project',
+  // Added 2026-09-20 for hospitality-use projects (Excello's Rudra Wellness
+  // Retreat / Panimozhi Club House) — owner asked for a "Hospitality" badge.
+  'Hospitality',
 ]
 
 const LOCATION_BADGE_OPTIONS = ['Beachfront', 'Ocean View', 'City View', 'Mountain View', 'Nature View', 'Prime Location', 'Gated Community']
