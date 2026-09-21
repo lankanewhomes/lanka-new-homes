@@ -387,6 +387,13 @@ export type Project = SeoFields & {
   /** Utilities/costs the buyer pays on top of maintenance. Shown in the
    * "Pricing and fees" card when set. */
   paidUtilities?: { label: string; value: string }[];
+  /** Optional extras a buyer can add for more money (e.g. a pool upgrade,
+   * an extra studio). Shown as "Optional add-ons" in the "Pricing and fees"
+   * card when set. */
+  pricingAddOns?: { label: string; value: string }[];
+  /** Short notes printed at the foot of the "Pricing and fees" card — e.g.
+   * "Prices published in USD by the developer; converted at …". */
+  pricingNotes?: string[];
 
   // --- Fields added on the Payload side (src/collections/Projects.ts),
   // synced here via src/collections/hooks/sync-to-supabase.ts. No frontend

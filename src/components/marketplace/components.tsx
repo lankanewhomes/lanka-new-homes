@@ -2104,6 +2104,8 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
     : (depositStructure ?? "").split(";").map((item) => item.trim()).filter((item) => hasDisplayValue(item));
   const includedUtilities = project.includedUtilities?.filter((item) => hasDisplayValue(item)) ?? [];
   const paidUtilities = project.paidUtilities?.filter((item) => hasDisplayValue(item.label) && hasDisplayValue(item.value)) ?? [];
+  const addOns = project.pricingAddOns?.filter((item) => hasDisplayValue(item.label) && hasDisplayValue(item.value)) ?? [];
+  const pricingNotes = project.pricingNotes?.filter((note) => hasDisplayValue(note)) ?? [];
 
   const pricingFields = [
     { label: "Available plan prices", value: project.availablePlanPrices },
@@ -2114,6 +2116,7 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
     { label: "Parking cost", value: project.parkingCost },
     { label: "Storage cost", value: project.storageCost },
     { label: "ⓘ Co-op fee realtors", value: project.coopFeeRealtors },
+    { label: "Expected rental income", value: project.rentalIncome },
   ].filter((field) => hasDisplayValue(field.value) && !(floorPlan && field.label === "Available plan prices"));
 
   // Every listing gets a Pricing section — the sticky nav always links to
@@ -2129,7 +2132,7 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
   const planPrices = (floorPlan ? project.floorPlans.filter((plan) => plan.id === floorPlan.id) : project.floorPlans)
     .filter((plan) => plan.startingPriceLkr > 0)
     .map((plan) => `${plan.planName} — ${formatLkr(plan.startingPriceLkr)}`);
-  const hasAnyPricingDetail = Boolean(startingPrice) || planPrices.length > 0 || pricingFields.length > 0 || pricingHistory.length > 0 || includedUtilities.length > 0 || paidUtilities.length > 0;
+  const hasAnyPricingDetail = Boolean(startingPrice) || planPrices.length > 0 || addOns.length > 0 || pricingFields.length > 0 || pricingHistory.length > 0 || includedUtilities.length > 0 || paidUtilities.length > 0;
 
   const hasPricingCard = true;
   const hasDepositCard = paymentLines.length > 0;
@@ -2176,6 +2179,16 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
                     </div>
                   </div>
                 ) : null}
+                {addOns.length > 0 ? (
+                  <div>
+                    <p className="font-semibold">Optional add-ons</p>
+                    <div className="space-y-1">
+                      {addOns.map((item) => (
+                        <p key={item.label}>{item.label}: {item.value}</p>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
                 {!hasAnyPricingDetail ? <p>Contact us for current pricing and availability.</p> : null}
                 {pricingFields.map((field) => (
                   <div key={field.label}>
@@ -2207,6 +2220,11 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
                         <p key={item.label}>{item.label}: {item.value}</p>
                       ))}
                     </div>
+                  </div>
+                ) : null}
+                {pricingNotes.length > 0 ? (
+                  <div className="space-y-2 border-t border-[#c9ddf5] pt-4 text-[13px] leading-6 text-[#5d6560]">
+                    {pricingNotes.map((note, index) => <p key={`${note}-${index}`}>{note}</p>)}
                   </div>
                 ) : null}
               </div>

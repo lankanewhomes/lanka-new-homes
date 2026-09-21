@@ -377,6 +377,23 @@ export const Projects: CollectionConfig = {
             { name: 'coopFeeRealtors', type: 'text' },
             { name: 'depositPaymentStructure', type: 'text' },
             { name: 'incentives', type: 'text', hasMany: true },
+            {
+              name: 'pricingAddOns',
+              type: 'array',
+              label: 'Optional Add-ons',
+              admin: { description: 'Extras a buyer can add for more money, e.g. "Infinity pool upgrade" → "+$7,900-$15,800". Shown in the Pricing card.' },
+              fields: [
+                { name: 'label', type: 'text', required: true },
+                { name: 'value', type: 'text', required: true },
+              ],
+            },
+            {
+              name: 'pricingNotes',
+              type: 'text',
+              hasMany: true,
+              label: 'Pricing Notes',
+              admin: { description: 'Short notes shown at the foot of the Pricing card, e.g. the currency the developer publishes in and the exchange rate used, or how foreign buyers purchase.' },
+            },
             { name: 'includedUtilities', type: 'text', hasMany: true, label: 'Included Utilities' },
             {
               name: 'paidUtilities',

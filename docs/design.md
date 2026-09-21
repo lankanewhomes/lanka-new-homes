@@ -925,6 +925,19 @@ the label, plan drawings → `floor-plans/`.
   `averagePricePerSqft` as a display string such as "Rs. 40,000" — it is shown
   as-is.
 
+**Pricing card holds everything a buyer pays or earns — not the description or
+Key Features (owner, 2026-09-21).** Developer pricing data goes in the
+Pricing tab fields, never in prose: payment schedule → `paymentPlanItems`
+(one line per step, "Deposit Structure" card); extras a buyer can add for
+more money → `pricingAddOns` [{label, value}] ("Optional add-ons" in the
+"Pricing and fees" card — not a Key Features group); the developer's own
+rental-yield projection → `rentalIncome` ("Expected rental income", worded as
+the developer's projection, never ours); currency/conversion and purchase
+terms → `pricingNotes` (small grey lines at the foot of the card, e.g. "Prices
+published in USD by the developer ($312,000); converted to LKR at 1 USD =
+333.64 (XE.com, 2026-09-17)…"). Bedroom/bathroom counts go in the project's
+`bedrooms`/`bathrooms` so the Beds/Baths stat chips show — not as a Key
+Features row.
 
 Three developer-published extras added 2026-09-08, all on `FloorPlan` and
 all rendered as fact-sheet rows only when set: `floorAvailability`

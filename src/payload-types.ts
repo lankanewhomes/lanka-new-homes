@@ -2807,6 +2807,20 @@ export interface Project {
   coopFeeRealtors?: string | null;
   depositPaymentStructure?: string | null;
   incentives?: string[] | null;
+  /**
+   * Extras a buyer can add for more money, e.g. "Infinity pool upgrade" → "+$7,900-$15,800". Shown in the Pricing card.
+   */
+  pricingAddOns?:
+    | {
+        label: string;
+        value: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Short notes shown at the foot of the Pricing card, e.g. the currency the developer publishes in and the exchange rate used, or how foreign buyers purchase.
+   */
+  pricingNotes?: string[] | null;
   includedUtilities?: string[] | null;
   paidUtilities?:
     | {
@@ -7515,6 +7529,14 @@ export interface ProjectsSelect<T extends boolean = true> {
   coopFeeRealtors?: T;
   depositPaymentStructure?: T;
   incentives?: T;
+  pricingAddOns?:
+    | T
+    | {
+        label?: T;
+        value?: T;
+        id?: T;
+      };
+  pricingNotes?: T;
   includedUtilities?: T;
   paidUtilities?:
     | T
