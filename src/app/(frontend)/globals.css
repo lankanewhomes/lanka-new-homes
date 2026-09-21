@@ -6100,7 +6100,8 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 .neighborhood-gallery-grid {
   margin-top: 18px;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  /* Four columns so one lead photo (2x2) plus four small ones fill a clean block. */
+  grid-template-columns: repeat(4, 1fr);
   gap: 14px;
 }
 
@@ -6167,6 +6168,17 @@ a.neighborhood-gallery-credit:hover {
     aspect-ratio: 4 / 3;
     min-height: 0;
   }
+}
+
+.neighborhood-hero-credit {
+  margin: -8px 0 0;
+  font-size: 12px;
+  color: #8a8577;
+}
+
+.neighborhood-hero-credit a {
+  color: #8a8577;
+  text-decoration: underline;
 }
 
 /* Small "2 projects" note after a name in the neighborhood directory. */

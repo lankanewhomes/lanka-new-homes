@@ -635,6 +635,9 @@ export type Neighborhood = SeoFields & {
   province: string;
   description: string;
   heroImage: string;
+  /** Photographer credit for `heroImage` (required for Creative Commons photos) — printed under the gallery. */
+  heroImageCredit?: string;
+  heroImageSourceUrl?: string;
   /** More photos of the area (famous landmarks), each with a caption and a
    * photographer credit — shown as a gallery under the overview. */
   gallery?: { url: string; caption?: string; credit?: string; sourceUrl?: string }[];

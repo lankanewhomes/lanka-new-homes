@@ -158,6 +158,17 @@ export default async function NeighborhoodPage({ params }: NeighborhoodPageProps
           </section>
         ) : null}
 
+        {neighborhood.heroImageCredit ? (
+          <p className="neighborhood-hero-credit">
+            Header photo:{" "}
+            {neighborhood.heroImageSourceUrl ? (
+              <a href={neighborhood.heroImageSourceUrl} target="_blank" rel="noopener noreferrer">{neighborhood.heroImageCredit.replace(/^Photo:\s*/i, "")}</a>
+            ) : (
+              neighborhood.heroImageCredit.replace(/^Photo:\s*/i, "")
+            )}
+          </p>
+        ) : null}
+
         <KnownLandmarksSection nearby={neighborhood.nearby ?? []} />
 
         <section className="developer-projects-section">

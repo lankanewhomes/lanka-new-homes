@@ -3911,6 +3911,14 @@ export interface Neighborhood {
    */
   heroImage?: string | null;
   /**
+   * Photographer credit for the hero photo, e.g. "Photo: Zoshua Colah / Unsplash". Required for Creative Commons photos; shown under the photo gallery.
+   */
+  heroImageCredit?: string | null;
+  /**
+   * Link to the original hero photo page (the credit links here).
+   */
+  heroImageSourceUrl?: string | null;
+  /**
    * 3-5 short standout facts shown at the top of the neighborhood page (e.g. "16 km from central Colombo").
    */
   highlights?: string[] | null;
@@ -8308,6 +8316,8 @@ export interface NeighborhoodsSelect<T extends boolean = true> {
   province?: T;
   description?: T;
   heroImage?: T;
+  heroImageCredit?: T;
+  heroImageSourceUrl?: T;
   highlights?: T;
   gallery?:
     | T

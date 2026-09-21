@@ -20,6 +20,8 @@ export const Neighborhoods: CollectionConfig = {
     { name: 'province', type: 'text' },
     { name: 'description', type: 'textarea' },
     { name: 'heroImage', type: 'text', admin: { description: 'Image URL — or upload a file in Media and paste its URL here.' } },
+    { name: 'heroImageCredit', type: 'text', admin: { description: 'Photographer credit for the hero photo, e.g. "Photo: Zoshua Colah / Unsplash". Required for Creative Commons photos; shown under the photo gallery.' } },
+    { name: 'heroImageSourceUrl', type: 'text', admin: { description: 'Link to the original hero photo page (the credit links here).' } },
     {
       name: 'highlights',
       type: 'text',
