@@ -3,7 +3,7 @@
 One file per listing built from a developer's website — what was captured, where it came from, and what is assumed or missing. Regenerate with `NODE_ENV=production npx tsx scripts/listing-reports.ts`; the live record in `/cms` is the source of truth. Open questions across all listings: [FOLLOW-UPS.md](FOLLOW-UPS.md).
 
 - [Oceana Wadduwa](oceana-wadduwa.md) — Mixed-Use, Wadduwa; 10 plans, 62 images, handover —
-- [Rush City (South City Tower)](rush-city-dematagoda.md) — Apartments, Dematagoda; 4 plans, 0 images, brochure, handover 2030
+- [Rush City (South City Tower)](rush-city-dematagoda.md) — Apartments, Dematagoda; 7 plans, 31 images, brochure, handover 2030
 - [Rush Court 5](rush-court-5-colombo-14.md) — Apartments, Colombo 14; 3 plans, 7 images, brochure, handover 2026
 - [Rush Metropolis](rush-metropolis-dehiwala.md) — Apartments, Dehiwala; 7 plans, 5 images, brochure, handover 2028
 - [Rush Residencies, Allen](rush-residencies-allen-dehiwala.md) — Apartments, Dehiwala; 4 plans, 7 images, brochure, handover 2029
@@ -27,3 +27,21 @@ One file per listing built from a developer's website — what was captured, whe
 - [The Residence - Samagi Mawatha Thalawathugoda](the-residence-samagi-mawatha-thalawathugoda.md) — House, Samagi Mawatha, Thalawathugoda; 3 plans, 8 images, brochure, handover —
 - [Water Estate - Moratuwa](water-estate-moratuwa.md) — House, Moratuwa; 15 plans, 8 images, brochure, handover —
 - [Waterfall Residencies - Malabe](waterfall-residencies-malabe.md) — House, Malabe; 3 plans, 8 images, brochure, handover —
+- [Aathavan Apartments](aathavan-apartments-dehiwala.md) — Apartments, Dehiwala; 8 plans, 8 images (Excello)
+- [Panimozhi Club House](panimozhi-club-house-kalkudah.md) — Coastal Retreat (Hospitality), Kalkudah; 0 plans, 7 images (Excello)
+- [Rudra Wellness Retreat](rudra-wellness-retreat-kalkudah.md) — Villas, Kalkudah; 0 plans, 16 images (Excello)
+- [Rush Court 4](rush-court-4-mount-lavinia.md) — Apartments, Mount Lavinia; 4 plans, 13 images, handover 2025
+- [Rush Court 3](rush-court-3-ratmalana.md) — Apartments, Ratmalana; 5 plans, 10 images, handover 2024
+- [Rush Residencies, Watarappala](rush-residencies-watarappala.md) — Apartments, Watarappala; 5 plans, 7 images, handover 2022
+- [Rush Reliance](rush-reliance-mount-lavinia.md) — Apartments, Mount Lavinia; 4 plans, 11 images, handover 2021
+- [Rush Residencies, Kawdana](rush-residencies-kawdana.md) — Apartments, Kawdana; 10 plans, 10 images, handover 2019
+- [Rush Tower](rush-tower-dehiwala.md) — Apartments, Dehiwala; 3 plans, 8 images, handover 2018
+- [Rush Court 2](rush-court-2-kolonnawa.md) — Apartments, Kolonnawa; 8 plans, 9 images, handover 2017
+- [Rush Homes](rush-homes-dehiwala.md) — Apartments, Dehiwala; 4 plans, 6 images, handover 2015
+- [Rush Ebenez](rush-ebenez-dehiwala.md) — Apartments, Dehiwala; 4 plans, 7 images, handover 2014
+- [Rush Residencies, Dehiwala](rush-residencies-dehiwala.md) — Apartments, Dehiwala; 6 plans, 9 images, handover 2013
+- [Rush Palm Grove](rush-palm-grove-colombo-3.md) — Luxury Villas, Colombo 3; 0 plans, 6 images, handover 2012
+- [Rush Park](rush-park-colombo-5.md) — Luxury Villas, Colombo 5; 0 plans, 0 images, handover 2012
+- [Rush Broadway](rush-broadway-grandpass.md) — Apartments, Grandpass; 3 plans, 7 images, handover 2011
+- [Rush Villa](rush-villa-dehiwala.md) — Luxury Villas, Dehiwala; 0 plans, 10 images, handover 2010
+- [Rush Residencies, Colombo 6](rush-residencies-colombo-6.md) — Apartments, Colombo 6; 4 plans, 6 images, handover 2007

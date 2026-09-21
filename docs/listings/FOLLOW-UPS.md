@@ -18,19 +18,26 @@ in the sibling `<slug>.md` files.
 - [ ] Home Lands' Instagram link on oceana.lk is generic (no handle) — not added.
 
 ## Rush City — South City Tower (`rush-city-dematagoda`)
-- [ ] Hero stat on the page reads "28 Residential Apartments" while the brochure says 109 units / 28 residential floors — 109 kept; confirm with Rush.
-- [ ] Expected handover **2030** (page) — the "Move in 2030" badge is on; confirm.
+- [x] ~~Hero stat "28 Residential Apartments" vs 109 units~~ — settled 2026-09-20: the page's per-floor tracker rows sum to exactly 109 (A 25 + B 27 + C 27 + D 27 + 3 first-floor units), matching the brochure; "28" is the residential floor count.
+- [ ] Expected handover **2030** (page says 2030-05-25) — the "Move in 2030" badge is on; confirm.
 - [ ] **Phase 2 (North City Tower)** has no brochure/unit data yet — add a second listing (or extend this one) when it launches.
-- [ ] 6 extra exterior/interior gallery images kept returning 403 from Rush's S3 bucket — retry later (URLs in the listing report).
+- [x] ~~6 extra gallery images returned 403~~ — all 31 site photos mirrored to R2 on 2026-09-20 (9 exterior, 10 interior, 12 common-area).
+- [x] ~~Only Units A–D imported~~ — 1st-floor Aqua Crest / South Crest / Urban Crest added 2026-09-20 with 2D + 3D plans.
 - [ ] No construction tracker on the page yet — add `constructionUpdates` once Rush publishes milestones.
-- [ ] Brochure lists 3 elevators, 10 ft floor-to-floor, gas system — in Key Features; confirm with the developer whether the "Lifestyle" brochure should also be attached.
+- [ ] **Lifestyle brochure** is mirrored to R2 (`brochure/rush-city-dematagoda_lifestyle-brochure.pdf`) but not linked — a project has one `brochureUrl` slot, holding the South City Tower brochure. Decide whether to add a second brochure field.
+- [ ] Units A, C, D show **"Powder room: 1"**, which is really the maid's toilet on the drawings (the maid's room is already recorded) — clear it? (left as-is pending owner's call).
+- [x] ~~Clubhouse / Security had no source~~ — Rush's 18 Aug 2026 blog lists "a clubhouse" and a key-card access system, and the Echelon interview mentions 24/7 smart security, CCTV and gated access, so both stay.
+- [ ] The storefront render at the tower entrance (gallery "Entrance") looks like the **Mini Mart** but no brochure caption says so, so it is not tagged as the Mini Mart amenity photo.
+- [ ] No **Dematagoda neighborhood page** exists (neighborhoods: no `dematagoda`) — the listing has no neighborhood link.
+- [ ] No unit prices or payment plan published anywhere — pricing block shows "Contact us for current pricing and availability."
+- [ ] Rush's own JSON-LD geo for this project (6.8794, 79.8653) is wrong; our pin (6.9315162, 79.8808925) matches their Google Maps link — no change needed, just don't "fix" ours from their JSON-LD.
 
 ## Rush Court 5 (`rush-court-5-colombo-14`)
 - [ ] Tracker shows **Unit A sold out** (all 7 floors) and only floors 1–2 left for B/C — confirm; if the tower is nearly sold, switch project status to "Nearly Sold Out".
 - [ ] Only 2 nearby places on the page (Baseline Road, Pettah) — brochure has no location page; ask for more.
 
 ## Rush Metropolis (`rush-metropolis-dehiwala`)
-- [ ] **Availability tracker shows every floor of every unit sold** while the project is marketed as selling — hidden as a placeholder. Confirm: sold out, or tracker not maintained?
+- [ ] **Answered 2026-09-20: it is sold out.** Rush's own news (16 Sep 2025) says all 125 apartments are sold, with completion still scheduled for 2028; their site also marks it as not open for visits. Our listing still says "Now Selling" — switch the status to Sold Out? (details: `rush-lanka-group-site-review-2026-09-20.md`)
 - [ ] Page sqft (e.g. Unit A 1310) differs slightly from brochure (1312) — page figures used; confirm which is current.
 
 ## Rush Residencies, Allen (`rush-residencies-allen-dehiwala`)
@@ -70,3 +77,31 @@ in the sibling `<slug>.md` files.
 - **"One sample type per project, disclose the rest as uncatalogued" is not sufficient when the user asks for full coverage.** The user caught this directly ("you have missed lots of floor plans... go check all the pages") after the first Prime Lands pass sampled only one type per project. When a source site lists several unit/lot types, the expectation is every type gets its own confirmed entry, not a representative sample — reading ~90 more drawings across 16 projects took a while but surfaced two more real bugs worth checking for going forward (see below).
 - **Always visually check what a "hero" image actually shows, not just that a URL exists.** 14 of 17 Prime Lands heroes turned out to be either a bare project logo (10) or a real photo with a "TYPE X"/"LOT N" label baked in (4) — both misrepresent the whole project. The tell: when a project's own marketing images are per-unit renders (common for house/villa developers who don't have a finished-site photo yet), the *first* gallery image is often the least neutral one, not the best. Check 2–3 gallery photos before picking a hero, and prefer one with no baked-in text at all.
 - **Recheck "leftover" feature bullets before writing off Key Features/Nearby as unavailable.** After matching bullets to amenities and payment-plan terms, what's left over often still contains real specification bullets (A/C, flooring, fittings) and real distance/landmark bullets — both belong in dedicated fields (`unitFeatures`, `nearby`), not just discarded. Don't conclude "this site doesn't publish X" until the full bullet list has been triaged into every field it could feed, not just the first one it matched.
+
+## Excello — Aathavan, Panimozhi, Rudra (created and published 2026-09-20)
+Excello's archive has 7 projects; only these 3 are "In Progress" — completed ones (Sea Esta Villas, Café Kaapi, Bambalapitiya Residence, Coffee Patrol Mobile Cafe) were skipped per the owner's scope. All three went live on 2026-09-20 at the owner's request.
+- [x] ~~Panimozhi: keep or delete?~~ — owner confirmed it is a property that can be bought and run as a hotel (not stated on Excello's site), so it stays.
+- [ ] **Deploy pending** (also: plan pages show only the plan's own pricing and no stand-in building photo; the plan cards drop their photo — see design.md "Floor plan page facts & chips"): the fix that hides "0 bathrooms" (plan page description + plan-card Bath icon) and the new **Hospitality** badge option are uncommitted code changes (`src/app/(frontend)/projects/[slug]/floor-plans/[floorPlanId]/page.tsx`, `src/components/marketplace/components.tsx`, `src/collections/Projects.ts`, `src/payload-types.ts`, `docs/design.md`). Until deployed, Aathavan's plan cards show a Bath icon with "0" and the plan-page description says "0 bathrooms". The database enum is already updated.
+- [ ] **Aathavan**: ask Excello for bathroom counts, floor-plan drawings (their page only says "ask the team about floor plans"), handover date, ownership type, parking count and nearby places — none are published.
+- [ ] **Aathavan availability is a snapshot (2026-09-20: 27 available, 17 reserved)** — Excello's register is updated daily, ours isn't.
+- [ ] **Rudra**: no villa sizes, prices or timeline published (concept stage, status Coming Soon); Excello's archive calls it "In Progress" — confirm.
+- [ ] Pins: Aathavan = centre of Carron Place (lane-level); Panimozhi/Rudra = Kalkudah village centre (approximate, Street View off). Ask for exact sites.
+- [x] ~~No Kalkudah neighborhood page~~ — created 2026-09-21 (`/neighborhoods/kalkudah`: verified facts from Wikipedia, hero = an Unsplash photo tagged Pasikuda by Charuka Herath, free under the Unsplash License); Panimozhi and Rudra link to it, Aathavan links to Dehiwala.
+- [ ] The page `<title>` template in `projects/[slug]/page.tsx` is hardcoded "{name} - New Apartments in {location}" for every listing, so the hotel (Panimozhi) and villa (Rudra) titles say "New Apartments" — site-wide pre-existing behaviour; consider a type-aware title.
+- [ ] Sitemap regenerates hourly (`revalidate = 3600`) — the new project, plan and developer pages appear there within an hour; resubmit in Search Console after that.
+- [ ] Excello Developers profile: verification pending; no socials on their site except WhatsApp; logo is their monogram mark.
+
+## Rush Lanka Group — decisions applied 2026-09-21 (from the 2026-09-20 site review)
+- [x] **Rush Metropolis marked sold out** (Rush's own news, 16 Sep 2025): status Under Construction (there is no project-level "Sold Out" status), all 7 plans Sold Out, sold 125 / available 0, an orange "Sold Out" availability badge, and a note at the top of the description. Backup of the old record was kept locally.
+- [x] **Price ranges applied** from Rush's payment-calculator feed to Rush City (Rs 34.0M–49.9M), Rush Court 5 (30.0M–33.6M), Rush Court 6 (27.1M–45.6M), Street Rush Residencies (40.2M–58.2M) and Rush Residencies, Allen (43.7M–64.5M) — project level only; per-plan prices stay "Contact for pricing".
+- [ ] **Imaarat left unchanged** at "From Rs 88.5M" — Rush's calculator says Rs 92.0M–100.0M and I can't trace where 88.5M came from. Which is right?
+- [ ] The calculator's payment defaults (initial 15–60%, 12–60 month periods) were **not** applied — they are calculator defaults, not a published payment plan.
+- [x] **Developer profile** (`rush-lanka-group`): 7 credentials added to a new Awards field (CIDA LB1, ISO 9001:2015, Great Place to Work®, BOI, CMA, COC, Amana Bank tripartite agreement), leadership team, vision/mission and history in the description, active projects = 9. The `awards` field + its sync mapping are **uncommitted code** (deploy pending) — until deployed, editing this developer in the production CMS could drop the awards.
+- [ ] Team is written into the description; a structured "Team" section would need a small UI addition. Not added: press mentions (Echelon Magazine ×2), complaints@pfm.lk, careers@rushlankagroup.com.
+- [x] **15 completed projects created as unpublished drafts** (Rush Court 2/3/4, Rush Residencies ×4, Rush Reliance, Rush Tower, Rush Homes, Rush Ebenez, Rush Broadway, Rush Palm Grove, Rush Park, Rush Villa) — each with photos, unit plans, specifications, road map, pin, and every unit marked Sold Out per Rush's own tracker.
+  - [ ] **Publish them?** Once published they appear in the "New Projects" grid and category pages (Colombo, etc.) beside new developments, with a "Completed" status. Preview each at `/listing-preview/<slug>`.
+  - [ ] Rush's own numbers disagree on three: Watarappala (tracker 40 vs headline 35), Ebenez (24 vs 26), Colombo 6 (24 vs 25) — headline used for total units.
+  - [ ] Missing on Rush's site: Reliance Unit B and Kawdana Unit J 2D drawings; the three villa projects (Rush Villa, Palm Grove, Rush Park) publish no unit types, so no floor plans and no sold claim; Rush Park has no gallery photos at all.
+  - [ ] Rush's location data is unreliable: the JSON-LD location on every project page is a placeholder 1–7 km off (same for Rush City); Watarappala's Google Maps link duplicates the Dehiwala project's, so it uses an area-level point (Watarappala Road, Ratmalana, Street View off) — ask Rush for the real address.
+  - [ ] "Luxury Villas" type for Rush Villa / Palm Grove / Park is inferred from Rush's history page ("ultra-luxury villa projects").
+- Skipped on purpose: **Rush Courts** (`rush-courts-colombo-14`, a duplicate of Rush Court 5), **AL Kareem Tower** (a 6-storey commercial office building) and the hidden **Rush Tower 3** (14 apartments, 2030, an empty page).

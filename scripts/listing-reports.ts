@@ -26,11 +26,20 @@ const SOURCES: Record<string, { site: string; brochures: string[]; notes: string
   },
   'rush-city-dematagoda': {
     site: 'https://www.rushlankagroup.com/projects/rush-city-dematagoda',
-    brochures: ['South City Tower brochure (attached)', 'Lifestyle brochure (downloaded, not attached)', 'North City Tower brochure — button exists, no file (Phase 2 not launched)'],
+    brochures: [
+      'South City Tower brochure (attached) — https://rushgroup-s3.s3.ap-southeast-1.amazonaws.com/projects40-rush-city/project-40_rush-city-colombo-9-b-1.pdf (byte-identical to the copy already on R2)',
+      'Lifestyle brochure — https://rushgroup-s3.s3.ap-southeast-1.amazonaws.com/projects40-rush-city/project-40_life-style-final.pdf — mirrored to R2 (brochure/rush-city-dematagoda_lifestyle-brochure.pdf) but not linked: a project has a single brochureUrl slot',
+      'North City Tower brochure — button exists, no file (Phase 2 not launched)',
+    ],
     notes: [
-      'Phase 1 (South City Tower, 109 units, 35 levels) selling; Phase 2 not launched. 350+ units across both towers. Hero stat "28" is residential floors, not units.',
-      'Units A–D specs, 2D/3D images and per-floor availability from the page\'s unit data. Expected handover 2030 (page).',
-      'Some S3 gallery images returned 403 intermittently — 6 extra exterior/interior shots not mirrored. No construction tracker yet.',
+      'Phase 1 (South City Tower, 109 units, 35 levels) selling; Phase 2 not launched. 350+ units across both towers. Hero stat "28" is residential floors, not units. Expected handover 2030-05-25 (page).',
+      'Re-pass 2026-09-20 (owner: "info missing"): the page has 7 units in two groups — 1st floor: Aqua Crest (4bd/3ba/2,181), South Crest (3bd/2ba/1,304), Urban Crest (3bd/2ba/1,273); 2nd–28th floor: Units A–D. The first import had only A–D. Crest units added with 2D + 3D images; bed/bath counts checked against the drawings.',
+      'Per-floor tracker rows sum to exactly 109 (A 25 + B 27 + C 27 + D 27 + 3 first-floor) = the tower\'s stated total units; Unit A has no rows for floors 9 and 19. Availability snapshot 2026-09-20: 36 available (A 2, B 2, C 17, D 12, each Crest 1) — moves as units sell, so unitsAvailable / floorAvailability are point-in-time. Crest plans skip the per-floor row (it just repeats "floor 1 of 1").',
+      'Gallery: all 31 site photos mirrored (9 exterior, 10 interior, 12 common-area — all developer 3D renders). Six common-area shots sit under amenities/ (one per amenity: Gym (Her), Swimming Pool, Children\'s Area, Jogging Track, Multifunctional Room, Parking); the rest stay in gallery/. Room labels follow the lifestyle brochure\'s own captions. Hero unchanged.',
+      'Typical floor plan (main brochure p.3) rendered and attached as a download on Units A–D. Main brochure also gave the correct Key Features wording — "Three" elevators (site says "These"), "lighting" (site typo "lightning" ×2), "porcelain tiles", "tile flooring for staircase and lobby" — fixed.',
+      'Nearby 8 → 21 from the developer\'s own map page (banks, mosques, temple, market, cinema, police, filling stations) plus the site\'s timings (Baseline Rd & Kolonnawa Rd 1 min, Nalanda College 4 min, Dematagoda station 1 km). "Baseline Road Railway Station" renamed "Baseline Railway Station" per the brochure. No hospitals are published anywhere.',
+      'Bedrooms now "2–4" (developer copy says "2/3" but Aqua Crest is 4-bed). Floor range on A–D corrected 1–28 → 2–28. Added ensuite baths (site: 1 attached each; Aqua 2), utility room where a drawing labels one (Aqua, Urban, C, D), maid\'s washroom only on South Crest. Carpark levels 7, floor-area range, highlights and YouTube video (dCe9xizyeRM) added. R2H Realtors (brochure back page: "Sales & Marketing Partner") linked as sales + marketing company.',
+      'Gaps / flags: "Powder room: 1" already on Units A, C, D is really the maid\'s toilet on the drawings (left as-is, owner to decide); "Clubhouse" and "Security" are sourced only by Rush\'s Aug 2026 blog / Echelon interview, not the site or brochures (kept); no Dematagoda neighborhood page exists yet; no prices or payment plan published ("Contact us"); the developer\'s JSON-LD geo (6.8794, 79.8653) is wrong — our pin (6.9315162, 79.8808925) matches their own Google Maps link.',
     ],
   },
   'rush-court-5-colombo-14': { site: 'https://www.rushlankagroup.com/projects/rush-court-5-colombo-14', brochures: ['rush-court-5-colombo-14-broucher.pdf (attached)'], notes: ['Units A–C from page unit data; tracker: Unit A all 7 floors sold, B/C floors 1–2 available. Handover 2026.', 'Construction: 8 milestones with photos (Sep 2023 → roof slab / brickwork ongoing).'] },
@@ -77,6 +86,69 @@ const SOURCES: Record<string, { site: string; brochures: string[]; notes: string
   'the-residence-samagi-mawatha-thalawathugoda': { site: 'https://www.primelands.lk/house/THE-RESIDENCE-SAMAGI-MAWATHA-THALAWATHUGODA/en', brochures: ['the-residence-samagi-mawatha-thalawathugoda_brochure.pdf (attached)'], notes: ['Structured differently from every other project in this batch: the site publishes one "MASTER PLAN" (a 22-lot site/block layout, each lot split into 4 townhouse units A–D) plus per-floor drawings rather than per-type tabs. Re-derived as 2 real unit types: "Type A-B (3 Bed)" (Ground Floor 986 sqft; Total Area 2,012 sqft — both printed on the ground-floor drawing) and "Type C-D (2 Bed)" (986 sqft, single storey) — both confirmed from the drawings. The master-plan image is kept as a "Site Plan (Lot & Unit Layout)" gallery photo, not a floor plan.', '3 nearby points (bus route/SLIIT, Thalawathugoda town, Vidura College) added.', 'Payment plan published: 30% down, 5% monthly, 15% balance at handover.'] },
   'water-estate-moratuwa': { site: 'https://www.primelands.lk/house/WATER-ESTATE-MORATUWA/en', brochures: ['water-estate-moratuwa_brochure.pdf (attached)'], notes: ['All 15 types confirmed ("Type 1, 2" through Type 18, skipping 9/13; two — 14 and 15 — share an identical mirrored layout). Single-storey types (3–11) read straight off one explicit "TOTAL SQFT" label each; 2-storey types (1/2, 12, 14–18) summed from ground+first.', 'Hero image was a Type-4-labeled render with no view of the actual property from outside — swapped for a clean lifestyle photo (kayaking on the estate\'s lake) from the gallery; the old render kept, demoted to the end of the gallery.', 'No price published ("Contact for pricing"); no Key Features or nearby bullets on this page.'] },
   'waterfall-residencies-malabe': { site: 'https://www.primelands.lk/house/WATERFALL-RESIDENCIES-MALABE/en', brochures: ['waterfall-residencies-malabe_brochure.pdf (attached)'], notes: ['Only Type C has a published drawing (3bd/2ba/1,627 sqft, confirmed) — Types A and B are listed on the site with no image attached to either, so genuinely nothing to confirm for those two.', 'Key Features are unusually rich here — yoga deck, sunset deck with Colombo skyline views, outdoor fitness center, hiking trail, bicycle paths, concierge, BBQ area, a 100ft rock waterfall, communal vegetable patch, compost system, solar lighting — all added.'] },
+  // Excello (excello.lk) — owner asked 2026-09-20 for every ongoing (In Progress) project, no completed/sold ones,
+  // new developments only. Excello's archive has 7 projects; only these 3 are In Progress. Created as unpublished drafts.
+  'aathavan-apartments-dehiwala': {
+    site: `https://excello.lk/projects/aathavan-dehiwala-apartment — plus the unit availability register embedded at https://excello.lk/aathavan-availability (https://aathavan-unit-availability.excellodesign.chatgpt.site) and the launch note https://excello.lk/insights/aathavan-residential-project-launched (7 Aug 2026)`,
+    brochures: [`No brochure published — the register page and project page are the only sources.`],
+    notes: [
+      `Excello is the developer (page: "Developer, architecture, interiors and build coordination"). 44 residences at No. 6, Carron Place, Dehiwala; 2- and 3-bedroom, selected 3-bedroom units with maid's quarters; launched Aug 2026.`,
+      `The register lists all 44 units: Types 1–8, floors 1–7, size, price and status. Snapshot 2026-09-20: 27 Available, 17 Reserved (floors 6–7 all reserved, plus 403, 502, 505). "Reserved" is stored as not-available — it is not "sold". The register is "checked daily", so unitsAvailable / floorAvailability are point-in-time.`,
+      `Prices are Excello's own "standard prices", calculated at LKR 40,000 per sq.ft. (promotional / negotiated / launch prices may differ). Every unit's price was checked to equal size × 40,000. Payment: LKR 1M reservation, 30% down payment, 22 monthly instalments for the 70% balance (register page).`,
+      `NOT published, so left blank: bathroom counts (stored as 0 = hidden; the plan page shows no Baths chip), floor-plan drawings (plan pages fall back to the project photos), handover date, ownership type, parking count, total floors, nearby place names (page only says "close to hospitals, schools, transport links").`,
+      `Gallery: 8 photos + hero, all developer 3D renders (4 exterior, a landscaped walkway, living, dining, bedroom, bathroom). A near-duplicate low-resolution copy of the entrance render was skipped. Amenities from the page: Parking, Gym + Rooftop (rooftop gym), Outdoor Gym (outdoor exercise areas), Multifunctional Room (community hall); solar infrastructure and rainwater management are in Key Features.`,
+      `Location: pin is the OpenStreetMap centre of Carron Place (Pamankada, Kalubowila, Dehiwala) — lane-level, not the building. Linked to the Dehiwala neighborhood page.`,
+    ],
+  },
+  'panimozhi-club-house-kalkudah': {
+    site: `https://excello.lk/projects/panimozhi-club-house`,
+    brochures: [`None published.`],
+    notes: [
+      `Excello's site describes only its own role ("hospitality concept, architecture, interior design and project delivery") and offers no sale terms. The owner told us on 2026-09-20 that Panimozhi is a property that can be bought and run as a hotel, so it is listed as a Hospitality property — that buy-and-operate fact comes from the owner, not from Excello's website. No price or completion date is published ("Contact Excello").`,
+      `A 15-room coastal retreat close to the beach in Kalkudah. Badge: Hospitality. Type stored as "Hotel / Coastal Retreat" (no hotel option in the type list). Status Under Construction (from Excello's "In Progress"). Published 2026-09-20.`,
+      `8 render photos (7 + hero). No room types, floor plans, amenities list or nearby places published. Pin is the Kalkudah village centre (approximate, Street View off) — the site's exact location is not published.`,
+    ],
+  },
+  'rudra-wellness-retreat-kalkudah': {
+    site: `https://excello.lk/projects/rudra-wellness-retreat-kalkudah`,
+    brochures: [`None published.`],
+    notes: [
+      `A proposed (concept-stage) 25-acre wellness village in Kalkudah: 48 fully furnished villas "offering opportunities for ownership and potential hospitality use" plus a 27-room holiday retreat, with community-empowerment initiatives. Excello's role: master planning, architecture, property development, hospitality and wellness concept development.`,
+      `Excello's archive says "In Progress" but the page and meta description say "concept" / "proposed", so status is Coming Soon. Badge: Hospitality (owner's request — added as a new marketing-badge option).`,
+      `18 render photos: master-plan aerial filed as the Block Plan; hero is a villa exterior; 16 gallery photos labelled neutrally (the page doesn't caption them, so no facility claims were made). No villa sizes, types, prices or timeline published; no floor plans. Pin is the Kalkudah village centre (approximate, Street View off).`,
+    ],
+  },
+}
+
+// Rush Lanka Group COMPLETED projects — imported 2026-09-21 as unpublished drafts from each project's own page on
+// rushlankagroup.com (owner: "add the completed projects"). Skipped on purpose: rush-courts-colombo-14 (a duplicate URL
+// of Rush Court 5 — same project id 10), al-kareem-tower-borella (a commercial office tower, not a home) and the hidden
+// Rush Tower 3 (14 apartments, 2030, no data).
+const RUSH_COMPLETED_EXTRA: Record<string, string> = {
+  'rush-residencies-watarappala': `Rush's unit tracker lists 40 rows while its page headline says 35 apartments — their own numbers disagree; the headline is used for total units. Rush's own Google Maps link for this project is a copy of the Dehiwala project's ("Rush Residencies, No 15 Campbell Pl"), so the pin is instead the area-level OpenStreetMap point for Watarappala Road, Ratmalana (Street View off) — ask Rush for the real site.`,
+  'rush-ebenez-dehiwala': `Rush's unit tracker lists 24 rows while its page headline says 26 apartments — their own numbers disagree; the headline is used for total units. Only a 2D drawing is published for each unit (no 3D render).`,
+  'rush-residencies-colombo-6': `Rush's unit tracker lists 24 rows while its page headline says 25 apartments — their own numbers disagree; the headline is used for total units.`,
+  'rush-reliance-mount-lavinia': `Unit B's 2D drawing is not available on Rush's site (the file 404s) — that plan is stored without an image.`,
+  'rush-residencies-kawdana': `Unit J's 2D drawing is not available on Rush's site (the file 404s) — that plan is stored without an image.`,
+  'rush-tower-dehiwala': `Only a 3D plan render is published for each unit (no 2D drawing) — the render is used as the plan image.`,
+  'rush-court-2-kolonnawa': `Only a 3D plan render is published for each unit (no 2D drawing) — the render is used as the plan image.`,
+  'rush-homes-dehiwala': `Only a 3D plan render is published for each unit (no 2D drawing) — the render is used as the plan image.`,
+  'rush-residencies-dehiwala': `Only a 2D drawing is published for each unit (no 3D render), and one unit type has no plan image at all.`,
+  'rush-villa-dehiwala': `Villa project (2 units): no unit types or tracker are published, so no floor plans and no sold claim. Type "Luxury Villas" is inferred from Rush's own history page ("ultra-luxury villa projects: Rush Villa Saranankara 2010, Rush Palm Grove 2012, Rush Villa Park Road 2012"). Pin comes from a coordinate-only Google Maps link.`,
+  'rush-palm-grove-colombo-3': `Villa project (1 unit): no unit types or tracker are published, so no floor plans and no sold claim. Type "Luxury Villas" is inferred from Rush's history page ("ultra-luxury villa projects").`,
+  'rush-park-colombo-5': `Villa project (2 units): no unit types, tracker or gallery photos are published — the listing has only the site's thumbnail and a road map. Type "Luxury Villas" is inferred from Rush's history page.`,
+}
+for (const s of ['rush-court-4-mount-lavinia', 'rush-court-3-ratmalana', 'rush-residencies-watarappala', 'rush-reliance-mount-lavinia', 'rush-residencies-kawdana', 'rush-tower-dehiwala', 'rush-court-2-kolonnawa', 'rush-homes-dehiwala', 'rush-ebenez-dehiwala', 'rush-residencies-dehiwala', 'rush-palm-grove-colombo-3', 'rush-park-colombo-5', 'rush-broadway-grandpass', 'rush-villa-dehiwala', 'rush-residencies-colombo-6']) {
+  SOURCES[s] = {
+    site: `https://www.rushlankagroup.com/projects/${s} (listed under Completed Projects: https://www.rushlankagroup.com/projects/completed)`,
+    brochures: [`None published on the project page.`],
+    notes: [
+      `Imported 2026-09-21 as an unpublished draft (owner: "add the completed projects"). Status Completed; handover year from the page's own handover date.`,
+      `Unit sizes, bedrooms, bathrooms and maid's rooms are parsed from Rush's unit data; every unit's tracker row shows sold, so plans are marked Sold Out (per-floor rows are not stored, since "None — all N floors sold" reads oddly for a finished building). No price, payment plan or brochure is published.`,
+      `Hero = the site's own thumbnail (a photo of the completed building), checked visually. Pin = Rush's own Google Maps link — the JSON-LD location on Rush's pages is a placeholder that is 1–7 km off on every project. Key Features come from the page's specification groups; amenities only where the page names a supported facility.`,
+      ...(RUSH_COMPLETED_EXTRA[s] ? [RUSH_COMPLETED_EXTRA[s]] : []),
+    ],
+  }
 }
 
 const fmt = (v: unknown) => (v === undefined || v === null || v === '' ? '—' : String(v))
