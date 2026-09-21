@@ -1009,7 +1009,7 @@ export function ProjectHero({
       </div>
     </div>
 
-    <section className={`listing-hero${photoItems.length === 0 ? " listing-hero--no-media" : ""}`}>
+    <section className="listing-hero">
       <div className="listing-hero-media">
         {activeMedia === null && photoItems.length > 0 && (
           <div className={`listing-hero-grid${photoItems.length === 1 ? " single-photo" : photoItems.length === 2 ? " two-photo" : ""}`}>
@@ -1058,6 +1058,13 @@ export function ProjectHero({
                 <Fragment key={pill.key}>{pill.render("listing-hero-grid-pill")}</Fragment>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* A plan page whose plan has no drawing: a plain notice, never the building's photos. */}
+        {activeMedia === null && photoItems.length === 0 && (
+          <div className="listing-hero-plan-placeholder">
+            <span>{t("Floor plan coming soon")}</span>
           </div>
         )}
 
@@ -2421,17 +2428,20 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
         {(showAllPlans ? visiblePlans : visiblePlans.slice(0, PLANS_INITIAL_COUNT)).map((plan) => (
           <Link key={plan.id} href={`${hrefBase}/${plan.slug ?? plan.id}`} className="plans-home-card">
             {/* Only a real floor-plan image is shown here. A plan with no drawing
-                gets no picture at all — never the building photo as a stand-in
-                (owner, 2026-09-21); its availability pill moves into the body. */}
-            {plan.image ? (
-              <figure>
+                shows a neutral "Floor plan coming soon" block — never the
+                building photo as a stand-in (owner, 2026-09-21). */}
+            <figure>
+              {plan.image ? (
                 <Image src={plan.image} alt={plan.planName} width={960} height={620} className="plans-home-image" />
-                <span className={planStatusPillClass(plan.availability)}>{plan.availability}</span>
-              </figure>
-            ) : null}
+              ) : (
+                <div className="plans-home-image plans-home-image-placeholder">
+                  <span>{t("Floor plan coming soon")}</span>
+                </div>
+              )}
+              <span className={planStatusPillClass(plan.availability)}>{plan.availability}</span>
+            </figure>
 
             <div className="plans-home-body">
-              {!plan.image ? <span className={`${planStatusPillClass(plan.availability)} plans-status-pill-inline`}>{plan.availability}</span> : null}
               {project.isFeatured ? (
                 <div className="plans-home-badge-row" aria-label={`${title} badges`}>
                   <span className="badge-featured">Featured</span>

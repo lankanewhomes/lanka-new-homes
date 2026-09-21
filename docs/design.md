@@ -914,13 +914,16 @@ the label, plan drawings → `floor-plans/`.
   — not the whole project's list (the project page keeps the full list). A plan
   with no price of its own falls back to the project's starting price and
   shows no plan-price line.
-- A plan with no floor-plan image gets **no picture at all** — never the
-  building's hero/gallery photo as a stand-in. On the plan card
-  (`PlansAndHomesSection`) the `<figure>` is dropped and the availability pill
-  sits in the card body (`.plans-status-pill-inline`); on the plan page the
-  hero photo grid is dropped (`.listing-hero--no-media`, title card no longer
-  overlaps the missing media). Store `averagePricePerSqft` as a display string
-  such as "Rs. 40,000" — it is shown as-is.
+- A plan with no floor-plan image shows a neutral **"Floor plan coming soon"**
+  notice (owner, 2026-09-21) — never the building's hero/gallery photo as a
+  stand-in. On the plan card (`PlansAndHomesSection`) it is a grey block in the
+  figure with the availability pill still overlaid
+  (`.plans-home-image-placeholder`); on the plan page it fills the hero media
+  frame (`.listing-hero-plan-placeholder`; `ProjectHero` builds an empty
+  `photoItems` when a `floorPlan` has no image). The text is translated
+  (`"Floor plan coming soon"` in `listing-strings.ts`). Store
+  `averagePricePerSqft` as a display string such as "Rs. 40,000" — it is shown
+  as-is.
 
 
 Three developer-published extras added 2026-09-08, all on `FloorPlan` and

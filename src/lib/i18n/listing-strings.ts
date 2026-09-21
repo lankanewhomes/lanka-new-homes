@@ -142,6 +142,7 @@ const si: Dictionary = {
   // Enumerated values
   "Now Selling": "දැන් විකිණේ",
   "Coming Soon": "ළඟදීම",
+  "Floor plan coming soon": "බිම් සැලසුම ළඟදීම",
   "Launching Soon": "ළඟදීම දියත් වේ",
   "Under Construction": "ඉදිකෙරෙමින් පවතී",
   "Nearly Complete": "නිම වීමට ආසන්නයි",
@@ -302,6 +303,7 @@ const ta: Dictionary = {
   // Enumerated values
   "Now Selling": "இப்போது விற்பனையில்",
   "Coming Soon": "விரைவில்",
+  "Floor plan coming soon": "தள வரைபடம் விரைவில்",
   "Launching Soon": "விரைவில் அறிமுகம்",
   "Under Construction": "கட்டுமானத்தில்",
   "Nearly Complete": "நிறைவடையும் நிலையில்",
