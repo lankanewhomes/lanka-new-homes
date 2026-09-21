@@ -409,6 +409,7 @@ export const syncNeighborhoodToSupabase: CollectionAfterChangeHook = async ({ do
       province: d.province,
       description: d.description,
       heroImage: d.heroImage,
+      gallery: d.gallery,
       highlights: d.highlights,
       nearby: d.nearby,
       seoTitle: (d.seo as AnyDoc)?.seoTitle,

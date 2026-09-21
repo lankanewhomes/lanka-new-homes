@@ -1218,13 +1218,25 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
    frame (never the building's photos as a stand-in). */
 .listing-hero-plan-placeholder {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 320px;
-  background: #f3f1ec;
-  color: #8a8577;
+  gap: 14px;
+  min-height: 420px;
+  background-color: #eef4fc;
+  background-image:
+    linear-gradient(rgba(120, 155, 188, 0.16) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(120, 155, 188, 0.16) 1px, transparent 1px);
+  background-size: 36px 36px;
+  color: #4d6a8a;
   font-size: 18px;
   letter-spacing: 0.01em;
+}
+
+.listing-hero-plan-placeholder .floor-plan-placeholder-art {
+  width: min(360px, 60%);
+  height: auto;
+  stroke: #8fb0d3;
 }
 
 .listing-hero-image {
@@ -4300,12 +4312,24 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
    picture (see PlansAndHomesSection) — never the building photo. */
 .plans-home-image-placeholder {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: #f3f1ec;
-  color: #8a8577;
+  gap: 8px;
+  background-color: #eef4fc;
+  background-image:
+    linear-gradient(rgba(120, 155, 188, 0.16) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(120, 155, 188, 0.16) 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: #4d6a8a;
   font-size: 14px;
   letter-spacing: 0.01em;
+}
+
+.plans-home-image-placeholder .floor-plan-placeholder-art {
+  width: 46%;
+  height: auto;
+  stroke: #8fb0d3;
 }
 
 .plans-home-body {
@@ -6010,6 +6034,146 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 .developer-directory-card a:hover {
   color: #f47b36;
   text-decoration: underline;
+}
+
+/* Project page "Neighborhood" section: a preview of the linked neighborhood
+   guide (photo, excerpt, three highlights, link) above the nearby-places list. */
+.neighborhood-preview {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: 24px;
+  margin-bottom: 24px;
+  border: 1px solid #e4e2db;
+  background: #fff;
+  padding: 18px;
+}
+
+.neighborhood-preview-media {
+  position: relative;
+  display: block;
+  min-height: 240px;
+  overflow: hidden;
+  background: #f3f1ec;
+}
+
+.neighborhood-preview-body h3 {
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.neighborhood-preview-body p {
+  margin-top: 10px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #4a4a45;
+}
+
+.neighborhood-preview-body ul {
+  margin-top: 12px;
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  color: #1f1f1f;
+}
+
+.neighborhood-preview-body li::before {
+  content: "✓";
+  margin-right: 8px;
+  color: #f47b36;
+}
+
+@media (max-width: 760px) {
+  .neighborhood-preview {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .neighborhood-preview-media {
+    min-height: 200px;
+  }
+}
+
+/* Neighborhood page photo gallery: one large lead photo (2x2) beside a grid of
+   smaller ones, each with a caption and a photographer credit underneath. */
+.neighborhood-gallery-grid {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.neighborhood-gallery-item {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.neighborhood-gallery-item-lead {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+.neighborhood-gallery-frame {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #f3f1ec;
+}
+
+.neighborhood-gallery-item-lead .neighborhood-gallery-frame {
+  flex: 1;
+  aspect-ratio: auto;
+  min-height: 300px;
+}
+
+.neighborhood-gallery-item figcaption {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.neighborhood-gallery-caption {
+  color: #1f1f1f;
+  font-weight: 600;
+}
+
+.neighborhood-gallery-credit {
+  color: #8a8577;
+}
+
+a.neighborhood-gallery-credit:hover {
+  color: #f47b36;
+  text-decoration: underline;
+}
+
+@media (max-width: 760px) {
+  .neighborhood-gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .neighborhood-gallery-item-lead {
+    grid-column: span 2;
+    grid-row: auto;
+  }
+
+  .neighborhood-gallery-item-lead .neighborhood-gallery-frame {
+    aspect-ratio: 4 / 3;
+    min-height: 0;
+  }
+}
+
+/* Small "2 projects" note after a name in the neighborhood directory. */
+.developer-directory-count {
+  margin-left: 8px;
+  font-size: 12px;
+  color: #8a8577;
 }
 
 @media (max-width: 760px) {

@@ -163,7 +163,13 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
 
         <PlansAndHomesSection project={project} />
 
-        <NeighborhoodSection nearby={project.nearby} neighborhoodName={project.neighborhood} neighborhoodSlug={project.neighborhoodSlug} neighborhoodPageExists={Boolean(neighborhood)} />
+        <NeighborhoodSection
+          nearby={project.nearby}
+          neighborhoodName={project.neighborhood}
+          neighborhoodSlug={project.neighborhoodSlug}
+          neighborhoodPageExists={Boolean(neighborhood)}
+          neighborhood={neighborhood ? { name: neighborhood.name, slug: neighborhood.slug, heroImage: neighborhood.heroImage, description: neighborhood.description, highlights: neighborhood.highlights } : undefined}
+        />
 
         <StatsContactCard project={project} developer={developer} />
 

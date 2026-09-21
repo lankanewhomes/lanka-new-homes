@@ -92,10 +92,10 @@ export default async function LandPlotDetailPage({ params }: PlotPageProps) {
         <LandDetailsTable rows={buildLandDetailRows(land)} />
 
         <section id="pricing" className="space-y-3">
-          <PricingInformationLayout project={project} />
+          <PricingInformationLayout project={project} floorPlan={plot} />
         </section>
 
-        <KeyFeaturesSection unitFeatures={project.unitFeatures} />
+        <KeyFeaturesSection unitFeatures={project.unitFeatures} floorPlan={plot} floorPlanLabel="This plot" />
 
         <AmenitiesShowcaseSection amenities={project.amenities} gallery={project.gallery} heroImage={project.heroImage} title="Facilities" />
 

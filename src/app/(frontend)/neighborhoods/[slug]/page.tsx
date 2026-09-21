@@ -53,6 +53,7 @@ export default async function NeighborhoodPage({ params }: NeighborhoodPageProps
   const neighborhoodProjects = allProjects.filter((project) => project.neighborhoodSlug === slug);
   const nearbyGroups = groupNearbyPlaces(neighborhood.nearby ?? []);
   const highlights = (neighborhood.highlights ?? []).filter(Boolean);
+  const gallery = (neighborhood.gallery ?? []).filter((photo) => photo.url);
   const landmarkCount = (neighborhood.nearby ?? []).filter((place) => place.category !== "School" && place.category !== "Transport").length;
 
   const stats: { icon: React.ComponentType<{ className?: string }>; label: string; value: string }[] = [
@@ -123,6 +124,39 @@ export default async function NeighborhoodPage({ params }: NeighborhoodPageProps
           ) : null}
           <TruncatedDescription text={neighborhood.description} />
         </section>
+
+        {gallery.length > 0 ? (
+          <section id="photos" className="project-description-shell" aria-label={`Photos of ${neighborhood.name}`}>
+            <h2>Photos of {neighborhood.name}</h2>
+            <div className="neighborhood-gallery-grid">
+              {gallery.map((photo, index) => (
+                <figure key={photo.url} className={`neighborhood-gallery-item${index === 0 ? " neighborhood-gallery-item-lead" : ""}`}>
+                  <div className="neighborhood-gallery-frame">
+                    <Image
+                      src={photo.url}
+                      alt={photo.caption ? `${photo.caption}, ${neighborhood.name}` : `${neighborhood.name}`}
+                      fill
+                      sizes={index === 0 ? "(max-width: 900px) 100vw, 840px" : "(max-width: 900px) 50vw, 420px"}
+                      style={{ objectFit: "cover" }}
+                    />
+                  </div>
+                  {photo.caption || photo.credit ? (
+                    <figcaption>
+                      {photo.caption ? <span className="neighborhood-gallery-caption">{photo.caption}</span> : null}
+                      {photo.credit ? (
+                        photo.sourceUrl ? (
+                          <a className="neighborhood-gallery-credit" href={photo.sourceUrl} target="_blank" rel="noopener noreferrer">{photo.credit}</a>
+                        ) : (
+                          <span className="neighborhood-gallery-credit">{photo.credit}</span>
+                        )
+                      ) : null}
+                    </figcaption>
+                  ) : null}
+                </figure>
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         <KnownLandmarksSection nearby={neighborhood.nearby ?? []} />
 

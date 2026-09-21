@@ -479,6 +479,26 @@ function useSwipeNavigation(onPrev: () => void, onNext: () => void) {
   };
 }
 
+// Stand-in for a floor plan that has no drawing yet (owner, 2026-09-21): a light
+// blueprint sketch with "Floor plan coming soon" — never the building's photo.
+// "hero" fills a plan page's media frame; "card" sits in a plan card's figure.
+function FloorPlanPlaceholder({ variant }: { variant: "hero" | "card" }) {
+  const { t } = useListingT();
+  const label = t("Floor plan coming soon");
+  return (
+    <div className={variant === "hero" ? "listing-hero-plan-placeholder" : "plans-home-image plans-home-image-placeholder"} role="img" aria-label={label}>
+      <svg className="floor-plan-placeholder-art" viewBox="0 0 320 200" fill="none" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <rect x="24" y="16" width="272" height="168" strokeWidth="3" />
+        <path d="M150 16V96M150 124V184M24 110H60M92 110H150M150 110H210M244 110H296M210 110V150M210 178V184" strokeWidth="2" />
+        <path d="M60 110a32 32 0 0 1 32-32M150 96a28 28 0 0 1 28 28M210 150a28 28 0 0 0 28 28" strokeWidth="1.25" />
+        <path d="M58 16h40M196 16h50M24 60v34M296 70v40M120 184h60" strokeWidth="6" opacity="0.35" />
+        <path d="M24 196h272M24 192v8M296 192v8" strokeWidth="1.25" />
+      </svg>
+      <span>{label}</span>
+    </div>
+  );
+}
+
 export function ProjectHero({
   project,
   titleOverride,
@@ -1063,9 +1083,7 @@ export function ProjectHero({
 
         {/* A plan page whose plan has no drawing: a plain notice, never the building's photos. */}
         {activeMedia === null && photoItems.length === 0 && (
-          <div className="listing-hero-plan-placeholder">
-            <span>{t("Floor plan coming soon")}</span>
-          </div>
+          <FloorPlanPlaceholder variant="hero" />
         )}
 
         {activeMedia === "interactiveMap" && hasInteractiveMap && (
@@ -2119,6 +2137,21 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
     { label: "Expected rental income", value: project.rentalIncome },
   ].filter((field) => hasDisplayValue(field.value) && !(floorPlan && field.label === "Available plan prices"));
 
+  // On a floor-plan / plot page, this plan's own price figures come first; the
+  // project's pricing info (average, deposit structure, fees, add-ons…) follows
+  // as the fallback for whatever the plan doesn't publish (owner, 2026-09-21).
+  const digits = (value: string | undefined) => (value ?? "").replace(/\D/g, "");
+  const planPerSqft = floorPlan && (floorPlan.pricePerSqFtLkr ?? 0) > 0 ? `${formatLkr(floorPlan.pricePerSqFtLkr as number)} / SqFt` : "";
+  const planFields = floorPlan
+    ? [
+        // Skip when it just repeats the project's "Average price per sqft".
+        { label: "Price per sq ft (this plan)", value: digits(planPerSqft) && digits(planPerSqft) === digits(project.averagePricePerSqft) ? "" : planPerSqft },
+        { label: "Maintenance (this plan)", value: (floorPlan.maintenancePerMonthLkr ?? 0) > 0 ? `${formatLkr(floorPlan.maintenancePerMonthLkr as number)} / month` : "" },
+        { label: "Deposit (this plan)", value: floorPlan.deposit ?? "" },
+      ].filter((field) => hasDisplayValue(field.value))
+    : [];
+  pricingFields.unshift(...planFields);
+
   // Every listing gets a Pricing section — the sticky nav always links to
   // #pricing, and a buyer looks for price first. These rows come from
   // figures already in the record (the developer's own starting price and
@@ -2452,9 +2485,7 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
               {plan.image ? (
                 <Image src={plan.image} alt={plan.planName} width={960} height={620} className="plans-home-image" />
               ) : (
-                <div className="plans-home-image plans-home-image-placeholder">
-                  <span>{t("Floor plan coming soon")}</span>
-                </div>
+                <FloorPlanPlaceholder variant="card" />
               )}
               <span className={planStatusPillClass(plan.availability)}>{plan.availability}</span>
             </figure>
@@ -2520,9 +2551,49 @@ function normalizeUnitFeaturesForDisplay(raw: unknown): { key: string; label: st
   ];
 }
 
-export function KeyFeaturesSection({ unitFeatures }: { unitFeatures: unknown }) {
+// Features of ONE floor plan / plot, taken from that plan's own fields (owner,
+// 2026-09-21). It is the first Key Features group on a plan page; the project's
+// own groups follow, and stand alone when the plan carries no data of its own.
+function floorPlanFeatureGroup(plan: FloorPlan, label: string): { key: string; label: string; items: { field: string; value: string }[] } | null {
+  const text = (value: unknown): string | undefined => (typeof value === "string" && value.trim() !== "" && value.trim() !== "-" ? value.trim() : undefined);
+  // Yes/No selects: only "yes"-style answers are features ("Maid's room: No" is not).
+  const positive = (value: unknown): string | undefined => {
+    const v = text(value);
+    return v && v.toLowerCase() !== "no" ? v : undefined;
+  };
+  const count = (value: unknown): string | undefined => (typeof value === "number" && Number.isFinite(value) && value > 0 ? String(value) : undefined);
+  const area = (value: unknown): string | undefined => (typeof value === "number" && Number.isFinite(value) && value > 0 ? `${value.toLocaleString("en-US")} SqFt` : undefined);
+  const items: { field: string; value: string }[] = [];
+  const add = (field: string, value: string | undefined) => {
+    if (value) items.push({ field, value });
+  };
+  add("View", text(plan.view));
+  add("Aspect", text(plan.aspect));
+  add("Ceiling height", text(plan.ceilingHeight));
+  add("Balcony", area(plan.balconySizeSqFt));
+  add("Terrace", area(plan.terraceSqFt));
+  add("Ensuite bathrooms", count(plan.ensuiteBaths));
+  add("Powder rooms", count(plan.powderRooms));
+  add("Maid's room", positive(plan.maidsRoom));
+  add("Pantry", positive(plan.pantry));
+  add("Storage", positive(plan.storage));
+  add("Utility area", positive(plan.utilityArea));
+  add("Furnishing", text(plan.furnishing));
+  add("AC provision", text(plan.acProvision));
+  add("Hot water", text(plan.hotWater));
+  add("Floor finish", text(plan.floorFinish));
+  add("Handover condition", text(plan.handoverCondition));
+  add("Parking", [count(plan.parkingSpaces), text(plan.parkingType)].filter(Boolean).join(" · ") || undefined);
+  add("Basement", text(plan.basement));
+  add("Garage", text(plan.garage));
+  add("Corner unit", plan.cornerUnit ? "Yes" : undefined);
+  return items.length ? { key: "floor-plan", label, items } : null;
+}
+
+export function KeyFeaturesSection({ unitFeatures, floorPlan, floorPlanLabel = "This floor plan" }: { unitFeatures: unknown; floorPlan?: FloorPlan; floorPlanLabel?: string }) {
   const { t } = useListingT();
-  const groups = normalizeUnitFeaturesForDisplay(unitFeatures).filter((group) => group.items.length > 0);
+  const planGroup = floorPlan ? floorPlanFeatureGroup(floorPlan, floorPlanLabel) : null;
+  const groups = [...(planGroup ? [planGroup] : []), ...normalizeUnitFeaturesForDisplay(unitFeatures).filter((group) => group.items.length > 0)];
 
   // Every row starts collapsed (owner, 2026-09-11) — the first group used
   // to open by default.
@@ -3581,6 +3652,7 @@ export function Footer() {
             <nav className="footer-link-row" aria-label="Explore listings">
               <Link href="/projects">New homes for sale</Link>
               <Link href="/land">Land for sale</Link>
+              <Link href="/neighborhoods">Neighborhoods</Link>
               <Link href="/developers">Developers</Link>
               <Link href="/construction-companies">Construction companies</Link>
             </nav>
@@ -3752,20 +3824,61 @@ export function NearbyPlacesAccordion({ groups }: { groups: ReturnType<typeof gr
   );
 }
 
-export function NeighborhoodSection({ nearby, neighborhoodName, neighborhoodSlug, neighborhoodPageExists }: { nearby: NearbyPlace[]; neighborhoodName?: string; neighborhoodSlug?: string; neighborhoodPageExists?: boolean }) {
+// First sentence(s) of a neighborhood description, cut at a sentence end so the
+// preview never stops mid-word.
+function neighborhoodExcerpt(text: string, maxChars = 240): string {
+  const clean = text.replace(/\s+/g, " ").trim();
+  if (clean.length <= maxChars) return clean;
+  const cut = clean.slice(0, maxChars);
+  const lastStop = Math.max(cut.lastIndexOf(". "), cut.lastIndexOf("— "));
+  return lastStop > 80 ? cut.slice(0, lastStop + 1) : `${cut.replace(/\s+\S*$/, "")}…`;
+}
+
+export type NeighborhoodPreview = { name: string; slug: string; heroImage?: string; description?: string; highlights?: string[] };
+
+export function NeighborhoodSection({ nearby, neighborhoodName, neighborhoodSlug, neighborhoodPageExists, neighborhood }: { nearby: NearbyPlace[]; neighborhoodName?: string; neighborhoodSlug?: string; neighborhoodPageExists?: boolean; neighborhood?: NeighborhoodPreview }) {
   const { t } = useListingT();
   const groups = groupNearbyPlaces(nearby);
 
   if (!hasDisplayValue(neighborhoodName) && groups.length === 0) return null;
+
+  // With a linked neighborhood page the section previews it (photo, a few
+  // highlights) and links straight to the full guide; otherwise it falls back
+  // to the old "View neighbourhood" search link.
+  const highlights = (neighborhood?.highlights ?? []).filter(Boolean).slice(0, 3);
+  const excerpt = neighborhood?.description ? neighborhoodExcerpt(neighborhood.description) : "";
 
   return (
     <section id="neighborhood" className="key-features-shell" aria-label="Neighborhood">
       <div className="key-features-pattern" aria-hidden="true" />
       <h2>{t("Neighborhood")}</h2>
 
+      {neighborhood && neighborhoodPageExists ? (
+        <div className="neighborhood-preview">
+          {neighborhood.heroImage ? (
+            <Link href={`/neighborhoods/${neighborhood.slug}`} className="neighborhood-preview-media" aria-label={`${neighborhood.name} neighborhood guide`}>
+              <Image src={neighborhood.heroImage} alt={neighborhood.name} fill sizes="(max-width: 900px) 100vw, 420px" style={{ objectFit: "cover" }} />
+            </Link>
+          ) : null}
+          <div className="neighborhood-preview-body">
+            <h3>About {neighborhood.name}</h3>
+            {excerpt ? <p>{excerpt}</p> : null}
+            {highlights.length > 0 ? (
+              <ul>
+                {highlights.map((highlight) => <li key={highlight}>{highlight}</li>)}
+              </ul>
+            ) : null}
+            <Link href={`/neighborhoods/${neighborhood.slug}`} className="featured-listings-button neighborhood-section-explore">
+              Read the {neighborhood.name} guide
+              <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+            </Link>
+          </div>
+        </div>
+      ) : null}
+
       <NearbyPlacesAccordion groups={groups} />
 
-      {hasDisplayValue(neighborhoodName) ? (
+      {hasDisplayValue(neighborhoodName) && !(neighborhood && neighborhoodPageExists) ? (
         <Link href={neighborhoodPageExists && neighborhoodSlug ? `/neighborhoods/${neighborhoodSlug}` : `/search?q=${encodeURIComponent(neighborhoodName!)}`} className="featured-listings-button neighborhood-section-explore">
           View neighbourhood
           <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />

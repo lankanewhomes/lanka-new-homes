@@ -103,7 +103,7 @@ export default async function FloorPlanDetailPage({ params }: FloorPlanPageProps
           <PricingInformationLayout project={project} floorPlan={floorPlan} />
         </section>
 
-        <KeyFeaturesSection unitFeatures={project.unitFeatures} />
+        <KeyFeaturesSection unitFeatures={project.unitFeatures} floorPlan={floorPlan} floorPlanLabel="This floor plan" />
 
         <AmenitiesShowcaseSection amenities={project.amenities} gallery={project.gallery} heroImage={project.heroImage} />
 

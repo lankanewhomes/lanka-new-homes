@@ -3914,6 +3914,30 @@ export interface Neighborhood {
    * 3-5 short standout facts shown at the top of the neighborhood page (e.g. "16 km from central Colombo").
    */
   highlights?: string[] | null;
+  /**
+   * More photos of the area — famous landmarks (a well-known school, park, mall, temple, beach) work best. Sharp, at least 2400px wide, never a listing render. The hero image above stays the page banner.
+   */
+  gallery?:
+    | {
+        /**
+         * Image URL — or upload a file in Media and paste its URL here.
+         */
+        url: string;
+        /**
+         * What the photo shows, e.g. "Mount Lavinia Hotel".
+         */
+        caption?: string | null;
+        /**
+         * Photographer credit, e.g. "Photo: Zoshua Colah / Unsplash". Required for Creative Commons photos.
+         */
+        credit?: string | null;
+        /**
+         * Link to the original photo page (the credit links here).
+         */
+        sourceUrl?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   nearby?:
     | {
         category: 'School' | 'Hospital' | 'Shopping' | 'Restaurant' | 'Transport' | 'Landmark';
@@ -8285,6 +8309,15 @@ export interface NeighborhoodsSelect<T extends boolean = true> {
   description?: T;
   heroImage?: T;
   highlights?: T;
+  gallery?:
+    | T
+    | {
+        url?: T;
+        caption?: T;
+        credit?: T;
+        sourceUrl?: T;
+        id?: T;
+      };
   nearby?:
     | T
     | {
