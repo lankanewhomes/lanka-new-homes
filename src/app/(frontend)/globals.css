@@ -1214,6 +1214,17 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   border: 1px solid #e8e8e8;
 }
 
+/* A floor-plan page whose plan has no drawing shows no photos (never the
+   building's photos as a stand-in): drop the empty media frame and the title
+   card's overlap onto it. */
+.listing-hero--no-media .listing-hero-media {
+  display: none;
+}
+
+.listing-hero--no-media .listing-hero-panel {
+  margin-top: 0;
+}
+
 .listing-hero-image {
   width: 100%;
   height: 560px;
@@ -4281,6 +4292,14 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 
 .plans-status-pill-booked {
   background: #b7791f;
+}
+
+/* A plan with no floor-plan image has no <figure> to overlay the pill on, so
+   the pill sits in the card body instead (see PlansAndHomesSection). */
+.plans-status-pill-inline {
+  position: static;
+  display: inline-block;
+  margin: 0 0 6px;
 }
 
 .plans-home-body {
@@ -8647,6 +8666,36 @@ a.developer-profile-press-title {
   font-size: 13px;
   font-weight: 400;
   color: #6b6355;
+}
+
+/* Desktop page title. The H1 + result count live inside .listing-filter-sticky,
+   which is a phone-only block (display: none above 760px), so on desktop the
+   page had no visible title at all — e.g. /projects/beachfront showed no
+   "Beachfront Condo Developments in Sri Lanka" heading (reported 2026-09-20).
+   From 761px up keep just that title visible, in normal flow between the
+   filter bar and the grid; the mobile filter/sort row inside it stays hidden
+   (desktop has its own filter bar above). Sizes follow docs/design.md
+   ("Category listing pages" → Header). Phones are untouched. */
+@media (min-width: 761px) {
+  .listing-filter-sticky {
+    display: block;
+    padding: 24px 0 12px;
+  }
+
+  .listing-filter-sticky .listing-filter-sticky-top {
+    display: none;
+  }
+
+  .listing-filter-sticky .listing-header-h1 {
+    font-size: 32px;
+    line-height: 40px;
+    font-weight: 400;
+  }
+
+  .listing-filter-sticky .listing-header-h1-dynamic {
+    font-size: 20px;
+    line-height: 28px;
+  }
 }
 
 /* Full map view has no list below to sort or label, so the sort pill and

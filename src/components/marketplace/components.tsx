@@ -579,7 +579,11 @@ export function ProjectHero({
           .filter((doc) => /\.(jpe?g|png|webp|avif)(\?|$)/i.test(doc.url) && doc.url !== heroImageOverride && doc.url !== floorPlan?.imageMetric && doc.url !== floorPlan?.image3d)
           .map((doc) => ({ label: `${floorPlan?.planName ?? "Floor Plan"} — ${doc.label}`, image: doc.url })),
       ]
-    : [
+    : floorPlan
+      // A plan page whose plan has no drawing shows no photos at all — never
+      // the building's photos as a stand-in for the floor plan (owner, 2026-09-21).
+      ? []
+      : [
         { label: "Exterior", image: project.heroImage },
         // heroImage is almost always also the first (or an early) gallery
         // photo — without this filter that same image shows twice in the
@@ -1005,9 +1009,9 @@ export function ProjectHero({
       </div>
     </div>
 
-    <section className="listing-hero">
+    <section className={`listing-hero${photoItems.length === 0 ? " listing-hero--no-media" : ""}`}>
       <div className="listing-hero-media">
-        {activeMedia === null && (
+        {activeMedia === null && photoItems.length > 0 && (
           <div className={`listing-hero-grid${photoItems.length === 1 ? " single-photo" : photoItems.length === 2 ? " two-photo" : ""}`}>
             <button
               type="button"
@@ -2083,7 +2087,7 @@ export function AmenityGrid({ amenities }: { amenities: Amenity[] }) {
   );
 }
 
-export function PricingInformationLayout({ project }: { project: Project }) {
+export function PricingInformationLayout({ project, floorPlan }: { project: Project; floorPlan?: FloorPlan }) {
   const { t, tPrice } = useListingT();
   const pricingHistory = project.pricingHistory?.filter((entry) => hasDisplayValue(entry.date) || hasDisplayValue(entry.note)) ?? [];
   const incentives = project.incentives?.filter((item) => hasDisplayValue(item)) ?? [];
@@ -2103,15 +2107,19 @@ export function PricingInformationLayout({ project }: { project: Project }) {
     { label: "Parking cost", value: project.parkingCost },
     { label: "Storage cost", value: project.storageCost },
     { label: "ⓘ Co-op fee realtors", value: project.coopFeeRealtors },
-  ].filter((field) => hasDisplayValue(field.value));
+  ].filter((field) => hasDisplayValue(field.value) && !(floorPlan && field.label === "Available plan prices"));
 
   // Every listing gets a Pricing section — the sticky nav always links to
   // #pricing, and a buyer looks for price first. These rows come from
   // figures already in the record (the developer's own starting price and
   // per-plan prices), so the card is never empty even before an editor
   // fills the fee fields; when there is genuinely nothing, it says so.
-  const startingPrice = project.startingPriceLkr > 0 ? `From ${formatLkr(project.startingPriceLkr)}` : "";
-  const planPrices = project.floorPlans
+  // On a floor-plan page the block describes that plan only (owner, 2026-09-21):
+  // its own starting price and only its own plan-price line, not the whole
+  // project's list. A plan with no price of its own falls back to the project's.
+  const startingPriceLkr = floorPlan && floorPlan.startingPriceLkr > 0 ? floorPlan.startingPriceLkr : project.startingPriceLkr;
+  const startingPrice = startingPriceLkr > 0 ? `From ${formatLkr(startingPriceLkr)}` : "";
+  const planPrices = (floorPlan ? project.floorPlans.filter((plan) => plan.id === floorPlan.id) : project.floorPlans)
     .filter((plan) => plan.startingPriceLkr > 0)
     .map((plan) => `${plan.planName} — ${formatLkr(plan.startingPriceLkr)}`);
   const hasAnyPricingDetail = Boolean(startingPrice) || planPrices.length > 0 || pricingFields.length > 0 || pricingHistory.length > 0 || includedUtilities.length > 0 || paidUtilities.length > 0;
@@ -2243,6 +2251,9 @@ const PLAN_SORT_OPTIONS = [
 ] as const;
 
 type PlanSortValue = typeof PLAN_SORT_OPTIONS[number]["value"];
+
+const planStatusPillClass = (availability: string) =>
+  `plans-status-pill${availability === "Sold Out" ? " plans-status-pill-sold" : availability === "Limited" ? " plans-status-pill-booked" : ""}`;
 
 export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFloorPlanId, showQuickMoveIns = true, planHrefBase, showBedBath = true }: { project: Project; title?: string; excludeFloorPlanId?: string; showQuickMoveIns?: boolean; planHrefBase?: string; showBedBath?: boolean }) {
   const { t, tPrice } = useListingT();
@@ -2409,16 +2420,18 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
       <div className="plans-homes-grid">
         {(showAllPlans ? visiblePlans : visiblePlans.slice(0, PLANS_INITIAL_COUNT)).map((plan) => (
           <Link key={plan.id} href={`${hrefBase}/${plan.slug ?? plan.id}`} className="plans-home-card">
-            <figure>
-              <Image src={plan.image || project.heroImage} alt={plan.planName} width={960} height={620} className="plans-home-image" />
-              <span
-                className={`plans-status-pill${plan.availability === "Sold Out" ? " plans-status-pill-sold" : plan.availability === "Limited" ? " plans-status-pill-booked" : ""}`}
-              >
-                {plan.availability}
-              </span>
-            </figure>
+            {/* Only a real floor-plan image is shown here. A plan with no drawing
+                gets no picture at all — never the building photo as a stand-in
+                (owner, 2026-09-21); its availability pill moves into the body. */}
+            {plan.image ? (
+              <figure>
+                <Image src={plan.image} alt={plan.planName} width={960} height={620} className="plans-home-image" />
+                <span className={planStatusPillClass(plan.availability)}>{plan.availability}</span>
+              </figure>
+            ) : null}
 
             <div className="plans-home-body">
+              {!plan.image ? <span className={`${planStatusPillClass(plan.availability)} plans-status-pill-inline`}>{plan.availability}</span> : null}
               {project.isFeatured ? (
                 <div className="plans-home-badge-row" aria-label={`${title} badges`}>
                   <span className="badge-featured">Featured</span>
@@ -2431,7 +2444,7 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
                 {showBedBath ? (
                   <>
                     <span><BedDouble className="h-3.5 w-3.5" aria-hidden="true" /> {plan.bedrooms} bd</span>
-                    <span><Bath className="h-3.5 w-3.5" aria-hidden="true" /> {plan.bathrooms}</span>
+                    {plan.bathrooms > 0 ? <span><Bath className="h-3.5 w-3.5" aria-hidden="true" /> {plan.bathrooms}</span> : null}
                   </>
                 ) : null}
                 <span><Square className="h-3.5 w-3.5" aria-hidden="true" /> From {plan.floorAreaSqFt} SqFt</span>

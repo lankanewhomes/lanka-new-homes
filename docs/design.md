@@ -230,7 +230,9 @@ badges. Three genuinely new categories were added instead:
 `availabilityBadge` (+ Other) — Limited Units / Last Few Units;
 `marketingBadges` (multi-select) — Premium, Luxury, Exclusive, Popular, Best
 Seller, Special Offer, Price Reduced, Early Bird, Investor Friendly, High
-Rental Potential, BOI Approved Project; `locationBadges` (multi-select) —
+Rental Potential, BOI Approved Project, Hospitality (added 2026-09-20 for
+hospitality-use projects such as a wellness retreat or coastal retreat);
+`locationBadges` (multi-select) —
 Beachfront, Ocean View, City View, Mountain View, Nature View, Prime
 Location. All three feed into `ProjectHero`'s existing `extraBadges` prop
 (`src/app/projects/[slug]/page.tsx`) rather than new rendering — they render
@@ -274,7 +276,15 @@ sort, list/map toggle) + `map-pane.tsx` (lazy-loaded map visual).
   narrows results, the H1 swaps to a smaller dynamic sentence
   (`.listing-header-h1-dynamic`, "There are N communities for sale in
   {place}") at `20px` / `28px` line-height. No eyebrow line, no intro
-  paragraph under the H1 on this page type.
+  paragraph under the H1 on this page type. **The H1 + result count sit
+  inside `.listing-filter-sticky`**, which is the phone-only sticky filter
+  block (`display: none` by default). From `761px` up a media query shows it
+  as a plain title block between the filter bar and the grid (its
+  filter/sort row stays hidden — desktop has its own filter bar above).
+  Until 2026-09-20 that block was hidden on desktop, so desktop visitors saw
+  no page title at all (e.g. `/projects/beachfront` had no "Beachfront Condo
+  Developments in Sri Lanka" heading) even though it was in the HTML — never
+  hide the H1 on desktop again.
 - **Page background**: `.listing-content-shade` — everything from the
   sort pill down through the card grid and map sits on a light grey panel
   (`#f5f5f4`), giving white cards visible contrast. No padding on the right
@@ -895,6 +905,23 @@ photos → `gallery/`, facility photos → `amenities/` with the amenity name as
 the label, plan drawings → `floor-plans/`.
 
 ## Floor plan page facts & chips
+
+**Floor-plan pages show the plan's own data and only real floor-plan images
+(owner, 2026-09-21).**
+- The "Pricing and fees" block on a plan page (`PricingInformationLayout`
+  with its `floorPlan` prop) shows that plan's own "Starting price", only that
+  plan's line under "Plan prices", and the project's "Average price per sqft"
+  — not the whole project's list (the project page keeps the full list). A plan
+  with no price of its own falls back to the project's starting price and
+  shows no plan-price line.
+- A plan with no floor-plan image gets **no picture at all** — never the
+  building's hero/gallery photo as a stand-in. On the plan card
+  (`PlansAndHomesSection`) the `<figure>` is dropped and the availability pill
+  sits in the card body (`.plans-status-pill-inline`); on the plan page the
+  hero photo grid is dropped (`.listing-hero--no-media`, title card no longer
+  overlaps the missing media). Store `averagePricePerSqft` as a display string
+  such as "Rs. 40,000" — it is shown as-is.
+
 
 Three developer-published extras added 2026-09-08, all on `FloorPlan` and
 all rendered as fact-sheet rows only when set: `floorAvailability`

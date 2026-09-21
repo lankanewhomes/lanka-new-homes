@@ -41,15 +41,25 @@ export async function generateMetadata({ params }: FloorPlanPageProps): Promise<
     return { title: "Floor Plan Not Found", robots: { index: false, follow: false } };
   }
 
+  // A developer doesn't always publish every figure (e.g. no bathroom count or
+  // no drawing yet) — leave the missing piece out instead of printing "0".
+  const planFacts = [
+    floorPlan.bedrooms > 0 ? `${floorPlan.bedrooms} bedrooms` : "",
+    floorPlan.bathrooms > 0 ? `${floorPlan.bathrooms} bathrooms` : "",
+    floorPlan.floorAreaSqFt > 0 ? `${floorPlan.floorAreaSqFt} sq.ft` : "",
+  ].filter(Boolean);
+  const planFactsText =
+    planFacts.length > 2 ? `${planFacts.slice(0, -1).join(", ")}, and ${planFacts[planFacts.length - 1]}` : planFacts.join(" and ");
+
   return {
     title: `${floorPlan.planName} Floor Plan - ${project.name}`,
-    description: `${floorPlan.planName} floor plan at ${project.name}: ${floorPlan.bedrooms} bedrooms, ${floorPlan.bathrooms} bathrooms, and ${floorPlan.floorAreaSqFt} sq.ft.`,
+    description: `${floorPlan.planName} floor plan at ${project.name}${planFactsText ? `: ${planFactsText}` : ""}.`,
     alternates: { canonical: `/projects/${project.slug}/floor-plans/${floorPlan.slug ?? floorPlan.id}` },
     openGraph: {
       title: `${floorPlan.planName} Floor Plan - ${project.name}`,
       description: `Explore the ${floorPlan.planName} floor plan at ${project.name}.`,
       url: `/projects/${project.slug}/floor-plans/${floorPlan.slug ?? floorPlan.id}`,
-      images: [{ url: floorPlan.image, alt: floorPlan.planName }],
+      images: floorPlan.image ? [{ url: floorPlan.image, alt: floorPlan.planName }] : undefined,
     },
   };
 }
@@ -90,7 +100,7 @@ export default async function FloorPlanDetailPage({ params }: FloorPlanPageProps
         <FloorPlanFactSheet floorPlan={floorPlan} />
 
         <section id="pricing" className="space-y-3">
-          <PricingInformationLayout project={project} />
+          <PricingInformationLayout project={project} floorPlan={floorPlan} />
         </section>
 
         <KeyFeaturesSection unitFeatures={project.unitFeatures} />
