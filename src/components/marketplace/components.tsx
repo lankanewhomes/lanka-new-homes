@@ -3092,6 +3092,7 @@ export function LandDetailsTable({ rows }: { rows: { label: string; value: strin
 }
 
 export function ProjectNarrativeDetails({ project }: { project: Project }) {
+  const { t } = useListingT();
   const launchDate = project.launchDate ? new Date(project.launchDate) : null;
   const salesStarted = launchDate && !Number.isNaN(launchDate.getTime())
     ? launchDate.toLocaleDateString("en-US", { month: "short", year: "numeric" })
@@ -3122,8 +3123,19 @@ export function ProjectNarrativeDetails({ project }: { project: Project }) {
   // types), the averages and price-per-sqft from their own fields — nothing
   // is computed (docs/supabase-workflow.md Standing Rule 4).
   const detailRows = [
-    { label: "Property type", show: isFact(project.type), value: <Link href={`/projects?type=${encodeURIComponent(project.type)}`} className="overview-link">{project.type}</Link> },
-    { label: "Listing status", show: isFact(project.status), value: project.status },
+    // A developer's own qualifier ("Off-plan villa, turnkey") sits after the
+    // value instead of in Key Features (owner, 2026-09-21).
+    {
+      label: "Property type",
+      show: isFact(project.type),
+      value: (
+        <>
+          <Link href={`/projects?type=${encodeURIComponent(project.type)}`} className="overview-link">{project.type}</Link>
+          {isFact(project.typeNote) ? ` — ${project.typeNote}` : ""}
+        </>
+      ),
+    },
+    { label: "Listing status", show: isFact(project.status), value: isFact(project.statusNote) ? `${t(project.status)} — ${project.statusNote}` : project.status },
     { label: "Construction status", show: isFact(project.constructionStatus), value: project.constructionStatus },
     { label: "Sales started", show: isFact(salesStarted), value: salesStarted },
     // A year still ahead is a move-in date; a past one is simply when the

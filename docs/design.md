@@ -937,7 +937,10 @@ terms → `pricingNotes` (small grey lines at the foot of the card, e.g. "Prices
 published in USD by the developer ($312,000); converted to LKR at 1 USD =
 333.64 (XE.com, 2026-09-17)…"). Bedroom/bathroom counts go in the project's
 `bedrooms`/`bathrooms` so the Beds/Baths stat chips show — not as a Key
-Features row.
+Features row. Likewise a developer's own qualifier for the property type or
+listing status ("Off-plan villa, turnkey", "Available off-plan, selected
+plots") goes in `typeNote` / `statusNote`, printed after "Property type" /
+"Listing status" in the fact sheet — not as Type/Status rows in Key Features.
 
 Three developer-published extras added 2026-09-08, all on `FloorPlan` and
 all rendered as fact-sheet rows only when set: `floorAvailability`

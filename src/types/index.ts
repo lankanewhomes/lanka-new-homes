@@ -387,6 +387,10 @@ export type Project = SeoFields & {
   /** Utilities/costs the buyer pays on top of maintenance. Shown in the
    * "Pricing and fees" card when set. */
   paidUtilities?: { label: string; value: string }[];
+  /** Optional qualifiers printed after "Property type" / "Listing status" in
+   * the fact sheet (e.g. "Off-plan villa, turnkey"). */
+  typeNote?: string;
+  statusNote?: string;
   /** Optional extras a buyer can add for more money (e.g. a pool upgrade,
    * an extra studio). Shown as "Optional add-ons" in the "Pricing and fees"
    * card when set. */

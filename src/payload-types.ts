@@ -2603,6 +2603,10 @@ export interface Project {
    * Custom value, used when Type above doesn't have the right option.
    */
   type_other?: string | null;
+  /**
+   * Optional qualifier shown after the property type in the fact sheet, e.g. "Off-plan villa, turnkey".
+   */
+  typeNote?: string | null;
   ownership?:
     | (
         | 'Freehold'
@@ -2657,6 +2661,10 @@ export interface Project {
         | 'Completed'
       )
     | null;
+  /**
+   * Optional qualifier shown after the listing status in the fact sheet, e.g. "Available off-plan, selected plots".
+   */
+  statusNote?: string | null;
   /**
    * Shown as a "Move in {year}" badge on the listing while the year is still ahead.
    */
@@ -7449,6 +7457,7 @@ export interface ProjectsSelect<T extends boolean = true> {
   tapWater_other?: T;
   type?: T;
   type_other?: T;
+  typeNote?: T;
   ownership?: T;
   ownership_other?: T;
   coDevelopers?:
@@ -7462,6 +7471,7 @@ export interface ProjectsSelect<T extends boolean = true> {
   additional_builders?: T;
   isPublished?: T;
   status?: T;
+  statusNote?: T;
   completionYear?: T;
   featured?: T;
   isMoveInNow?: T;

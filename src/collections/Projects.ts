@@ -214,6 +214,7 @@ export const Projects: CollectionConfig = {
             ...selectWithOther('electricity', 'Electricity', ELECTRICITY_OPTIONS),
             ...selectWithOther('tapWater', 'Tap Water', TAP_WATER_OPTIONS),
             ...selectWithOther('type', 'Type', PROJECT_TYPE_OPTIONS),
+            { name: 'typeNote', type: 'text', label: 'Type Note', admin: { description: 'Optional qualifier shown after the property type in the fact sheet, e.g. "Off-plan villa, turnkey".' } },
             ...selectWithOther('ownership', 'Ownership', OWNERSHIP_OPTIONS),
             {
               name: 'coDevelopers',
@@ -268,6 +269,7 @@ export const Projects: CollectionConfig = {
           label: 'Status & Badges',
           fields: [
             { name: 'status', type: 'select', options: PROJECT_STATUS_OPTIONS, index: true },
+            { name: 'statusNote', type: 'text', label: 'Status Note', admin: { description: 'Optional qualifier shown after the listing status in the fact sheet, e.g. "Available off-plan, selected plots".' } },
             {
               name: 'completionYear',
               type: 'number',
