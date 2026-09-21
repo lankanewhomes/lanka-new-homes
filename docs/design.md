@@ -1463,3 +1463,12 @@ customization points, all from `payload.config.ts`'s `admin.components`
   `views.list.Component` pattern, one collection at a time next), further
   Project edit-form tab reorganization, a real database-editable Plans
   collection, media library UX, deeper Analytics work.
+
+## Neighborhood pages: content rules (owner brief, 2026-09-21)
+
+A neighborhood row exists for every area with a published project (`/neighborhoods/<slug>`; fields: name, city, province, description, heroImage, highlights, nearby).
+- **Description**: a fresh 150–250 word overview in our own words (never lifted from LankaPropertyWeb / PropertyGuide / Wikipedia). Any price figure names its source and the date pulled, e.g. "LankaPropertyWeb (pulled 21 Sep 2026)"; averages are the source's own, never computed by us; undated or single-source figures are called out as a guide.
+- **Nearby**: named schools, hospitals, shopping, restaurants, transport and landmarks. `distanceKm` only when a source states it. Search-snippet-only names are left out.
+- **Hero photo**: an Unsplash (or Pexels) photo that really shows the area — check the photo page's location tag and look at the image first. Never a listing's render. Where no area-specific photo exists, use a city-level stand-in and flag it. `images.unsplash.com` is an allowed image host; `images.pexels.com` is not (copy to R2 or add the host and deploy first).
+- Sources in priority order: LankaPropertyWeb area guide → PropertyGuide area guide → Wikipedia → web search; also tripadvisor, agoda, booking.com, facebook, primelands.lk, rome2rio and ikman.lk (asking prices only, as a sanity check). Do not use or hotlink images from LankaPropertyWeb, PropertyGuide or Google Images.
+- Write through Payload (which mirrors to Supabase). A project only lists on its neighborhood page once its `neighborhood` relation is set.
