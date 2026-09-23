@@ -1,9 +1,10 @@
 "use client";
 
 import type { ComponentType } from "react";
-import { Bath, BedDouble, Building2, Car, Clock3, Compass, DoorOpen, Eye, HousePlus, KeyRound, LayoutGrid, Sofa, Square } from "lucide-react";
+import { Bath, BedDouble, Building2, Car, Clock3, Compass, DoorOpen, Eye, HousePlus, KeyRound, LayoutGrid, Ruler, Sofa, Square } from "lucide-react";
 import type { FloorPlan, Project } from "@/types";
 import { formatLkr } from "@/lib/format";
+import { floorRangeLabel } from "@/lib/floor-plan-title";
 import { FactSheetTable } from "@/components/marketplace/components";
 import { useListingT } from "@/lib/i18n/use-listing-t";
 
@@ -24,14 +25,14 @@ const yesNoValue = (value: unknown) => (hasText(value) ? value : undefined);
 type FactRow = { label: string; value: React.ReactNode };
 
 const FLOOR_PLAN_FACTS_DESKTOP = [
-  "Plan type", "Beds", "Baths", "Ensuite baths", "Powder room", "Total SqFt", "Interior SqFt", "Balcony SqFt", "Terrace SqFt", "Land extent",
+  "Plan type", "Beds", "Baths", "Ensuite baths", "Powder room", "Total SqFt", "Interior SqFt", "Balcony", "Balcony SqFt", "Terrace SqFt", "Land extent",
   "Ceiling height", "Floor range", "Aspect", "View", "Price LKR", "Per SqFt", "Maintenance / mo", "Deposit", "Parking", "Parking type",
   "Storage", "Utility area", "Maid's room", "Pantry", "Handover condition", "Furnishing", "AC provision", "Hot water", "Floor finish",
   "Units in plan", "Units available", "Availability", "Available floors", "Downloads",
 ];
 
 const FLOOR_PLAN_FACTS_MOBILE = [
-  "Total SqFt", "Interior SqFt", "Balcony SqFt", "Land extent", "Per SqFt", "Maintenance / mo", "Floor range", "View", "Ceiling height", "Parking",
+  "Total SqFt", "Interior SqFt", "Balcony", "Balcony SqFt", "Land extent", "Per SqFt", "Maintenance / mo", "Floor range", "View", "Ceiling height", "Parking",
   "Storage", "Utility area", "Maid's room", "Handover condition", "Furnishing", "Units available", "Availability", "Available floors", "Downloads",
 ];
 
@@ -44,7 +45,7 @@ function availableFloorsValue(plan: FloorPlan): string | undefined {
   return open.length ? `${open.join(", ")} (of ${floors.length} floors)` : `None — all ${floors.length} floors sold`;
 }
 
-function floorPlanFactRows(plan: FloorPlan): Map<string, FactRow> {
+function floorPlanFactRows(plan: FloorPlan, balcony?: string): Map<string, FactRow> {
   const rows = new Map<string, FactRow>();
   const add = (label: string, value: React.ReactNode | undefined) => {
     if (value === undefined || value === null || value === "") return;
@@ -58,6 +59,8 @@ function floorPlanFactRows(plan: FloorPlan): Map<string, FactRow> {
   add("Powder room", hasNumber(plan.powderRooms) ? plan.powderRooms : undefined);
   add("Total SqFt", hasNumber(plan.floorAreaSqFt) ? sqft(plan.floorAreaSqFt) : undefined);
   add("Interior SqFt", hasNumber(plan.interiorSizeSqFt) ? sqft(plan.interiorSizeSqFt) : undefined);
+  // Not a plan field: the project's "Balcony: Private balcony" Key Features item (src/lib/balcony-features.ts).
+  add("Balcony", hasText(balcony) ? balcony : undefined);
   add("Balcony SqFt", hasNumber(plan.balconySizeSqFt) ? sqft(plan.balconySizeSqFt) : undefined);
   add("Terrace SqFt", hasNumber(plan.terraceSqFt) ? sqft(plan.terraceSqFt) : undefined);
   add("Land extent", hasNumber(plan.landPerches) ? `${plan.landPerches} perches` : undefined);
@@ -104,8 +107,8 @@ function floorPlanFactRows(plan: FloorPlan): Map<string, FactRow> {
   return rows;
 }
 
-export function FloorPlanFactSheet({ floorPlan }: { floorPlan: FloorPlan }) {
-  const rows = floorPlanFactRows(floorPlan);
+export function FloorPlanFactSheet({ floorPlan, balcony }: { floorPlan: FloorPlan; balcony?: string }) {
+  const rows = floorPlanFactRows(floorPlan, balcony);
   const pick = (order: string[]) => order.map((label) => rows.get(label)).filter((row): row is FactRow => Boolean(row));
   const desktopRows = pick(FLOOR_PLAN_FACTS_DESKTOP);
   const mobileRows = pick(FLOOR_PLAN_FACTS_MOBILE);
@@ -122,21 +125,22 @@ export function FloorPlanFactSheet({ floorPlan }: { floorPlan: FloorPlan }) {
 // -------------------------------------------------------------------- Chips
 
 type FloorPlanChipKey =
-  | "planType" | "beds" | "baths" | "view" | "aspect" | "furnishing" | "quickMoveIn" | "availability"
-  | "handoverCondition" | "parking" | "maidsRoom" | "corner";
+  | "planType" | "beds" | "baths" | "totalSqFt" | "view" | "aspect" | "furnishing" | "quickMoveIn" | "availability"
+  | "handoverCondition" | "parking" | "maidsRoom" | "corner" | "floor";
 
-// Desktop — max 8
-const FLOOR_PLAN_CHIPS_DESKTOP: FloorPlanChipKey[] = ["planType", "beds", "baths", "view", "aspect", "furnishing", "quickMoveIn", "availability"];
-// Mobile — max 6. Aspect drops off: "Sea" tells a buyer more than
+// Desktop — max 9
+const FLOOR_PLAN_CHIPS_DESKTOP: FloorPlanChipKey[] = ["planType", "beds", "baths", "totalSqFt", "view", "aspect", "furnishing", "quickMoveIn", "availability"];
+// Mobile — max 7. Aspect drops off: "Sea" tells a buyer more than
 // "North-West", and view already carries it where there's no room for both.
-const FLOOR_PLAN_CHIPS_MOBILE: FloorPlanChipKey[] = ["planType", "beds", "baths", "view", "quickMoveIn", "availability"];
+const FLOOR_PLAN_CHIPS_MOBILE: FloorPlanChipKey[] = ["planType", "beds", "baths", "totalSqFt", "view", "quickMoveIn", "availability"];
 // Fill-ins, in order, when a primary chip has no data on this plan.
-const FLOOR_PLAN_CHIPS_OVERFLOW: FloorPlanChipKey[] = ["handoverCondition", "parking", "maidsRoom", "corner"];
+const FLOOR_PLAN_CHIPS_OVERFLOW: FloorPlanChipKey[] = ["floor", "handoverCondition", "parking", "maidsRoom", "corner"];
 
 const CHIP_ICON: Record<FloorPlanChipKey, ComponentType<{ className?: string }>> = {
   planType: LayoutGrid,
   beds: BedDouble,
   baths: Bath,
+  totalSqFt: Ruler,
   view: Eye,
   aspect: Compass,
   furnishing: Sofa,
@@ -146,6 +150,7 @@ const CHIP_ICON: Record<FloorPlanChipKey, ComponentType<{ className?: string }>>
   parking: Car,
   maidsRoom: DoorOpen,
   corner: Square,
+  floor: Building2,
 };
 
 type Chip = { key: FloorPlanChipKey; value: string; label: string };
@@ -156,9 +161,11 @@ function resolveChip(plan: FloorPlan, key: FloorPlanChipKey, compact: boolean): 
     case "planType":
       return chip(hasText(plan.planType) ? plan.planType : undefined, "Plan type");
     case "beds":
-      return chip(hasNumber(plan.bedrooms) ? `${plan.bedrooms} Bed` : undefined, "Beds");
+      return chip(hasNumber(plan.bedrooms) ? `${plan.bedrooms}` : undefined, "Beds");
     case "baths":
       return chip(hasNumber(plan.bathrooms) ? `${plan.bathrooms} Bath` : undefined, "Baths");
+    case "totalSqFt":
+      return chip(hasNumber(plan.floorAreaSqFt) ? sqft(plan.floorAreaSqFt) : undefined, "Total SqFt");
     case "view":
       // "Sea View" on desktop, just "Sea" where space is tight.
       return chip(hasText(plan.view) ? (compact ? plan.view.replace(/\s*view$/i, "") : plan.view) : undefined, "View");
@@ -173,7 +180,7 @@ function resolveChip(plan: FloorPlan, key: FloorPlanChipKey, compact: boolean): 
     case "handoverCondition":
       return chip(hasText(plan.handoverCondition) ? plan.handoverCondition : undefined, "Handover");
     case "parking":
-      return chip(hasNumber(plan.parkingSpaces) ? `${plan.parkingSpaces} Parking` : undefined, "Parking");
+      return chip(hasNumber(plan.parkingSpaces) ? `${plan.parkingSpaces}` : undefined, "Parking");
     case "maidsRoom": {
       // "Yes" → the chip says what it is; custom text is shown as written; "No" is not a selling point.
       const value = hasText(plan.maidsRoom) && !/^no$/i.test(plan.maidsRoom.trim()) ? (/^yes$/i.test(plan.maidsRoom.trim()) ? "Maid's room" : plan.maidsRoom) : undefined;
@@ -181,6 +188,8 @@ function resolveChip(plan: FloorPlan, key: FloorPlanChipKey, compact: boolean): 
     }
     case "corner":
       return chip(plan.cornerUnit ? "Corner unit" : undefined, "Unit");
+    case "floor":
+      return chip(floorRangeLabel(plan.floorRange), "Floor");
   }
 }
 
@@ -215,8 +224,8 @@ function ChipRow({ chips, className }: { chips: Chip[]; className: string }) {
 // Two rows are rendered — desktop (8) and mobile (6) differ in both set and
 // wording — and CSS shows one per breakpoint (≤980px), like the fact sheet.
 export function FloorPlanStatsChips({ floorPlan }: { floorPlan: FloorPlan; project?: Project }) {
-  const desktop = buildChips(floorPlan, FLOOR_PLAN_CHIPS_DESKTOP, 8, false);
-  const mobile = buildChips(floorPlan, FLOOR_PLAN_CHIPS_MOBILE, 6, true);
+  const desktop = buildChips(floorPlan, FLOOR_PLAN_CHIPS_DESKTOP, 9, false);
+  const mobile = buildChips(floorPlan, FLOOR_PLAN_CHIPS_MOBILE, 7, true);
   if (!desktop.length && !mobile.length) return null;
   return (
     <>

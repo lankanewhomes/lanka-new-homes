@@ -5,6 +5,8 @@ import { getAllProjects, getProjectBySlug } from "@/lib/project-store";
 import { getDeveloperBySlug } from "@/lib/developer-store";
 import { listingWhatsAppHref } from "@/lib/whatsapp";
 import { pickSimilarListings } from "@/lib/similar-listings";
+import { splitBalconyFeature } from "@/lib/balcony-features";
+import { planTitleWithFloor } from "@/lib/floor-plan-title";
 import { SimilarListingsSection } from "@/components/marketplace/similar-listings";
 import { FloorPlanFactSheet, FloorPlanStatsChips } from "@/components/marketplace/floor-plan-facts";
 import {
@@ -73,12 +75,14 @@ export default async function FloorPlanDetailPage({ params }: FloorPlanPageProps
 
   const [developer, allProjects] = await Promise.all([getDeveloperBySlug(project.developerSlug), getAllProjects()]);
   const similarListings = pickSimilarListings(project, allProjects, 4);
+  // "Balcony: Private balcony" belongs in the fact sheet on a plan page, not in Key Features.
+  const { balcony, rest: keyFeatures } = splitBalconyFeature(project.unitFeatures);
 
   return (
     <div className="space-y-8">
       <ProjectHero
         project={project}
-        titleOverride={floorPlan.planName}
+        titleOverride={planTitleWithFloor(floorPlan.planName, floorPlan.floorRange)}
         heroImageOverride={floorPlan.image}
         floorPlan={floorPlan}
         showAmenitiesAndNeighborhoodNav={false}
@@ -97,13 +101,16 @@ export default async function FloorPlanDetailPage({ params }: FloorPlanPageProps
         <FloorPlanStatsChips floorPlan={floorPlan} />
         <ProjectDescriptionSection project={project} floorPlan={floorPlan} />
 
-        <FloorPlanFactSheet floorPlan={floorPlan} />
+        <FloorPlanFactSheet floorPlan={floorPlan} balcony={balcony} />
 
         <section id="pricing" className="space-y-3">
           <PricingInformationLayout project={project} floorPlan={floorPlan} />
         </section>
 
-        <KeyFeaturesSection unitFeatures={project.unitFeatures} floorPlan={floorPlan} floorPlanLabel="This floor plan" />
+        {/* No per-plan "This floor plan" group here (owner, 2026-09-21) — its facts (beds, baths,
+            parking, ensuite baths, maid's room…) already sit in the chips and fact sheet above;
+            repeating them as an accordion group just duplicated that. Project-level groups only. */}
+        <KeyFeaturesSection unitFeatures={keyFeatures} />
 
         <AmenitiesShowcaseSection amenities={project.amenities} gallery={project.gallery} heroImage={project.heroImage} />
 
