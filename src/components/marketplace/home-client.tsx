@@ -399,10 +399,6 @@ export function HomeClient({ projects, lands = [] }: { projects: Project[]; land
           View more cities
           <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
         </Link>
-        <Link href="/neighborhoods" className="featured-listings-button neighborhood-section-explore">
-          Browse neighborhood guides
-          <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
-        </Link>
       </section>
 
       <section className="seo-links-section" aria-label="Popular searches">
