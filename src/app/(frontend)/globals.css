@@ -1750,7 +1750,13 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   z-index: 1;
   display: flex;
   justify-content: center;
-  flex-wrap: wrap;
+  /* Always one row. An absolutely positioned box at left: 50% shrink-wraps to the remaining
+     half of the map's width, which wrapped the entries onto three lines on phones; max-content
+     sizes it to the entries instead (owner, 2026-09-23). */
+  flex-wrap: nowrap;
+  width: max-content;
+  max-width: calc(100% - 24px);
+  white-space: nowrap;
   gap: 18px;
   margin: 0;
   padding: 10px 20px;
@@ -1773,6 +1779,25 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   display: inline-block;
   width: 12px;
   height: 12px;
+}
+
+/* Tighter pill on phones so all three entries fit on one row down to 320px wide. */
+@media (max-width: 640px) {
+  .listing-photo-lightbox-map-legend {
+    bottom: 12px;
+    gap: 10px;
+    padding: 7px 12px;
+    font-size: 11px;
+  }
+
+  .listing-photo-lightbox-map-legend span {
+    gap: 4px;
+  }
+
+  .listing-photo-lightbox-map-legend i {
+    width: 10px;
+    height: 10px;
+  }
 }
 
 .listing-photo-lightbox-preview {
