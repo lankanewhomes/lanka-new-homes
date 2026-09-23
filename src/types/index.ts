@@ -134,9 +134,14 @@ export type FloorPlan = {
 };
 
 export type NearbyPlace = {
-  category: "School" | "Hospital" | "Shopping" | "Restaurant" | "Transport" | "Landmark";
+  // "Access", "Road" and "Business" are used by neighborhood pages only
+  // (rendered as Accessibility, Major roads and Business districts).
+  category: "School" | "Hospital" | "Shopping" | "Restaurant" | "Transport" | "Landmark" | "Access" | "Road" | "Business";
   name: string;
   distanceKm?: number;
+  /** Neighborhood pages only — puts the place on the area map. */
+  lat?: number;
+  lng?: number;
 };
 
 export type PricingHistoryEntry = {
@@ -633,6 +638,24 @@ export type Neighborhood = SeoFields & {
   name: string;
   city: string;
   province: string;
+  /** Population with its scope and year — first line of the Overview list when set. */
+  population?: string;
+  /** e.g. "Colombo District" — quick-facts chip. */
+  district?: string;
+  /** Short line on where the area is relative to Colombo Fort — quick-facts chip. */
+  approxLocation?: string;
+  /** Neighbouring areas, nearest first — quick-facts chip and the "Explore nearby areas" links
+   * (a name that matches another neighborhood page links to it). */
+  nearbyAreas?: string[];
+  /** Centre of the area map and the radius of its "approximate area" circle. */
+  latitude?: number;
+  longitude?: number;
+  mapRadiusKm?: number;
+  /** Two authored FAQ answers (what it is known for / is it close to Colombo); the project-based
+   * questions are generated on the page from the live listings. */
+  faqs?: { question: string; answer: string }[];
+  /** Where the overview facts came from — printed as "Source: …" under the overview. */
+  sources?: { label: string; url?: string }[];
   description: string;
   heroImage: string;
   /** Photographer credit for `heroImage` (required for Creative Commons photos) — printed under the gallery. */
@@ -640,7 +663,7 @@ export type Neighborhood = SeoFields & {
   heroImageSourceUrl?: string;
   /** More photos of the area (famous landmarks), each with a caption and a
    * photographer credit — shown as a gallery under the overview. */
-  gallery?: { url: string; caption?: string; credit?: string; sourceUrl?: string }[];
+  gallery?: { url: string; caption?: string; credit?: string; sourceUrl?: string; landmark?: string }[];
   highlights?: string[];
   nearby?: NearbyPlace[];
 };

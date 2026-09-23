@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { AccountMenu } from "@/components/auth/account-menu";
 import { IconBrandFacebook, IconBrandInstagram, IconChevronRight as TablerChevronRight, IconMenu2, IconSearch, IconX as TablerX } from "@tabler/icons-react";
 import { useSavedListing } from "@/lib/use-saved-listing";
@@ -78,6 +79,8 @@ import {
   MapPinned,
   MapPin,
   Navigation,
+  Route,
+  Briefcase,
   RotateCw,
   Phone,
   Ruler,
@@ -105,6 +108,14 @@ import { floorPlanSummarySentence } from "@/lib/i18n/floor-plan-sentence";
 import { formatWhatsAppNumber, listingWhatsAppHref } from "@/lib/whatsapp";
 import { groupNearbyPlaces } from "@/lib/nearby-places";
 import { sortConstructionUpdates } from "@/lib/construction-updates";
+import type { MapArea, MapPlace } from "@/components/marketplace/map-pane";
+
+// Every project/land page's Map tab (owner, 2026-09-23) — same free MapLibre/OpenFreeMap map
+// already used on the neighbourhood and search pages, in place of the locked Google Maps embed.
+const LazyMapPane = dynamic(() => import("@/components/marketplace/map-pane").then((mod) => mod.MapPane), {
+  ssr: false,
+  loading: () => <div className="listing-map-loading" aria-hidden="true">Loading map…</div>,
+});
 
 const amenityIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   Pool: Waves,
@@ -509,6 +520,7 @@ export function ProjectHero({
   backLabel,
   plansHomesNavLabel = "Floor Plans",
   amenitiesNavLabel = "Amenities",
+  sectionNavBase,
   statusLabelOverride,
   extraBadges = [],
   roadMapImages = [],
@@ -526,6 +538,11 @@ export function ProjectHero({
   backLabel?: string;
   plansHomesNavLabel?: string;
   amenitiesNavLabel?: string;
+  /** For pages that only render some of the sections (the all-floor-plans page):
+   * the nav's Overview/Pricing/Key Features/Amenities/Neighborhood links point
+   * at this page's sections instead of anchors that don't exist here. The
+   * plans link stays a same-page anchor. */
+  sectionNavBase?: string;
   /** Shows this instead of `project.status` in the status pill — for pages
    * (like land) that adapt their own data onto the Project shape and need
    * to display their real status value rather than the mapped one. */
@@ -636,6 +653,17 @@ export function ProjectHero({
   const virtualTourCount = project.virtualTours?.length ?? 0;
   const { t } = useListingT();
   const hasMap = project.coordinates?.lat != null && project.coordinates?.lng != null;
+  // The free, editable MapLibre/OpenFreeMap map in place of the locked Google Maps embed below
+  // (owner, 2026-09-23 — trialled on C'est la Vie first, approved for every project/land page).
+  const useCustomMap = hasMap;
+  // Real coordinates on the project's own `nearby` list — most don't have any yet (the field only
+  // gained lat/lng today), so this is usually empty until a listing's nearby places get geocoded.
+  const mapNearbyPlaces: MapPlace[] = (project.nearby ?? [])
+    .filter((place): place is typeof place & { lat: number; lng: number } => typeof place.lat === "number" && typeof place.lng === "number")
+    .map((place) => ({ name: place.name, category: place.category, lat: place.lat, lng: place.lng }));
+  // Centred on the project's own exact point, not a fuzzy guess — see the "no label" note on
+  // MapPane's area marker for why this is an "immediate vicinity" indicator, not uncertainty.
+  const mapArea: MapArea | undefined = hasMap ? { lat: project.coordinates!.lat, lng: project.coordinates!.lng, radiusKm: 1.5, label: "" } : undefined;
   const hasInteractiveMap = Boolean(project.interactiveMapUrl);
   // Floor plan count for the hero pill: prefer a gallery photo explicitly
   // labeled as a block/site/floor plan, otherwise count the project's own
@@ -976,6 +1004,8 @@ export function ProjectHero({
   // all of them and slides horizontally when they don't fit (.is-scrollable).
   const quickjumpPills = visibleHeroMediaPills;
 
+  const navHref = (id: string) => (sectionNavBase && id !== "plans-homes" ? `${sectionNavBase}#${id}` : `#${id}`);
+
   return (
     <>
     <div className="listing-hero-sticky-bar">
@@ -986,19 +1016,19 @@ export function ProjectHero({
               <ChevronLeft className="h-3.5 w-3.5" aria-hidden="true" /> {t(backLabel ?? "Back")}
             </Link>
           ) : null}
-          <a href="#overview" className={activeSection === "overview" ? "active" : undefined} onClick={() => setActiveSection("overview")}>{t("Overview")}</a>
-          <a href="#pricing" className={activeSection === "pricing" ? "active" : undefined} onClick={() => setActiveSection("pricing")}>{t("Pricing")}</a>
+          <a href={navHref("overview")} className={activeSection === "overview" ? "active" : undefined} onClick={() => setActiveSection("overview")}>{t("Overview")}</a>
+          <a href={navHref("pricing")} className={activeSection === "pricing" ? "active" : undefined} onClick={() => setActiveSection("pricing")}>{t("Pricing")}</a>
           {hasKeyFeatures ? (
-            <a href="#key-features" className={activeSection === "key-features" ? "active" : undefined} onClick={() => setActiveSection("key-features")}>{t("Key Features")}</a>
+            <a href={navHref("key-features")} className={activeSection === "key-features" ? "active" : undefined} onClick={() => setActiveSection("key-features")}>{t("Key Features")}</a>
           ) : null}
-          <a href="#plans-homes" className={activeSection === "plans-homes" ? "active" : undefined} onClick={() => setActiveSection("plans-homes")}>{t(plansHomesNavLabel)}</a>
+          <a href={navHref("plans-homes")} className={activeSection === "plans-homes" ? "active" : undefined} onClick={() => setActiveSection("plans-homes")}>{t(plansHomesNavLabel)}</a>
           {showAmenitiesAndNeighborhoodNav ? (
             <>
-              <a href="#amenities" className={activeSection === "amenities" ? "active" : undefined} onClick={() => setActiveSection("amenities")}>{t(amenitiesNavLabel)}</a>
+              <a href={navHref("amenities")} className={activeSection === "amenities" ? "active" : undefined} onClick={() => setActiveSection("amenities")}>{t(amenitiesNavLabel)}</a>
               {hasCommercialAreas ? (
-                <a href="#commercial-areas" className={activeSection === "commercial-areas" ? "active" : undefined} onClick={() => setActiveSection("commercial-areas")}>{t("Commercial Areas")}</a>
+                <a href={navHref("commercial-areas")} className={activeSection === "commercial-areas" ? "active" : undefined} onClick={() => setActiveSection("commercial-areas")}>{t("Commercial Areas")}</a>
               ) : null}
-              <a href="#neighborhood" className={activeSection === "neighborhood" ? "active" : undefined} onClick={() => setActiveSection("neighborhood")}>{t("Neighborhood")}</a>
+              <a href={navHref("neighborhood")} className={activeSection === "neighborhood" ? "active" : undefined} onClick={() => setActiveSection("neighborhood")}>{t("Neighborhood")}</a>
             </>
           ) : null}
         </nav>
@@ -1294,14 +1324,31 @@ export function ProjectHero({
               </>
             )}
 
+            {/* The free, editable MapLibre/OpenFreeMap map — every project/land page with real
+                coordinates, not the locked Google Maps embed (owner, 2026-09-23; trialled on
+                C'est la Vie first). "Nearby place" pins only show once that listing's `nearby`
+                entries have real, verified coordinates — most don't yet. */}
             {lightboxView === "map" && (
-              <iframe
-                className="listing-photo-lightbox-map"
-                title="Project map viewer"
-                src={mapSrc}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
+              useCustomMap ? (
+                <div className="listing-photo-lightbox-map-wrap">
+                  <div className="listing-photo-lightbox-map">
+                    <LazyMapPane projects={[project]} basePath="/projects" places={mapNearbyPlaces} area={mapArea} />
+                  </div>
+                  <p className="listing-photo-lightbox-map-legend">
+                    <span><i className="neighborhood-map-legend-project" aria-hidden="true" />Project</span>
+                    {mapNearbyPlaces.length > 0 ? <span><i className="neighborhood-map-legend-place" aria-hidden="true" />Nearby place</span> : null}
+                    <span><i className="neighborhood-map-legend-area" aria-hidden="true" />Approximate area</span>
+                  </p>
+                </div>
+              ) : (
+                <iframe
+                  className="listing-photo-lightbox-map"
+                  title="Project map viewer"
+                  src={mapSrc}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                />
+              )
             )}
 
             {lightboxView === "roadMap" && activeRoadMapItem && (
@@ -3042,12 +3089,32 @@ const DESCRIPTION_TRUNCATE_WORDS = 70;
 // Overview section — mobile-only truncation (see .project-description-full/
 // -short in globals.css): desktop always shows the full text regardless of
 // this button's state, no separate desktop word limit.
-export function TruncatedDescription({ text }: { text: string }) {
+export function TruncatedDescription({ text, paragraphs = false }: { text: string; paragraphs?: boolean }) {
   const { t } = useListingT();
   const [expanded, setExpanded] = useState(false);
   const words = text.trim().split(/\s+/);
   const isLong = words.length > DESCRIPTION_TRUNCATE_WORDS;
   const shortText = `${words.slice(0, DESCRIPTION_TRUNCATE_WORDS).join(" ")}…`;
+
+  // Long multi-paragraph copy (the neighborhood "About" text): one <p> per blank-line-separated block.
+  if (paragraphs) {
+    const blocks = text.split(/\n{2,}/).map((block) => block.trim()).filter(Boolean);
+    const paragraphList = (className?: string) => (
+      <div className={className}>
+        {blocks.map((block, index) => <p key={index}>{block}</p>)}
+      </div>
+    );
+    if (!isLong) return paragraphList("project-description-paragraphs");
+    return (
+      <>
+        {expanded ? paragraphList("project-description-short") : <p className="project-description-short">{shortText}</p>}
+        {paragraphList("project-description-full")}
+        <button type="button" className="project-description-toggle" onClick={() => setExpanded((value) => !value)}>
+          {expanded ? t("View less") : t("View more")}
+        </button>
+      </>
+    );
+  }
 
   if (!isLong) return <p>{text}</p>;
 
@@ -3776,6 +3843,9 @@ const NEARBY_CATEGORY_ICON: Record<NearbyPlace["category"], React.ComponentType<
   Restaurant: UtensilsCrossed,
   Transport: Navigation,
   Landmark: Landmark,
+  Access: MapPinned,
+  Road: Route,
+  Business: Briefcase,
 };
 
 // Shared accordion UI — used both by NeighborhoodSection (the "Neighborhood"
@@ -3893,27 +3963,57 @@ export function NeighborhoodSection({ nearby, neighborhoodName, neighborhoodSlug
 // no per-landmark photos exist yet, so every entry shows the same
 // text-only placeholder AmenitiesShowcaseSection already falls back to for
 // an amenity with no matched gallery image, rather than inventing new CSS.
-export function KnownLandmarksSection({ nearby, title = "Known Landmarks" }: { nearby: NearbyPlace[]; title?: string }) {
+export type LandmarkPhoto = { landmark: string; url: string; caption?: string; credit?: string; sourceUrl?: string };
+
+// Without a photo only these kinds of place qualify as a "known landmark"; schools, transport, roads,
+// access points and business districts stay in "What's Nearby".
+const LANDMARK_LIST_CATEGORIES: NearbyPlace["category"][] = ["Landmark", "Hospital", "Shopping", "Restaurant"];
+
+export function KnownLandmarksSection({ nearby, title = "Known Landmarks", photos = [] }: { nearby: NearbyPlace[]; title?: string; photos?: LandmarkPhoto[] }) {
   const { t } = useListingT();
-  const landmarkItems = useMemo(
-    () => nearby.filter((place) => place.category !== "School" && place.category !== "Transport").slice(0, 8),
-    [nearby],
-  );
+  const photoFor = (name: string) => photos.find((photo) => photo.landmark === name);
+  // Places with a photo come first so the cards that can show a picture are never cut off, and a photo
+  // lets a school or station qualify too; without one, schools and transport stay in "What's Nearby".
+  const landmarkItems = useMemo(() => {
+    const hasPhoto = (place: NearbyPlace) => photos.some((photo) => photo.landmark === place.name);
+    const withPhoto = nearby.filter(hasPhoto);
+    const without = nearby.filter((place) => !hasPhoto(place) && LANDMARK_LIST_CATEGORIES.includes(place.category));
+    return [...withPhoto, ...without].slice(0, 8);
+  }, [nearby, photos]);
 
   const [activeIndex, setActiveIndex] = useState(0);
   const active = landmarkItems[Math.max(0, Math.min(activeIndex, landmarkItems.length - 1))];
 
   if (!landmarkItems.length || !active) return null;
+  const activePhoto = photoFor(active.name);
 
   return (
     <section id="known-landmarks" className="amenities-showcase-shell" aria-label={title}>
       <h2>{t(title)}</h2>
 
       <div className="amenities-showcase-grid">
-        <figure className="amenities-showcase-image-wrap no-image">
-          <div className="amenities-showcase-image-placeholder" aria-hidden="true">
-            <span>{active.name}</span>
-          </div>
+        <figure className={`amenities-showcase-image-wrap${activePhoto ? " has-landmark-photo" : " no-image"}`}>
+          {activePhoto ? (
+            <>
+              <Image src={activePhoto.url} alt={activePhoto.caption ?? active.name} width={1400} height={950} sizes="(max-width: 900px) 100vw, 780px" className="amenities-showcase-image" />
+              {activePhoto.caption || activePhoto.credit ? (
+                <figcaption className="landmark-photo-caption">
+                  {activePhoto.caption ? <strong>{activePhoto.caption}</strong> : null}
+                  {activePhoto.credit ? (
+                    activePhoto.sourceUrl ? (
+                      <a href={activePhoto.sourceUrl} target="_blank" rel="noopener noreferrer">{activePhoto.credit}</a>
+                    ) : (
+                      <span>{activePhoto.credit}</span>
+                    )
+                  ) : null}
+                </figcaption>
+              ) : null}
+            </>
+          ) : (
+            <div className="amenities-showcase-image-placeholder" aria-hidden="true">
+              <span>{active.name}</span>
+            </div>
+          )}
         </figure>
 
         <div className="amenities-showcase-list" role="list" aria-label="Landmark details">

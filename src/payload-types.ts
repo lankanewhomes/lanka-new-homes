@@ -3498,6 +3498,14 @@ export interface Project {
         category: 'School' | 'Hospital' | 'Shopping' | 'Restaurant' | 'Transport' | 'Landmark';
         name: string;
         distanceKm?: number | null;
+        /**
+         * Optional. Latitude — puts the place on the project/land map.
+         */
+        lat?: number | null;
+        /**
+         * Optional. Longitude — puts the place on the project/land map.
+         */
+        lng?: number | null;
         id?: string | null;
       }[]
     | null;
@@ -3905,7 +3913,58 @@ export interface Neighborhood {
   name: string;
   city?: string | null;
   province?: string | null;
+  /**
+   * Population with its scope and year, e.g. "17,588 in the Grandpass South division (2012 census)". Shown as the first line of the Overview list.
+   */
+  population?: string | null;
+  /**
+   * e.g. "Colombo District". Shown as a quick-facts chip.
+   */
+  district?: string | null;
+  /**
+   * One short line on where the area is, e.g. "About 9 km from Colombo Fort by road". Quick-facts chip.
+   */
+  approxLocation?: string | null;
+  /**
+   * Neighbouring areas, nearest first (4-6). A name that matches another neighborhood page links to it. Feeds the "Nearby major areas" chip and the "Explore nearby areas" links.
+   */
+  nearbyAreas?: string[] | null;
+  /**
+   * Centre of the area map.
+   */
+  latitude?: number | null;
+  /**
+   * Centre of the area map.
+   */
+  longitude?: number | null;
+  /**
+   * Radius (km) of the "approximate area" circle drawn on the map, usually 1-3.
+   */
+  mapRadiusKm?: number | null;
+  /**
+   * 300-600 words, paragraphs separated by a blank line: where it is, what it is known for, connectivity, lifestyle, development activity, who looks for property there. No prices, no property-portal names.
+   */
   description?: string | null;
+  /**
+   * Where the facts above came from. Printed as "Source: …" under the overview. Official and reference pages only, never property portals.
+   */
+  sources?:
+    | {
+        label: string;
+        url?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Two authored answers: what the area is known for, and whether it is close to Colombo. The questions about new homes and projects are generated on the page from the live listings.
+   */
+  faqs?:
+    | {
+        question: string;
+        answer: string;
+        id?: string | null;
+      }[]
+    | null;
   /**
    * Image URL — or upload a file in Media and paste its URL here.
    */
@@ -3943,14 +4002,27 @@ export interface Neighborhood {
          * Link to the original photo page (the credit links here).
          */
         sourceUrl?: string | null;
+        /**
+         * Optional. Name of the Known Landmark this photo shows — it must match a Nearby place name exactly. Photos with a landmark appear in the Known Landmarks section; the others appear in the Photos section.
+         */
+        landmark?: string | null;
         id?: string | null;
       }[]
     | null;
   nearby?:
     | {
-        category: 'School' | 'Hospital' | 'Shopping' | 'Restaurant' | 'Transport' | 'Landmark';
+        category:
+          'Access' | 'Road' | 'School' | 'Hospital' | 'Shopping' | 'Restaurant' | 'Business' | 'Transport' | 'Landmark';
         name: string;
         distanceKm?: number | null;
+        /**
+         * Optional. Latitude — puts the place on the area map.
+         */
+        lat?: number | null;
+        /**
+         * Optional. Longitude — puts the place on the area map.
+         */
+        lng?: number | null;
         id?: string | null;
       }[]
     | null;
@@ -6723,6 +6795,14 @@ export interface Land {
         category: 'School' | 'Hospital' | 'Shopping' | 'Restaurant' | 'Transport' | 'Landmark';
         name: string;
         distanceKm?: number | null;
+        /**
+         * Optional. Latitude — puts the place on the project/land map.
+         */
+        lat?: number | null;
+        /**
+         * Optional. Longitude — puts the place on the project/land map.
+         */
+        lng?: number | null;
         id?: string | null;
       }[]
     | null;
@@ -7798,6 +7878,8 @@ export interface ProjectsSelect<T extends boolean = true> {
         category?: T;
         name?: T;
         distanceKm?: T;
+        lat?: T;
+        lng?: T;
         id?: T;
       };
   coordinates?:
@@ -7969,6 +8051,8 @@ export interface LandsSelect<T extends boolean = true> {
         category?: T;
         name?: T;
         distanceKm?: T;
+        lat?: T;
+        lng?: T;
         id?: T;
       };
   coordinates?:
@@ -8314,7 +8398,28 @@ export interface NeighborhoodsSelect<T extends boolean = true> {
   name?: T;
   city?: T;
   province?: T;
+  population?: T;
+  district?: T;
+  approxLocation?: T;
+  nearbyAreas?: T;
+  latitude?: T;
+  longitude?: T;
+  mapRadiusKm?: T;
   description?: T;
+  sources?:
+    | T
+    | {
+        label?: T;
+        url?: T;
+        id?: T;
+      };
+  faqs?:
+    | T
+    | {
+        question?: T;
+        answer?: T;
+        id?: T;
+      };
   heroImage?: T;
   heroImageCredit?: T;
   heroImageSourceUrl?: T;
@@ -8326,6 +8431,7 @@ export interface NeighborhoodsSelect<T extends boolean = true> {
         caption?: T;
         credit?: T;
         sourceUrl?: T;
+        landmark?: T;
         id?: T;
       };
   nearby?:
@@ -8334,6 +8440,8 @@ export interface NeighborhoodsSelect<T extends boolean = true> {
         category?: T;
         name?: T;
         distanceKm?: T;
+        lat?: T;
+        lng?: T;
         id?: T;
       };
   seo?:

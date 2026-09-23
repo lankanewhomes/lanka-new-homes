@@ -330,6 +330,28 @@ export const nearbyField: Field = {
     },
     { name: 'name', type: 'text', required: true },
     { name: 'distanceKm', type: 'number' },
+    { name: 'lat', type: 'number', admin: { description: 'Optional. Latitude — puts the place on the project/land map.' } },
+    { name: 'lng', type: 'number', admin: { description: 'Optional. Longitude — puts the place on the project/land map.' } },
+  ],
+}
+
+// Neighborhood pages use a wider nearby list than projects: it adds the buyer-facing
+// Accessibility / Major roads / Business districts groups and lets a place carry
+// map coordinates. Kept separate so the project and land tables are untouched.
+export const neighborhoodNearbyField: Field = {
+  name: 'nearby',
+  type: 'array',
+  fields: [
+    {
+      name: 'category',
+      type: 'select',
+      required: true,
+      options: ['Access', 'Road', 'School', 'Hospital', 'Shopping', 'Restaurant', 'Business', 'Transport', 'Landmark'],
+    },
+    { name: 'name', type: 'text', required: true },
+    { name: 'distanceKm', type: 'number' },
+    { name: 'lat', type: 'number', admin: { description: 'Optional. Latitude — puts the place on the area map.' } },
+    { name: 'lng', type: 'number', admin: { description: 'Optional. Longitude — puts the place on the area map.' } },
   ],
 }
 

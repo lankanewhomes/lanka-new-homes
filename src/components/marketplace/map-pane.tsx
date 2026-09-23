@@ -2,7 +2,7 @@
 
 import "maplibre-gl/dist/maplibre-gl.css";
 import { LngLatBounds, setWorkerUrl } from "maplibre-gl";
-import Map, { Marker, NavigationControl, Popup, type MapRef } from "react-map-gl/maplibre";
+import Map, { Layer, Marker, NavigationControl, Popup, Source, type MapRef } from "react-map-gl/maplibre";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ProjectPopup } from "@/components/map/ProjectPopup";
 import type { Project } from "@/types";
@@ -29,9 +29,33 @@ const MAP_STYLE = "https://tiles.openfreemap.org/styles/liberty";
 
 export type MapAreaSelection = { label: string; projects: Project[] } | null;
 
-export function MapPane({ projects, basePath = "/projects", onSelectArea }: { projects: Project[]; basePath?: string; onSelectArea?: (selection: MapAreaSelection) => void }) {
+// Neighborhood pages: the area's centre/radius (drawn as an approximate-area circle) and the
+// nearby places to mark. Both optional, so the listing-page map is unchanged.
+export type MapArea = { lat: number; lng: number; radiusKm: number; label: string };
+export type MapPlace = { name: string; category: string; lat: number; lng: number };
+
+const KM_PER_DEGREE = 111.32;
+
+function areaBounds(area: MapArea): [[number, number], [number, number]] {
+  const dLat = area.radiusKm / KM_PER_DEGREE;
+  const dLng = area.radiusKm / (KM_PER_DEGREE * Math.cos((area.lat * Math.PI) / 180));
+  return [[area.lng - dLng, area.lat - dLat], [area.lng + dLng, area.lat + dLat]];
+}
+
+function areaCircle(area: MapArea) {
+  const dLat = area.radiusKm / KM_PER_DEGREE;
+  const dLng = area.radiusKm / (KM_PER_DEGREE * Math.cos((area.lat * Math.PI) / 180));
+  const ring = Array.from({ length: 65 }, (_, i) => {
+    const angle = (i / 64) * 2 * Math.PI;
+    return [area.lng + dLng * Math.cos(angle), area.lat + dLat * Math.sin(angle)];
+  });
+  return { type: "Feature" as const, properties: {}, geometry: { type: "Polygon" as const, coordinates: [ring] } };
+}
+
+export function MapPane({ projects, basePath = "/projects", onSelectArea, area, places = [] }: { projects: Project[]; basePath?: string; onSelectArea?: (selection: MapAreaSelection) => void; area?: MapArea; places?: MapPlace[] }) {
   const mapRef = useRef<MapRef | null>(null);
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
+  const [activePlace, setActivePlace] = useState<MapPlace | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
   // "load" fires once the style JSON is parsed, but the actual vector tiles
   // for the current view are still streaming in at that point — rendering
@@ -56,6 +80,7 @@ export function MapPane({ projects, basePath = "/projects", onSelectArea }: { pr
   // actual marker area). Only the multi-marker fitBounds case still needs
   // to run after load, via the mapLoaded gate below.
   const initialViewState = useMemo(() => {
+    if (area) return { longitude: area.lng, latitude: area.lat, zoom: 13 };
     if (pinnedProjects.length === 1) {
       return { longitude: pinnedProjects[0].coordinates!.lng, latitude: pinnedProjects[0].coordinates!.lat, zoom: 12 };
     }
@@ -63,9 +88,21 @@ export function MapPane({ projects, basePath = "/projects", onSelectArea }: { pr
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Neighborhood map: frame the approximate-area circle, the projects and the marked places together.
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !mapLoaded || pinnedProjects.length < 2) return;
+    if (!area || !map || !mapLoaded) return;
+    const [sw, ne] = areaBounds(area);
+    const bounds = new LngLatBounds(sw, ne);
+    pinnedProjects.forEach((project) => bounds.extend([project.coordinates!.lng, project.coordinates!.lat]));
+    places.forEach((place) => bounds.extend([place.lng, place.lat]));
+    map.fitBounds(bounds, { padding: 56, duration: 0, maxZoom: 15 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapLoaded]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (area || !map || !mapLoaded || pinnedProjects.length < 2) return;
 
     const bounds = pinnedProjects.reduce(
       (acc, project) => acc.extend([project.coordinates!.lng, project.coordinates!.lat]),
@@ -75,6 +112,7 @@ export function MapPane({ projects, basePath = "/projects", onSelectArea }: { pr
   }, [pinnedProjects, mapLoaded]);
 
   const selectProject = (project: Project) => {
+    setActivePlace(null);
     setActiveSlug((current) => {
       const next = current === project.slug ? null : project.slug;
       onSelectArea?.(next === null ? null : { label: project.city || project.location, projects: [project] });
@@ -93,6 +131,40 @@ export function MapPane({ projects, basePath = "/projects", onSelectArea }: { pr
         onIdle={() => setMapIdle(true)}
       >
         <NavigationControl position="top-left" showCompass={false} />
+
+        {area ? (
+          <>
+            <Source id="neighborhood-area" type="geojson" data={areaCircle(area)}>
+              <Layer id="neighborhood-area-fill" type="fill" paint={{ "fill-color": "#f47b36", "fill-opacity": 0.1 }} />
+              <Layer id="neighborhood-area-line" type="line" paint={{ "line-color": "#f47b36", "line-width": 2, "line-dasharray": [2, 2] }} />
+            </Source>
+            {/* A project/land page centres this circle on the pin's own exact coordinates (an
+                "immediate vicinity" indicator, not "we're unsure where this is") — omit the
+                label there, since the project's own numbered marker already sits at that same
+                point and a text pill on top of it would just double up. */}
+            {area.label ? (
+              <Marker longitude={area.lng} latitude={area.lat} anchor="center">
+                <span className="listing-map-area-label">{area.label}</span>
+              </Marker>
+            ) : null}
+          </>
+        ) : null}
+
+        {places.map((place) => (
+          <Marker
+            key={`${place.category}-${place.name}`}
+            longitude={place.lng}
+            latitude={place.lat}
+            anchor="center"
+            onClick={(event) => {
+              event.originalEvent.stopPropagation();
+              setActiveSlug(null);
+              setActivePlace((current) => (current?.name === place.name ? null : place));
+            }}
+          >
+            <span className="listing-map-place-marker" title={place.name} />
+          </Marker>
+        ))}
 
         {pinnedProjects.map((project) => (
           <Marker
@@ -134,9 +206,17 @@ export function MapPane({ projects, basePath = "/projects", onSelectArea }: { pr
             />
           </Popup>
         ) : null}
+        {activePlace ? (
+          <Popup longitude={activePlace.lng} latitude={activePlace.lat} anchor="top" offset={10} closeButton={false} onClose={() => setActivePlace(null)}>
+            <span className="listing-map-place-popup">
+              <strong>{activePlace.name}</strong>
+              <span>{activePlace.category}</span>
+            </span>
+          </Popup>
+        ) : null}
       </Map>
 
-      {pinnedProjects.length === 0 ? <p className="listing-map-empty">No pins to show yet for this area.</p> : null}
+      {pinnedProjects.length === 0 && !area ? <p className="listing-map-empty">No pins to show yet for this area.</p> : null}
       <div className={`listing-map-tile-overlay${mapIdle ? " is-hidden" : ""}`} aria-hidden="true" />
     </div>
   );

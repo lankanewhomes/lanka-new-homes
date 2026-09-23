@@ -399,18 +399,34 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
   color: #1d2430;
 }
 
+/* Split hero (owner, 2026-09-21): the photo used to be a full-bleed background spanning the
+   entire viewport width with the search panel floating on top of it as a translucent card —
+   at that size a normal listing photo's resolution doesn't hold up, so it read as blurry. The
+   photo now sits in its own contained, rounded frame on the right (`row-reverse` — the media div
+   is first in the DOM so it keeps loading/priority semantics, but renders second/right), at
+   roughly half the width instead of the full page, with the text and search in normal flow on
+   the left instead of overlaid on top of it. Matches the "clean photo, headline+search
+   separate" direction the phone layout already used below 761px (see that media query). */
 .luxury-hero-two {
   position: relative;
-  margin: 0 0 42px;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  gap: 48px;
+  max-width: 1400px;
+  margin: 0 auto 42px;
+  padding: 40px 24px 0;
 }
 
 .luxury-hero-two-media {
   position: relative;
-  height: 620px;
+  flex: 1 1 52%;
+  min-width: 0;
+  align-self: stretch;
+  height: 560px;
   overflow: hidden;
+  border-radius: 0;
   border: 1px solid rgba(20, 27, 36, 0.08);
-  border-left: none;
-  border-right: none;
   box-shadow: 0 28px 80px rgba(16, 24, 40, 0.12);
 }
 
@@ -589,19 +605,16 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
 }
 
 .luxury-hero-two-panel {
-  position: absolute;
-  left: 50%;
-  bottom: -50px;
-  transform: translateX(-50%);
-  z-index: 4;
-  width: min(760px, calc(100% - 48px));
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(254, 246, 239, 0.96));
-  border: 1px solid rgba(20, 27, 36, 0.08);
-  border-top: 4px solid #f47b36;
-  backdrop-filter: blur(8px);
-  padding: 28px 30px 22px;
-  text-align: center;
-  box-shadow: 0 30px 80px rgba(244, 123, 54, 0.18), 0 18px 36px rgba(15, 23, 42, 0.12);
+  position: relative;
+  flex: 1 1 48%;
+  min-width: 0;
+  width: auto;
+  background: none;
+  border: 0;
+  backdrop-filter: none;
+  padding: 0;
+  text-align: left;
+  box-shadow: none;
   font-family: var(--font-ref-sans);
   font-weight: 500;
   font-style: normal;
@@ -621,8 +634,8 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
 
 .luxury-hero-two-subheading {
   font-family: var(--font-ref-sans);
-  margin: 10px auto 0;
-  max-width: 620px;
+  margin: 10px 0 0;
+  max-width: 480px;
   font-size: 14px;
   line-height: 22px;
   color: #5f6876;
@@ -640,9 +653,8 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
 
 .luxury-hero-two-top-search {
   min-height: 0;
-  margin-top: 20px;
-  margin-bottom: 22px;
-  max-width: 620px;
+  margin: 20px 0 22px;
+  max-width: 480px;
   padding: 0;
   gap: 0;
   box-shadow: none;
@@ -693,11 +705,10 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
 
 .hero-search-suggestions {
   position: absolute;
-  left: 50%;
+  left: 0;
   top: calc(100% - 22px);
   z-index: 8;
-  width: min(620px, calc(100% - 48px));
-  transform: translateX(-50%);
+  width: min(480px, 100%);
   border: 1px solid #cbd7e3;
   background: #edf3f8;
   box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14);
@@ -753,7 +764,7 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
 .hero-quick-links {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 8px;
 }
 
@@ -789,12 +800,28 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
 }
 
 @media (max-width: 980px) {
+  /* Stack instead of side-by-side once there's no room for both columns at a
+     reasonable width — the panel's own text/search/quick-link sizing for this
+     stacked layout is set below, in the "Mobile hero" block (widened to also
+     cover this tablet range, since it's the same layout, just roomier). */
   .luxury-hero-two {
-    margin-bottom: 24px;
+    flex-direction: column;
+    /* The base rule's align-items: center cross-aligns column children by shrinking them to
+       fit their own content instead of the container's width — at this width that let the
+       h1's unbroken text set (and overflow past) the panel's width instead of wrapping within
+       it. Stretch so both the media and the panel fill the full width and text wraps normally. */
+    align-items: stretch;
+    gap: 0;
+    padding: 0;
+    margin: 0 0 24px;
+    max-width: none;
   }
 
   .luxury-hero-two-media {
-    height: 455px;
+    flex: none;
+    align-self: auto;
+    width: 100%;
+    border-radius: 0;
   }
 
   .luxury-hero-two-collection {
@@ -836,76 +863,25 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
   .luxury-hero-two-pagination {
     bottom: 22px;
   }
-
-  .luxury-hero-two-panel {
-    top: auto;
-    bottom: 18px;
-    width: calc(100% - 22px);
-    padding: 26px 14px 24px;
-  }
-
-  .luxury-hero-two-panel h2 {
-    font-weight: 325;
-    font-style: normal;
-    font-size: 40px;
-    font-variant: normal;
-    font-kerning: auto;
-    font-optical-sizing: auto;
-    font-stretch: 100%;
-    font-variation-settings: normal;
-    font-feature-settings: normal;
-    line-height: 48px;
-    vertical-align: baseline;
-    letter-spacing: 0.3px;
-    word-spacing: 0;
-    text-transform: none;
-    text-decoration: none;
-    text-align: center;
-    text-indent: 0;
-  }
-
-  .luxury-hero-two-subheading {
-    font-size: 13px;
-    line-height: 20px;
-    margin-top: 8px;
-  }
-
-  .luxury-hero-two-top-search {
-    margin-top: 16px;
-    margin-bottom: 18px;
-  }
-
-  .luxury-hero-two-top-search label,
-  .luxury-hero-two-top-search .hero-region-picker,
-  .luxury-hero-two-top-search a {
-    min-height: 48px;
-  }
 }
 
-/* Mobile hero: the panel moves out of the absolute overlay into normal
-   flow below the image (Zillow-style "clean photo, then headline+search
-   underneath" layout) instead of the desktop's blurred card sitting on
-   top of the photo. Region picker is dropped from the search row (no
-   Location/Smart mode toggle on this site) — the row becomes a single
-   rounded pill, search icon on the left via flex `order` so the DOM
+/* Stacked hero, tablet and phone alike (≤980px): the panel sits in normal flow below the
+   image (Zillow-style "clean photo, then headline+search underneath" layout) instead of the
+   desktop split's side-by-side columns — there isn't room for two columns at these widths.
+   Region picker is dropped from the search row (no Location/Smart mode toggle on this site) —
+   the row becomes a single rounded pill, search icon on the left via flex `order` so the DOM
    (and tab order / submit behavior) doesn't change. */
-@media (max-width: 760px) {
+@media (max-width: 980px) {
   .luxury-hero-two-media {
     height: 340px;
     border-radius: 0;
   }
 
   .luxury-hero-two-panel {
+    flex: none;
     position: static;
-    transform: none;
-    left: auto;
-    bottom: auto;
     width: auto;
     margin-top: 22px;
-    background: none;
-    border: 0;
-    backdrop-filter: none;
-    box-shadow: none;
     padding: 0 18px;
     text-align: center;
   }
@@ -924,7 +900,7 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
   }
 
   .hero-search.luxury-hero-two-top-search {
-    margin-top: 18px;
+    margin: 18px auto 0;
     min-height: 56px;
     flex-direction: row;
     padding: 0;
@@ -976,6 +952,12 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
 
   .hero-quick-link-pill {
     flex: none;
+  }
+
+  .hero-search-suggestions {
+    left: 50%;
+    width: min(480px, calc(100% - 36px));
+    transform: translateX(-50%);
   }
 }
 
@@ -1314,6 +1296,24 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   grid-template-rows: 1fr 1fr;
   gap: 8px;
   height: 100%;
+}
+
+/* Neighbourhood hero (owner, 2026-09-22): up to 4 side photos instead of the project hero's
+   fixed 2 — 3 photos go two-tall-on-the-left/two-stacked-on-the-right so nothing sits in a
+   half-empty row, 4 form an even 2x2. Project/floor-plan/land pages never add these modifier
+   classes, so their plain 2-row .listing-hero-grid-side is untouched. */
+.listing-hero-grid-side-3 .listing-hero-grid-side {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+
+.listing-hero-grid-side-3 .listing-hero-grid-side-item:first-child {
+  grid-row: 1 / 3;
+}
+
+.listing-hero-grid-side-4 .listing-hero-grid-side {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
 }
 
 .listing-hero-grid-side-item {
@@ -1719,6 +1719,60 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   width: 100%;
   height: 100%;
   border: 0;
+}
+
+/* Neighbourhood hero's Map tab (owner, 2026-09-23): the same interactive MapPane as the page's
+   own "Location map" section, opened here instead of an iframe — its .listing-map/-maplibre-map
+   children size to a fixed height elsewhere on the site, so they need their own 100% override to
+   actually fill this tab instead of falling back to that fixed value. */
+.listing-photo-lightbox-map .listing-map,
+.listing-photo-lightbox-map .listing-maplibre-map,
+.listing-photo-lightbox-map .listing-map-loading {
+  height: 100%;
+  min-height: 0;
+}
+
+.listing-photo-lightbox-map-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Same legend as the page's own Location map section, restyled for the lightbox's black
+   background (that version's grey text and unfilled icon swatches — .neighborhood-map-legend
+   itself is untouched — would be unreadable here) and positioned as a floating bar over the map,
+   matching how the Photos tab overlays its caption pill along the same bottom edge. */
+.listing-photo-lightbox-map-legend {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin: 0;
+  padding: 10px 20px;
+  border-radius: 999px;
+  /* One shared pill behind all three entries together, not one each (owner, 2026-09-23). */
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  font-size: 12.5px;
+  color: #fff;
+  pointer-events: none;
+}
+
+.listing-photo-lightbox-map-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.listing-photo-lightbox-map-legend i {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
 }
 
 .listing-photo-lightbox-preview {
@@ -4118,7 +4172,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   max-height: calc(100vh - 32px);
   overflow-y: auto;
   background: #fff;
-  border-radius: 8px;
+  border-radius: 0;
   box-shadow: 0 18px 44px rgba(10, 15, 23, 0.24);
   padding: 16px;
 }
@@ -4142,12 +4196,19 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   height: 26px;
   display: grid;
   place-items: center;
-  border-radius: 999px;
+  border-radius: 0;
   color: #6b6355;
 }
 
 .plans-filter-panel-head button:hover {
   background: #f4f4f4;
+}
+
+/* Filter & sort popup: square corners on the container, buttons and every control inside
+   (owner, 2026-09-21). */
+.plans-filter-panel,
+.plans-filter-panel * {
+  border-radius: 0;
 }
 
 .plans-filter-group {
@@ -4186,6 +4247,23 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 
 .plans-filter-option input {
   flex-shrink: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  display: grid;
+  place-content: center;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  border: 1px solid #1f1f1f;
+  border-radius: 0;
+  background: #fff;
+}
+
+.plans-filter-option input:checked::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: #1f1f1f;
 }
 
 .plans-filter-panel-actions {
@@ -4208,7 +4286,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 .plans-filter-apply {
   flex: 1;
   min-height: 38px;
-  border-radius: 6px;
+  border-radius: 0;
   background: #1f1f1f;
   color: #fff;
   font-size: 12.5px;
@@ -4228,7 +4306,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 
   .plans-filter-panel {
     max-width: 100%;
-    border-radius: 14px 14px 0 0;
+    border-radius: 0;
   }
 }
 
@@ -4844,6 +4922,40 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   min-height: 540px;
   object-fit: cover;
   display: block;
+}
+
+.amenities-showcase-image-wrap.has-landmark-photo {
+  position: relative;
+}
+
+/* Caption + photographer credit over the foot of a Known Landmarks photo. */
+.landmark-photo-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 28px 18px 14px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.68), rgba(0, 0, 0, 0));
+  color: #fff;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.landmark-photo-caption strong {
+  font-weight: 600;
+}
+
+.landmark-photo-caption a,
+.landmark-photo-caption span {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 12px;
+}
+
+.landmark-photo-caption a:hover {
+  text-decoration: underline;
 }
 
 .amenities-showcase-image-placeholder {
@@ -8630,7 +8742,7 @@ a.developer-profile-press-title {
   overflow-y: auto;
   background: #fff;
   border: 1px solid #d8d8d8;
-  border-radius: 8px;
+  border-radius: 0;
   box-shadow: 0 18px 44px rgba(10, 15, 23, 0.16);
   padding: 16px;
 }
@@ -8654,12 +8766,18 @@ a.developer-profile-press-title {
   height: 26px;
   display: grid;
   place-items: center;
-  border-radius: 999px;
+  border-radius: 0;
   color: #6b6355;
 }
 
 .listing-filter-more-head button:hover {
   background: #f4f4f4;
+}
+
+/* Filter popup: square corners on the container and everything inside it (owner, 2026-09-21). */
+.listing-filter-more-panel,
+.listing-filter-more-panel * {
+  border-radius: 0;
 }
 
 .listing-filter-more-group {
@@ -8698,6 +8816,23 @@ a.developer-profile-press-title {
 
 .listing-filter-more-option input {
   flex-shrink: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  display: grid;
+  place-content: center;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  border: 1px solid #1f1f1f;
+  border-radius: 0;
+  background: #fff;
+}
+
+.listing-filter-more-option input:checked::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: #1f1f1f;
 }
 
 .listing-filter-more-actions {
@@ -8720,7 +8855,7 @@ a.developer-profile-press-title {
 .listing-filter-more-apply {
   flex: 1;
   min-height: 38px;
-  border-radius: 6px;
+  border-radius: 0;
   background: #1f1f1f;
   color: #fff;
   font-size: 12.5px;
@@ -8740,7 +8875,7 @@ a.developer-profile-press-title {
     right: 0;
     width: 100%;
     max-height: 80vh;
-    border-radius: 14px 14px 0 0;
+    border-radius: 0;
   }
 }
 
@@ -8857,7 +8992,12 @@ a.developer-profile-press-title {
    From 761px up keep just that title visible, in normal flow between the
    filter bar and the grid; the mobile filter/sort row inside it stays hidden
    (desktop has its own filter bar above). Sizes follow docs/design.md
-   ("Category listing pages" → Header). Phones are untouched. */
+   ("Category listing pages" → Header). Phones are untouched.
+   The dynamic search/region sentence (.listing-header-h1-dynamic) matches the
+   plain H1's 32px/400/40px here too (owner, 2026-09-21) — it used to drop to
+   20px/28px on desktop, which read as a different, smaller style than a page
+   like /projects/beachfront right next to it. Still 19px/26px on phones,
+   where a long "There are N homes for sale in {place}" sentence needs it. */
 @media (min-width: 761px) {
   .listing-filter-sticky {
     display: block;
@@ -8868,15 +9008,11 @@ a.developer-profile-press-title {
     display: none;
   }
 
-  .listing-filter-sticky .listing-header-h1 {
+  .listing-filter-sticky .listing-header-h1,
+  .listing-filter-sticky .listing-header-h1-dynamic {
     font-size: 32px;
     line-height: 40px;
     font-weight: 400;
-  }
-
-  .listing-filter-sticky .listing-header-h1-dynamic {
-    font-size: 20px;
-    line-height: 28px;
   }
 }
 
@@ -12824,5 +12960,189 @@ a.developer-profile-press-title {
 
   .pricing-page-head h1 {
     font-size: 28px;
+  }
+}
+
+/* Neighborhood guide page (2026-09-21): the area guide + development hub sections.
+   Everything reuses the existing shells (project-description-shell, key-features-shell,
+   developer-projects-section, guide-page-faq-item) — only what has no equivalent is here. */
+@media (min-width: 901px) {
+  /* Six quick-facts chips (District, City, Approx. location, Nearby major areas,
+     Typical property types, New projects) sit in two rows of three. */
+  .listing-hero-stats-chips.neighborhood-stats-chips {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* The overview is several paragraphs (blank-line separated) instead of one block. */
+.project-description-paragraphs p + p,
+.project-description-short p + p,
+.project-description-full p + p {
+  margin-top: 14px;
+}
+
+.project-description-paragraphs {
+  margin: 12px 0 0;
+  font-size: 14.5px;
+  line-height: 1.85;
+  color: #3a3a3a;
+}
+
+.neighborhood-source {
+  margin: 16px 0 0;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: #6b6b6b;
+}
+
+.neighborhood-source a {
+  color: #6b6b6b;
+  text-decoration: underline;
+}
+
+.neighborhood-source a:hover {
+  color: #1f1f1f;
+}
+
+.neighborhood-developers-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.neighborhood-developer-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: #fff;
+  border: 1px solid #e4e2db;
+  color: #1f1f1f;
+  text-decoration: none;
+  transition: border-color 0.15s ease;
+}
+
+.neighborhood-developer-card:hover {
+  border-color: #f47b36;
+}
+
+.neighborhood-developer-logo {
+  flex-shrink: 0;
+  width: 84px;
+  height: 56px;
+  object-fit: contain;
+}
+
+.neighborhood-developer-copy {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #6b6b6b;
+}
+
+.neighborhood-developer-copy strong {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f1f1f;
+}
+
+.listing-map-place-marker {
+  display: block;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  border: 2px solid #fff;
+  background: #1f1f1f;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+}
+
+.listing-map-area-label {
+  display: inline-block;
+  padding: 4px 10px;
+  border: 1px solid #f47b36;
+  background: rgba(255, 255, 255, 0.92);
+  color: #1f1f1f;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.listing-map-place-popup {
+  display: grid;
+  gap: 2px;
+  font-family: var(--font-ref-sans);
+  font-size: 13px;
+  color: #1f1f1f;
+}
+
+.listing-map-place-popup span {
+  font-size: 12px;
+  color: #6b6b6b;
+}
+
+/* Only the colour swatches below are still used, by the neighbourhood hero's Map tab legend
+   (.listing-photo-lightbox-map-legend) — the wrapping .neighborhood-map-legend layout/text rule
+   itself was only for the dedicated "Location map" page section, removed 2026-09-23. */
+.neighborhood-map-legend-project {
+  border-radius: 999px;
+  background: #f47b36;
+}
+
+.neighborhood-map-legend-place {
+  border-radius: 999px;
+  background: #1f1f1f;
+}
+
+.neighborhood-map-legend-area {
+  border: 1.5px dashed #f47b36;
+  background: rgba(244, 123, 54, 0.1);
+}
+
+/* Explore nearby areas — same pill look as the guide pages' related links. */
+.neighborhood-nearby-areas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.neighborhood-nearby-areas a,
+.neighborhood-nearby-areas span {
+  display: inline-block;
+  padding: 9px 16px;
+  border: 1px solid #e4e2db;
+  background: #fff;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #1f1f1f;
+  text-decoration: none;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.neighborhood-nearby-areas a:hover {
+  border-color: #f47b36;
+  color: #f47b36;
+}
+
+/* The "Frequently Asked Questions" heading has margin: 0 (project-description-shell's default)
+   and .guide-page-faq-item only carries a bottom margin, so the first question sat flush against
+   the heading with no gap (owner, 2026-09-21) — every other project-description-shell section on
+   this page (e.g. Overview's highlights list) puts 14px between its h2 and its first child, so
+   this matches that instead of introducing a new gap value. Scoped to this page's FAQ section by
+   id so the guide pages' own .guide-page-faq (which already spaces its heading via a different
+   rule) is untouched. */
+#faq .guide-page-faq-item:first-of-type {
+  margin-top: 14px;
+}
+
+@media (max-width: 900px) {
+  .neighborhood-developers-grid {
+    grid-template-columns: 1fr;
   }
 }
