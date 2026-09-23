@@ -74,11 +74,11 @@ export default function WebDesignPage() {
             <h1>Your listing lives on LankaNewHomes.<br />Your brand deserves its own home too.</h1>
             <p className="fd-hero-sub">
               We design and build dedicated websites for property developments — a brand new site for a project
-              that doesn't have one yet, or a redesign of one that isn't working anymore.
+              that doesn&apos;t have one yet, or a redesign of one that isn&apos;t working anymore.
             </p>
             <div className="fd-hero-ctas">
               <Link href="/contact" className="fd-cta-primary">Talk to us about a site</Link>
-              <a href="#what-we-do" className="fd-cta-secondary">See what's included</a>
+              <a href="#what-we-do" className="fd-cta-secondary">See what&apos;s included</a>
             </div>
           </div>
         </div>
@@ -120,8 +120,8 @@ export default function WebDesignPage() {
           <h2>A listing gets you found. A site tells your story.</h2>
           <p>
             Your LankaNewHomes listing puts your project in front of buyers actively searching right now. A dedicated
-            website is different — it's where you send every other lead: a Facebook ad, a signboard QR code, a
-            referral, a business card. It's the version of your project that's entirely yours.
+            website is different — it&apos;s where you send every other lead: a Facebook ad, a signboard QR code, a
+            referral, a business card. It&apos;s the version of your project that&apos;s entirely yours.
           </p>
         </div>
 
@@ -153,7 +153,7 @@ export default function WebDesignPage() {
       <section className="fd-how-section" aria-label="How it works">
         <div className="fd-section-head">
           <h2>How it works</h2>
-          <p>Four steps from "we need a site" to a live one.</p>
+          <p>Four steps from &quot;we need a site&quot; to a live one.</p>
         </div>
         <ol className="fd-how-list">
           {PROCESS.map((step, index) => (
@@ -195,7 +195,7 @@ export default function WebDesignPage() {
       <section className="fd-cta-band" aria-label="Get started">
         <Rocket className="fd-cta-band-icon" aria-hidden="true" />
         <h2>Have a project that needs a website?</h2>
-        <p>Tell us about it — new site or redesign, we'll take it from there.</p>
+        <p>Tell us about it — new site or redesign, we&apos;ll take it from there.</p>
         <div className="fd-hero-ctas">
           <Link href="/contact" className="fd-cta-primary">Get in touch</Link>
           <Link href="/for-developers" className="fd-cta-secondary">List your project instead</Link>

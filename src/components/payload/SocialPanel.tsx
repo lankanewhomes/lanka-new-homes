@@ -37,7 +37,10 @@ export function SocialPanel() {
     setData(json); setError(null)
   }, [id])
 
-  useEffect(() => { load() }, [load])
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    load()
+  }, [load])
 
   const post = async () => {
     if (!id) return
@@ -82,7 +85,7 @@ export function SocialPanel() {
         <div style={label}>Generated assets</div>
         {!assets ? (
           <div style={{ fontSize: 13 }}>
-            Nothing generated yet. From the repo, run <code style={{ background: 'var(--theme-elevation-100)', padding: '2px 6px', borderRadius: 4 }}>{cmd}</code> — it renders the reel and carousel cards from this listing's photos and plans, uploads them, and they appear here.
+            Nothing generated yet. From the repo, run <code style={{ background: 'var(--theme-elevation-100)', padding: '2px 6px', borderRadius: 4 }}>{cmd}</code> — it renders the reel and carousel cards from this listing&apos;s photos and plans, uploads them, and they appear here.
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'minmax(180px, 220px) 1fr', gap: 18, alignItems: 'start' }}>
@@ -111,7 +114,7 @@ export function SocialPanel() {
       <div style={box}>
         <div style={label}>Caption that will be posted</div>
         <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'inherit', fontSize: 13, margin: 0, opacity: 0.9 }}>{data?.caption ?? '…'}</pre>
-        <div style={{ fontSize: 12, opacity: 0.7, marginTop: 8 }}>Edit it in the Caption field below (leave it blank to use this default, built from the listing's own data).</div>
+        <div style={{ fontSize: 12, opacity: 0.7, marginTop: 8 }}>Edit it in the Caption field below (leave it blank to use this default, built from the listing&apos;s own data).</div>
       </div>
 
       <div style={box}>

@@ -7,7 +7,7 @@ import path from 'node:path'
 import { writeFileSync, mkdirSync } from 'node:fs'
 import { config as loadEnv } from 'dotenv'
 loadEnv({ path: path.join(process.cwd(), '.env.local') })
-const payloadConfig = ((await import('../payload.config')) as any).default
+const payloadConfig = (await import('../payload.config')).default
 const { getPayload } = await import('payload')
 const payload = await getPayload({ config: payloadConfig })
 
@@ -157,23 +157,23 @@ mkdirSync(path.join(process.cwd(), 'docs/listings'), { recursive: true })
 let index = '# Listing reports\n\nOne file per listing built from a developer\'s website — what was captured, where it came from, and what is assumed or missing. Regenerate with `NODE_ENV=production npx tsx scripts/listing-reports.ts`; the live record in `/cms` is the source of truth. Open questions across all listings: [FOLLOW-UPS.md](FOLLOW-UPS.md).\n\n'
 for (const [slug, src] of Object.entries(SOURCES)) {
   const res = await payload.find({ collection: 'projects', where: { slug: { equals: slug } }, limit: 1, depth: 1, overrideAccess: true })
-  const p: any = res.docs[0]
+  const p = res.docs[0]
   if (!p) continue
   const dev = typeof p.developer === 'object' ? p.developer?.name : p.developer
-  const plans: any[] = p.floorPlans ?? []
-  const gallery: any[] = p.gallery ?? []
+  const plans = p.floorPlans ?? []
+  const gallery = p.gallery ?? []
   const byFolder = (f: string) => gallery.filter((g) => g.image?.includes(`/${f}/`)).length
   const L: string[] = []
   L.push(`# ${p.name}`, '', `- **Slug:** \`${slug}\` · **Developer:** ${fmt(dev)} · **Published:** ${p.isPublished ? 'yes' : 'no'}`, `- **Source:** ${src.site}`, `- **Location:** ${fmt(p.location)}${p.road ? `, ${p.road}` : ''}, ${fmt(p.city)}, ${fmt(p.district)} District, ${fmt(p.province)} Province`, `- **Type / status:** ${fmt(p.type)} · ${fmt(p.status)} · units ${fmt(p.units)} · floors ${fmt(p.floors)} · beds ${fmt(p.bedrooms)} · expected handover ${fmt(p.completionYear)}`, `- **Payment plan badge:** ${fmt(p.paymentPlanBadge)} · **Deposit terms:** ${p.depositPaymentStructure ? 'yes' : '—'}`, `- **Brochure on listing:** ${p.brochureUrl ?? '—'}`, `- **Live:** /projects/${slug}`, '')
   L.push('## Floor plans', '', '| Plan | Beds | Baths | SqFt | Perches | 2D | m² | 3D | Downloads | Availability | Available floors |', '|---|---|---|---|---|---|---|---|---|---|---|')
   for (const fp of plans) {
-    const fa: any[] = fp.floorAvailability ?? []
+    const fa = fp.floorAvailability ?? []
     const open = fa.filter((f) => f.available).map((f) => f.floor).join(', ')
     L.push(`| ${cell(fp.planName)} | ${fp.bedrooms} | ${fp.bathrooms} | ${fp.floorAreaSqFt} | ${fmt(fp.landPerches)} | ${fp.image ? '✅' : '—'} | ${fp.imageMetric ? '✅' : '—'} | ${fp.image3d ? '✅' : '—'} | ${(fp.planDocuments ?? []).length || '—'} | ${fmt(fp.availability)} | ${fa.length ? (open || 'none') + ` of ${fa.length}` : '—'} |`)
   }
   L.push('', '## Media (Cloudflare R2, media.lankanewhomes.com)', '', `- Hero: ${p.heroImage ?? '—'}`, `- Property photos (gallery/): ${byFolder('gallery')} · amenity photos (amenities/): ${byFolder('amenities')} · road map: ${byFolder('road-map') ? 'yes' : '—'}`, `- Construction updates (dated photos): ${(p.constructionUpdates ?? []).length}`, '')
-  if ((p.constructionUpdates ?? []).length) { L.push('| Date | Milestone |', '|---|---|'); for (const c of p.constructionUpdates) L.push(`| ${String(c.date).slice(0, 10)} | ${cell(c.note)} |`); L.push('') }
-  L.push('## Data captured', '', `- Amenities: ${(p.amenities ?? []).map((a: any) => a.name).join(', ') || '—'}`, `- Key Features groups: ${(p.unitFeatures ?? []).map((g: any) => `${g.label || g.key_other || g.key} (${(g.items ?? []).length})`).join(', ') || '—'}`, `- Nearby places: ${(p.nearby ?? []).length}`, `- Contact: ${fmt(p.contact?.name)} · ${fmt(p.contact?.phone)} · ${fmt(p.contact?.email)}`, `- Project verification checklist: ${p.isVerified ? 'verified' : 'not yet'}`, '')
+  if ((p.constructionUpdates ?? []).length) { L.push('| Date | Milestone |', '|---|---|'); for (const c of p.constructionUpdates ?? []) L.push(`| ${String(c.date).slice(0, 10)} | ${cell(c.note)} |`); L.push('') }
+  L.push('## Data captured', '', `- Amenities: ${(p.amenities ?? []).map((a) => a.name).join(', ') || '—'}`, `- Key Features groups: ${(p.unitFeatures ?? []).map((g) => `${g.label || g.key_other || g.key} (${(g.items ?? []).length})`).join(', ') || '—'}`, `- Nearby places: ${(p.nearby ?? []).length}`, `- Contact: ${fmt(p.contact?.name)} · ${fmt(p.contact?.phone)} · ${fmt(p.contact?.email)}`, `- Project verification checklist: ${p.isVerified ? 'verified' : 'not yet'}`, '')
   L.push('## Sources & brochures', '', ...src.brochures.map((b) => `- ${b}`), '', '## Notes, assumptions & gaps', '', ...src.notes.map((n) => `- ${n}`), '', `_Generated ${new Date().toISOString().slice(0, 10)} from the live Payload record._`, '')
   writeFileSync(path.join(process.cwd(), 'docs/listings', `${slug}.md`), L.join('\n'))
   index += `- [${p.name}](${slug}.md) — ${fmt(p.type)}, ${fmt(p.location)}; ${plans.length} plans, ${gallery.length} images${p.brochureUrl ? ', brochure' : ''}, handover ${fmt(p.completionYear)}\n`
