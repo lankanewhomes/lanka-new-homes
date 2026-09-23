@@ -10,13 +10,30 @@ import type { NearbyPlace } from "@/types";
 // component renders the groups looks up its own icon from that key.
 export type NearbyPlaceGroup = { key: NearbyPlace["category"]; label: string; items: NearbyPlace[] };
 
-const NEARBY_CATEGORY_ORDER: NearbyPlace["category"][] = ["School", "Hospital", "Shopping", "Restaurant", "Transport", "Landmark"];
+// Access / Road / Business exist on neighborhood pages only, so on a project page
+// they simply never produce a group.
+const NEARBY_CATEGORY_ORDER: NearbyPlace["category"][] = ["Access", "Road", "School", "Hospital", "Shopping", "Restaurant", "Business", "Transport", "Landmark"];
 
-export function groupNearbyPlaces(nearby: NearbyPlace[]): NearbyPlaceGroup[] {
+const NEARBY_LABEL: Partial<Record<NearbyPlace["category"], string>> = { Access: "Accessibility", Road: "Major roads", Business: "Business districts" };
+
+// Neighborhood pages name the groups the way a buyer asks about them.
+const NEIGHBORHOOD_LABEL: Record<NearbyPlace["category"], string> = {
+  Access: "Accessibility",
+  Road: "Major roads",
+  School: "Schools",
+  Hospital: "Hospitals",
+  Shopping: "Shopping",
+  Restaurant: "Restaurants",
+  Business: "Business districts",
+  Transport: "Public transportation",
+  Landmark: "Landmarks",
+};
+
+export function groupNearbyPlaces(nearby: NearbyPlace[], options?: { neighborhood?: boolean }): NearbyPlaceGroup[] {
   return NEARBY_CATEGORY_ORDER
     .map((category) => ({
       key: category,
-      label: category,
+      label: options?.neighborhood ? NEIGHBORHOOD_LABEL[category] : NEARBY_LABEL[category] ?? category,
       items: [...nearby.filter((place) => place.category === category)].sort((a, b) => (a.distanceKm ?? Infinity) - (b.distanceKm ?? Infinity)),
     }))
     .filter((group) => group.items.length > 0);

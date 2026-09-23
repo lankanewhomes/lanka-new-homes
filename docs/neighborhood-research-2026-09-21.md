@@ -28,8 +28,22 @@ Every area with a published project now has a `/neighborhoods/<slug>` page (22 p
 | digana | created | 6 | LPW, PG, Wikipedia, rome2rio, primelands.lk |
 | south-coast (Ahangama, Weligama, Mirissa) | created | 6 | LPW, PG, Wikipedia, rome2rio, agent guides |
 | thalawathugoda | photos only | 6 | (text unchanged) |
+| hokandara | created (2026-09-21) | 5 | LPW, PG, Wikipedia, rome2rio, Commons |
+| homagama | created (2026-09-21) | 6 | LPW, PG, Wikipedia, rome2rio, Commons |
+| ratmalana | created (2026-09-21) | 6 | LPW (slug `Western_Rathmalana`), PG, Wikipedia, rome2rio |
+| kollupitiya | updated (2026-09-21) | 6 | LPW, PG, Wikipedia, Unsplash / Commons |
 
-Out of scope, untouched (no published project): hokandara, homagama, ratmalana, kollupitiya — they still carry the old generic hero and have no gallery.
+Text on these four (and on all pages except Colombo 14) is still the long form with price sentences and source names — see "Trial: Colombo 14" below.
+
+Hokandara, Homagama, Ratmalana and Kollupitiya (no published project yet) were added afterwards at the owner's request. Hokandara and Ratmalana galleries are mostly nearby landmarks, captioned as such. Kollupitiya's old text wrongly put it on Beira Lake and Colombo City Centre; replaced. A "Ladies' College" photo turned out to be Colombo 7 and was swapped for a Galle Face photo.
+
+## Trial: Colombo 14 (owner, 2026-09-21)
+The owner asked to try a different layout on Colombo 14 only, and will decide on the rest:
+- Photos moved into the **Known Landmarks** section (photo panel with caption and credit; `gallery[].landmark` must equal a Nearby name); the separate "Photos of Colombo 14" section is gone. The first landmark photo (R. Premadasa Stadium) is the same picture as the page hero.
+- **Population** added as the first Overview line (`population` field): "17,588 in the Grandpass South division (2012 census; no figure for all of Colombo 14)".
+- Text cut from 228 to 52 words; **no prices and no source names** (owner: "i will add them in the future"). Highlights trimmed to 4.
+- Backups of the previous rows are in the session scratchpad (`backup-c14-*.json`).
+To roll out to the other 25 pages once approved: shorten each text, remove price/market sentences and source names, add a `landmark` to each gallery item and matching Nearby entries.
 
 ## Photos
 - Sources: Unsplash, Pexels and Wikimedia Commons (CC0 / CC BY / CC BY-SA). Every photo has a caption and a credit line; the hero's credit prints under the gallery. Files are copies in R2 under `neighborhoods/<slug>/`.

@@ -273,9 +273,14 @@ sort, list/map toggle) + `map-pane.tsx` (lazy-loaded map visual).
 - **Header**: H1 uses `var(--font-ref-sans)` (Archivo) — not serif. Default
   page H1 (e.g. "New projects in Sri Lanka") is `32px` / `400` weight /
   `40px` line-height / `#202022`. When a map cluster or the search box
-  narrows results, the H1 swaps to a smaller dynamic sentence
+  narrows results, the H1 swaps to a dynamic sentence
   (`.listing-header-h1-dynamic`, "There are N communities for sale in
-  {place}") at `20px` / `28px` line-height. No eyebrow line, no intro
+  {place}") — **on desktop (`761px` up) this now matches the same
+  `32px`/`400`/`40px` styling as the plain H1** (owner, 2026-09-21: it used
+  to drop to `20px`/`28px` there, which looked like a different page style
+  next to a curated page like `/projects/beachfront`); on phones it stays
+  smaller, `19px`/`26px` line-height, since the fuller sentence needs it at
+  that width. No eyebrow line, no intro
   paragraph under the H1 on this page type. **The H1 + result count sit
   inside `.listing-filter-sticky`**, which is the phone-only sticky filter
   block (`display: none` by default). From `761px` up a media query shows it
@@ -966,16 +971,31 @@ per SqFt is the developer's own figure, never price ÷ size).
   unit. Two rows render; CSS shows one per breakpoint
   (`.stats-chips-desktop-only` / `.stats-chips-mobile-only`).
 - **Fact sheet** — desktop order: Plan type · Beds · Baths · Ensuite baths ·
-  Powder room · Total SqFt · Interior SqFt · Balcony SqFt · Terrace SqFt ·
+  Powder room · Total SqFt · Interior SqFt · Balcony · Balcony SqFt · Terrace SqFt ·
   Ceiling height · Floor range · Aspect · View · Price LKR · Per SqFt ·
   Maintenance / mo · Deposit · Parking · Parking type · Storage · Utility
   area · Maid's room · Pantry · Handover condition · Furnishing · AC
   provision · Hot water · Floor finish · Units in plan · Units available ·
-  Availability. Mobile order: Total SqFt · Interior SqFt · Balcony SqFt ·
+  Availability. Mobile order: Total SqFt · Interior SqFt · Balcony · Balcony SqFt ·
   Per SqFt · Maintenance / mo · Floor range · View · Ceiling height ·
   Parking · Storage · Utility area · Maid's room · Handover condition ·
   Furnishing · Units available · Availability. Column-major, same table
   shell as the project fact sheet.
+- **Balcony row** (owner, 2026-09-21): "Balcony: Private balcony". It is not
+  a plan field — it comes from the project's Key Features when an item's
+  field is "Balcony"/"Balconies" (or the value is just "Private / Wraparound
+  balcony"), split out by `src/lib/balcony-features.ts`. The plan page shows it
+  in the fact sheet and drops that item from its Key Features (no duplicate);
+  the project page's Key Features keep it. Passing mentions in other fields
+  ("Finishes: … balconies … tiles") are left alone. Applies to every plan of
+  a project that carries such an item (7 projects on 2026-09-21: Rush Court 5, Rush Tower 2, Rush Metropolis, Maimoona Residencies, Street Rush Residencies, Imaarat, and Rush Residencies Colombo 6, whose page was not live at the time).
+- **All-floor-plans page** (`/projects/<slug>/floor-plans`): same shell as the
+  project and plan pages — `ProjectHero` (back link, WhatsApp, badges), then
+  everything inside `.project-page-content` (stats chips, the plan grid, the
+  builder/contact card, similar listings). The hero's Overview / Pricing / Key
+  Features / Amenities / Neighborhood links point at the project page
+  (`sectionNavBase`), because those sections don't exist here. Without the
+  wrapper the grid ran edge to edge.
 - The admin `floorPlanVisibleStats` picker no longer affects these pages
   (only land plot pages, which still use `ProjectStatsChips`).
 
@@ -1467,11 +1487,13 @@ customization points, all from `payload.config.ts`'s `admin.components`
 ## Neighborhood pages: content rules (owner brief, 2026-09-21)
 
 A neighborhood row exists for every area with a published project (`/neighborhoods/<slug>`; fields: name, city, province, description, heroImage, highlights, nearby).
-- **Description**: a fresh 150–250 word overview in our own words (never lifted from LankaPropertyWeb / PropertyGuide / Wikipedia). Any price figure names its source and the date pulled, e.g. "LankaPropertyWeb (pulled 21 Sep 2026)"; averages are the source's own, never computed by us; undated or single-source figures are called out as a guide.
+- **Description** (revised by the owner, 2026-09-21, on the Colombo 14 trial page): short — about 50–100 words, one or two short paragraphs — in our own words (never lifted from another site). **No prices and no market-mix sentences** ("most listings are older houses…", per-perch or per-house asking prices): the owner will add them later. **Never name a source website** (PropertyGuide, LankaPropertyWeb, ikman, Wikipedia…) in the visible text. The older pages still carry 150–250 word texts with price sentences and source names; they are trimmed to this rule as each page is rolled over.
+- **Population** (optional `population` field): shown as the first line of the Overview list, always with its scope and year (e.g. "17,588 in the Grandpass South division (2012 census; no figure for all of Colombo 14)").
 - **Nearby**: named schools, hospitals, shopping, restaurants, transport and landmarks. `distanceKm` only when a source states it. Search-snippet-only names are left out.
 - **Hero photo**: an Unsplash (or Pexels) photo that really shows the area — check the photo page's location tag and look at the image first. Never a listing's render. Where no area-specific photo exists, use a city-level stand-in and flag it. `images.unsplash.com` is an allowed image host; `images.pexels.com` is not (copy to R2 or add the host and deploy first).
 - Sources in priority order: LankaPropertyWeb area guide → PropertyGuide area guide → Wikipedia → web search; also tripadvisor, agoda, booking.com, facebook, primelands.lk, rome2rio and ikman.lk (asking prices only, as a sanity check). Do not use or hotlink images from LankaPropertyWeb, PropertyGuide or Google Images.
 - Write through Payload (which mirrors to Supabase). A project only lists on its neighborhood page once its `neighborhood` relation is set.
 - **Every listing gets a neighborhood page (owner, 2026-09-21).** When a listing is added, check `/neighborhoods` for its area; if there is no row, create the page (text + nearby + photos as above) and set the project's `neighborhood` relation. The project page's Neighborhood section then previews the guide and links to it, and `/neighborhoods` (linked from the footer and the homepage) lists it with its project count.
+- **Landmark photos live in Known Landmarks (owner, 2026-09-21; trial on Colombo 14).** A gallery item with a `landmark` (must equal a Nearby place's name exactly) is shown in that landmark's card in the Known Landmarks section (photo panel with caption and credit; landmarks with a photo are listed first) and is left out of the "Photos of X" section; items without a `landmark` still form the Photos section, which is hidden when empty. Not yet rolled out to the other pages.
 - **Photos: at least 5 per page** (`heroImage` + `gallery`), showing famous landmarks of the area (a well-known school, park, mall, temple, beach, station) — sharp, at least ~2400 px wide for the hero and ~1800 px for gallery photos, no blur, watermarks, night noise or heavy filters. Sources: Unsplash, Pexels, and Wikimedia Commons (CC0 / CC BY / CC BY-SA only). Check that a Commons file really shows the place (search hits match on words, not location — "Richmond Castle" returned Yorkshire). Every photo carries a caption saying what it shows (and "nearby, about N km" when it is not in the area) and a `credit` line; the hero's credit goes in `heroImageCredit` and prints under the gallery. Files are copied to R2 under `neighborhoods/<slug>/` (so `images.pexels.com` / `upload.wikimedia.org` never need to be allowed hosts). Where a small suburb has no photographed landmarks of its own, use the nearest famous ones and caption them honestly.
 - The `/neighborhoods` index (`src/app/(frontend)/neighborhoods/page.tsx`) reuses the `/developers` A–Z directory layout and shows each area's project count.
