@@ -7929,6 +7929,27 @@ a.developer-profile-press-title {
   cursor: not-allowed;
 }
 
+/* "Coming soon" badge nested inside a social button's label span — used by
+   both the plain (.auth-social-button) and modal (.auth-modal-social-button)
+   variants. Selector is deliberately two classes deep (not just
+   ".auth-social-button-soon") so it outranks ".auth-modal-social-button
+   span" (a class+type selector, further down) and keeps its own small pill
+   styling instead of inheriting the label's font-size/weight/color. */
+.auth-social-button .auth-social-button-soon,
+.auth-modal-social-button .auth-social-button-soon {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #efe9dd;
+  color: #8a7f68;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  vertical-align: middle;
+}
+
 .auth-divider {
   display: flex;
   align-items: center;

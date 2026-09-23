@@ -8,10 +8,15 @@ type Provider = "google" | "facebook" | "linkedin_oidc";
 
 // Order matches the requested layout: Facebook, LinkedIn, Google (not
 // alphabetical or "most popular first" — an explicit choice).
-const PROVIDERS: { id: Provider; label: string; icon: ReactNode }[] = [
+// Facebook and LinkedIn are marked comingSoon (2026-09-23): the buyer-side
+// Facebook app is still Dev-Mode-restricted in Meta (only the
+// lankanewhomes@gmail.com account can use it) pending Business Verification,
+// and LinkedIn was never wired up. Only Google is live for real buyers.
+const PROVIDERS: { id: Provider; label: string; icon: ReactNode; comingSoon?: boolean }[] = [
   {
     id: "facebook",
     label: "Continue with Facebook",
+    comingSoon: true,
     icon: (
       <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
         <path fill="#1877F2" d="M18 9a9 9 0 1 0-10.4 8.89v-6.29H5.31V9h2.29V7.02c0-2.26 1.35-3.51 3.41-3.51.99 0 2.02.18 2.02.18v2.22h-1.14c-1.12 0-1.47.7-1.47 1.41V9h2.5l-.4 2.6h-2.1v6.29A9 9 0 0 0 18 9Z" />
@@ -21,6 +26,7 @@ const PROVIDERS: { id: Provider; label: string; icon: ReactNode }[] = [
   {
     id: "linkedin_oidc",
     label: "Continue with LinkedIn",
+    comingSoon: true,
     icon: (
       <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
         <rect width="18" height="18" rx="2" fill="#0A66C2" />
@@ -261,11 +267,22 @@ export function AuthForm({
           key={provider.id}
           type="button"
           className={variant === "modal" ? "auth-modal-social-button" : "auth-social-button"}
-          disabled={oauthLoading !== null}
-          onClick={() => onOAuth(provider.id)}
+          disabled={provider.comingSoon || oauthLoading !== null}
+          aria-disabled={provider.comingSoon}
+          onClick={() => {
+            if (provider.comingSoon) return;
+            onOAuth(provider.id);
+          }}
         >
           {provider.icon}
-          <span>{oauthLoading === provider.id ? "Redirecting…" : variant === "modal" ? provider.label.replace("Continue with ", "") : provider.label}</span>
+          <span>
+            {oauthLoading === provider.id
+              ? "Redirecting…"
+              : variant === "modal"
+                ? provider.label.replace("Continue with ", "")
+                : provider.label}
+            {provider.comingSoon && <span className="auth-social-button-soon">Coming soon</span>}
+          </span>
         </button>
       ))}
     </div>

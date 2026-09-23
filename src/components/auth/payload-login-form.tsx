@@ -8,12 +8,16 @@ import { useSearchParams } from "next/navigation";
 // Google) — the two were inconsistent before (this list only had Google and
 // Facebook, in the opposite order), which is exactly what showed up as
 // visually inconsistent once someone compared both login screens side by
-// side. Google and Facebook are wired to real routes below; LinkedIn still
-// shows the "not set up" notice until that gets built too.
+// side. Facebook and LinkedIn are marked comingSoon (2026-09-23) — Facebook
+// login itself works end to end, but Meta still restricts it to
+// Admin/Developer/Tester-listed accounts until Business Verification clears,
+// so it isn't usable by a real developer signing up yet; LinkedIn was never
+// wired up. Only Google is live for everyone.
 const SOCIAL_PROVIDERS = [
   {
     id: "facebook",
     label: "Continue with Facebook",
+    comingSoon: true,
     icon: (
       <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
         <path fill="#1877F2" d="M18 9a9 9 0 1 0-10.4 8.89v-6.29H5.31V9h2.29V7.02c0-2.26 1.35-3.51 3.41-3.51.99 0 2.02.18 2.02.18v2.22h-1.14c-1.12 0-1.47.7-1.47 1.41V9h2.5l-.4 2.6h-2.1v6.29A9 9 0 0 0 18 9Z" />
@@ -23,6 +27,7 @@ const SOCIAL_PROVIDERS = [
   {
     id: "linkedin_oidc",
     label: "Continue with LinkedIn",
+    comingSoon: true,
     icon: (
       <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
         <rect width="18" height="18" rx="2" fill="#0A66C2" />
@@ -33,6 +38,7 @@ const SOCIAL_PROVIDERS = [
   {
     id: "google",
     label: "Continue with Google",
+    comingSoon: false,
     icon: (
       <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
         <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.9c1.7-1.57 2.7-3.88 2.7-6.62Z" />
@@ -71,7 +77,6 @@ function PayloadLoginFormInner({ mode = "login" }: { mode?: "login" | "signup" }
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [socialNotice, setSocialNotice] = useState(false);
   const [checkEmail, setCheckEmail] = useState(false);
   const searchParams = useSearchParams();
 
@@ -188,24 +193,23 @@ function PayloadLoginFormInner({ mode = "login" }: { mode?: "login" | "signup" }
             key={provider.id}
             type="button"
             className="auth-social-button"
+            disabled={provider.comingSoon}
+            aria-disabled={provider.comingSoon}
             onClick={() => {
+              if (provider.comingSoon) return;
               if (provider.id === "google") {
                 window.location.href = `/api/auth/admin-google?from=${encodeURIComponent(window.location.pathname)}`;
-                return;
               }
-              if (provider.id === "facebook") {
-                window.location.href = `/api/auth/admin-facebook?from=${encodeURIComponent(window.location.pathname)}`;
-                return;
-              }
-              setSocialNotice(true);
             }}
           >
             {provider.icon}
-            <span>{provider.label}</span>
+            <span>
+              {provider.label}
+              {provider.comingSoon && <span className="auth-social-button-soon">Coming soon</span>}
+            </span>
           </button>
         ))}
       </div>
-      {socialNotice && <p className="auth-error">Social sign-in isn&apos;t set up for this login yet — use your email and password above.</p>}
     </div>
   );
 }
