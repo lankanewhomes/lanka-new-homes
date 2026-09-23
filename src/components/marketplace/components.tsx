@@ -101,7 +101,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteLanguage, useLanguage } from "@/components/layout/language-provider";
-import { compactLkr, formatLkr, formatOfficeHours } from "@/lib/format";
+import { compactLkr, formatLkr, formatOfficeHours, splitSentences } from "@/lib/format";
 import { Amenity, Article, Developer, FloorPlan, Lead, Location, NearbyPlace, Project } from "@/types";
 import { localizedProjectCopy, useListingT } from "@/lib/i18n/use-listing-t";
 import { floorPlanSummarySentence } from "@/lib/i18n/floor-plan-sentence";
@@ -2270,10 +2270,14 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
                   </div>
                 ) : null}
                 {!hasAnyPricingDetail ? <p>Contact us for current pricing and availability.</p> : null}
+                {/* Editors often type several prices/notes as one paragraph ("2-Bedroom from Rs. …. 3-Bedroom
+                    from Rs. …. Penthouses are sold out."); show one row per sentence (owner, 2026-09-23). */}
                 {pricingFields.map((field) => (
                   <div key={field.label}>
                     <p className="font-semibold">{field.label}</p>
-                    <p>{field.value}</p>
+                    <div className="space-y-1">
+                      {splitSentences(field.value).map((line) => <p key={line}>{line}</p>)}
+                    </div>
                   </div>
                 ))}
                 {pricingHistory.length > 0 ? (

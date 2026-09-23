@@ -73,3 +73,16 @@ export function formatMinutes(minutes: number | null | undefined): string {
   const h = Math.floor((minutes % (60 * 24)) / 60);
   return h ? `${d} d ${h} h` : `${d} d`;
 }
+
+// Abbreviations whose trailing "." is not the end of a sentence ("Rs. 91,270,000").
+const NON_TERMINAL_ABBREVIATIONS = ["Rs", "No", "Nos", "approx", "Approx", "sq", "ft", "St", "Mr", "Mrs", "Ms", "Dr", "Ltd", "Pvt", "vs", "etc", "e\\.g", "i\\.e"];
+const SENTENCE_BREAK = new RegExp(`(?<!\\b(?:${NON_TERMINAL_ABBREVIATIONS.join("|")})\\.)(?<=[.!?])\\s+|\\s*\\n+\\s*`);
+
+/**
+ * Splits free text an editor typed as one run-on paragraph into one line per
+ * sentence (or per line break), so "2-Bedroom from Rs. 91,270,000. 3-Bedroom
+ * from Rs. 117,612,000. Penthouses are sold out." reads as three rows.
+ */
+export function splitSentences(text: string | null | undefined): string[] {
+  return (text ?? "").split(SENTENCE_BREAK).map((line) => line.trim()).filter(Boolean);
+}

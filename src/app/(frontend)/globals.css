@@ -6086,6 +6086,21 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   }
 }
 
+/* Mobile only: the homepage band backgrounds (New listings, Land, Explore by city, Popular
+   searches) run edge to edge of the screen instead of stopping ~10px short inside
+   .home-content's gutter. The padding grows by exactly what the margin pulls out, so the
+   content inside stays where it was — only the background widens (owner, 2026-09-23). */
+@media (max-width: 760px) {
+  .livabl-home .new-listings-section,
+  .livabl-home .neighborhoods-section,
+  .livabl-home .seo-links-section {
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    padding-left: calc(50vw - 50% + 6px);
+    padding-right: calc(50vw - 50% + 6px);
+  }
+}
+
 .developer-page {
   width: min(1290px, calc(100% - 48px));
   margin: 0 auto;

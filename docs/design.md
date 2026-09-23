@@ -490,6 +490,22 @@ site should render `ListingGridCard`, not a new bespoke card — one card
 component, one visual language, styled once in `globals.css`
 (`.listing-grid-card*`).
 
+**Section bands on mobile (owner, 2026-09-23):** under 760px the coloured
+backgrounds of New listings, Land for sale, Explore by city and Popular
+searches run edge to edge of the screen, while their content keeps the normal
+gutter (negative `calc(50% - 50vw)` margin, matched by extra padding). On
+desktop they stay boxed at `max-width: 1280px`. Any new homepage band should
+join that mobile rule in `globals.css`.
+
+## Pricing card: one row per sentence (owner, 2026-09-23)
+
+Free-text pricing fields ("Available plan prices", "Pricing coming soon",
+fees…) render one row per sentence via `splitSentences()` in
+`src/lib/format.ts`. An editor who types "2-Bedroom from Rs. 91,270,000.
+3-Bedroom from Rs. 117,612,000. Penthouses are sold out." gets three rows.
+Abbreviations like "Rs." don't count as sentence ends. Line breaks also start
+a new row.
+
 ## Key Features editor (project wizard, own step)
 
 `Project.unitFeatures` (distinct from the checkbox building amenities above
