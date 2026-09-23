@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Check, ShieldCheck } from "lucide-react";
-import { PACKAGE_LIST, formatPackagePrice } from "@/lib/packages";
+import { ShieldCheck } from "lucide-react";
+import { PackageCards } from "@/components/marketplace/package-cards";
 
 export const metadata: Metadata = {
   title: "Pricing",
@@ -20,26 +20,7 @@ export default function PricingPage() {
           </p>
         </div>
 
-        <div className="pricing-page-grid">
-          {PACKAGE_LIST.map((pkg) => (
-            <div className={`pricing-page-card${pkg.tier === "premium" ? " pricing-page-card-highlight" : ""}`} key={pkg.tier}>
-              {pkg.tier === "premium" ? <span className="pricing-page-card-tag">Most visibility</span> : null}
-              <h2>{pkg.name}</h2>
-              <p className="pricing-page-card-price">{formatPackagePrice(pkg)}</p>
-              <ul>
-                {pkg.features.map((feature) => (
-                  <li key={feature}>
-                    <Check className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-              <Link href="/developers/register" className={`pricing-page-card-cta${pkg.tier === "premium" ? " pricing-page-card-cta-solid" : ""}`}>
-                {pkg.tier === "free" ? "List for free" : `Get ${pkg.name}`}
-              </Link>
-            </div>
-          ))}
-        </div>
+        <PackageCards showCta />
 
         <p className="pricing-page-note fd-badge-preview">
           <span className="listing-badge-pill badge-verified" title="Verified by LankaNewHomes">

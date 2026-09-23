@@ -6,7 +6,7 @@ import { ShieldCheck, Zap } from "lucide-react";
 import { getProjectBySlug } from "@/lib/project-store";
 import { ListingGridCard } from "@/components/marketplace/listing-page";
 import { ScrollReveal } from "@/components/marketplace/scroll-reveal";
-import { PACKAGE_LIST, formatPackagePrice } from "@/lib/packages";
+import { PackageCards } from "@/components/marketplace/package-cards";
 import { formatLkr } from "@/lib/format";
 
 export const revalidate = 300;
@@ -432,17 +432,8 @@ export default async function ForDevelopersPage() {
           <p className="fdv-eyebrow">Pricing</p>
           <h2>Listing is always free. Upgrade any project for more reach.</h2>
         </div>
-        <div className="fdv-pricing-grid" data-reveal>
-          {PACKAGE_LIST.map((pkg) => (
-            <div className={`fdv-pricing-card${pkg.tier === "premium" ? " fdv-pricing-card-highlight" : ""}`} key={pkg.tier}>
-              {pkg.tier === "premium" ? <span className="fdv-pricing-card-tag">Most visibility</span> : null}
-              <h3>{pkg.name}</h3>
-              <p className="fdv-pricing-card-price">{formatPackagePrice(pkg)}</p>
-              <ul>
-                {pkg.features.map((feature) => <li key={feature}>{feature}</li>)}
-              </ul>
-            </div>
-          ))}
+        <div className="fdv-pricing-cards" data-reveal>
+          <PackageCards />
         </div>
         <p className="fdv-pricing-note" data-reveal>
           <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" /> A Verified badge appears automatically once a project has an active Featured or Premium package.

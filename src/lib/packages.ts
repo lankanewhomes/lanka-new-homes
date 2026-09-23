@@ -27,11 +27,14 @@ export type PackageDefinition = {
   weeklyReports: boolean;
   /** One-line bullets shown on the package picker card. */
   features: string[];
+  /** Short "who it's for" line under the plan name on the public pricing cards. */
+  tagline: string;
 };
 
 export const PACKAGES: Record<PackageTier, PackageDefinition> = {
   free: {
     tier: "free",
+    tagline: "Everything you need to put a project in front of buyers, at no cost.",
     name: "Free",
     price: 0,
     currency: "LKR",
@@ -50,6 +53,7 @@ export const PACKAGES: Record<PackageTier, PackageDefinition> = {
   },
   featured: {
     tier: "featured",
+    tagline: "For projects that need more buyers finding them in search and on the homepage.",
     name: "Featured",
     price: 25000,
     currency: "LKR",
@@ -70,6 +74,7 @@ export const PACKAGES: Record<PackageTier, PackageDefinition> = {
   },
   premium: {
     tier: "premium",
+    tagline: "Maximum exposure and the deepest buyer analytics for flagship projects.",
     name: "Premium",
     price: 50000,
     currency: "LKR",

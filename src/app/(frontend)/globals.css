@@ -12643,86 +12643,201 @@ a.developer-profile-press-title {
   padding: 40px 0 130px;
 }
 
-.fdv-pricing-grid {
+.fdv-pricing-cards {
   width: min(1100px, calc(100% - 44px));
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1px;
-  background: var(--fdv-line);
-  border: 1px solid var(--fdv-line);
 }
 
-.fdv-pricing-card {
+/* Free / Featured / Premium cards (PackageCards, shared by /pricing and /for-developers;
+   owner, 2026-09-23): modelled on webdesignetobicoke.ca's pricing cards — thick orange top
+   bar, the highlighted card fully outlined on white, the others on cream, uppercase plan
+   name, big bold price, filled orange tick circles, divider + fine print. Site font and
+   site orange throughout, not the reference's. */
+.package-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  align-items: stretch;
+  font-family: var(--font-ref-sans);
+}
+
+.package-card {
   position: relative;
-  background: #fff;
-  padding: 40px 32px;
   display: flex;
   flex-direction: column;
+  padding: 64px 32px 36px;
+  background: #faf7f2;
+  border-top: 8px solid #f47b36;
+  color: #1f1f1f;
 }
 
-.fdv-pricing-card-highlight {
-  background: var(--fdv-ink);
-  color: #fff;
+.package-card-highlight {
+  background: #fff;
+  border: 3px solid #f47b36;
+  border-top-width: 8px;
+  box-shadow: 0 18px 40px rgba(31, 31, 31, 0.1);
 }
 
-.fdv-pricing-card-tag {
+.package-card-tag {
   position: absolute;
-  top: 24px;
-  right: 32px;
-  font-size: 10.5px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--fdv-accent);
-}
-
-.fdv-pricing-card h3 {
-  margin: 0 0 6px;
-  font-family: var(--fdv-serif);
+  top: 32px;
+  right: 28px;
+  padding: 6px 14px;
+  background: #f47b36;
+  color: #fff;
+  font-size: 12px;
   font-weight: 500;
-  font-size: 22px;
+  letter-spacing: 0.18em;
+  line-height: 1.2;
+  text-transform: uppercase;
 }
 
-.fdv-pricing-card-price {
-  margin: 0 0 28px;
+.package-card-name {
+  margin: 0;
+  font-family: var(--font-ref-sans);
+  font-size: 28px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: #1f1f1f;
+}
+
+.package-card-tagline {
+  margin: 12px 0 0;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #6b6f76;
+}
+
+.package-card-price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin: 30px 0 28px;
+}
+
+.package-card-price strong {
+  font-size: 44px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: #1f1f1f;
+}
+
+.package-card-price span {
   font-size: 15px;
-  color: var(--fdv-muted);
+  color: #6b6f76;
 }
 
-.fdv-pricing-card-highlight .fdv-pricing-card-price {
-  color: #b9b6b0;
-}
-
-.fdv-pricing-card ul {
+.package-card-features {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 16px;
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+.package-card-features li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 16px;
+  line-height: 1.45;
+  color: #1f1f1f;
+}
+
+.package-card-tick {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #f47b36;
+  color: #fff;
+}
+
+.package-card-tick svg {
+  width: 13px;
+  height: 13px;
+}
+
+.package-card-notes {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  margin: 30px 0 0;
+  padding-top: 24px;
+  border-top: 1px solid #e3ded5;
 }
 
-.fdv-pricing-card li {
-  padding-left: 18px;
-  position: relative;
-  font-size: 13.5px;
-  line-height: 1.5;
-  color: var(--fdv-muted);
+.package-card-notes dt {
+  font-size: 15px;
+  color: #6b6f76;
 }
 
-.fdv-pricing-card-highlight li {
-  color: #d8d6d2;
+.package-card-notes dd {
+  margin: 2px 0 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1f1f1f;
 }
 
-.fdv-pricing-card li::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 7px;
-  width: 6px;
-  height: 1px;
-  background: currentColor;
+.package-card-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 52px;
+  margin-top: 28px;
+  border: 2px solid #1f1f1f;
+  color: #1f1f1f;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.package-card-cta:hover {
+  background: #1f1f1f;
+  color: #fff;
+  text-decoration: none;
+}
+
+.package-card-cta-solid {
+  background: #f47b36;
+  border-color: #f47b36;
+  color: #fff;
+}
+
+.package-card-cta-solid:hover {
+  background: #d9601f;
+  border-color: #d9601f;
+  color: #fff;
+}
+
+@media (max-width: 900px) {
+  .package-cards {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .package-card {
+    padding: 64px 26px 32px;
+  }
+
+  .package-card-tag {
+    right: 20px;
+  }
+
+  .package-card-price strong {
+    font-size: 52px;
+  }
 }
 
 .fdv-pricing-note {
@@ -12734,12 +12849,6 @@ a.developer-profile-press-title {
   text-align: center;
   font-size: 13px;
   color: var(--fdv-muted);
-}
-
-@media (max-width: 900px) {
-  .fdv-pricing-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 /* Live listings — reuses the site's own .home-card-grid/ListingGridCard
@@ -12876,113 +12985,6 @@ a.developer-profile-press-title {
   color: #55524c;
 }
 
-.pricing-page-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 22px;
-  align-items: stretch;
-}
-
-.pricing-page-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  background: #fff;
-  border: 1px solid #e7e2d8;
-  border-radius: 0;
-  padding: 32px 28px;
-}
-
-.pricing-page-card-highlight {
-  border-color: #f47b36;
-  box-shadow: 0 16px 40px rgba(244, 123, 54, 0.16);
-}
-
-.pricing-page-card-tag {
-  position: absolute;
-  top: -13px;
-  left: 28px;
-  background: #f47b36;
-  color: #fff;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  padding: 5px 12px;
-  border-radius: 0;
-}
-
-.pricing-page-card h2 {
-  margin: 6px 0 4px;
-  font-family: var(--font-ref-sans);
-  font-weight: 700;
-  font-size: 21px;
-  color: #1f1f1f;
-}
-
-.pricing-page-card-price {
-  margin: 0 0 24px;
-  font-size: 15px;
-  font-weight: 600;
-  color: #6f6b62;
-}
-
-.pricing-page-card ul {
-  margin: 0 0 28px;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  flex: 1;
-}
-
-.pricing-page-card li {
-  display: flex;
-  align-items: flex-start;
-  gap: 9px;
-  font-size: 13.5px;
-  line-height: 1.5;
-  color: #45423c;
-}
-
-.pricing-page-card li svg {
-  flex-shrink: 0;
-  margin-top: 2px;
-  color: #f47b36;
-}
-
-.pricing-page-card-cta {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 46px;
-  border-radius: 0;
-  border: 1px solid #1f1f1f;
-  color: #1f1f1f;
-  font-weight: 600;
-  font-size: 14px;
-  text-decoration: none;
-}
-
-.pricing-page-card-cta:hover {
-  background: #1f1f1f;
-  color: #fff;
-  text-decoration: none;
-}
-
-.pricing-page-card-cta-solid {
-  background: #f47b36;
-  border-color: #f47b36;
-  color: #fff;
-}
-
-.pricing-page-card-cta-solid:hover {
-  background: #d9601f;
-  border-color: #d9601f;
-  color: #fff;
-}
-
 .pricing-page-note {
   display: flex;
   align-items: center;
@@ -13015,10 +13017,6 @@ a.developer-profile-press-title {
 }
 
 @media (max-width: 900px) {
-  .pricing-page-grid {
-    grid-template-columns: 1fr;
-  }
-
   .pricing-page-head h1 {
     font-size: 28px;
   }

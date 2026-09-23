@@ -1404,6 +1404,22 @@ for pricing/features: `src/lib/packages.ts` (`PACKAGES` — name, price,
 ranking boost, featured/badge flags, analytics level, weekly-reports flag).
 Change a price or feature gate there, nowhere else.
 
+**Public pricing cards (owner, 2026-09-23):** `/pricing` and the Pricing
+section on `/for-developers` both render `PackageCards`
+(`src/components/marketplace/package-cards.tsx`, styles `.package-card*`).
+The design is modelled on webdesignetobicoke.ca's pricing cards but uses the
+site's font and orange:
+- an 8px orange top bar on every card
+- Premium fully outlined in orange on white, with a "Most visibility" tag
+  top-right; Free and Featured on cream `#faf7f2`
+- uppercase plan name, then the `tagline` from `packages.ts`
+- a big bold price with a small grey suffix
+- filled orange tick circles for features
+- a divider, then grey-label / bold-value fine print
+
+`/pricing` passes `showCta` for the sign-up buttons. Don't restyle one page's
+cards separately.
+
 - **Data**: `Subscriptions` collection (`src/collections/Subscriptions.ts`,
   admin group Business) — `project`, `developer`, `package`
   (featured/premium), `status` (active/past_due/canceled/incomplete/
