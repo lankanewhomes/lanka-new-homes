@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Check } from "lucide-react";
-import { formatLkr } from "@/lib/format";
 import { PACKAGE_LIST, type PackageDefinition } from "@/lib/packages";
 
 // Free / Featured / Premium cards shared by /pricing and /for-developers
@@ -30,9 +29,13 @@ export function PackageCards({ showCta = false }: { showCta?: boolean }) {
             {highlight ? <span className="package-card-tag">Most visibility</span> : null}
             <h3 className="package-card-name">{pkg.name} package</h3>
             <p className="package-card-tagline">{pkg.tagline}</p>
+            {/* No Rs. figure shown for Featured/Premium — they're Coming Soon (no
+                payment gateway yet), so a firm price isn't advertised before it can
+                actually be bought. `priceHeadline` is a short benefit instead (owner,
+                2026-09-24). The real price still lives in packages.ts for billing/CMS. */}
             <p className="package-card-price">
-              <strong>{pkg.price === 0 ? "Free" : formatLkr(pkg.price)}</strong>
-              <span>{pkg.price === 0 ? "per project" : "per project / month"}</span>
+              <strong>{pkg.price === 0 ? "Free" : pkg.priceHeadline}</strong>
+              <span>per project</span>
             </p>
             <ul className="package-card-features">
               {pkg.features.map((feature) => (

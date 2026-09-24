@@ -29,6 +29,17 @@ export type PackageDefinition = {
   features: string[];
   /** Short "who it's for" line under the plan name on the public pricing cards. */
   tagline: string;
+  /**
+   * Public pricing cards only (package-cards.tsx) — shown in the big price
+   * slot INSTEAD OF the real `price` for a paid tier, since Featured/Premium
+   * are marked Coming Soon (no payment gateway yet) and the owner didn't
+   * want a specific Rs. figure advertised before it can actually be bought
+   * (2026-09-24). Unused for `free` (that card always shows "Free"). Every
+   * other consumer of this file (billing, admin PackagePicker, scoring,
+   * subscriptions) still uses the real `price`/`formatPackagePrice` —
+   * this field only affects the public marketing copy.
+   */
+  priceHeadline?: string;
 };
 
 export const PACKAGES: Record<PackageTier, PackageDefinition> = {
@@ -56,6 +67,7 @@ export const PACKAGES: Record<PackageTier, PackageDefinition> = {
     tagline: "For projects that need more buyers finding them in search and on the homepage.",
     name: "Featured",
     price: 25000,
+    priceHeadline: "More reach",
     currency: "LKR",
     rankingBoost: 15,
     featured: true,
@@ -77,6 +89,7 @@ export const PACKAGES: Record<PackageTier, PackageDefinition> = {
     tagline: "Maximum exposure and the deepest buyer analytics for flagship projects.",
     name: "Premium",
     price: 50000,
+    priceHeadline: "Max reach",
     currency: "LKR",
     rankingBoost: 35,
     featured: true,

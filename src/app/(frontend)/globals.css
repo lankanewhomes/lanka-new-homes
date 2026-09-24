@@ -12815,26 +12815,44 @@ a.developer-profile-press-title {
   position: relative;
   display: flex;
   flex-direction: column;
-  padding: 64px 32px 36px;
+  padding: 56px 32px 32px;
   background: #faf7f2;
-  /* Free / Featured: black outline, orange top bar (owner, 2026-09-24). */
-  border: 3px solid #1f1f1f;
-  border-top: 8px solid #f47b36;
+  /* Rounded card, thin neutral border + soft shadow for depth instead of a
+     heavy black outline — orange top bar is the brand signature, kept
+     lighter (owner asked for less "plain/boxy", 2026-09-24). */
+  border: 1px solid #e7e1d4;
+  border-top: 6px solid #f47b36;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(31, 31, 31, 0.05);
   color: #1f1f1f;
 }
 
+/* Premium: a solid dark card (not just an outline) so the recommended tier
+   actually stands out among the three, the way the free-listing-band's
+   dark #1f1f1f panel already reads as "the important one" elsewhere on the
+   site — a light-on-light outline card didn't carry enough weight. Lifted
+   slightly on desktop for extra emphasis. */
 .package-card-highlight {
-  background: #fff;
-  border: 3px solid #f47b36;
-  border-top-width: 8px;
-  box-shadow: 0 18px 40px rgba(31, 31, 31, 0.1);
+  background: #1f1f1f;
+  border: 1px solid #1f1f1f;
+  border-top: 6px solid #f47b36;
+  color: #fff;
+  box-shadow: 0 24px 48px rgba(31, 31, 31, 0.22);
+}
+
+@media (min-width: 901px) {
+  .package-card-highlight {
+    transform: translateY(-14px);
+    z-index: 1;
+  }
 }
 
 .package-card-tag {
   position: absolute;
   top: 32px;
   right: 28px;
-  padding: 6px 14px;
+  padding: 6px 16px;
+  border-radius: 999px;
   background: #f47b36;
   color: #fff;
   font-size: 12px;
@@ -12948,6 +12966,7 @@ a.developer-profile-press-title {
   justify-content: center;
   height: 52px;
   margin-top: 28px;
+  border-radius: 999px;
   border: 2px solid #1f1f1f;
   color: #1f1f1f;
   font-size: 14px;
@@ -12985,6 +13004,46 @@ a.developer-profile-press-title {
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+}
+
+/* Premium's card is dark, so every text element and the CTA need a light
+   variant — the black-on-black/white-on-white that a plain class reuse
+   would otherwise produce. */
+.package-card-highlight .package-card-tagline,
+.package-card-highlight .package-card-price span,
+.package-card-highlight .package-card-notes dt {
+  color: #c9c6c0;
+}
+
+.package-card-highlight .package-card-name,
+.package-card-highlight .package-card-price strong,
+.package-card-highlight .package-card-features li,
+.package-card-highlight .package-card-notes dd {
+  color: #fff;
+}
+
+.package-card-highlight .package-card-notes {
+  border-top-color: rgba(255, 255, 255, 0.16);
+}
+
+.package-card-highlight .package-card-cta {
+  border-color: #fff;
+  color: #fff;
+}
+
+.package-card-highlight .package-card-cta:hover {
+  background: #fff;
+  color: #1f1f1f;
+}
+
+.package-card-highlight .package-card-cta-soon:hover {
+  background: transparent;
+  color: #fff;
+}
+
+.package-card-highlight .package-card-cta-soon-badge {
+  background: rgba(255, 255, 255, 0.14);
+  color: #e5e1d8;
 }
 
 /* Desktop: the three cards share their rows (CSS subgrid), so name, description, price,
