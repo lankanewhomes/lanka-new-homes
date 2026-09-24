@@ -12667,6 +12667,8 @@ a.developer-profile-press-title {
   flex-direction: column;
   padding: 64px 32px 36px;
   background: #faf7f2;
+  /* Free / Featured: black outline, orange top bar (owner, 2026-09-24). */
+  border: 3px solid #1f1f1f;
   border-top: 8px solid #f47b36;
   color: #1f1f1f;
 }

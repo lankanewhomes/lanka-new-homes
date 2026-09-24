@@ -1411,7 +1411,8 @@ The design is modelled on webdesignetobicoke.ca's pricing cards but uses the
 site's font and orange:
 - an 8px orange top bar on every card
 - Premium fully outlined in orange on white, with a "Most visibility" tag
-  top-right; Free and Featured on cream `#faf7f2`
+  top-right; Free and Featured on cream `#faf7f2` with a 3px black
+  (`#1f1f1f`) outline
 - uppercase plan name, then the `tagline` from `packages.ts`
 - a big bold price with a small grey suffix
 - filled orange tick circles for features
