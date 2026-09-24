@@ -1421,6 +1421,11 @@ site's font and orange:
 `/pricing` passes `showCta` for the sign-up buttons. Don't restyle one page's
 cards separately.
 
+On desktop the cards share their rows (CSS subgrid), so name, description,
+price, list, fine print and button line up across all three cards. The price
+note always sits under the price. Keep new card parts inside that 6-row
+structure.
+
 - **Data**: `Subscriptions` collection (`src/collections/Subscriptions.ts`,
   admin group Business) — `project`, `developer`, `package`
   (featured/premium), `status` (active/past_due/canceled/incomplete/
