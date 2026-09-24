@@ -4,6 +4,7 @@ import { projects } from "@/data/projects";
 import { getAllProjects, getProjectBySlug } from "@/lib/project-store";
 import { getDeveloperBySlug } from "@/lib/developer-store";
 import { listingWhatsAppHref } from "@/lib/whatsapp";
+import { isPaidPackageTier } from "@/lib/packages";
 import { pickSimilarListings } from "@/lib/similar-listings";
 import { SimilarListingsSection } from "@/components/marketplace/similar-listings";
 import { PlansAndHomesSection, ProjectHero, ProjectStatsChips, StatsContactCard } from "@/components/marketplace/components";
@@ -48,7 +49,7 @@ export default async function FloorPlansPage({ params }: FloorPlansPageProps) {
         whatsappHref={listingWhatsAppHref(developer?.socialLinks?.whatsapp, project.name)}
         extraBadges={[
           ...(developer?.respondsWithinHour ? [{ label: "Responds within 1 hour", kind: "responder" as const }] : []),
-          ...(project.package === "featured" || project.package === "premium" ? [{ label: "Verified", kind: "verified" as const }] : []),
+          ...(isPaidPackageTier(project.package) ? [{ label: "Verified", kind: "verified" as const }] : []),
           ...(project.startingPriceLkr === 0 ? [{ label: "Contact for pricing", kind: "contact-pricing" as const }] : []),
         ]}
       />

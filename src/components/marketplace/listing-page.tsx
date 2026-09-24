@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { BedDouble, Building2, ChevronDown, ChevronLeft, ChevronRight, Heart, List, Map as MapIcon, Ruler, Search, MapPin, SlidersHorizontal, X, ArrowUpDown } from "lucide-react";
 import { formatLkr } from "@/lib/format";
+import { hasPremiumStyleBadge } from "@/lib/packages";
 import { useListingT } from "@/lib/i18n/use-listing-t";
 import { useSavedListing } from "@/lib/use-saved-listing";
 import { MapSidebar } from "@/components/marketplace/map-sidebar";
@@ -191,7 +192,7 @@ export function ListingGridCard({ project, basePath = "/projects" }: { project: 
       <div className="listing-grid-card-body">
         {project.isFeatured || project.paymentPlanBadge ? (
           <div className="home-card-badge-row">
-            {project.package === "premium" ? (
+            {hasPremiumStyleBadge(project.package) ? (
               <span className="badge-premium">{t("Premium")}</span>
             ) : project.isFeatured ? (
               <span className="badge-featured">{t("Featured")}</span>

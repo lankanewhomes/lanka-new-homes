@@ -321,7 +321,7 @@ export default async function ForDevelopersPage() {
             <span className="listing-badge-pill badge-verified fdv-badge-pill">
               <ShieldCheck className="h-3 w-3" aria-hidden="true" /> Verified
             </span>
-            <p>Shown automatically once a project has an active Featured or Premium package.</p>
+            <p>Shown automatically once a project has any active paid package.</p>
           </div>
           <div className="fdv-badge-card">
             <span className="listing-badge-pill badge-responder fdv-badge-pill">
@@ -335,7 +335,7 @@ export default async function ForDevelopersPage() {
           </div>
           <div className="fdv-badge-card">
             <span className="badge-premium fdv-badge-pill">Premium</span>
-            <p>Our highest tier — top placement plus the full analytics dashboard below.</p>
+            <p>Developer Pro and Campaign — top placement plus the full analytics dashboard below.</p>
           </div>
           <div className="fdv-badge-card">
             <span className="badge-move-in-now fdv-badge-pill">Move-In Now</span>

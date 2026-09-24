@@ -171,10 +171,47 @@ export function getPackage(tier: PackageTier | string | null | undefined): Packa
   return found ?? PACKAGES.free;
 }
 
+/**
+ * Any active paid tier — "Verified" badge eligibility site-wide. Fixes a
+ * regression from the 2026-09-24 5-tier restructure: several call sites
+ * still literally checked `package === "featured" || package === "premium"`,
+ * a value from the OLD 3-tier model that no longer exists in PackageTier,
+ * so Verified silently stopped being able to show at all. Use this instead
+ * of a hardcoded tier list anywhere "is this project on any paid package"
+ * is the actual question.
+ */
+export function isPaidPackageTier(tier: PackageTier | string | null | undefined): boolean {
+  return getPackage(tier).tier !== "free";
+}
+
+/**
+ * The two tiers with the strongest homepage exposure (Developer Pro,
+ * Campaign) — shows the distinguished `.badge-premium` pill instead of the
+ * plain `.badge-featured` one. Same regression as `isPaidPackageTier`: this
+ * replaces a hardcoded `package === "premium"` check for the old
+ * single top tier, which can never match a real PackageTier anymore.
+ */
+export function hasPremiumStyleBadge(tier: PackageTier | string | null | undefined): boolean {
+  const resolved = getPackage(tier).tier;
+  return resolved === "developer-pro" || resolved === "campaign";
+}
+
 export function formatPackagePrice(pkg: PackageDefinition): string {
   if (pkg.price === 0) return "Free";
   const label = `${formatLkr(pkg.price)}/month`;
   return pkg.customPricing ? `From ${label}` : label;
+}
+
+/**
+ * Just the amount, no "/month" suffix — for layouts (the pricing
+ * comparison table) that render the suffix on its own smaller line
+ * instead of letting a long "Rs. 100,000/month" string wrap wherever the
+ * browser happens to break it (owner report, 2026-09-24: didn't like
+ * "Rs." wrapping away from the number).
+ */
+export function formatPackagePriceAmount(pkg: PackageDefinition): string {
+  if (pkg.price === 0) return "Free";
+  return pkg.customPricing ? `From ${formatLkr(pkg.price)}` : formatLkr(pkg.price);
 }
 
 /**
@@ -209,9 +246,10 @@ export type PackageFeatureValue = boolean | string;
 export type PackageFeatureRow = {
   key: string;
   label: string;
-  /** Shown behind the "?" info-circle — both the admin/developer-facing Package tab and (for rows like Search placement) an explanation of exactly where on the site it shows up. */
-  tooltip: string;
+  /** Shown behind the "?" info-circle as a bullet list — both the admin/developer-facing Package tab and (for rows like Search placement) an explanation of exactly where on the site it shows up. One short point per bullet, not a paragraph (owner, 2026-09-24). */
+  tooltip: string[];
   values: [PackageFeatureValue, PackageFeatureValue, PackageFeatureValue, PackageFeatureValue, PackageFeatureValue];
+  /** Real, not-yet-built entitlements get an extra "Planned — not built yet" bullet appended automatically wherever this is rendered — don't repeat that line inside `tooltip` itself. */
   notYetBuilt?: boolean;
 };
 
@@ -219,63 +257,96 @@ export const PACKAGE_FEATURE_ROWS: PackageFeatureRow[] = [
   {
     key: "featured-projects",
     label: "Featured projects",
-    tooltip: "How many of your own projects can be marked Featured at once under this plan — each gets the Featured badge and higher search/homepage placement. Pick which projects on the Package tab in /cms.",
+    tooltip: [
+      "Marks that many of your own projects as Featured.",
+      "Each Featured project gets the Featured badge and higher search/homepage placement.",
+      "Pick which projects on the Package tab in /cms.",
+    ],
     values: [false, "1", "3", "Up to 5", "Custom"],
   },
   {
     key: "homepage-rotation",
     label: "Homepage rotation",
-    tooltip: "Chance to appear in the homepage's Featured listings shelf. Developer Pro gets a priority slot and Campaign a fixed slot in the homepage hero banner rotation (the large rotating banner at the top of lankanewhomes.com) — homepage slots are meant to be capped and rotate rather than being permanent once more than a handful of developers are paid; that cap isn't built yet, so treat this as the intended behavior, not today's guarantee.",
+    tooltip: [
+      "Chance to appear in the homepage's Featured listings shelf.",
+      "Developer Pro gets a priority slot, Campaign a fixed slot, in the homepage hero banner rotation (the big rotating banner at the top of lankanewhomes.com).",
+      "Slots are meant to be capped and rotate once more than a handful of developers are paid — that cap isn't built yet, so today every eligible subscription gets a slide unconditionally.",
+    ],
     values: [false, true, true, "Priority slot", "Fixed premium slot"],
   },
   {
     key: "search-placement",
     label: "Search placement",
-    tooltip: "Where your project appears in category search results (e.g. lankanewhomes.com/projects/colombo, or any location/type search). Featured and Featured Plus projects are ranked above equivalent Free listings; Developer Pro projects appear first within that Featured group; Campaign gets top placement overall. This is never a fixed '#1' spot — placements rotate among featured developers rather than always fixing one company first.",
+    tooltip: [
+      "Where your project appears in category search results (e.g. lankanewhomes.com/projects/colombo).",
+      "Featured and Featured Plus rank above equivalent Free listings.",
+      "Developer Pro appears first within that Featured group; Campaign gets top placement overall.",
+      "Never a fixed '#1' spot — placements rotate among featured developers.",
+    ],
     values: ["Standard", "Above free", "Above free", "Top of featured", "Top"],
   },
   {
     key: "featured-badge",
     label: "Featured badge",
-    tooltip: "The orange 'Featured' pill shown on the project's card in listings/search results and on the project page itself.",
+    tooltip: [
+      "The orange 'Featured' pill on the project's card in listings and search results.",
+      "Also shown on the project page itself.",
+    ],
     values: [false, true, true, true, true],
   },
   {
     key: "lead-call-counts",
     label: "Lead & call counts",
-    tooltip: "See how many enquiries, WhatsApp clicks, phone calls and email clicks each project receives — this is the proof of what your listing is actually producing, shown on the project's Analytics tab in /cms.",
+    tooltip: [
+      "See how many enquiries, WhatsApp clicks, phone calls and email clicks each project receives.",
+      "Shown on the project's Analytics tab in /cms.",
+      "This is the proof of what your listing is actually producing.",
+    ],
     values: [false, true, true, true, true],
   },
   {
     key: "detailed-lead-tracking",
     label: "Detailed lead tracking",
-    tooltip: "A breakdown of those leads by channel (WhatsApp vs. call vs. email vs. form) and over time, not just a total count.",
+    tooltip: [
+      "Breaks those leads down by channel — WhatsApp vs. call vs. email vs. form.",
+      "Shows the trend over time, not just a total count.",
+    ],
     values: [false, false, false, true, true],
   },
   {
     key: "advanced-analytics",
     label: "Advanced analytics",
-    tooltip: "Buyer location (which cities/countries are viewing), top traffic source, and a trend chart over time, in addition to Detailed lead tracking.",
+    tooltip: [
+      "Buyer location — which cities/countries are viewing.",
+      "Top traffic source.",
+      "A trend chart over time.",
+    ],
     values: [false, false, false, true, true],
   },
   {
     key: "developer-spotlight",
     label: "Developer spotlight",
-    tooltip: "Planned: a dedicated homepage/company-page feature highlighting your company. Not built yet — recorded here so it isn't forgotten, but not something a Developer Pro/Campaign subscriber gets today.",
+    tooltip: ["A dedicated homepage/company-page feature highlighting your company."],
     values: [false, false, false, true, true],
     notYetBuilt: true,
   },
   {
     key: "newsletter-social",
     label: "Newsletter + social",
-    tooltip: "Promotion in an email newsletter to buyers and a post on LankaNewHomes' own social accounts (distinct from the developer's own project posts). Planned as an à la carte add-on for Free/Featured/Featured Plus, one per quarter on Developer Pro, and included with Campaign. Not built yet — there's no newsletter or add-on purchase system today.",
+    tooltip: [
+      "Promotion in an email newsletter to buyers, and a post on LankaNewHomes' own social accounts.",
+      "Planned as an add-on purchase for Free/Featured/Featured Plus, one per quarter on Developer Pro, included with Campaign.",
+    ],
     values: ["Add-on", "Add-on", "Add-on", "1/quarter", "Included"],
     notYetBuilt: true,
   },
   {
     key: "dedicated-campaign",
     label: "Dedicated campaign",
-    tooltip: "A custom marketing push arranged directly with the LankaNewHomes team — Campaign only, negotiated per deal, not a self-serve feature.",
+    tooltip: [
+      "A custom marketing push arranged directly with the LankaNewHomes team.",
+      "Campaign only, negotiated per deal — not a self-serve feature.",
+    ],
     values: [false, false, false, false, true],
   },
 ];

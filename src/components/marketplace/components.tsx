@@ -8,6 +8,7 @@ import { IconBrandFacebook, IconBrandInstagram, IconChevronRight as TablerChevro
 import { useSavedListing } from "@/lib/use-saved-listing";
 import { useSavedDeveloper } from "@/lib/use-saved-developer";
 import { getStoredUtmParams, getTrafficSource, trackEvent } from "@/lib/ga4";
+import { hasPremiumStyleBadge, isPaidPackageTier } from "@/lib/packages";
 import { getSessionId } from "@/components/marketplace/view-tracker";
 import {
   ApartmentIcon,
@@ -1461,7 +1462,7 @@ export function ProjectHero({
           {isUpcomingMoveIn(project) ? <span className="listing-hero-tag-move-in">{t("Move in")} {project.completionYear}</span> : null}
           {project.isMoveInNow ? <span className="listing-badge-pill badge-move-in-now">{t("Move-In Now")}</span> : null}
           {hasQuickMoveIn(project) ? <span className="listing-badge-pill badge-quick-move-in">{t("Quick Move-In")}</span> : null}
-          {project.package === "premium" ? (
+          {hasPremiumStyleBadge(project.package) ? (
             <span className="listing-badge-pill badge-premium">{t("Premium")}</span>
           ) : project.isFeatured ? (
             <span className="listing-badge-pill badge-featured">{t("Featured")}</span>
@@ -1772,7 +1773,7 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
             <Zap className="h-3 w-3" aria-hidden="true" /> {t("Responds within 1 hour")}
           </span>
         ) : null}
-        {project.package === "featured" || project.package === "premium" ? (
+        {isPaidPackageTier(project.package) ? (
           <span className="listing-badge-pill badge-verified stats-contact-card-badge" title="Verified by LankaNewHomes">
             <ShieldCheck className="h-3 w-3" aria-hidden="true" /> {t("Verified")}
           </span>

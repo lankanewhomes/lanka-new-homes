@@ -10,7 +10,7 @@ import { useState } from "react";
 // priority does, where it would show on the website"). Plain inline
 // styles + CSS vars to match PackagePicker's own style, since this is a
 // Payload admin UI component, not a public-site one.
-export function InfoTooltip({ text }: { text: string }) {
+export function InfoTooltip({ text }: { text: string[] }) {
   const [open, setOpen] = useState(false);
   return (
     <span style={{ position: "relative", display: "inline-flex", verticalAlign: "middle", marginLeft: 6 }}>
@@ -63,7 +63,13 @@ export function InfoTooltip({ text }: { text: string }) {
             boxShadow: "0 8px 20px rgba(0,0,0,0.25)",
           }}
         >
-          {text}
+          <ul style={{ margin: 0, padding: "0 0 0 14px" }}>
+            {text.map((bullet) => (
+              <li key={bullet} style={{ marginBottom: 4 }}>
+                {bullet}
+              </li>
+            ))}
+          </ul>
         </span>
       )}
     </span>

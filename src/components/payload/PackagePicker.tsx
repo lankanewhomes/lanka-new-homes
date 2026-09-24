@@ -42,6 +42,32 @@ function relatedId(value: unknown): string | number | undefined {
   return value as string | number | undefined;
 }
 
+// Real badge-pill previews (matching the actual .badge-featured/
+// .badge-premium colors used on live project cards) instead of a plain
+// checkmark/text, so a developer sees exactly what they'd get — owner,
+// 2026-09-24: "include a feature badge" / "do they same thing for Priority
+// slot? Fixed premium slot?". /cms doesn't load the public site's
+// globals.css, so these are inline styles rather than the real CSS
+// classes, tuned to match them.
+const REAL_BADGE_SHAPE: React.CSSProperties = {
+  display: "inline-block",
+  borderRadius: 3,
+  fontSize: 10,
+  textTransform: "uppercase",
+  letterSpacing: "0.06em",
+  padding: "3px 7px",
+  fontWeight: 700,
+};
+const FEATURED_BADGE_STYLE: React.CSSProperties = { ...REAL_BADGE_SHAPE, background: "#fdf3e0", border: "1px solid #f2d38a", color: "#92670c" };
+const PREMIUM_BADGE_STYLE: React.CSSProperties = { ...REAL_BADGE_SHAPE, background: "#fef1e8", border: "1px solid #f4b48a", color: "#c65a1e" };
+
+function realBadgeFor(rowKey: string, value: string | boolean): { style: React.CSSProperties; label: string } | null {
+  if (rowKey === "featured-badge" && value === true) return { style: FEATURED_BADGE_STYLE, label: "Featured" };
+  if (value === "Priority slot") return { style: FEATURED_BADGE_STYLE, label: value };
+  if (value === "Fixed premium slot") return { style: PREMIUM_BADGE_STYLE, label: value };
+  return null;
+}
+
 // Mounted as the "Package" tab on the Project edit form (same shape as
 // ListingAnalyticsPanel/SocialPanel — a type:'ui' field reading the current
 // document via useDocumentInfo). Lets a developer pick Free/Featured/
@@ -187,19 +213,30 @@ export function PackagePicker() {
             return (
               <div key={pkg.tier} style={isCurrent ? cardCurrentStyle : cardStyle}>
                 <strong style={{ fontSize: 15 }}>{pkg.name}</strong>
-                <div style={{ fontSize: 18, fontWeight: 700, margin: "6px 0 2px" }}>{formatPackagePrice(pkg)}</div>
+                {/* Free's own price line would just repeat the tier name
+                    ("Free" / "Free") — skip it there, same fix as the public
+                    pricing table (owner report, 2026-09-24: "where is 2 free"). */}
+                {pkg.tier !== "free" && <div style={{ fontSize: 18, fontWeight: 700, margin: "6px 0 2px" }}>{formatPackagePrice(pkg)}</div>}
                 {annualPrice && <div style={{ fontSize: 11, opacity: 0.65, marginBottom: 8 }}>or {annualPrice} billed annually</div>}
-                <ul style={{ margin: annualPrice ? 0 : "8px 0 0", padding: 0, fontSize: 12, opacity: 0.85, lineHeight: 1.9, listStyle: "none" }}>
+                <ul style={{ margin: annualPrice || pkg.tier === "free" ? 0 : "8px 0 0", padding: 0, fontSize: 12, opacity: 0.85, lineHeight: 1.9, listStyle: "none" }}>
                   {PACKAGE_FEATURE_ROWS.map((row) => {
                     const value = row.values[pkgIndex];
-                    const display = value === true ? "✓" : value === false ? "—" : value;
+                    const tooltip = row.notYetBuilt ? [...row.tooltip, "Planned — not built yet."] : row.tooltip;
+                    const realBadge = realBadgeFor(row.key, value);
                     return (
-                      <li key={row.key} style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
+                      <li key={row.key} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
                         <span>
                           {row.label}
-                          <InfoTooltip text={row.notYetBuilt ? `${row.tooltip} (Planned — not built yet.)` : row.tooltip} />
+                          <InfoTooltip text={tooltip} />
                         </span>
-                        <strong style={{ fontWeight: 600, textAlign: "right", whiteSpace: "nowrap" }}>{display}</strong>
+                        {realBadge ? (
+                          <span style={realBadge.style}>{realBadge.label}</span>
+                        ) : (
+                          <strong style={{ fontWeight: 600, textAlign: "right", whiteSpace: "nowrap", display: "inline-flex", alignItems: "center" }}>
+                            {value === true ? "✓" : value === false ? "—" : value}
+                            {typeof value === "string" && <InfoTooltip text={tooltip} />}
+                          </strong>
+                        )}
                       </li>
                     );
                   })}

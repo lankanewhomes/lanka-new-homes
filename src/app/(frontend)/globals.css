@@ -5934,12 +5934,10 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   margin: 0 auto 34px;
   padding: 44px 40px;
   background: #1f1f1f;
-  border-top: 8px solid #f47b36;
-  border-radius: 24px;
-  /* Rounded + shadow-lifted instead of a flat sharp-cornered rectangle
-     sitting between the textured sections above/below — same visual
-     language as the redesigned pricing cards (owner felt the old version
-     was too plain/boxy, 2026-09-24). */
+  /* Flat black rectangle, no radius, no orange border — the only orange
+     left in this section is the eyebrow label and the bullet ticks (owner,
+     2026-09-24: "dont use orange color except the bullet points... leave
+     for developers also"). Shadow-lifted still, just square-cornered. */
   box-shadow: 0 24px 60px rgba(31, 31, 31, 0.18);
   color: #fff;
   font-family: var(--font-ref-sans);
@@ -6011,6 +6009,10 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   gap: 14px;
 }
 
+/* Same outline-pill-then-orange-on-hover treatment as the footer's own
+   "List your project" button (.footer-cta) — owner, 2026-09-24: "the
+   button should be like that one you have on footer". Not solid orange by
+   default; orange only shows up on hover. */
 .free-listing-band-cta {
   display: inline-flex;
   align-items: center;
@@ -6018,8 +6020,9 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   gap: 8px;
   height: 52px;
   padding: 0 26px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
   border-radius: 999px;
-  background: #f47b36;
+  background: transparent;
   color: #fff;
   font-size: 14px;
   font-weight: 700;
@@ -6027,10 +6030,12 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   text-transform: uppercase;
   text-decoration: none;
   white-space: nowrap;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
 .free-listing-band-cta:hover {
-  background: #d9601f;
+  background: #f47b36;
+  border-color: #f47b36;
   color: #fff;
   text-decoration: none;
 }
@@ -12848,13 +12853,27 @@ a.developer-profile-press-title {
   color: #1f1f1f;
 }
 
+/* The amount and "/month" are two deliberately separate lines — letting a
+   single "Rs. 100,000/month" string wrap wherever the column happened to
+   run out of room orphaned "Rs." above the number (owner report,
+   2026-09-24: "i dont like the styling"). */
 .pricing-table-tier-price {
   display: block;
   margin-top: 10px;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 800;
   letter-spacing: -0.01em;
+  line-height: 1.25;
   color: #1f1f1f;
+  white-space: nowrap;
+}
+
+.pricing-table-tier-price-suffix {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: normal;
+  color: #6b6f76;
 }
 
 .pricing-table-tier-annual {
@@ -12956,6 +12975,22 @@ a.developer-profile-press-title {
   height: 12px;
 }
 
+/* Real badge preview for the "Featured badge" row — the actual
+   .badge-featured pill (same colors used on ListingGridCard everywhere
+   else on the site), not just a checkmark, so a builder can see exactly
+   what they'd get (owner, 2026-09-24). .badge-featured alone has no shape
+   of its own elsewhere (it relies on an ancestor row selector for
+   padding/radius/size), so this repeats that exact shape standalone. */
+.pricing-table-badge-preview {
+  display: inline-block;
+  border-radius: 3px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 3px 7px;
+  font-weight: 700;
+}
+
 .pricing-table-dash {
   color: #b8b2a4;
   font-size: 16px;
@@ -12975,6 +13010,73 @@ a.developer-profile-press-title {
   font-size: 13px;
   line-height: 1.6;
   color: #6b6f76;
+}
+
+.pricing-table-note-highlight {
+  color: #f47b36;
+  font-weight: 700;
+}
+
+/* "?" info-circle on each feature row (FeatureInfoTooltip) — public
+   sibling of the admin Package tab's InfoTooltip, same explanations
+   (owner, 2026-09-24: "let builders know where their placement will be"). */
+.pricing-table-info-wrap {
+  position: relative;
+  display: inline-flex;
+  vertical-align: middle;
+  margin-left: 6px;
+}
+
+.pricing-table-info {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid #cfc8b8;
+  background: #fff;
+  color: #6b6f76;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: help;
+  padding: 0;
+}
+
+/* Positioned via inline top/left (fixed, viewport coordinates set in JS from
+   the button's own getBoundingClientRect) — rendered through a portal into
+   document.body, so it isn't trapped inside the table's per-row sticky
+   stacking contexts. See feature-info-tooltip.tsx. */
+.pricing-table-info-bubble {
+  position: fixed;
+  z-index: 100;
+  width: 260px;
+  max-width: calc(100vw - 24px);
+  padding: 10px 12px;
+  border-radius: 6px;
+  background: #1f1f1f;
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 400;
+  line-height: 1.5;
+  white-space: normal;
+  text-transform: none;
+  letter-spacing: normal;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+}
+
+.pricing-table-info-bubble-list {
+  margin: 0;
+  padding: 0 0 0 14px;
+}
+
+.pricing-table-info-bubble-list li {
+  margin-bottom: 4px;
+}
+
+.pricing-table-info-bubble-list li:last-child {
+  margin-bottom: 0;
 }
 
 @media (max-width: 640px) {
@@ -13108,7 +13210,11 @@ a.developer-profile-press-title {
 }
 
 .pricing-page-shell {
-  width: min(1080px, 100%);
+  /* Wide enough that all 5 tier columns fit without horizontal scroll on a
+     normal desktop viewport (owner, 2026-09-24) — matches the site's other
+     wide sections (e.g. .free-listing-band) rather than the narrower
+     640px-ish reading width used for prose pages. */
+  width: min(1280px, 100%);
   margin: 0 auto;
 }
 

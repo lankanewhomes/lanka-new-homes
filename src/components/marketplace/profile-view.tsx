@@ -7,6 +7,7 @@ import Link from "next/link";
 import { ChevronDown, Heart, House, ShieldCheck, Star, X, Zap } from "lucide-react";
 import type { CoDeveloperEntry, CompanyProfile, Developer, ProfileEntityType, Project, Review } from "@/types";
 import { formatLkr, formatOfficeHours } from "@/lib/format";
+import { isPaidPackageTier } from "@/lib/packages";
 import { SOCIAL_ICON } from "@/components/marketplace/components";
 import { useSavedProfile } from "@/lib/use-saved-profile";
 import { useListingT } from "@/lib/i18n/use-listing-t";
@@ -77,7 +78,7 @@ export function ProfileView({
         ) : null}
         {/* Verified is gated behind at least one project having an active
             paid (Featured/Premium) package, not admin approval anymore. */}
-        {projects.some((project) => project.package === "featured" || project.package === "premium") ? (
+        {projects.some((project) => isPaidPackageTier(project.package)) ? (
           <p className="developer-profile-badge badge-verified" title="Verified by LankaNewHomes">
             <ShieldCheck size={13} aria-hidden="true" /> {t("Verified")}
           </p>
