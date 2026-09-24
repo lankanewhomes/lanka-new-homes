@@ -490,6 +490,14 @@ site should render `ListingGridCard`, not a new bespoke card — one card
 component, one visual language, styled once in `globals.css`
 (`.listing-grid-card*`).
 
+**"List your project for free" band (owner, 2026-09-24):** a
+`.free-listing-band` sits right after New listings. It pitches free listing
+to developers, with a button to `/for-developers` and a "See pricing" link.
+The owner decided against putting it in the hero, so the hero ad slideshow
+keeps its full size. Styling: site black `#1f1f1f`, 8px orange top bar,
+orange tick circles and a square orange button (same language as the pricing
+cards). Three columns on desktop, stacked under 980px.
+
 **Section bands on mobile (owner, 2026-09-23):** under 760px the coloured
 backgrounds of New listings, Land for sale, Explore by city and Popular
 searches run edge to edge of the screen, while their content keeps the normal

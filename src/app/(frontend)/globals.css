@@ -5922,6 +5922,155 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   }
 }
 
+/* Homepage "List your project for free" band (developers), right after New listings.
+   Same visual language as the pricing cards: orange top bar, orange tick circles, square
+   orange button — on the site black so it reads as a distinct pitch (owner, 2026-09-24). */
+.free-listing-band {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 36px;
+  max-width: 1280px;
+  margin: 0 auto 34px;
+  padding: 44px 40px;
+  background: #1f1f1f;
+  border-top: 8px solid #f47b36;
+  color: #fff;
+  font-family: var(--font-ref-sans);
+}
+
+.free-listing-band-eyebrow {
+  margin: 0 0 10px;
+  color: #f47b36;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.free-listing-band h2 {
+  margin: 0;
+  font-family: var(--font-ref-sans);
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #fff;
+}
+
+.free-listing-band-copy > p:last-child {
+  margin: 12px 0 0;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #c9c6c0;
+}
+
+.free-listing-band-points {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.free-listing-band-points li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.free-listing-band-tick {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #f47b36;
+  color: #fff;
+}
+
+.free-listing-band-tick svg {
+  width: 13px;
+  height: 13px;
+}
+
+.free-listing-band-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.free-listing-band-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 52px;
+  padding: 0 26px;
+  background: #f47b36;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.free-listing-band-cta:hover {
+  background: #d9601f;
+  color: #fff;
+  text-decoration: none;
+}
+
+.free-listing-band-link {
+  color: #fff;
+  font-size: 14px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.free-listing-band-link:hover {
+  color: #f47b36;
+}
+
+@media (max-width: 980px) {
+  .free-listing-band {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .free-listing-band-actions {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 760px) {
+  .free-listing-band {
+    margin-top: 0;
+    margin-bottom: 28px;
+    padding-top: 32px;
+    padding-bottom: 34px;
+  }
+
+  .free-listing-band h2 {
+    font-size: 26px;
+  }
+
+  .free-listing-band-actions {
+    align-items: stretch;
+  }
+
+  .free-listing-band-link {
+    align-self: center;
+  }
+}
+
 .neighborhoods-section {
   position: relative;
   padding: 56px 30px 52px;
@@ -6092,6 +6241,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
    content inside stays where it was — only the background widens (owner, 2026-09-23). */
 @media (max-width: 760px) {
   .livabl-home .new-listings-section,
+  .livabl-home .free-listing-band,
   .livabl-home .neighborhoods-section,
   .livabl-home .seo-links-section {
     margin-left: calc(50% - 50vw);

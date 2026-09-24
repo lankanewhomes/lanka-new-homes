@@ -4,7 +4,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, ChevronDown, ChevronLeft, ChevronRight, MapPin, Pause, Search, X } from "lucide-react";
+import { ArrowUpRight, Check, ChevronDown, ChevronLeft, ChevronRight, MapPin, Pause, Search, X } from "lucide-react";
 import { SiteLanguage, useLanguage } from "@/components/layout/language-provider";
 import { ListingGridCard } from "@/components/marketplace/listing-page";
 import { allProjectCategories } from "@/lib/listing-categories";
@@ -356,6 +356,31 @@ export function HomeClient({ projects, lands = [] }: { projects: Project[]; land
               <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* Free-listing pitch to developers, right after New listings — "your project could be
+          here too". Owner asked for it on the homepage but not in the hero (2026-09-24). */}
+      <section className="free-listing-band" aria-label="List your project for free">
+        <div className="free-listing-band-copy">
+          <p className="free-listing-band-eyebrow">For developers</p>
+          <h2>List your project for free</h2>
+          <p>Put your development in front of buyers across Sri Lanka at no cost. Upgrade only if you want more reach.</p>
+        </div>
+        <ul className="free-listing-band-points">
+          {["Full project page", "Photos, floor plans & brochure", "Buyer enquiries straight to you"].map((point) => (
+            <li key={point}>
+              <span className="free-listing-band-tick" aria-hidden="true"><Check strokeWidth={3} /></span>
+              {point}
+            </li>
+          ))}
+        </ul>
+        <div className="free-listing-band-actions">
+          <Link href="/for-developers" className="free-listing-band-cta">
+            List your project free
+            <ArrowUpRight className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
+          </Link>
+          <Link href="/pricing" className="free-listing-band-link">See pricing</Link>
         </div>
       </section>
 
