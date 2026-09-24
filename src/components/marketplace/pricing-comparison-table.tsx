@@ -11,6 +11,7 @@ import {
   type PackageFeatureValue,
 } from "@/lib/packages";
 import { FeatureInfoTooltip } from "./feature-info-tooltip";
+import { EarlyAccessButton } from "./early-access-button";
 
 // Public /pricing and /for-developers Pricing-section table — replaced the
 // old 3-card PackageCards layout once the plan grew to 5 tiers with a real
@@ -35,6 +36,14 @@ function tooltipBullets(row: PackageFeatureRow): string[] {
 const HOMEPAGE_SLOT_BADGE_CLASS: Record<string, string> = {
   "Priority slot": "badge-featured",
   "Fixed premium slot": "badge-premium",
+};
+
+// "Priority slot" gets its own more concrete tooltip than the row's
+// generic one, spelling out the actual perk in one line (owner, 2026-09-24:
+// "makes it clear why Pro costs more per spot than Featured Plus") —
+// overrides the row-level tooltip for this one cell value only.
+const CELL_TOOLTIP_OVERRIDE: Record<string, string[]> = {
+  "Priority slot": ["Includes a homepage hero banner slide."],
 };
 
 // Every distinct value cell gets its own "?" too, not just the row label —
@@ -66,7 +75,7 @@ function FeatureCell({ value, tooltip, showRealBadge }: { value: PackageFeatureV
   return (
     <span className="pricing-table-value">
       {slotBadgeClass ? <span className={`${slotBadgeClass} pricing-table-badge-preview`}>{value}</span> : value}
-      <FeatureInfoTooltip text={tooltip} />
+      <FeatureInfoTooltip text={CELL_TOOLTIP_OVERRIDE[value] ?? tooltip} />
     </span>
   );
 }
@@ -84,6 +93,11 @@ export function PricingComparisonTable({ showCta = false }: { showCta?: boolean 
               const annualPrice = formatAnnualPrice(pkg);
               return (
                 <th scope="col" key={pkg.tier} className={pkg.tier === "free" ? "pricing-table-free-col" : undefined}>
+                  {/* Developer Pro is the plan that costs more per spot than
+                      Featured Plus but adds the hero slide/spotlight/advanced
+                      analytics — flagging it as recommended makes that trade-off
+                      legible at a glance (owner, 2026-09-24, "make Pro stand out"). */}
+                  {pkg.tier === "developer-pro" && <span className="pricing-table-popular">Most popular</span>}
                   <span className="pricing-table-tier-name">{pkg.name}</span>
                   {/* Free's own price line would just repeat the tier name
                       ("FREE" / "Free") — the name plus the "List for free"
@@ -103,7 +117,7 @@ export function PricingComparisonTable({ showCta = false }: { showCta?: boolean 
                       </Link>
                     ) : null
                   ) : (
-                    <span className="pricing-table-soon">Coming soon</span>
+                    <EarlyAccessButton plan={pkg.tier} planName={pkg.name} />
                   )}
                 </th>
               );

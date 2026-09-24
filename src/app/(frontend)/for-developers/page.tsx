@@ -436,61 +436,8 @@ export default async function ForDevelopersPage() {
           <PricingComparisonTable />
         </div>
         <p className="fdv-pricing-note" data-reveal>
-          <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" /> A Verified badge appears automatically once a project has an active paid package.
+          <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" /> A Verified badge is added to your featured projects while your package is active.
         </p>
-      </section>
-
-      {/* Extra-project pricing — à la carte, on top of the plan price.
-          Static content (not read from packages.ts): no code models this
-          yet, it's a pricing design the owner specified 2026-09-24, not a
-          built feature (see the "Coming soon" note below). */}
-      <section className="fdv-extra-pricing" aria-label="Extra project pricing">
-        <div className="fdv-section-head" data-reveal>
-          <p className="fdv-eyebrow">Extra project pricing</p>
-          <h2>Adding projects is always free. Featuring more of them isn&apos;t.</h2>
-          <p className="fdv-section-sub">
-            Listing unlimited projects is free and always will be. What costs extra is featuring a project beyond what your plan already includes.
-          </p>
-        </div>
-        <div className="fdv-extra-pricing-table-wrap" data-reveal>
-          <table className="fdv-extra-pricing-table">
-            <thead>
-              <tr>
-                <th>Plan</th>
-                <th>Included featured</th>
-                <th>Each extra featured project</th>
-                <th>When to upgrade instead</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Featured</td>
-                <td>1</td>
-                <td>{formatLkr(20000)}/month</td>
-                <td>Need 2+: Featured Plus ({formatLkr(50000)} for 3) is cheaper</td>
-              </tr>
-              <tr>
-                <td>Featured Plus</td>
-                <td>3</td>
-                <td>{formatLkr(15000)}/month (max 2 extra)</td>
-                <td>Need 5+: Pro ({formatLkr(100000)}) adds hero, spotlight, analytics</td>
-              </tr>
-              <tr>
-                <td>Developer Pro</td>
-                <td>5</td>
-                <td>{formatLkr(12000)}/month (no cap)</td>
-                <td>—</td>
-              </tr>
-              <tr>
-                <td>Campaign</td>
-                <td>Custom</td>
-                <td>Included in the quote</td>
-                <td>—</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <p className="fdv-pricing-note" data-reveal>Coming soon — this pricing isn&apos;t purchasable yet, no payment gateway is live.</p>
       </section>
 
       {/* Placement inventory — where each tier actually shows up, with real

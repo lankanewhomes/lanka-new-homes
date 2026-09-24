@@ -10,23 +10,21 @@ const STATUS_BADGE: Record<string, string> = {
   unpaid: "ln-badge-danger",
 };
 
-function relatedName(value: unknown, fallback = "—"): string {
-  if (value && typeof value === "object" && "name" in value) return (value as { name?: string }).name || fallback;
-  return fallback;
-}
-
 function relatedId(value: unknown): string | number | undefined {
   if (value && typeof value === "object" && "id" in value) return (value as { id: string | number }).id;
   return typeof value === "string" || typeof value === "number" ? value : undefined;
 }
 
-// Developer-facing billing — packages are per-*project* (see
-// src/collections/Subscriptions.ts), so unlike a typical single "my plan"
-// page this lists every subscription across all of a developer's projects.
-// Scoped the same way Leads/Analytics already scope a developer to their
-// own data (see getOwnedDeveloperIds in access.ts) — inlined here rather
-// than calling that helper directly since it expects a full PayloadRequest,
-// which this view doesn't receive (only `payload` + `user` separately).
+// Developer-facing billing history — plans are per-*developer* (see
+// src/collections/Subscriptions.ts, restructured 2026-09-24 from the old
+// per-project model), so this is one company's plan history over time, not
+// a list of per-project packages. Which of the developer's own projects
+// actually use the plan's featured slots is managed on the Developer
+// profile's own "Plan" tab (DeveloperPlanPanel), not here. Scoped the same
+// way Leads/Analytics already scope a developer to their own data (see
+// getOwnedDeveloperIds in access.ts) — inlined here rather than calling
+// that helper directly since it expects a full PayloadRequest, which this
+// view doesn't receive (only `payload` + `user` separately).
 export async function MyBilling({ payload, user }: AdminViewServerProps) {
   const role = (user as { role?: string } | null)?.role;
   if (role !== "developer" || !user) {
@@ -57,14 +55,14 @@ export async function MyBilling({ payload, user }: AdminViewServerProps) {
 
       {subscriptionsRes.docs.length === 0 ? (
         <div className="ln-empty">
-          No paid packages yet — pick Featured or Premium from any project&apos;s Package tab to get started.
+          No paid plan yet — pick a package from your company profile&apos;s Placements tab to get started.
         </div>
       ) : (
         <table className="ln-table">
           <thead>
             <tr>
-              <th>Project</th>
-              <th>Package</th>
+              <th>Plan</th>
+              <th>Extra slots</th>
               <th>Status</th>
               <th>Renewal date</th>
               <th>Amount</th>
@@ -73,15 +71,15 @@ export async function MyBilling({ payload, user }: AdminViewServerProps) {
           </thead>
           <tbody>
             {subscriptionsRes.docs.map((sub) => {
-              const projectId = relatedId(sub.project);
+              const developerId = relatedId(sub.developer);
               return (
                 <tr key={sub.id}>
-                  <td>{relatedName(sub.project)}</td>
-                  <td style={{ textTransform: "capitalize" }}>{String(sub.package)}</td>
+                  <td style={{ textTransform: "capitalize" }}>{String(sub.package).replace("-", " ")}</td>
+                  <td>{sub.extra_featured_slots ?? 0}</td>
                   <td><span className={`ln-badge ${STATUS_BADGE[sub.status as string] ?? "ln-badge-neutral"}`}>{String(sub.status).replace("_", " ")}</span></td>
                   <td>{sub.current_period_end ? new Date(sub.current_period_end).toLocaleDateString() : "—"}</td>
                   <td>{formatLkr(sub.amount)}</td>
-                  <td>{projectId ? <Link href={`/cms/collections/projects/${projectId}`}>Manage</Link> : null}</td>
+                  <td>{developerId ? <Link href={`/cms/collections/developers/${developerId}`}>Manage</Link> : null}</td>
                 </tr>
               );
             })}

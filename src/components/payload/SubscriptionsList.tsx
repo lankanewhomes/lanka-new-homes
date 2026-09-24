@@ -7,12 +7,12 @@ import { formatLkr } from "@/lib/format";
 type SubscriptionRow = {
   id: string | number;
   package: string;
+  extra_featured_slots?: number | null;
   status: string;
   amount: number;
   current_period_start?: string | null;
   current_period_end?: string | null;
   developer?: { id: string | number; name?: string } | string | number | null;
-  project?: { id: string | number; name?: string } | string | number | null;
   createdAt: string;
 };
 
@@ -72,8 +72,8 @@ export function SubscriptionsList() {
           <thead>
             <tr>
               <th>Developer</th>
-              <th>Project</th>
-              <th>Package</th>
+              <th>Plan</th>
+              <th>Extra slots</th>
               <th>Status</th>
               <th>Start date</th>
               <th>Renewal date</th>
@@ -85,14 +85,8 @@ export function SubscriptionsList() {
             {rows.map((row) => (
               <tr key={row.id}>
                 <td>{relatedName(row.developer)}</td>
-                <td>
-                  {typeof row.project === "object" && row.project ? (
-                    <Link href={`/cms/collections/projects/${row.project.id}`}>{row.project.name}</Link>
-                  ) : (
-                    "—"
-                  )}
-                </td>
-                <td style={{ textTransform: "capitalize" }}>{row.package}</td>
+                <td style={{ textTransform: "capitalize" }}>{row.package.replace("-", " ")}</td>
+                <td>{row.extra_featured_slots ?? 0}</td>
                 <td><span className={`ln-badge ${STATUS_BADGE[row.status] ?? "ln-badge-neutral"}`}>{row.status.replace("_", " ")}</span></td>
                 <td>{row.current_period_start ? new Date(row.current_period_start).toLocaleDateString() : "—"}</td>
                 <td>{row.current_period_end ? new Date(row.current_period_end).toLocaleDateString() : "—"}</td>

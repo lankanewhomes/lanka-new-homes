@@ -11,10 +11,10 @@ function relatedName(value: unknown, fallback = "—"): string {
 }
 
 // Admin-only real billing summary — every number here is computed from the
-// Subscriptions collection (built alongside the Free/Featured/Premium
-// packages, see src/lib/packages.ts). No "Failed Payments" card: there's
-// no failed-charge event log to derive it from (only a status enum), so
-// it's omitted rather than faked. "Plans" reads straight from packages.ts —
+// Subscriptions collection (one row per developer's plan, not per project —
+// see src/lib/packages.ts). No "Failed Payments" card: there's no
+// failed-charge event log to derive it from (only a status enum), so it's
+// omitted rather than faked. "Plans" reads straight from packages.ts —
 // there is no separate database Plans collection.
 export async function BillingOverview({ payload, user }: AdminViewServerProps) {
   const role = (user as { role?: string } | null)?.role;
@@ -67,8 +67,8 @@ export async function BillingOverview({ payload, user }: AdminViewServerProps) {
             <thead>
               <tr>
                 <th>Developer</th>
-                <th>Project</th>
-                <th>Package</th>
+                <th>Plan</th>
+                <th>Extra slots</th>
                 <th>Renewal</th>
                 <th>Amount</th>
               </tr>
@@ -77,8 +77,8 @@ export async function BillingOverview({ payload, user }: AdminViewServerProps) {
               {activeRes.docs.slice(0, 10).map((sub) => (
                 <tr key={sub.id}>
                   <td>{relatedName(sub.developer)}</td>
-                  <td>{relatedName(sub.project)}</td>
-                  <td><span className="ln-badge ln-badge-warning" style={{ textTransform: "capitalize" }}>{String(sub.package)}</span></td>
+                  <td><span className="ln-badge ln-badge-warning" style={{ textTransform: "capitalize" }}>{String(sub.package).replace("-", " ")}</span></td>
+                  <td>{sub.extra_featured_slots ?? 0}</td>
                   <td>{sub.current_period_end ? new Date(sub.current_period_end).toLocaleDateString() : "—"}</td>
                   <td>{formatLkr(sub.amount)}</td>
                 </tr>

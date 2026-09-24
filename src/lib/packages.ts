@@ -31,11 +31,29 @@ export type PackageDefinition = {
   // ---- Fields real app logic reads (change these and behavior changes) ----
   /** Added into final_score (project-scoring.ts) — search/homepage priority. Placeholder scale, adjust freely. */
   rankingBoost: number;
-  /** How many of the developer's own projects can be marked Featured under this tier. Recorded here; NOT YET ENFORCED anywhere in code — no UI stops a developer requesting more today. */
+  /** How many of the developer's own projects can be marked Featured under this tier (before any extra slots — see `extraFeaturedSlotPrice`). Enforced on Developers.featuredProjectIds (see Developers.ts's beforeChange validation) together with any purchased extra slots. */
   featuredProjectLimit: number | "custom";
+  /**
+   * À la carte price (LKR/month) for ONE additional featured slot beyond
+   * `featuredProjectLimit` — `null` where extras aren't sellable (Free has
+   * no base plan to extend; Campaign's scope is custom/negotiated, not
+   * à la carte). Tracked on the developer's Subscription
+   * (`extra_featured_slots`), billed alongside the base plan price.
+   */
+  extraFeaturedSlotPrice: number | null;
+  /**
+   * Hard cap on how many extra slots can be bought on top of
+   * `featuredProjectLimit` — `null` means no hard cap (Developer Pro).
+   * Featured has no hard cap either, but its per-extra price is
+   * deliberately high enough that 2+ extras costs more than just
+   * upgrading to Featured Plus — the owner's own "keeps the upgrade path
+   * clean" design intent (2026-09-24), enforced by price rather than a
+   * cap for that one tier.
+   */
+  extraFeaturedSlotCap: number | null;
   /** Sets Projects.featured + the .badge-featured pill and homepage "Featured listings" shelf eligibility. */
   featured: boolean;
-  /** Auto-creates/renews a homepage hero slide while the subscription is active (hooks/sync-subscription-package.ts) — Developer Pro ("Priority slot") and Campaign ("Fixed premium slot") get this; plain Featured/Featured Plus don't. NOTE: homepage slots are meant to be capped and rotate (e.g. 8–12 slots) once more than a handful of developers are on a paid tier — that rotation/capacity logic is NOT built yet; today every eligible active subscription gets a slide unconditionally. */
+  /** Developer Pro ("Priority slot") and Campaign ("Fixed premium slot") are meant to get an automatic homepage hero slide while their plan is active; plain Featured/Featured Plus don't. NOT BUILT since the 2026-09-24 per-developer billing restructure — the old per-project version of this (hooks/sync-subscription-package.ts) was retired, and which of a developer's several featured projects should represent them in the ONE slide isn't decided yet. Also still pending regardless: homepage slots are meant to be capped and rotate (e.g. 8–12 slots) once more than a handful of developers are on a paid tier. */
   premiumHeroSlide: boolean;
   /** Gates the analytics UI (ListingAnalyticsPanel) and the weekly email digest's deeper sections. "none" = only the raw Views/Inquiries counts every listing already gets (the universal "basic analytics" bullet); "basic" = Lead & call counts (inquiry rate, avg. time on page, lead status breakdown) — Featured/Featured Plus's proof-of-ROI feature; "advanced" = + Detailed lead tracking and buyer-location/traffic/trend analytics — Developer Pro/Campaign only. */
   leadAnalytics: "none" | "basic" | "advanced";
@@ -67,6 +85,8 @@ export const PACKAGES: Record<PackageTier, PackageDefinition> = {
     currency: "LKR",
     rankingBoost: 0,
     featuredProjectLimit: 0,
+    extraFeaturedSlotPrice: null,
+    extraFeaturedSlotCap: null,
     featured: false,
     premiumHeroSlide: false,
     leadAnalytics: "none",
@@ -86,6 +106,8 @@ export const PACKAGES: Record<PackageTier, PackageDefinition> = {
     currency: "LKR",
     rankingBoost: 15,
     featuredProjectLimit: 1,
+    extraFeaturedSlotPrice: 20000,
+    extraFeaturedSlotCap: null,
     featured: true,
     premiumHeroSlide: false,
     leadAnalytics: "basic",
@@ -105,6 +127,8 @@ export const PACKAGES: Record<PackageTier, PackageDefinition> = {
     currency: "LKR",
     rankingBoost: 20,
     featuredProjectLimit: 3,
+    extraFeaturedSlotPrice: 15000,
+    extraFeaturedSlotCap: 2,
     featured: true,
     premiumHeroSlide: false,
     leadAnalytics: "basic",
@@ -124,6 +148,8 @@ export const PACKAGES: Record<PackageTier, PackageDefinition> = {
     currency: "LKR",
     rankingBoost: 30,
     featuredProjectLimit: 5,
+    extraFeaturedSlotPrice: 12000,
+    extraFeaturedSlotCap: null,
     featured: true,
     premiumHeroSlide: true,
     leadAnalytics: "advanced",
@@ -144,6 +170,8 @@ export const PACKAGES: Record<PackageTier, PackageDefinition> = {
     currency: "LKR",
     rankingBoost: 45,
     featuredProjectLimit: "custom",
+    extraFeaturedSlotPrice: null,
+    extraFeaturedSlotCap: null,
     featured: true,
     premiumHeroSlide: true,
     leadAnalytics: "advanced",
@@ -169,6 +197,22 @@ export const PACKAGE_LIST: PackageDefinition[] = [
 export function getPackage(tier: PackageTier | string | null | undefined): PackageDefinition {
   const found = PACKAGE_LIST.find((p) => p.tier === tier);
   return found ?? PACKAGES.free;
+}
+
+/**
+ * How many projects a developer can currently mark Featured — the plan's
+ * base `featuredProjectLimit` plus any purchased `extraSlots`, clamped to
+ * `extraFeaturedSlotCap` where one exists. Returns "custom" unchanged for
+ * Campaign (extras don't apply — its scope is negotiated). Used to
+ * validate `Developers.featuredProjectIds` (see Developers.ts) and to
+ * cap the extra-slot purchase UI.
+ */
+export function maxFeaturedProjects(tier: PackageTier | string | null | undefined, extraSlots: number): number | "custom" {
+  const pkg = getPackage(tier);
+  if (pkg.featuredProjectLimit === "custom") return "custom";
+  if (pkg.extraFeaturedSlotPrice == null) return pkg.featuredProjectLimit;
+  const cappedExtras = pkg.extraFeaturedSlotCap != null ? Math.min(extraSlots, pkg.extraFeaturedSlotCap) : extraSlots;
+  return pkg.featuredProjectLimit + Math.max(0, cappedExtras);
 }
 
 /**
@@ -260,9 +304,18 @@ export const PACKAGE_FEATURE_ROWS: PackageFeatureRow[] = [
     tooltip: [
       "Marks that many of your own projects as Featured.",
       "Each Featured project gets the Featured badge and higher search/homepage placement.",
-      "Pick which projects on the Package tab in /cms.",
+      "Pick which projects on the Placements tab in your developer dashboard.",
     ],
-    values: [false, "1", "3", "Up to 5", "Custom"],
+    values: [false, "1", "3", "5", "Custom"],
+  },
+  {
+    key: "extra-spots",
+    label: "Extra spots",
+    tooltip: [
+      "Buy additional featured slots beyond your plan's included amount, at your plan's per-extra-slot price.",
+      "Works exactly like your included spots — pick any project, swap any time, ends when your plan does.",
+    ],
+    values: [false, "Rs. 20,000/mo each", "Rs. 15,000/mo each (max 2)", "Rs. 12,000/mo each", "Included"],
   },
   {
     key: "homepage-rotation",

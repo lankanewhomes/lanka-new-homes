@@ -1,7 +1,9 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, Where } from 'payload'
 import { adminOnly, adminOnlyField, getOwnedDeveloperIds, getRole, isAdmin, publicRead } from './access'
 import { companyProfileFields, seoFields, socialLinksField } from './shared-fields'
 import { syncDeveloperDeleteToSupabase, syncDeveloperToSupabase } from './hooks/sync-to-supabase'
+import { syncFeaturedProjectsFromDeveloper } from './hooks/sync-developer-plan'
+import { maxFeaturedProjects, PACKAGE_LIST } from '@/lib/packages'
 
 export const Developers: CollectionConfig = {
   slug: 'developers',
@@ -57,7 +59,12 @@ export const Developers: CollectionConfig = {
         return data
       },
     ],
-    afterChange: [syncDeveloperToSupabase],
+    // syncFeaturedProjectsFromDeveloper runs after every save (not just
+    // plan/featuredProjectIds changes) — see its own comment for why that's
+    // fine. Runs before the Supabase sync so a plan/slot change is already
+    // reflected on each project's `.package` by the time Projects' own
+    // afterChange hook mirrors that project to Supabase.
+    afterChange: [syncFeaturedProjectsFromDeveloper, syncDeveloperToSupabase],
     afterDelete: [syncDeveloperDeleteToSupabase],
   },
   fields: [
@@ -162,6 +169,88 @@ export const Developers: CollectionConfig = {
     },
     { name: 'projects', type: 'join', collection: 'projects', on: 'developer' },
     { name: 'team_members', type: 'join', collection: 'team-members', on: 'company', label: 'Team Members' },
+    {
+      // Billing moved from per-project to per-developer 2026-09-24 — a
+      // company buys ONE plan here, not a package per project. Set
+      // automatically from an active Subscription
+      // (hooks/sync-developer-plan.ts) when payment is confirmed; not
+      // meant to be hand-edited except for an admin manually granting one.
+      name: 'plan',
+      type: 'select',
+      label: 'Plan',
+      defaultValue: 'free',
+      options: [...PACKAGE_LIST.map((p) => p.tier)],
+      access: { update: adminOnlyField },
+      admin: {
+        description: "This company's current plan — drives which of the projects in Featured Projects (below) actually show as featured. Set automatically from an active Subscription.",
+      },
+    },
+    {
+      name: 'featuredUntil',
+      type: 'date',
+      label: 'Featured Until',
+      access: { update: adminOnlyField },
+      admin: {
+        description: "When the current plan (and every featured placement below) expires — the active Subscription's renewal date. Past this date every project reverts to Free until the plan renews.",
+        date: { pickerAppearance: 'dayAndTime' },
+      },
+    },
+    {
+      name: 'extra_featured_slots',
+      type: 'number',
+      label: 'Extra Featured Slots (purchased)',
+      defaultValue: 0,
+      access: { update: adminOnlyField },
+      admin: {
+        description: "Mirrors the active Subscription's extra_featured_slots — additional featured-project slots bought beyond the plan's included amount, at that plan's per-extra-slot price (see src/lib/packages.ts).",
+      },
+    },
+    {
+      // The developer's own choice — which of THEIR projects use their
+      // plan's included (+ extra) slots. Editable by the developer
+      // themselves (this collection's normal update access, not
+      // adminOnlyField) since picking projects is the whole point of the
+      // slot system (owner, 2026-09-24: "they can choose which project").
+      // Swapping which projects are picked never changes featuredUntil —
+      // the package end date stays fixed regardless of swaps.
+      name: 'featuredProjectIds',
+      type: 'relationship',
+      label: 'Featured Projects',
+      relationTo: 'projects',
+      hasMany: true,
+      filterOptions: ({ id }): Where => (id ? { developer: { equals: id } } : { id: { equals: -1 } }),
+      validate: (value, { siblingData }) => {
+        const ids = Array.isArray(value) ? value : []
+        const plan = (siblingData as { plan?: string })?.plan ?? 'free'
+        const extras = (siblingData as { extra_featured_slots?: number })?.extra_featured_slots ?? 0
+        const max = maxFeaturedProjects(plan, extras)
+        if (max === 'custom' || ids.length <= max) return true
+        return `You can feature at most ${max} project${max === 1 ? '' : 's'} on your current plan — buy an extra slot or upgrade your plan to feature more.`
+      },
+      admin: {
+        // Hidden from the default field UI — DeveloperPlanPanel (the
+        // planPanel field right below) is the real interface for this,
+        // with an On/Off toggle per project instead of a raw multi-select.
+        // The field (and its validate/cap-enforcement above) still exists
+        // and is still what gets saved.
+        hidden: true,
+        description: "Which of your own projects use your plan's featured slots. Projects left unpicked stay on Free even while you have an active paid plan — pick up to your plan's limit (base slots + any extra slots purchased).",
+      },
+    },
+    {
+      // The actual interactive UI for choosing a plan and toggling which
+      // projects use its slots — see DeveloperPlanPanel.tsx for the full
+      // "buy a plan, pick your featured projects" flow and the exact
+      // dashboard spec it matches (owner, 2026-09-24).
+      // Labeled "Placements" (not "Plan") to match the public /pricing
+      // page's own wording — "Choose your package and featured projects
+      // from the Placements tab in your developer dashboard" (owner,
+      // 2026-09-24).
+      name: 'planPanel',
+      type: 'ui',
+      label: 'Placements',
+      admin: { components: { Field: '@/components/payload/DeveloperPlanPanel#DeveloperPlanPanel' } },
+    },
     {
       name: 'verification_status',
       type: 'select',

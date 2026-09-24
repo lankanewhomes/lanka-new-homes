@@ -3,8 +3,9 @@ import type { Payload } from "payload";
 // Daily sweep: no payment gateway is wired yet (see docs/todo.md — PayHere
 // is the intended one), so a subscription past its current_period_end
 // can't auto-renew — it simply expires. Marking it `canceled` fires the
-// existing Subscriptions afterChange hook (sync-subscription-package.ts),
-// which reverts the project to Free — same as any other cancellation.
+// existing Subscriptions afterChange hook (sync-developer-plan.ts), which
+// reverts the developer's plan to Free and cascades every one of their
+// featured projects back to Free too — same as any other cancellation.
 // Project content is never touched, only `package`/`featured`.
 export async function expirePastDueSubscriptions(payload: Payload): Promise<{ expired: number; failed: number }> {
   const nowIso = new Date().toISOString();

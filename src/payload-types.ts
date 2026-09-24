@@ -88,6 +88,7 @@ export interface Config {
     analytics: Analytics;
     payments: Payment;
     'placement-pricing': PlacementPricing;
+    'plan-waitlist': PlanWaitlist;
     'team-members': TeamMember;
     articles: Article;
     media: Media;
@@ -127,6 +128,7 @@ export interface Config {
     analytics: AnalyticsSelect<false> | AnalyticsSelect<true>;
     payments: PaymentsSelect<false> | PaymentsSelect<true>;
     'placement-pricing': PlacementPricingSelect<false> | PlacementPricingSelect<true>;
+    'plan-waitlist': PlanWaitlistSelect<false> | PlanWaitlistSelect<true>;
     'team-members': TeamMembersSelect<false> | TeamMembersSelect<true>;
     articles: ArticlesSelect<false> | ArticlesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
@@ -316,6 +318,22 @@ export interface Developer {
     hasNextPage?: boolean;
     totalDocs?: number;
   };
+  /**
+   * This company's current plan — drives which of the projects in Featured Projects (below) actually show as featured. Set automatically from an active Subscription.
+   */
+  plan?: ('free' | 'featured' | 'featured-plus' | 'developer-pro' | 'campaign') | null;
+  /**
+   * When the current plan (and every featured placement below) expires — the active Subscription's renewal date. Past this date every project reverts to Free until the plan renews.
+   */
+  featuredUntil?: string | null;
+  /**
+   * Mirrors the active Subscription's extra_featured_slots — additional featured-project slots bought beyond the plan's included amount, at that plan's per-extra-slot price (see src/lib/packages.ts).
+   */
+  extra_featured_slots?: number | null;
+  /**
+   * Which of your own projects use your plan's featured slots. Projects left unpicked stay on Free even while you have an active paid plan — pick up to your plan's limit (base slots + any extra slots purchased).
+   */
+  featuredProjectIds?: (number | Project)[] | null;
   /**
    * Gates the "Developer approval" workflow — new self-registered developers start pending.
    */
@@ -3574,7 +3592,7 @@ export interface Project {
       }[]
     | null;
   /**
-   * Set automatically from the linked Subscriptions record (see src/collections/hooks/sync-subscription-package.ts) when a developer picks Featured/Premium and payment is confirmed — not meant to be hand-edited except for an admin manually granting/adjusting a package.
+   * Read-only here — set automatically from the developer's own Plan (Developers.featuredProjectIds; see hooks/sync-developer-plan.ts) once this project is one of the ones they've picked to use their plan's featured slots. Billing moved from per-project to per-developer 2026-09-24 — manage which projects are featured from the Developer profile's Plan tab, not here.
    */
   package?: ('free' | 'featured' | 'featured-plus' | 'developer-pro' | 'campaign') | null;
   /**
@@ -4241,7 +4259,7 @@ export interface HeroSlide {
    */
   is_paid_placement?: boolean | null;
   /**
-   * Created and kept active automatically by a Premium subscription (see hooks/sync-subscription-package.ts). It archives itself when that subscription ends — edit the headline/image/order here like any other slide, or set Status to Archived to remove it early.
+   * Was auto-created/archived by a Developer Pro/Campaign subscription (the old hooks/sync-subscription-package.ts). Billing moved to per-developer 2026-09-24 (see hooks/sync-developer-plan.ts) and this auto-creation was intentionally NOT carried over — which of a developer's several featured projects should represent them in one hero slide isn't decided yet (see the placement-inventory notes), so this flag is currently unused; every slide is created by hand today.
    */
   auto_generated?: boolean | null;
   /**
@@ -6965,22 +6983,25 @@ export interface SeoKeyword {
  */
 export interface Subscription {
   id: number;
-  project: number | Project;
   developer: number | Developer;
   package: 'featured' | 'featured-plus' | 'developer-pro' | 'campaign';
   /**
-   * Set to "active" once payment is confirmed — activates the project automatically (see hooks/sync-subscription-package.ts). No live gateway yet, so this is a manual step, same as Payments today.
+   * Additional featured-project slots beyond the plan's included amount, at that plan's per-extra-slot price (see src/lib/packages.ts) — clamped server-side to whatever the plan actually allows.
+   */
+  extra_featured_slots?: number | null;
+  /**
+   * Set to "active" once payment is confirmed — activates the plan automatically (see hooks/sync-developer-plan.ts). No live gateway yet, so this is a manual step, same as Payments today.
    */
   status: 'active' | 'past_due' | 'canceled' | 'incomplete' | 'unpaid';
   /**
-   * Snapshot of the price at signup, from src/lib/packages.ts — for every fixed-price tier this is set automatically and shouldn't be hand-edited. Exception: `campaign` has no fixed price (negotiated per deal) — an admin sets the real agreed amount here after creating the subscription.
+   * Snapshot of the price at signup (plan + any extra slots), from src/lib/packages.ts — for every fixed-price tier this is set automatically and shouldn't be hand-edited. Exception: `campaign` has no fixed price (negotiated per deal) — an admin sets the real agreed amount here after creating the subscription.
    */
   amount: number;
   currency: 'LKR' | 'USD' | 'CAD';
   current_period_start?: string | null;
   current_period_end?: string | null;
   /**
-   * A developer can check this to cancel — stays active (and featured) until the renewal date, then reverts to Free.
+   * A developer can check this to cancel — the plan (and every featured project it grants) stays active until the renewal date, then everything reverts to Free.
    */
   cancel_at_period_end?: boolean | null;
   provider?: ('manual' | 'payhere' | 'stripe') | null;
@@ -7203,6 +7224,24 @@ export interface PlacementPricing {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "plan-waitlist".
+ */
+export interface PlanWaitlist {
+  id: number;
+  name: string;
+  email: string;
+  company?: string | null;
+  /**
+   * Which plan's "Get early access" button they clicked.
+   */
+  interested_plan?: ('featured' | 'featured-plus' | 'developer-pro' | 'campaign') | null;
+  message?: string | null;
+  status?: ('new' | 'contacted' | 'converted' | 'not_interested') | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "articles".
  */
 export interface Article {
@@ -7371,6 +7410,10 @@ export interface PayloadLockedDocument {
         value: number | PlacementPricing;
       } | null)
     | ({
+        relationTo: 'plan-waitlist';
+        value: number | PlanWaitlist;
+      } | null)
+    | ({
         relationTo: 'team-members';
         value: number | TeamMember;
       } | null)
@@ -7526,6 +7569,10 @@ export interface DevelopersSelect<T extends boolean = true> {
   user?: T;
   projects?: T;
   team_members?: T;
+  plan?: T;
+  featuredUntil?: T;
+  extra_featured_slots?: T;
+  featuredProjectIds?: T;
   verification_status?: T;
   seo?:
     | T
@@ -8555,9 +8602,9 @@ export interface SeoKeywordsSelect<T extends boolean = true> {
  * via the `definition` "subscriptions_select".
  */
 export interface SubscriptionsSelect<T extends boolean = true> {
-  project?: T;
   developer?: T;
   package?: T;
+  extra_featured_slots?: T;
   status?: T;
   amount?: T;
   currency?: T;
@@ -8695,6 +8742,20 @@ export interface PlacementPricingSelect<T extends boolean = true> {
   duration_days?: T;
   description?: T;
   active?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "plan-waitlist_select".
+ */
+export interface PlanWaitlistSelect<T extends boolean = true> {
+  name?: T;
+  email?: T;
+  company?: T;
+  interested_plan?: T;
+  message?: T;
+  status?: T;
   updatedAt?: T;
   createdAt?: T;
 }

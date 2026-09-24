@@ -12561,16 +12561,22 @@ a.developer-profile-press-title {
    of their own outside the specific parent rows they're normally nested in
    (.stats-contact-card-badge / .home-card-badge-row) — this supplies a
    consistent pill shape so all six render accurately here. */
+/* Matches .home-card-badge-row/.plans-home-badge-row span exactly — the
+   real shape a Featured/Verified/etc. badge has on an actual project
+   listing card, not the rounder .stats-contact-card-badge pill used on
+   the project detail page's contact card. Owner, 2026-09-24: "for all the
+   badges use the ones from project listings" — this was previously
+   modelled on the wrong one. */
 .fdv-badge-pill {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 5px 12px;
-  border-radius: 999px;
-  font-size: 12.5px;
+  padding: 3px 7px;
+  border-radius: 3px;
+  font-size: 10px;
   font-weight: 700;
-  text-transform: none;
-  letter-spacing: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 @media (max-width: 900px) {
@@ -12907,17 +12913,95 @@ a.developer-profile-press-title {
   text-decoration: none;
 }
 
-.pricing-table-soon {
+/* "Most popular" (Developer Pro) — sits above the plan name, its own pill
+   distinct from the price/CTA area below (owner, 2026-09-24). */
+.pricing-table-popular {
   display: inline-block;
-  margin-top: 14px;
-  padding: 4px 12px;
+  margin-bottom: 8px;
+  padding: 3px 10px;
   border-radius: 999px;
-  background: rgba(31, 31, 31, 0.08);
-  color: #6b6355;
+  background: #f47b36;
+  color: #fff;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+}
+
+/* "Get early access" modal (EarlyAccessButton) — replaced the old inert
+   "Coming soon" pill so a paid tier's button actually does something
+   before the payment gateway exists (owner, 2026-09-24: "collect leads
+   before launch"). */
+.pricing-early-access-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(31, 31, 31, 0.55);
+}
+
+.pricing-early-access-modal {
+  position: relative;
+  width: min(420px, 100%);
+  padding: 32px 28px 28px;
+  background: #fff;
+  border: 3px solid #1f1f1f;
+}
+
+.pricing-early-access-modal h3 {
+  margin: 0 0 8px;
+  font-family: var(--font-ref-sans);
+  font-size: 20px;
+  font-weight: 700;
+  color: #1f1f1f;
+}
+
+.pricing-early-access-modal p {
+  margin: 0 0 18px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: #6b6f76;
+}
+
+.pricing-early-access-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  line-height: 1;
+  color: #6b6f76;
+  cursor: pointer;
+}
+
+.pricing-early-access-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pricing-early-access-form input {
+  height: 44px;
+  padding: 0 14px;
+  border: 1px solid #d8d8d8;
+  font-size: 14px;
+  font-family: var(--font-ref-sans);
+  color: #1f1f1f;
+}
+
+.pricing-early-access-form .pricing-table-cta {
+  border: none;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+.pricing-early-access-form .pricing-table-cta:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .pricing-table tbody th {
@@ -13100,42 +13184,6 @@ a.developer-profile-press-title {
   text-align: center;
   font-size: 13px;
   color: var(--fdv-muted);
-}
-
-/* Extra-project pricing (owner, 2026-09-24) — à la carte add-on pricing
-   table, static content (no code models this yet). */
-.fdv-extra-pricing {
-  padding: 20px 0 90px;
-}
-
-.fdv-extra-pricing-table-wrap {
-  width: min(900px, calc(100% - 44px));
-  margin: 0 auto;
-  overflow-x: auto;
-}
-
-.fdv-extra-pricing-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13.5px;
-}
-
-.fdv-extra-pricing-table th,
-.fdv-extra-pricing-table td {
-  border: 1px solid var(--fdv-line);
-  padding: 10px 14px;
-  text-align: left;
-  vertical-align: top;
-}
-
-.fdv-extra-pricing-table thead th {
-  background: var(--fdv-ink);
-  color: #fff;
-  font-weight: 600;
-}
-
-.fdv-extra-pricing-table tbody tr:nth-child(even) {
-  background: #faf8f4;
 }
 
 /* Placement inventory (owner, 2026-09-24) — real component samples (the
@@ -13510,6 +13558,69 @@ a.developer-profile-press-title {
   text-align: center;
   font-size: 13.5px;
   line-height: 1.6;
+  color: #8a8680;
+}
+
+/* "How it works" (owner, 2026-09-24) — plain numbered steps under the
+   table, explaining the per-developer plan/slot-picker model in prose. */
+.pricing-how-it-works {
+  width: min(640px, 100%);
+  margin: 48px auto 0;
+}
+
+.pricing-how-it-works h2 {
+  margin: 0 0 18px;
+  font-family: var(--font-ref-sans);
+  font-size: 22px;
+  font-weight: 700;
+  color: #1f1f1f;
+  text-align: center;
+}
+
+.pricing-how-it-works ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: how-it-works;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.pricing-how-it-works li {
+  counter-increment: how-it-works;
+  position: relative;
+  padding-left: 40px;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: #4a4a4a;
+}
+
+.pricing-how-it-works li::before {
+  content: counter(how-it-works);
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #f47b36;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.pricing-how-it-works li strong {
+  color: #1f1f1f;
+}
+
+.pricing-how-it-works-note {
+  margin: 20px 0 0;
+  text-align: center;
+  font-size: 13.5px;
   color: #8a8680;
 }
 

@@ -50,7 +50,8 @@ export const HeroSlides: CollectionConfig = {
       defaultValue: false,
       admin: {
         readOnly: true,
-        description: 'Created and kept active automatically by a Premium subscription (see hooks/sync-subscription-package.ts). It archives itself when that subscription ends — edit the headline/image/order here like any other slide, or set Status to Archived to remove it early.',
+        description:
+          "Was auto-created/archived by a Developer Pro/Campaign subscription (the old hooks/sync-subscription-package.ts). Billing moved to per-developer 2026-09-24 (see hooks/sync-developer-plan.ts) and this auto-creation was intentionally NOT carried over — which of a developer's several featured projects should represent them in one hero slide isn't decided yet (see the placement-inventory notes), so this flag is currently unused; every slide is created by hand today.",
       },
     },
     { name: 'payment', type: 'relationship', relationTo: 'payments', label: 'Payment Record', admin: { description: 'Attach the completed Hero Slide or Hero Image payment before activating this placement — set automatically once that payment is confirmed.' } },

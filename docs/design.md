@@ -1341,29 +1341,36 @@ to be persuasive were rebuilt to actually make the case to a builder:
   rather than presented as real data (see the "no invented stats" rule
   above; this is the graphical equivalent of that same rule).
 
-**2026-09-24 addition**: two new sections after Pricing, ahead of the
-"no invented stats" rule the whole page already follows:
-- `.fdv-extra-pricing`/`.fdv-extra-pricing-table` — the à la carte
-  "extra featured project" pricing table (see `[[pricing-restructure]]`/
-  `[[placement-inventory]]` memory) — static content, since no code
-  models this pricing yet; explicitly captioned "Coming soon" since it
-  isn't purchasable.
-- `.fdv-placement`/`.fdv-placement-grid`/`.fdv-placement-card` — the
-  placement inventory (where each tier shows up: hero carousel, chip row,
-  the new "Featured projects" homepage section, map pins, search/
-  collection ranking, `/developers` pinning, saved-search emails, the
-  Similar-projects competitor rail, Campaign's blog/newsletter/social),
-  each card with a **real component sample** rather than a generic icon —
-  the actual `.listing-filter-pill`/`.hero-quick-link-pill` chip class,
-  the actual `.listing-map-marker` pin, the actual `.badge-featured` pill
-  (via the same `.fdv-badge-pill` shape helper the badges section already
-  uses) — plus a small illustrative-only CSS mockup for the one surface
-  with nothing existing yet to sample from (a hero-slide preview). Every
-  card is tagged with which plan unlocks it and "Coming soon" (or "Not
-  built yet" for Campaign's blog/newsletter/social, since those systems
-  don't exist at all) — same "don't imply something is live that isn't"
-  rule as the analytics mockup above, just applied to a whole section
-  instead of one panel.
+**2026-09-24 addition**: a new section after Pricing —
+`.fdv-placement`/`.fdv-placement-grid`/`.fdv-placement-card`, the
+placement inventory (where each tier shows up: hero carousel, chip row,
+the new "Featured projects" homepage section, map pins, search/collection
+ranking, `/developers` pinning, saved-search emails, the Similar-projects
+competitor rail, Campaign's blog/newsletter/social), each card with a
+**real component sample** rather than a generic icon — the actual
+`.listing-filter-pill`/`.hero-quick-link-pill` chip class, the actual
+`.listing-map-marker` pin, the actual `.badge-featured` pill (via the same
+`.fdv-badge-pill` shape helper the badges section already uses) — plus a
+small illustrative-only CSS mockup for the one surface with nothing
+existing yet to sample from (a hero-slide preview). Every card is tagged
+with which plan unlocks it and "Coming soon" (or "Not built yet" for
+Campaign's blog/newsletter/social, since those systems don't exist at
+all) — same "don't imply something is live that isn't" rule as the
+analytics mockup above, just applied to a whole section instead of one
+panel.
+
+An earlier version of this same commit also added a standalone
+`.fdv-extra-pricing` "extra featured project" pricing table — removed
+again once the shared `PricingComparisonTable`'s own "Extra spots" row
+covered the same numbers, to avoid showing the same 4 prices twice on one
+page. `.fdv-badge-pill` itself was corrected the same day: it had been
+modelled on the rounder `.stats-contact-card-badge` pill (project detail
+page), not the actual small-uppercase-tag shape a badge has on a real
+project *listing* card (`.home-card-badge-row span` /
+`.plans-home-badge-row span`) — every badge sample on this page (and the
+pricing table's own badge previews) now matches the listing-card shape
+exactly (owner: "for all the badges use the ones from project
+listings").
 
 **`/web-design`** (2026-09-10) reuses this same `.fd-*` system for a second,
 unrelated offer — custom project websites, separate from a marketplace
@@ -1427,16 +1434,17 @@ captions, and no invented scenes — if a listing has no floor plan or block
 plan, those scenes are skipped rather than faked. Stories can't be published
 by API (Meta limit), only feed posts and Reels.
 
-## Listing packages (Free / Featured / Featured Plus / Developer Pro / Campaign, Project → Package tab)
+## Listing packages (Free / Featured / Featured Plus / Developer Pro / Campaign, Developer → Placements tab)
 
-One package per project (a developer with several projects sets each
-independently) — Free is the default, no data needed; the 4 paid tiers are
-recurring, one `Subscriptions` doc per paid project. Single source of truth
-for pricing/features: `src/lib/packages.ts` (`PACKAGES` — name, price,
-ranking boost, featured/badge flags, lead-analytics level, weekly-reports
-flag, plus the display-only `PACKAGE_FEATURE_ROWS` comparison matrix and
-per-feature tooltip copy). Change a price or feature gate there, nowhere
-else.
+One plan per **developer** (not per project — see the "Restructured again
+2026-09-24" note below for why) — Free is the default, no data needed; the
+4 paid tiers are recurring, one `Subscriptions` doc per developer plan. A
+developer picks which of their own projects use that plan's featured
+slots. Single source of truth for pricing/features: `src/lib/packages.ts`
+(`PACKAGES` — name, price, ranking boost, featured/badge flags,
+lead-analytics level, weekly-reports flag, extra-slot pricing/caps, plus
+the display-only `PACKAGE_FEATURE_ROWS` comparison matrix and per-feature
+tooltip copy). Change a price or feature gate there, nowhere else.
 
 **Restructured 2026-09-24** from the original 3-tier Free/Featured/Premium
 model after an owner pricing-strategy review. No live Subscriptions existed
@@ -1541,13 +1549,78 @@ tier gets them today.
   annual cycle is built.
 - **Not built** (recorded as real backlog, not forgotten — see the
   session's daily-reminder memory): live PayHere/Stripe checkout;
-  `featuredProjectLimit` enforcement (nothing stops a developer requesting
-  more Featured projects than their tier allows today); homepage-slot
-  capping/rotation; Developer spotlight; a newsletter system; social-media
-  promotion; dedicated campaigns; an à la carte add-on purchase flow
-  (newsletter/social as a one-off purchase below Campaign); a real
-  quarterly/annual billing cycle; "founding developer" launch-pricing
-  discount.
+  homepage-slot capping/rotation; Developer spotlight; a newsletter
+  system; social-media promotion; dedicated campaigns; a newsletter/
+  social à la carte purchase flow (distinct from the extra-featured-slot
+  flow below, which IS built); a real quarterly/annual billing cycle;
+  "founding developer" launch-pricing discount.
+
+### Restructured again 2026-09-24: billing moved to per-developer
+
+Same day, later: the owner walked through the exact mechanics (a Prime
+Lands example — 30 projects, buys Developer Pro for 5 spots, picks 5 by
+name, the other 25 stay free) and confirmed this explicitly replaces the
+per-project model above, not sit alongside it. See
+`[[placement-inventory-2026-09-24]]` memory for the full worked example
+and the exact developer-dashboard UI spec this was built from.
+
+- **What changed**: `Subscriptions` no longer has a `project` field — one
+  row per **developer's plan**, not per project. New fields on
+  `Developers`: `plan`, `featuredUntil`, `extra_featured_slots`,
+  `featuredProjectIds` (relationship, hasMany, the developer's own choice
+  of which projects use their plan's slots — validated against
+  `maxFeaturedProjects()` so a developer can't pick more than their plan
+  + purchased extras allow). `Projects.package` is now a **read-only
+  mirror**, kept in sync by `hooks/sync-developer-plan.ts` — every
+  existing consumer that already read `Projects.package` (ranking badge,
+  analytics gating, weekly digest) keeps working unchanged, since the
+  cascade just changes WHERE that field's value comes from.
+- **Extra featured slots**: à la carte, on `Subscriptions.extra_featured_slots`
+  — Featured Rs. 20,000/extra (no hard cap), Featured Plus Rs. 15,000/extra
+  (max 2, hard-capped), Developer Pro Rs. 12,000/extra (no cap), Campaign
+  n/a (custom quote already covers it). Prices deliberately keep "stacking
+  extras costs about as much as the next tier up" — e.g. Featured Plus + 2
+  extras (Rs. 80K) sits just under Developer Pro (Rs. 100K), which also
+  adds the hero slide/spotlight/analytics extras alone don't. **This IS
+  built** (`packages.ts`'s `extraFeaturedSlotPrice`/`extraFeaturedSlotCap`,
+  enforced in `Subscriptions.ts`'s beforeChange and the
+  `featuredProjectIds` validator) — swapping which project fills a slot
+  never changes `featuredUntil`; only a Subscription renewal does.
+- **Admin UI**: `PackagePicker.tsx` (the old per-project "Package" tab on
+  Projects) is retired; `DeveloperPlanPanel.tsx` replaces it as the
+  "Placements" tab on the Developer edit page — current plan + spots used,
+  end date + days remaining, an On/Off toggle per project (not a
+  multi-select — matches the owner's exact dashboard spec), a "swaps
+  allowed until [date]" note, and Add extra spot / Upgrade plan / Renew
+  package buttons (each creates a pending Subscription an admin confirms,
+  same manual pattern as before).
+- **Public pricing page**: headline/lede rewritten for the per-developer
+  model; the comparison table gained an "Extra spots" row (right under
+  "Featured projects") and a "Most popular" tag on Developer Pro (its
+  higher per-spot cost vs. Featured Plus needed the hero-slide/spotlight/
+  analytics payoff made legible — the "Priority slot" cell's tooltip was
+  also sharpened to "Includes a homepage hero banner slide."); the
+  Verified-badge callout was reworded (it previously read as contradicting
+  the table's own "Claim & verification: ✓ for every tier" row) to "Verified
+  badge is added to your featured projects while your package is active."; a
+  plain numbered "How it works" section was added below the table. The old
+  "Coming soon" pill on every paid tier's header was replaced with a "Get
+  early access" button (`EarlyAccessButton.tsx`) opening a small modal that
+  submits to a new public `PlanWaitlist` collection — "the paid columns had
+  no action, so interested builders couldn't do anything... collect leads
+  before launch" (owner). `/for-developers`'s own standalone extra-pricing
+  table was removed once the shared table's new row covered the same
+  numbers, to avoid showing the same 4 prices twice on one page.
+- **Badge shape correction**: `.fdv-badge-pill` (the shape helper for
+  every badge sample shown on `/for-developers`) had been modelled on the
+  rounder `.stats-contact-card-badge` pill (used on the project *detail*
+  page's contact card) instead of the actual small-uppercase-tag shape a
+  badge has on a real project *listing* card
+  (`.home-card-badge-row span`/`.plans-home-badge-row span`:
+  `border-radius: 3px; font-size: 10px; uppercase`). Corrected to match
+  the listing-card shape exactly — same fix already applied to the pricing
+  table's own badge previews (`.pricing-table-badge-preview`), which were
+  already correct.
 
 ## Payload admin redesign (`/cms`)
 

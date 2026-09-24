@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { adminOnly, adminOnlyField, getOwnedDeveloperIds, getRole, isAdmin, ownDeveloperAccess, publicRead } from './access'
+import { adminOnlyField, getOwnedDeveloperIds, getRole, isAdmin, ownDeveloperAccess, publicRead } from './access'
 import {
   amenitiesField,
   BASEMENT_OPTIONS,
@@ -661,7 +661,7 @@ export const Projects: CollectionConfig = {
               access: { update: adminOnlyField },
               admin: {
                 description:
-                  'Set automatically from the linked Subscriptions record (see src/collections/hooks/sync-subscription-package.ts) when a developer picks Featured/Premium and payment is confirmed — not meant to be hand-edited except for an admin manually granting/adjusting a package.',
+                  "Read-only here — set automatically from the developer's own Plan (Developers.featuredProjectIds; see hooks/sync-developer-plan.ts) once this project is one of the ones they've picked to use their plan's featured slots. Billing moved from per-project to per-developer 2026-09-24 — manage which projects are featured from the Developer profile's Plan tab, not here.",
               },
             },
             {
@@ -678,18 +678,6 @@ export const Projects: CollectionConfig = {
               defaultValue: 0,
               admin: { readOnly: true, description: 'Auto-calculated: completeness + engagement + recency + paid_boost.' },
             },
-          ],
-        },
-        {
-          label: 'Package',
-          fields: [
-            // Free/Featured/Premium picker for this specific listing — see
-            // src/lib/packages.ts (pricing/features) and
-            // src/collections/Subscriptions.ts (the recurring-package
-            // record this creates). Confirming payment (no gateway wired
-            // yet, same manual step Payments already requires) flips
-            // `package`/`featured` above automatically.
-            { name: 'packagePanel', type: 'ui', admin: { components: { Field: '@/components/payload/PackagePicker#PackagePicker' } } },
           ],
         },
         {

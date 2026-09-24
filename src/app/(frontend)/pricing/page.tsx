@@ -5,7 +5,7 @@ import { PricingComparisonTable } from "@/components/marketplace/pricing-compari
 
 export const metadata: Metadata = {
   title: "Pricing",
-  description: "Listing a project on LankaNewHomes is always free. Upgrade any project to Featured, Featured Plus, Developer Pro, or Campaign for more search placement and homepage exposure.",
+  description: "Listing your projects on LankaNewHomes is always free. Choose a package, then pick which of your projects to feature.",
   alternates: { canonical: "/pricing" },
   // Not linked from anywhere on the site yet (owner, 2026-09-24: still
   // reviewing the plan) — the page itself stays live at this URL, just
@@ -19,23 +19,52 @@ export default function PricingPage() {
     <div className="pricing-page">
       <div className="pricing-page-shell">
         <div className="pricing-page-head">
-          <h1>Simple, per-project pricing</h1>
+          {/* Headline/lede rewritten for the per-developer model (owner,
+              2026-09-24) — the old copy ("Upgrade any individual project")
+              described per-project billing, superseded by the 2026-09-24
+              restructure (buy one plan, pick which projects fill its
+              slots). */}
+          <h1>Simple pricing for developers</h1>
           <p className="pricing-page-lede">
-            Listing a project is always free. Upgrade any individual project for more reach whenever you want it — no bundles, no long-term contracts.
+            Listing your projects is always free. Choose a package, then pick which of your projects to feature. Swap them any time until your package ends.
           </p>
         </div>
 
         <PricingComparisonTable showCta />
 
+        {/* Verified copy corrected (owner, 2026-09-24): the table's own
+            footnote already says every plan includes verification — this
+            box previously contradicted that by implying Verified needs a
+            paid package. It's actually the FEATURED PROJECTS specifically
+            that show the badge while a package is active. */}
         <p className="pricing-page-note fd-badge-preview">
           <span className="listing-badge-pill badge-verified" title="Verified by LankaNewHomes">
             <ShieldCheck className="h-3 w-3" aria-hidden="true" /> Verified
           </span>
-          appears automatically once a project has an active paid package.
+          badge is added to your featured projects while your package is active.
         </p>
 
+        <section className="pricing-how-it-works" aria-label="How it works">
+          <h2>How it works</h2>
+          <ol>
+            <li>
+              <strong>Choose a package.</strong> Featured (1 spot), Featured Plus (3), Developer Pro (5) or Campaign (custom).
+            </li>
+            <li>
+              <strong>Pick your projects.</strong> Choose which of your projects fill those spots. All your other projects stay listed for free.
+            </li>
+            <li>
+              <strong>Swap any time.</strong> Replace a featured project whenever you like, until your package end date. Swapping doesn&apos;t change the end date.
+            </li>
+            <li>
+              <strong>Need more spots?</strong> Add extra spots or upgrade your package.
+            </li>
+          </ol>
+          <p className="pricing-how-it-works-note">When your package ends, your projects return to free listings until you renew.</p>
+        </section>
+
         <p className="pricing-page-footer-note">
-          Already listed a project? Upgrade its package any time from the Package tab on that project&apos;s edit page in <Link href="/cms">/cms</Link>. New here? <Link href="/developers/register">Register as a developer</Link> to list your first project.
+          Already listed? Choose your package and featured projects from the Placements tab in your developer dashboard. New here? <Link href="/developers/register">Register as a developer</Link> to list your first project.
         </p>
       </div>
     </div>
