@@ -51,9 +51,21 @@ export function PackageCards({ showCta = false }: { showCta?: boolean }) {
               ))}
             </dl>
             {showCta ? (
-              <Link href="/developers/register" className={`package-card-cta${highlight ? " package-card-cta-solid" : ""}`}>
-                {pkg.price === 0 ? "List for free" : `Get ${pkg.name}`}
-              </Link>
+              pkg.price === 0 ? (
+                <Link href="/developers/register" className="package-card-cta">
+                  List for free
+                </Link>
+              ) : (
+                // Featured/Premium can't actually be bought yet — /developers/register
+                // is the same free signup form regardless of which button sent you
+                // there, with no tier/payment step (payment gateway not built yet).
+                // A real link here would be misleading, so this is inert with a
+                // "Coming soon" badge instead (owner, 2026-09-23).
+                <span className="package-card-cta package-card-cta-soon" aria-disabled="true">
+                  Get {pkg.name}
+                  <span className="package-card-cta-soon-badge">Coming soon</span>
+                </span>
+              )
             ) : null}
           </article>
         );
