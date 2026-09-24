@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useDocumentInfo } from "@payloadcms/ui";
-import { PACKAGE_LIST, formatPackagePrice, type PackageTier } from "@/lib/packages";
+import { PACKAGE_LIST, PACKAGE_FEATURE_ROWS, PACKAGE_ALWAYS_INCLUDED, PACKAGE_ANNUAL_BILLING_NOTE, formatPackagePrice, formatAnnualPrice, type PackageTier } from "@/lib/packages";
+import { InfoTooltip } from "./InfoTooltip";
 
 type ProjectDoc = { id: string | number; package?: PackageTier | null; developer?: { id: string | number } | string | number | null };
 
@@ -172,16 +173,36 @@ export function PackagePicker() {
 
       {submitError && <p style={{ color: "var(--theme-error-500)", fontSize: 13, marginBottom: 12 }}>{submitError}</p>}
 
+      <p style={{ fontSize: 12.5, opacity: 0.75, margin: "0 0 14px", lineHeight: 1.6 }}>
+        {PACKAGE_ALWAYS_INCLUDED} {PACKAGE_ANNUAL_BILLING_NOTE}
+        <br />
+        <em>(Annual billing isn&apos;t wired up yet — every subscription bills monthly today.)</em>
+      </p>
+
       {!pendingSubscription && (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 14 }}>
-          {PACKAGE_LIST.map((pkg) => {
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 14 }}>
+          {PACKAGE_LIST.map((pkg, pkgIndex) => {
             const isCurrent = pkg.tier === currentTier;
+            const annualPrice = formatAnnualPrice(pkg);
             return (
               <div key={pkg.tier} style={isCurrent ? cardCurrentStyle : cardStyle}>
                 <strong style={{ fontSize: 15 }}>{pkg.name}</strong>
-                <div style={{ fontSize: 18, fontWeight: 700, margin: "6px 0 10px" }}>{formatPackagePrice(pkg)}</div>
-                <ul style={{ margin: 0, padding: "0 0 0 16px", fontSize: 12, opacity: 0.75, lineHeight: 1.6 }}>
-                  {pkg.features.map((feature) => <li key={feature}>{feature}</li>)}
+                <div style={{ fontSize: 18, fontWeight: 700, margin: "6px 0 2px" }}>{formatPackagePrice(pkg)}</div>
+                {annualPrice && <div style={{ fontSize: 11, opacity: 0.65, marginBottom: 8 }}>or {annualPrice} billed annually</div>}
+                <ul style={{ margin: annualPrice ? 0 : "8px 0 0", padding: 0, fontSize: 12, opacity: 0.85, lineHeight: 1.9, listStyle: "none" }}>
+                  {PACKAGE_FEATURE_ROWS.map((row) => {
+                    const value = row.values[pkgIndex];
+                    const display = value === true ? "✓" : value === false ? "—" : value;
+                    return (
+                      <li key={row.key} style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
+                        <span>
+                          {row.label}
+                          <InfoTooltip text={row.notYetBuilt ? `${row.tooltip} (Planned — not built yet.)` : row.tooltip} />
+                        </span>
+                        <strong style={{ fontWeight: 600, textAlign: "right", whiteSpace: "nowrap" }}>{display}</strong>
+                      </li>
+                    );
+                  })}
                 </ul>
                 {isCurrent ? (
                   <p style={{ marginTop: 12, marginBottom: 0, fontSize: 12, fontWeight: 600, color: "#f47b36" }}>Current package</p>

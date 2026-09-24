@@ -5935,6 +5935,12 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   padding: 44px 40px;
   background: #1f1f1f;
   border-top: 8px solid #f47b36;
+  border-radius: 24px;
+  /* Rounded + shadow-lifted instead of a flat sharp-cornered rectangle
+     sitting between the textured sections above/below — same visual
+     language as the redesigned pricing cards (owner felt the old version
+     was too plain/boxy, 2026-09-24). */
+  box-shadow: 0 24px 60px rgba(31, 31, 31, 0.18);
   color: #fff;
   font-family: var(--font-ref-sans);
 }
@@ -6012,6 +6018,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   gap: 8px;
   height: 52px;
   padding: 0 26px;
+  border-radius: 999px;
   background: #f47b36;
   color: #fff;
   font-size: 14px;
@@ -12798,205 +12805,93 @@ a.developer-profile-press-title {
   margin: 0 auto;
 }
 
-/* Free / Featured / Premium cards (PackageCards, shared by /pricing and /for-developers;
-   owner, 2026-09-23): modelled on webdesignetobicoke.ca's pricing cards — thick orange top
-   bar, the highlighted card fully outlined on white, the others on cream, uppercase plan
-   name, big bold price, filled orange tick circles, divider + fine print. Site font and
-   site orange throughout, not the reference's. */
-.package-cards {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 24px;
-  align-items: stretch;
+/* Pricing comparison table (PricingComparisonTable, shared by /pricing and
+   /for-developers; owner, 2026-09-24) — replaced the old 3-card layout
+   once the plan grew to 5 tiers with a real feature matrix. Visual
+   language deliberately kept from the earlier boxy card design (black
+   outline, thick orange top bar, cream, uppercase plan name, filled orange
+   tick circles) rather than a softened/rounded treatment the owner
+   rejected — "put it back how it was". */
+.pricing-table-wrap {
+  border: 3px solid #1f1f1f;
+  border-top: 8px solid #f47b36;
+  background: #fff;
+  overflow-x: auto;
   font-family: var(--font-ref-sans);
 }
 
-.package-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  padding: 56px 32px 32px;
+.pricing-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+}
+
+.pricing-table thead th {
+  padding: 24px 18px;
   background: #faf7f2;
-  /* Rounded card, thin neutral border + soft shadow for depth instead of a
-     heavy black outline — orange top bar is the brand signature, kept
-     lighter (owner asked for less "plain/boxy", 2026-09-24). */
-  border: 1px solid #e7e1d4;
-  border-top: 6px solid #f47b36;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(31, 31, 31, 0.05);
+  border-bottom: 3px solid #1f1f1f;
+  border-left: 1px solid #e3ded5;
+  text-align: center;
+  vertical-align: top;
+}
+
+.pricing-table thead th:first-child {
+  border-left: none;
+}
+
+.pricing-table-tier-name {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   color: #1f1f1f;
 }
 
-/* Premium: a solid dark card (not just an outline) so the recommended tier
-   actually stands out among the three, the way the free-listing-band's
-   dark #1f1f1f panel already reads as "the important one" elsewhere on the
-   site — a light-on-light outline card didn't carry enough weight. Lifted
-   slightly on desktop for extra emphasis. */
-.package-card-highlight {
-  background: #1f1f1f;
-  border: 1px solid #1f1f1f;
-  border-top: 6px solid #f47b36;
-  color: #fff;
-  box-shadow: 0 24px 48px rgba(31, 31, 31, 0.22);
+.pricing-table-tier-price {
+  display: block;
+  margin-top: 10px;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #1f1f1f;
 }
 
-@media (min-width: 901px) {
-  .package-card-highlight {
-    transform: translateY(-14px);
-    z-index: 1;
-  }
+.pricing-table-tier-annual {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  color: #6b6f76;
 }
 
-.package-card-tag {
-  position: absolute;
-  top: 32px;
-  right: 28px;
-  padding: 6px 16px;
+.pricing-table-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 0 16px;
+  margin-top: 14px;
   border-radius: 999px;
   background: #f47b36;
   color: #fff;
   font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.18em;
-  line-height: 1.2;
-  text-transform: uppercase;
-}
-
-.package-card-name {
-  margin: 0;
-  font-family: var(--font-ref-sans);
-  font-size: 28px;
-  font-weight: 400;
+  font-weight: 700;
   letter-spacing: 0.04em;
-  line-height: 1.2;
-  text-transform: uppercase;
-  color: #1f1f1f;
-}
-
-.package-card-tagline {
-  margin: 12px 0 0;
-  font-size: 16px;
-  line-height: 1.6;
-  color: #6b6f76;
-}
-
-/* Price note always sits under the price (never beside it), so every card's price block
-   is the same shape. */
-.package-card-price {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-  margin: 30px 0 28px;
-}
-
-.package-card-price strong {
-  font-size: 44px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1;
-  color: #1f1f1f;
-}
-
-.package-card-price span {
-  font-size: 15px;
-  color: #6b6f76;
-}
-
-.package-card-features {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: 16px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.package-card-features li {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  font-size: 16px;
-  line-height: 1.45;
-  color: #1f1f1f;
-}
-
-.package-card-tick {
-  display: inline-flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: #f47b36;
-  color: #fff;
-}
-
-.package-card-tick svg {
-  width: 13px;
-  height: 13px;
-}
-
-.package-card-notes {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin: 30px 0 0;
-  padding-top: 24px;
-  border-top: 1px solid #e3ded5;
-}
-
-.package-card-notes dt {
-  font-size: 15px;
-  color: #6b6f76;
-}
-
-.package-card-notes dd {
-  margin: 2px 0 0;
-  font-size: 15px;
-  font-weight: 700;
-  color: #1f1f1f;
-}
-
-.package-card-cta {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 52px;
-  margin-top: 28px;
-  border-radius: 999px;
-  border: 2px solid #1f1f1f;
-  color: #1f1f1f;
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
   text-transform: uppercase;
   text-decoration: none;
+  white-space: nowrap;
 }
 
-.package-card-cta:hover {
-  background: #1f1f1f;
+.pricing-table-cta:hover {
+  background: #d9601f;
   color: #fff;
   text-decoration: none;
 }
 
-/* Featured/Premium CTA — not a real link (no payment step exists yet), so
-   it's dimmed, unclickable, and doesn't get the black hover-invert above. */
-.package-card-cta-soon {
-  gap: 8px;
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
-.package-card-cta-soon:hover {
-  background: transparent;
-  color: #1f1f1f;
-}
-
-.package-card-cta-soon-badge {
-  padding: 2px 10px;
+.pricing-table-soon {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 4px 12px;
   border-radius: 999px;
   background: rgba(31, 31, 31, 0.08);
   color: #6b6355;
@@ -13006,84 +12901,91 @@ a.developer-profile-press-title {
   text-transform: uppercase;
 }
 
-/* Premium's card is dark, so every text element and the CTA need a light
-   variant — the black-on-black/white-on-white that a plain class reuse
-   would otherwise produce. */
-.package-card-highlight .package-card-tagline,
-.package-card-highlight .package-card-price span,
-.package-card-highlight .package-card-notes dt {
-  color: #c9c6c0;
+.pricing-table tbody th {
+  padding: 14px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f1f1f;
+  text-align: left;
+  white-space: nowrap;
+  border-right: 1px solid #e3ded5;
 }
 
-.package-card-highlight .package-card-name,
-.package-card-highlight .package-card-price strong,
-.package-card-highlight .package-card-features li,
-.package-card-highlight .package-card-notes dd {
+.pricing-table tbody td {
+  padding: 14px 18px;
+  border-left: 1px solid #e3ded5;
+  text-align: center;
+}
+
+.pricing-table tbody tr:nth-child(even) th,
+.pricing-table tbody tr:nth-child(even) td {
+  background: #faf7f2;
+}
+
+.pricing-table tbody tr:not(:last-child) th,
+.pricing-table tbody tr:not(:last-child) td {
+  border-bottom: 1px solid #e3ded5;
+}
+
+/* Sticky feature-name column so a 5-tier table stays usable once it
+   scrolls horizontally on a narrow screen. */
+.pricing-table tbody th,
+.pricing-table thead th.pricing-table-feature-head {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+}
+
+.pricing-table thead th.pricing-table-feature-head {
+  background: #faf7f2;
+}
+
+.pricing-table-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #f47b36;
   color: #fff;
 }
 
-.package-card-highlight .package-card-notes {
-  border-top-color: rgba(255, 255, 255, 0.16);
+.pricing-table-check svg {
+  width: 12px;
+  height: 12px;
 }
 
-.package-card-highlight .package-card-cta {
-  border-color: #fff;
-  color: #fff;
+.pricing-table-dash {
+  color: #b8b2a4;
+  font-size: 16px;
 }
 
-.package-card-highlight .package-card-cta:hover {
-  background: #fff;
+.pricing-table-value {
+  font-size: 13px;
+  font-weight: 700;
   color: #1f1f1f;
 }
 
-.package-card-highlight .package-card-cta-soon:hover {
-  background: transparent;
-  color: #fff;
+.pricing-table-note {
+  margin: 0;
+  padding: 18px 22px;
+  border-top: 3px solid #1f1f1f;
+  background: #faf7f2;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #6b6f76;
 }
 
-.package-card-highlight .package-card-cta-soon-badge {
-  background: rgba(255, 255, 255, 0.14);
-  color: #e5e1d8;
-}
-
-/* Desktop: the three cards share their rows (CSS subgrid), so name, description, price,
-   feature list, fine print and button each start at the same height in every card, sized
-   by whichever card needs the most room there — e.g. a plan name that wraps to two lines
-   pushes all three descriptions down together (owner, 2026-09-24). */
-@media (min-width: 901px) {
-  .package-card {
-    display: grid;
-    grid-row: span 6;
-    grid-template-rows: subgrid;
-    row-gap: 0;
+@media (max-width: 640px) {
+  .pricing-table thead th,
+  .pricing-table tbody th,
+  .pricing-table tbody td {
+    padding: 12px;
   }
 
-  .package-card-features,
-  .package-card-notes {
-    align-self: start;
-  }
-
-  .package-card-cta {
-    align-self: end;
-  }
-}
-
-@media (max-width: 900px) {
-  .package-cards {
-    grid-template-columns: 1fr;
-    gap: 28px;
-  }
-
-  .package-card {
-    padding: 64px 26px 32px;
-  }
-
-  .package-card-tag {
-    right: 20px;
-  }
-
-  .package-card-price strong {
-    font-size: 52px;
+  .pricing-table-tier-price {
+    font-size: 18px;
   }
 }
 

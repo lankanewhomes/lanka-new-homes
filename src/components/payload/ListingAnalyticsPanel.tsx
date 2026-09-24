@@ -48,7 +48,17 @@ export function ListingAnalyticsPanel() {
   const [packageTier, setPackageTier] = useState<PackageTier>("free");
 
   const preset = RANGE_PRESETS[presetIndex];
-  const analyticsLevel = getPackage(packageTier).analyticsLevel;
+  // Views/Inquiries (below) are always shown — the universal "basic
+  // analytics" every tier gets. Lead & call counts (inquiry rate, avg. time
+  // on page, lead status) is Featured's proof-of-ROI feature, so it's
+  // gated to "basic"-and-up; Detailed lead tracking/Advanced analytics
+  // (top city, traffic sources, trend chart) stays Developer Pro/Campaign
+  // only (owner, 2026-09-24: "Lead and call tracking is your proof of
+  // ROI... give Featured tiers basic lead counts... keep the detailed
+  // breakdown for Pro").
+  const leadAnalytics = getPackage(packageTier).leadAnalytics;
+  const hasLeadAnalytics = leadAnalytics !== "none";
+  const isAdvancedAnalytics = leadAnalytics === "advanced";
 
   useEffect(() => {
     if (!id || collectionSlug !== "projects") return;
@@ -131,7 +141,7 @@ export function ListingAnalyticsPanel() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 10, marginBottom: 16 }}>
             <StatCard label="Views" value={data.summary.views.toLocaleString()} />
             <StatCard label="Inquiries" value={data.summary.inquiries.toLocaleString()} />
-            {analyticsLevel !== "none" && (
+            {hasLeadAnalytics && (
               <>
                 <StatCard
                   label="Inquiry rate"
@@ -141,16 +151,22 @@ export function ListingAnalyticsPanel() {
                 <StatCard label="Pages / session" value={data.summary.pagesPerSession != null ? String(data.summary.pagesPerSession) : "—"} />
               </>
             )}
-            {analyticsLevel === "advanced" && <StatCard label="Top city" value={data.summary.topCity ?? "—"} />}
+            {isAdvancedAnalytics && <StatCard label="Top city" value={data.summary.topCity ?? "—"} />}
           </div>
 
-          {analyticsLevel === "none" && (
+          {!hasLeadAnalytics && (
             <p style={{ fontSize: 13, padding: "10px 12px", background: "var(--theme-warning-100)", borderRadius: 4, marginBottom: 16 }}>
-              Upgrade to Featured or Premium (see the Package tab) for inquiry rate, traffic sources, lead status, and trend charts.
+              Upgrade to Featured (see the Package tab) for inquiry rate, lead status, and lead &amp; call counts.
             </p>
           )}
 
-          {analyticsLevel === "advanced" && (data.insights.topTrafficSource || data.insights.bestDayOfWeek) && (
+          {hasLeadAnalytics && !isAdvancedAnalytics && (
+            <p style={{ fontSize: 13, padding: "10px 12px", background: "var(--theme-warning-100)", borderRadius: 4, marginBottom: 16 }}>
+              Upgrade to Developer Pro or Campaign (see the Package tab) for detailed lead tracking, top city, traffic sources, and trend charts.
+            </p>
+          )}
+
+          {isAdvancedAnalytics && (data.insights.topTrafficSource || data.insights.bestDayOfWeek) && (
             <div style={{ display: "grid", gap: 8, marginBottom: 16 }}>
               {data.insights.topTrafficSource && (
                 <div style={{ fontSize: 13, padding: "8px 12px", background: "var(--theme-success-100)", borderRadius: 4 }}>
@@ -165,7 +181,7 @@ export function ListingAnalyticsPanel() {
             </div>
           )}
 
-          {analyticsLevel === "advanced" && (
+          {isAdvancedAnalytics && (
             <div style={{ marginBottom: 16 }}>
               <h5 style={{ marginBottom: 8 }}>Traffic Source</h5>
               {data.trafficSources.length === 0 ? (
@@ -193,7 +209,7 @@ export function ListingAnalyticsPanel() {
             </div>
           )}
 
-          {analyticsLevel !== "none" && (
+          {hasLeadAnalytics && (
             <div style={{ marginBottom: 16 }}>
               <h5 style={{ marginBottom: 8 }}>Lead Status</h5>
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -206,7 +222,7 @@ export function ListingAnalyticsPanel() {
             </div>
           )}
 
-          {analyticsLevel === "advanced" && (
+          {isAdvancedAnalytics && (
             <div>
               <h5 style={{ marginBottom: 8 }}>Trend</h5>
               {chartData.length === 0 ? (

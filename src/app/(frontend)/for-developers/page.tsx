@@ -6,7 +6,7 @@ import { ShieldCheck, Zap } from "lucide-react";
 import { getProjectBySlug } from "@/lib/project-store";
 import { ListingGridCard } from "@/components/marketplace/listing-page";
 import { ScrollReveal } from "@/components/marketplace/scroll-reveal";
-import { PackageCards } from "@/components/marketplace/package-cards";
+import { PricingComparisonTable } from "@/components/marketplace/pricing-comparison-table";
 import { formatLkr } from "@/lib/format";
 
 export const revalidate = 300;
@@ -433,10 +433,10 @@ export default async function ForDevelopersPage() {
           <h2>Listing is always free. Upgrade any project for more reach.</h2>
         </div>
         <div className="fdv-pricing-cards" data-reveal>
-          <PackageCards />
+          <PricingComparisonTable />
         </div>
         <p className="fdv-pricing-note" data-reveal>
-          <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" /> A Verified badge appears automatically once a project has an active Featured or Premium package.
+          <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" /> A Verified badge appears automatically once a project has an active paid package.
         </p>
       </section>
 

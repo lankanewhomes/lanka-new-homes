@@ -380,7 +380,9 @@ export function HomeClient({ projects, lands = [] }: { projects: Project[]; land
             List your project free
             <ArrowUpRight className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
           </Link>
-          <Link href="/pricing" className="free-listing-band-link">See pricing</Link>
+          {/* "See pricing" removed (owner, 2026-09-24): /pricing is still being
+              reviewed, unlinked from the whole site for now but kept live at
+              its URL — not deleted, just not reachable by clicking around. */}
         </div>
       </section>
 

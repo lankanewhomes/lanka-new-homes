@@ -3576,7 +3576,7 @@ export interface Project {
   /**
    * Set automatically from the linked Subscriptions record (see src/collections/hooks/sync-subscription-package.ts) when a developer picks Featured/Premium and payment is confirmed — not meant to be hand-edited except for an admin manually granting/adjusting a package.
    */
-  package?: ('free' | 'featured' | 'premium') | null;
+  package?: ('free' | 'featured' | 'featured-plus' | 'developer-pro' | 'campaign') | null;
   /**
    * Manually set by admin — added into final_score to rank this project higher.
    */
@@ -6967,13 +6967,13 @@ export interface Subscription {
   id: number;
   project: number | Project;
   developer: number | Developer;
-  package: 'featured' | 'premium';
+  package: 'featured' | 'featured-plus' | 'developer-pro' | 'campaign';
   /**
    * Set to "active" once payment is confirmed — activates the project automatically (see hooks/sync-subscription-package.ts). No live gateway yet, so this is a manual step, same as Payments today.
    */
   status: 'active' | 'past_due' | 'canceled' | 'incomplete' | 'unpaid';
   /**
-   * Snapshot of the price at signup, from src/lib/packages.ts — never edited by hand.
+   * Snapshot of the price at signup, from src/lib/packages.ts — for every fixed-price tier this is set automatically and shouldn't be hand-edited. Exception: `campaign` has no fixed price (negotiated per deal) — an admin sets the real agreed amount here after creating the subscription.
    */
   amount: number;
   currency: 'LKR' | 'USD' | 'CAD';

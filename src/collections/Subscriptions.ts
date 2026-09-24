@@ -16,7 +16,7 @@ import { syncProjectPackageFromSubscription } from './hooks/sync-subscription-pa
 // / `provider_customer_id` are placeholders for whenever a real gateway is
 // connected, so this schema doesn't need to change then.
 export const SUBSCRIPTION_STATUS_OPTIONS = ['active', 'past_due', 'canceled', 'incomplete', 'unpaid'] as const
-export const SUBSCRIPTION_PACKAGE_OPTIONS = ['featured', 'premium'] as const
+export const SUBSCRIPTION_PACKAGE_OPTIONS = ['featured', 'featured-plus', 'developer-pro', 'campaign'] as const
 
 export const Subscriptions: CollectionConfig = {
   slug: 'subscriptions',
@@ -137,7 +137,16 @@ export const Subscriptions: CollectionConfig = {
       access: { update: adminOnlyField },
       admin: { description: 'Set to "active" once payment is confirmed — activates the project automatically (see hooks/sync-subscription-package.ts). No live gateway yet, so this is a manual step, same as Payments today.' },
     },
-    { name: 'amount', type: 'number', required: true, access: { update: adminOnlyField }, admin: { readOnly: true, description: 'Snapshot of the price at signup, from src/lib/packages.ts — never edited by hand.' } },
+    {
+      name: 'amount',
+      type: 'number',
+      required: true,
+      access: { update: adminOnlyField },
+      admin: {
+        description:
+          "Snapshot of the price at signup, from src/lib/packages.ts — for every fixed-price tier this is set automatically and shouldn't be hand-edited. Exception: `campaign` has no fixed price (negotiated per deal) — an admin sets the real agreed amount here after creating the subscription.",
+      },
+    },
     { name: 'currency', type: 'select', options: ['LKR', 'USD', 'CAD'], defaultValue: 'LKR', required: true, access: { update: adminOnlyField } },
     { name: 'current_period_start', type: 'date', label: 'Start Date', access: { update: adminOnlyField } },
     { name: 'current_period_end', type: 'date', label: 'Renewal Date', access: { update: adminOnlyField } },

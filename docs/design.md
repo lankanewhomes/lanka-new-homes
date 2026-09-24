@@ -1403,89 +1403,127 @@ captions, and no invented scenes — if a listing has no floor plan or block
 plan, those scenes are skipped rather than faked. Stories can't be published
 by API (Meta limit), only feed posts and Reels.
 
-## Listing packages (Free / Featured / Premium, Project → Package tab)
+## Listing packages (Free / Featured / Featured Plus / Developer Pro / Campaign, Project → Package tab)
 
 One package per project (a developer with several projects sets each
-independently) — Free is the default, no data needed; Featured/Premium are
+independently) — Free is the default, no data needed; the 4 paid tiers are
 recurring, one `Subscriptions` doc per paid project. Single source of truth
 for pricing/features: `src/lib/packages.ts` (`PACKAGES` — name, price,
-ranking boost, featured/badge flags, analytics level, weekly-reports flag).
-Change a price or feature gate there, nowhere else.
+ranking boost, featured/badge flags, lead-analytics level, weekly-reports
+flag, plus the display-only `PACKAGE_FEATURE_ROWS` comparison matrix and
+per-feature tooltip copy). Change a price or feature gate there, nowhere
+else.
 
-**Public pricing cards (owner, 2026-09-23):** `/pricing` and the Pricing
-section on `/for-developers` both render `PackageCards`
-(`src/components/marketplace/package-cards.tsx`, styles `.package-card*`).
-The design is modelled on webdesignetobicoke.ca's pricing cards but uses the
-site's font and orange:
-- an 8px orange top bar on every card
-- Premium fully outlined in orange on white, with a "Most visibility" tag
-  top-right; Free and Featured on cream `#faf7f2` with a 3px black
-  (`#1f1f1f`) outline
-- uppercase plan name, then the `tagline` from `packages.ts`
-- a big bold price with a small grey suffix
-- filled orange tick circles for features
-- a divider, then grey-label / bold-value fine print
+**Restructured 2026-09-24** from the original 3-tier Free/Featured/Premium
+model after an owner pricing-strategy review. No live Subscriptions existed
+at the time (checked before touching the schema), so no billing-data
+migration was needed — safe to rename tier keys outright
+(`free`/`featured`/`featured-plus`/`developer-pro`/`campaign`).
 
-`/pricing` passes `showCta` for the sign-up buttons. Don't restyle one page's
-cards separately.
+**Public comparison table (owner, 2026-09-24):** `/pricing` and the Pricing
+section on `/for-developers` both render `PricingComparisonTable`
+(`src/components/marketplace/pricing-comparison-table.tsx`, styles
+`.pricing-table*`) — a real 5-column comparison table, not 3 side-by-side
+cards, once the plan grew past what a card layout could show. Visual
+language is deliberately the earlier boxy card design's (black outline,
+thick orange top bar, cream header, uppercase plan name, filled orange tick
+circles), not a softened/rounded treatment the owner rejected earlier the
+same day ("put it back how it was"):
+- table wrapped in a 3px black border with an 8px orange top bar
+- header row per tier: uppercase name, big bold price, small annual-price
+  note, then either a "List for free" pill (Free, only when `showCta`) or a
+  muted "Coming soon" pill (every paid tier — no payment gateway yet)
+- feature rows only for what differs between tiers; the 8 things every
+  tier includes (profile, unlimited projects, photos/videos, floor plans,
+  map, buyer enquiries, verification, basic analytics) are one sentence
+  (`PACKAGE_ALWAYS_INCLUDED`) below the table instead of 8 repeated all-✓
+  rows — owner: "Nine rows are ✓ in every column... replace them with one
+  line."
+- sticky first (feature-name) column so the table stays usable once it
+  scrolls horizontally on a narrow screen
 
-On desktop the cards share their rows (CSS subgrid), so name, description,
-price, list, fine print and button line up across all three cards. The price
-note always sits under the price. Keep new card parts inside that 6-row
-structure.
+`/pricing` passes `showCta`; `/for-developers` doesn't (informational only
+there — its own hero CTA handles sign-up). Don't restyle one page's table
+separately.
+
+**Not linked from anywhere on the site (owner, 2026-09-24):** `/pricing`
+itself still works and is intentionally `robots: { index: false }` while
+the plan is still being reviewed — every on-site link to it (footer, About,
+Terms, the homepage `free-listing-band`'s old "See pricing" link) was
+removed. Re-add them once the owner approves the page for real. The
+`/for-developers` page's own inline pricing section is unaffected (it's
+content, not a link to `/pricing`).
+
+**Admin/developer-facing tooltips (owner, 2026-09-24):** the Project →
+Package tab (`PackagePicker.tsx`) shows every feature row (from the same
+`PACKAGE_FEATURE_ROWS`) with a "?" info-circle (`InfoTooltip.tsx`) — hover
+or tap reveals what that feature actually does, and for rows like Search
+placement, concretely where on the site it shows up. A row flagged
+`notYetBuilt: true` in `packages.ts` says so explicitly in its tooltip
+("Planned — not built yet") so a developer isn't misled about what a paid
+tier gets them today.
 
 - **Data**: `Subscriptions` collection (`src/collections/Subscriptions.ts`,
   admin group Business) — `project`, `developer`, `package`
-  (featured/premium), `status` (active/past_due/canceled/incomplete/
-  unpaid), `amount`/`currency` (server-set snapshot, never trusted from the
-  client), `current_period_start`/`end`, `cancel_at_period_end`, and
+  (`featured`/`featured-plus`/`developer-pro`/`campaign`), `status`
+  (active/past_due/canceled/incomplete/unpaid), `amount`/`currency`
+  (server-set snapshot from `packages.ts`, never trusted from the client —
+  **exception: `campaign` has no fixed price**, an admin sets the real
+  negotiated `amount` by hand after creating the subscription, since that
+  field is no longer `readOnly`), `current_period_start`/`end`,
+  `cancel_at_period_end`, and
   `provider`/`provider_subscription_id`/`provider_customer_id` placeholders
   for whichever gateway gets wired later (**PayHere**, per `docs/todo.md` —
   not Stripe; no gateway is live yet, so `status` is flipped to `active` by
   an admin today, same manual-confirm step `Payments` already uses).
-  `Projects.package` (new field, default `free`) is the denormalized
-  current tier, kept in sync by `hooks/sync-subscription-package.ts`
-  whenever a Subscription's status changes — the only thing this system
-  ever writes on a Project besides `featured`; listing content is never
-  touched. Rides the existing `data jsonb` sync to Supabase — no new
-  migration needed.
+  `Projects.package` (default `free`) is the denormalized current tier,
+  kept in sync by `hooks/sync-subscription-package.ts` whenever a
+  Subscription's status changes.
 - **Ranking**: `computeFinalScore` (`hooks/project-scoring.ts`) adds a small
-  package boost (Featured +15, Premium +35 — tuned so a strong, complete,
-  relevant Free listing can still outrank a thin Premium one) into the same
-  formula that already blends completeness/engagement/recency/admin
-  `paid_boost`. This is the one ranking function everything reads —
-  `listing-page.tsx`'s default "Recommended" sort already sorts by it.
-- **Badge/homepage**: Featured/Premium both set `Projects.featured = true`
-  (the existing `.badge-featured` pill + homepage "Featured listings" shelf
-  — zero new UI); Premium additionally shows `.badge-premium` (same pill
-  shape, brand-orange palette) on `ListingGridCard`.
-- **Analytics gating**: `ListingAnalyticsPanel` reads the project's package
-  and hides inquiry-rate/traffic-source/lead-status/trend-chart sections
-  unless `analyticsLevel` is `basic` (Featured) or `advanced` (Premium,
-  adds top-city/traffic-source/trend chart back). Free sees Views +
-  Inquiries only, with an upgrade prompt.
-- **Weekly reports**: `analytics-digest.ts`'s existing weekly developer
-  email/cron (Mondays) gets a new per-project section
-  (`src/lib/project-package-digest.ts`) for any project with
-  `weeklyReports: true` — views/inquiries/saves/downloads this week vs
-  last, top visitor locations — all read from the existing `Analytics`
-  event log (same `is_duplicate`/`is_bot` exclusion `increment-counts.ts`
-  already uses), no new tracking.
-- **Expiry**: a new daily cron (`/api/cron/subscription-expiry`, added to
-  `vercel.json`) cancels any `active` subscription past its
-  `current_period_end` (no gateway to auto-renew yet) — the same
-  afterChange hook reverts the project to Free.
-- **UI**: `PackagePicker.tsx` (Payload admin component, same
-  `var(--theme-elevation-*)` visual language as `PlacementPicker.tsx`) —
-  mounted as the Project edit form's new "Package" tab. Selecting
-  Featured/Premium creates a pending Subscription; an admin confirms it in
-  `/cms` (`Subscriptions` list) today.
-- **Currency**: `packages.ts` uses LKR (Rs. 0 / 25,000 / 50,000 per month) —
-  placeholder round numbers, same spirit as PlacementPricing's own seed
-  data ("adjust freely"); change them in `packages.ts`, nowhere else.
-- **Not built**: live PayHere/Stripe checkout, pay-per-lead, multi-listing
-  bundle pricing — architecture leaves room for all three without a schema
-  change, none implemented yet.
+  package boost (`rankingBoost`: Free 0, Featured 15, Featured Plus 20,
+  Developer Pro 30, Campaign 45 — placeholder scale, tuned so a strong,
+  complete, relevant Free listing can still outrank a thin paid one) into
+  the same formula that already blends completeness/engagement/recency/
+  admin `paid_boost`.
+- **Badge/homepage**: every paid tier sets `Projects.featured = true` (the
+  existing `.badge-featured` pill + homepage "Featured listings" shelf).
+  `premiumHeroSlide` (Developer Pro/Campaign only) auto-creates a homepage
+  hero slide while active (`hooks/sync-subscription-package.ts`) — **the
+  owner wants homepage slots capped and rotated (e.g. 8–12 slots) once more
+  than a handful of developers are on a paid tier; that cap/rotation is
+  NOT built yet** — today every eligible active subscription gets a slide
+  unconditionally.
+- **Analytics gating**: `ListingAnalyticsPanel` reads `leadAnalytics`
+  (`"none" | "basic" | "advanced"`). Views + Inquiries always show (the
+  universal basic-analytics bullet). `"basic"` (Featured, Featured Plus)
+  adds inquiry rate/avg. time on page/lead status — this is deliberately
+  Featured's proof-of-ROI feature, not free, per the owner's own reasoning:
+  "a developer paying Rs.25K a month who can't see what it produced won't
+  renew." `"advanced"` (Developer Pro, Campaign) adds top city/traffic
+  source/trend chart on top of that.
+- **Weekly reports**: unchanged mechanism, gated by `weeklyReports: true`
+  (every paid tier).
+- **Expiry**: unchanged — daily cron cancels a lapsed `active` subscription
+  and reverts the project to Free.
+- **Currency**: LKR only, no CAD — the owner explicitly didn't want a CAD
+  column confusing local developers, even though it's useful for internal
+  planning. Prices: Free 0, Featured 25,000, Featured Plus 50,000,
+  Developer Pro 100,000, Campaign from 150,000 (negotiated, real figures —
+  not placeholders).
+- **Annual billing**: `formatAnnualPrice()`/`PACKAGE_ANNUAL_BILLING_NOTE`
+  show "2 months free" (10× monthly for 12 months) as **display copy
+  only** — Subscriptions has no billing-interval field and always bills
+  monthly today. Don't promise this at an actual checkout until a real
+  annual cycle is built.
+- **Not built** (recorded as real backlog, not forgotten — see the
+  session's daily-reminder memory): live PayHere/Stripe checkout;
+  `featuredProjectLimit` enforcement (nothing stops a developer requesting
+  more Featured projects than their tier allows today); homepage-slot
+  capping/rotation; Developer spotlight; a newsletter system; social-media
+  promotion; dedicated campaigns; an à la carte add-on purchase flow
+  (newsletter/social as a one-off purchase below Campaign); a real
+  quarterly/annual billing cycle; "founding developer" launch-pricing
+  discount.
 
 ## Payload admin redesign (`/cms`)
 

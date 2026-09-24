@@ -656,7 +656,7 @@ export const Projects: CollectionConfig = {
               name: 'package',
               type: 'select',
               label: 'Package',
-              options: ['free', 'featured', 'premium'],
+              options: ['free', 'featured', 'featured-plus', 'developer-pro', 'campaign'],
               defaultValue: 'free',
               access: { update: adminOnlyField },
               admin: {

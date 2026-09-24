@@ -83,7 +83,6 @@ export default async function AboutPage() {
             </p>
             <div className="about-page-links" aria-label="For developers">
               <Link href="/for-developers">Why developers list with us</Link>
-              <Link href="/pricing">Pricing</Link>
               <Link href="/developers/register">Register as a developer</Link>
             </div>
           </div>

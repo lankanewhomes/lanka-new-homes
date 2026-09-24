@@ -1,12 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
-import { PackageCards } from "@/components/marketplace/package-cards";
+import { PricingComparisonTable } from "@/components/marketplace/pricing-comparison-table";
 
 export const metadata: Metadata = {
   title: "Pricing",
-  description: "Listing a project on LankaNewHomes is always free. Upgrade any project to Featured or Premium for more search placement and homepage exposure.",
+  description: "Listing a project on LankaNewHomes is always free. Upgrade any project to Featured, Featured Plus, Developer Pro, or Campaign for more search placement and homepage exposure.",
   alternates: { canonical: "/pricing" },
+  // Not linked from anywhere on the site yet (owner, 2026-09-24: still
+  // reviewing the plan) — the page itself stays live at this URL, just
+  // unreachable by clicking around the site. Keep this off until the
+  // owner says otherwise.
+  robots: { index: false, follow: true },
 };
 
 export default function PricingPage() {
@@ -16,17 +21,17 @@ export default function PricingPage() {
         <div className="pricing-page-head">
           <h1>Simple, per-project pricing</h1>
           <p className="pricing-page-lede">
-            Listing a project is always free. Upgrade any individual project to Featured or Premium whenever you want more reach — no bundles, no long-term contracts.
+            Listing a project is always free. Upgrade any individual project for more reach whenever you want it — no bundles, no long-term contracts.
           </p>
         </div>
 
-        <PackageCards showCta />
+        <PricingComparisonTable showCta />
 
         <p className="pricing-page-note fd-badge-preview">
           <span className="listing-badge-pill badge-verified" title="Verified by LankaNewHomes">
             <ShieldCheck className="h-3 w-3" aria-hidden="true" /> Verified
           </span>
-          appears automatically once a project has an active Featured or Premium package.
+          appears automatically once a project has an active paid package.
         </p>
 
         <p className="pricing-page-footer-note">

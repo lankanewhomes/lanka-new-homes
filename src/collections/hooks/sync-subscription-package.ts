@@ -8,18 +8,19 @@ function relatedId(value: unknown): string | number | undefined {
   return value as string | number | undefined
 }
 
-// Premium's own pricing copy (packages.ts) already promises "Stronger
-// homepage exposure" — this is what makes that real: an active Premium
-// subscription auto-creates (and keeps renewed) one row in the existing
-// Hero Slides collection, the same admin-facing place a manually-bought
-// hero placement lives (CMS -> Content -> Hero Slides). Marked
-// auto_generated so it's distinguishable from a hand-created slide and
-// safe to archive automatically once Premium ends. Never invents an image —
-// skips creating a slide entirely if the project has no heroImage yet.
+// Developer Pro / Campaign's own pricing copy (packages.ts,
+// `premiumHeroSlide`) promises "Priority"/"Premium" homepage exposure —
+// this is what makes that real: an active subscription on one of those
+// tiers auto-creates (and keeps renewed) one row in the existing Hero
+// Slides collection, the same admin-facing place a manually-bought hero
+// placement lives (CMS -> Content -> Hero Slides). Marked auto_generated so
+// it's distinguishable from a hand-created slide and safe to archive
+// automatically once the subscription ends. Never invents an image — skips
+// creating a slide entirely if the project has no heroImage yet.
 async function syncPremiumHeroSlide(
   req: Parameters<CollectionAfterChangeHook>[0]['req'],
   projectId: string | number,
-  isPremiumActive: boolean,
+  wantsHeroSlide: boolean,
   periodEnd: unknown,
 ) {
   const existing = await req.payload.find({
@@ -31,7 +32,7 @@ async function syncPremiumHeroSlide(
   })
   const existingSlide = existing.docs[0]
 
-  if (!isPremiumActive) {
+  if (!wantsHeroSlide) {
     if (existingSlide && existingSlide.status !== 'archived') {
       await req.payload.update({
         collection: 'hero-slides',
@@ -94,7 +95,7 @@ export const syncProjectPackageFromSubscription: CollectionAfterChangeHook = asy
     req,
   })
 
-  await syncPremiumHeroSlide(req, projectId, pkg.tier === 'premium', doc.current_period_end)
+  await syncPremiumHeroSlide(req, projectId, pkg.premiumHeroSlide, doc.current_period_end)
 
   return doc
 }
