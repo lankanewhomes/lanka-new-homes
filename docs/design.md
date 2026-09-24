@@ -1341,6 +1341,30 @@ to be persuasive were rebuilt to actually make the case to a builder:
   rather than presented as real data (see the "no invented stats" rule
   above; this is the graphical equivalent of that same rule).
 
+**2026-09-24 addition**: two new sections after Pricing, ahead of the
+"no invented stats" rule the whole page already follows:
+- `.fdv-extra-pricing`/`.fdv-extra-pricing-table` — the à la carte
+  "extra featured project" pricing table (see `[[pricing-restructure]]`/
+  `[[placement-inventory]]` memory) — static content, since no code
+  models this pricing yet; explicitly captioned "Coming soon" since it
+  isn't purchasable.
+- `.fdv-placement`/`.fdv-placement-grid`/`.fdv-placement-card` — the
+  placement inventory (where each tier shows up: hero carousel, chip row,
+  the new "Featured projects" homepage section, map pins, search/
+  collection ranking, `/developers` pinning, saved-search emails, the
+  Similar-projects competitor rail, Campaign's blog/newsletter/social),
+  each card with a **real component sample** rather than a generic icon —
+  the actual `.listing-filter-pill`/`.hero-quick-link-pill` chip class,
+  the actual `.listing-map-marker` pin, the actual `.badge-featured` pill
+  (via the same `.fdv-badge-pill` shape helper the badges section already
+  uses) — plus a small illustrative-only CSS mockup for the one surface
+  with nothing existing yet to sample from (a hero-slide preview). Every
+  card is tagged with which plan unlocks it and "Coming soon" (or "Not
+  built yet" for Campaign's blog/newsletter/social, since those systems
+  don't exist at all) — same "don't imply something is live that isn't"
+  rule as the analytics mockup above, just applied to a whole section
+  instead of one panel.
+
 **`/web-design`** (2026-09-10) reuses this same `.fd-*` system for a second,
 unrelated offer — custom project websites, separate from a marketplace
 listing. New `.fd-hero-grid-single` variant (single centered column, no

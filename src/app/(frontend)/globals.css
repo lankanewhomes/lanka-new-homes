@@ -13102,6 +13102,248 @@ a.developer-profile-press-title {
   color: var(--fdv-muted);
 }
 
+/* Extra-project pricing (owner, 2026-09-24) — à la carte add-on pricing
+   table, static content (no code models this yet). */
+.fdv-extra-pricing {
+  padding: 20px 0 90px;
+}
+
+.fdv-extra-pricing-table-wrap {
+  width: min(900px, calc(100% - 44px));
+  margin: 0 auto;
+  overflow-x: auto;
+}
+
+.fdv-extra-pricing-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+.fdv-extra-pricing-table th,
+.fdv-extra-pricing-table td {
+  border: 1px solid var(--fdv-line);
+  padding: 10px 14px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.fdv-extra-pricing-table thead th {
+  background: var(--fdv-ink);
+  color: #fff;
+  font-weight: 600;
+}
+
+.fdv-extra-pricing-table tbody tr:nth-child(even) {
+  background: #faf8f4;
+}
+
+/* Placement inventory (owner, 2026-09-24) — real component samples (the
+   same .badge-featured/.listing-filter-pill/.listing-map-marker classes
+   used live elsewhere) so a developer sees exactly what they'd get, not a
+   generic icon. Almost every card here is "Coming soon" — see packages.ts
+   and the placement-inventory memory for what's actually built. */
+.fdv-placement {
+  padding: 20px 0 130px;
+}
+
+.fdv-placement-grid {
+  width: min(1180px, calc(100% - 64px));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.fdv-placement-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--fdv-line);
+  background: #fff;
+  padding: 22px 24px 24px;
+}
+
+.fdv-placement-card h4 {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--fdv-ink);
+}
+
+.fdv-placement-card p {
+  flex: 1;
+  margin: 0 0 14px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--fdv-muted);
+}
+
+.fdv-placement-tag {
+  align-self: flex-start;
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #fdf3e0;
+  border: 1px solid #f2d38a;
+  color: #92670c;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.fdv-placement-sample {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 74px;
+  margin-bottom: 16px;
+}
+
+/* Hero-slide mockup — a small illustrative preview, not the real carousel. */
+.fdv-placement-sample-hero {
+  position: relative;
+  width: 100%;
+  height: 74px;
+  background: linear-gradient(135deg, #2b2f38, #55606e);
+  border: 1px solid var(--fdv-line);
+}
+
+.fdv-placement-sample-hero-pill {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #1f1f1f;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.fdv-placement-sample-hero-dots {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  display: flex;
+  gap: 4px;
+}
+
+.fdv-placement-sample-hero-dots i {
+  display: block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.fdv-placement-sample-hero-dots i:first-child {
+  background: #fff;
+}
+
+/* "Featured projects" homepage-section mockup — 4 mini cards. */
+.fdv-placement-sample-shelf {
+  gap: 6px;
+}
+
+.fdv-placement-sample-shelf-card {
+  flex: 1;
+  height: 56px;
+  display: flex;
+  align-items: flex-start;
+  padding: 5px;
+  background: #eee8db;
+  border: 1px solid var(--fdv-line);
+}
+
+.fdv-placement-sample-shelf-badge {
+  font-size: 8px !important;
+  padding: 2px 6px !important;
+}
+
+/* Map pin comparison — a plain grey pin next to the real highlighted one. */
+.fdv-placement-sample-map {
+  gap: 16px;
+}
+
+.listing-map-marker.fdv-placement-sample-pin-plain {
+  background: #b8b2a4;
+  box-shadow: none;
+}
+
+/* Ranking / directory / email / competitor / campaign samples all build
+   their own stacked rows rather than sitting inside the framed box above. */
+.fdv-placement-sample-rank,
+.fdv-placement-sample-directory,
+.fdv-placement-sample-email,
+.fdv-placement-sample-competitor,
+.fdv-placement-sample-campaign {
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 5px;
+}
+
+.fdv-placement-sample-email,
+.fdv-placement-sample-competitor {
+  align-items: flex-start;
+}
+
+.fdv-placement-sample-rank-row,
+.fdv-placement-sample-directory-row {
+  padding: 6px 10px;
+  background: #eee8db;
+  border-left: 3px solid var(--fdv-line);
+  font-size: 11px;
+  color: var(--fdv-ink);
+}
+
+.fdv-placement-sample-rank-top,
+.fdv-placement-sample-directory-pinned {
+  background: #fdf3e0;
+  border-left-color: var(--fdv-accent);
+  font-weight: 700;
+}
+
+.fdv-placement-sample-rank-muted {
+  opacity: 0.6;
+}
+
+.fdv-placement-sample-email-line {
+  font-size: 11px;
+  color: var(--fdv-muted);
+}
+
+.fdv-placement-sample-email-featured {
+  align-self: flex-start;
+  padding: 4px 9px;
+  border-radius: 4px;
+  background: #fdf3e0;
+  color: #92670c;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.fdv-placement-sample-competitor-line {
+  margin: 0;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--fdv-ink);
+}
+
+.fdv-placement-sample-campaign span {
+  padding: 6px 10px;
+  background: #eee8db;
+  font-size: 11.5px;
+  color: var(--fdv-ink);
+}
+
+@media (max-width: 900px) {
+  .fdv-placement-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Live listings — reuses the site's own .home-card-grid/ListingGridCard
    (already white, unchanged sitewide). The section itself gets an explicit
    white band, full-bleed, so this "proof" showcase reads as a clean break

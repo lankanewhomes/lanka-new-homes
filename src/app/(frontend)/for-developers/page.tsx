@@ -440,6 +440,169 @@ export default async function ForDevelopersPage() {
         </p>
       </section>
 
+      {/* Extra-project pricing — à la carte, on top of the plan price.
+          Static content (not read from packages.ts): no code models this
+          yet, it's a pricing design the owner specified 2026-09-24, not a
+          built feature (see the "Coming soon" note below). */}
+      <section className="fdv-extra-pricing" aria-label="Extra project pricing">
+        <div className="fdv-section-head" data-reveal>
+          <p className="fdv-eyebrow">Extra project pricing</p>
+          <h2>Adding projects is always free. Featuring more of them isn&apos;t.</h2>
+          <p className="fdv-section-sub">
+            Listing unlimited projects is free and always will be. What costs extra is featuring a project beyond what your plan already includes.
+          </p>
+        </div>
+        <div className="fdv-extra-pricing-table-wrap" data-reveal>
+          <table className="fdv-extra-pricing-table">
+            <thead>
+              <tr>
+                <th>Plan</th>
+                <th>Included featured</th>
+                <th>Each extra featured project</th>
+                <th>When to upgrade instead</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Featured</td>
+                <td>1</td>
+                <td>{formatLkr(20000)}/month</td>
+                <td>Need 2+: Featured Plus ({formatLkr(50000)} for 3) is cheaper</td>
+              </tr>
+              <tr>
+                <td>Featured Plus</td>
+                <td>3</td>
+                <td>{formatLkr(15000)}/month (max 2 extra)</td>
+                <td>Need 5+: Pro ({formatLkr(100000)}) adds hero, spotlight, analytics</td>
+              </tr>
+              <tr>
+                <td>Developer Pro</td>
+                <td>5</td>
+                <td>{formatLkr(12000)}/month (no cap)</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td>Campaign</td>
+                <td>Custom</td>
+                <td>Included in the quote</td>
+                <td>—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p className="fdv-pricing-note" data-reveal>Coming soon — this pricing isn&apos;t purchasable yet, no payment gateway is live.</p>
+      </section>
+
+      {/* Placement inventory — where each tier actually shows up, with real
+          samples (the same badge/chip/map-pin classes used live elsewhere
+          on the site) rather than generic icons, so a developer sees
+          exactly what they'd get. Almost everything here is planned, not
+          built — each card says so explicitly (owner, 2026-09-24). */}
+      <section className="fdv-placement" aria-label="Where you'll be seen">
+        <div className="fdv-section-head" data-reveal>
+          <p className="fdv-eyebrow">Placement</p>
+          <h2>Exactly where a paid plan puts your project.</h2>
+          <p className="fdv-section-sub">Real samples of each placement, and which plan unlocks it.</p>
+        </div>
+        <div className="fdv-placement-grid" data-reveal>
+          <div className="fdv-placement-card">
+            <div className="fdv-placement-sample fdv-placement-sample-hero">
+              <span className="fdv-placement-sample-hero-pill">View project</span>
+              <span className="fdv-placement-sample-hero-dots"><i /><i /><i /></span>
+            </div>
+            <h4>Homepage hero carousel</h4>
+            <p>Developer Pro rotates in with other Pro developers; Campaign gets a fixed slide for the campaign period.</p>
+            <span className="fdv-placement-tag">Pro &amp; Campaign · Coming soon</span>
+          </div>
+
+          <div className="fdv-placement-card">
+            <div className="fdv-placement-sample">
+              <span className="listing-filter-pill hero-quick-link-pill hero-quick-link-pill-highlight">Your Company</span>
+            </div>
+            <h4>Chip row under the homepage search bar</h4>
+            <p>A Developer Spotlight chip alongside the category chips (e.g. &quot;Colombo&quot;, &quot;Villas&quot;).</p>
+            <span className="fdv-placement-tag">Developer Pro · Coming soon</span>
+          </div>
+
+          <div className="fdv-placement-card">
+            <div className="fdv-placement-sample fdv-placement-sample-shelf">
+              {[1, 2, 3, 4].map((i) => (
+                <span key={i} className="fdv-placement-sample-shelf-card">
+                  <span className="badge-featured fdv-badge-pill fdv-placement-sample-shelf-badge">Featured</span>
+                </span>
+              ))}
+            </div>
+            <h4>New &quot;Featured projects&quot; section</h4>
+            <p>A homepage section above &quot;New listings&quot; — 8 rotating slots, capped so placement stays valuable.</p>
+            <span className="fdv-placement-tag">Any Featured tier · Coming soon</span>
+          </div>
+
+          <div className="fdv-placement-card">
+            <div className="fdv-placement-sample fdv-placement-sample-map">
+              <span className="listing-map-marker fdv-placement-sample-pin-plain">2</span>
+              <span className="listing-map-marker active">1</span>
+            </div>
+            <h4>Highlighted map pin</h4>
+            <p>Featured and above stand out from plain pins on every map view.</p>
+            <span className="fdv-placement-tag">Featured &amp; up · Coming soon</span>
+          </div>
+
+          <div className="fdv-placement-card">
+            <div className="fdv-placement-sample fdv-placement-sample-rank">
+              <span className="fdv-placement-sample-rank-row fdv-placement-sample-rank-top">Campaign — pinned #1</span>
+              <span className="fdv-placement-sample-rank-row">Developer Pro — top of featured</span>
+              <span className="fdv-placement-sample-rank-row">Featured / Featured Plus</span>
+              <span className="fdv-placement-sample-rank-row fdv-placement-sample-rank-muted">Free — standard order</span>
+            </div>
+            <h4>Search, city &amp; collection page ranking</h4>
+            <p>/projects, city pages, and collections (e.g. /colombo, /beachfront) rank paid plans above Free — never a guaranteed &quot;#1&quot;, except Campaign&apos;s 1–2 pinned pages.</p>
+            <span className="fdv-placement-tag">All paid tiers · Coming soon</span>
+          </div>
+
+          <div className="fdv-placement-card">
+            <div className="fdv-placement-sample fdv-placement-sample-directory">
+              <span className="fdv-placement-sample-directory-row fdv-placement-sample-directory-pinned">Your Company · Pro</span>
+              <span className="fdv-placement-sample-directory-row">Other developer</span>
+              <span className="fdv-placement-sample-directory-row">Other developer</span>
+            </div>
+            <h4>/developers directory</h4>
+            <p>Pinned to the top, plus an upgraded developer page — banner, all projects, a lead form.</p>
+            <span className="fdv-placement-tag">Developer Pro · Coming soon</span>
+          </div>
+
+          <div className="fdv-placement-card">
+            <div className="fdv-placement-sample fdv-placement-sample-email">
+              <span className="fdv-placement-sample-email-line">New listings matching your saved search</span>
+              <span className="fdv-placement-sample-email-featured">★ Featured for you</span>
+            </div>
+            <h4>Saved-search alert emails</h4>
+            <p>A dedicated &quot;Featured&quot; block inside every buyer alert email.</p>
+            <span className="fdv-placement-tag">Developer Pro · Coming soon</span>
+          </div>
+
+          <div className="fdv-placement-card">
+            <div className="fdv-placement-sample fdv-placement-sample-competitor">
+              <p className="fdv-placement-sample-competitor-line"><strong>Free project page:</strong> shows paid competitors in &quot;Similar projects&quot;</p>
+              <p className="fdv-placement-sample-competitor-line"><strong>Paid project page:</strong> shows only your own other projects</p>
+            </div>
+            <h4>&quot;Similar projects&quot; rail</h4>
+            <p>The clearest reason to upgrade — a Free page&apos;s own rail can point buyers to a paid competitor.</p>
+            <span className="fdv-placement-tag">Featured &amp; up removes it · Coming soon</span>
+          </div>
+
+          <div className="fdv-placement-card">
+            <div className="fdv-placement-sample fdv-placement-sample-campaign">
+              <span>Sponsored blog article</span>
+              <span>Newsletter feature</span>
+              <span>FB / IG posts</span>
+            </div>
+            <h4>Blog, newsletter &amp; social</h4>
+            <p>Included with Campaign. Optional Sinhala/Tamil homepage takeover for launches aimed at those audiences.</p>
+            <span className="fdv-placement-tag">Campaign · Not built yet</span>
+          </div>
+        </div>
+      </section>
+
       {showcaseProjects.length > 0 ? (
         <section className="fdv-live-listings" aria-label="Live listings">
           <div className="fdv-section-head" data-reveal>
