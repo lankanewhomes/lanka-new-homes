@@ -134,6 +134,7 @@ See `docs/supabase-schema.sql` for the full schema. Summary:
 | `leads` | contact form submissions (was `data/tracking.sqlite`) |
 | `project_views` | view-count analytics (was `data/tracking.sqlite`) |
 | `project_notification_snapshots` | last-notified values per project, diffed weekly by the follower-digest cron — service-role only, no buyer-facing reads |
+| `saved_searches` | a signed-in buyer's saved search filters + alert on/off (`/account/alerts`) — `last_notified_at` (added 2026-09-25) is diffed weekly by the saved-search alert cron, same pattern as `project_notification_snapshots` |
 
 Not migrated (static reference data, no admin editing): Sri Lanka
 provinces/districts/cities geo lookups.

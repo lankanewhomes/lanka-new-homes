@@ -406,7 +406,13 @@ drop policy if exists "saved_searches: update own" on saved_searches;
 create policy "saved_searches: update own" on saved_searches for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
 drop policy if exists "saved_searches: delete own" on saved_searches;
 create policy "saved_searches: delete own" on saved_searches for delete using (auth.uid() = user_id);
-comment on column saved_searches.is_active is 'Alerts panel "email notifications" on/off flag. No email is sent yet — this only persists the toggle state for a future notification job.';
+
+-- Saved-search alert emails (supabase/migrations/20260925090000_saved_search_alerts.sql)
+-- — is_active finally has a consumer: the weekly cron in
+-- src/lib/saved-search-alerts.ts.
+alter table saved_searches add column if not exists last_notified_at timestamptz;
+comment on column saved_searches.is_active is 'Alerts panel "email notifications" on/off flag — consumed by the weekly saved-search alert cron (src/lib/saved-search-alerts.ts) since 2026-09-25.';
+comment on column saved_searches.last_notified_at is 'Last time this search''s weekly alert email was sent — a project created/published after this counts as "new" for the next email. Null until the first email goes out.';
 
 -- Developer team members -----------------------------------------------------
 -- (supabase/migrations/20260827120400_developer_members.sql)

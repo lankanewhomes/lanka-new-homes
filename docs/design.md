@@ -1775,6 +1775,51 @@ items 1–4 above).
   still not-built item — only the directory pinning itself was in the
   owner's 12-item build queue.
 
+### Saved-search alert emails built from scratch (2026-09-24/25, build item 9)
+
+Owner's build note assumed saved-search alert emails already existed and
+just needed a "Featured" block added — they didn't exist at all yet
+(`/account/alerts` said so explicitly: "Email alerts are saved for when
+this launches"). Flagged the scope gap to the owner before building; they
+chose to build the whole thing.
+
+- **Schema**: `saved_searches.last_notified_at`
+  (`supabase/migrations/20260925090000_saved_search_alerts.sql`, applied
+  live) — a pure "have I emailed this search" cursor, not a value snapshot
+  like `project_notification_snapshots`. Only advances on a search that
+  actually got emailed, so a search with no current matches (or a buyer
+  with alerts off) keeps its old cursor and isn't silently skipped once a
+  real match does appear.
+- **Matching** (`saved-search-alerts.ts`'s `matchesSavedSearch`): the same
+  simple exact/minimum-match style as `matchesFilters` in
+  `listing-page.tsx`, over the filter shape `/account/alerts` already
+  stores (`propertyType`, `bedrooms` as a minimum, `city` case-insensitive,
+  `maxPriceLkr`).
+- **Cron**: piggybacks on the existing weekly `analytics-digest` cron (same
+  reasoning as `follower-digest.ts` — no separate Vercel cron slot needed).
+  Capped at 5 new matches per search per email so a broad filter can't
+  produce a giant email; the very first run for a brand-new search emails
+  whatever currently matches (there's no prior state to diff against, unlike
+  follower-digest's snapshot).
+- **Featured/"Sponsored" block**: Developer Pro/Campaign's own
+  "placement in saved-search alert emails" perk — up to 3 paid-tier
+  listings matching that same search's filters, ranked by
+  `planRotationWeight` then `final_score`, excluded from also appearing in
+  the New-matches list. Labeled "Sponsored" in the email itself (not
+  "Featured") — matches the placement spec's own transparency note ("mark
+  every paid card Featured or Sponsored"); inside an email next to a
+  buyer's own real matches, "Sponsored" reads more honestly.
+- **Safety**: reuses the exact same non-production email-routing guard as
+  lead alerts/follower digests (`isProductionDeployment`/`DEFAULT_TEST_INBOX`
+  in `lead-alerts.ts`) — a local/preview run can never reach a real buyer's
+  inbox.
+- Live-verified (2026-09-25, once the Supabase outage resolved): ran
+  `sendSavedSearchAlerts()` against the live (currently empty)
+  `saved_searches` table end to end with no errors; `matchesSavedSearch`
+  and the email template separately verified against synthetic fixtures
+  (exact/case-insensitive/minimum-bedroom/budget matching, and that the
+  Sponsored block renders).
+
 ## Payload admin redesign (`/cms`)
 
 Rebrands the admin shell without touching schema/access/auth — three

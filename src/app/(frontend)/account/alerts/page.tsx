@@ -84,7 +84,7 @@ export default function AlertsPage() {
               </button>
             </form>
 
-            <p className="text-xs text-stone-500">Email alerts are saved for when this launches — for now, this keeps each search on/off and matches it against new listings visually here.</p>
+            <p className="text-xs text-stone-500">When a search&apos;s email notifications are on, you&apos;ll get a weekly email whenever a new listing matches it.</p>
 
             {searches.length === 0 ? (
               <p className="text-sm text-stone-600">No saved searches yet.</p>

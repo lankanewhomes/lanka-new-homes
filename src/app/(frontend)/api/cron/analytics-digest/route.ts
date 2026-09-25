@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { sendWeeklyAnalyticsDigests } from "@/lib/analytics-digest";
 import { recomputeAllDeveloperResponseStats } from "@/lib/response-badge";
 import { sendFollowerDigests } from "@/lib/follower-digest";
+import { sendSavedSearchAlerts } from "@/lib/saved-search-alerts";
 
 // Triggered by Vercel Cron (see vercel.json — weekly, Mondays 08:00 UTC).
 // Vercel signs its own cron requests with `Authorization: Bearer $CRON_SECRET`
@@ -33,5 +34,12 @@ export async function GET(request: Request) {
     console.error("Follower digest run failed", error);
     return null;
   });
-  return NextResponse.json({ ...result, responseBadges, followerDigests });
+  // Supabase-native, same reasoning as followerDigests above — emails
+  // buyers with an active saved search whenever a new listing matches it,
+  // plus a small Developer Pro/Campaign "Sponsored" placement block.
+  const savedSearchAlerts = await sendSavedSearchAlerts().catch((error) => {
+    console.error("Saved-search alert run failed", error);
+    return null;
+  });
+  return NextResponse.json({ ...result, responseBadges, followerDigests, savedSearchAlerts });
 }
