@@ -64,7 +64,7 @@ export default function PricingPage() {
         </section>
 
         <p className="pricing-page-footer-note">
-          Already listed? Choose your package and featured projects from the Placements tab in your developer dashboard. New here? <Link href="/developers/register">Register as a developer</Link> to list your first project.
+          Already listed? Choose your package and featured projects from the Placements tab in your developer dashboard. New here? <Link href="/developers/register"><strong>Register as a developer</strong></Link> to list your first project.
         </p>
       </div>
     </div>
