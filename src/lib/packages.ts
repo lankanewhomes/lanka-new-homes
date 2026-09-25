@@ -273,6 +273,22 @@ export function formatAnnualPrice(pkg: PackageDefinition): string | null {
 
 export const PACKAGE_ANNUAL_BILLING_NOTE = "Annual billing: 2 months free.";
 
+/**
+ * À la carte newsletter/social promotion for ONE project — the "Newsletter
+ * + social" row's "Add-on" cells (Free/Featured/Featured Plus). Developer
+ * Pro gets one included per quarter; Campaign has it bundled — this
+ * request flow exists for everyone else. Flat one-off prices, not tied to
+ * a tier's monthly price. See AddonRequests.ts — this creates a request an
+ * admin fulfills manually (no newsletter system or automated social
+ * publishing pipeline exists yet, same "not built" status as the features
+ * themselves).
+ */
+export const ADDON_PRICES = {
+  newsletter: 15000,
+  social: 20000,
+} as const;
+export type AddonType = keyof typeof ADDON_PRICES;
+
 /** Owner's exact wording (2026-09-24) — shown once above/below the comparison table instead of repeating 8 always-✓ rows for every tier. */
 export const PACKAGE_ALWAYS_INCLUDED =
   "All plans include profile, unlimited projects, photos/videos, floor plans, map, buyer enquiries, verification, and basic analytics.";
@@ -388,10 +404,10 @@ export const PACKAGE_FEATURE_ROWS: PackageFeatureRow[] = [
     label: "Newsletter + social",
     tooltip: [
       "Promotion in an email newsletter to buyers, and a post on LankaNewHomes' own social accounts.",
-      "Planned as an add-on purchase for Free/Featured/Featured Plus, one per quarter on Developer Pro, included with Campaign.",
+      "Request it for a specific project from that project's Promotion tab in /cms — Rs. 15,000 for a newsletter feature or Rs. 20,000 for a social push, one per quarter included on Developer Pro, bundled with Campaign.",
+      "We write and send/post it by hand once confirmed — there's no automated newsletter or social pipeline yet.",
     ],
     values: ["Add-on", "Add-on", "Add-on", "1/quarter", "Included"],
-    notYetBuilt: true,
   },
   {
     key: "dedicated-campaign",

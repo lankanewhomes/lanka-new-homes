@@ -693,6 +693,16 @@ export const Projects: CollectionConfig = {
           ],
         },
         {
+          label: 'Promotion',
+          fields: [
+            // À la carte newsletter/social request for THIS project — see
+            // AddonRequestPanel.tsx and src/collections/AddonRequests.ts.
+            // Distinct from the Placements tab on the Developer profile
+            // (which picks which projects use the plan's featured slots).
+            { name: 'addonRequestPanel', type: 'ui', admin: { components: { Field: '@/components/payload/AddonRequestPanel#AddonRequestPanel' } } },
+          ],
+        },
+        {
           label: 'Social',
           fields: [
             // Generated reel + carousel cards, caption preview, "Post now"

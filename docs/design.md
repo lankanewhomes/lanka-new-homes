@@ -1549,11 +1549,12 @@ tier gets them today.
   annual cycle is built.
 - **Not built** (recorded as real backlog, not forgotten — see the
   session's daily-reminder memory): live PayHere/Stripe checkout;
-  homepage-slot capping/rotation; Developer spotlight; a newsletter
-  system; social-media promotion; dedicated campaigns; a newsletter/
-  social à la carte purchase flow (distinct from the extra-featured-slot
-  flow below, which IS built); a real quarterly/annual billing cycle;
-  "founding developer" launch-pricing discount.
+  homepage-slot capping/rotation; Developer spotlight; an actual
+  newsletter system or automated social-publishing pipeline (the
+  à la carte *request* flow for these IS built — see below — but
+  fulfilling one still means a human writes and sends/posts it by hand);
+  dedicated campaigns; a real quarterly/annual billing cycle; "founding
+  developer" launch-pricing discount.
 
 ### Restructured again 2026-09-24: billing moved to per-developer
 
@@ -1621,6 +1622,25 @@ and the exact developer-dashboard UI spec this was built from.
   the listing-card shape exactly — same fix already applied to the pricing
   table's own badge previews (`.pricing-table-badge-preview`), which were
   already correct.
+
+### À la carte newsletter/social requests (same day, later)
+
+Owner: "can we built this. No à la carte purchase flow exists yet — this
+is a pricing design, not a built feature." Built as a request, not real
+billing — same pattern as everything else on this site with no payment
+gateway: `AddonRequests` (new collection, `src/collections/AddonRequests.ts`)
+holds one row per request (`developer`, `project`, `addon_type`:
+newsletter/social, a server-snapshotted `price` from the new
+`ADDON_PRICES` constant in `packages.ts`, `status`). Mounted as a new
+"Promotion" tab on the Project edit form (`AddonRequestPanel.tsx`) —
+copy adapts to the project's developer's plan (Campaign: already
+included, points to contact instead of a request button; Developer Pro:
+notes the quarterly-included one, still lets them request; everyone else:
+priced Request buttons for both add-ons) and lists past requests for that
+project. An admin works the request by hand in `/cms` — there's still no
+real newsletter system or automated social-publishing pipeline, so
+"fulfilled" means a human wrote and sent/posted it, not that anything
+sent itself.
 
 ## Payload admin redesign (`/cms`)
 

@@ -71,6 +71,7 @@ export interface Config {
     developers: Developer;
     projects: Project;
     lands: Land;
+    'addon-requests': AddonRequest;
     'construction-companies': ConstructionCompany;
     'marketing-companies': MarketingCompany;
     'sales-companies': SalesCompany;
@@ -111,6 +112,7 @@ export interface Config {
     developers: DevelopersSelect<false> | DevelopersSelect<true>;
     projects: ProjectsSelect<false> | ProjectsSelect<true>;
     lands: LandsSelect<false> | LandsSelect<true>;
+    'addon-requests': AddonRequestsSelect<false> | AddonRequestsSelect<true>;
     'construction-companies': ConstructionCompaniesSelect<false> | ConstructionCompaniesSelect<true>;
     'marketing-companies': MarketingCompaniesSelect<false> | MarketingCompaniesSelect<true>;
     'sales-companies': SalesCompaniesSelect<false> | SalesCompaniesSelect<true>;
@@ -6852,6 +6854,34 @@ export interface Land {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "addon-requests".
+ */
+export interface AddonRequest {
+  id: number;
+  developer: number | Developer;
+  /**
+   * Which project this newsletter feature/social push is for.
+   */
+  project: number | Project;
+  addon_type: 'newsletter' | 'social';
+  /**
+   * Snapshot of the add-on price at request time, from src/lib/packages.ts.
+   */
+  price?: number | null;
+  currency?: 'LKR' | null;
+  /**
+   * Set by an admin as the request is worked — "confirmed" (payment/scope agreed) then "fulfilled" once the newsletter feature or social post actually goes out.
+   */
+  status: 'requested' | 'confirmed' | 'fulfilled' | 'canceled';
+  /**
+   * Optional — anything specific to ask for (e.g. a particular angle for the feature, preferred timing).
+   */
+  notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "saved-listings".
  */
 export interface SavedListing {
@@ -7340,6 +7370,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'lands';
         value: number | Land;
+      } | null)
+    | ({
+        relationTo: 'addon-requests';
+        value: number | AddonRequest;
       } | null)
     | ({
         relationTo: 'construction-companies';
@@ -8125,6 +8159,21 @@ export interface LandsSelect<T extends boolean = true> {
         canonicalUrl?: T;
         noIndex?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "addon-requests_select".
+ */
+export interface AddonRequestsSelect<T extends boolean = true> {
+  developer?: T;
+  project?: T;
+  addon_type?: T;
+  price?: T;
+  currency?: T;
+  status?: T;
+  notes?: T;
   updatedAt?: T;
   createdAt?: T;
 }

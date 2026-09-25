@@ -12,6 +12,7 @@ import { importListingEndpoint } from './src/collections/endpoints/import-listin
 import { listingTodoEndpoint } from './src/collections/endpoints/listing-todo'
 import { leadActivityEndpoint } from './src/collections/endpoints/lead-activity'
 import { socialPostEndpoint, socialStatusEndpoint } from './src/collections/endpoints/social-post'
+import { AddonRequests } from './src/collections/AddonRequests'
 import { Architects } from './src/collections/Architects'
 import { Articles } from './src/collections/Articles'
 import { ConstructionCompanies } from './src/collections/ConstructionCompanies'
@@ -137,6 +138,7 @@ export default buildConfig({
     Developers,
     Projects,
     Lands,
+    AddonRequests,
     ConstructionCompanies,
     MarketingCompanies,
     SalesCompanies,
