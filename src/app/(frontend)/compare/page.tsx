@@ -4,7 +4,7 @@ import Link from "next/link";
 import { getProjectBySlug } from "@/lib/project-store";
 import { getLandBySlug } from "@/lib/land-store";
 import { formatLkr } from "@/lib/format";
-import { MAX_COMPARE } from "@/lib/use-compare-listings";
+import { MAX_COMPARE } from "@/lib/compare-constants";
 import type { Project, Land } from "@/types";
 
 export const metadata: Metadata = {

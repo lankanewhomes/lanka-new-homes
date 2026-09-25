@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { MAX_COMPARE } from "@/lib/compare-constants";
 
 // Compare is a session convenience, not an account feature like Saved
 // listings (which persists server-side per logged-in user via Supabase) —
@@ -11,7 +12,11 @@ import { useCallback, useEffect, useState } from "react";
 export type CompareEntry = { slug: string; type: "project" | "land" };
 
 const STORAGE_KEY = "lnh-compare";
-export const MAX_COMPARE = 4;
+// Re-exported so existing client-side importers (listing-page.tsx,
+// compare-bar.tsx) don't need to change — compare/page.tsx (a Server
+// Component) must import it from compare-constants.ts directly instead;
+// see that file's comment for why.
+export { MAX_COMPARE };
 
 function readStorage(): CompareEntry[] {
   try {
