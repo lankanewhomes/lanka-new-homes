@@ -186,7 +186,7 @@ export function ListingGridCard({ project, basePath = "/projects" }: { project: 
           title={!comparing && atMax ? `You can compare up to ${MAX_COMPARE} listings at a time` : undefined}
           onClick={(event) => {
             event.preventDefault();
-            toggleCompare(project.slug, isLand ? "land" : "project");
+            toggleCompare(project.slug, isLand ? "land" : "project", project.name);
           }}
         >
           <Scale className="h-4 w-4" aria-hidden="true" />

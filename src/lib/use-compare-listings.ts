@@ -9,7 +9,15 @@ import { MAX_COMPARE } from "@/lib/compare-constants";
 // a few projects without creating an account first. Wrapped in try/catch
 // throughout: private browsing / blocked storage should degrade to "compare
 // just doesn't persist," never throw.
-export type CompareEntry = { slug: string; type: "project" | "land" };
+// `name` is the listing's display name for the compare bar's chips; entries saved
+// before it existed only have a slug, so readers fall back to compareEntryLabel().
+export type CompareEntry = { slug: string; type: "project" | "land"; name?: string };
+
+/** "rudra-wellness-retreat-kalkudah" → "Rudra Wellness Retreat Kalkudah" (fallback when no name was stored). */
+export function compareEntryLabel(entry: CompareEntry): string {
+  if (entry.name) return entry.name;
+  return entry.slug.split("-").filter(Boolean).map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+}
 
 const STORAGE_KEY = "lnh-compare";
 // Re-exported so existing client-side importers (listing-page.tsx,
@@ -22,7 +30,11 @@ function readStorage(): CompareEntry[] {
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed.filter((e) => e && typeof e.slug === "string" && (e.type === "project" || e.type === "land")) : [];
+    return Array.isArray(parsed)
+      ? parsed
+          .filter((e) => e && typeof e.slug === "string" && (e.type === "project" || e.type === "land"))
+          .map((e) => ({ slug: e.slug, type: e.type, ...(typeof e.name === "string" && e.name ? { name: e.name } : {}) }))
+      : [];
   } catch {
     return [];
   }
@@ -61,14 +73,14 @@ export function useCompareListings() {
 
   const isComparing = useCallback((slug: string) => entries.some((e) => e.slug === slug), [entries]);
 
-  const toggle = useCallback((slug: string, type: CompareEntry["type"]) => {
+  const toggle = useCallback((slug: string, type: CompareEntry["type"], name?: string) => {
     const current = readStorage();
     if (current.some((e) => e.slug === slug)) {
       writeStorage(current.filter((e) => e.slug !== slug));
       return;
     }
     if (current.length >= MAX_COMPARE) return; // caller decides how to surface the cap
-    writeStorage([...current, { slug, type }]);
+    writeStorage([...current, { slug, type, ...(name ? { name } : {}) }]);
   }, []);
 
   const clear = useCallback(() => writeStorage([]), []);

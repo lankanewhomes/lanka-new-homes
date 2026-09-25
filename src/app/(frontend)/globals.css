@@ -10144,7 +10144,15 @@ a.developer-profile-press-title {
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.12);
   font-size: 12px;
-  max-width: 180px;
+  max-width: 200px;
+  flex-shrink: 0;
+}
+
+.compare-bar-chip-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .compare-bar-chip button {
@@ -10211,10 +10219,51 @@ a.developer-profile-press-title {
   white-space: nowrap;
 }
 
+/* Keep the end of every page reachable above the fixed bar while it's showing. */
+body:has(.compare-bar) {
+  padding-bottom: 72px;
+}
+
+/* Phones (owner, 2026-09-25): two compact rows instead of a half-screen block.
+   Row 1 is count + Clear + Compare; row 2 is the picked listings as one swipeable
+   line of chips. (The old rule's `flex: 1` zeroed the chips' flex-basis, which
+   crushed them into a sliver beside the button, one word per line.) */
 @media (max-width: 760px) {
+  .compare-bar {
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+  }
+
+  .compare-bar-inner {
+    gap: 10px;
+  }
+
+  .compare-bar-count {
+    flex: 1 1 auto;
+  }
+
   .compare-bar-chips {
     order: 3;
-    width: 100%;
+    flex: 1 1 100%;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .compare-bar-chips::-webkit-scrollbar {
+    display: none;
+  }
+
+  .compare-bar-chip {
+    max-width: 70vw;
+  }
+
+  .compare-bar-mixed-note {
+    white-space: normal;
+  }
+
+  body:has(.compare-bar) {
+    padding-bottom: 120px;
   }
 }
 
@@ -10350,6 +10399,58 @@ a.developer-profile-press-title {
 .compare-table tbody tr:not(:last-child) th,
 .compare-table tbody tr:not(:last-child) td {
   border-bottom: 1px solid #e3ded5;
+}
+
+/* Phones (owner, 2026-09-25): the label column (Price, Status…) stays pinned on the left
+   while the listings swipe sideways, and columns are narrower so ~2 listings fit on screen
+   instead of the table forcing a 640px-wide scroll with the labels scrolling away. */
+@media (max-width: 760px) {
+  .compare-page {
+    padding: 28px 16px 80px;
+  }
+
+  .compare-page h1 {
+    margin-bottom: 18px;
+    font-size: 24px;
+  }
+
+  .compare-table {
+    width: max-content;
+    min-width: 100%;
+  }
+
+  .compare-table thead th {
+    padding: 12px 10px;
+    min-width: 140px;
+    max-width: 170px;
+  }
+
+  .compare-table-item-image {
+    height: 90px;
+  }
+
+  .compare-table thead th:first-child,
+  .compare-table tbody th {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    width: 96px;
+    min-width: 96px;
+    max-width: 96px;
+    padding: 10px;
+    background: #fff;
+    white-space: normal;
+    box-shadow: 2px 0 0 #e3ded5;
+  }
+
+  .compare-table tbody tr:nth-child(even) th {
+    background: #faf7f2;
+  }
+
+  .compare-table tbody td {
+    padding: 10px;
+    font-size: 13px;
+  }
 }
 
 .compare-table-view-cta {

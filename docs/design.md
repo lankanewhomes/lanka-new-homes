@@ -440,6 +440,16 @@ never remove from the DOM" philosophy as the List/Map toggle above.
   also renders on `/land` — land parcels live in a separate `lands` table,
   so a new `/api/compare` route resolves slugs against both `projects` and
   `lands` (via `landToProjectShape`) and tags each result with its origin.
+- **Floating compare bar + `/compare` on phones (owner, 2026-09-25):** the
+  site-wide `CompareBar` (`useCompareListings`) stores each pick's
+  display `name` and shows names, never slugs. Older name-less entries go
+  through `compareEntryLabel()`, which title-cases the slug.
+  - Under 760px the bar is two compact rows: count + Clear + Compare on
+    top, then one swipeable line of chips (shortened with "…").
+  - While the bar is showing, `body` gets bottom padding so it never hides
+    the end of a page.
+  - On `/compare`, the label column stays pinned on the left while the
+    listings swipe sideways.
 - **z-index 60** for the rail/panel — below `.auth-modal-backdrop`'s 300
   (the highest in the app), and nothing else on these 11 routes uses
   `position: fixed`.

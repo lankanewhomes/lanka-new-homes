@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Scale, X } from "lucide-react";
-import { useCompareListings } from "@/lib/use-compare-listings";
+import { compareEntryLabel, useCompareListings } from "@/lib/use-compare-listings";
 
 // Floating bar, mounted once in the root layout (site-wide) — appears once
 // 1+ listings are picked for comparison via the Scale button on
@@ -25,14 +25,17 @@ export function CompareBar() {
         </span>
         <span className="compare-bar-count">{entries.length} listing{entries.length === 1 ? "" : "s"} selected</span>
         <div className="compare-bar-chips">
-          {entries.map((entry) => (
-            <span key={entry.slug} className="compare-bar-chip">
-              {entry.slug}
-              <button type="button" aria-label={`Remove ${entry.slug} from compare`} onClick={() => remove(entry.slug)}>
-                <X className="h-3 w-3" aria-hidden="true" />
-              </button>
-            </span>
-          ))}
+          {entries.map((entry) => {
+            const label = compareEntryLabel(entry);
+            return (
+              <span key={entry.slug} className="compare-bar-chip" title={label}>
+                <span className="compare-bar-chip-label">{label}</span>
+                <button type="button" aria-label={`Remove ${label} from compare`} onClick={() => remove(entry.slug)}>
+                  <X className="h-3 w-3" aria-hidden="true" />
+                </button>
+              </span>
+            );
+          })}
         </div>
         <div className="compare-bar-actions">
           <button type="button" className="compare-bar-clear" onClick={clear}>
