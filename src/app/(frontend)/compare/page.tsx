@@ -8,7 +8,7 @@ import { MAX_COMPARE } from "@/lib/compare-constants";
 import type { Project, Land } from "@/types";
 
 export const metadata: Metadata = {
-  title: "Compare listings",
+  title: "Compare projects",
   robots: { index: false, follow: true },
 };
 
@@ -64,8 +64,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
   return (
     <div className="compare-page">
       <div className="compare-page-shell">
-        <p className="compare-page-eyebrow">Compare {isLand ? "land" : "projects"}</p>
-        <h1>Compare listings</h1>
+        <h1>Compare {isLand ? "land" : "projects"}</h1>
 
         {items.length === 0 ? (
           <div className="compare-page-empty">

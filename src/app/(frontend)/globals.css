@@ -1136,6 +1136,14 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
   .similar-listings-section .home-card-grid {
     grid-template-columns: 1fr;
   }
+
+  /* No grey panel behind the Similar listings cards on phones — the cards sit
+     straight on the page (owner, 2026-09-25). Desktop keeps the panel. */
+  .developer-projects-section.similar-listings-section {
+    background: none;
+    border: 0;
+    padding: 0;
+  }
 }
 
 /* Typography scale */
@@ -10277,15 +10285,6 @@ body:has(.compare-bar) {
 .compare-page-shell {
   max-width: 1100px;
   margin: 0 auto;
-}
-
-.compare-page-eyebrow {
-  margin: 0 0 6px;
-  color: #f47b36;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
 }
 
 .compare-page h1 {
