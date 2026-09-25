@@ -4,11 +4,12 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { BedDouble, Building2, ChevronDown, ChevronLeft, ChevronRight, Heart, List, Map as MapIcon, Ruler, Search, MapPin, SlidersHorizontal, X, ArrowUpDown } from "lucide-react";
+import { BedDouble, Building2, ChevronDown, ChevronLeft, ChevronRight, Heart, List, Map as MapIcon, Ruler, Scale, Search, MapPin, SlidersHorizontal, X, ArrowUpDown } from "lucide-react";
 import { formatLkr } from "@/lib/format";
 import { hasPremiumStyleBadge } from "@/lib/packages";
 import { useListingT } from "@/lib/i18n/use-listing-t";
 import { useSavedListing } from "@/lib/use-saved-listing";
+import { useCompareListings, MAX_COMPARE } from "@/lib/use-compare-listings";
 import { MapSidebar } from "@/components/marketplace/map-sidebar";
 import { searchablePages } from "@/lib/listing-categories";
 import type { Project } from "@/types";
@@ -121,6 +122,8 @@ export function ListingGridCard({ project, basePath = "/projects" }: { project: 
   const { saved, toggle } = useSavedListing(project.slug);
   const { t, tPrice } = useListingT();
   const isLand = basePath === "/land";
+  const { isComparing, toggle: toggleCompare, atMax } = useCompareListings();
+  const comparing = isComparing(project.slug);
   const hasPrice = project.startingPriceLkr > 0;
   const hasLandSize = project.floorAreaRange && project.floorAreaRange !== "-";
   const href = `${basePath}/${project.slug}`;
@@ -174,6 +177,19 @@ export function ListingGridCard({ project, basePath = "/projects" }: { project: 
           }}
         >
           <Heart className="h-4 w-4" aria-hidden="true" fill={saved ? "currentColor" : "none"} />
+        </button>
+        <button
+          type="button"
+          className={`listing-grid-card-compare${comparing ? " comparing" : ""}`}
+          aria-label={comparing ? `Remove ${project.name} from compare` : `Add ${project.name} to compare`}
+          disabled={!comparing && atMax}
+          title={!comparing && atMax ? `You can compare up to ${MAX_COMPARE} listings at a time` : undefined}
+          onClick={(event) => {
+            event.preventDefault();
+            toggleCompare(project.slug, isLand ? "land" : "project");
+          }}
+        >
+          <Scale className="h-4 w-4" aria-hidden="true" />
         </button>
 
         {photos.length > 1 ? (

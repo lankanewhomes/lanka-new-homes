@@ -6,6 +6,7 @@ import { BreadcrumbBar } from "@/components/layout/breadcrumb-bar";
 import { LanguageProvider } from "@/components/layout/language-provider";
 import { AuthModalProvider } from "@/components/auth/auth-modal-provider";
 import { UtmCapture } from "@/components/analytics/utm-capture";
+import { CompareBar } from "@/components/marketplace/compare-bar";
 import { buildOrganizationJsonLd, buildWebsiteJsonLd, getSiteUrl, jsonLdScriptProps } from "@/lib/seo";
 import "./globals.css";
 
@@ -67,6 +68,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <BreadcrumbBar />
             <main>{children}</main>
             <Footer />
+            <CompareBar />
           </AuthModalProvider>
         </LanguageProvider>
       </body>

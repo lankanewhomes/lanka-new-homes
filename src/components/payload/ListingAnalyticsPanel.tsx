@@ -156,13 +156,13 @@ export function ListingAnalyticsPanel() {
 
           {!hasLeadAnalytics && (
             <p style={{ fontSize: 13, padding: "10px 12px", background: "var(--theme-warning-100)", borderRadius: 4, marginBottom: 16 }}>
-              Upgrade to Featured (see the Package tab) for inquiry rate, lead status, and lead &amp; call counts.
+              Upgrade to Featured (see the Placements tab) for inquiry rate, lead status, and lead &amp; call counts.
             </p>
           )}
 
           {hasLeadAnalytics && !isAdvancedAnalytics && (
             <p style={{ fontSize: 13, padding: "10px 12px", background: "var(--theme-warning-100)", borderRadius: 4, marginBottom: 16 }}>
-              Upgrade to Developer Pro or Campaign (see the Package tab) for detailed lead tracking, top city, traffic sources, and trend charts.
+              Upgrade to Developer Pro or Campaign (see the Placements tab) for detailed lead tracking, top city, traffic sources, and trend charts.
             </p>
           )}
 

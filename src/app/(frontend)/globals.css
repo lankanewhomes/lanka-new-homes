@@ -9951,6 +9951,319 @@ a.developer-profile-press-title {
   color: #d94f4f;
 }
 
+/* Compare (Scale icon) sits directly below Save, same pill treatment —
+   no-login localStorage convenience, see use-compare-listings.ts. */
+.listing-grid-card-compare {
+  position: absolute;
+  right: 8px;
+  top: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  border: none;
+  background: rgba(255, 255, 255, 0.92);
+  color: #303030;
+}
+
+.listing-grid-card-compare:hover {
+  color: #f47b36;
+}
+
+.listing-grid-card-compare.comparing {
+  color: #f47b36;
+  background: #fff;
+}
+
+.listing-grid-card-compare:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Floating compare bar (CompareBar) — mounted site-wide in the root
+   layout, only rendered once 1+ listings are picked. */
+.compare-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 90;
+  background: #1f1f1f;
+  border-top: 3px solid #f47b36;
+  padding: 12px 20px;
+}
+
+.compare-bar-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  color: #fff;
+  font-family: var(--font-ref-sans);
+}
+
+.compare-bar-icon {
+  display: inline-flex;
+  color: #f47b36;
+  flex-shrink: 0;
+}
+
+.compare-bar-count {
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.compare-bar-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.compare-bar-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px 4px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 12px;
+  max-width: 180px;
+}
+
+.compare-bar-chip button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.compare-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.compare-bar-clear {
+  border: none;
+  background: transparent;
+  color: #c9c6c0;
+  font-size: 12.5px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.compare-bar-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 38px;
+  padding: 0 20px;
+  border-radius: 999px;
+  background: #f47b36;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.compare-bar-cta:hover {
+  background: #d9601f;
+  color: #fff;
+  text-decoration: none;
+}
+
+.compare-bar-cta.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.compare-bar-mixed-note {
+  font-size: 12px;
+  color: #c9c6c0;
+  white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+  .compare-bar-chips {
+    order: 3;
+    width: 100%;
+  }
+}
+
+/* /compare page */
+.compare-page {
+  background: #faf8f4;
+  min-height: 60vh;
+  padding: 48px 24px 100px;
+}
+
+.compare-page-shell {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.compare-page-eyebrow {
+  margin: 0 0 6px;
+  color: #f47b36;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.compare-page h1 {
+  margin: 0 0 28px;
+  font-family: var(--font-ref-sans);
+  font-size: 32px;
+  font-weight: 700;
+  color: #1f1f1f;
+}
+
+.compare-page-empty {
+  padding: 40px;
+  background: #fff;
+  border: 1px solid #e3ded5;
+  text-align: center;
+}
+
+.compare-page-empty p {
+  margin: 0 0 18px;
+  font-size: 14.5px;
+  color: #6b6f76;
+}
+
+.compare-page-empty-cta {
+  display: inline-flex;
+  height: 44px;
+  padding: 0 22px;
+  align-items: center;
+  border-radius: 999px;
+  background: #1f1f1f;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.compare-table-wrap {
+  overflow-x: auto;
+  background: #fff;
+  border: 3px solid #1f1f1f;
+}
+
+.compare-table {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+}
+
+.compare-table thead th {
+  padding: 18px;
+  border-bottom: 3px solid #1f1f1f;
+  border-left: 1px solid #e3ded5;
+  vertical-align: top;
+  text-align: center;
+}
+
+.compare-table thead th:first-child {
+  border-left: none;
+}
+
+.compare-table-item-media {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.compare-table-item-image {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+}
+
+.compare-table-item-image-placeholder {
+  background: #eee8db;
+}
+
+.compare-table-item-name {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1f1f1f;
+  text-decoration: none;
+}
+
+.compare-table-item-name:hover {
+  text-decoration: underline;
+}
+
+.compare-table tbody th {
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b6f76;
+  text-align: left;
+  white-space: nowrap;
+  border-right: 1px solid #e3ded5;
+}
+
+.compare-table tbody td {
+  padding: 12px 16px;
+  border-left: 1px solid #e3ded5;
+  text-align: center;
+  font-size: 13.5px;
+  color: #1f1f1f;
+}
+
+.compare-table tbody tr:nth-child(even) th,
+.compare-table tbody tr:nth-child(even) td {
+  background: #faf7f2;
+}
+
+.compare-table tbody tr:not(:last-child) th,
+.compare-table tbody tr:not(:last-child) td {
+  border-bottom: 1px solid #e3ded5;
+}
+
+.compare-table-view-cta {
+  display: inline-flex;
+  height: 36px;
+  padding: 0 16px;
+  align-items: center;
+  border-radius: 999px;
+  background: #f47b36;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+}
+
+.compare-table-view-cta:hover {
+  background: #d9601f;
+  color: #fff;
+  text-decoration: none;
+}
+
 .listing-grid-card-facts-empty {
   margin-top: 6px;
   font-size: 12px;
