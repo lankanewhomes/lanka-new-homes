@@ -26,6 +26,12 @@ the user sends additional requests while you're mid-task. Queue new
 requests and work through them in order rather than context-switching
 mid-fix.
 
+Always push finished work straight to the `main` branch (owner,
+2026-09-25). Don't leave it only on a feature branch, and don't open a PR
+unless asked. Before pushing, run lint, type-check and tests. After
+pushing, confirm the GitHub CI run on `main` is green, including Build: a
+red build means Vercel can't deploy anything newer.
+
 ## Data / Supabase
 
 This project's live data (projects, developers, neighborhoods, hero ads,
