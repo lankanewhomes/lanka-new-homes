@@ -899,8 +899,10 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
     text-align: center;
   }
 
+  /* 20px under the search bar so the category chips below don't butt up against it
+     (owner, 2026-09-25; was 0). Desktop already has 22px. */
   .hero-search.luxury-hero-two-top-search {
-    margin: 18px auto 0;
+    margin: 18px auto 20px;
     min-height: 56px;
     flex-direction: row;
     padding: 0;
