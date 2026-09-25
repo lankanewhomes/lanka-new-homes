@@ -4,11 +4,11 @@ import { useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronDown, Heart, House, ShieldCheck, Star, X, Zap } from "lucide-react";
+import { ChevronDown, Heart, House, MessageCircle, ShieldCheck, Star, X, Zap } from "lucide-react";
 import type { CoDeveloperEntry, CompanyProfile, Developer, ProfileEntityType, Project, Review } from "@/types";
 import { formatLkr, formatOfficeHours } from "@/lib/format";
-import { isPaidPackageTier } from "@/lib/packages";
-import { SOCIAL_ICON } from "@/components/marketplace/components";
+import { getPackage, isPaidPackageTier } from "@/lib/packages";
+import { RequestInfoDialog, SOCIAL_ICON } from "@/components/marketplace/components";
 import { useSavedProfile } from "@/lib/use-saved-profile";
 import { useListingT } from "@/lib/i18n/use-listing-t";
 import { Button } from "@/components/ui/button";
@@ -46,6 +46,7 @@ export function ProfileView({
   const { t, tPrice } = useListingT();
   const [locationFilter, setLocationFilter] = useState("all");
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
+  const [spotlightContactOpen, setSpotlightContactOpen] = useState(false);
   const formattedOfficeHours = formatOfficeHours(entity.officeHours);
   const coDevelopers = ((entity as ProfileEntity).coDevelopers ?? []).filter((entry) => entry.name);
   const socialEntries = Object.entries(entity.socialLinks ?? {}).filter(([, url]) => Boolean(url)) as [string, string][];
@@ -57,7 +58,38 @@ export function ProfileView({
 
   const averageRating = reviews.length > 0 ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length : 0;
 
+  // "Upgraded developer page" — Developer Pro/Campaign's own placement perk
+  // (owner's 2026-09-24 build note item, "the actual homepage/company-page
+  // feature itself, not just the entitlement flag"). Only developers (not
+  // the partner directories) carry a `plan`, so this is entityType-gated;
+  // "plan" in entity narrows the union at runtime for the same reason.
+  // Banner image reuses the SAME representative-project convention as the
+  // homepage hero-slide auto-creation (hooks/sync-developer-plan.ts) —
+  // the developer's first Featured project, falling back to their first
+  // project at all — rather than a brand-new "banner image" field, so this
+  // needed no new CMS data entry to ship. Never invents an image: no
+  // spotlight banner renders at all if that project has no heroImage.
+  const isSpotlightDeveloper = entityType === "developer" && "plan" in entity && getPackage((entity as Developer).plan).developerSpotlight;
+  const spotlightProject = isSpotlightDeveloper ? projects.find((project) => project.isFeatured) ?? projects[0] : undefined;
+
   return (
+    <>
+      {isSpotlightDeveloper && spotlightProject?.heroImage ? (
+        <section className="developer-spotlight-banner" aria-label={`${entity.name} — Developer Spotlight`}>
+          <Image src={spotlightProject.heroImage} alt="" fill sizes="100vw" className="developer-spotlight-banner-image" priority />
+          <div className="developer-spotlight-banner-overlay" />
+          <div className="developer-spotlight-banner-content">
+            <span className="developer-spotlight-banner-badge">Developer Spotlight</span>
+            <h2>{entity.name}</h2>
+            <button type="button" className="developer-spotlight-banner-cta" onClick={() => setSpotlightContactOpen(true)}>
+              <MessageCircle size={16} aria-hidden="true" /> Contact {entity.name}
+            </button>
+          </div>
+        </section>
+      ) : null}
+      {spotlightProject ? (
+        <RequestInfoDialog open={spotlightContactOpen} onClose={() => setSpotlightContactOpen(false)} project={spotlightProject} variant="inquiry" />
+      ) : null}
     <div className="developer-profile">
       <aside className="developer-profile-sidebar">
         {entity.logo ? (
@@ -261,6 +293,7 @@ export function ProfileView({
 
       <WriteReviewDialog open={reviewDialogOpen} onClose={() => setReviewDialogOpen(false)} entityName={entity.name} entityType={entityType} entitySlug={entity.slug} />
     </div>
+    </>
   );
 }
 

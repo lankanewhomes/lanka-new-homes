@@ -1820,6 +1820,47 @@ chose to build the whole thing.
   (exact/case-insensitive/minimum-bedroom/budget matching, and that the
   Sponsored block renders).
 
+### Developer Spotlight page built (2026-09-25)
+
+The last piece of build item 4/build-note item "Developer spotlight" — the
+homepage chip linking to a spotlight developer was built earlier (see
+above); this is the actual "upgraded developer page" itself the original
+placement spec asked for (banner + lead form; "all projects" turned out to
+already be there — the Projects tab already lists every one of a
+developer's projects, not just featured ones).
+
+- **Where**: `profile-view.tsx`'s shared `ProfileView` (the same component
+  behind every `/developers/[slug]` page) — not a separate URL. Gated on
+  `entityType === "developer" && getPackage(entity.plan).developerSpotlight`
+  (Developer Pro/Campaign only); the partner directories (architects,
+  marketing/sales companies, etc.) never show it, since only Developers
+  carry a `plan`.
+- **Banner image**: reuses the SAME representative-project convention as
+  the homepage hero-slide auto-creation (`sync-developer-plan.ts`) — the
+  developer's first Featured project, falling back to their first project
+  at all — rather than a new "banner image" field, so this needed no new
+  CMS data entry to ship. Never invents an image: no banner renders at all
+  if that project has no `heroImage`.
+- **Lead form**: a "Contact {name}" button on the banner opens the
+  existing `RequestInfoDialog` (the same component every project page's
+  enquiry button already uses), anchored to that same representative
+  project — a real lead lands in the `leads` collection exactly like any
+  other enquiry, since there's no project-less lead type yet. The
+  developer-level framing is honest about that: it reads as "Contact
+  {name}", but under the hood it's still a project-anchored enquiry.
+- **Verification note**: no developer is on Developer Pro/Campaign in the
+  live DB as of this build (no live Subscriptions exist yet — no payment
+  gateway), so there's no real URL to click through today. Verified via
+  `tsc`/`eslint`/`vitest` plus manual tracing of the gating condition;
+  deliberately did NOT create a throwaway test Developer Pro record to
+  visual-check it, since that would have cascaded real side effects on the
+  live site (an auto-created hero slide entering the homepage's live
+  rotation) for a record that would need to be cleaned up again right
+  after. To see it for real: set any developer's plan to Developer Pro or
+  Campaign from their Placements tab in `/cms`, make sure at least one of
+  their projects has a `heroImage`, then visit that developer's own
+  `/developers/<slug>` page.
+
 ## Payload admin redesign (`/cms`)
 
 Rebrands the admin shell without touching schema/access/auth — three
