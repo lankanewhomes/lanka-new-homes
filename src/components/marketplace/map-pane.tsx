@@ -5,7 +5,22 @@ import { LngLatBounds, setWorkerUrl } from "maplibre-gl";
 import Map, { Layer, Marker, NavigationControl, Popup, Source, type MapRef } from "react-map-gl/maplibre";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ProjectPopup } from "@/components/map/ProjectPopup";
+import { hasPremiumStyleBadge, isPaidPackageTier } from "@/lib/packages";
 import type { Project } from "@/types";
+
+// Highlighted map pins (owner, 2026-09-24 build note item 6) — Free stays
+// the plain/muted grey pin (matches the "plain" comparison pin already
+// shown on /for-developers' placement-inventory mockup,
+// .fdv-placement-sample-pin-plain), Featured/Featured Plus keeps today's
+// existing orange (unchanged — that's the pin every project already used
+// to render as), Developer Pro/Campaign gets its own bigger, darker-orange
+// marker so it stands out even against a plain Featured pin, same accent
+// color as .badge-premium.
+function mapMarkerTierClass(project: Project): string {
+  if (hasPremiumStyleBadge(project.package)) return "marker-premium";
+  if (!isPaidPackageTier(project.package)) return "marker-free";
+  return "";
+}
 
 // maplibre-gl parses vector tiles in a Worker it constructs internally via
 // a bundler-relative URL — under Next.js's webpack config that URL doesn't
@@ -177,7 +192,7 @@ export function MapPane({ projects, basePath = "/projects", onSelectArea, area, 
               selectProject(project);
             }}
           >
-            <span className={`listing-map-marker${activeSlug === project.slug ? " active" : ""}`}>1</span>
+            <span className={["listing-map-marker", mapMarkerTierClass(project), activeSlug === project.slug ? "active" : ""].filter(Boolean).join(" ")}>1</span>
           </Marker>
         ))}
 

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllDevelopers } from "@/lib/developer-store";
+import { getPackage, planRotationWeight } from "@/lib/packages";
 import type { Developer } from "@/types";
 
 // Regenerate at most once a minute so admin edits show up without waiting for the next deploy.
@@ -54,10 +55,23 @@ export default async function DevelopersPage() {
     }, new Map<string, Developer>()).values(),
   ).sort((a, b) => a.name.localeCompare(b.name));
 
+  // Directory pinning (owner, 2026-09-24 build note item 8) — Developer
+  // Pro/Campaign developers (same `developerSpotlight` entitlement the
+  // homepage chip uses, getPackage in packages.ts) get a pinned section
+  // above the regular A-Z groups; Campaign outranks Developer Pro within
+  // it (planRotationWeight, same tier-first ordering now used for
+  // /projects — see listing-page.tsx). Excluded from the A-Z groups below
+  // so nobody appears twice on the page.
+  const pinnedDevelopers = developers
+    .filter((developer) => getPackage(developer.plan).developerSpotlight)
+    .sort((a, b) => planRotationWeight(b.plan) - planRotationWeight(a.plan) || a.name.localeCompare(b.name));
+  const pinnedSlugs = new Set(pinnedDevelopers.map((developer) => developer.slug));
+  const unpinnedDevelopers = developers.filter((developer) => !pinnedSlugs.has(developer.slug));
+
   const groups = LETTER_GROUPS
     .map((group) => ({
       label: group.label,
-      developers: developers.filter((developer) => group.test(developer.name.trim().charAt(0).toUpperCase())),
+      developers: unpinnedDevelopers.filter((developer) => group.test(developer.name.trim().charAt(0).toUpperCase())),
     }))
     .filter((group) => group.developers.length > 0);
 
@@ -65,6 +79,19 @@ export default async function DevelopersPage() {
     <div className="developer-directory">
       <h1 className="text-3xl">Developer Directory</h1>
       <p className="text-sm text-stone-600">Companies developing new residential apartment projects in Sri Lanka, listed A to Z.</p>
+
+      {pinnedDevelopers.length > 0 ? (
+        <div className="developer-directory-pinned">
+          <h2>Developer Pro</h2>
+          <ul>
+            {pinnedDevelopers.map((developer) => (
+              <li key={developer.slug}>
+                <Link href={`/developers/${developer.slug}`}>{developer.name}</Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
 
       <div className="developer-directory-grid">
         {groups.map((group) => (

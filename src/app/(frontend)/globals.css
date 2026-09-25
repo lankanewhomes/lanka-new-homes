@@ -6313,6 +6313,43 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   font-weight: 400;
 }
 
+/* /developers directory pinning (owner, 2026-09-24 build note item 8) —
+   Developer Pro/Campaign developers, above the regular A-Z grid. Same
+   .badge-premium accent (#c65a1e) as the Premium badge/map-pin treatment
+   elsewhere, so "pinned here" reads as the same tier signal site-wide. */
+.developer-directory-pinned {
+  margin-top: 24px;
+  border: 1px solid #f4b48a;
+  background: #fef1e8;
+  padding: 18px 20px;
+}
+
+.developer-directory-pinned h2 {
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #c65a1e;
+}
+
+.developer-directory-pinned ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px 20px;
+}
+
+.developer-directory-pinned a {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f1f1f;
+}
+
+.developer-directory-pinned a:hover {
+  color: #c65a1e;
+  text-decoration: underline;
+}
+
 .developer-directory-grid {
   margin-top: 24px;
   display: grid;
@@ -10386,6 +10423,29 @@ a.developer-profile-press-title {
 
 .listing-map-marker.active {
   background: #c85f24;
+}
+
+/* Highlighted map pins (owner, 2026-09-24 build note item 6) — Free is a
+   plain muted grey (same color as the "plain" comparison pin already
+   shown on /for-developers' placement-inventory mockup,
+   .fdv-placement-sample-pin-plain), Featured/Featured Plus keeps the
+   original orange unchanged, Developer Pro/Campaign gets a bigger,
+   darker-orange marker (.badge-premium's own accent) so it stands out
+   even against a plain Featured pin. */
+.listing-map-marker.marker-free {
+  background: #b8b2a4;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+}
+
+.listing-map-marker.marker-premium {
+  width: 38px;
+  height: 38px;
+  background: #c65a1e;
+  box-shadow: 0 0 0 3px rgba(198, 90, 30, 0.25), 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+.listing-map-marker.marker-premium.active {
+  background: #a3480f;
 }
 
 /* Dark card popup (.custom-popup passed as the Popup's className prop) —

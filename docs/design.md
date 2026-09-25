@@ -1730,6 +1730,51 @@ built yet" claims in the first restructure section above.
   `PackageTier` (this file mirrors Supabase, not Payload) — keep the two
   lists in sync by hand if a tier is ever renamed.
 
+### Ranking, map pins, similar-listings swap, directory pinning built (2026-09-24, later still)
+
+Owner's build-note queue, items 5–8 of 12 (continuing straight on from
+items 1–4 above).
+
+- **`/projects`/city/collection ranking**: `listing-page.tsx`'s
+  `ListingPageBody` (the shared component behind `/projects`, every city/
+  collection page via `ProjectListingShell`, `/land`, `/search`) — the
+  default "Recommended" sort was a single blended `final_score`. Changed to
+  a **hard partition by plan tier first** (`planRotationWeight`), with
+  `final_score` only breaking ties within the same tier — a Free listing
+  can no longer outrank any paid one, no matter how strong. This is a
+  deliberate reversal of the ORIGINAL (first-restructure) design comment,
+  which blended the package boost additively into one score specifically
+  so a strong Free listing could still occasionally outrank a thin paid
+  one. Flagged this conflict to the owner before building; they deferred to
+  judgement — went with the hard partition mainly because `/pricing`'s own
+  copy already promises unconditional placement ("rank above Free," not
+  "usually" or "boosted"). **Owner asked to revisit this decision the next
+  day** — see the daily-reminder memory, don't assume it's final.
+- **Highlighted map pins**: `map-pane.tsx`'s markers — Free is now a plain
+  muted grey (`.listing-map-marker.marker-free`, matching the "plain"
+  comparison pin already shown on `/for-developers`' placement-inventory
+  mockup), Featured/Featured Plus is unchanged (the original orange every
+  pin used to render as), Developer Pro/Campaign gets its own bigger,
+  darker-orange marker (`.marker-premium`, `.badge-premium`'s own accent)
+  so it stands out even against a plain Featured pin.
+- **Similar-listings rail swap**: `similar-listings.ts`'s
+  `pickSimilarListings` — a Free listing's page keeps the original
+  site-wide candidate pool (deliberately, so a paid competitor can surface
+  there — "the main reason to upgrade," per the placement spec). A paid
+  listing's page now only ever considers the SAME developer's own other
+  listings; never a competitor, paid or free. If that developer doesn't
+  have enough other listings to fill the section, it renders fewer cards
+  (or none) rather than backfilling with a competitor. Land listings have
+  no package system yet, so this never changes their behavior today.
+- **`/developers` directory pinning**: a new pinned section above the
+  existing A-Z grid lists every Developer Pro/Campaign developer (the same
+  `developerSpotlight` entitlement the homepage chip uses), Campaign before
+  Developer Pro, then alphabetically; excluded from the A-Z groups below so
+  nobody appears twice. The "upgraded developer page" (banner, all
+  projects, lead form) from the original placement spec is a separate,
+  still not-built item — only the directory pinning itself was in the
+  owner's 12-item build queue.
+
 ## Payload admin redesign (`/cms`)
 
 Rebrands the admin shell without touching schema/access/auth — three

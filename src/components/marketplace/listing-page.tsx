@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { BedDouble, Building2, ChevronDown, ChevronLeft, ChevronRight, Heart, List, Map as MapIcon, Ruler, Scale, Search, MapPin, SlidersHorizontal, X, ArrowUpDown } from "lucide-react";
 import { formatLkr } from "@/lib/format";
-import { hasPremiumStyleBadge } from "@/lib/packages";
+import { hasPremiumStyleBadge, planRotationWeight } from "@/lib/packages";
 import { useListingT } from "@/lib/i18n/use-listing-t";
 import { useSavedListing } from "@/lib/use-saved-listing";
 import { useCompareListings, MAX_COMPARE } from "@/lib/use-compare-listings";
@@ -381,12 +381,29 @@ export function ListingPageBody({
 
   const sortedProjects = useMemo(() => {
     const list = [...baseProjects];
-    // "Recommended" (the default) ranks by final_score — completeness +
+    // "Recommended" (the default) — a hard partition by plan tier first
+    // (owner, 2026-09-24 build note: "rank /projects results by planWeight
+    // first... then by the current ordering"), final_score — completeness +
     // engagement + recency + paid_boost, computed in Payload (see
-    // src/collections/hooks/project-scoring.ts) — so a developer paying for
-    // a placement boost actually surfaces higher in search, not just on the
-    // homepage's hero/featured sections.
-    if (sortBy === "featured") list.sort((a, b) => (b.finalScore ?? 0) - (a.finalScore ?? 0));
+    // src/collections/hooks/project-scoring.ts) — only breaks ties WITHIN
+    // the same tier. A Campaign project always outranks Developer Pro,
+    // which always outranks Featured/Featured Plus, which always outrank
+    // Free, regardless of how strong a lower-tier listing's own score is.
+    // This is a deliberate reversal of the original (pre-2026-09-24)
+    // design, which blended the package boost additively into one score so
+    // "a strong, complete, relevant Free listing can still outrank a thin
+    // paid one" — /pricing's own copy now promises paid tiers rank above
+    // Free unconditionally ("Above free", "Top of featured", "Top"), so the
+    // actual sort has to honor that literally, not just usually.
+    // planRotationWeight is shared with the homepage's rotation logic
+    // (hero-ad-store.ts, home-client.tsx) — same 4/3/2/1 scale, reused here
+    // as a ranking tier rather than a random-sampling weight.
+    if (sortBy === "featured") {
+      list.sort((a, b) => {
+        const tierDiff = planRotationWeight(b.package) - planRotationWeight(a.package);
+        return tierDiff !== 0 ? tierDiff : (b.finalScore ?? 0) - (a.finalScore ?? 0);
+      });
+    }
     else if (sortBy === "priceAsc") list.sort((a, b) => a.startingPriceLkr - b.startingPriceLkr);
     else if (sortBy === "priceDesc") list.sort((a, b) => b.startingPriceLkr - a.startingPriceLkr);
     else if (sortBy === "newest") list.sort((a, b) => (b.launchDate ?? "").localeCompare(a.launchDate ?? ""));
