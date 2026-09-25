@@ -4261,7 +4261,7 @@ export interface HeroSlide {
    */
   is_paid_placement?: boolean | null;
   /**
-   * Was auto-created/archived by a Developer Pro/Campaign subscription (the old hooks/sync-subscription-package.ts). Billing moved to per-developer 2026-09-24 (see hooks/sync-developer-plan.ts) and this auto-creation was intentionally NOT carried over — which of a developer's several featured projects should represent them in one hero slide isn't decided yet (see the placement-inventory notes), so this flag is currently unused; every slide is created by hand today.
+   * Auto-created/updated/archived by a Developer Pro/Campaign developer's plan (hooks/sync-developer-plan.ts's syncHeroSlideFromDeveloper) — one slide per developer, using the FIRST project in their featuredProjectIds as the representative one (a judgment call, not a spec'd 'pick your hero project' UI — see the placement-inventory notes). Skipped if that project has no heroImage yet. Archived (not deleted) once the developer drops below Developer Pro/Campaign or has no featured projects left. Don't hand-edit a slide with this checked — the next Developers save will overwrite it.
    */
   auto_generated?: boolean | null;
   /**

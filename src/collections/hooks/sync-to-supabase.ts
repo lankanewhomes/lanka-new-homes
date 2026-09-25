@@ -1,6 +1,8 @@
 import type { CollectionAfterChangeHook, CollectionAfterDeleteHook, PayloadRequest } from 'payload'
 import { supabaseAdmin } from '@/lib/supabase'
 import { insertLead } from '@/lib/tracking-db'
+import { planRotationWeight } from '@/lib/packages'
+import { effectivePlanTier } from './sync-developer-plan'
 
 // Payload -> Supabase, one-way: whatever gets saved in Payload overwrites
 // the matching Supabase row (same slug) so the existing frontend — which
@@ -259,6 +261,11 @@ export const syncDeveloperToSupabase: CollectionAfterChangeHook = async ({ doc, 
       ogImage: (d.seo as AnyDoc)?.ogImage,
       canonicalUrl: (d.seo as AnyDoc)?.canonicalUrl,
       noIndex: (d.seo as AnyDoc)?.noIndex,
+      // Expiry-aware — never a stale "developer-pro" left over after
+      // featuredUntil has passed. Powers the homepage's real "Developer
+      // Spotlight" chip (home-client.tsx checks getPackage(plan)
+      // .developerSpotlight) — added 2026-09-24.
+      plan: effectivePlanTier(d.plan, d.featuredUntil),
     }
     const { error } = await supabaseAdmin
       .from('developers')
@@ -303,6 +310,20 @@ export const syncHeroSlideToSupabase: CollectionAfterChangeHook = async ({ doc, 
       if (payment && typeof (payment as unknown as AnyDoc).amount === 'number') priceLkr = (payment as unknown as AnyDoc).amount as number
     }
 
+    // Weight the rotation by the ADVERTISER'S CURRENT plan, not whatever
+    // tier was active when this slide was first created — a developer who
+    // downgrades (or a manually-created slide with no linked developer)
+    // should immediately stop crowding out higher tiers, without needing
+    // this slide re-saved.
+    const advertiserId = relId(d.advertiser)
+    let planWeight = 1
+    if (advertiserId) {
+      const developer = await req.payload
+        .findByID({ collection: 'developers', id: advertiserId, depth: 0, overrideAccess: true, req })
+        .catch(() => null)
+      if (developer) planWeight = planRotationWeight((developer as unknown as AnyDoc).plan as string)
+    }
+
     const heroAd: AnyDoc = {
       id: `payload-${d.id}`,
       developerSlug: advertiser.slug,
@@ -316,6 +337,7 @@ export const syncHeroSlideToSupabase: CollectionAfterChangeHook = async ({ doc, 
       status: HERO_SLIDE_STATUS_TO_LEGACY[d.status as string] ?? 'pending',
       order: d.display_order ?? 0,
       priceLkr,
+      planWeight,
       submittedAt: d.createdAt,
       reviewedAt: d.status !== 'pending' ? d.updatedAt : undefined,
       reviewNote: d.review_note || undefined,

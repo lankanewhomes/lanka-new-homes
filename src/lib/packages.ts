@@ -53,7 +53,7 @@ export type PackageDefinition = {
   extraFeaturedSlotCap: number | null;
   /** Sets Projects.featured + the .badge-featured pill and homepage "Featured listings" shelf eligibility. */
   featured: boolean;
-  /** Developer Pro ("Priority slot") and Campaign ("Fixed premium slot") are meant to get an automatic homepage hero slide while their plan is active; plain Featured/Featured Plus don't. NOT BUILT since the 2026-09-24 per-developer billing restructure — the old per-project version of this (hooks/sync-subscription-package.ts) was retired, and which of a developer's several featured projects should represent them in the ONE slide isn't decided yet. Also still pending regardless: homepage slots are meant to be capped and rotate (e.g. 8–12 slots) once more than a handful of developers are on a paid tier. */
+  /** Developer Pro ("Priority slot") and Campaign ("Fixed premium slot") get an automatic homepage hero slide while their plan is active; plain Featured/Featured Plus don't. Built 2026-09-24 (hooks/sync-developer-plan.ts's syncHeroSlideFromDeveloper) — uses the FIRST project in the developer's featuredProjectIds as the representative one (a judgment call, since there's no separate "pick your hero slide project" control). Homepage hero slots are capped at 5 and rotate randomly, weighted by plan (see hero-ad-store.ts's getActiveHeroAds / planRotationWeight below) once more than 5 are eligible at once. */
   premiumHeroSlide: boolean;
   /** Gates the analytics UI (ListingAnalyticsPanel) and the weekly email digest's deeper sections. "none" = only the raw Views/Inquiries counts every listing already gets (the universal "basic analytics" bullet); "basic" = Lead & call counts (inquiry rate, avg. time on page, lead status breakdown) — Featured/Featured Plus's proof-of-ROI feature; "advanced" = + Detailed lead tracking and buyer-location/traffic/trend analytics — Developer Pro/Campaign only. */
   leadAnalytics: "none" | "basic" | "advanced";
@@ -240,6 +240,30 @@ export function hasPremiumStyleBadge(tier: PackageTier | string | null | undefin
   return resolved === "developer-pro" || resolved === "campaign";
 }
 
+/**
+ * Simple 1–4 weight scale for randomized homepage rotation (hero slides,
+ * the Featured section — see hero-ad-store.ts's getActiveHeroAds) and,
+ * later, search/collection-page ranking order — the owner's own scale from
+ * the 2026-09-24 build notes: Campaign 4, Developer Pro 3, Featured/
+ * Featured Plus 2, Free 1. Deliberately coarser than `rankingBoost` (an
+ * additive input into the /projects score formula, already tuned for that
+ * use) — this is a weight for weighted-random selection, where the RATIO
+ * between tiers matters more than the absolute number.
+ */
+export function planRotationWeight(tier: PackageTier | string | null | undefined): number {
+  switch (getPackage(tier).tier) {
+    case "campaign":
+      return 4;
+    case "developer-pro":
+      return 3;
+    case "featured":
+    case "featured-plus":
+      return 2;
+    default:
+      return 1;
+  }
+}
+
 export function formatPackagePrice(pkg: PackageDefinition): string {
   if (pkg.price === 0) return "Free";
   const label = `${formatLkr(pkg.price)}/month`;
@@ -337,9 +361,9 @@ export const PACKAGE_FEATURE_ROWS: PackageFeatureRow[] = [
     key: "homepage-rotation",
     label: "Homepage rotation",
     tooltip: [
-      "Chance to appear in the homepage's Featured listings shelf.",
+      "Chance to appear in the homepage's Featured projects shelf (capped at 8) and hero banner rotation (capped at 5).",
       "Developer Pro gets a priority slot, Campaign a fixed slot, in the homepage hero banner rotation (the big rotating banner at the top of lankanewhomes.com).",
-      "Slots are meant to be capped and rotate once more than a handful of developers are paid — that cap isn't built yet, so today every eligible subscription gets a slide unconditionally.",
+      "Once there are more eligible projects/developers than slots, which ones show rotates on each page load, weighted by plan — a higher tier appears more often, but never crowds out the others completely.",
     ],
     values: [false, true, true, "Priority slot", "Fixed premium slot"],
   },

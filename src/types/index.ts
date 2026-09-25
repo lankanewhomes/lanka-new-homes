@@ -225,6 +225,14 @@ export type Developer = SeoFields & {
     sampleSize?: number | null;
     computedAt?: string | null;
   };
+  /** This developer's CURRENT effective plan tier (src/lib/packages.ts's
+   * PackageTier) — already accounts for featuredUntil expiry (see
+   * effectivePlanTier in hooks/sync-developer-plan.ts), so this is never a
+   * stale "developer-pro" left over after a lapsed plan. Added 2026-09-24
+   * for the homepage's real "Developer Spotlight" chip (getPackage(plan)
+   * .developerSpotlight) — not synced before that, so an older row can be
+   * missing this field entirely (treat as "free"). */
+  plan?: "free" | "featured" | "featured-plus" | "developer-pro" | "campaign";
 };
 
 export type CoDeveloperEntry = { name: string; href?: string };
@@ -416,10 +424,21 @@ export type Project = SeoFields & {
   leadCount?: number;
   paidBoost?: number;
   finalScore?: number;
-  /** Free/Featured/Premium listing package (src/lib/packages.ts) — set from
-   * the linked Subscriptions record, not hand-edited. Drives the .badge-featured
-   * / .badge-premium pills and a small ranking boost in finalScore. */
-  package?: "free" | "featured" | "premium";
+  /** Listing package tier (src/lib/packages.ts's PackageTier) — mirrored from
+   * the developer's plan (hooks/sync-developer-plan.ts), not hand-edited.
+   * Drives the .badge-featured / .badge-premium pills and a ranking boost in
+   * finalScore. Stale "free" | "featured" | "premium" union corrected
+   * 2026-09-24 — those were the OLD 3-tier model's values; a project's
+   * `package` has used the 5-tier PackageTier values (free, featured,
+   * featured-plus, developer-pro, campaign) since that day's restructure,
+   * which is exactly why several call sites silently kept comparing against
+   * the no-longer-possible "premium" (see isPaidPackageTier/
+   * hasPremiumStyleBadge in packages.ts) without tsc ever catching it — this
+   * field's type was too loose to flag the mismatch. Left as a plain string
+   * union (not importing PackageTier itself) since this file is the
+   * frontend/Supabase-mirror type, not Payload's own; keep the two lists in
+   * sync by hand if a tier is ever renamed. */
+  package?: "free" | "featured" | "featured-plus" | "developer-pro" | "campaign";
   verification?: {
     developerVerified?: boolean;
     addressVerified?: boolean;
@@ -744,4 +763,6 @@ export type HeroAd = {
   submittedAt: string;
   reviewedAt?: string;
   reviewNote?: string;
+  /** The advertiser developer's plan tier weight at last sync (Campaign 4, Developer Pro 3, Featured/Featured Plus 2, Free/unlinked 1) — used to weight the random rotation in getActiveHeroAds() so a higher tier shows more often without ever fully crowding out the others. Missing on rows synced before 2026-09-24's hero-rotation build (hero-ad-store.ts treats a missing value as weight 1). */
+  planWeight?: number;
 };

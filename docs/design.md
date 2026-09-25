@@ -1520,11 +1520,11 @@ tier gets them today.
 - **Badge/homepage**: every paid tier sets `Projects.featured = true` (the
   existing `.badge-featured` pill + homepage "Featured listings" shelf).
   `premiumHeroSlide` (Developer Pro/Campaign only) auto-creates a homepage
-  hero slide while active (`hooks/sync-subscription-package.ts`) — **the
-  owner wants homepage slots capped and rotated (e.g. 8–12 slots) once more
-  than a handful of developers are on a paid tier; that cap/rotation is
-  NOT built yet** — today every eligible active subscription gets a slide
-  unconditionally.
+  hero slide while active (superseded — now `hooks/sync-developer-plan.ts`'s
+  `syncHeroSlideFromDeveloper`, see the "Homepage rotation built" note
+  below). ~~the owner wants homepage slots capped and rotated (e.g. 8–12
+  slots) once more than a handful of developers are on a paid tier; that
+  cap/rotation is NOT built yet~~ **this IS built** — see below.
 - **Analytics gating**: `ListingAnalyticsPanel` reads `leadAnalytics`
   (`"none" | "basic" | "advanced"`). Views + Inquiries always show (the
   universal basic-analytics bullet). `"basic"` (Featured, Featured Plus)
@@ -1549,12 +1549,15 @@ tier gets them today.
   annual cycle is built.
 - **Not built** (recorded as real backlog, not forgotten — see the
   session's daily-reminder memory): live PayHere/Stripe checkout;
-  homepage-slot capping/rotation; Developer spotlight; an actual
-  newsletter system or automated social-publishing pipeline (the
-  à la carte *request* flow for these IS built — see below — but
-  fulfilling one still means a human writes and sends/posts it by hand);
-  dedicated campaigns; a real quarterly/annual billing cycle; "founding
-  developer" launch-pricing discount.
+  ~~homepage-slot capping/rotation~~ **built, see below**; Developer
+  spotlight page itself (the homepage chip that LINKS to a spotlight
+  developer is built — see below — but there's no dedicated
+  spotlight page/section on their profile yet); an actual newsletter
+  system or automated social-publishing pipeline (the à la carte
+  *request* flow for these IS built — see below — but fulfilling one
+  still means a human writes and sends/posts it by hand); dedicated
+  campaigns; a real quarterly/annual billing cycle; "founding developer"
+  launch-pricing discount.
 
 ### Restructured again 2026-09-24: billing moved to per-developer
 
@@ -1641,6 +1644,91 @@ project. An admin works the request by hand in `/cms` — there's still no
 real newsletter system or automated social-publishing pipeline, so
 "fulfilled" means a human wrote and sent/posted it, not that anything
 sent itself.
+
+### Homepage hero/Featured-section rotation built (2026-09-24, later)
+
+Owner's build-note queue, items 1–4 of 12. Retires the "cap/rotation NOT
+built yet" claims in the first restructure section above.
+
+- **Hero slide auto-creation**: `hooks/sync-developer-plan.ts`'s
+  `syncHeroSlideFromDeveloper` (called from `syncFeaturedProjectsFromDeveloper`,
+  which already runs on every Developers save) creates/updates/archives one
+  `HeroSlides` doc per Developer Pro/Campaign developer, using the FIRST
+  entry in `featuredProjectIds` as the representative project — a judgment
+  call (there's no separate "pick your hero project" control), documented
+  in both the hook and `HeroSlides.auto_generated`'s admin description.
+  Skips creating a slide if that project has no `heroImage` yet (never
+  invents one); archives (doesn't delete) the slide once the developer
+  drops below Developer Pro/Campaign or has no featured projects left.
+- **Hero cap + rotation**: `hero-ad-store.ts`'s `getActiveHeroAds()` caps at
+  5. At or under 5 eligible ads, unchanged `order`-based sort. Over 5, a
+  weighted-random pick (`weighted-random.ts`'s `weightedTake`, an
+  Efraimidis-Spirakis sampler) chooses which 5, weighted by
+  `planRotationWeight` (Campaign 4, Developer Pro 3, Featured/Featured Plus
+  2, Free/unlinked 1 — `packages.ts`) — a higher tier shows more often but
+  never crowds out the others completely, and it's a fresh pick on every
+  call (the route handler isn't cached). The weight itself is synced onto
+  each `hero_ads` row (`planWeight`, in `syncHeroSlideToSupabase`) from the
+  advertiser developer's CURRENT effective plan (see `effectivePlanTier`
+  below), not whatever tier was active when the slide was first created.
+- **Real "Featured projects" homepage section**: `home-client.tsx` — used
+  to compute a `featuredProjects` list only to exclude those slugs from
+  New listings; nothing ever rendered it. Now a real
+  `<section className="featured-projects-section">` above New listings,
+  capped at 8, same weighted-rotation-once-over-cap logic as the hero. The
+  Featured/Premium badge already shows correctly on these cards (existing
+  `ListingGridCard` logic, `hasPremiumStyleBadge`) — no extra marking
+  needed.
+- **Developer Spotlight chip**: the hero quick-links row under the search
+  bar used to hardcode one manual entry (`{ path: "/developers/prime-lands",
+  ..., isHighlighted: true }`) — a placeholder for this exact feature.
+  Replaced with real data: any developer whose CURRENT effective plan has
+  `developerSpotlight: true` (Developer Pro/Campaign) gets a highlighted
+  chip, capped at 3, same weighted-pick-once-over-cap pattern. If Prime
+  Lands isn't actually on one of those plans, it's simply no longer
+  highlighted — correct behavior for a real feature, not a regression.
+  Needs `getAllDevelopers()` passed into `HomeClient` as a new `developers`
+  prop (fetched in `page.tsx` alongside projects/lands) and a `plan` field
+  now synced onto each Supabase `developers` row (`syncDeveloperToSupabase`
+  — previously synced everything except plan).
+- **Hydration-safety pattern**: the weighted-random reshuffles above must
+  NOT run during the very first render, because Home is server-rendered
+  (`page.tsx`'s `revalidate: 60`) and a `Math.random()` call in the
+  client's first hydration pass would very likely disagree with the
+  server-rendered markup, triggering a React hydration mismatch. Both the
+  Featured-projects and Developer-Spotlight lists therefore render a
+  deterministic value (top-N by `finalScore`/name) on the first render —
+  identical on server and client — and only swap to the weighted-random
+  pick in a `useEffect` that fires once, right after mount (a `hasMounted`
+  flag, the idiomatic guard react.dev itself recommends for this exact
+  "different on server vs. client" case), shared by both lists. The hero
+  carousel doesn't need this guard — `heroAds` already starts empty and is
+  only ever populated via a client-side `useEffect` fetch to
+  `/api/hero-ads`, so its first render already matches on both sides.
+- **`effectivePlanTier` extracted**: `Developers.plan` isn't reset to
+  `'free'` the moment `featuredUntil` passes (only an explicit
+  Subscription change writes to the developer doc) — so anywhere that
+  needs to know if a plan is CURRENTLY live has to account for both
+  fields, not trust `plan` alone. Pulled the existing inline logic out of
+  `syncFeaturedProjectsFromDeveloper` into an exported
+  `effectivePlanTier(plan, featuredUntil)` and reused it in
+  `syncDeveloperToSupabase` too, so the hero-rotation weight and the
+  Spotlight chip agree with the Placements-tab UI on the exact same
+  "is this plan still active" rule. Same daily-cron staleness tolerance as
+  `Projects.package` already has (see Expiry above) — a plan that lapses
+  with no other Payload save won't reflect in Supabase until the next
+  `expirePastDueSubscriptions()` sweep or Developers save.
+- **`Project.package` type fixed**: the frontend/Supabase-mirror `Project`
+  type (`src/types/index.ts`) was still typed
+  `"free" | "featured" | "premium"` — the OLD 3-tier model's values, never
+  updated in either 2026-09-24 restructure. Corrected to the current 5
+  tiers. This is exactly why several call sites could silently keep
+  comparing against the no-longer-possible `"premium"` (see
+  `isPaidPackageTier`/`hasPremiumStyleBadge` in `packages.ts`) without
+  `tsc` ever flagging it — the field's type was too loose to catch the
+  mismatch. Kept as a plain string union rather than importing
+  `PackageTier` (this file mirrors Supabase, not Payload) — keep the two
+  lists in sync by hand if a tier is ever renamed.
 
 ## Payload admin redesign (`/cms`)
 

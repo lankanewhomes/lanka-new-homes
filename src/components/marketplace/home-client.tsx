@@ -8,7 +8,9 @@ import { ArrowUpRight, Check, ChevronDown, ChevronLeft, ChevronRight, MapPin, Pa
 import { SiteLanguage, useLanguage } from "@/components/layout/language-provider";
 import { ListingGridCard } from "@/components/marketplace/listing-page";
 import { allProjectCategories } from "@/lib/listing-categories";
-import type { HeroAd, Project } from "@/types";
+import { getPackage, planRotationWeight } from "@/lib/packages";
+import { weightedTake } from "@/lib/weighted-random";
+import type { Developer, HeroAd, Project } from "@/types";
 
 // Real photos of each city (Wikimedia Commons), replacing generic Unsplash
 // stock photos that weren't actually of these places. Kandy's original
@@ -79,7 +81,7 @@ const SEO_LINK_GROUPS: { title: string; links: { label: string; href: string }[]
   },
 ];
 
-export function HomeClient({ projects, lands = [] }: { projects: Project[]; lands?: Project[] }) {
+export function HomeClient({ projects, lands = [], developers = [] }: { projects: Project[]; lands?: Project[]; developers?: Developer[] }) {
   const { language } = useLanguage();
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
@@ -210,16 +212,45 @@ export function HomeClient({ projects, lands = [] }: { projects: Project[]; land
 
   const t = copy[language];
 
-  // Sorted by finalScore (completeness + engagement + recency + package
-  // boost — same field the site's default "Recommended" search sort
-  // already uses, computeFinalScore in project-scoring.ts) before slicing
-  // to 4, so a Premium project's stronger boost actually earns it a spot
-  // here over a Featured one when there are more than 4 featured listings
-  // — not just "featured vs not."
-  const featuredProjects = useMemo(
-    () => [...projects].filter((project) => project.isFeatured).sort((a, b) => (b.finalScore ?? 0) - (a.finalScore ?? 0)).slice(0, 4),
+  // Real "Featured projects" homepage section (owner, 2026-09-24 — this used
+  // to just be feeding featuredSlugs below, with nothing ever rendering it).
+  // Capped at 8 (owner's build note: "'Featured projects' section limited to
+  // 8, picked randomly so no one hogs the spot forever"), weighted by plan
+  // (planRotationWeight in packages.ts) so Developer Pro/Campaign shows up
+  // far more often than plain Featured, but never guaranteed and never the
+  // only one shown. A Free-tier project never shows here either way — this
+  // section is paid-tier-only inventory, unlike New listings below it.
+  //
+  // The random reshuffle deliberately does NOT happen in the render itself
+  // (unlike heroSlides' finalScore sort, which is deterministic). Home is
+  // server-rendered (revalidate: 60 — see page.tsx) and this component
+  // hydrates that markup; if the very first client render called
+  // Math.random() too, it would very likely disagree with what the server
+  // already rendered and React would flag/undo a hydration mismatch. So the
+  // first render (server AND the client's initial paint) always shows the
+  // same deterministic top-N by finalScore — matching, no mismatch — and
+  // only a useEffect AFTER hydration commits swaps in the weighted-random
+  // pick, exactly the same "start deterministic, upgrade after mount"
+  // pattern this file already uses for heroAds below.
+  const FEATURED_SECTION_CAP = 8;
+  const featuredEligible = useMemo(
+    () => [...projects].filter((project) => project.isFeatured).sort((a, b) => (b.finalScore ?? 0) - (a.finalScore ?? 0)),
     [projects]
   );
+  // Flips true once, right after mount — the idiomatic hydration guard
+  // (react.dev's own recommended pattern for "different on server vs.
+  // client" content) instead of computing the random pick inside the effect
+  // itself, which would call setState with derived data on every
+  // featuredEligible change and trip react-hooks/set-state-in-effect.
+  const [hasMounted, setHasMounted] = useState(false);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setHasMounted(true);
+  }, []);
+  const featuredProjects = useMemo(() => {
+    if (!hasMounted || featuredEligible.length <= FEATURED_SECTION_CAP) return featuredEligible.slice(0, FEATURED_SECTION_CAP);
+    return weightedTake(featuredEligible, FEATURED_SECTION_CAP, (project) => planRotationWeight(project.package));
+  }, [hasMounted, featuredEligible]);
   // Sorted by createdAt (when the row was actually added here), not
   // launchDate (the developer's own marketed date, often unset) — sorting
   // by launchDate meant a project with no launchDate could never surface on
@@ -260,8 +291,27 @@ export function HomeClient({ projects, lands = [] }: { projects: Project[]; land
     setMobileSearchOpen(false);
     router.push(suggestion.href);
   };
+  // "Developer Spotlight" chip row (owner's 2026-09-24 build note) —
+  // replaces the old hardcoded "Prime Lands" placeholder chip with the real
+  // entitlement: any developer currently on Developer Pro/Campaign
+  // (getPackage(plan).developerSpotlight — expiry-aware, see
+  // effectivePlanTier) gets a highlighted chip here, linking to their
+  // profile. If Prime Lands isn't actually on one of those plans yet, it
+  // simply won't be highlighted anymore — that's the real feature working
+  // correctly, not a regression. Capped at 3 so the row can't get crowded;
+  // same hasMounted-gated weighted-by-plan pick as the Featured projects
+  // section above once there are more eligible developers than that.
+  const DEVELOPER_SPOTLIGHT_CAP = 3;
+  const spotlightEligible = useMemo(
+    () => developers.filter((developer) => getPackage(developer.plan).developerSpotlight).sort((a, b) => a.name.localeCompare(b.name)),
+    [developers]
+  );
+  const spotlightDevelopers = useMemo(() => {
+    if (!hasMounted || spotlightEligible.length <= DEVELOPER_SPOTLIGHT_CAP) return spotlightEligible.slice(0, DEVELOPER_SPOTLIGHT_CAP);
+    return weightedTake(spotlightEligible, DEVELOPER_SPOTLIGHT_CAP, (developer) => planRotationWeight(developer.plan));
+  }, [hasMounted, spotlightEligible]);
   const heroQuickLinks = [
-    { path: "/developers/prime-lands", breadcrumbLabel: "Prime Lands", isHighlighted: true },
+    ...spotlightDevelopers.map((developer) => ({ path: `/developers/${developer.slug}`, breadcrumbLabel: developer.name, isHighlighted: true })),
     ...allProjectCategories,
     { path: "/land", breadcrumbLabel: "Lands" },
   ];
@@ -339,6 +389,22 @@ export function HomeClient({ projects, lands = [] }: { projects: Project[]; land
     ) : null}
 
     <main className="home-content">
+      {featuredProjects.length > 0 ? (
+        <section className="featured-projects-section" aria-label="Featured projects">
+          <div className="featured-listings-head">
+            <h2>Featured projects</h2>
+            <p className="featured-listings-subhead">Promoted developments from our Featured and Developer Pro partners.</p>
+          </div>
+          <div className="featured-listings-shell">
+            <div className="home-card-grid featured-listings-grid">
+              {featuredProjects.map((project) => (
+                <ListingGridCard key={`featured-${project.slug}`} project={project} />
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
+
       <section className="new-listings-section" aria-label="New listings">
         <div className="featured-listings-head">
           <h2>New listings</h2>

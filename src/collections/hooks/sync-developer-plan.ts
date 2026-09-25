@@ -1,5 +1,5 @@
 import type { CollectionAfterChangeHook } from 'payload'
-import { getPackage } from '@/lib/packages'
+import { getPackage, type PackageTier } from '@/lib/packages'
 
 function relatedId(value: unknown): string | number | undefined {
   if (value && typeof value === 'object' && 'id' in value) return (value as { id: string | number }).id
@@ -31,22 +31,85 @@ function idsOf(value: unknown): (string | number)[] {
 // a routine profile edit (e.g. updating office hours) costs one extra find
 // query but no needless writes.
 //
-// NOT handled here yet: the "one hero carousel slide" a Developer Pro/
-// Campaign plan is supposed to grant (see placement-inventory memory) —
-// which of a developer's several featured projects should represent them
-// in that one slide isn't specified yet, so hero-slide auto-creation is
-// intentionally left alone rather than guessing. The old per-project
-// version of this (sync-subscription-package.ts) is retired along with
-// per-project billing; re-introduce a developer-level equivalent once
-// that's decided.
+// Developer Pro/Campaign are supposed to grant one homepage hero carousel
+// slide (see placement-inventory memory). A developer can have several
+// featured projects at once, but the slide can only show one — the FIRST
+// entry in featuredProjectIds represents them (the order a developer's own
+// toggles were switched on, oldest first; there's no separate "pick your
+// hero project" control, so this is a judgment call, not a spec'd rule —
+// revisit if the owner wants explicit control over which one). Never
+// invents an image — skips creating a slide entirely if that project has
+// no heroImage yet. Archives the slide (doesn't delete it) once the
+// developer drops below Developer Pro/Campaign or has no featured projects
+// left, so admin history isn't lost.
+async function syncHeroSlideFromDeveloper(
+  req: Parameters<CollectionAfterChangeHook>[0]['req'],
+  developerId: string | number,
+  wantsHeroSlide: boolean,
+  representativeProjectId: string | number | undefined,
+  featuredUntil: unknown,
+) {
+  const existing = await req.payload.find({
+    collection: 'hero-slides',
+    where: { advertiser: { equals: developerId }, auto_generated: { equals: true } },
+    limit: 1,
+    overrideAccess: true,
+    req,
+  })
+  const existingSlide = existing.docs[0]
+
+  if (!wantsHeroSlide || !representativeProjectId) {
+    if (existingSlide && existingSlide.status !== 'archived') {
+      await req.payload.update({ collection: 'hero-slides', id: existingSlide.id, data: { status: 'archived' }, overrideAccess: true, req })
+    }
+    return
+  }
+
+  const project = await req.payload.findByID({ collection: 'projects', id: representativeProjectId, overrideAccess: true, req })
+  if (!project?.heroImage) return
+
+  const data = {
+    headline: project.name,
+    image: project.heroImage,
+    project: Number(representativeProjectId),
+    advertiser: Number(developerId),
+    page_target: 'homepage',
+    display_order: 0,
+    status: 'active' as const,
+    is_paid_placement: true,
+    auto_generated: true,
+    start_date: new Date().toISOString(),
+    end_date: featuredUntil ? new Date(featuredUntil as string).toISOString() : undefined,
+  }
+
+  if (existingSlide) {
+    await req.payload.update({ collection: 'hero-slides', id: existingSlide.id, data, overrideAccess: true, req })
+  } else {
+    await req.payload.create({ collection: 'hero-slides', data, overrideAccess: true, req })
+  }
+}
+
+// A Developer's raw `plan` field isn't reset to 'free' the moment
+// `featuredUntil` passes — nothing writes to the developer doc itself when
+// a plan simply expires with time (only an explicit Subscription change
+// does). So anything that cares whether a plan is CURRENTLY live must
+// compute it from both fields, not trust `plan` alone. Shared by
+// syncFeaturedProjectsFromDeveloper below and syncDeveloperToSupabase
+// (the developerSpotlight homepage chip — see sync-to-supabase.ts) so both
+// agree on the exact same "is this plan still active" rule.
+export function effectivePlanTier(plan: unknown, featuredUntil: unknown): PackageTier {
+  const rawPlan = typeof plan === 'string' ? plan : 'free'
+  const until = featuredUntil ? new Date(featuredUntil as string) : null
+  const isActive = rawPlan !== 'free' && (!until || until.getTime() > Date.now())
+  return isActive ? getPackage(rawPlan).tier : 'free'
+}
+
 export const syncFeaturedProjectsFromDeveloper: CollectionAfterChangeHook = async ({ doc, req }) => {
   const developerId = doc.id
-  const rawPlan = typeof doc.plan === 'string' ? doc.plan : 'free'
-  const featuredUntil = doc.featuredUntil ? new Date(doc.featuredUntil as string) : null
-  const isActive = rawPlan !== 'free' && (!featuredUntil || featuredUntil.getTime() > Date.now())
-  const effectiveTier = isActive ? rawPlan : 'free'
+  const effectiveTier = effectivePlanTier(doc.plan, doc.featuredUntil)
   const pkg = getPackage(effectiveTier)
-  const featuredIds = new Set(idsOf(doc.featuredProjectIds).map(String))
+  const featuredIdList = idsOf(doc.featuredProjectIds)
+  const featuredIds = new Set(featuredIdList.map(String))
 
   const { docs: projects } = await req.payload.find({
     collection: 'projects',
@@ -71,6 +134,8 @@ export const syncFeaturedProjectsFromDeveloper: CollectionAfterChangeHook = asyn
       })
     }),
   )
+
+  await syncHeroSlideFromDeveloper(req, developerId, pkg.premiumHeroSlide, featuredIdList[0], doc.featuredUntil)
 
   return doc
 }
