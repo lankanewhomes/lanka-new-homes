@@ -110,6 +110,14 @@ export const syncFeaturedProjectsFromDeveloper: CollectionAfterChangeHook = asyn
   const pkg = getPackage(effectiveTier)
   const featuredIdList = idsOf(doc.featuredProjectIds)
   const featuredIds = new Set(featuredIdList.map(String))
+  // Land packages (owner, 2026-09-25: "same plan/slot system, but for land
+  // listings") — SHARES the developer's plan/slot pool above, not a
+  // separate one. Only land where this developer is the seller
+  // (sellerType 'developer') can ever be in this list — see the scope note
+  // on Lands.package for why construction-company/builder-sold land isn't
+  // covered.
+  const featuredLandIdList = idsOf(doc.featuredLandIds)
+  const featuredLandIds = new Set(featuredLandIdList.map(String))
 
   const { docs: projects } = await req.payload.find({
     collection: 'projects',
@@ -129,6 +137,30 @@ export const syncFeaturedProjectsFromDeveloper: CollectionAfterChangeHook = asyn
         collection: 'projects',
         id: project.id,
         data: { package: targetPackage, featured: isFeaturedHere ? pkg.featured : false },
+        overrideAccess: true,
+        req,
+      })
+    }),
+  )
+
+  const { docs: lands } = await req.payload.find({
+    collection: 'lands',
+    where: { seller: { equals: developerId }, sellerType: { equals: 'developer' } },
+    depth: 0,
+    limit: 500,
+    overrideAccess: true,
+    req,
+  })
+
+  await Promise.all(
+    lands.map((land) => {
+      const isFeaturedHere = effectiveTier !== 'free' && featuredLandIds.has(String(land.id))
+      const targetPackage = isFeaturedHere ? effectiveTier : 'free'
+      if (land.package === targetPackage && land.isFeatured === isFeaturedHere) return null
+      return req.payload.update({
+        collection: 'lands',
+        id: land.id,
+        data: { package: targetPackage, isFeatured: isFeaturedHere },
         overrideAccess: true,
         req,
       })

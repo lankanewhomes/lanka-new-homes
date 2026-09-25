@@ -61,6 +61,14 @@ export function landToProjectShape(land: Land): Project {
     type: land.landUse.join(" & "),
     status: landStatusToProjectStatus(land.status),
     isFeatured: land.isFeatured,
+    // Carries the land package tier onto the Project-shaped object — this
+    // one field is what makes ranking (listing-page.tsx), badges
+    // (ListingGridCard), map pin styling (map-pane.tsx), and the
+    // similar-listings rail swap all apply to land automatically, since
+    // they already read `.package`/`.isFeatured` off whatever they're
+    // given without caring whether it's really a Project or a land-shaped
+    // stand-in.
+    package: land.package,
     launchDate: "",
     completionYear: 0,
     constructionStatus: "",

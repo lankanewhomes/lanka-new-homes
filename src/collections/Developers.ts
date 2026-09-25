@@ -212,7 +212,11 @@ export const Developers: CollectionConfig = {
       // adminOnlyField) since picking projects is the whole point of the
       // slot system (owner, 2026-09-24: "they can choose which project").
       // Swapping which projects are picked never changes featuredUntil —
-      // the package end date stays fixed regardless of swaps.
+      // the package end date stays fixed regardless of swaps. The slot
+      // pool is SHARED with featuredLandIds below (2026-09-25: "same plan/
+      // slot system, but for land listings") — one project + one land
+      // listing together use 2 of the same slots, not 1 of each kind's own
+      // separate pool.
       name: 'featuredProjectIds',
       type: 'relationship',
       label: 'Featured Projects',
@@ -221,11 +225,12 @@ export const Developers: CollectionConfig = {
       filterOptions: ({ id }): Where => (id ? { developer: { equals: id } } : { id: { equals: -1 } }),
       validate: (value, { siblingData }) => {
         const ids = Array.isArray(value) ? value : []
+        const landIds = Array.isArray((siblingData as { featuredLandIds?: unknown[] })?.featuredLandIds) ? (siblingData as { featuredLandIds: unknown[] }).featuredLandIds : []
         const plan = (siblingData as { plan?: string })?.plan ?? 'free'
         const extras = (siblingData as { extra_featured_slots?: number })?.extra_featured_slots ?? 0
         const max = maxFeaturedProjects(plan, extras)
-        if (max === 'custom' || ids.length <= max) return true
-        return `You can feature at most ${max} project${max === 1 ? '' : 's'} on your current plan — buy an extra slot or upgrade your plan to feature more.`
+        if (max === 'custom' || ids.length + landIds.length <= max) return true
+        return `You can feature at most ${max} project${max === 1 ? '' : 's'}/land listing${max === 1 ? '' : 's'} combined on your current plan — buy an extra slot or upgrade your plan to feature more.`
       },
       admin: {
         // Hidden from the default field UI — DeveloperPlanPanel (the
@@ -234,7 +239,33 @@ export const Developers: CollectionConfig = {
         // The field (and its validate/cap-enforcement above) still exists
         // and is still what gets saved.
         hidden: true,
-        description: "Which of your own projects use your plan's featured slots. Projects left unpicked stay on Free even while you have an active paid plan — pick up to your plan's limit (base slots + any extra slots purchased).",
+        description: "Which of your own projects use your plan's featured slots. Projects left unpicked stay on Free even while you have an active paid plan — pick up to your plan's limit (base slots + any extra slots purchased), shared with your land listings below.",
+      },
+    },
+    {
+      // Land's equivalent of featuredProjectIds above — same shared slot
+      // pool, same swap/no-extend behavior. Only land where THIS developer
+      // is the seller (sellerType 'developer') can ever appear here —
+      // construction-company- and builder-sold land have no plan to spend
+      // a slot from (see the scope note on Lands.package).
+      name: 'featuredLandIds',
+      type: 'relationship',
+      label: 'Featured Land Listings',
+      relationTo: 'lands',
+      hasMany: true,
+      filterOptions: ({ id }): Where => (id ? { seller: { equals: id }, sellerType: { equals: 'developer' } } : { id: { equals: -1 } }),
+      validate: (value, { siblingData }) => {
+        const ids = Array.isArray(value) ? value : []
+        const projectIds = Array.isArray((siblingData as { featuredProjectIds?: unknown[] })?.featuredProjectIds) ? (siblingData as { featuredProjectIds: unknown[] }).featuredProjectIds : []
+        const plan = (siblingData as { plan?: string })?.plan ?? 'free'
+        const extras = (siblingData as { extra_featured_slots?: number })?.extra_featured_slots ?? 0
+        const max = maxFeaturedProjects(plan, extras)
+        if (max === 'custom' || ids.length + projectIds.length <= max) return true
+        return `You can feature at most ${max} project${max === 1 ? '' : 's'}/land listing${max === 1 ? '' : 's'} combined on your current plan — buy an extra slot or upgrade your plan to feature more.`
+      },
+      admin: {
+        hidden: true,
+        description: "Which of your own land listings use your plan's featured slots (shared with featuredProjectIds above).",
       },
     },
     {

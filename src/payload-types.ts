@@ -333,9 +333,13 @@ export interface Developer {
    */
   extra_featured_slots?: number | null;
   /**
-   * Which of your own projects use your plan's featured slots. Projects left unpicked stay on Free even while you have an active paid plan — pick up to your plan's limit (base slots + any extra slots purchased).
+   * Which of your own projects use your plan's featured slots. Projects left unpicked stay on Free even while you have an active paid plan — pick up to your plan's limit (base slots + any extra slots purchased), shared with your land listings below.
    */
   featuredProjectIds?: (number | Project)[] | null;
+  /**
+   * Which of your own land listings use your plan's featured slots (shared with featuredProjectIds above).
+   */
+  featuredLandIds?: (number | Land)[] | null;
   /**
    * Gates the "Developer approval" workflow — new self-registered developers start pending.
    */
@@ -6525,6 +6529,10 @@ export interface Land {
   status: 'Available' | 'Reserved' | 'Sold';
   isFeatured?: boolean | null;
   isTrending?: boolean | null;
+  /**
+   * Read-only — mirrors the developer's plan when this land listing is one of their picked featured slots (Developers → Placements tab). Only applies when Seller Type is 'developer'; construction-company/builder listings have no plan system today.
+   */
+  package?: ('free' | 'featured' | 'featured-plus' | 'developer-pro' | 'campaign') | null;
   landSizePerches: number;
   landSizeAcres?: number | null;
   /**
@@ -7607,6 +7615,7 @@ export interface DevelopersSelect<T extends boolean = true> {
   featuredUntil?: T;
   extra_featured_slots?: T;
   featuredProjectIds?: T;
+  featuredLandIds?: T;
   verification_status?: T;
   seo?:
     | T
@@ -8041,6 +8050,7 @@ export interface LandsSelect<T extends boolean = true> {
   status?: T;
   isFeatured?: T;
   isTrending?: T;
+  package?: T;
   landSizePerches?: T;
   landSizeAcres?: T;
   landUse?: T;

@@ -525,6 +525,16 @@ export type Land = SeoFields & {
     email: string;
     phone: string;
   };
+  /** Land packages (added 2026-09-25) — mirrors Project.package, but only
+   * ever set when sellerType is "developer" (see hooks/sync-developer-plan.ts
+   * and Lands.ts's own field comment): a developer's plan/slot system was
+   * extended to also cover their own land listings, sharing the same slot
+   * pool as their projects. Construction-company/builder-sold land has no
+   * plan concept, so this is always "free" for those. Carried over onto the
+   * Project-shaped object landToProjectShape() produces, which is what lets
+   * every existing package-aware surface (ranking, badges, map pins,
+   * similar-listings swap) apply to land automatically, with no extra code. */
+  package?: "free" | "featured" | "featured-plus" | "developer-pro" | "campaign";
 };
 
 export type LandPlot = {

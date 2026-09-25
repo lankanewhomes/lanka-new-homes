@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { adminOnly, hiddenUnlessAdmin, publicRead } from './access'
+import { adminOnly, adminOnlyField, hiddenUnlessAdmin, publicRead } from './access'
 import { syncLandDeleteToSupabase, syncLandToSupabase } from './hooks/sync-to-supabase'
 import {
   amenitiesField,
@@ -74,6 +74,29 @@ export const Lands: CollectionConfig = {
             { name: 'status', type: 'select', required: true, defaultValue: 'Available', options: ['Available', 'Reserved', 'Sold'], index: true },
             { name: 'isFeatured', type: 'checkbox', defaultValue: false },
             { name: 'isTrending', type: 'checkbox', label: 'Trending', defaultValue: false },
+            {
+              // Land packages (owner, 2026-09-25: "same plan/slot system,
+              // but for land listings"). Scoped to land sold BY A DEVELOPER
+              // (sellerType 'developer') only — reuses that developer's
+              // EXISTING plan and slot pool rather than a new billing
+              // system, since construction companies and plain "builder"
+              // sellers have no plan/subscription concept at all today.
+              // Read-only here — set automatically from the developer's own
+              // Plan (Developers.featuredLandIds; see
+              // hooks/sync-developer-plan.ts) once this listing is one of
+              // the ones they've picked to use a slot on. A construction-
+              // company- or builder-sold listing always stays 'free'.
+              name: 'package',
+              type: 'select',
+              label: 'Package',
+              options: ['free', 'featured', 'featured-plus', 'developer-pro', 'campaign'],
+              defaultValue: 'free',
+              access: { update: adminOnlyField },
+              admin: {
+                description:
+                  "Read-only — mirrors the developer's plan when this land listing is one of their picked featured slots (Developers → Placements tab). Only applies when Seller Type is 'developer'; construction-company/builder listings have no plan system today.",
+              },
+            },
           ],
         },
         {

@@ -1861,6 +1861,53 @@ developer's projects, not just featured ones).
   their projects has a `heroImage`, then visit that developer's own
   `/developers/<slug>` page.
 
+### Land packages (2026-09-25) — build item 10
+
+Owner's own wording left this to judgment: "Land packages — same plan/slot
+system, but for land listings, if you want that too." Scoped it narrowly:
+land sold BY A DEVELOPER (`Lands.sellerType === 'developer'`) can now use
+that SAME developer's existing plan and slot pool — not a new, separate
+billing system for land sellers. Construction companies and plain
+"builder" sellers (no account on the site at all) have no plan concept
+today and aren't covered; extending billing to them would have been a much
+bigger, separate piece of work with no existing plan system to hang off of.
+
+- **`Lands.package`** (new field, mirrors `Projects.package` exactly — same
+  5-tier options, admin-readOnly, "mirrors the developer's plan" copy).
+- **`Developers.featuredLandIds`** (new relationship, parallel to
+  `featuredProjectIds`, filtered to land where `seller` is this developer
+  AND `sellerType === 'developer'`) — shares the SAME slot pool as
+  `featuredProjectIds`, not a separate one: both fields' `validate`
+  functions check the COMBINED count against `maxFeaturedProjects()`, so a
+  developer with 5 Pro slots could feature 3 projects + 2 land listings,
+  not 5 of each.
+- **`syncFeaturedProjectsFromDeveloper`** (`sync-developer-plan.ts`) now
+  also loops over the developer's own land listings the same way it
+  already looped over projects, keeping `Lands.package`/`isFeatured` in
+  sync exactly like `Projects.package`/`featured`.
+- **`DeveloperPlanPanel.tsx`** (the Placements tab) shows a second "Your
+  land listings" section with the same On/Off toggle, right below "Your
+  projects" — only rendered when that developer actually has land listings
+  of their own, and both sections' toggles spend from the same combined
+  `spotsUsed` count.
+- **Everywhere else** (ranking, badges, map pins, the similar-listings
+  swap) needed ZERO new code — `landToProjectShape()` (the existing
+  adapter that lets land reuse every Project-shaped display component) now
+  also carries `package` onto the pseudo-Project it produces, so every
+  package-aware surface that already reads `.package`/`.isFeatured`
+  applies to land automatically, exactly the way it already does for
+  projects. This is the main reason the scoped-down version above was
+  worth building instead of skipping: the display-side payoff was nearly
+  free once the data model carried the field through.
+- Hero-slide auto-creation (the homepage carousel) still only ever
+  represents a developer with one of their PROJECTS, never a land listing
+  — `HeroSlides.project` is a required relationship to `projects` only, and
+  extending it to also accept land was out of scope for this pass.
+- Live-verified: `getAllLands()`/`landToProjectShape()` run cleanly against
+  the real Supabase data (no existing land has ever had a package, so all
+  show `package: undefined` → treated as free, exactly as expected); `/land`
+  still renders 200 after the change.
+
 ## Payload admin redesign (`/cms`)
 
 Rebrands the admin shell without touching schema/access/auth — three

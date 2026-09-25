@@ -5,15 +5,20 @@ import { useDocumentInfo } from "@payloadcms/ui";
 import { PACKAGE_LIST, formatPackagePrice, maxFeaturedProjects, type PackageTier } from "@/lib/packages";
 
 type ProjectRow = { id: string | number; name: string; package?: string | null };
+type LandRow = { id: string | number; title: string; package?: string | null };
 type DeveloperDoc = {
   id: string | number;
   plan?: PackageTier | null;
   featuredUntil?: string | null;
   extra_featured_slots?: number | null;
   featuredProjectIds?: (string | number | { id: string | number })[] | null;
+  // Land packages (2026-09-25) — shares the same plan/slot pool as
+  // featuredProjectIds above, just a separate relationship since land is a
+  // different collection. See Developers.ts's field comment.
+  featuredLandIds?: (string | number | { id: string | number })[] | null;
 };
 
-function projectId(entry: string | number | { id: string | number }): string | number {
+function entryId(entry: string | number | { id: string | number }): string | number {
   return typeof entry === "object" ? entry.id : entry;
 }
 
@@ -37,6 +42,7 @@ export function DeveloperPlanPanel() {
   const { id, collectionSlug } = useDocumentInfo();
   const [developer, setDeveloper] = useState<DeveloperDoc | null>(null);
   const [projects, setProjects] = useState<ProjectRow[]>([]);
+  const [lands, setLands] = useState<LandRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
@@ -48,14 +54,20 @@ export function DeveloperPlanPanel() {
     setLoading(true);
     setError("");
     try {
-      const [devRes, projectsRes] = await Promise.all([
+      const [devRes, projectsRes, landsRes] = await Promise.all([
         fetch(`/payload-api/developers/${id}?depth=0`, { credentials: "include" }),
         fetch(`/payload-api/projects?where[developer][equals]=${id}&depth=0&limit=500&sort=name`, { credentials: "include" }),
+        // Land packages (2026-09-25) — only land where this developer is
+        // the seller ever counts against their plan; see Developers.ts's
+        // featuredLandIds comment.
+        fetch(`/payload-api/lands?where[seller][equals]=${id}&where[sellerType][equals]=developer&depth=0&limit=500&sort=title`, { credentials: "include" }),
       ]);
       const devBody = await devRes.json();
       const projectsBody = await projectsRes.json();
+      const landsBody = await landsRes.json();
       setDeveloper(devBody);
       setProjects(Array.isArray(projectsBody?.docs) ? projectsBody.docs : []);
+      setLands(Array.isArray(landsBody?.docs) ? landsBody.docs : []);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load.");
     } finally {
@@ -68,30 +80,35 @@ export function DeveloperPlanPanel() {
 
   const plan = developer?.plan ?? "free";
   const pkg = useMemo(() => PACKAGE_LIST.find((p) => p.tier === plan) ?? PACKAGE_LIST[0], [plan]);
-  const featuredIds = useMemo(() => new Set((developer?.featuredProjectIds ?? []).map((e) => String(projectId(e)))), [developer]);
+  const featuredProjectIds = useMemo(() => new Set((developer?.featuredProjectIds ?? []).map((e) => String(entryId(e)))), [developer]);
+  const featuredLandIds = useMemo(() => new Set((developer?.featuredLandIds ?? []).map((e) => String(entryId(e)))), [developer]);
   const maxSlots = maxFeaturedProjects(plan, developer?.extra_featured_slots ?? 0);
-  const spotsUsed = featuredIds.size;
+  // Shared slot pool — a featured project and a featured land listing spend
+  // the same slots, not two separate pools (owner, 2026-09-25: "same plan/
+  // slot system, but for land listings").
+  const spotsUsed = featuredProjectIds.size + featuredLandIds.size;
   const atCap = maxSlots !== "custom" && spotsUsed >= maxSlots;
   const isActive = plan !== "free" && developer?.featuredUntil;
   const nearingEnd = isActive && developer?.featuredUntil ? daysRemaining(developer.featuredUntil) <= 14 : false;
 
-  const toggleProject = async (projectIdValue: string | number, on: boolean) => {
+  const toggleEntry = async (kind: "project" | "land", entryIdValue: string | number, on: boolean) => {
     if (!developer) return;
-    const current = new Set(featuredIds);
+    const current = new Set(kind === "project" ? featuredProjectIds : featuredLandIds);
     if (on) {
       if (atCap) return;
-      current.add(String(projectIdValue));
+      current.add(String(entryIdValue));
     } else {
-      current.delete(String(projectIdValue));
+      current.delete(String(entryIdValue));
     }
     setSaving(true);
     setError("");
     try {
+      const field = kind === "project" ? "featuredProjectIds" : "featuredLandIds";
       const res = await fetch(`/payload-api/developers/${developer.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ featuredProjectIds: [...current] }),
+        body: JSON.stringify({ [field]: [...current] }),
       });
       const body = await res.json();
       if (!res.ok) throw new Error(body?.errors?.[0]?.message ?? "Couldn't update — check your plan's spot limit.");
@@ -188,7 +205,7 @@ export function DeveloperPlanPanel() {
       ) : (
         <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 6 }}>
           {projects.map((project) => {
-            const isOn = featuredIds.has(String(project.id));
+            const isOn = featuredProjectIds.has(String(project.id));
             const disabled = saving || plan === "free" || (!isOn && atCap);
             return (
               <li
@@ -198,14 +215,43 @@ export function DeveloperPlanPanel() {
                 <span style={{ fontSize: 13.5 }}>{project.name}</span>
                 <label style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 12, opacity: disabled && !isOn ? 0.5 : 1, cursor: disabled ? "not-allowed" : "pointer" }}>
                   {isOn ? "On" : "Off"}
-                  <input type="checkbox" checked={isOn} disabled={disabled} onChange={(e) => toggleProject(project.id, e.target.checked)} />
+                  <input type="checkbox" checked={isOn} disabled={disabled} onChange={(e) => toggleEntry("project", project.id, e.target.checked)} />
                 </label>
               </li>
             );
           })}
         </ul>
       )}
-      {plan === "free" && <p style={{ fontSize: 12.5, opacity: 0.65, marginTop: 10 }}>Pick a plan above to start featuring projects.</p>}
+
+      {/* Land packages (2026-09-25) — only shown when this developer
+          actually has land listings of their own, so a developer with none
+          doesn't see an empty section. Same shared slot pool as projects
+          above (spotsUsed/atCap already combine both). */}
+      {lands.length > 0 && (
+        <>
+          <p style={{ fontSize: 13, fontWeight: 600, margin: "18px 0 8px" }}>Your land listings</p>
+          <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 6 }}>
+            {lands.map((land) => {
+              const isOn = featuredLandIds.has(String(land.id));
+              const disabled = saving || plan === "free" || (!isOn && atCap);
+              return (
+                <li
+                  key={land.id}
+                  style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "10px 14px", border: "1px solid var(--theme-elevation-150)", borderRadius: 4 }}
+                >
+                  <span style={{ fontSize: 13.5 }}>{land.title}</span>
+                  <label style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 12, opacity: disabled && !isOn ? 0.5 : 1, cursor: disabled ? "not-allowed" : "pointer" }}>
+                    {isOn ? "On" : "Off"}
+                    <input type="checkbox" checked={isOn} disabled={disabled} onChange={(e) => toggleEntry("land", land.id, e.target.checked)} />
+                  </label>
+                </li>
+              );
+            })}
+          </ul>
+        </>
+      )}
+
+      {plan === "free" && <p style={{ fontSize: 12.5, opacity: 0.65, marginTop: 10 }}>Pick a plan above to start featuring projects{lands.length > 0 ? " or land listings" : ""}.</p>}
     </div>
   );
 }
