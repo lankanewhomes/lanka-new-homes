@@ -502,11 +502,25 @@ component, one visual language, styled once in `globals.css`
 
 **"List your project for free" band (owner, 2026-09-24):** a
 `.free-listing-band` sits right after New listings. It pitches free listing
-to developers, with a button to `/for-developers` and a "See pricing" link.
-The owner decided against putting it in the hero, so the hero ad slideshow
-keeps its full size. Styling: site black `#1f1f1f`, 8px orange top bar,
-orange tick circles and a square orange button (same language as the pricing
-cards). Three columns on desktop, stacked under 980px.
+to developers, with a button to `/for-developers`. The owner decided against
+putting it in the hero, so the hero ad slideshow keeps its full size.
+Styling: site black `#1f1f1f`, 8px orange top bar and orange tick circles.
+Three columns on desktop, stacked under 980px. Updated 2026-09-25:
+- The heading uses the same regular-weight style as the other homepage
+  headings (32px, or 26px on phones).
+- The button reads "List your project" in the footer's `.footer-cta` outline
+  pill style (no uppercase), at a bigger 16px.
+
+**Hero category chips on phones (owner, 2026-09-25):** the last chip,
+"Lands" (`.hero-quick-link-pill-land`), takes a full-width row of its own.
+
+**Footer on phones (owner, 2026-09-25):** the wordmark sits on the left
+and the social icons on the right of the same top row. Desktop keeps the
+icons above the wordmark.
+
+**Listing-page header on phones (owner, 2026-09-25):** the white sticky
+box (`.listing-filter-sticky`: title, count, Filter/Sort) runs edge to edge
+of the screen; its content keeps the normal gutter.
 
 **Section bands on mobile (owner, 2026-09-23):** under 760px the coloured
 backgrounds of New listings, Land for sale, Explore by city and Popular

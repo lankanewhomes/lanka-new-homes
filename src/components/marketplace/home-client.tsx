@@ -350,7 +350,7 @@ export function HomeClient({ projects, lands = [], developers = [] }: { projects
               <Link
                 key={category.path}
                 href={category.path}
-                className={`listing-filter-pill hero-quick-link-pill${"isHighlighted" in category && category.isHighlighted ? " hero-quick-link-pill-highlight" : ""}`}
+                className={`listing-filter-pill hero-quick-link-pill${"isHighlighted" in category && category.isHighlighted ? " hero-quick-link-pill-highlight" : ""}${category.path === "/land" ? " hero-quick-link-pill-land" : ""}`}
               >
                 <span>{category.breadcrumbLabel}</span>
               </Link>
@@ -443,8 +443,7 @@ export function HomeClient({ projects, lands = [], developers = [] }: { projects
         </ul>
         <div className="free-listing-band-actions">
           <Link href="/for-developers" className="free-listing-band-cta">
-            List your project free
-            <ArrowUpRight className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
+            List your project
           </Link>
           {/* "See pricing" removed (owner, 2026-09-24): /pricing is still being
               reviewed, unlinked from the whole site for now but kept live at

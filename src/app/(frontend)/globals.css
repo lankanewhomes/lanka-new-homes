@@ -956,6 +956,12 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
     flex: none;
   }
 
+  /* "Lands" is the last chip: a full-width row of its own on phones (owner, 2026-09-25). */
+  .hero-quick-link-pill-land {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+
   .hero-search-suggestions {
     left: 50%;
     width: min(480px, calc(100% - 36px));
@@ -5962,12 +5968,14 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   text-transform: uppercase;
 }
 
+/* Same as the other homepage section headings (.featured-listings-head h2): regular weight,
+   32px / 26px on phones (owner, 2026-09-25: "no bold"). */
 .free-listing-band h2 {
   margin: 0;
   font-family: var(--font-ref-sans);
   font-size: 32px;
-  font-weight: 600;
-  line-height: 1.2;
+  font-weight: 400;
+  line-height: 1.15;
   color: #fff;
 }
 
@@ -6027,17 +6035,15 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  height: 52px;
-  padding: 0 26px;
+  padding: 14px 28px;
   border: 1px solid rgba(255, 255, 255, 0.28);
   border-radius: 999px;
   background: transparent;
   color: #fff;
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  /* Footer .footer-cta styling in sentence case (no uppercase / letter-spacing), just a
+     bigger font: 16px vs the footer's 13px (owner, 2026-09-25). */
+  font-size: 16px;
+  font-weight: 600;
   text-decoration: none;
   white-space: nowrap;
   transition: background-color 0.15s ease, border-color 0.15s ease;
@@ -6082,6 +6088,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 
   .free-listing-band h2 {
     font-size: 26px;
+    line-height: 32px;
   }
 
   .free-listing-band-actions {
@@ -8041,6 +8048,30 @@ a.developer-profile-press-title {
     padding: 44px 0 24px;
   }
 
+  /* Phones: wordmark on the left and the social icons on the right of the same top row
+     (owner, 2026-09-25). Desktop keeps the icons above the wordmark. */
+  .footer-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 16px;
+  }
+
+  .footer-inner > * {
+    grid-column: 1 / -1;
+  }
+
+  .footer-inner > .footer-brand-row {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .footer-inner > .footer-social-row {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: start;
+    margin-bottom: 0;
+  }
+
   .footer-brand-row {
     align-items: flex-start;
     flex-direction: column;
@@ -8918,6 +8949,9 @@ a.developer-profile-press-title {
     flex: 1 1 calc(50% - 5px);
   }
 
+  /* The white header box (title, count, Filter/Sort) runs edge to edge of the screen;
+     the padding grows by exactly what the margin pulls out, so its content stays where it
+     was (owner, 2026-09-25). */
   .listing-filter-sticky {
     position: sticky;
     top: 0;
@@ -8926,7 +8960,9 @@ a.developer-profile-press-title {
     flex-direction: column;
     gap: 6px;
     background: #fff;
-    padding: 8px 0 10px;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    padding: 8px calc(50vw - 50%) 10px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   }
 
