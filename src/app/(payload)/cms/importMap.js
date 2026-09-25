@@ -1,8 +1,9 @@
+import { DeveloperPlanPanel as DeveloperPlanPanel_098505e37097b4e31e435c2abfcb8db4 } from '@/components/payload/DeveloperPlanPanel'
 import { CompletenessTodo as CompletenessTodo_e02911b42e48821b16fd5d9e40cf5034 } from '@/components/payload/CompletenessTodo'
 import { PreviewLinkPanel as PreviewLinkPanel_58de2ef0318e59b9fbb2898773569633 } from '@/components/payload/PreviewLinkPanel'
 import { YearPickerField as YearPickerField_4dc9f7e903015cdc77733f6107aaaf6d } from '@/components/payload/YearPickerField'
-import { PackagePicker as PackagePicker_b6fb5efff34773d65c795651027fa81f } from '@/components/payload/PackagePicker'
 import { ListingAnalyticsPanel as ListingAnalyticsPanel_aef927c4ceb2652d7f7abf8ef0fcf2e5 } from '@/components/payload/ListingAnalyticsPanel'
+import { AddonRequestPanel as AddonRequestPanel_78c0b05313dbf1762f420ef38d99b378 } from '@/components/payload/AddonRequestPanel'
 import { SocialPanel as SocialPanel_e89e5c6e27d995476e5b50bf9943be69 } from '@/components/payload/SocialPanel'
 import { SubscriptionsList as SubscriptionsList_2dc33570c131e8faf2f1046801145d72 } from '@/components/payload/SubscriptionsList'
 import { AnalyticsDashboard as AnalyticsDashboard_16ddde46401d8b8f0e062ed5c8fb8520 } from '@/components/payload/AnalyticsDashboard'
@@ -50,11 +51,12 @@ import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } f
 
 /** @type import('payload').ImportMap */
 export const importMap = {
+  "@/components/payload/DeveloperPlanPanel#DeveloperPlanPanel": DeveloperPlanPanel_098505e37097b4e31e435c2abfcb8db4,
   "@/components/payload/CompletenessTodo#CompletenessTodo": CompletenessTodo_e02911b42e48821b16fd5d9e40cf5034,
   "@/components/payload/PreviewLinkPanel#PreviewLinkPanel": PreviewLinkPanel_58de2ef0318e59b9fbb2898773569633,
   "@/components/payload/YearPickerField#YearPickerField": YearPickerField_4dc9f7e903015cdc77733f6107aaaf6d,
-  "@/components/payload/PackagePicker#PackagePicker": PackagePicker_b6fb5efff34773d65c795651027fa81f,
   "@/components/payload/ListingAnalyticsPanel#ListingAnalyticsPanel": ListingAnalyticsPanel_aef927c4ceb2652d7f7abf8ef0fcf2e5,
+  "@/components/payload/AddonRequestPanel#AddonRequestPanel": AddonRequestPanel_78c0b05313dbf1762f420ef38d99b378,
   "@/components/payload/SocialPanel#SocialPanel": SocialPanel_e89e5c6e27d995476e5b50bf9943be69,
   "@/components/payload/SubscriptionsList#SubscriptionsList": SubscriptionsList_2dc33570c131e8faf2f1046801145d72,
   "@/components/payload/AnalyticsDashboard#AnalyticsDashboard": AnalyticsDashboard_16ddde46401d8b8f0e062ed5c8fb8520,
