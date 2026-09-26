@@ -4383,6 +4383,16 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   max-width: 360px;
 }
 
+/* Phones: same 44px between floor plan cards as between Similar listings
+   cards (owner, 2026-09-26). The 980px block further down stacks the grid
+   to one column with a 12px gap; the extra class here outranks it no matter
+   the source order. */
+@media (max-width: 760px) {
+  .plans-homes-shell .plans-homes-grid {
+    row-gap: 44px;
+  }
+}
+
 .plans-home-card {
   display: block;
   border: 1px solid #dce2ea;

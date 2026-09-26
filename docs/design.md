@@ -62,19 +62,21 @@ the floor-plan tabs/filter toolbar plus a list of plans. The toolbar (tabs,
 filter drawer, sort) is unchanged; only the plan list markup/styling has a
 documented alternate.
 
-- **Current default: row list.** Each plan is a horizontal card
+- **Currently rendered (checked 2026-09-26): the vertical-card grid**
+  (`.plans-homes-grid` / `.plans-home-card` / `.plans-home-image` /
+  `.plans-status-pill` / `.plans-home-body`) — 3 columns on desktop, one
+  column at 980px and below, sharp corners, image on top, details stacked
+  below. On phones (760px and below) the row gap between cards is 44px, the
+  same as the Similar listings cards; the tighter 12px stack made the cards
+  run together.
+- **Alternate variant, kept in CSS but NOT in the JSX right now:** a row list
   (`.plans-home-list` / `.plans-home-row`) — small rounded thumbnail on the
   left, name + status pill + type + facts in the middle, price + "View plan"
-  on the right. Rounded corners (14px), soft hover shadow, no image overlay
-  pill.
-- **Previous variant, kept in CSS for an instant revert:** a 3-column grid
-  of vertical cards (`.plans-homes-grid` / `.plans-home-card` /
-  `.plans-home-image` / `.plans-status-pill` / `.plans-home-body`) — sharp
-  corners, image on top with a green "For sale" pill overlaid on the photo,
-  details stacked below. To revert, swap the `<div className="plans-home-list">…</div>`
-  block back to a `<div className="plans-homes-grid">` mapping over
-  `visiblePlans` with the `plans-home-card` markup — nothing was deleted
-  from `globals.css`, so no new styles need writing.
+  on the right, 14px rounded corners, soft hover shadow. (This doc used to
+  call the row list the current default; `components.tsx` maps
+  `visiblePlans` into `plans-home-card`s, so the grid is what visitors see.)
+  Only the CSS survives — no `.tsx` uses these classes any more, so
+  switching means rewriting the row markup, not just swapping a block.
 - **Card text styling is shared with `ListingGridCard`'s** (see "Homepage"
   below): title `16px` / `400` weight / `20px` line-height / `#1a1a1a`,
   price `13px` / `400` / `18px` line-height / `#303030`, secondary line
