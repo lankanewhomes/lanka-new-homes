@@ -1143,6 +1143,10 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
 @media (max-width: 760px) {
   .similar-listings-section .home-card-grid {
     grid-template-columns: 1fr;
+    /* The cards have no box of their own here (white on the page), so the
+       shared 22px row gap left each card's spec line crowding the next
+       card's photo — more air between them (owner, 2026-09-26). */
+    row-gap: 44px;
   }
 
   /* No grey panel behind the Similar listings cards on phones — the cards sit

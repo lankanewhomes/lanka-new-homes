@@ -1063,7 +1063,10 @@ over existing fields — nothing is computed about a listing — and renders
 nothing when there is no other listing to show. On mobile it's one card per
 row (`.similar-listings-section .home-card-grid` overrides the shared
 `.home-card-grid`'s 2-column mobile default, scoped to this section only —
-the homepage/neighborhood/builder grids keep 2 columns).
+the homepage/neighborhood/builder grids keep 2 columns). The panel is dropped
+on phones (cards sit straight on the page), so the row gap there is 44px, not
+the shared 22px — with no box around each card, 22px left one card's spec
+line crowding the next card's photo.
 
 ## Languages (Sinhala / Tamil listing content)
 
