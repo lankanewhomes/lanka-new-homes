@@ -1005,6 +1005,77 @@ export function ProjectHero({
   // all of them and slides horizontally when they don't fit (.is-scrollable).
   const quickjumpPills = visibleHeroMediaPills;
 
+  // Mobile bottom tab bar: when the tabs don't all fit on the screen, the
+  // last one just gets cut off — nothing says "swipe for more". Track whether
+  // the bar overflows and which sides still have tabs hidden, so CSS can show
+  // an arrow + fade on those edges (and the visitor can tap the arrow instead
+  // of swiping). Measured, not inferred from the pill count: five tabs already
+  // overflow a 390px phone. Desktop never overflows (7th+ pills are hidden), so
+  // nothing shows there.
+  const quickjumpRef = useRef<HTMLDivElement>(null);
+  const [quickjumpScroll, setQuickjumpScroll] = useState({ overflowing: false, left: false, right: false });
+
+  useEffect(() => {
+    const bar = quickjumpRef.current;
+    if (!bar) return;
+    const measure = () => {
+      const max = bar.scrollWidth - bar.clientWidth;
+      const next = { overflowing: max > 4, left: bar.scrollLeft > 4, right: bar.scrollLeft < max - 4 };
+      setQuickjumpScroll((prev) =>
+        prev.overflowing === next.overflowing && prev.left === next.left && prev.right === next.right ? prev : next,
+      );
+    };
+    bar.addEventListener("scroll", measure, { passive: true });
+    // ResizeObserver fires once on observe(), which does the first measurement;
+    // observing the tabs too catches a language switch changing their widths.
+    const resizeObserver = new ResizeObserver(measure);
+    resizeObserver.observe(bar);
+    Array.from(bar.children).forEach((child) => resizeObserver.observe(child));
+    return () => {
+      bar.removeEventListener("scroll", measure);
+      resizeObserver.disconnect();
+    };
+  }, [quickjumpPills.length]);
+
+  // One-time "peek" a moment after the page loads: slide the bar left a little
+  // and back so it's obvious the row moves. Phones only, only when tabs are
+  // hidden, never if the visitor has already touched it or prefers reduced
+  // motion.
+  useEffect(() => {
+    const bar = quickjumpRef.current;
+    if (!bar) return;
+    if (!window.matchMedia("(max-width: 760px)").matches) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let back: ReturnType<typeof setTimeout> | undefined;
+    let touched = false;
+    const markTouched = () => {
+      touched = true;
+    };
+    bar.addEventListener("pointerdown", markTouched, { passive: true });
+    bar.addEventListener("wheel", markTouched, { passive: true });
+    const start = setTimeout(() => {
+      const max = bar.scrollWidth - bar.clientWidth;
+      if (max < 8 || bar.scrollLeft > 0 || touched) return;
+      bar.scrollTo({ left: Math.min(56, max), behavior: "smooth" });
+      // Slide back unless the visitor has grabbed the bar in the meantime.
+      back = setTimeout(() => {
+        if (!touched) bar.scrollTo({ left: 0, behavior: "smooth" });
+      }, 1000);
+    }, 1200);
+    return () => {
+      clearTimeout(start);
+      if (back) clearTimeout(back);
+      bar.removeEventListener("pointerdown", markTouched);
+      bar.removeEventListener("wheel", markTouched);
+    };
+  }, []);
+
+  const scrollQuickjump = (direction: 1 | -1) => {
+    const bar = quickjumpRef.current;
+    if (!bar) return;
+    bar.scrollBy({ left: direction * Math.max(bar.clientWidth * 0.6, 160), behavior: "smooth" });
+  };
+
   const navHref = (id: string) => (sectionNavBase && id !== "plans-homes" ? `${sectionNavBase}#${id}` : `#${id}`);
 
   return (
@@ -1523,12 +1594,40 @@ export function ProjectHero({
       // at natural width and slides sideways (desktop hides the 7th onward
       // in CSS either way). is-visible: desktop-only scroll gating, see the
       // titlePanelRef observer above.
-      <div className={`listing-hero-quickjump-bar${quickjumpPills.length > 6 ? " is-scrollable" : ""}${scrolledPastTitle ? " is-visible" : ""}`} aria-label="Quick jump">
+      <div
+        ref={quickjumpRef}
+        className={`listing-hero-quickjump-bar${quickjumpPills.length > 6 ? " is-scrollable" : ""}${quickjumpScroll.overflowing ? " is-overflowing" : ""}${quickjumpScroll.left ? " has-more-left" : ""}${quickjumpScroll.right ? " has-more-right" : ""}${scrolledPastTitle ? " is-visible" : ""}`}
+        aria-label="Quick jump"
+      >
         {quickjumpPills.map((pill) => (
           <Fragment key={pill.key}>
             {pill.render(`listing-hero-quickjump-btn${pill.lightboxKey && pill.lightboxKey === lightboxView ? " is-active" : ""}`)}
           </Fragment>
         ))}
+        {/* Mobile-only scroll cues (hidden on desktop and whenever nothing is
+            hidden on that side). They come AFTER the pills in the DOM so the
+            :nth-child(n + 7) desktop cap keeps counting pills only; the left
+            one is pulled to the front with CSS `order`. */}
+        <button
+          type="button"
+          className="listing-hero-quickjump-more listing-hero-quickjump-more-left"
+          aria-label="Scroll menu left"
+          aria-hidden={!quickjumpScroll.left}
+          tabIndex={quickjumpScroll.left ? 0 : -1}
+          onClick={() => scrollQuickjump(-1)}
+        >
+          <ChevronLeft strokeWidth={2.5} aria-hidden="true" />
+        </button>
+        <button
+          type="button"
+          className="listing-hero-quickjump-more listing-hero-quickjump-more-right"
+          aria-label="Scroll menu right"
+          aria-hidden={!quickjumpScroll.right}
+          tabIndex={quickjumpScroll.right ? 0 : -1}
+          onClick={() => scrollQuickjump(1)}
+        >
+          <ChevronRight strokeWidth={2.5} aria-hidden="true" />
+        </button>
       </div>
     )}
 

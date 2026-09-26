@@ -132,11 +132,22 @@ pill is rendered into the bar; the desktop floating pill shows only the
 first 6 (`:nth-child(n + 7)` hidden in CSS), so on a fully populated
 listing Map and Street View are what drop off it — not Floor Plans, which
 an earlier positional `slice(0, 6)` used to lose. The mobile bottom tab
-bar re-shows all of them and, with 7+ (`.is-scrollable`), keeps each tab
-at natural width and slides horizontally — the partly visible last tab is
-the affordance — rather than squeezing every label onto one screen (the
-old `is-compact` mode, removed 2026-09-11). Don't reintroduce per-pill
-"essential"/"always last" special cases; change the order in one place.
+bar re-shows all of them and, whenever they don't fit (`.is-overflowing`,
+measured in `ProjectHero` — five or six tabs already overflow a 390px phone,
+so it is NOT tied to a pill count; `.is-scrollable` at 7+ is only the
+pre-measurement fallback), keeps each tab at natural width and slides
+horizontally rather than squeezing every label onto one screen (the old
+`is-compact` mode, removed 2026-09-11). **Scroll cue** (owner, 2026-09-26):
+a round orange chevron over a white fade on whichever edge still has tabs
+hidden (`.listing-hero-quickjump-more-left/-right`, shown via
+`.has-more-left/-right`, tap to slide the bar, gently nudging), plus a
+one-time "peek" ~1.2s after load where the bar slides out ~56px and back
+(skipped if the visitor touches the bar or prefers reduced motion). The
+arrows come after the pills in the DOM so the desktop `:nth-child(n + 7)` cap
+still counts pills only. Desktop never needs them: its pill shows at most 6
+tabs and doesn't scroll (it fits the viewport from ~770px up). Don't
+reintroduce per-pill "essential"/"always last" special cases; change the
+order in one place.
 
 **Lightbox top bar carries Brochure too** (2026-09-11): the photo lightbox's
 tab row (Photos / Videos / Map / Road Map / Block Plan / 360° / Street View)
@@ -1065,10 +1076,18 @@ over existing fields — nothing is computed about a listing — and renders
 nothing when there is no other listing to show. On mobile it's one card per
 row (`.similar-listings-section .home-card-grid` overrides the shared
 `.home-card-grid`'s 2-column mobile default, scoped to this section only —
-the homepage/neighborhood/builder grids keep 2 columns). The panel is dropped
-on phones (cards sit straight on the page), so the row gap there is 44px, not
-the shared 22px — with no box around each card, 22px left one card's spec
-line crowding the next card's photo.
+the homepage/neighborhood/builder grids keep 2 columns). On phones the grey
+panel is dropped (the cards themselves stay unboxed, straight on the page) but
+the **container** gets a 1px `#e2e2e2` border and `22px 18px` padding — the
+same border colour and padding as the developer contact card
+(`.stats-contact-card`) directly above it, so the two boxes line up (owner,
+2026-09-26; border on the container, not on each card). The row gap between
+cards is 44px, not the shared 22px — with no box around each card, 22px left
+one card's spec line crowding the next card's photo. Desktop keeps the grey
+panel (1px `#e5e5e4` border, `28px 32px` padding). Below the section, phones
+reduce `.project-page-content`'s bottom padding from 140px to 48px
+(`:has(> .similar-listings-section)`): the 140px exists to clear the floating
+bar, but the footer follows this section, so it was just empty space.
 
 ## Languages (Sinhala / Tamil listing content)
 
