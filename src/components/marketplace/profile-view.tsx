@@ -69,7 +69,10 @@ export function ProfileView({
   // project at all — rather than a brand-new "banner image" field, so this
   // needed no new CMS data entry to ship. Never invents an image: no
   // spotlight banner renders at all if that project has no heroImage.
-  const isSpotlightDeveloper = entityType === "developer" && "plan" in entity && getPackage((entity as Developer).plan).developerSpotlight;
+  // TEMPORARY preview override: `prime-lands` is forced on so the owner can
+  // see the banner live (2026-09-26) — no developer is on Developer Pro/
+  // Campaign yet. Remove it once a real paid developer exists.
+  const isSpotlightDeveloper = entity.slug === "prime-lands" || (entityType === "developer" && "plan" in entity && getPackage((entity as Developer).plan).developerSpotlight);
   const spotlightProject = isSpotlightDeveloper ? projects.find((project) => project.isFeatured) ?? projects[0] : undefined;
 
   return (
