@@ -269,6 +269,38 @@ export const Developers: CollectionConfig = {
       },
     },
     {
+      // Set once, permanently, the first time ANY subscription activates
+      // for this developer — founding or not (see Subscriptions.ts's
+      // "becomingActive" hook). This is what makes "is this genuinely
+      // their first-ever activation" knowable later, even after that
+      // first subscription is canceled and its own status field no longer
+      // says 'active' — without this, re-querying "have they ever had an
+      // active subscription" would go blind the moment they cancel.
+      name: 'first_subscribed_at',
+      type: 'date',
+      label: 'First Subscribed At',
+      access: { update: adminOnlyField },
+      admin: { readOnly: true, description: 'When this developer first activated any subscription, ever. Never changes after being set — used to decide founding-developer eligibility, not just a timestamp.' },
+    },
+    {
+      // "Founding developer" launch discount (owner, 2026-09-25: first 10
+      // developers, 40% off — see FOUNDING_DEVELOPER_CAP/_DISCOUNT in
+      // packages.ts). System-granted only, at the moment a developer's
+      // FIRST-EVER subscription is activated (Subscriptions.ts's
+      // "becomingActive" hook) — never hand-set, and never revoked once
+      // earned (applies to every subscription this developer activates
+      // from then on, even through a later cancel/resubscribe).
+      name: 'is_founding_developer',
+      type: 'checkbox',
+      label: 'Founding Developer (40% off, first 10)',
+      defaultValue: false,
+      access: { update: adminOnlyField },
+      admin: {
+        readOnly: true,
+        description: 'Auto-granted the first time this developer activates a subscription, if fewer than 10 developers hold this already. Permanent once earned — applies to every future subscription payment, not just the first.',
+      },
+    },
+    {
       // The actual interactive UI for choosing a plan and toggling which
       // projects use its slots — see DeveloperPlanPanel.tsx for the full
       // "buy a plan, pick your featured projects" flow and the exact

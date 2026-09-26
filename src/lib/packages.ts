@@ -298,6 +298,41 @@ export function formatAnnualPrice(pkg: PackageDefinition): string | null {
 export const PACKAGE_ANNUAL_BILLING_NOTE = "Annual billing: 2 months free.";
 
 /**
+ * Real billing cycles (owner, 2026-09-25 — "real annual/quarterly
+ * billing," replacing what `formatAnnualPrice` above used to be: display
+ * copy only). Multiplies the monthly amount before any founding-developer
+ * discount is applied — see `FOUNDING_DEVELOPER_DISCOUNT` below.
+ * `quarterly` has no separate discount; `annual` is exactly the "2 months
+ * free" already promised (10x monthly for 12 months of coverage), now a
+ * real number instead of just a caption. Campaign is exempt (see
+ * `customPricing`) — its amount is never computed, so a billing interval
+ * multiplier has nothing to apply to.
+ */
+export type BillingInterval = "monthly" | "quarterly" | "annual";
+export const BILLING_INTERVAL_MULTIPLIERS: Record<BillingInterval, number> = {
+  monthly: 1,
+  quarterly: 3,
+  annual: 10,
+};
+
+/**
+ * "Founding developer" launch discount (owner's idea, numbers confirmed
+ * 2026-09-25: first 10 developers, 40% off). Scoped GLOBALLY (a hard cap
+ * on how many developers total can ever hold it — not a per-account time
+ * window), and once earned it's permanent: it applies to every
+ * subscription that developer ever activates from then on, even through a
+ * later cancel/resubscribe cycle, because the slot is spent on THEM, not
+ * returned to the pool. Eligibility is decided at the moment a
+ * subscription is ACTIVATED (Subscriptions.ts's "becomingActive" hook),
+ * not at creation — an abandoned/incomplete request never costs a
+ * developer their shot at a slot, since it never got confirmed as real.
+ * Never applies to Campaign (customPricing — no computed amount to
+ * discount off of).
+ */
+export const FOUNDING_DEVELOPER_CAP = 10;
+export const FOUNDING_DEVELOPER_DISCOUNT = 0.4;
+
+/**
  * À la carte newsletter/social promotion for ONE project — the "Newsletter
  * + social" row's "Add-on" cells (Free/Featured/Featured Plus). Developer
  * Pro gets one included per quarter; Campaign has it bundled — this

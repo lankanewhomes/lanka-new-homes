@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useDocumentInfo } from "@payloadcms/ui";
-import { PACKAGE_LIST, formatPackagePrice, maxFeaturedProjects, type PackageTier } from "@/lib/packages";
+import { PACKAGE_LIST, formatPackagePrice, maxFeaturedProjects, type BillingInterval, type PackageTier } from "@/lib/packages";
 
 type ProjectRow = { id: string | number; name: string; package?: string | null };
 type LandRow = { id: string | number; title: string; package?: string | null };
@@ -16,7 +16,17 @@ type DeveloperDoc = {
   // featuredProjectIds above, just a separate relationship since land is a
   // different collection. See Developers.ts's field comment.
   featuredLandIds?: (string | number | { id: string | number })[] | null;
+  // Founding-developer discount (2026-09-25) — see Developers.ts's field
+  // comment. Read-only here; only Subscriptions.ts's activation hook ever
+  // sets this.
+  is_founding_developer?: boolean | null;
 };
+
+const BILLING_INTERVAL_OPTIONS: { value: BillingInterval; label: string }[] = [
+  { value: "monthly", label: "Monthly" },
+  { value: "quarterly", label: "Quarterly (3x)" },
+  { value: "annual", label: "Annual (2 months free)" },
+];
 
 function entryId(entry: string | number | { id: string | number }): string | number {
   return typeof entry === "object" ? entry.id : entry;
@@ -122,7 +132,12 @@ export function DeveloperPlanPanel() {
 
   // "Add extra spot" / "Upgrade plan" / "Renew package" all create a
   // pending Subscription the same way — an admin confirms it in /cms
-  // (Subscriptions list) today, no live gateway yet.
+  // (Subscriptions list) today, no live gateway yet. billingInterval
+  // (2026-09-25) is the developer's own choice of how often to be billed —
+  // there's no live gateway to charge them differently by cycle yet, but
+  // capturing their intent now means an admin doesn't have to find out
+  // out-of-band during manual confirmation.
+  const [billingInterval, setBillingInterval] = useState<BillingInterval>("monthly");
   const requestSubscription = async (targetPlan: PackageTier, extraSlots: number, label: string) => {
     if (!developer) return;
     setRequesting(label);
@@ -133,7 +148,7 @@ export function DeveloperPlanPanel() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ developer: developer.id, package: targetPlan, extra_featured_slots: extraSlots }),
+        body: JSON.stringify({ developer: developer.id, package: targetPlan, extra_featured_slots: extraSlots, billing_interval: billingInterval }),
       });
       const body = await res.json();
       if (!res.ok) throw new Error(body?.errors?.[0]?.message ?? "Couldn't submit this request.");
@@ -157,6 +172,9 @@ export function DeveloperPlanPanel() {
           Current plan: {pkg.name}
           {maxSlots !== "custom" && `, ${spotsUsed} of ${maxSlots} spot${maxSlots === 1 ? "" : "s"} used`}
         </p>
+        {developer.is_founding_developer && (
+          <p style={{ margin: "6px 0 0", fontSize: 12.5, fontWeight: 600, color: "#c65a1e" }}>🎉 Founding developer — 40% off every payment, for as long as you stay subscribed.</p>
+        )}
         {isActive && developer.featuredUntil && (
           <p style={{ margin: "6px 0 0", fontSize: 13, opacity: 0.75 }}>
             Ends {new Date(developer.featuredUntil).toLocaleDateString()} — {daysRemaining(developer.featuredUntil)} days remaining
@@ -165,7 +183,15 @@ export function DeveloperPlanPanel() {
         {isActive && developer.featuredUntil && (
           <p style={{ margin: "4px 0 0", fontSize: 12, opacity: 0.65 }}>Swaps allowed until {new Date(developer.featuredUntil).toLocaleDateString()}</p>
         )}
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 14 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 14 }}>
+          <label style={{ fontSize: 12.5, opacity: 0.75 }}>
+            Billing:{" "}
+            <select value={billingInterval} onChange={(e) => setBillingInterval(e.target.value as BillingInterval)} disabled={requesting !== null} style={{ fontSize: 12.5, padding: "4px 6px" }}>
+              {BILLING_INTERVAL_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+            </select>
+          </label>
+        </div>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 10 }}>
           {plan !== "free" && pkg.extraFeaturedSlotPrice != null && (
             <button
               type="button"

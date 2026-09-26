@@ -341,6 +341,14 @@ export interface Developer {
    */
   featuredLandIds?: (number | Land)[] | null;
   /**
+   * When this developer first activated any subscription, ever. Never changes after being set — used to decide founding-developer eligibility, not just a timestamp.
+   */
+  first_subscribed_at?: string | null;
+  /**
+   * Auto-granted the first time this developer activates a subscription, if fewer than 10 developers hold this already. Permanent once earned — applies to every future subscription payment, not just the first.
+   */
+  is_founding_developer?: boolean | null;
+  /**
    * Gates the "Developer approval" workflow — new self-registered developers start pending.
    */
   verification_status?: ('pending' | 'approved' | 'rejected' | 'changes_requested') | null;
@@ -7024,6 +7032,10 @@ export interface Subscription {
   developer: number | Developer;
   package: 'featured' | 'featured-plus' | 'developer-pro' | 'campaign';
   /**
+   * How often this plan bills. Quarterly = 3x the monthly price; Annual = 10x (2 months free). Set from the developer's own request (Placements tab) or by an admin.
+   */
+  billing_interval?: ('monthly' | 'quarterly' | 'annual') | null;
+  /**
    * Additional featured-project slots beyond the plan's included amount, at that plan's per-extra-slot price (see src/lib/packages.ts) — clamped server-side to whatever the plan actually allows.
    */
   extra_featured_slots?: number | null;
@@ -7032,7 +7044,11 @@ export interface Subscription {
    */
   status: 'active' | 'past_due' | 'canceled' | 'incomplete' | 'unpaid';
   /**
-   * Snapshot of the price at signup (plan + any extra slots), from src/lib/packages.ts — for every fixed-price tier this is set automatically and shouldn't be hand-edited. Exception: `campaign` has no fixed price (negotiated per deal) — an admin sets the real agreed amount here after creating the subscription.
+   * Whether this subscription's amount includes the 40% founding-developer discount (packages.ts). Decided once, at activation — never recalculated afterward.
+   */
+  founding_discount_applied?: boolean | null;
+  /**
+   * Snapshot of the price (plan + any extra slots, x the billing interval, minus 40% if founding_discount_applied), from src/lib/packages.ts — for every fixed-price tier this is set automatically and shouldn't be hand-edited. Exception: `campaign` has no fixed price (negotiated per deal) — an admin sets the real agreed amount here after creating the subscription.
    */
   amount: number;
   currency: 'LKR' | 'USD' | 'CAD';
@@ -7616,6 +7632,8 @@ export interface DevelopersSelect<T extends boolean = true> {
   extra_featured_slots?: T;
   featuredProjectIds?: T;
   featuredLandIds?: T;
+  first_subscribed_at?: T;
+  is_founding_developer?: T;
   verification_status?: T;
   seo?:
     | T
@@ -8663,8 +8681,10 @@ export interface SeoKeywordsSelect<T extends boolean = true> {
 export interface SubscriptionsSelect<T extends boolean = true> {
   developer?: T;
   package?: T;
+  billing_interval?: T;
   extra_featured_slots?: T;
   status?: T;
+  founding_discount_applied?: T;
   amount?: T;
   currency?: T;
   current_period_start?: T;

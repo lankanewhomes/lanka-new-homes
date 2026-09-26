@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
 import { PricingComparisonTable } from "@/components/marketplace/pricing-comparison-table";
+import { FOUNDING_DEVELOPER_CAP, FOUNDING_DEVELOPER_DISCOUNT } from "@/lib/packages";
 
 export const metadata: Metadata = {
   title: "Pricing",
@@ -14,7 +15,31 @@ export const metadata: Metadata = {
   robots: { index: false, follow: true },
 };
 
-export default function PricingPage() {
+// Regenerate at most once a minute so the founding-spots count below
+// doesn't go stale for long once a real subscription activates.
+export const revalidate = 60;
+
+// Real, honestly-counted remaining slots (owner, 2026-09-25) — never a
+// fabricated countdown. Reads Payload directly (is_founding_developer
+// isn't synced to Supabase — it's an internal billing flag, not something
+// the public developers table needs). Fails soft: if Payload can't be
+// reached, the banner just doesn't render rather than breaking the page.
+async function getFoundingSpotsRemaining(): Promise<number | null> {
+  try {
+    const { getPayload } = await import("payload");
+    const payloadConfig = (await import("../../../../payload.config")).default;
+    const payload = await getPayload({ config: payloadConfig });
+    const { totalDocs } = await payload.count({ collection: "developers", where: { is_founding_developer: { equals: true } }, overrideAccess: true });
+    return Math.max(0, FOUNDING_DEVELOPER_CAP - totalDocs);
+  } catch {
+    return null;
+  }
+}
+
+export default async function PricingPage() {
+  const foundingSpotsRemaining = await getFoundingSpotsRemaining();
+  const foundingDiscountPercent = Math.round(FOUNDING_DEVELOPER_DISCOUNT * 100);
+
   return (
     <div className="pricing-page">
       <div className="pricing-page-shell">
@@ -28,6 +53,16 @@ export default function PricingPage() {
           <p className="pricing-page-lede">
             Listing your projects is always free. Choose a package, then pick which of your projects to feature. Swap them any time until your package ends.
           </p>
+          {/* "Founding developer" discount (owner, 2026-09-25) — only shown
+              while real slots remain; never invents a number if the count
+              couldn't be read. */}
+          {foundingSpotsRemaining !== null && foundingSpotsRemaining > 0 ? (
+            <p className="pricing-table-note-highlight" style={{ marginTop: 12 }}>
+              🎉 {foundingSpotsRemaining} of {FOUNDING_DEVELOPER_CAP} founding developer spot{foundingSpotsRemaining === 1 ? "" : "s"} left — get {foundingDiscountPercent}% off, locked in for as long as you stay subscribed.
+            </p>
+          ) : foundingSpotsRemaining === 0 ? (
+            <p className="pricing-table-note-highlight" style={{ marginTop: 12 }}>Founding developer pricing is now closed — all {FOUNDING_DEVELOPER_CAP} spots are taken.</p>
+          ) : null}
         </div>
 
         <PricingComparisonTable showCta />

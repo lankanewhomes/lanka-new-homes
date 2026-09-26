@@ -1932,6 +1932,61 @@ bigger, separate piece of work with no existing plan system to hang off of.
   show `package: undefined` → treated as free, exactly as expected); `/land`
   still renders 200 after the change.
 
+### "Founding developer" discount + real billing cycles (2026-09-25/26) — build item 11
+
+Numbers confirmed with the owner: **first 10 developers, 40% off**, global
+cap (not per-account/time-boxed) — locked in for as long as they keep
+subscribing, even through a later cancel/resubscribe.
+
+- **Real billing cycles** (`BILLING_INTERVAL_MULTIPLIERS` in
+  `packages.ts`): monthly (unchanged, x1), quarterly (x3, no separate
+  discount), annual (x10 — exactly the "2 months free" already promised on
+  `/pricing`, now a real number instead of just display copy).
+  `Subscriptions.billing_interval` (new field, developer's own choice from
+  the Placements tab) drives it.
+- **Founding discount eligibility is decided at ACTIVATION, not creation**
+  (`Subscriptions.ts`'s existing "becomingActive" hook, extended) — an
+  abandoned/incomplete request never costs a developer their shot at a
+  slot, since it was never confirmed as real. At the moment of activation:
+  is this developer's `Developers.first_subscribed_at` still unset (their
+  genuine first-ever activation, not just first-ever subscription row —
+  their status can't be re-derived from OTHER canceled subscriptions once
+  those no longer read 'active'), and are fewer than 10 developers
+  currently `is_founding_developer`? If both, the amount is recalculated
+  at 40% off and the developer is permanently tagged. `first_subscribed_at`
+  itself is set on ANY first activation, founding or not — this is what
+  keeps a later re-query from ever re-opening eligibility for someone who
+  already used their one shot (matches "first 10 developers," not "first
+  10 activations"). Never applies to Campaign (customPricing).
+  `Subscriptions.founding_discount_applied` records the outcome per
+  subscription, for audit only — the real decision logic lives in the
+  hook, not this field.
+- **Visible**: Placements tab shows "🎉 Founding developer — 40% off" once
+  earned; `/pricing` shows a real, honestly-counted "X of 10 founding
+  spots left" (a live Payload count, not a fabricated number) — or "now
+  closed" once all 10 are taken.
+- **A real infrastructure snag found and fixed along the way**: Payload's
+  dev-mode schema push is interactive when it can't tell a new column from
+  a rename, and that interactive prompt hangs forever with no TTY to
+  answer it (see the payload-dev-push-interactive-hang memory — found
+  2026-09-25, unrelated to this feature specifically, but this work is
+  what next triggered it, for the new `billing_interval`/
+  `founding_discount_applied`/`is_founding_developer`/
+  `first_subscribed_at` columns). Resolved by running the schema push
+  through `expect` (scripts a real pseudo-TTY, auto-selects "create
+  column" at each prompt) instead of a plain piped script, then restarting
+  the long-running local dev server so its own in-memory Payload instance
+  picked up the now-correct schema (a plain DB fix wasn't enough — the
+  already-running process's cached schema mapping needed a fresh boot to
+  see it). Production is unaffected either way (`NODE_ENV=production`
+  never does interactive push), but the live Postgres schema needed this
+  one-time push regardless of which environment runs it, since dev and
+  production share the same database.
+- Live-verified after the restart: `/pricing` renders the real "10 of 10"
+  banner, `payload.count` on the new `is_founding_developer` field returns
+  correctly, and the other main pages (homepage, `/land`, `/projects`,
+  `/developers`) all still respond normally.
+
 ## Payload admin redesign (`/cms`)
 
 Rebrands the admin shell without touching schema/access/auth — three
