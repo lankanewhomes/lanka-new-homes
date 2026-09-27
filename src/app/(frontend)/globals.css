@@ -2441,7 +2441,13 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
     border-top: 1px solid #e0e0e0;
     box-shadow: 0 -4px 12px rgba(15, 23, 42, 0.06);
     background: #fff;
-    padding: 18px 8px calc(18px + env(safe-area-inset-bottom));
+    /* Icon + label centred between the bar's top border and bottom edge
+       (owner, 2026-09-26: "centre it, top and bottom"): the tab is 40px tall
+       but its icon+label only fill ~33px of that (the rest is slack above the
+       active underline), so the top padding is 21px and the bottom 14px —
+       that leaves ~21px above the icon and ~21px below the label. The iPhone
+       safe area is added below the centred part. */
+    padding: 21px 8px calc(14px + env(safe-area-inset-bottom));
   }
 
   .listing-hero-quickjump-bar::-webkit-scrollbar {
@@ -2464,7 +2470,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
      "not round, a square touching the top and bottom, a little transparent so
      the menu shows through"): a square-cornered block that fills the bar's
      full height, from its top border to the bottom edge (the negative
-     vertical margins cancel the bar's own 18px padding + the iPhone safe
+     vertical margins cancel the bar's own 21px/14px padding + the iPhone safe
      area, and align-self: stretch does the rest), holding just an orange
      chevron. On whichever edge still has tabs hidden; it gently nudges its
      chevron in that direction and tapping it slides the bar. The background
@@ -2480,16 +2486,18 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
     --quickjump-more-size: 56px;
     position: sticky;
     display: none;
-    /* The chevron sits level with the tabs' icon row (18px of bar padding +
-       half the 16px icon − half its own 26px = 13px down), not the middle of
-       the block — dead centre lands it on the tab labels showing through. */
-    align-items: flex-start;
+    /* Chevron centred top-to-bottom (owner, 2026-09-26), on the same middle
+       line as the tabs' icon + label — the safe-area padding keeps that
+       middle line clear of the iPhone home-indicator strip. The vertical
+       margins mirror the bar's own padding (21px top, 14px + safe area
+       bottom) so the block reaches the bar's top border and bottom edge. */
+    align-items: center;
     justify-content: center;
     align-self: stretch;
     flex: 0 0 var(--quickjump-more-size);
     width: var(--quickjump-more-size);
-    margin: -18px 0 calc(-18px - env(safe-area-inset-bottom));
-    padding: 13px 0 0;
+    margin: -21px 0 calc(-14px - env(safe-area-inset-bottom));
+    padding: 0 0 env(safe-area-inset-bottom);
     border: 0;
     border-radius: 0;
     background: rgba(255, 255, 255, 0.75);

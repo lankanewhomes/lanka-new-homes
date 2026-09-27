@@ -144,11 +144,14 @@ little transparent so the menu shows through") on whichever edge still has
 tabs hidden (`.listing-hero-quickjump-more-left/-right`, shown via
 `.has-more-left/-right`, tap to slide the bar, chevron gently nudging). The
 block is 56px wide and runs from the bar's top border to the bottom edge
-(negative vertical margins cancel the bar's 18px padding + the iPhone safe
-area), white at 75% with no blur so the tab label underneath still shows
-through, a 1px inner edge line, and the chevron sits level with the tabs'
-icon row rather than dead centre (centred, it lands on the labels behind).
-Plus a
+(negative vertical margins cancel the bar's 21px/14px padding + the iPhone
+safe area), white at 75% with no blur so the tab label underneath still
+shows through, a 1px inner edge line, and the chevron is centred top-to-
+bottom. **The whole bar is vertically centred too** (owner, 2026-09-26):
+the tab is 40px tall but its icon + label fill only ~33px, so the bar's
+padding is 21px top / 14px bottom (+ safe area) — measured ≈21px above the
+icon and ≈21px below the label at 390px, and the chevron sits on that same
+middle line. Plus a
 one-time "peek" ~1.2s after load where the bar slides out ~56px and back
 (skipped if the visitor touches the bar or prefers reduced motion). The
 arrows come after the pills in the DOM so the desktop `:nth-child(n + 7)` cap
