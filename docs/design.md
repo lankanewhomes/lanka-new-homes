@@ -138,9 +138,17 @@ so it is NOT tied to a pill count; `.is-scrollable` at 7+ is only the
 pre-measurement fallback), keeps each tab at natural width and slides
 horizontally rather than squeezing every label onto one screen (the old
 `is-compact` mode, removed 2026-09-11). **Scroll cue** (owner, 2026-09-26):
-a round orange chevron over a white fade on whichever edge still has tabs
-hidden (`.listing-hero-quickjump-more-left/-right`, shown via
-`.has-more-left/-right`, tap to slide the bar, gently nudging), plus a
+an orange chevron in a **square-cornered, full-height block** (not a round
+button — reshaped the same day: "a square touching the top and bottom, a
+little transparent so the menu shows through") on whichever edge still has
+tabs hidden (`.listing-hero-quickjump-more-left/-right`, shown via
+`.has-more-left/-right`, tap to slide the bar, chevron gently nudging). The
+block is 56px wide and runs from the bar's top border to the bottom edge
+(negative vertical margins cancel the bar's 18px padding + the iPhone safe
+area), white at 75% with no blur so the tab label underneath still shows
+through, a 1px inner edge line, and the chevron sits level with the tabs'
+icon row rather than dead centre (centred, it lands on the labels behind).
+Plus a
 one-time "peek" ~1.2s after load where the bar slides out ~56px and back
 (skipped if the visitor touches the bar or prefers reduced motion). The
 arrows come after the pills in the DOM so the desktop `:nth-child(n + 7)` cap
