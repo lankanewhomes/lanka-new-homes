@@ -1,19 +1,29 @@
 import type { Metadata } from "next";
+import { Fraunces } from "next/font/google";
+import Image from "next/image";
 import Link from "next/link";
-import {
-  Gauge,
-  LayoutTemplate,
-  MessageCircle,
-  RefreshCcw,
-  Rocket,
-  Search,
-  Smartphone,
-} from "lucide-react";
+import { ArrowRight, Gauge, LayoutTemplate, MessageCircle, Search, Smartphone, Globe } from "lucide-react";
+import { ScrollReveal } from "@/components/marketplace/scroll-reveal";
+import { SampleDevices } from "@/components/marketplace/web-design-frames";
+import { SAMPLE_IMAGES } from "@/components/web-design-sample/sample-data";
+
+export const revalidate = 300;
+
+// Same editorial serif as /for-developers, scoped to this page (the rest of the
+// site is sans-only — see docs/design.md "Colors & type"). The variable name is
+// shared with .fdv-page on purpose, so this page reuses that page's colour
+// tokens and its ScrollReveal fade-in, and adds its own `wdx-` classes.
+const displaySerif = Fraunces({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
+  style: ["normal", "italic"],
+  variable: "--fdv-font-serif",
+});
 
 export const metadata: Metadata = {
   title: "Website Design for Property Developers | LankaNewHomes",
   description:
-    "Beyond your LankaNewHomes listing — we design and build dedicated project websites for developers, or redesign an existing one, from scratch.",
+    "Beyond your LankaNewHomes listing — we design and build dedicated project websites for developers, or redesign an existing one, from scratch. See a sample homepage.",
   alternates: { canonical: "/web-design" },
   openGraph: {
     title: "Website Design for Property Developers | LankaNewHomes",
@@ -24,125 +34,114 @@ export const metadata: Metadata = {
   },
 };
 
-const SERVICES = [
-  {
-    icon: LayoutTemplate,
-    title: "Brand new project websites",
-    body: "A dedicated site for a single development or your whole company — built from the ground up around your brand, your renders, and your floor plans.",
-  },
-  {
-    icon: RefreshCcw,
-    title: "Redesigns",
-    body: "Already have a site that's dated, slow, or doesn't convert? We rebuild it — same domain, same content where it's still good, everything else improved.",
-  },
-  {
-    icon: Smartphone,
-    title: "Built to work on every device",
-    body: "Most buyers browse on their phone first. Every site we build is designed mobile-first, then scaled up — not the other way around.",
-  },
-  {
-    icon: Search,
-    title: "SEO from day one",
-    body: "Page structure, metadata, and site speed are handled as part of the build, not bolted on afterward — so the site is actually findable once it's live.",
-  },
-  {
-    icon: MessageCircle,
-    title: "Lead capture built in",
-    body: "Contact forms, WhatsApp click-to-chat, brochure downloads — whatever gets a genuine inquiry from a visitor to your team, wired in from the start.",
-  },
-  {
-    icon: Gauge,
-    title: "Fast, and built to stay that way",
-    body: "Modern tooling, optimized images, no bloat — a site that loads quickly on an average connection, not just on a fast office Wi-Fi.",
-  },
-];
+const INCLUDED = [
+  { icon: LayoutTemplate, title: "Designed for your project", body: "A dedicated site built from the ground up around your brand, your renders and your floor plans — not a template with your logo dropped in." },
+  { icon: Smartphone, title: "Mobile-first", body: "Most buyers browse on their phone first. Every site is designed for a phone, then scaled up — not the other way around." },
+  { icon: Search, title: "SEO from day one", body: "Page structure, metadata and site speed are part of the build, not bolted on afterward — so the site is actually findable once it's live." },
+  { icon: MessageCircle, title: "Lead capture built in", body: "Contact forms, WhatsApp click-to-chat and brochure downloads — whatever gets a genuine enquiry from a visitor to your team, wired in from the start." },
+  { icon: Gauge, title: "Fast, and built to stay that way", body: "Modern tooling and optimised images, no bloat — a site that loads quickly on an average connection, not just on a fast office Wi-Fi." },
+  { icon: Globe, title: "Your own domain", body: "Your address, your brand. For a redesign we keep your existing domain and any content that's still working." },
+] as const;
+
+const HOMEPAGE_SECTIONS = [
+  "Hero and key facts",
+  "Residences with plans and pricing",
+  "Photo gallery",
+  "Amenities",
+  "Location and nearby places",
+  "Construction progress",
+  "Payment plan",
+  "Enquiry form and WhatsApp",
+  "Brochure download",
+  "Buyers from any country",
+] as const;
 
 const PROCESS = [
   { title: "Tell us about the project", body: "Send over what you have — renders, floor plans, brand guidelines, an existing site if there is one — and what you want the new site to do." },
   { title: "We design it", body: "A look and structure built around your project specifically, not a generic template with your logo dropped in." },
   { title: "You review, we refine", body: "You see it before it's built — changes at this stage are quick, not a rebuild." },
   { title: "We build and launch it", body: "Live on your domain, connected to your forms and contact channels, ready for traffic." },
-];
+] as const;
+
+const FAQS = [
+  { q: "Do I need a website if I already have a LankaNewHomes listing?", a: "Most developers end up with both. A listing gets your project discovered by buyers already searching; a website is where every other lead lands — a Facebook ad, a signboard QR code, a referral, a business card." },
+  { q: "Can you redesign the website I already have?", a: "Yes. We rebuild it on the same domain, keep the content that's still good and improve the rest." },
+  { q: "Will it work well on a phone?", a: "Every site is designed mobile-first, then scaled up for larger screens." },
+  { q: "How do buyers get in touch?", a: "Through the enquiry form, WhatsApp click-to-chat and brochure downloads — wired in from the start so an enquiry reaches your team." },
+  { q: "Will I see it before it's built?", a: "Yes. You review the design first, and changes at that stage are quick." },
+  { q: "How much does it cost?", a: "It depends on the size of the project and what you need, so we quote for each one. Tell us about it and we'll come back to you." },
+] as const;
 
 export default function WebDesignPage() {
   return (
-    <div className="fd-page">
-      <section className="fd-hero" aria-label="Website design for developers">
-        <div className="fd-hero-grid fd-hero-grid-single">
-          <div className="fd-hero-copy">
-            <p className="fd-eyebrow">Beyond your listing</p>
-            <h1>Your listing lives on LankaNewHomes.<br />Your brand deserves its own home too.</h1>
-            <p className="fd-hero-sub">
-              We design and build dedicated websites for property developments — a brand new site for a project
-              that doesn&apos;t have one yet, or a redesign of one that isn&apos;t working anymore.
-            </p>
-            <div className="fd-hero-ctas">
-              <Link href="/contact" className="fd-cta-primary">Talk to us about a site</Link>
-              <a href="#what-we-do" className="fd-cta-secondary">See what&apos;s included</a>
-            </div>
-          </div>
-        </div>
+    <div className={`fdv-page wdx-page ${displaySerif.variable}`}>
+      <ScrollReveal />
 
-        <div className="fd-hero-stats">
-          <div className="listing-hero-stat-chip">
-            <LayoutTemplate className="listing-hero-stat-chip-icon" aria-hidden="true" />
-            <div className="listing-hero-stat-chip-content">
-              <span className="listing-hero-stat-chip-value">Custom</span>
-              <span className="listing-hero-stat-chip-label">designed for this project, not a template</span>
-            </div>
-          </div>
-          <div className="listing-hero-stat-chip">
-            <Smartphone className="listing-hero-stat-chip-icon" aria-hidden="true" />
-            <div className="listing-hero-stat-chip-content">
-              <span className="listing-hero-stat-chip-value">Mobile-first</span>
-              <span className="listing-hero-stat-chip-label">designed for a phone, then scaled up</span>
-            </div>
-          </div>
-          <div className="listing-hero-stat-chip">
-            <Search className="listing-hero-stat-chip-icon" aria-hidden="true" />
-            <div className="listing-hero-stat-chip-content">
-              <span className="listing-hero-stat-chip-value">SEO-ready</span>
-              <span className="listing-hero-stat-chip-label">built in from day one, not bolted on</span>
-            </div>
-          </div>
-          <div className="listing-hero-stat-chip">
-            <Gauge className="listing-hero-stat-chip-icon" aria-hidden="true" />
-            <div className="listing-hero-stat-chip-content">
-              <span className="listing-hero-stat-chip-value">Fast</span>
-              <span className="listing-hero-stat-chip-label">loads quickly, even on an average connection</span>
-            </div>
+      {/* 1 — HERO */}
+      <section className="wdx-hero" aria-label="Website design for developers">
+        <div className="wdx-hero-media">
+          <Image src={SAMPLE_IMAGES.hero} alt="" fill priority sizes="100vw" className="wdx-hero-img" />
+          <div className="wdx-hero-overlay" />
+        </div>
+        <div className="wdx-hero-content">
+          <p className="fdv-eyebrow">Beyond your listing</p>
+          <h1 className="wdx-hero-headline">Your project deserves a website of its own.</h1>
+          <p className="wdx-hero-sub">
+            We design and build dedicated websites for property developments — a brand new site for a project that
+            doesn&apos;t have one yet, or a redesign of one that isn&apos;t working anymore.
+          </p>
+          <div className="wdx-hero-ctas">
+            <Link href="/contact" className="fdv-cta-primary">Talk to us about a site</Link>
+            <a href="#sample" className="fdv-cta-secondary">See a sample homepage</a>
           </div>
         </div>
       </section>
 
-      <section className="fd-section" aria-label="Why a dedicated site" id="what-we-do">
-        <div className="fd-section-head">
-          <h2>A listing gets you found. A site tells your story.</h2>
+      {/* 2 — INTRODUCTION */}
+      <section className="wdx-intro" aria-label="Why a dedicated site">
+        <div className="wdx-intro-grid">
+          <h2 className="wdx-statement" data-reveal>A listing gets you found. A website tells your story.</h2>
+          <div className="wdx-intro-copy" data-reveal>
+            <p>
+              Your LankaNewHomes listing puts your project in front of buyers actively searching right now. A dedicated
+              website is different — it&apos;s where you send every other lead: a Facebook ad, a signboard QR code, a
+              referral, a business card. It&apos;s the version of your project that&apos;s entirely yours.
+            </p>
+            <Link href="/contact" className="fdv-text-link">Talk to us about a site →</Link>
+          </div>
+        </div>
+      </section>
+
+      {/* 3 — LIVE SAMPLE */}
+      <section className="wdx-sample" id="sample" aria-label="Sample homepage">
+        <div className="wdx-sample-head" data-reveal>
+          <p className="fdv-eyebrow">A sample homepage</p>
+          <h2>See what your site could look like.</h2>
           <p>
-            Your LankaNewHomes listing puts your project in front of buyers actively searching right now. A dedicated
-            website is different — it&apos;s where you send every other lead: a Facebook ad, a signboard QR code, a
-            referral, a business card. It&apos;s the version of your project that&apos;s entirely yours.
+            We designed this homepage for a fictional development to show what&apos;s possible. Every section is
+            something we can build for your project — watch it scroll, or open the full page.
           </p>
         </div>
-
-        <div className="fd-badge-preview" aria-hidden="true">
-          <span className="fd-badge-preview-label">Every site includes:</span>
-          {[
-            "Custom design",
-            "Mobile-first",
-            "SEO-ready",
-            "Lead capture",
-            "Fast hosting",
-            "Your own domain",
-          ].map((label) => (
-            <span className="listing-badge-pill badge-extra" key={label}>{label}</span>
-          ))}
+        <div data-reveal>
+          <SampleDevices />
         </div>
+        <div className="wdx-sample-foot" data-reveal>
+          <Link href="/web-design/sample" className="fdv-cta-primary">Open the full sample <ArrowRight size={16} aria-hidden="true" /></Link>
+          <p>Sample design — a fictional development with illustrative images, prices and contact details.</p>
+        </div>
+      </section>
 
-        <div className="fd-feature-grid">
-          {SERVICES.map((item) => (
-            <div className="fd-feature-card" key={item.title}>
-              <item.icon className="fd-feature-icon" aria-hidden="true" />
+      {/* 4 — WHAT'S INCLUDED */}
+      <section className="wdx-included" aria-label="What every site includes">
+        <div className="wdx-section-head" data-reveal>
+          <p className="fdv-eyebrow">Every site includes</p>
+          <h2>Built properly, from the first line.</h2>
+        </div>
+        <div className="wdx-included-grid">
+          {INCLUDED.map((item, index) => (
+            <div className="wdx-included-item" key={item.title} data-reveal>
+              <span className="wdx-included-number">{String(index + 1).padStart(2, "0")}</span>
+              <item.icon className="wdx-included-icon" strokeWidth={1.4} aria-hidden="true" />
               <h3>{item.title}</h3>
               <p>{item.body}</p>
             </div>
@@ -150,15 +149,54 @@ export default function WebDesignPage() {
         </div>
       </section>
 
-      <section className="fd-how-section" aria-label="How it works">
-        <div className="fd-section-head">
-          <h2>How it works</h2>
-          <p>Four steps from &quot;we need a site&quot; to a live one.</p>
+      {/* 5 — WHAT GOES ON A HOMEPAGE */}
+      <section className="wdx-sections" aria-label="What we can put on your homepage">
+        <div className="wdx-sections-inner">
+          <div className="wdx-section-head" data-reveal>
+            <p className="fdv-eyebrow">On your homepage</p>
+            <h2>Everything a buyer looks for, in one place.</h2>
+            <p>The sample shows what a typical development site can carry. We choose the sections that suit your project.</p>
+          </div>
+          <ul className="wdx-chip-list" data-reveal>
+            {HOMEPAGE_SECTIONS.map((label) => (
+              <li key={label}>{label}</li>
+            ))}
+          </ul>
         </div>
-        <ol className="fd-how-list">
+      </section>
+
+      {/* 6 — LISTING VS WEBSITE */}
+      <section className="wdx-compare" aria-label="A listing or a website">
+        <div className="wdx-section-head" data-reveal>
+          <p className="fdv-eyebrow">Not sure which you need?</p>
+          <h2>A listing to get discovered. A site to close the sale.</h2>
+        </div>
+        <div className="wdx-compare-grid">
+          <div className="wdx-compare-card" data-reveal>
+            <Search size={26} strokeWidth={1.4} aria-hidden="true" />
+            <h3>A LankaNewHomes listing</h3>
+            <p>Puts your project in front of buyers already searching. Free to list, live in minutes — no design work needed from you.</p>
+            <Link href="/for-developers" className="fdv-text-link">Why developers list with us →</Link>
+          </div>
+          <div className="wdx-compare-card wdx-compare-card-dark" data-reveal>
+            <LayoutTemplate size={26} strokeWidth={1.4} aria-hidden="true" />
+            <h3>A dedicated project website</h3>
+            <p>Your own domain and brand, built around this project specifically — where every other lead you generate (ads, signboards, referrals) ends up.</p>
+            <Link href="/contact" className="fdv-text-link">Talk to us about a site →</Link>
+          </div>
+        </div>
+      </section>
+
+      {/* 7 — PROCESS */}
+      <section className="wdx-process" aria-label="How it works">
+        <div className="wdx-section-head" data-reveal>
+          <p className="fdv-eyebrow">How it works</p>
+          <h2>Four steps from &ldquo;we need a site&rdquo; to a live one.</h2>
+        </div>
+        <ol className="wdx-process-list">
           {PROCESS.map((step, index) => (
-            <li className="fd-how-item" key={step.title}>
-              <span className="fd-how-number">{index + 1}</span>
+            <li className="wdx-process-item" key={step.title} data-reveal>
+              <span className="wdx-process-number">{index + 1}</span>
               <div>
                 <h3>{step.title}</h3>
                 <p>{step.body}</p>
@@ -168,37 +206,31 @@ export default function WebDesignPage() {
         </ol>
       </section>
 
-      <section className="fd-section" aria-label="Not sure which one you need">
-        <div className="fd-section-head">
-          <h2>Not sure if you need a listing, a site, or both?</h2>
-          <p>Most developers end up with both — a listing to get discovered, a site to close the sale.</p>
+      {/* 8 — FAQ */}
+      <section className="wdx-faq" aria-label="Questions">
+        <div className="wdx-section-head" data-reveal>
+          <p className="fdv-eyebrow">Questions</p>
+          <h2>What developers ask us.</h2>
         </div>
-
-        <div className="fd-feature-grid fd-compare-grid">
-          <div className="fd-feature-card">
-            <Search className="fd-feature-icon" aria-hidden="true" />
-            <h3>A LankaNewHomes listing</h3>
-            <p>Puts your project in front of buyers already searching. Free to list, live in minutes — no design work needed from you.</p>
-          </div>
-          <div className="fd-feature-card">
-            <LayoutTemplate className="fd-feature-icon" aria-hidden="true" />
-            <h3>A dedicated project website</h3>
-            <p>Your own domain and brand, built around this project specifically — where every other lead you generate (ads, signboards, referrals) ends up.</p>
-          </div>
+        <div className="wdx-faq-list" data-reveal>
+          {FAQS.map((item) => (
+            <details className="wdx-faq-item" key={item.q}>
+              <summary>{item.q}</summary>
+              <p>{item.a}</p>
+            </details>
+          ))}
         </div>
-
-        <p style={{ textAlign: "center", marginTop: 24, fontSize: 14, color: "#57534e" }}>
-          Not sure which fits? <Link href="/contact" style={{ color: "#f47b36", fontWeight: 600 }}>Talk it through with us</Link> — or see <Link href="/for-developers" style={{ color: "#f47b36", fontWeight: 600 }}>why developers list with us</Link>.
-        </p>
       </section>
 
-      <section className="fd-cta-band" aria-label="Get started">
-        <Rocket className="fd-cta-band-icon" aria-hidden="true" />
-        <h2>Have a project that needs a website?</h2>
-        <p>Tell us about it — new site or redesign, we&apos;ll take it from there.</p>
-        <div className="fd-hero-ctas">
-          <Link href="/contact" className="fd-cta-primary">Get in touch</Link>
-          <Link href="/for-developers" className="fd-cta-secondary">List your project instead</Link>
+      {/* 9 — CTA */}
+      <section className="wdx-cta" aria-label="Get started">
+        <div className="wdx-cta-inner" data-reveal>
+          <h2>Have a project that needs a website?</h2>
+          <p>Tell us about it — new site or redesign, we&apos;ll take it from there.</p>
+          <div className="wdx-hero-ctas">
+            <Link href="/contact" className="fdv-cta-primary">Get in touch</Link>
+            <Link href="/for-developers" className="fdv-cta-secondary">List your project instead</Link>
+          </div>
         </div>
       </section>
     </div>

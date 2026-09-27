@@ -14554,3 +14554,731 @@ body:has(.compare-bar) {
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------------------------------------------------------------------- */
+/* /web-design redesign (2026-09-26) — same premium/editorial system as    */
+/* /for-developers: the page root also carries .fdv-page, so it reuses     */
+/* that page's colour tokens (--fdv-*), the shared Fraunces variable, the  */
+/* .fdv-eyebrow / .fdv-cta-* / .fdv-text-link pieces and ScrollReveal's    */
+/* fade-in; everything below is its own `wdx-` layer. It replaces the old  */
+/* dark `.fd-*` layout (that block is no longer used by any page).         */
+/* The live previews load /web-design/sample/embed — see                   */
+/* src/app/(sample)/ for the sample site itself and its own stylesheet.    */
+/* ---------------------------------------------------------------------- */
+
+.wdx-hero {
+  position: relative;
+  min-height: 88vh;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  color: #fff;
+}
+
+.wdx-hero-media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.wdx-hero-img {
+  object-fit: cover;
+  object-position: 60% center;
+}
+
+.wdx-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(10, 9, 12, 0.3) 0%, rgba(10, 9, 12, 0.45) 45%, rgba(10, 9, 12, 0.9) 100%);
+}
+
+.wdx-hero-content {
+  position: relative;
+  z-index: 1;
+  width: min(1180px, calc(100% - 64px));
+  margin: 0 auto;
+  padding-bottom: 96px;
+}
+
+.wdx-hero-headline {
+  margin: 0 0 22px;
+  max-width: 14ch;
+  font-family: var(--fdv-serif);
+  font-weight: 400;
+  font-size: 72px;
+  line-height: 1.04;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+  color: #fff;
+}
+
+.wdx-hero-sub {
+  margin: 0 0 34px;
+  max-width: 520px;
+  font-size: 17px;
+  line-height: 1.65;
+  color: #e4e2dd;
+}
+
+.wdx-hero-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 28px;
+}
+
+.wdx-hero .fdv-cta-secondary,
+.wdx-cta .fdv-cta-secondary {
+  color: #fff;
+}
+
+/* The orange eyebrow sits over a bright part of the photo — lift it. */
+.wdx-hero .fdv-eyebrow {
+  color: #ff9a5c;
+  text-shadow: 0 1px 14px rgba(10, 9, 12, 0.7);
+}
+
+/* Introduction */
+.wdx-intro {
+  padding: 140px 0;
+}
+
+.wdx-intro-grid {
+  width: min(1180px, calc(100% - 64px));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 80px;
+  align-items: start;
+}
+
+.wdx-statement {
+  margin: 0;
+  font-family: var(--fdv-serif);
+  font-weight: 400;
+  font-size: 46px;
+  line-height: 1.16;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.wdx-intro-copy {
+  padding-top: 12px;
+}
+
+.wdx-intro-copy p {
+  margin: 0;
+  max-width: 440px;
+  font-size: 17px;
+  line-height: 1.75;
+  color: var(--fdv-muted);
+}
+
+/* Section heads shared by the lighter bands */
+.wdx-section-head {
+  width: min(1180px, calc(100% - 64px));
+  margin: 0 auto 56px;
+  max-width: 760px;
+  margin-left: max(32px, calc((100% - 1180px) / 2));
+}
+
+.wdx-section-head h2 {
+  margin: 0;
+  font-family: var(--fdv-serif);
+  font-weight: 400;
+  font-size: 42px;
+  line-height: 1.14;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.wdx-section-head p:not(.fdv-eyebrow) {
+  margin: 18px 0 0;
+  max-width: 560px;
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--fdv-muted);
+}
+
+/* Live sample */
+.wdx-sample {
+  padding: 120px 0 120px;
+  background: var(--fdv-ink);
+  color: #f1eee6;
+  overflow: hidden;
+}
+
+.wdx-sample-head {
+  width: min(1180px, calc(100% - 64px));
+  margin: 0 auto 64px;
+}
+
+.wdx-sample-head h2 {
+  margin: 0;
+  max-width: 16ch;
+  font-family: var(--fdv-serif);
+  font-weight: 400;
+  font-size: 54px;
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+  color: #fff;
+}
+
+.wdx-sample-head p:not(.fdv-eyebrow) {
+  margin: 20px 0 0;
+  max-width: 520px;
+  font-size: 17px;
+  line-height: 1.7;
+  color: #b9b5aa;
+}
+
+.wdx-sample-foot {
+  width: min(1180px, calc(100% - 64px));
+  margin: 72px auto 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 18px 28px;
+}
+
+.wdx-sample-foot .fdv-cta-primary {
+  gap: 10px;
+}
+
+.wdx-sample-foot p {
+  margin: 0;
+  font-size: 13.5px;
+  color: #8f8b80;
+}
+
+.wdx-devices {
+  position: relative;
+  width: min(1180px, calc(100% - 64px));
+  margin: 0 auto;
+  padding-bottom: 56px;
+}
+
+.wdx-laptop {
+  width: 88%;
+  overflow: hidden;
+  border-radius: 12px 12px 4px 4px;
+  border: 1px solid #34323d;
+  background: #23212a;
+  box-shadow: 0 50px 100px rgba(0, 0, 0, 0.5);
+}
+
+.wdx-browser-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 40px;
+  padding: 0 16px;
+  background: #2b2932;
+}
+
+.wdx-browser-dots {
+  display: inline-flex;
+  gap: 7px;
+}
+
+.wdx-browser-dots i {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #5b5866;
+}
+
+.wdx-browser-url {
+  flex: 1;
+  max-width: 320px;
+  margin: 0 auto;
+  padding: 5px 12px;
+  border-radius: 6px;
+  background: #1c1b22;
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: #a19dab;
+}
+
+.wdx-preview {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  background: #f6f1e7;
+}
+
+.wdx-preview iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 0;
+  background: #f6f1e7;
+  transform-origin: top left;
+  /* Touch screens: the preview is a picture, so the page scrolls normally. */
+  pointer-events: none;
+}
+
+@media (hover: hover) {
+  /* With a mouse, hovering hands the preview over so it can be scrolled. */
+  .wdx-preview iframe {
+    pointer-events: auto;
+  }
+}
+
+.wdx-phone {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 22%;
+  padding: 10px;
+  border-radius: 34px;
+  border: 1px solid #3a3844;
+  background: #0d0d12;
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.55);
+}
+
+.wdx-phone .wdx-preview {
+  border-radius: 25px;
+}
+
+.wdx-phone-notch {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  z-index: 2;
+  width: 26%;
+  height: 8px;
+  border-radius: 8px;
+  background: #0d0d12;
+  transform: translateX(-50%);
+}
+
+/* What's included */
+.wdx-included {
+  padding: 130px 0 110px;
+}
+
+.wdx-included-grid {
+  width: min(1180px, calc(100% - 64px));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 56px 48px;
+}
+
+.wdx-included-item {
+  position: relative;
+  padding-top: 26px;
+  border-top: 1px solid var(--fdv-line);
+}
+
+.wdx-included-number {
+  position: absolute;
+  top: 26px;
+  right: 0;
+  font-family: var(--fdv-serif);
+  font-size: 15px;
+  color: var(--fdv-accent);
+}
+
+.wdx-included-icon {
+  width: 28px;
+  height: 28px;
+  color: var(--fdv-accent);
+}
+
+.wdx-included-item h3 {
+  margin: 22px 0 10px;
+  font-family: var(--fdv-serif);
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 1.2;
+}
+
+.wdx-included-item p {
+  margin: 0;
+  font-size: 15.5px;
+  line-height: 1.7;
+  color: var(--fdv-muted);
+}
+
+/* Homepage sections band */
+.wdx-sections {
+  padding: 110px 0;
+  background: #efe9dc;
+}
+
+.wdx-sections-inner {
+  width: 100%;
+}
+
+.wdx-sections .wdx-section-head {
+  margin-bottom: 40px;
+}
+
+.wdx-chip-list {
+  width: min(1180px, calc(100% - 64px));
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.wdx-chip-list li {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 20px;
+  border: 1px solid #d3cbb9;
+  background: #fbf8f1;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.wdx-chip-list li::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  background: var(--fdv-accent);
+}
+
+/* Listing vs website */
+.wdx-compare {
+  padding: 130px 0 110px;
+}
+
+.wdx-compare-grid {
+  width: min(1180px, calc(100% - 64px));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.wdx-compare-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 44px 40px 40px;
+  border: 1px solid var(--fdv-line);
+  background: #fbf9f4;
+}
+
+.wdx-compare-card svg {
+  color: var(--fdv-accent);
+}
+
+.wdx-compare-card h3 {
+  margin: 22px 0 12px;
+  font-family: var(--fdv-serif);
+  font-weight: 400;
+  font-size: 30px;
+  line-height: 1.15;
+}
+
+.wdx-compare-card p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--fdv-muted);
+}
+
+.wdx-compare-card-dark {
+  background: var(--fdv-ink);
+  border-color: var(--fdv-ink);
+  color: #fff;
+}
+
+.wdx-compare-card-dark p {
+  color: #bdb9ae;
+}
+
+.wdx-compare-card-dark .fdv-text-link {
+  color: #fff;
+  border-color: #fff;
+}
+
+.wdx-compare-card-dark .fdv-text-link:hover {
+  color: var(--fdv-accent);
+  border-color: var(--fdv-accent);
+}
+
+/* Process */
+.wdx-process {
+  padding: 40px 0 130px;
+}
+
+.wdx-process-list {
+  width: min(1180px, calc(100% - 64px));
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px;
+}
+
+.wdx-process-item {
+  padding-top: 24px;
+  border-top: 1px solid var(--fdv-ink);
+}
+
+.wdx-process-number {
+  display: block;
+  margin-bottom: 18px;
+  font-family: var(--fdv-serif);
+  font-size: 46px;
+  line-height: 1;
+  color: var(--fdv-accent);
+}
+
+.wdx-process-item h3 {
+  margin: 0 0 10px;
+  font-family: var(--fdv-serif);
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+.wdx-process-item p {
+  margin: 0;
+  font-size: 15.5px;
+  line-height: 1.7;
+  color: var(--fdv-muted);
+}
+
+/* FAQ */
+.wdx-faq {
+  padding: 0 0 140px;
+}
+
+.wdx-faq-list {
+  width: min(860px, calc(100% - 64px));
+  margin: 0 auto 0 max(32px, calc((100% - 1180px) / 2));
+  border-top: 1px solid var(--fdv-line);
+}
+
+.wdx-faq-item {
+  border-bottom: 1px solid var(--fdv-line);
+}
+
+.wdx-faq-item summary {
+  position: relative;
+  display: block;
+  padding: 24px 44px 24px 0;
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--fdv-serif);
+  font-size: 22px;
+  line-height: 1.3;
+}
+
+.wdx-faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.wdx-faq-item summary::after {
+  content: "+";
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-ref-sans), sans-serif;
+  font-size: 26px;
+  font-weight: 300;
+  color: var(--fdv-accent);
+  transition: transform 0.25s ease;
+}
+
+.wdx-faq-item[open] summary::after {
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.wdx-faq-item p {
+  margin: 0;
+  padding: 0 44px 26px 0;
+  max-width: 720px;
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--fdv-muted);
+}
+
+/* Closing call to action */
+.wdx-cta {
+  padding: 120px 0;
+  background: var(--fdv-ink);
+  color: #fff;
+  text-align: center;
+}
+
+.wdx-cta-inner {
+  width: min(720px, calc(100% - 64px));
+  margin: 0 auto;
+}
+
+.wdx-cta h2 {
+  margin: 0 0 16px;
+  font-family: var(--fdv-serif);
+  font-weight: 400;
+  font-size: 46px;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.wdx-cta p {
+  margin: 0 0 36px;
+  font-size: 17px;
+  line-height: 1.65;
+  color: #bdb9ae;
+}
+
+.wdx-cta .wdx-hero-ctas {
+  justify-content: center;
+}
+
+@media (max-width: 1000px) {
+  .wdx-hero-headline {
+    font-size: 56px;
+  }
+
+  .wdx-included-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .wdx-process-list {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 48px 40px;
+  }
+}
+
+@media (max-width: 760px) {
+  .wdx-hero {
+    min-height: 82vh;
+  }
+
+  .wdx-hero-content {
+    width: min(560px, calc(100% - 44px));
+    padding-bottom: 64px;
+  }
+
+  .wdx-hero-headline {
+    font-size: 40px;
+  }
+
+  .wdx-intro,
+  .wdx-included,
+  .wdx-compare {
+    padding: 80px 0;
+  }
+
+  .wdx-intro-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    width: calc(100% - 44px);
+  }
+
+  .wdx-statement {
+    font-size: 32px;
+  }
+
+  .wdx-section-head {
+    width: calc(100% - 44px);
+    margin-left: 22px;
+    margin-bottom: 36px;
+  }
+
+  .wdx-section-head h2,
+  .wdx-cta h2 {
+    font-size: 32px;
+  }
+
+  .wdx-sample {
+    padding: 80px 0;
+  }
+
+  .wdx-sample-head,
+  .wdx-sample-foot,
+  .wdx-devices {
+    width: calc(100% - 44px);
+  }
+
+  .wdx-sample-head {
+    margin-bottom: 40px;
+  }
+
+  .wdx-sample-head h2 {
+    font-size: 36px;
+  }
+
+  /* On a phone the laptop preview would be too small to read, so show just the
+     phone, full-size and centred. */
+  .wdx-laptop {
+    display: none;
+  }
+
+  .wdx-devices {
+    display: flex;
+    justify-content: center;
+    padding-bottom: 0;
+  }
+
+  .wdx-phone {
+    position: relative;
+    width: min(280px, 100%);
+  }
+
+  .wdx-sample-foot {
+    margin-top: 44px;
+  }
+
+  .wdx-included-grid,
+  .wdx-compare-grid,
+  .wdx-process-list {
+    width: calc(100% - 44px);
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .wdx-compare-grid {
+    gap: 18px;
+  }
+
+  .wdx-compare-card {
+    padding: 32px 26px;
+  }
+
+  .wdx-sections {
+    padding: 80px 0;
+  }
+
+  .wdx-chip-list {
+    width: calc(100% - 44px);
+  }
+
+  .wdx-process {
+    padding-bottom: 80px;
+  }
+
+  .wdx-faq {
+    padding-bottom: 90px;
+  }
+
+  .wdx-faq-list {
+    width: calc(100% - 44px);
+    margin-left: 22px;
+  }
+
+  .wdx-faq-item summary {
+    font-size: 19px;
+  }
+
+  .wdx-cta {
+    padding: 84px 0;
+  }
+}

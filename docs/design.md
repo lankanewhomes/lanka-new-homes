@@ -1474,7 +1474,7 @@ pricing table's own badge previews) now matches the listing-card shape
 exactly (owner: "for all the badges use the ones from project
 listings").
 
-**`/web-design`** (2026-09-10) reuses this same `.fd-*` system for a second,
+**`/web-design`** (2026-09-10; **superseded 2026-09-26** — see "/web-design redesign + sample site" below; the `.fd-*` classes are now unused by any page) reused this same `.fd-*` system for a second,
 unrelated offer — custom project websites, separate from a marketplace
 listing. New `.fd-hero-grid-single` variant (single centered column, no
 photo) for pages with no real listing image to show. Linked from the
@@ -1514,6 +1514,50 @@ below the header divider), and `.mobile-menu-actions` /
 in/Sign up and the language switcher is `22px` (was `16px`) — those two sit
 back-to-back at the bottom of the panel and read as cramped together at the
 tighter spacing.
+
+## /web-design redesign + the sample site (2026-09-26)
+
+**`/web-design`** was rebuilt in the same premium/editorial system as
+`/for-developers`: the page root carries `fdv-page wdx-page` plus the shared
+Fraunces variable (`--fdv-font-serif`), so it reuses that page's colour tokens,
+`.fdv-eyebrow` / `.fdv-cta-*` / `.fdv-text-link` and `ScrollReveal`'s fade-in,
+and adds its own `wdx-` layer (end of `globals.css`). Sections, in order: image
+hero (the sample's hero photo) → statement ("A listing gets you found. A website
+tells your story.") → **live sample** on a dark band (laptop + phone frames) →
+"Every site includes" (6 numbered items) → chip list of homepage sections →
+listing-vs-website cards → 4-step process → FAQ (`<details>`) → dark CTA band.
+Copy is the old page's claims, re-laid; the only new claim is the FAQ line that
+pricing is quoted per project (no prices are published — same "no invented
+numbers" rule as `/for-developers`). Don't add a prices/timelines claim without
+the owner giving the number.
+
+**The sample site** (`/web-design/sample`, "Halcyon Residences") is a complete,
+fictional developer homepage — hero + key facts, intro, three villa plans
+(schematic SVG sketches), gallery, amenities, stylised location map, build
+progress + payment plan, enquiry form, footer, phone action bar — built to show
+what a developer's own site can be.
+- **Own root layout**: `src/app/(sample)/layout.tsx` (a third route group, like
+  `(payload)`), so it has none of LankaNewHomes' header/footer/compare bar and its
+  own fonts (Cormorant Garamond + DM Sans) and palette (deep green, cream, brass) —
+  deliberately unlike the marketplace, to show a site carries the developer's
+  brand. Styles live in `src/app/(sample)/sample.css` (`.smp-*`), not `globals.css`.
+  Markup: `src/components/web-design-sample/`.
+- **Clearly a sample**: a top bar says so (back link + "Get a site like this"),
+  the footer repeats it, prices/distances/phone are placeholders (`Rs. XX.X million`,
+  `+94 XX XXX XXXX`), photography is Unsplash (free licence), and the route is
+  `noindex`. The enquiry form validates but **sends nothing** (no request leaves
+  the page), so it can never create a real lead; its phone box uses the same
+  worldwide country picker as the marketplace forms.
+- **`/web-design/sample/embed`** is the same page without the sample bar, loaded
+  by the device frames on `/web-design` (`web-design-frames.tsx`): an iframe of the
+  real page at its true desktop/phone width, scaled with a CSS transform. While on
+  screen and not hovered it auto-scrolls down the page (same-origin, parent drives
+  the iframe's scroll; off for reduced-motion) and loops; hovering (mouse only) lets
+  the visitor scroll it themselves. On phones only the phone frame is shown.
+  Because it is a live iframe it can never go out of date with the sample.
+- Pitfall found while building: the sample's CSS reset uses `:where()` — a plain
+  `.smp-root ul { margin: 0 }` (specificity 0,1,1) silently beat every single-class
+  margin rule (`.smp-facts { margin: 0 auto }`).
 
 ## Social publishing (Project → Social tab)
 
