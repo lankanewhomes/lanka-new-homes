@@ -165,7 +165,28 @@ export default buildConfig({
   endpoints: [analyticsEndpoint, analyticsSummaryEndpoint, importListingEndpoint, listingTodoEndpoint, leadActivityEndpoint, socialStatusEndpoint, socialPostEndpoint],
   editor: lexicalEditor(),
   db: postgresAdapter({
-    pool: { connectionString: process.env.DATABASE_URI },
+    pool: {
+      connectionString: process.env.DATABASE_URI,
+      // DATABASE_URI points at Supabase's SESSION-mode pooler (port 5432),
+      // which has a small hard client cap (15 backends on this project's
+      // compute size — see `select ... from pg_stat_activity` grouped by
+      // application_name = 'Supavisor'). node-postgres' default `max` is
+      // 10, so ONE serverless instance running the admin dashboard's
+      // parallel count() queries can grab most of that cap, and Vercel
+      // instances that go idle keep their pooled connections open while
+      // suspended. When the cap is hit, the next cold start can't connect,
+      // Payload's root layout throws, and /cms/login shows Next's "This
+      // page couldn't load — ERROR <digest>" screen until a reload lands on
+      // a free slot (intermittent, worst right after deploys). Keep each
+      // instance small and release idle connections quickly. Queries just
+      // queue for a free connection; connectionTimeoutMillis bounds the
+      // worst-case wait so a stuck request fails loudly instead of hanging.
+      // Override with DATABASE_POOL_MAX if the pooler's pool size is raised
+      // in the Supabase dashboard.
+      max: Number(process.env.DATABASE_POOL_MAX) || 4,
+      idleTimeoutMillis: 5_000,
+      connectionTimeoutMillis: 20_000,
+    },
     // Dedicated schema so Payload's tables never collide with (or touch)
     // the existing public.* Supabase tables/RLS policies/triggers.
     schemaName: 'payload',
