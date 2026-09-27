@@ -542,6 +542,31 @@ gutter (negative `calc(50% - 50vw)` margin, matched by extra padding). On
 desktop they stay boxed at `max-width: 1280px`. Any new homepage band should
 join that mobile rule in `globals.css`.
 
+### "New listings" shelf is time-boxed: 30 days after going live (2026-09-26)
+
+Owner's placement spec: a Free listing appears in the homepage "New listings"
+shelf for 30 days after it goes live, then only organic placement remains. The
+shelf used to sort by creation date with no cutoff. Now (`src/lib/new-listings.ts`):
+- **When a listing "went live"** = `publishedAt`, else `createdAt`.
+  `publishedAt` is stamped by `syncProjectToSupabase` the first time a project
+  syncs as published and kept forever (a republish or later edit never resets
+  it; a listing that was already live before this existed is stamped with its
+  creation time, so editing an old listing doesn't make it "new" again). It
+  lives in the Supabase row's `data` JSON — no Payload schema change.
+- **Window**: `NEW_LISTINGS_WINDOW_DAYS = 30`. The cutoff is computed on the
+  server (`page.tsx`, `newListingsCutoff()`) and passed to `HomeClient` as
+  `newListingsSince`, so the cached HTML and the client hydration pass agree
+  (computing `Date.now()` in the client could disagree for a listing on the
+  boundary and trip a hydration mismatch).
+- **Applies to every listing on the shelf**, not just Free: paid listings have
+  the "Featured projects" section instead, and a paid listing already in that
+  section is excluded from New listings as before.
+- **Empty shelf**: if no listing is inside the window the whole section is
+  hidden (no backfill with old listings). Today every published listing is
+  under 30 days old (the oldest was added 2026-09-05), so nothing visibly
+  changes until early October.
+- Lands ("Land for sale" shelf) are unchanged.
+
 ## Pricing card: one row per sentence (owner, 2026-09-23)
 
 Free-text pricing fields ("Available plan prices", "Pricing coming soon",

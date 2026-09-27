@@ -10,6 +10,7 @@ import { ListingGridCard } from "@/components/marketplace/listing-page";
 import { allProjectCategories } from "@/lib/listing-categories";
 import { getPackage, planRotationWeight } from "@/lib/packages";
 import { weightedTake } from "@/lib/weighted-random";
+import { isInNewListingsWindow } from "@/lib/new-listings";
 import type { Developer, HeroAd, Project } from "@/types";
 
 // Real photos of each city (Wikimedia Commons), replacing generic Unsplash
@@ -81,7 +82,18 @@ const SEO_LINK_GROUPS: { title: string; links: { label: string; href: string }[]
   },
 ];
 
-export function HomeClient({ projects, lands = [], developers = [] }: { projects: Project[]; lands?: Project[]; developers?: Developer[] }) {
+export function HomeClient({
+  projects,
+  lands = [],
+  developers = [],
+  newListingsSince,
+}: {
+  projects: Project[];
+  lands?: Project[];
+  developers?: Developer[];
+  /** ISO cutoff for the 30-day "New listings" window, computed on the server (see lib/new-listings.ts). Omitted = no time limit. */
+  newListingsSince?: string;
+}) {
   const { language } = useLanguage();
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
@@ -256,13 +268,20 @@ export function HomeClient({ projects, lands = [], developers = [] }: { projects
   // by launchDate meant a project with no launchDate could never surface on
   // this shelf, and the same handful of projects with one set showed up
   // indefinitely regardless of what was actually added recently.
+  //
+  // Time-boxed (owner's placement spec, 2026-09-24): a listing stays on this
+  // shelf for 30 days after it went live (publishedAt, else createdAt — see
+  // lib/new-listings.ts), then only its organic placement remains. If nothing
+  // is that fresh the whole section is hidden rather than backfilled with old
+  // listings.
   const newListings = useMemo(() => {
     const featuredSlugs = new Set(featuredProjects.map((project) => project.slug));
     return [...projects]
       .filter((project) => !featuredSlugs.has(project.slug))
-      .sort((a, b) => (b.createdAt ?? "").localeCompare(a.createdAt ?? ""))
+      .filter((project) => !newListingsSince || isInNewListingsWindow(project, newListingsSince))
+      .sort((a, b) => (b.publishedAt ?? b.createdAt ?? "").localeCompare(a.publishedAt ?? a.createdAt ?? ""))
       .slice(0, 8);
-  }, [projects, featuredProjects]);
+  }, [projects, featuredProjects, newListingsSince]);
   const landListings = useMemo(
     () => [...lands].sort((a, b) => (b.createdAt ?? "").localeCompare(a.createdAt ?? "")).slice(0, 8),
     [lands]
@@ -405,25 +424,27 @@ export function HomeClient({ projects, lands = [], developers = [] }: { projects
         </section>
       ) : null}
 
-      <section className="new-listings-section" aria-label="New listings">
-        <div className="featured-listings-head">
-          <h2>New listings</h2>
-          <p className="featured-listings-subhead">The latest developments just added to Lanka New Homes.</p>
-        </div>
-        <div className="featured-listings-shell">
-          <div className="home-card-grid featured-listings-grid">
-            {newListings.map((project) => (
-              <ListingGridCard key={`new-${project.slug}`} project={project} />
-            ))}
+      {newListings.length > 0 ? (
+        <section className="new-listings-section" aria-label="New listings">
+          <div className="featured-listings-head">
+            <h2>New listings</h2>
+            <p className="featured-listings-subhead">The latest developments just added to Lanka New Homes.</p>
           </div>
-          <div className="featured-listings-footer new-listings-footer">
-            <Link href="/search" className="featured-listings-button">
-              View all new listings
-              <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
-            </Link>
+          <div className="featured-listings-shell">
+            <div className="home-card-grid featured-listings-grid">
+              {newListings.map((project) => (
+                <ListingGridCard key={`new-${project.slug}`} project={project} />
+              ))}
+            </div>
+            <div className="featured-listings-footer new-listings-footer">
+              <Link href="/search" className="featured-listings-button">
+                View all new listings
+                <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+              </Link>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      ) : null}
 
       {/* Free-listing pitch to developers, right after New listings — "your project could be
           here too". Owner asked for it on the homepage but not in the hero (2026-09-24). */}

@@ -261,6 +261,12 @@ export type Project = SeoFields & {
    * public listing page, used only to sort "new listings" shelves by real
    * recency instead of the developer's own (often-unset) launchDate. */
   createdAt?: string;
+  /** When the listing FIRST went live (stamped by the Payload→Supabase sync
+   * the first time it syncs as published; never reset). Starts the 30-day
+   * "New listings" homepage window — see lib/new-listings.ts. Absent on
+   * listings that were already live before this existed; those fall back to
+   * `createdAt`. */
+  publishedAt?: string;
   developerSlug: string;
   developerName: string;
   architectName?: string;

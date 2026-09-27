@@ -2,6 +2,7 @@ import type { CollectionAfterChangeHook, CollectionAfterDeleteHook, PayloadReque
 import { supabaseAdmin } from '@/lib/supabase'
 import { insertLead } from '@/lib/tracking-db'
 import { planRotationWeight } from '@/lib/packages'
+import { resolvePublishedAt } from '@/lib/new-listings'
 import { effectivePlanTier } from './sync-developer-plan'
 
 // Payload -> Supabase, one-way: whatever gets saved in Payload overwrites
@@ -144,8 +145,33 @@ export const syncProjectToSupabase: CollectionAfterChangeHook = async ({ doc, re
       endDate: p.end_date,
     }))
 
+    // "Went live" moment for the homepage's 30-day New listings window
+    // (lib/new-listings.ts): stamped the first time the project syncs as
+    // published, then kept. Read from the existing Supabase row (no Payload
+    // schema change — it lives in the row's `data` JSON). A failed lookup just
+    // skips the stamp this time; the shelf then falls back to created_at.
+    let publishedAt: string | undefined
+    try {
+      const { data: existingRow } = await supabaseAdmin.from('projects').select('data, created_at').eq('slug', d.slug).maybeSingle()
+      const existingData = (existingRow?.data ?? null) as AnyDoc | null
+      publishedAt = resolvePublishedAt({
+        isPublishedNow: d.isPublished !== false,
+        existing: existingRow
+          ? {
+              publishedAt: typeof existingData?.publishedAt === 'string' ? existingData.publishedAt : undefined,
+              wasLive: existingData?.isPublished !== false,
+              createdAt: typeof existingRow.created_at === 'string' ? existingRow.created_at : undefined,
+            }
+          : null,
+        nowIso: new Date().toISOString(),
+      })
+    } catch (err) {
+      req.payload.logger.warn(`Could not resolve publishedAt for ${d.slug}: ${err instanceof Error ? err.message : err}`)
+    }
+
     const project: AnyDoc = {
       ...d,
+      ...(publishedAt ? { publishedAt } : {}),
       developerSlug: developer.slug ?? d.developerSlug,
       developerName: developer.name ?? d.developerName,
       architectSlug: architect.slug,
