@@ -107,6 +107,8 @@ import { Amenity, Article, Developer, FloorPlan, Lead, Location, NearbyPlace, Pr
 import { localizedProjectCopy, useListingT } from "@/lib/i18n/use-listing-t";
 import { floorPlanSummarySentence } from "@/lib/i18n/floor-plan-sentence";
 import { formatWhatsAppNumber, listingWhatsAppHref } from "@/lib/whatsapp";
+import { buildInternationalPhone, DEFAULT_PHONE_COUNTRY, isPlausiblePhone } from "@/lib/phone";
+import { PhoneField, type PhoneValue } from "@/components/marketplace/phone-field";
 import { groupNearbyPlaces } from "@/lib/nearby-places";
 import { sortConstructionUpdates } from "@/lib/construction-updates";
 import type { MapArea, MapPlace } from "@/components/marketplace/map-pane";
@@ -1967,7 +1969,9 @@ export function RequestInfoDialog({
 }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
+  // Buyers can be anywhere in the world: country + local number, stored with
+  // the international prefix (see lib/phone.ts) so reply links work abroad.
+  const [phoneValue, setPhoneValue] = useState<PhoneValue>({ country: DEFAULT_PHONE_COUNTRY, national: "" });
   const [message, setMessage] = useState("");
   const [contactMethod, setContactMethod] = useState<"Phone" | "Text" | "Email">("Phone");
   const [agreed, setAgreed] = useState(false);
@@ -1998,6 +2002,11 @@ export function RequestInfoDialog({
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const phone = isPlausiblePhone(phoneValue.country, phoneValue.national) ? buildInternationalPhone(phoneValue.country, phoneValue.national) : null;
+    if (!phone) {
+      setErrorMessage("Please enter a valid phone number, including the right country code.");
+      return;
+    }
     setSubmitting(true);
     setErrorMessage("");
 
@@ -2113,17 +2122,10 @@ export function RequestInfoDialog({
               </label>
             ) : null}
 
-            <label className="request-info-field">
-              <span>{isInquiry ? "Contact Number" : "Phone number"}<span className="request-info-star">*</span></span>
-              {isInquiry ? (
-                <div className="request-info-phone-row">
-                  <span className="request-info-phone-flag" aria-hidden="true">🇱🇰 +94</span>
-                  <input type="tel" value={phone} onChange={(event) => setPhone(event.target.value)} required placeholder="7X XXX XXXX" />
-                </div>
-              ) : (
-                <input type="tel" value={phone} onChange={(event) => setPhone(event.target.value)} required placeholder="+94 7X XXX XXXX" />
-              )}
-            </label>
+            <div className="request-info-field">
+              <span id="request-info-phone-label">{isInquiry ? "Contact Number" : "Phone number"}<span className="request-info-star">*</span></span>
+              <PhoneField value={phoneValue} onChange={setPhoneValue} labelId="request-info-phone-label" required />
+            </div>
 
             {!isInquiry ? (
               <label className="request-info-field">

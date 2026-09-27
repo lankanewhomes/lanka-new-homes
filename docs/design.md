@@ -614,6 +614,24 @@ false`, so ownership rules still apply. Image-only PDFs (most brochures)
 yield nothing but are stored as the brochure. Route handler has
 `maxDuration = 60`.
 
+## Enquiry form phone number: any country (2026-09-26)
+
+Buyers write in from all over the world, so the phone field on the enquiry
+dialog (`RequestInfoDialog` — the "Contact Us" popup, the "Send us your
+inquiry" variant, and the brochure popup) is no longer Sri Lanka only.
+`PhoneField` (`src/components/marketplace/phone-field.tsx`) is a country-code
+picker plus the number box: the closed picker shows just "🇱🇰 +94" (a
+transparent native `<select>` covers it, so phones get the OS list; the list
+shows country names, ~230 of them, Sri Lanka + common expat countries first,
+then A–Z). Sri Lanka is the default. Typing or pasting a full international
+number (`+44 7911 123456`, `0044 …`) into the number box switches the country
+by itself. The stored `phone` is always international — `+44 7911 123456`,
+one local leading 0 dropped (`src/lib/phone.ts`, `buildInternationalPhone`) —
+so the developer's one-tap WhatsApp/Call reply links work for a buyer abroad
+(the old Sri Lanka-only inquiry variant sent the number without its `+94`).
+A number with under 4 digits or over 15 in total is rejected with a message.
+The `/contact` page itself has no form or phone field (email only).
+
 ## Lead alerts, pipeline and response time
 
 **Alert.** Creating a lead in Payload (the `/api/leads` route mirrors every
