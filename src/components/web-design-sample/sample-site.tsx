@@ -1,22 +1,38 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Baby, Check, Coffee, Download, Dumbbell, MessageCircle, Phone, PlugZap, ShieldCheck, Sun, TreePine, Waves } from "lucide-react";
+import {
+  ArrowRight,
+  Baby,
+  Car,
+  Check,
+  Coffee,
+  Download,
+  Dumbbell,
+  Film,
+  MessageCircle,
+  Phone,
+  PlugZap,
+  Sailboat,
+  ShieldCheck,
+  Sparkles,
+  Sun,
+  TreePine,
+  UtensilsCrossed,
+  Waves,
+  Wifi,
+} from "lucide-react";
 import { LocationMap } from "./location-map";
 import { PlanDrawing } from "./plan-drawing";
 import { SampleEnquiryForm } from "./sample-enquiry-form";
 import { SampleHeader } from "./sample-header";
-import {
-  SAMPLE_AMENITIES,
-  SAMPLE_FACTS,
-  SAMPLE_GALLERY,
-  SAMPLE_IMAGES,
-  SAMPLE_NEARBY,
-  SAMPLE_PAYMENT_STEPS,
-  SAMPLE_PROGRESS,
-  SAMPLE_RESIDENCES,
-} from "./sample-data";
+import { HALCYON_THEME } from "./sample-data";
+import type { AmenityIconKey, SampleTheme } from "./theme-types";
 
-const AMENITY_ICONS = {
+// One icon set shared by all three themes' amenity lists — each theme only
+// uses the keys relevant to its own property type (waves/dumbbell/trees/etc.
+// for garden villas, +film/wifi/car for a tower, +sailboat/utensils for a
+// beach resort).
+const AMENITY_ICONS: Record<AmenityIconKey, typeof Waves> = {
   waves: Waves,
   dumbbell: Dumbbell,
   trees: TreePine,
@@ -25,18 +41,26 @@ const AMENITY_ICONS = {
   plug: PlugZap,
   coffee: Coffee,
   sun: Sun,
-} as const;
+  film: Film,
+  wifi: Wifi,
+  car: Car,
+  sparkles: Sparkles,
+  sailboat: Sailboat,
+  utensils: UtensilsCrossed,
+};
 
 /**
  * A complete sample homepage for a fictional development, to show developers
- * what LankaNewHomes Web Design can build. `embedded` drops the "this is a
- * sample" bar — used for the live previews inside the device frames on
- * /web-design. Every name, figure, distance and contact detail is placeholder
- * content, and the page says so.
+ * what LankaNewHomes Web Design can build. `theme` picks which of the three
+ * samples renders (Halcyon Residences / Meridian Heights / Azure Cove —
+ * defaults to Halcyon so existing callers/routes need no changes). `embedded`
+ * drops the "this is a sample" bar — used for the live previews inside the
+ * device frames on /web-design. Every name, figure, distance and contact
+ * detail is placeholder content, and the page says so.
  */
-export function SampleSite({ embedded = false }: { embedded?: boolean }) {
+export function SampleSite({ theme = HALCYON_THEME, embedded = false }: { theme?: SampleTheme; embedded?: boolean }) {
   return (
-    <div className="smp-root" id="top">
+    <div className="smp-root" id="top" data-theme={theme.id}>
       {!embedded ? (
         <div className="smp-banner" role="note">
           <span className="smp-banner-text">
@@ -50,26 +74,24 @@ export function SampleSite({ embedded = false }: { embedded?: boolean }) {
         </div>
       ) : null}
 
-      <SampleHeader hasBanner={!embedded} />
+      <SampleHeader hasBanner={!embedded} theme={theme} />
 
       <main>
         {/* HERO */}
-        <section className="smp-hero" aria-label="Halcyon Residences">
-          <Image src={SAMPLE_IMAGES.hero} alt="" fill priority sizes="100vw" className="smp-hero-img" />
+        <section className="smp-hero" aria-label={theme.heroAriaLabel}>
+          <Image src={theme.images.hero} alt="" fill priority sizes="100vw" className="smp-hero-img" />
           <div className="smp-hero-shade" />
           <div className="smp-hero-content">
-            <p className="smp-eyebrow smp-eyebrow-light">Battaramulla · Colombo</p>
-            <h1 className="smp-hero-title">Live where the garden meets the city.</h1>
-            <p className="smp-hero-sub">
-              Thirty-two garden villas in a gated community — a pool, a clubhouse and mature trees, ten minutes from everything.
-            </p>
+            <p className="smp-eyebrow smp-eyebrow-light">{theme.locationLine}</p>
+            <h1 className="smp-hero-title">{theme.heroHeadline}</h1>
+            <p className="smp-hero-sub">{theme.heroSub}</p>
             <div className="smp-hero-ctas">
               <a href="#enquire" className="smp-btn smp-btn-brass">Register interest</a>
               <a href="#enquire" className="smp-btn smp-btn-ghost"><Download size={16} aria-hidden="true" /> Download brochure</a>
             </div>
           </div>
           <ul className="smp-facts" aria-label="Key facts">
-            {SAMPLE_FACTS.map((fact) => (
+            {theme.facts.map((fact) => (
               <li key={fact.value}>
                 <strong>{fact.value}</strong>
                 <span>{fact.label}</span>
@@ -82,33 +104,30 @@ export function SampleSite({ embedded = false }: { embedded?: boolean }) {
         <section className="smp-section smp-intro" aria-label="About the development">
           <div className="smp-intro-grid">
             <div className="smp-intro-copy">
-              <p className="smp-eyebrow">The development</p>
-              <h2 className="smp-h2">A quiet address, close to everything.</h2>
-              <p>
-                Halcyon Residences is a community of thirty-two villas set around shared gardens. Every home is planned
-                around light, cross-ventilation and a garden you can walk out to — with the city a short drive away.
-              </p>
+              <p className="smp-eyebrow">{theme.introEyebrow}</p>
+              <h2 className="smp-h2">{theme.introHeading}</h2>
+              <p>{theme.introBody}</p>
               <ul className="smp-checks">
-                {["Architect-designed, three villa types", "Private gardens and shared green space", "Ten minutes to schools, hospitals and the expressway"].map((line) => (
+                {theme.introChecks.map((line) => (
                   <li key={line}><Check size={16} aria-hidden="true" /> {line}</li>
                 ))}
               </ul>
             </div>
             <div className="smp-intro-media">
-              <Image src={SAMPLE_IMAGES.intro} alt="Villa with a pool and palm trees" fill sizes="(min-width: 900px) 46vw, 100vw" className="smp-cover" />
+              <Image src={theme.images.intro} alt="" fill sizes="(min-width: 900px) 46vw, 100vw" className="smp-cover" />
             </div>
           </div>
         </section>
 
         {/* RESIDENCES */}
-        <section className="smp-section smp-residences" id="residences" aria-label="Residences">
+        <section className="smp-section smp-residences" id="residences" aria-label={theme.residencesEyebrow}>
           <div className="smp-section-head">
-            <p className="smp-eyebrow">Residences</p>
-            <h2 className="smp-h2">Three villas. One way of living.</h2>
-            <p>Choose the plan that fits your family. Prices below are placeholders for the sample.</p>
+            <p className="smp-eyebrow">{theme.residencesEyebrow}</p>
+            <h2 className="smp-h2">{theme.residencesHeading}</h2>
+            <p>{theme.residencesSub}</p>
           </div>
           <div className="smp-residence-grid">
-            {SAMPLE_RESIDENCES.map((residence) => (
+            {theme.residences.map((residence) => (
               <article className="smp-residence" key={residence.key}>
                 <div className="smp-plan"><PlanDrawing rooms={residence.rooms} label={`Sketch plan of ${residence.name}`} /></div>
                 <h3>{residence.name}</h3>
@@ -127,10 +146,10 @@ export function SampleSite({ embedded = false }: { embedded?: boolean }) {
         <section className="smp-section smp-gallery" id="gallery" aria-label="Gallery">
           <div className="smp-section-head">
             <p className="smp-eyebrow">Gallery</p>
-            <h2 className="smp-h2">Made to be lived in.</h2>
+            <h2 className="smp-h2">{theme.galleryHeading}</h2>
           </div>
           <div className="smp-gallery-grid">
-            {SAMPLE_GALLERY.map((item) => (
+            {theme.gallery.map((item) => (
               <figure className={`smp-gallery-item${item.wide ? " is-wide" : ""}`} key={item.src}>
                 <Image src={item.src} alt={item.alt} fill sizes="(min-width: 900px) 33vw, 100vw" className="smp-cover" />
                 <figcaption>{item.caption}</figcaption>
@@ -142,11 +161,11 @@ export function SampleSite({ embedded = false }: { embedded?: boolean }) {
         {/* AMENITIES */}
         <section className="smp-section smp-amenities" id="amenities" aria-label="Amenities">
           <div className="smp-section-head">
-            <p className="smp-eyebrow smp-eyebrow-light">Amenities</p>
-            <h2 className="smp-h2 smp-h2-light">Everything shared, nothing crowded.</h2>
+            <p className="smp-eyebrow smp-eyebrow-light">{theme.amenitiesEyebrow}</p>
+            <h2 className="smp-h2 smp-h2-light">{theme.amenitiesHeading}</h2>
           </div>
           <div className="smp-amenity-grid">
-            {SAMPLE_AMENITIES.map((amenity) => {
+            {theme.amenities.map((amenity) => {
               const Icon = AMENITY_ICONS[amenity.icon];
               return (
                 <div className="smp-amenity" key={amenity.title}>
@@ -163,28 +182,28 @@ export function SampleSite({ embedded = false }: { embedded?: boolean }) {
         <section className="smp-section smp-location" id="location" aria-label="Location">
           <div className="smp-location-grid">
             <div className="smp-location-copy">
-              <p className="smp-eyebrow">Location</p>
-              <h2 className="smp-h2">Ten minutes from what matters.</h2>
-              <p>Distances are illustrative for the sample. On your site this section shows your real location and nearby places.</p>
+              <p className="smp-eyebrow">{theme.locationEyebrow}</p>
+              <h2 className="smp-h2">{theme.locationHeading}</h2>
+              <p>{theme.locationBody}</p>
               <ul className="smp-nearby">
-                {SAMPLE_NEARBY.map((place) => (
+                {theme.nearby.map((place) => (
                   <li key={place.name}><span>{place.name}</span><strong>{place.time}</strong></li>
                 ))}
               </ul>
             </div>
-            <div className="smp-location-map"><LocationMap /></div>
+            <div className="smp-location-map"><LocationMap title={theme.mapTitle} pois={theme.mapPois} /></div>
           </div>
         </section>
 
         {/* PROGRESS + PAYMENT */}
         <section className="smp-section smp-progress" id="progress" aria-label="Construction progress and payment plan">
           <div className="smp-section-head">
-            <p className="smp-eyebrow">Progress</p>
-            <h2 className="smp-h2">See it being built.</h2>
-            <p>Buyers can follow construction stage by stage — updated by your team.</p>
+            <p className="smp-eyebrow">{theme.progressEyebrow}</p>
+            <h2 className="smp-h2">{theme.progressHeading}</h2>
+            <p>{theme.progressSub}</p>
           </div>
           <ol className="smp-stepper">
-            {SAMPLE_PROGRESS.map((step) => (
+            {theme.progress.map((step) => (
               <li key={step.title} className={`is-${step.state}`}>
                 <span className="smp-step-dot" aria-hidden="true">{step.state === "done" ? <Check size={14} /> : null}</span>
                 <span className="smp-step-title">{step.title}</span>
@@ -194,9 +213,9 @@ export function SampleSite({ embedded = false }: { embedded?: boolean }) {
           </ol>
 
           <div className="smp-pay">
-            <h3>A payment plan that follows the build.</h3>
+            <h3>{theme.payHeading}</h3>
             <div className="smp-pay-grid">
-              {SAMPLE_PAYMENT_STEPS.map((step, index) => (
+              {theme.paymentSteps.map((step, index) => (
                 <div className="smp-pay-step" key={step.title}>
                   <span className="smp-pay-number">{String(index + 1).padStart(2, "0")}</span>
                   <h4>{step.title}</h4>
@@ -211,19 +230,16 @@ export function SampleSite({ embedded = false }: { embedded?: boolean }) {
         <section className="smp-section smp-enquire" id="enquire" aria-label="Enquire">
           <div className="smp-enquire-grid">
             <div className="smp-enquire-copy">
-              <p className="smp-eyebrow smp-eyebrow-light">Register your interest</p>
-              <h2 className="smp-h2 smp-h2-light">Come and see the show villa.</h2>
-              <p>
-                Leave your details and our sales team will call you to arrange a visit — or message us on WhatsApp.
-                Buyers overseas are welcome: choose your country code and we&apos;ll reach you there.
-              </p>
+              <p className="smp-eyebrow smp-eyebrow-light">{theme.enquireEyebrow}</p>
+              <h2 className="smp-h2 smp-h2-light">{theme.enquireHeading}</h2>
+              <p>{theme.enquireBody}</p>
               <div className="smp-contact-list">
-                <a href="#enquire"><Phone size={16} aria-hidden="true" /> +94 XX XXX XXXX</a>
+                <a href="#enquire"><Phone size={16} aria-hidden="true" /> {theme.contactPhonePlaceholder}</a>
                 <a href="#enquire"><MessageCircle size={16} aria-hidden="true" /> WhatsApp us</a>
                 <a href="#enquire"><Download size={16} aria-hidden="true" /> Download the brochure</a>
               </div>
             </div>
-            <div className="smp-enquire-card"><SampleEnquiryForm /></div>
+            <div className="smp-enquire-card"><SampleEnquiryForm residences={theme.residences} /></div>
           </div>
         </section>
       </main>
@@ -231,14 +247,11 @@ export function SampleSite({ embedded = false }: { embedded?: boolean }) {
       <footer className="smp-footer">
         <div className="smp-footer-inner">
           <div>
-            <span className="smp-logo-mark">Halcyon</span>
-            <span className="smp-logo-sub">Residences</span>
-            <p>Sales gallery: address to come · hello@yourproject.lk</p>
+            <span className="smp-logo-mark">{theme.siteName}</span>
+            <span className="smp-logo-sub">{theme.siteNameSub}</span>
+            <p>Sales gallery: address to come · {theme.contactEmail}</p>
           </div>
-          <p className="smp-footer-note">
-            Sample website for a fictional development, designed by LankaNewHomes Web Design. All names, prices, distances and
-            contact details are placeholders. Photography from Unsplash.
-          </p>
+          <p className="smp-footer-note">{theme.footerNote}</p>
         </div>
       </footer>
 

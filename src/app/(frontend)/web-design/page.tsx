@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Gauge, LayoutTemplate, MessageCircle, Search, Smartphone, Globe } from "lucide-react";
+import { Gauge, LayoutTemplate, MessageCircle, Search, Smartphone, Globe } from "lucide-react";
 import { ScrollReveal } from "@/components/marketplace/scroll-reveal";
 import { SampleDevices } from "@/components/marketplace/web-design-frames";
+import { SampleSiteSwitcher } from "@/components/marketplace/web-design-sample-switcher";
 import { SAMPLE_IMAGES } from "@/components/web-design-sample/sample-data";
 import { getAllProjects } from "@/lib/project-store";
 
@@ -137,16 +138,12 @@ export default async function WebDesignPage() {
         <div className="wdx-sample-head" data-reveal>
           <h2>See what your site could look like.</h2>
           <p>
-            We designed this homepage for a fictional development to show what&apos;s possible. Every section is
-            something we can build for your project — watch it scroll, or open the full page.
+            We built three complete sample homepages for three fictional developments, each with its own look — pick
+            one below. Every section is something we can build for your project — watch it scroll, or open the full page.
           </p>
         </div>
         <div data-reveal>
-          <SampleDevices />
-        </div>
-        <div className="wdx-sample-foot" data-reveal>
-          <Link href="/web-design/sample" className="fdv-cta-primary">Open the full sample <ArrowRight size={16} aria-hidden="true" /></Link>
-          <p>Sample design — a fictional development with illustrative images, prices and contact details.</p>
+          <SampleSiteSwitcher />
         </div>
       </section>
 
@@ -155,7 +152,10 @@ export default async function WebDesignPage() {
         <section className="wdx-styles" aria-label="Design styles">
           <div className="wdx-section-head" data-reveal>
             <h2>Every project looks different. Yours will too.</h2>
-            <p>Real projects listed on LankaNewHomes, shown here to illustrate range — not sites we&apos;ve built for them.</p>
+            <p>
+              The three samples above show how much the design itself can change. These are real projects listed on
+              LankaNewHomes, shown here to illustrate range too — not sites we&apos;ve built for them.
+            </p>
           </div>
           <div className="wdx-styles-grid">
             {styleSamples.map((project) => (

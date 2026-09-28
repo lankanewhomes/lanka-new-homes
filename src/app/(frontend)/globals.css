@@ -14805,6 +14805,52 @@ body:has(.compare-bar) {
   color: #8f8b80;
 }
 
+/* Sample-site switcher (owner, 2026-09-28: "need more sample websites") —
+   picks which of the three live samples SampleDevices shows below. Same
+   pill shape as .location-chip-row's filter buttons elsewhere on the site,
+   just two lines (site name + property type) instead of one. */
+.wdx-sample-tabs {
+  width: min(1180px, calc(100% - 64px));
+  margin: 0 auto 32px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.wdx-sample-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: transparent;
+  color: #f1eee6;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.wdx-sample-tab:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.wdx-sample-tab.is-active {
+  background: var(--fdv-accent);
+  border-color: var(--fdv-accent);
+  color: #17140f;
+}
+
+.wdx-sample-tab-name {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.wdx-sample-tab-type {
+  font-size: 12px;
+  opacity: 0.75;
+}
+
 /* Style variety — real listing photos, 3-up grid of plain cards (photo +
    type/city caption only, no invented copy). */
 .wdx-styles {
@@ -15477,6 +15523,7 @@ body:has(.compare-bar) {
   }
 
   .wdx-sample-head,
+  .wdx-sample-tabs,
   .wdx-sample-foot,
   .wdx-devices {
     width: calc(100% - 44px);

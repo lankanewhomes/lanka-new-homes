@@ -7,6 +7,16 @@ const PHONE = { width: 390, height: 800 };
 /** Auto-scroll speed inside a preview, in the sample page's own CSS px per second. */
 const AUTO_SCROLL_PX_PER_SECOND = 90;
 
+/** The three sample sites, for the browse switcher on /web-design's live-sample
+ * band (web-design-sample-switcher.tsx) — one real, live site each, not a
+ * mockup. Adding a 4th sample means adding one line here plus its own
+ * theme file + routes (see theme-meridian.ts's comment). */
+export const SAMPLE_SITES = [
+  { id: "halcyon", label: "Halcyon Residences", propertyType: "Garden villas", browserUrl: "halcyonresidences.lk", embedSrc: "/web-design/sample/embed", href: "/web-design/sample" },
+  { id: "meridian", label: "Meridian Heights", propertyType: "Apartment tower", browserUrl: "meridianheights.lk", embedSrc: "/web-design/sample/meridian/embed", href: "/web-design/sample/meridian" },
+  { id: "azure-cove", label: "Azure Cove", propertyType: "Beachfront villas", browserUrl: "azurecove.lk", embedSrc: "/web-design/sample/azure-cove/embed", href: "/web-design/sample/azure-cove" },
+] as const;
+
 /**
  * A live, scaled-down preview of the sample site: an iframe of the real page,
  * laid out at its true desktop/phone width and shrunk with a CSS transform to
@@ -92,7 +102,12 @@ function ScaledPreview({ src, title, base }: { src: string; title: string; base:
       wrap.removeEventListener("pointerenter", onEnter);
       wrap.removeEventListener("pointerleave", onLeave);
     };
-  }, [scale]);
+    // `src` in the deps: switching which sample is loaded (the browse
+    // switcher on /web-design) must restart `y` at 0 — otherwise the newly
+    // navigated iframe would jump straight to whatever scroll position the
+    // PREVIOUS sample had reached, since the iframe element (and its
+    // `contentWindow`) is reused across a plain `src` change, not remounted.
+  }, [scale, src]);
 
   return (
     <div ref={wrapRef} className="wdx-preview" style={{ aspectRatio: `${base.width} / ${base.height}` }}>
@@ -111,30 +126,32 @@ function ScaledPreview({ src, title, base }: { src: string; title: string; base:
 }
 
 /** Just the laptop (browser bar + live scaled preview), no phone — the
- * building block SampleDevices below adds the phone to. */
-function HeroLaptopPreview() {
+ * building block SampleDevices below adds the phone to. Defaults to
+ * Halcyon's own embed/URL so the hero's fixed (never-switched) preview needs
+ * no props. */
+function HeroLaptopPreview({ embedSrc = SAMPLE_SITES[0].embedSrc, browserUrl = SAMPLE_SITES[0].browserUrl, title = "Sample developer website on a desktop screen" }: { embedSrc?: string; browserUrl?: string; title?: string }) {
   return (
     <div className="wdx-laptop">
       <div className="wdx-browser-bar" aria-hidden="true">
         <span className="wdx-browser-dots"><i /><i /><i /></span>
-        <span className="wdx-browser-url">halcyonresidences.lk</span>
+        <span className="wdx-browser-url">{browserUrl}</span>
       </div>
-      <ScaledPreview src="/web-design/sample/embed" title="Sample developer website on a desktop screen" base={DESKTOP} />
+      <ScaledPreview src={embedSrc} title={title} base={DESKTOP} />
     </div>
   );
 }
 
 /** The laptop + phone pair, both live previews of the sample homepage —
- * shown in the hero (next to the headline) and again in the full sample
- * band below it. Owner, 2026-09-28: the hero needs the same phone-plus-
- * laptop preview as the sample section, not just the laptop alone. */
-export function SampleDevices() {
+ * shown in the hero (next to the headline, always Halcyon's) and again in
+ * the full sample band below it, where SampleSwitcher (below) drives which
+ * one shows via `embedSrc`/`browserUrl`/`label`. */
+export function SampleDevices({ embedSrc = SAMPLE_SITES[0].embedSrc, browserUrl = SAMPLE_SITES[0].browserUrl, label = SAMPLE_SITES[0].label }: { embedSrc?: string; browserUrl?: string; label?: string }) {
   return (
     <div className="wdx-devices">
-      <HeroLaptopPreview />
+      <HeroLaptopPreview embedSrc={embedSrc} browserUrl={browserUrl} title={`${label} — desktop preview`} />
       <div className="wdx-phone">
         <div className="wdx-phone-notch" aria-hidden="true" />
-        <ScaledPreview src="/web-design/sample/embed" title="Sample developer website on a phone" base={PHONE} />
+        <ScaledPreview src={embedSrc} title={`${label} — phone preview`} base={PHONE} />
       </div>
     </div>
   );

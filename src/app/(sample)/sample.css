@@ -1,10 +1,19 @@
 /* ------------------------------------------------------------------------ */
-/* Sample developer website (/web-design/sample) — "Halcyon Residences".     */
-/* A fictional, standalone site with its OWN root layout, palette and type   */
-/* (deep green + cream + brass; Cormorant Garamond + DM Sans), on purpose    */
-/* unlike LankaNewHomes' own look: it shows that a site carries the          */
-/* developer's brand. All classes are `.smp-*`; nothing here touches the     */
-/* marketplace. Mobile-first: base rules are the phone layout.               */
+/* Sample developer websites (/web-design/sample/*) — three of them, each a  */
+/* fictional, standalone site with none of LankaNewHomes' own look:          */
+/* Halcyon Residences (garden villas — deep green + cream + brass, Cormorant */
+/* Garamond + DM Sans), Meridian Heights (an apartment tower — steel blue +  */
+/* electric teal, Space Grotesk + Inter) and Azure Cove (beachfront villas — */
+/* navy + terracotta + sand, Fraunces + Work Sans). All three share this ONE */
+/* file and the same `.smp-*` markup/classes (see sample-site.tsx and the    */
+/* theme-*.ts files) — only the palette differs, via the `[data-theme]`      */
+/* blocks at the end of this file overriding the custom properties declared  */
+/* below (Halcyon's own values are the defaults, so its markup needs no      */
+/* [data-theme] block of its own). Every colour a theme should be able to    */
+/* change reads one of these `--smp-*` variables rather than a literal hex   */
+/* value — a plain `#fff`/`rgba(...)` left in the rules below is deliberate: */
+/* it's white text or a shadow that works the same regardless of theme.      */
+/* Mobile-first: base rules are the phone layout.                            */
 /* ------------------------------------------------------------------------ */
 
 html:has(.smp-root) {
@@ -18,6 +27,8 @@ html:has(.smp-root) {
 }
 
 .smp-root {
+  /* ---- Halcyon Residences' own values — every other theme overrides all of
+     these via [data-theme="..."] below. ---- */
   --smp-bg: #f6f1e7;
   --smp-paper: #fbf8f1;
   --smp-sand: #ece3cf;
@@ -28,6 +39,23 @@ html:has(.smp-root) {
   --smp-brass-light: #d6ad70;
   --smp-line: #ddd2ba;
   --smp-muted: #5c675f;
+  /* Text sitting on the --smp-green/--smp-green-deep panels (amenities,
+     enquire, footer) — needs its own tokens since "light warm text" doesn't
+     read right against every theme's dark accent colour (e.g. Meridian's
+     steel blue wants a cooler near-white, not this cream-tinted one). */
+  --smp-on-dark: #f2ede1;
+  --smp-on-dark-muted: #c6d0c9;
+  --smp-on-dark-faint: #8a978f;
+  /* Text sitting directly on the hero/enquire PHOTO (over --smp-hero-shade),
+     not a solid panel — a touch warmer/lighter than --smp-on-dark so it
+     still reads against a photo. */
+  --smp-eyebrow-light: #ecca90;
+  --smp-hero-text-muted: #e9e4d8;
+  /* The illustrative Location map's own palette. */
+  --smp-map-land: #efe7d4;
+  --smp-map-water: #c9dcd8;
+  --smp-map-park: #cddbc0;
+  --smp-map-pulse: rgba(185, 138, 78, 0.28);
   --smp-display: var(--smp-font-display), "Cormorant Garamond", Georgia, serif;
   --smp-banner-h: 40px;
   --smp-gutter: 24px;
@@ -38,6 +66,52 @@ html:has(.smp-root) {
   font-size: 16px;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
+}
+
+/* ---- Meridian Heights: steel blue + electric teal, cool and minimal ---- */
+.smp-root[data-theme="meridian"] {
+  --smp-bg: #f2f3f5;
+  --smp-paper: #f8f9fb;
+  --smp-sand: #e4e7eb;
+  --smp-ink: #14161a;
+  --smp-green: #1c3a5c;
+  --smp-green-deep: #0f2439;
+  --smp-brass: #2ea8c9;
+  --smp-brass-light: #5fc3dd;
+  --smp-line: #d7dbe0;
+  --smp-muted: #5b6169;
+  --smp-on-dark: #eef1f4;
+  --smp-on-dark-muted: #b7c2cc;
+  --smp-on-dark-faint: #7c8a94;
+  --smp-eyebrow-light: #7fd4ea;
+  --smp-hero-text-muted: #d7dee4;
+  --smp-map-land: #eceff2;
+  --smp-map-water: #bcd4e0;
+  --smp-map-park: #c7d6c0;
+  --smp-map-pulse: rgba(46, 168, 201, 0.28);
+}
+
+/* ---- Azure Cove: ocean navy + terracotta + warm sand, editorial/resort ---- */
+.smp-root[data-theme="azure-cove"] {
+  --smp-bg: #f7efe2;
+  --smp-paper: #fbf6ec;
+  --smp-sand: #eddfc7;
+  --smp-ink: #21201c;
+  --smp-green: #16324a;
+  --smp-green-deep: #0c1f30;
+  --smp-brass: #c1602f;
+  --smp-brass-light: #e08a5c;
+  --smp-line: #e2d2b8;
+  --smp-muted: #6b6255;
+  --smp-on-dark: #eef3f2;
+  --smp-on-dark-muted: #b9c7c7;
+  --smp-on-dark-faint: #7f8f8f;
+  --smp-eyebrow-light: #f2b98a;
+  --smp-hero-text-muted: #e6ddc9;
+  --smp-map-land: #f0e6d2;
+  --smp-map-water: #a9d2d8;
+  --smp-map-park: #cddbc0;
+  --smp-map-pulse: rgba(193, 96, 47, 0.28);
 }
 
 .smp-root *,
@@ -327,7 +401,7 @@ html:has(.smp-root) {
 }
 
 .smp-eyebrow-light {
-  color: #ecca90;
+  color: var(--smp-eyebrow-light);
   text-shadow: 0 1px 12px rgba(8, 20, 17, 0.5);
 }
 
@@ -345,7 +419,7 @@ html:has(.smp-root) {
   max-width: 520px;
   margin-top: 22px;
   font-size: 17px;
-  color: #e9e4d8;
+  color: var(--smp-hero-text-muted);
 }
 
 .smp-hero-ctas {
@@ -381,7 +455,7 @@ html:has(.smp-root) {
 
 .smp-facts span {
   font-size: 12.5px;
-  color: #d9d4c7;
+  color: var(--smp-hero-text-muted);
 }
 
 /* ---- Sections ---- */
@@ -589,11 +663,11 @@ html:has(.smp-root) {
 /* Amenities */
 .smp-amenities {
   background: var(--smp-green);
-  color: #f2ede1;
+  color: var(--smp-on-dark);
 }
 
 .smp-amenities .smp-section-head p:not(.smp-eyebrow) {
-  color: #c6d0c9;
+  color: var(--smp-on-dark-muted);
 }
 
 .smp-amenity-grid {
@@ -624,7 +698,7 @@ html:has(.smp-root) {
 .smp-amenity p {
   font-size: 14px;
   line-height: 1.55;
-  color: #c6d0c9;
+  color: var(--smp-on-dark-muted);
 }
 
 /* Location */
@@ -672,20 +746,20 @@ html:has(.smp-root) {
 }
 
 .smp-map-land {
-  fill: #efe7d4;
+  fill: var(--smp-map-land);
 }
 
 .smp-map-water {
-  fill: #c9dcd8;
+  fill: var(--smp-map-water);
 }
 
 .smp-map-park {
-  fill: #cddbc0;
+  fill: var(--smp-map-park);
 }
 
 .smp-map-road {
   fill: none;
-  stroke: #fbf8f1;
+  stroke: var(--smp-paper);
   stroke-width: 6;
   stroke-linecap: round;
 }
@@ -695,7 +769,7 @@ html:has(.smp-root) {
 }
 
 .smp-map-pulse {
-  fill: rgba(185, 138, 78, 0.28);
+  fill: var(--smp-map-pulse);
 }
 
 .smp-map-dot {
@@ -845,7 +919,7 @@ html:has(.smp-root) {
 /* Enquire */
 .smp-enquire {
   background: var(--smp-green-deep);
-  color: #f2ede1;
+  color: var(--smp-on-dark);
 }
 
 .smp-enquire-grid {
@@ -856,7 +930,7 @@ html:has(.smp-root) {
 .smp-enquire-copy p:not(.smp-eyebrow) {
   margin-top: 18px;
   max-width: 460px;
-  color: #c6d0c9;
+  color: var(--smp-on-dark-muted);
   font-size: 17px;
 }
 
@@ -908,7 +982,7 @@ html:has(.smp-root) {
   width: 100%;
   min-height: 48px;
   padding: 12px 14px;
-  border: 1px solid #d5cab1;
+  border: 1px solid var(--smp-line);
   border-radius: 0;
   background: #fff;
   color: var(--smp-ink);
@@ -944,7 +1018,7 @@ html:has(.smp-root) {
   gap: 6px;
   flex: none;
   padding: 0 12px;
-  border: 1px solid #d5cab1;
+  border: 1px solid var(--smp-line);
   background: var(--smp-sand);
   font-size: 15px;
   white-space: nowrap;
@@ -1004,8 +1078,8 @@ html:has(.smp-root) {
 /* Footer */
 .smp-footer {
   padding: 40px 0 120px;
-  background: #081a16;
-  color: #b9c4bd;
+  background: var(--smp-ink);
+  color: var(--smp-on-dark-muted);
   font-size: 14px;
 }
 
@@ -1019,7 +1093,7 @@ html:has(.smp-root) {
 .smp-footer .smp-logo-mark,
 .smp-footer .smp-logo-sub {
   display: block;
-  color: #f2ede1;
+  color: var(--smp-on-dark);
 }
 
 .smp-footer-inner p {
@@ -1029,7 +1103,7 @@ html:has(.smp-root) {
 .smp-footer-note {
   max-width: 520px;
   font-size: 12.5px;
-  color: #8a978f;
+  color: var(--smp-on-dark-faint);
 }
 
 /* Phone-only action bar */

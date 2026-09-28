@@ -1,8 +1,13 @@
+import type { SampleMapPoi } from "./theme-types";
+
 // A stylised, illustrative map for the sample site's Location section — not a
 // real map of anywhere. A real site would embed the developer's actual map.
-export function LocationMap() {
+// `title`/`pois` come from the theme (site name + 4 nearby-place labels);
+// the road/water/park shapes themselves stay the same across every theme —
+// only the CSS custom properties they're coloured with change per theme.
+export function LocationMap({ title, pois }: { title: string; pois: readonly SampleMapPoi[] }) {
   return (
-    <svg viewBox="0 0 520 380" role="img" aria-label="Illustrative map showing the development at the centre" className="smp-map-svg">
+    <svg viewBox="0 0 520 380" role="img" aria-label={`Illustrative map showing ${title} at the centre`} className="smp-map-svg">
       <rect width="520" height="380" className="smp-map-land" />
       <path d="M0 300 C 90 270, 150 330, 250 300 S 430 250, 520 290 L520 380 L0 380 Z" className="smp-map-water" />
       <path d="M40 40 C 90 20, 150 30, 170 80 S 120 150, 60 140 S 10 80, 40 40 Z" className="smp-map-park" />
@@ -14,13 +19,8 @@ export function LocationMap() {
       <path d="M120 250 C 170 230, 220 260, 262 230" className="smp-map-road" />
       <circle cx="262" cy="190" r="34" className="smp-map-pulse" />
       <circle cx="262" cy="190" r="12" className="smp-map-dot" />
-      <text x="262" y="236" textAnchor="middle" className="smp-map-title">Halcyon Residences</text>
-      {[
-        { x: 96, y: 96, t: "Wetland park" },
-        { x: 420, y: 100, t: "Shopping mall" },
-        { x: 120, y: 214, t: "International school" },
-        { x: 420, y: 222, t: "Private hospital" },
-      ].map((place) => (
+      <text x="262" y="236" textAnchor="middle" className="smp-map-title">{title}</text>
+      {pois.map((place) => (
         <g key={place.t}>
           <circle cx={place.x} cy={place.y} r="5" className="smp-map-poi" />
           <text x={place.x} y={place.y - 12} textAnchor="middle" className="smp-map-poi-label">{place.t}</text>

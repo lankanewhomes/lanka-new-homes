@@ -1,7 +1,18 @@
-// Content for the sample developer website (/web-design/sample). Everything
-// here is fictional and illustrative — a made-up development, placeholder
-// prices/distances/contact details — and the page says so. Photography is
-// Unsplash (free licence), never a real project's renders.
+// Content for the first sample developer website (/web-design/sample) —
+// "Halcyon Residences", garden villas. Everything here is fictional and
+// illustrative — a made-up development, placeholder prices/distances/contact
+// details — and the page says so. Photography is Unsplash (free licence),
+// never a real project's renders.
+//
+// The individual SAMPLE_* constants below are kept exactly as they were
+// (nothing importing them by name needs to change); HALCYON_THEME at the
+// bottom just bundles them into the shared SampleTheme shape so SampleSite
+// can be theme-driven for the other two samples (Meridian Heights,
+// Azure Cove — see theme-meridian.ts / theme-azure-cove.ts) while this
+// theme's own routes keep working unchanged.
+
+import type { SamplePlanRoom } from "./plan-drawing";
+import type { SampleTheme } from "./theme-types";
 
 const unsplash = (id: string, width: number) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&q=80&w=${width}`;
 
@@ -32,8 +43,6 @@ export const SAMPLE_FACTS = [
   { value: "Pool & clubhouse", label: "shared by residents" },
   { value: "Handover 20XX", label: "sample date" },
 ] as const;
-
-export type SamplePlanRoom = { x: number; y: number; w: number; h: number; label: string };
 
 export const SAMPLE_RESIDENCES: {
   key: string;
@@ -134,3 +143,66 @@ export const SAMPLE_PAYMENT_STEPS = [
   { title: "Stage payments", body: "Pay in instalments as construction reaches each stage." },
   { title: "Handover", body: "Final walk-through, keys and after-sales support." },
 ] as const;
+
+const HALCYON_MAP_TITLE = "Halcyon Residences";
+const HALCYON_MAP_POIS = [
+  { x: 96, y: 96, t: "Wetland park" },
+  { x: 420, y: 100, t: "Shopping mall" },
+  { x: 120, y: 214, t: "International school" },
+  { x: 420, y: 222, t: "Private hospital" },
+] as const;
+
+// This theme's own font pair is loaded on <html> by (sample)/layout.tsx (the
+// route group's root layout — every /web-design/sample/* route shares it),
+// not here, since Halcyon is the default route. The other two themes load
+// their own fonts in their own file and shadow these CSS variables via a
+// wrapper div lower in the tree — see theme-meridian.ts's own comment.
+export const HALCYON_THEME: SampleTheme = {
+  id: "halcyon",
+  siteName: "Halcyon",
+  siteNameSub: "Residences",
+  fontVariables: "",
+  metaTitle: "Halcyon Residences — sample website | LankaNewHomes Web Design",
+  metaDescription: "A sample developer website by LankaNewHomes Web Design. Fictional development, illustrative content.",
+  heroAriaLabel: "Halcyon Residences",
+  locationLine: "Battaramulla · Colombo",
+  heroHeadline: "Live where the garden meets the city.",
+  heroSub: "Thirty-two garden villas in a gated community — a pool, a clubhouse and mature trees, ten minutes from everything.",
+  images: SAMPLE_IMAGES,
+  nav: SAMPLE_NAV,
+  facts: SAMPLE_FACTS,
+  introEyebrow: "The development",
+  introHeading: "A quiet address, close to everything.",
+  introBody:
+    "Halcyon Residences is a community of thirty-two villas set around shared gardens. Every home is planned around light, cross-ventilation and a garden you can walk out to — with the city a short drive away.",
+  introChecks: ["Architect-designed, three villa types", "Private gardens and shared green space", "Ten minutes to schools, hospitals and the expressway"],
+  residencesEyebrow: "Residences",
+  residencesHeading: "Three villas. One way of living.",
+  residencesSub: "Choose the plan that fits your family. Prices below are placeholders for the sample.",
+  residences: SAMPLE_RESIDENCES,
+  galleryHeading: "Made to be lived in.",
+  gallery: SAMPLE_GALLERY,
+  amenitiesEyebrow: "Amenities",
+  amenitiesHeading: "Everything shared, nothing crowded.",
+  amenities: SAMPLE_AMENITIES,
+  locationEyebrow: "Location",
+  locationHeading: "Ten minutes from what matters.",
+  locationBody: "Distances are illustrative for the sample. On your site this section shows your real location and nearby places.",
+  nearby: SAMPLE_NEARBY,
+  mapTitle: HALCYON_MAP_TITLE,
+  mapPois: HALCYON_MAP_POIS,
+  progressEyebrow: "Progress",
+  progressHeading: "See it being built.",
+  progressSub: "Buyers can follow construction stage by stage — updated by your team.",
+  progress: SAMPLE_PROGRESS,
+  payHeading: "A payment plan that follows the build.",
+  paymentSteps: SAMPLE_PAYMENT_STEPS,
+  enquireEyebrow: "Register your interest",
+  enquireHeading: "Come and see the show villa.",
+  enquireBody:
+    "Leave your details and our sales team will call you to arrange a visit — or message us on WhatsApp. Buyers overseas are welcome: choose your country code and we'll reach you there.",
+  contactPhonePlaceholder: "+94 XX XXX XXXX",
+  contactEmail: "hello@yourproject.lk",
+  footerNote:
+    "Sample website for a fictional development, designed by LankaNewHomes Web Design. All names, prices, distances and contact details are placeholders. Photography from Unsplash.",
+};

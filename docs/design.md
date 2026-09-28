@@ -1592,6 +1592,92 @@ own note:
   `z-index: 1` rule so its own content sits above the pattern, same
   construction as `.new-listings-section > *`.
 
+### Two more sample sites + a browse switcher (2026-09-28, later)
+
+Owner: "Need more sample websites, built them." What was one sample
+(Halcyon Residences) is now three, each a genuinely different property type
+and design identity, not a recolour of the same layout:
+
+- **Halcyon Residences** — garden villas, Battaramulla. Deep green + cream +
+  brass, Cormorant Garamond + DM Sans. (Unchanged from 2026-09-26.)
+- **Meridian Heights** — a 28-storey Colombo apartment tower, Rajagiriya.
+  Steel blue + electric teal, Space Grotesk + Inter. Studio/2-bed/penthouse
+  floor plans, tower-appropriate amenities (sky lounge, co-working, private
+  cinema, basement parking) and progress stages ("Structure rising",
+  "Facade & interiors").
+- **Azure Cove** — beachfront villas, Mirissa. Ocean navy + terracotta +
+  sand, Fraunces + Work Sans. Reef Suite/Horizon Villa/Tidewater Villa,
+  resort amenities (water sports centre, spa pavilion, beach club
+  restaurant).
+
+**Shared architecture** (`src/components/web-design-sample/`) — one set of
+markup/CSS serves all three, only content and CSS custom-property values
+differ per theme:
+- **`theme-types.ts`** — the `SampleTheme` shape every theme fills in
+  (copy, images, residences/amenities/nearby/progress/payment lists, map
+  POIs, contact placeholders, `fontVariables`). `SampleSite`,
+  `SampleHeader`, `SampleEnquiryForm` and `LocationMap` all read only from
+  a `theme` prop now — no theme-specific logic lives in the components.
+- **`sample-data.ts`** — unchanged named exports (`SAMPLE_IMAGES`,
+  `SAMPLE_RESIDENCES`, etc., still used by other call sites) plus a new
+  `HALCYON_THEME` bundling them into the shared shape. `SampleSite`
+  defaults its `theme` prop to `HALCYON_THEME`, so Halcyon's own two routes
+  needed zero changes.
+- **`theme-meridian.ts` / `theme-azure-cove.ts`** — one file each, holding
+  BOTH the theme's content and its two `next/font/google` calls (fonts can
+  be loaded from any Server Component module, not just a page/layout — this
+  keeps a theme fully self-contained). `fontVariables` (the two `.variable`
+  strings) is applied via a wrapper `<div>` in that theme's own
+  `page.tsx`/`embed/page.tsx`, which shadows the Cormorant/DM Sans
+  variables `(sample)/layout.tsx` sets on `<html>` for everything inside
+  that div — CSS custom properties cascade normally, so the closest
+  definition wins. `<html>` itself still only ever sets Halcyon's fonts
+  (Next requires exactly one root layout defining `<html>`/`<body>` per
+  branch), which is why the other two themes override lower down instead of
+  in a layout of their own.
+- **Palette theming**: `sample.css`'s `.smp-root` declares ~19 custom
+  properties (10 already existed; added `--smp-on-dark`/`-muted`/`-faint`
+  for text on the dark accent panels, `--smp-eyebrow-light`/
+  `--smp-hero-text-muted` for text over the hero photo, and
+  `--smp-map-land`/`-water`/`-park`/`-pulse` for the illustrative map) —
+  Halcyon's own values are the defaults, and `.smp-root[data-theme="…"]`
+  blocks for `meridian`/`azure-cove` override all of them.
+  `SampleSite` sets `data-theme={theme.id}` on `.smp-root` itself. Every
+  hardcoded hex that was actually theme-specific got converted to one of
+  these `var()`s; a literal `#fff`/`rgba(...)` left in the CSS is
+  deliberate (white text or a shadow that reads the same on any theme) —
+  see the file's own header comment for that rule. **Pitfall hit doing
+  this**: `.smp-banner`'s own colours (the "Sample design" bar, not the
+  site itself) must stay literal — it's our chrome, not the developer's
+  brand, and should look the same regardless of which sample is showing.
+- **Routes**: `web-design/sample/meridian/{,embed/}page.tsx` and
+  `web-design/sample/azure-cove/{,embed/}page.tsx`, siblings of the
+  existing `web-design/sample/{,embed/}page.tsx` — each ~10 lines,
+  wrapping `<SampleSite theme={…} />` in that theme's font div plus its own
+  `export const metadata`. `(sample)/layout.tsx`'s own `metadata.title` was
+  generalised to "Sample website | LankaNewHomes Web Design" (was
+  Halcyon-specific) since it's now the fallback for three different sites;
+  each route's own title wins via Next's normal metadata merging.
+
+**Browse switcher** (`web-design-sample-switcher.tsx`, used in `/web-design`'s
+`#sample` band in place of the old fixed `<SampleDevices />`): three pills
+(`role="tablist"`/`role="tab"`, same ARIA pattern as the site's other tab
+groups, e.g. the photo lightbox) pick which theme `SampleDevices`' laptop +
+phone preview loads — `SAMPLE_SITES` in `web-design-frames.tsx` is the one
+list of `{id, label, propertyType, browserUrl, embedSrc, href}` driving both
+the switcher and (unchanged) the hero's own always-Halcyon preview.
+`SampleDevices`/`HeroLaptopPreview` gained `embedSrc`/`browserUrl`/`label`
+props (defaulting to Halcyon's, so the hero's own call site needed no
+changes). **Real bug found and fixed**: `ScaledPreview`'s auto-scroll effect
+depended only on `[scale]`, so switching which sample was loaded changed the
+iframe's `src` (a real navigation) without resetting the effect's `y`
+accumulator — the newly-loaded site would immediately jump to whatever
+scroll position the previous one had reached, since the `<iframe>` element
+(and its `contentWindow`) is reused across a plain `src` change, not
+remounted. Fixed by adding `src` to the effect's dependency array, so
+switching tears down and restarts the loop (`y` resets to 0 as a fresh
+`let` inside the effect body).
+
 ## Social publishing (Project → Social tab)
 
 Full guide: `docs/social-publishing.md`. In short: `npm run social:generate

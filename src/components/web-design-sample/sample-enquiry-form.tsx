@@ -3,13 +3,15 @@
 import { FormEvent, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { buildInternationalPhone, cleanNationalNumber, DEFAULT_PHONE_COUNTRY, getPhoneCountries, getPhoneCountry, isPlausiblePhone, parseInternationalInput } from "@/lib/phone";
-import { SAMPLE_RESIDENCES } from "./sample-data";
+import type { SampleResidence } from "./theme-types";
 
 // A demo form: it validates and shows a confirmation but sends NOTHING (no
 // request leaves the page), so a visitor poking at the sample can never create
 // a real lead. The phone box takes a number from any country — the same
-// worldwide picker as the LankaNewHomes enquiry forms.
-export function SampleEnquiryForm() {
+// worldwide picker as the LankaNewHomes enquiry forms. `residences` fills the
+// "I'm interested in" dropdown, so it lists whichever theme's own villas/
+// units/suites are showing.
+export function SampleEnquiryForm({ residences }: { residences: readonly SampleResidence[] }) {
   const [country, setCountry] = useState(DEFAULT_PHONE_COUNTRY);
   const [national, setNational] = useState("");
   const [sent, setSent] = useState(false);
@@ -93,7 +95,7 @@ export function SampleEnquiryForm() {
         <span>I&apos;m interested in</span>
         <select name="interest" defaultValue="">
           <option value="" disabled>Choose a villa type</option>
-          {SAMPLE_RESIDENCES.map((residence) => (
+          {residences.map((residence) => (
             <option key={residence.key} value={residence.key}>{residence.name}</option>
           ))}
           <option value="unsure">Not sure yet</option>

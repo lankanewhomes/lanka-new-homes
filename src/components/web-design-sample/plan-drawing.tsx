@@ -1,7 +1,9 @@
-import type { SamplePlanRoom } from "./sample-data";
-
 // A simple, abstract floor-plan sketch (rooms as outlined boxes) for the sample
-// residences — deliberately schematic, not a real architectural drawing.
+// residences — deliberately schematic, not a real architectural drawing. One
+// drawing serves every theme (Halcyon/Meridian/Azure Cove all pass their own
+// `rooms`) since the sketch style itself doesn't need to vary.
+export type SamplePlanRoom = { x: number; y: number; w: number; h: number; label: string };
+
 export function PlanDrawing({ rooms, label }: { rooms: SamplePlanRoom[]; label: string }) {
   return (
     <svg viewBox="0 0 300 190" role="img" aria-label={label} className="smp-plan-svg">
