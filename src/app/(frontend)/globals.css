@@ -11219,7 +11219,7 @@ body:has(.compare-bar) {
 .contact-hero h1 {
   font-family: var(--font-ref-sans);
   font-size: 34px;
-  font-weight: 500;
+  font-weight: 400;
   line-height: 1.2;
   color: #1f1f1f;
   margin-bottom: 16px;
@@ -11280,7 +11280,7 @@ body:has(.compare-bar) {
 .contact-cta-panel h2 {
   font-family: var(--font-ref-sans);
   font-size: 20px;
-  font-weight: 500;
+  font-weight: 400;
   margin-bottom: 8px;
 }
 

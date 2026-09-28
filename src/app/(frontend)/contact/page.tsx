@@ -31,7 +31,7 @@ export default function ContactPage() {
         <h1>Get in touch with our team</h1>
         <p className="contact-hero-sub">Have a question about a listing, a developer partnership, or the platform itself? Tell us more below and we&apos;ll get back to you within one business day.</p>
         <p className="contact-hero-line">
-          Prefer email? <a href="mailto:support@lankanewhomes.com">support@lankanewhomes.com</a> · Founder: <a href="mailto:rupan@lankanewhomes.com">rupan@lankanewhomes.com</a> · <a href="tel:+16477165155">+1 647 716 5155</a>
+          Prefer email? <a href="mailto:support@lankanewhomes.com">support@lankanewhomes.com</a>
         </p>
       </div>
 

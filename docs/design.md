@@ -1808,6 +1808,16 @@ gone; `.contact-page-bg`/`.contact-hero`/`.contact-cards`/
   still has a real accessible name, and the placeholder text itself became
   the field's description ("First name", "Company (optional)", "Who are
   you trying to reach?", etc.) since it's now the only visible cue.
+- **Headings dropped to `font-weight: 400`** — `500` still read as bold
+  to the owner ("Get in touch with our team... no bold"); a real
+  competing global `h1 { font-weight: 700 }` rule exists (site-wide, for
+  plain content pages) but loses on specificity to `.contact-hero h1`
+  either way, so this was purely a visual-weight call, not a specificity
+  bug.
+- **The "Prefer email?" line now shows only `support@lankanewhomes.com`**
+  — the Founder's direct email/phone (added earlier the same session) was
+  removed from it on the owner's own instruction ("Just put support email
+  only"); that contact detail isn't shown anywhere else on the page now.
 
 ## Social publishing (Project → Social tab)
 
