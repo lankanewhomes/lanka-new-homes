@@ -3,10 +3,26 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Gauge, LayoutTemplate, MessageCircle, Search, Smartphone, Globe } from "lucide-react";
 import { ScrollReveal } from "@/components/marketplace/scroll-reveal";
-import { SampleDevices } from "@/components/marketplace/web-design-frames";
+import { HeroLaptopPreview, SampleDevices } from "@/components/marketplace/web-design-frames";
 import { SAMPLE_IMAGES } from "@/components/web-design-sample/sample-data";
+import { getAllProjects } from "@/lib/project-store";
 
 export const revalidate = 300;
+
+// Real, published LankaNewHomes listings, picked for visual variety across
+// property type and location — used only to illustrate that a dedicated
+// site's design changes with the project, never presented as an actual
+// delivered website for that developer (owner, 2026-09-27: "get the
+// content or video, photos, from my website. not soemwher else" — every
+// image on this page has to be real, not stock).
+const STYLE_SAMPLE_SLUGS = [
+  "rush-court-5-colombo-14",
+  "rudra-wellness-retreat-kalkudah",
+  "waterfall-residencies-malabe",
+  "viva-la-vida",
+  "imaarat-bambalapitiya",
+  "magna-mattegoda",
+] as const;
 
 // Dropped the editorial Fraunces serif this page used to share with
 // /for-developers (owner, 2026-09-27: "all the content thats realted to
@@ -69,7 +85,10 @@ const FAQS = [
   { q: "How much does it cost?", a: "It depends on the size of the project and what you need, so we quote for each one. Tell us about it and we'll come back to you." },
 ] as const;
 
-export default function WebDesignPage() {
+export default async function WebDesignPage() {
+  const allProjects = await getAllProjects();
+  const styleSamples = STYLE_SAMPLE_SLUGS.map((slug) => allProjects.find((p) => p.slug === slug)).filter((p): p is NonNullable<typeof p> => Boolean(p?.heroImage));
+
   return (
     <div className="fdv-page wdx-page">
       <ScrollReveal />
@@ -80,15 +99,20 @@ export default function WebDesignPage() {
           <Image src={SAMPLE_IMAGES.hero} alt="" fill priority sizes="100vw" className="wdx-hero-img" />
           <div className="wdx-hero-overlay" />
         </div>
-        <div className="wdx-hero-content">
-          <h1 className="wdx-hero-headline">Your project deserves a website of its own.</h1>
-          <p className="wdx-hero-sub">
-            We design and build dedicated websites for property developments — a brand new site for a project that
-            doesn&apos;t have one yet, or a redesign of one that isn&apos;t working anymore.
-          </p>
-          <div className="wdx-hero-ctas">
-            <Link href="/contact" className="fdv-cta-primary">Talk to us about a site</Link>
-            <a href="#sample" className="fdv-cta-secondary">See a sample homepage</a>
+        <div className="wdx-hero-content wdx-hero-content-split">
+          <div>
+            <h1 className="wdx-hero-headline">Your project deserves a website of its own.</h1>
+            <p className="wdx-hero-sub">
+              We design and build dedicated websites for property developments — a brand new site for a project that
+              doesn&apos;t have one yet, or a redesign of one that isn&apos;t working anymore.
+            </p>
+            <div className="wdx-hero-ctas">
+              <Link href="/contact" className="fdv-cta-primary">Talk to us about a site</Link>
+              <a href="#sample" className="fdv-cta-secondary">See a sample homepage</a>
+            </div>
+          </div>
+          <div className="wdx-hero-preview" aria-hidden="true">
+            <HeroLaptopPreview />
           </div>
         </div>
       </section>
@@ -126,15 +150,34 @@ export default function WebDesignPage() {
         </div>
       </section>
 
+      {/* 3B — STYLE VARIETY (real LankaNewHomes listings, not delivered sites) */}
+      {styleSamples.length > 0 ? (
+        <section className="wdx-styles" aria-label="Design styles">
+          <div className="wdx-section-head" data-reveal>
+            <h2>Every project looks different. Yours will too.</h2>
+            <p>Real projects listed on LankaNewHomes, shown here to illustrate range — not sites we&apos;ve built for them.</p>
+          </div>
+          <div className="wdx-styles-grid">
+            {styleSamples.map((project) => (
+              <div className="wdx-styles-card" key={project.slug} data-reveal>
+                <div className="wdx-styles-card-media">
+                  <Image src={project.heroImage} alt="" fill sizes="(max-width: 760px) 100vw, 33vw" className="wdx-styles-card-img" />
+                </div>
+                <p className="wdx-styles-card-caption">{project.type} &middot; {project.city}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
       {/* 4 — WHAT'S INCLUDED */}
       <section className="wdx-included" aria-label="What every site includes">
         <div className="wdx-section-head" data-reveal>
           <h2>Built properly, from the first line.</h2>
         </div>
         <div className="wdx-included-grid">
-          {INCLUDED.map((item, index) => (
+          {INCLUDED.map((item) => (
             <div className="wdx-included-item" key={item.title} data-reveal>
-              <span className="wdx-included-number">{String(index + 1).padStart(2, "0")}</span>
               <item.icon className="wdx-included-icon" strokeWidth={1.4} aria-hidden="true" />
               <h3>{item.title}</h3>
               <p>{item.body}</p>
@@ -187,11 +230,9 @@ export default function WebDesignPage() {
         <ol className="wdx-process-list">
           {PROCESS.map((step, index) => (
             <li className="wdx-process-item" key={step.title} data-reveal>
-              <span className="wdx-process-number">{index + 1}</span>
-              <div>
-                <h3>{step.title}</h3>
-                <p>{step.body}</p>
-              </div>
+              <span className="wdx-process-step-label">Step {index + 1}</span>
+              <h3>{step.title}</h3>
+              <p>{step.body}</p>
             </li>
           ))}
         </ol>

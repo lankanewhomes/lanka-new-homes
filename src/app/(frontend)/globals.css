@@ -14602,10 +14602,28 @@ body:has(.compare-bar) {
   padding-bottom: 96px;
 }
 
+/* A live scrolling preview of the sample site sits to the right of the
+   headline, instead of leaving that side of the hero empty photo. */
+.wdx-hero-content-split {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 48px;
+  align-items: center;
+}
+
+.wdx-hero-preview {
+  justify-self: end;
+  width: 100%;
+}
+
+.wdx-hero-preview .wdx-laptop {
+  width: 100%;
+}
+
 .wdx-hero-headline {
   margin: 0 0 22px;
   max-width: 14ch;
-  font-weight: 700;
+  font-weight: 400;
   font-size: 72px;
   line-height: 1.04;
   letter-spacing: -0.02em;
@@ -14639,9 +14657,13 @@ body:has(.compare-bar) {
   text-shadow: 0 1px 14px rgba(10, 9, 12, 0.7);
 }
 
-/* Introduction */
+/* Introduction — a bordered card with an accent top edge, same card
+   language as the compare/process/FAQ cards elsewhere on this page,
+   instead of a plain unboxed text block (2nd redesign). */
 .wdx-intro {
-  padding: 140px 0;
+  padding: 90px 0;
+  background: #fff;
+  border-top: 1px solid var(--fdv-line);
 }
 
 .wdx-intro-grid {
@@ -14651,11 +14673,15 @@ body:has(.compare-bar) {
   grid-template-columns: 1.1fr 0.9fr;
   gap: 80px;
   align-items: start;
+  padding: 56px;
+  border: 1px solid var(--fdv-line);
+  border-top: 3px solid var(--fdv-accent);
+  background: #fbf9f4;
 }
 
 .wdx-statement {
   margin: 0;
-  font-weight: 700;
+  font-weight: 400;
   font-size: 46px;
   line-height: 1.16;
   letter-spacing: -0.02em;
@@ -14684,7 +14710,7 @@ body:has(.compare-bar) {
 
 .wdx-section-head h2 {
   margin: 0;
-  font-weight: 700;
+  font-weight: 400;
   font-size: 42px;
   line-height: 1.14;
   letter-spacing: -0.02em;
@@ -14705,6 +14731,7 @@ body:has(.compare-bar) {
   background: var(--fdv-ink);
   color: #f1eee6;
   overflow: hidden;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .wdx-sample-head {
@@ -14715,7 +14742,7 @@ body:has(.compare-bar) {
 .wdx-sample-head h2 {
   margin: 0;
   max-width: 16ch;
-  font-weight: 700;
+  font-weight: 400;
   font-size: 54px;
   line-height: 1.08;
   letter-spacing: -0.02em;
@@ -14748,6 +14775,40 @@ body:has(.compare-bar) {
   margin: 0;
   font-size: 13.5px;
   color: #8f8b80;
+}
+
+/* Style variety — real listing photos, 3-up grid of plain cards (photo +
+   type/city caption only, no invented copy). */
+.wdx-styles {
+  padding: 100px 0;
+  background: var(--fdv-paper);
+  border-top: 1px solid var(--fdv-line);
+}
+
+.wdx-styles-grid {
+  width: min(1180px, calc(100% - 64px));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.wdx-styles-card-media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border: 1px solid var(--fdv-line);
+}
+
+.wdx-styles-card-img {
+  object-fit: cover;
+}
+
+.wdx-styles-card-caption {
+  margin: 10px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fdv-muted);
 }
 
 .wdx-devices {
@@ -14857,6 +14918,8 @@ body:has(.compare-bar) {
 /* What's included */
 .wdx-included {
   padding: 130px 0 110px;
+  background: var(--fdv-paper);
+  border-top: 1px solid var(--fdv-line);
 }
 
 .wdx-included-grid {
@@ -14868,18 +14931,8 @@ body:has(.compare-bar) {
 }
 
 .wdx-included-item {
-  position: relative;
   padding-top: 26px;
   border-top: 1px solid var(--fdv-line);
-}
-
-.wdx-included-number {
-  position: absolute;
-  top: 26px;
-  right: 0;
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--fdv-accent);
 }
 
 .wdx-included-icon {
@@ -14906,6 +14959,7 @@ body:has(.compare-bar) {
 .wdx-sections {
   padding: 110px 0;
   background: #efe9dc;
+  border-top: 1px solid var(--fdv-line);
 }
 
 .wdx-sections-inner {
@@ -14947,6 +15001,8 @@ body:has(.compare-bar) {
 /* Listing vs website */
 .wdx-compare {
   padding: 130px 0 110px;
+  background: #fff;
+  border-top: 1px solid var(--fdv-line);
 }
 
 .wdx-compare-grid {
@@ -15015,7 +15071,9 @@ body:has(.compare-bar) {
 
 /* Process */
 .wdx-process {
-  padding: 40px 0 130px;
+  padding: 60px 0 130px;
+  background: var(--fdv-paper);
+  border-top: 1px solid var(--fdv-line);
 }
 
 .wdx-process-list {
@@ -15028,26 +15086,24 @@ body:has(.compare-bar) {
   gap: 40px;
 }
 
+/* Bordered step cards — same card language as .wdx-compare-card and
+   .wdx-faq-item elsewhere on this page (2nd redesign: a numbered circle
+   badge read too close to /pricing's steps; a plain "Step N" label inside
+   a real card is a clearer, more distinct treatment for a 4-step process). */
 .wdx-process-item {
-  padding-top: 24px;
-  border-top: 1px solid var(--fdv-ink);
+  padding: 28px 24px 26px;
+  border: 1px solid var(--fdv-line);
+  background: #fbf9f4;
 }
 
-/* Numbered circle, same pattern as .pricing-how-it-works's steps — kept
-   consistent with the site's other numbered-steps section instead of a
-   bespoke serif numeral treatment. */
-.wdx-process-number {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  margin-bottom: 18px;
-  border-radius: 50%;
-  background: var(--fdv-accent);
-  color: #fff;
-  font-size: 15px;
+.wdx-process-step-label {
+  display: block;
+  margin-bottom: 14px;
+  font-size: 12px;
   font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fdv-accent);
 }
 
 .wdx-process-item h3 {
@@ -15068,7 +15124,9 @@ body:has(.compare-bar) {
    (the site's established FAQ style) instead of a bespoke serif divider
    list, per the owner's "be consistent with other pages" request. */
 .wdx-faq {
-  padding: 0 0 140px;
+  padding: 90px 0 140px;
+  background: #efe9dc;
+  border-top: 1px solid var(--fdv-line);
 }
 
 .wdx-faq-list {
@@ -15133,6 +15191,24 @@ body:has(.compare-bar) {
   background: var(--fdv-ink);
   color: #fff;
   text-align: center;
+  border-top: 1px solid var(--fdv-line);
+}
+
+/* "List your project instead" — a real outlined pill button here (unlike
+   .fdv-cta-secondary's plain underlined-link look used in the hero),
+   since it sits next to a solid button and needs to read as a second,
+   equally real choice, not an afterthought link. */
+.wdx-cta .fdv-cta-secondary {
+  padding: 14px 28px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 999px;
+  color: #fff;
+}
+
+.wdx-cta .fdv-cta-secondary:hover {
+  background: #fff;
+  color: var(--fdv-ink);
+  opacity: 1;
 }
 
 .wdx-cta-inner {
@@ -15142,7 +15218,7 @@ body:has(.compare-bar) {
 
 .wdx-cta h2 {
   margin: 0 0 16px;
-  font-weight: 700;
+  font-weight: 400;
   font-size: 46px;
   line-height: 1.12;
   letter-spacing: -0.02em;
@@ -15165,7 +15241,19 @@ body:has(.compare-bar) {
     font-size: 56px;
   }
 
+  .wdx-hero-content-split {
+    grid-template-columns: 1fr;
+  }
+
+  .wdx-hero-preview {
+    display: none;
+  }
+
   .wdx-included-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .wdx-styles-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 
@@ -15191,14 +15279,21 @@ body:has(.compare-bar) {
 
   .wdx-intro,
   .wdx-included,
-  .wdx-compare {
+  .wdx-compare,
+  .wdx-styles {
     padding: 80px 0;
+  }
+
+  .wdx-styles-grid {
+    grid-template-columns: 1fr;
+    width: calc(100% - 44px);
   }
 
   .wdx-intro-grid {
     grid-template-columns: 1fr;
     gap: 32px;
     width: calc(100% - 44px);
+    padding: 28px 24px;
   }
 
   .wdx-statement {

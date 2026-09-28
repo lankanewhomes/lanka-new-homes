@@ -110,17 +110,26 @@ function ScaledPreview({ src, title, base }: { src: string; title: string; base:
   );
 }
 
+/** Just the laptop (browser bar + live scaled preview), no phone — used in
+ * the hero, where there's only room for one device next to the headline.
+ * Shares the same live preview as SampleDevices below. */
+export function HeroLaptopPreview() {
+  return (
+    <div className="wdx-laptop">
+      <div className="wdx-browser-bar" aria-hidden="true">
+        <span className="wdx-browser-dots"><i /><i /><i /></span>
+        <span className="wdx-browser-url">halcyonresidences.lk</span>
+      </div>
+      <ScaledPreview src="/web-design/sample/embed" title="Sample developer website on a desktop screen" base={DESKTOP} />
+    </div>
+  );
+}
+
 /** The laptop + phone pair shown on /web-design, both live previews of the sample homepage. */
 export function SampleDevices() {
   return (
     <div className="wdx-devices">
-      <div className="wdx-laptop">
-        <div className="wdx-browser-bar" aria-hidden="true">
-          <span className="wdx-browser-dots"><i /><i /><i /></span>
-          <span className="wdx-browser-url">halcyonresidences.lk</span>
-        </div>
-        <ScaledPreview src="/web-design/sample/embed" title="Sample developer website on a desktop screen" base={DESKTOP} />
-      </div>
+      <HeroLaptopPreview />
       <div className="wdx-phone">
         <div className="wdx-phone-notch" aria-hidden="true" />
         <ScaledPreview src="/web-design/sample/embed" title="Sample developer website on a phone" base={PHONE} />
