@@ -57,36 +57,36 @@ export function ContactForm() {
     <form className="contact-form" onSubmit={onSubmit}>
       <div className="contact-form-row">
         <label className="contact-form-field">
-          <span>First name</span>
-          <input value={firstName} onChange={(event) => setFirstName(event.target.value)} required placeholder="John" autoComplete="given-name" />
+          <span className="sr-only">First name</span>
+          <input value={firstName} onChange={(event) => setFirstName(event.target.value)} required placeholder="First name" autoComplete="given-name" />
         </label>
         <label className="contact-form-field">
-          <span>Last name</span>
-          <input value={lastName} onChange={(event) => setLastName(event.target.value)} required placeholder="Doe" autoComplete="family-name" />
+          <span className="sr-only">Last name</span>
+          <input value={lastName} onChange={(event) => setLastName(event.target.value)} required placeholder="Last name" autoComplete="family-name" />
         </label>
       </div>
 
       <div className="contact-form-row">
         <label className="contact-form-field">
-          <span>Company (optional)</span>
-          <input value={company} onChange={(event) => setCompany(event.target.value)} placeholder="Acme Developers" autoComplete="organization" />
+          <span className="sr-only">Company (optional)</span>
+          <input value={company} onChange={(event) => setCompany(event.target.value)} placeholder="Company (optional)" autoComplete="organization" />
         </label>
         <label className="contact-form-field">
-          <span>Role (optional)</span>
-          <input value={jobTitle} onChange={(event) => setJobTitle(event.target.value)} placeholder="Sales Manager" autoComplete="organization-title" />
+          <span className="sr-only">Role (optional)</span>
+          <input value={jobTitle} onChange={(event) => setJobTitle(event.target.value)} placeholder="Role (optional)" autoComplete="organization-title" />
         </label>
       </div>
 
       <label className="contact-form-field">
-        <span>Email</span>
-        <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} required placeholder="you@example.com" autoComplete="email" />
+        <span className="sr-only">Email</span>
+        <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} required placeholder="Email" autoComplete="email" />
       </label>
 
       <label className="contact-form-field">
-        <span>Who are you trying to reach?</span>
+        <span className="sr-only">Who are you trying to reach?</span>
         <span className="contact-form-select-wrap">
           <select value={audience} onChange={(event) => setAudience(event.target.value)} required defaultValue="">
-            <option value="" disabled>Select one option…</option>
+            <option value="" disabled>Who are you trying to reach?</option>
             {AUDIENCE_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>{option.label}</option>
             ))}
@@ -96,8 +96,8 @@ export function ContactForm() {
       </label>
 
       <label className="contact-form-field">
-        <span>Tell us more about your inquiry</span>
-        <textarea value={message} onChange={(event) => setMessage(event.target.value)} required rows={5} placeholder="Type your message here…" />
+        <span className="sr-only">Tell us more about your inquiry</span>
+        <textarea value={message} onChange={(event) => setMessage(event.target.value)} required rows={5} placeholder="Tell us more about your inquiry" />
       </label>
 
       <label className="contact-form-consent">

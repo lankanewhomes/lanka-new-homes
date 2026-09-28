@@ -1793,11 +1793,21 @@ gone; `.contact-page-bg`/`.contact-hero`/`.contact-cards`/
   content rather than inventing a new offer.
 - **Two explicit style deviations from the reference, both owner
   instructions from earlier the same session**: headings are NOT bold
-  (`font-weight: 500` on the h1/h2/eyebrow, not the reference's bold) —
-  "I don't want bold" — and the eyebrow ("Contact us") is plain ink, not
-  an accent colour, since the owner separately said they don't like orange
-  used for eyebrow labels (applies here even though this is a different
-  page from where that feedback originated).
+  (`font-weight: 500` on the h1/h2, not the reference's bold) — "I don't
+  want bold" — and the eyebrow ("Contact us") was removed outright the
+  same day ("make sure delete this on top"), rather than just recoloured.
+- **No radius anywhere except the Submit button** (owner: "make sure the
+  radius is... no radius... except the button") — `.contact-form-panel`/
+  `.contact-cta-panel`/`.contact-form-sent` are all `border-radius: 0`;
+  `.contact-form-submit`'s pill (`999px`) and its inner arrow circle
+  (`50%`) are the one deliberate exception.
+- **Fields dropped the underline style for a full bordered box with the
+  placeholder text inside** (owner, same session: "placeholder also needs
+  a border with the text inside... delete the label") — no visible label
+  above each field any more; each one keeps a `.sr-only` `<span>` so it
+  still has a real accessible name, and the placeholder text itself became
+  the field's description ("First name", "Company (optional)", "Who are
+  you trying to reach?", etc.) since it's now the only visible cue.
 
 ## Social publishing (Project → Social tab)
 

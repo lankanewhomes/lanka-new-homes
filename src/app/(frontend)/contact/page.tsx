@@ -28,7 +28,6 @@ export default function ContactPage() {
   return (
     <div className="contact-page-bg">
       <div className="contact-hero">
-        <p className="contact-eyebrow">Contact us</p>
         <h1>Get in touch with our team</h1>
         <p className="contact-hero-sub">Have a question about a listing, a developer partnership, or the platform itself? Tell us more below and we&apos;ll get back to you within one business day.</p>
         <p className="contact-hero-line">

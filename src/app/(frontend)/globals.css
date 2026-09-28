@@ -11216,15 +11216,6 @@ body:has(.compare-bar) {
   text-align: center;
 }
 
-.contact-eyebrow {
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #1f1f1f;
-  margin-bottom: 14px;
-}
-
 .contact-hero h1 {
   font-family: var(--font-ref-sans);
   font-size: 34px;
@@ -11264,7 +11255,7 @@ body:has(.compare-bar) {
 
 .contact-form-panel {
   background: #fff;
-  border-radius: 20px;
+  border-radius: 0;
   padding: 36px 32px;
   box-shadow: 0 1px 2px rgba(16, 16, 16, 0.04);
 }
@@ -11273,7 +11264,7 @@ body:has(.compare-bar) {
   position: relative;
   background: #1a1a1a;
   color: #fff;
-  border-radius: 20px;
+  border-radius: 0;
   padding: 32px 34px;
 }
 
@@ -11316,18 +11307,19 @@ body:has(.compare-bar) {
   color: #f47b36;
 }
 
-/* Form fields — the reference's minimal underline style (a small uppercase
-   label, the input itself just a bottom border) rather than the site's
-   usual bordered-box inputs; a deliberate one-off matching this specific
-   reference design. */
+/* Form fields — a full bordered box with the placeholder text inside,
+   owner (2026-09-28): "placeholder also needs a border with the text
+   inside... delete the label" — no separate visible label above each
+   field any more (kept as a .sr-only <span> so the field still has a real
+   accessible name; only the visual label was removed). */
 .contact-form {
   display: grid;
-  gap: 22px;
+  gap: 18px;
 }
 
 .contact-form-row {
   display: grid;
-  gap: 22px;
+  gap: 18px;
 }
 
 @media (min-width: 481px) {
@@ -11338,26 +11330,16 @@ body:has(.compare-bar) {
 
 .contact-form-field {
   display: grid;
-  gap: 8px;
-}
-
-.contact-form-field > span {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #8a8a8a;
 }
 
 .contact-form-field input,
 .contact-form-field textarea,
 .contact-form-field select {
   width: 100%;
-  border: 0;
-  border-bottom: 1px solid #dcdcd8;
+  border: 1px solid #dcdcd8;
   border-radius: 0;
-  background: transparent;
-  padding: 6px 2px;
+  background: #fff;
+  padding: 12px 14px;
   font-size: 15px;
   font-family: var(--font-ref-sans);
   color: #1f1f1f;
@@ -11373,7 +11355,7 @@ body:has(.compare-bar) {
 .contact-form-field textarea:focus,
 .contact-form-field select:focus {
   outline: none;
-  border-bottom-color: #f47b36;
+  border-color: #f47b36;
 }
 
 .contact-form-select-wrap {
@@ -11382,7 +11364,7 @@ body:has(.compare-bar) {
 }
 
 .contact-form-select-wrap select {
-  padding-right: 24px;
+  padding-right: 32px;
   cursor: pointer;
 }
 
@@ -11392,7 +11374,7 @@ body:has(.compare-bar) {
 
 .contact-form-select-chevron {
   position: absolute;
-  right: 2px;
+  right: 12px;
   top: 50%;
   transform: translateY(-50%);
   color: #8a8a8a;
@@ -11468,7 +11450,7 @@ body:has(.compare-bar) {
 
 .contact-form-sent {
   padding: 18px 20px;
-  border-radius: 12px;
+  border-radius: 0;
   background: #f3f2ef;
   font-size: 15px;
   color: #1f1f1f;
