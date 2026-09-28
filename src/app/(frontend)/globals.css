@@ -11196,6 +11196,254 @@ body:has(.compare-bar) {
   color: #4a4a4a;
 }
 
+/* /contact (owner, 2026-09-28: shared a reference screenshot — a bordered,
+   dot-textured panel split into a left info column and a right form
+   column by a vertical divider, with small corner-bracket accents —
+   "do it like this... use the brand's fonts and colors"). Structure
+   follows the reference; every colour/font below is LankaNewHomes' own
+   (#f47b36 orange, #1f1f1f ink, Archivo/var(--font-ref-sans)), not the
+   reference's navy/monospace look. */
+.contact-panel-wrap {
+  width: min(1100px, calc(100% - 48px));
+  margin: 48px auto 90px;
+  /* Fine dot-grid texture behind the whole panel, same faded-pattern
+     language as the /web-design section backgrounds elsewhere on the
+     site, just a dot instead of a line. */
+  background-image: radial-gradient(circle, rgba(31, 31, 31, 0.12) 1px, transparent 1px);
+  background-size: 16px 16px;
+  padding: 28px;
+}
+
+.contact-panel {
+  position: relative;
+  display: grid;
+  border: 1px solid #1f1f1f;
+  background: #fff;
+}
+
+.contact-panel-left,
+.contact-panel-right {
+  position: relative;
+  padding: 40px 32px;
+}
+
+.contact-panel-left {
+  border-bottom: 1px solid #e4e2db;
+}
+
+.contact-panel-right {
+  background: #faf7f0;
+}
+
+/* The reference's small schematic corner-bracket accent on each column —
+   two short edges of a square, in the brand accent colour. */
+.contact-corner {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 14px;
+  height: 14px;
+  border-top: 2px solid #f47b36;
+  border-right: 2px solid #f47b36;
+}
+
+.contact-panel-left h1 {
+  font-family: var(--font-ref-sans);
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.15;
+  color: #1f1f1f;
+  margin-bottom: 14px;
+  text-wrap: balance;
+}
+
+.contact-panel-left > p {
+  font-size: 15.5px;
+  line-height: 1.6;
+  color: #4a4a4a;
+  max-width: 46ch;
+}
+
+.contact-mini-grid {
+  display: grid;
+  gap: 22px;
+  margin-top: 32px;
+  padding-top: 24px;
+  padding-bottom: 24px;
+  border-top: 1px solid #e4e2db;
+  border-bottom: 1px solid #e4e2db;
+}
+
+.contact-mini-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #1f1f1f;
+  margin-bottom: 8px;
+}
+
+.contact-mini-detail {
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: #1f1f1f;
+}
+
+.contact-mini-detail a {
+  color: #1f1f1f;
+  text-decoration: underline;
+  text-decoration-color: #d8d2c2;
+  text-underline-offset: 2px;
+}
+
+.contact-mini-detail a:hover {
+  text-decoration-color: #f47b36;
+}
+
+.contact-panel-footnote {
+  margin-top: 26px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: #6b6355;
+  max-width: 46ch;
+}
+
+.contact-panel-email-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1f1f1f;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.contact-panel-email-link svg {
+  color: #f47b36;
+}
+
+.contact-panel-right h2 {
+  font-family: var(--font-ref-sans);
+  font-size: 26px;
+  font-weight: 700;
+  color: #1f1f1f;
+  margin-bottom: 22px;
+}
+
+@media (min-width: 861px) {
+  .contact-panel {
+    grid-template-columns: 1.05fr 0.95fr;
+  }
+
+  .contact-panel-left {
+    border-bottom: 0;
+    border-right: 1px solid #e4e2db;
+  }
+
+  .contact-mini-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* /contact's own form — the reference's minimal underline-style fields
+   (a small uppercase tag label, the input itself just a bottom border,
+   no full box) instead of the site's usual bordered-box inputs. */
+.contact-form {
+  display: grid;
+  gap: 22px;
+}
+
+.contact-form-field {
+  display: grid;
+  gap: 8px;
+}
+
+.contact-form-field > span {
+  display: inline-block;
+  width: fit-content;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #6b6355;
+  background: #eee8db;
+}
+
+.contact-form-field input,
+.contact-form-field textarea {
+  border: 0;
+  border-bottom: 1px solid #c9c2ae;
+  border-radius: 0;
+  background: transparent;
+  padding: 6px 2px;
+  font-size: 15px;
+  font-family: var(--font-ref-sans);
+  color: #1f1f1f;
+}
+
+.contact-form-field textarea {
+  resize: vertical;
+  min-height: 70px;
+}
+
+.contact-form-field input:focus,
+.contact-form-field textarea:focus {
+  outline: none;
+  border-bottom-color: #f47b36;
+}
+
+.contact-form-submit {
+  position: relative;
+  justify-self: stretch;
+  min-height: 50px;
+  padding: 0 28px;
+  border: 0;
+  border-radius: 0;
+  background: #f47b36;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.contact-form-submit::after {
+  content: "";
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 10px;
+  height: 10px;
+  border-top: 2px solid rgba(255, 255, 255, 0.6);
+  border-right: 2px solid rgba(255, 255, 255, 0.6);
+}
+
+.contact-form-submit:hover {
+  background: #ff9a5c;
+}
+
+.contact-form-submit:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.contact-form-error {
+  font-size: 13px;
+  color: #a3341d;
+}
+
+.contact-form-sent {
+  padding: 18px 20px;
+  border: 1px solid #e4e2db;
+  background: #fff;
+  font-size: 15px;
+  color: #1f1f1f;
+}
+
 .guide-page-related {
   margin-top: 44px;
   padding-top: 30px;
@@ -14650,8 +14898,31 @@ body:has(.compare-bar) {
   gap: 28px;
 }
 
-.wdx-hero .fdv-cta-secondary,
-.wdx-cta .fdv-cta-secondary {
+/* "See a sample homepage" (owner, 2026-09-28: "needs a better design, with
+   an arrow pointing down") — a chevron makes clear this scrolls down the
+   page rather than navigating away, and nudges gently to draw the eye. */
+.wdx-hero-sample-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.wdx-hero-sample-arrow {
+  animation: wdx-arrow-nudge 1.6s ease-in-out infinite;
+}
+
+@keyframes wdx-arrow-nudge {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wdx-hero-sample-arrow {
+    animation: none;
+  }
+}
+
+.wdx-hero .fdv-cta-secondary {
   color: #fff;
 }
 
@@ -14849,61 +15120,6 @@ body:has(.compare-bar) {
 .wdx-sample-tab-type {
   font-size: 12px;
   opacity: 0.75;
-}
-
-/* Style variety — real listing photos, 3-up grid of plain cards (photo +
-   type/city caption only, no invented copy). */
-.wdx-styles {
-  position: relative;
-  overflow: hidden;
-  padding: 100px 0;
-  background: var(--fdv-paper);
-  border-top: 1px solid var(--fdv-line);
-}
-
-/* A fine grid (two directions), same construction as the homepage's
-   developer-contact-card pattern. */
-.wdx-styles::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-image:
-    repeating-linear-gradient(0deg, transparent 0 28px, rgba(16, 24, 40, 0.05) 28px 29px),
-    repeating-linear-gradient(90deg, transparent 0 28px, rgba(16, 24, 40, 0.05) 28px 29px);
-  -webkit-mask-image: radial-gradient(ellipse 85% 100% at center, #000 40%, transparent 100%);
-  mask-image: radial-gradient(ellipse 85% 100% at center, #000 40%, transparent 100%);
-}
-
-.wdx-styles > * {
-  position: relative;
-  z-index: 1;
-}
-
-.wdx-styles-grid {
-  width: min(1180px, calc(100% - 64px));
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-}
-
-.wdx-styles-card-media {
-  position: relative;
-  aspect-ratio: 4 / 3;
-  overflow: hidden;
-  border: 1px solid var(--fdv-line);
-}
-
-.wdx-styles-card-img {
-  object-fit: cover;
-}
-
-.wdx-styles-card-caption {
-  margin: 10px 0 0;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--fdv-muted);
 }
 
 .wdx-devices {
@@ -15401,23 +15617,6 @@ body:has(.compare-bar) {
   z-index: 1;
 }
 
-/* "List your project instead" — a real outlined pill button here (unlike
-   .fdv-cta-secondary's plain underlined-link look used in the hero),
-   since it sits next to a solid button and needs to read as a second,
-   equally real choice, not an afterthought link. */
-.wdx-cta .fdv-cta-secondary {
-  padding: 14px 28px;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  border-radius: 999px;
-  color: #fff;
-}
-
-.wdx-cta .fdv-cta-secondary:hover {
-  background: #fff;
-  color: var(--fdv-ink);
-  opacity: 1;
-}
-
 .wdx-cta-inner {
   width: min(720px, calc(100% - 64px));
   margin: 0 auto;
@@ -15597,6 +15796,8 @@ body:has(.compare-bar) {
   }
 
   .wdx-cta {
-    padding: 84px 0;
+    /* Clears the fixed bottom quickjump tab bar (~76px + the iPhone safe
+       area), same reasoning as the listing pages' own bottom-bar clearance. */
+    padding: 84px 0 calc(84px + 76px + env(safe-area-inset-bottom));
   }
 }

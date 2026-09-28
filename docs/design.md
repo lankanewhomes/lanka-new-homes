@@ -1678,6 +1678,90 @@ remounted. Fixed by adding `src` to the effect's dependency array, so
 switching tears down and restarts the loop (`y` resets to 0 as a fresh
 `let` inside the effect body).
 
+### "Every project looks different" section removed; one CTA in the closing band (2026-09-28, later still)
+
+Owner: the real-photo "Every project looks different. Yours will too." band
+(6 real LankaNewHomes listing photos, added the same day) was cut once the
+3-sample switcher above it already made that point live — the static photo
+grid read as a weaker echo of it. Removed the section, its `styleSamples`/
+`STYLE_SAMPLE_SLUGS`/`getAllProjects()` plumbing (the page went back to a
+plain, non-async component), and its now-dead `.wdx-styles*` CSS. Separately,
+the closing CTA band (`.wdx-cta`) dropped its second button ("List your
+project instead") — one CTA only, "Get in touch"; the now-unused
+`.wdx-cta .fdv-cta-secondary` pill-button CSS was removed too.
+
+### Floating bottom quickjump menu + hero "see a sample" arrow (2026-09-28, later still)
+
+Owner: "add floating bottom sticky, like listings" — `/web-design` gets the
+same section-jump bar a listing page's hero already has. Rather than
+duplicate that logic, `src/components/marketplace/quickjump-bar.tsx` is a
+new, generic `<QuickjumpBar items gateSelector>` component that **reuses
+the listing hero's own CSS classes verbatim**
+(`.listing-hero-quickjump-bar`/`-btn`/`-label`/`-more`/`-more-left`/
+`-more-right`) — so it needed zero new CSS and behaves identically: a
+floating pill on desktop, hidden until scrolled past `gateSelector` (an
+`IntersectionObserver` on `document.querySelector(gateSelector)`, the same
+approach as the listing hero's `titlePanelRef` observer, just resolved by
+selector instead of a passed-down ref since this component is used from a
+plain page, not threaded through `ProjectHero`); the full-width bottom tab
+bar on phones, sliding sideways with the tap-arrows + one-time "peek" nudge
+when the items overflow (measured, not inferred from count — same
+reasoning as the listing hero's version). `/web-design` passes 7 items
+(`#sample`/`#included`/`#homepage`/`#compare`/`#process`/`#faq`/`#contact` —
+every section below the hero now has a matching `id`) and
+`gateSelector=".wdx-hero"`. `.wdx-cta`'s mobile padding gained bottom
+clearance (`76px` + safe area) so the fixed bar doesn't sit on the closing
+band's own content.
+
+Same session: "See a sample homepage" (the hero's secondary CTA) "needs a
+better design, with an arrow pointing down" — added a `ChevronDown` that
+gently nudges (`.wdx-hero-sample-arrow`, `@keyframes wdx-arrow-nudge`,
+off for reduced-motion), making clear the link scrolls down the page
+rather than navigating away.
+
+## Contact page redesign + a real form (2026-09-28)
+
+`/contact` was a bare `h1`/`h2`/`p` list (`.static-page-shell`) with a
+placeholder "Colombo, Sri Lanka" office line. Rebuilt twice the same
+session, ending on a layout the owner supplied as a reference screenshot
+(a bordered, dot-textured panel split into a left info column and a right
+form column by a divider, with small corner-bracket accents) — "do it like
+this... use the brand's fonts and colors": every colour/font below is
+LankaNewHomes' own (`#f47b36` orange, `#1f1f1f` ink, Archivo), not the
+reference's navy/monospace look. New `.contact-panel-*` CSS, not
+`.guide-page` (the two-column split needed its own container width/rules).
+
+- **Real contact details, not placeholders**: the old "Colombo, Sri Lanka"
+  line was replaced through several owner-directed rounds — first offered
+  a real Canada address after the owner revealed the business actually
+  runs from Canada (not Sri Lanka, avoiding a false "we have a Colombo
+  office" claim), then a real Sri Lanka address was added alongside it,
+  then **both addresses were removed again** by the owner's own final
+  call — the page shows no physical address at all now. The owner's own
+  direct line (**Founder: Rupan**, `rupan@lankanewhomes.com`,
+  `+1 647 716 5155`) was added and kept.
+- **The left column**'s 3-item mini-grid (General / Founder / Developers)
+  deliberately mirrors the reference's 3-office layout rhythm without
+  inventing addresses — it's the 3 real ways to reach LankaNewHomes,
+  reusing content the page already had.
+- **A real working form** (owner: "it also needs a contact form"),
+  `src/components/marketplace/contact-form.tsx` posting to
+  `src/app/(frontend)/api/contact/route.ts` — a plain email via
+  `nodemailer` (the same `SMTP_*`/`EMAIL_FROM` transport Payload's own
+  adapter and the follower-digest cron already use), **not** a Payload
+  lead (this form isn't tied to a project). Reply-To is the visitor's own
+  address. **Test routing reuses the exact same non-production guard as
+  every other alert channel on the site**
+  (`isProductionDeployment()`/`DEFAULT_TEST_INBOX` from `lead-alerts.ts`) —
+  a local/preview submission can never reach the real inbox; see the
+  "lead-alert-test-routing" feedback memory: never assume a new channel is
+  exempt from this.
+- Field styling matches the reference's minimal underline inputs (a small
+  uppercase tag label, the input itself just a bottom border) instead of
+  the site's usual bordered-box `.request-info-field`/`.smp-field` inputs —
+  a deliberate one-off for this page's specific reference design, not a
+  new site-wide input convention.
+
 ## Social publishing (Project → Social tab)
 
 Full guide: `docs/social-publishing.md`. In short: `npm run social:generate

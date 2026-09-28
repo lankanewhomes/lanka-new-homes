@@ -1,0 +1,55 @@
+import { NextResponse } from "next/server";
+import nodemailer from "nodemailer";
+import { DEFAULT_TEST_INBOX, isProductionDeployment } from "@/lib/lead-alerts";
+
+// The /contact page's own general-inquiry form — not tied to a project/lead,
+// so it doesn't go through Payload's leads collection at all; it's a plain
+// email, same transport (`SMTP_*`) and `EMAIL_FROM` Payload's own adapter
+// and the follower-digest cron already use. Reply-To is the visitor's own
+// address, so replying from the inbox goes straight back to them.
+//
+// Test routing reuses the exact same non-production guard as every other
+// alert channel on the site (lead alerts, the follower digest, saved-search
+// alerts) — a local/preview submission can never reach the real inbox. See
+// feedback memory "lead-alert-test-routing": never assume a new channel is
+// exempt from this.
+export async function POST(req: Request) {
+  try {
+    const body = await req.json();
+    const name = typeof body?.name === "string" ? body.name.trim() : "";
+    const email = typeof body?.email === "string" ? body.email.trim() : "";
+    const message = typeof body?.message === "string" ? body.message.trim() : "";
+
+    if (!name || !email || !message) {
+      return NextResponse.json({ error: "Missing name, email, or message" }, { status: 400 });
+    }
+
+    const isTest = !isProductionDeployment();
+    const testInbox = process.env.LEAD_ALERTS_OVERRIDE_TO || process.env.LEAD_ALERTS_TEST_INBOX || DEFAULT_TEST_INBOX;
+    const to = isTest ? testInbox : "support@lankanewhomes.com";
+
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: Number(process.env.SMTP_PORT) || 587,
+      auth: process.env.SMTP_USER ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } : undefined,
+    });
+
+    await transporter.sendMail({
+      to,
+      from: process.env.EMAIL_FROM,
+      replyTo: email,
+      subject: `${isTest ? `[TEST — would go to support@lankanewhomes.com] ` : ""}Contact form: ${name}`,
+      html: `<p><strong>${escapeHtml(name)}</strong> (${escapeHtml(email)}) sent a message from the /contact form:</p><p>${escapeHtml(message).replace(/\n/g, "<br>")}</p>`,
+      text: `${name} (${email}) sent a message from the /contact form:\n\n${message}`,
+    });
+
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    console.error("Failed to send /contact form submission", error);
+    return NextResponse.json({ error: "Failed to send message" }, { status: 500 });
+  }
+}
+
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char] as string);
+}

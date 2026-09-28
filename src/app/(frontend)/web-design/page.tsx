@@ -1,28 +1,23 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { Gauge, LayoutTemplate, MessageCircle, Search, Smartphone, Globe } from "lucide-react";
+import { ChevronDown, Gauge, LayoutTemplate, MessageCircle, Search, Smartphone, Globe } from "lucide-react";
+import { QuickjumpBar } from "@/components/marketplace/quickjump-bar";
 import { ScrollReveal } from "@/components/marketplace/scroll-reveal";
 import { SampleDevices } from "@/components/marketplace/web-design-frames";
 import { SampleSiteSwitcher } from "@/components/marketplace/web-design-sample-switcher";
 import { SAMPLE_IMAGES } from "@/components/web-design-sample/sample-data";
-import { getAllProjects } from "@/lib/project-store";
 
-export const revalidate = 300;
-
-// Real, published LankaNewHomes listings, picked for visual variety across
-// property type and location — used only to illustrate that a dedicated
-// site's design changes with the project, never presented as an actual
-// delivered website for that developer (owner, 2026-09-27: "get the
-// content or video, photos, from my website. not soemwher else" — every
-// image on this page has to be real, not stock).
-const STYLE_SAMPLE_SLUGS = [
-  "rush-court-5-colombo-14",
-  "rudra-wellness-retreat-kalkudah",
-  "waterfall-residencies-malabe",
-  "viva-la-vida",
-  "imaarat-bambalapitiya",
-  "magna-mattegoda",
+// Section ids QuickjumpBar links to, in reading order — every `id` below
+// must match a section further down the page exactly once.
+const QUICKJUMP_ITEMS = [
+  { href: "#sample", label: "Sample" },
+  { href: "#included", label: "Included" },
+  { href: "#homepage", label: "Homepage" },
+  { href: "#compare", label: "Compare" },
+  { href: "#process", label: "Process" },
+  { href: "#faq", label: "FAQ" },
+  { href: "#contact", label: "Contact" },
 ] as const;
 
 // Dropped the editorial Fraunces serif this page used to share with
@@ -86,10 +81,7 @@ const FAQS = [
   { q: "How much does it cost?", a: "It depends on the size of the project and what you need, so we quote for each one. Tell us about it and we'll come back to you." },
 ] as const;
 
-export default async function WebDesignPage() {
-  const allProjects = await getAllProjects();
-  const styleSamples = STYLE_SAMPLE_SLUGS.map((slug) => allProjects.find((p) => p.slug === slug)).filter((p): p is NonNullable<typeof p> => Boolean(p?.heroImage));
-
+export default function WebDesignPage() {
   return (
     <div className="fdv-page wdx-page">
       <ScrollReveal />
@@ -109,7 +101,10 @@ export default async function WebDesignPage() {
             </p>
             <div className="wdx-hero-ctas">
               <Link href="/contact" className="fdv-cta-primary">Talk to us about a site</Link>
-              <a href="#sample" className="fdv-cta-secondary">See a sample homepage</a>
+              <a href="#sample" className="fdv-cta-secondary wdx-hero-sample-link">
+                See a sample homepage
+                <ChevronDown size={16} strokeWidth={2.5} aria-hidden="true" className="wdx-hero-sample-arrow" />
+              </a>
             </div>
           </div>
           <div className="wdx-hero-preview" aria-hidden="true">
@@ -147,31 +142,8 @@ export default async function WebDesignPage() {
         </div>
       </section>
 
-      {/* 3B — STYLE VARIETY (real LankaNewHomes listings, not delivered sites) */}
-      {styleSamples.length > 0 ? (
-        <section className="wdx-styles" aria-label="Design styles">
-          <div className="wdx-section-head" data-reveal>
-            <h2>Every project looks different. Yours will too.</h2>
-            <p>
-              The three samples above show how much the design itself can change. These are real projects listed on
-              LankaNewHomes, shown here to illustrate range too — not sites we&apos;ve built for them.
-            </p>
-          </div>
-          <div className="wdx-styles-grid">
-            {styleSamples.map((project) => (
-              <div className="wdx-styles-card" key={project.slug} data-reveal>
-                <div className="wdx-styles-card-media">
-                  <Image src={project.heroImage} alt="" fill sizes="(max-width: 760px) 100vw, 33vw" className="wdx-styles-card-img" />
-                </div>
-                <p className="wdx-styles-card-caption">{project.type} &middot; {project.city}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-      ) : null}
-
       {/* 4 — WHAT'S INCLUDED */}
-      <section className="wdx-included" aria-label="What every site includes">
+      <section className="wdx-included" id="included" aria-label="What every site includes">
         <div className="wdx-section-head" data-reveal>
           <h2>Built properly, from the first line.</h2>
         </div>
@@ -187,7 +159,7 @@ export default async function WebDesignPage() {
       </section>
 
       {/* 5 — WHAT GOES ON A HOMEPAGE */}
-      <section className="wdx-sections" aria-label="What we can put on your homepage">
+      <section className="wdx-sections" id="homepage" aria-label="What we can put on your homepage">
         <div className="wdx-sections-inner">
           <div className="wdx-section-head" data-reveal>
             <h2>Everything a buyer looks for, in one place.</h2>
@@ -202,7 +174,7 @@ export default async function WebDesignPage() {
       </section>
 
       {/* 6 — LISTING VS WEBSITE */}
-      <section className="wdx-compare" aria-label="A listing or a website">
+      <section className="wdx-compare" id="compare" aria-label="A listing or a website">
         <div className="wdx-section-head" data-reveal>
           <h2>A listing to get discovered. A site to close the sale.</h2>
         </div>
@@ -223,7 +195,7 @@ export default async function WebDesignPage() {
       </section>
 
       {/* 7 — PROCESS */}
-      <section className="wdx-process" aria-label="How it works">
+      <section className="wdx-process" id="process" aria-label="How it works">
         <div className="wdx-section-head" data-reveal>
           <h2>Four steps from &ldquo;we need a site&rdquo; to a live one.</h2>
         </div>
@@ -239,7 +211,7 @@ export default async function WebDesignPage() {
       </section>
 
       {/* 8 — FAQ */}
-      <section className="wdx-faq" aria-label="Questions">
+      <section className="wdx-faq" id="faq" aria-label="Questions">
         <div className="wdx-section-head" data-reveal>
           <h2>What developers ask us.</h2>
         </div>
@@ -254,16 +226,17 @@ export default async function WebDesignPage() {
       </section>
 
       {/* 9 — CTA */}
-      <section className="wdx-cta" aria-label="Get started">
+      <section className="wdx-cta" id="contact" aria-label="Get started">
         <div className="wdx-cta-inner" data-reveal>
           <h2>Have a project that needs a website?</h2>
           <p>Tell us about it — new site or redesign, we&apos;ll take it from there.</p>
           <div className="wdx-hero-ctas">
             <Link href="/contact" className="fdv-cta-primary">Get in touch</Link>
-            <Link href="/for-developers" className="fdv-cta-secondary">List your project instead</Link>
           </div>
         </div>
       </section>
+
+      <QuickjumpBar items={QUICKJUMP_ITEMS} gateSelector=".wdx-hero" />
     </div>
   );
 }
