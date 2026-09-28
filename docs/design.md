@@ -1762,6 +1762,43 @@ reference's navy/monospace look. New `.contact-panel-*` CSS, not
   a deliberate one-off for this page's specific reference design, not a
   new site-wide input convention.
 
+### Rebuilt again the same day: a second reference, a real field set, a dark CTA card
+
+Owner shared a second reference screenshot (a different site — centred
+eyebrow/heading/subhead, a white rounded form card, a dark "Book a Demo"
+CTA card below it) and asked for the form built to match it closely,
+"even the button" — **this replaces the two-column panel design above**
+(the `.contact-panel-*`/`.contact-mini-*`/`.contact-corner` classes are
+gone; `.contact-page-bg`/`.contact-hero`/`.contact-cards`/
+`.contact-form-panel`/`.contact-cta-panel` took over).
+
+- **Field set follows the reference**, adapted to what the form actually
+  needs to collect: First name / Last name / Company (optional) / Role
+  (optional) / Email / **"Who are you trying to reach?"** (a real select —
+  General inquiries / Founder / Developer partnerships, reusing the same 3
+  categories the page already had) / a message textarea / an optional
+  "keep me posted" consent checkbox linking the site's real `/privacy` and
+  `/terms` pages. `/api/contact` combines first+last into one `name` for
+  the email, and includes the audience choice, company and role in the
+  email body so the team can route it by hand — still one inbox
+  (`support@lankanewhomes.com`), not split across several real addresses.
+- **Submit button matches the reference's two-part shape exactly**: a
+  white circular arrow icon overlapping the left edge of a solid pill
+  button (`.contact-form-submit-icon` inside `.contact-form-submit`),
+  recoloured to the brand orange instead of the reference's yellow.
+- **The dark CTA card has no direct LankaNewHomes equivalent** (the
+  reference's was a SaaS demo-booking prompt) — repurposed as the one
+  thing that actually fits: a "List your project" push to
+  `/developers/register`, reusing this page's own existing developer
+  content rather than inventing a new offer.
+- **Two explicit style deviations from the reference, both owner
+  instructions from earlier the same session**: headings are NOT bold
+  (`font-weight: 500` on the h1/h2/eyebrow, not the reference's bold) —
+  "I don't want bold" — and the eyebrow ("Contact us") is plain ink, not
+  an accent colour, since the owner separately said they don't like orange
+  used for eyebrow labels (applies here even though this is a different
+  page from where that feedback originated).
+
 ## Social publishing (Project → Social tab)
 
 Full guide: `docs/social-publishing.md`. In short: `npm run social:generate
