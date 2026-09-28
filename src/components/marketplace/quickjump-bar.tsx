@@ -1,17 +1,23 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, type LucideIcon } from "lucide-react";
 
-export type QuickjumpItem = { label: string } & ({ href: string; onClick?: undefined } | { href?: undefined; onClick: () => void });
+export type QuickjumpItem = { label: string; icon: LucideIcon } & ({ href: string; onClick?: undefined } | { href?: undefined; onClick: () => void });
 
 /**
- * A floating bottom section-jump menu — the same bar/behavior as a listing
- * page's own `.listing-hero-quickjump-bar` (reuses its exact CSS classes on
- * purpose, see globals.css, so this needed no new styling): on desktop a
- * pill fixed to the bottom of the viewport, hidden until the visitor scrolls
- * past `gateSelector` (so it doesn't sit on top of that element); on phones
- * it becomes the page's own bottom tab bar, always shown, sliding sideways
+ * A floating bottom section-jump menu — the same bar/behavior AND look as a
+ * listing page's own `.listing-hero-quickjump-bar` (its `ProjectHero` pills
+ * in components.tsx): reuses the exact CSS classes on purpose, see
+ * globals.css, so this needed no new styling, and renders each item with a
+ * lucide icon the same way ("doesn't look right" without one, owner,
+ * 2026-09-28 — the icon-less version this component shipped with first
+ * didn't match) — bare icon (`className="h-4 w-4" strokeWidth={1.5}
+ * aria-hidden`) before the label span, spaced by the button's own flex
+ * `gap`, no wrapping span around the icon. On desktop a pill fixed to the
+ * bottom of the viewport, hidden until the visitor scrolls past
+ * `gateSelector` (so it doesn't sit on top of that element); on phones it
+ * becomes the page's own bottom tab bar, always shown, sliding sideways
  * with a tap-to-scroll arrow + one-time "peek" nudge when the links don't
  * all fit. Owner, 2026-09-28: "add floating bottom sticky, like listings".
  * Each item is either a plain section link (`href`) or a button
@@ -104,11 +110,11 @@ export function QuickjumpBar({ items, gateSelector }: { items: readonly Quickjum
       {items.map((item) =>
         item.href ? (
           <a key={item.label} href={item.href} className="listing-hero-quickjump-btn">
-            <span className="listing-hero-quickjump-label">{item.label}</span>
+            <item.icon className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">{item.label}</span>
           </a>
         ) : (
           <button key={item.label} type="button" onClick={item.onClick} className="listing-hero-quickjump-btn">
-            <span className="listing-hero-quickjump-label">{item.label}</span>
+            <item.icon className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">{item.label}</span>
           </button>
         )
       )}

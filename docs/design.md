@@ -1856,6 +1856,18 @@ homepage" link still uses `#sample`), only the bar's item list changed.
   centred dialog, matching the full-width tab-bar treatment the bottom bar
   itself already gets on phones.
 
+**Same day, follow-up:** the 2-item bar shipped without icons and the
+owner flagged it — "needs to look exactly like what you have it on the
+project listing... it had icons... it doesn't look right." `QuickjumpItem`
+now carries a required `icon: LucideIcon`, rendered exactly like
+`ProjectHero`'s own pills in `components.tsx` (bare `<Icon className="h-4
+w-4" strokeWidth={1.5} aria-hidden="true" />` before the label span, no
+wrapping element, spacing from the button's own flex `gap` — no new CSS,
+same as the rest of this component). `/web-design` uses `LayoutTemplate`
+for Samples (already used on this page for "Designed for your project")
+and `MessageCircle` for Contact (the site's existing contact icon — see
+`profile-view.tsx`'s "Contact {developer}" button).
+
 ## Social publishing (Project → Social tab)
 
 Full guide: `docs/social-publishing.md`. In short: `npm run social:generate
