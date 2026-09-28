@@ -465,6 +465,7 @@ export function HomeClient({
         <div className="free-listing-band-actions">
           <Link href="/for-developers" className="free-listing-band-cta">
             List your project
+            <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
           </Link>
           {/* "See pricing" removed (owner, 2026-09-24): /pricing is still being
               reviewed, unlinked from the whole site for now but kept live at

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Fraunces } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Gauge, LayoutTemplate, MessageCircle, Search, Smartphone, Globe } from "lucide-react";
@@ -9,16 +8,14 @@ import { SAMPLE_IMAGES } from "@/components/web-design-sample/sample-data";
 
 export const revalidate = 300;
 
-// Same editorial serif as /for-developers, scoped to this page (the rest of the
-// site is sans-only — see docs/design.md "Colors & type"). The variable name is
-// shared with .fdv-page on purpose, so this page reuses that page's colour
-// tokens and its ScrollReveal fade-in, and adds its own `wdx-` classes.
-const displaySerif = Fraunces({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
-  style: ["normal", "italic"],
-  variable: "--fdv-font-serif",
-});
+// Dropped the editorial Fraunces serif this page used to share with
+// /for-developers (owner, 2026-09-27: "all the content thats realted to
+// lankanewhomes or LNH the fonts needs to be consistent") — every heading
+// here now uses the site's default sans stack instead, matching
+// docs/design.md's "no serif anywhere on the site" rule. The `fdv-page`
+// wrapper class stays for this page's colour tokens and ScrollReveal
+// fade-in, neither of which depend on the font variable that used to be
+// loaded here.
 
 export const metadata: Metadata = {
   title: "Website Design for Property Developers | LankaNewHomes",
@@ -74,7 +71,7 @@ const FAQS = [
 
 export default function WebDesignPage() {
   return (
-    <div className={`fdv-page wdx-page ${displaySerif.variable}`}>
+    <div className="fdv-page wdx-page">
       <ScrollReveal />
 
       {/* 1 — HERO */}
@@ -84,7 +81,6 @@ export default function WebDesignPage() {
           <div className="wdx-hero-overlay" />
         </div>
         <div className="wdx-hero-content">
-          <p className="fdv-eyebrow">Beyond your listing</p>
           <h1 className="wdx-hero-headline">Your project deserves a website of its own.</h1>
           <p className="wdx-hero-sub">
             We design and build dedicated websites for property developments — a brand new site for a project that
@@ -115,7 +111,6 @@ export default function WebDesignPage() {
       {/* 3 — LIVE SAMPLE */}
       <section className="wdx-sample" id="sample" aria-label="Sample homepage">
         <div className="wdx-sample-head" data-reveal>
-          <p className="fdv-eyebrow">A sample homepage</p>
           <h2>See what your site could look like.</h2>
           <p>
             We designed this homepage for a fictional development to show what&apos;s possible. Every section is
@@ -134,7 +129,6 @@ export default function WebDesignPage() {
       {/* 4 — WHAT'S INCLUDED */}
       <section className="wdx-included" aria-label="What every site includes">
         <div className="wdx-section-head" data-reveal>
-          <p className="fdv-eyebrow">Every site includes</p>
           <h2>Built properly, from the first line.</h2>
         </div>
         <div className="wdx-included-grid">
@@ -153,7 +147,6 @@ export default function WebDesignPage() {
       <section className="wdx-sections" aria-label="What we can put on your homepage">
         <div className="wdx-sections-inner">
           <div className="wdx-section-head" data-reveal>
-            <p className="fdv-eyebrow">On your homepage</p>
             <h2>Everything a buyer looks for, in one place.</h2>
             <p>The sample shows what a typical development site can carry. We choose the sections that suit your project.</p>
           </div>
@@ -168,7 +161,6 @@ export default function WebDesignPage() {
       {/* 6 — LISTING VS WEBSITE */}
       <section className="wdx-compare" aria-label="A listing or a website">
         <div className="wdx-section-head" data-reveal>
-          <p className="fdv-eyebrow">Not sure which you need?</p>
           <h2>A listing to get discovered. A site to close the sale.</h2>
         </div>
         <div className="wdx-compare-grid">
@@ -190,7 +182,6 @@ export default function WebDesignPage() {
       {/* 7 — PROCESS */}
       <section className="wdx-process" aria-label="How it works">
         <div className="wdx-section-head" data-reveal>
-          <p className="fdv-eyebrow">How it works</p>
           <h2>Four steps from &ldquo;we need a site&rdquo; to a live one.</h2>
         </div>
         <ol className="wdx-process-list">
@@ -209,7 +200,6 @@ export default function WebDesignPage() {
       {/* 8 — FAQ */}
       <section className="wdx-faq" aria-label="Questions">
         <div className="wdx-section-head" data-reveal>
-          <p className="fdv-eyebrow">Questions</p>
           <h2>What developers ask us.</h2>
         </div>
         <div className="wdx-faq-list" data-reveal>
