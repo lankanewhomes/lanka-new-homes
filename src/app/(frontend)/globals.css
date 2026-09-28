@@ -14616,8 +14616,12 @@ body:has(.compare-bar) {
   width: 100%;
 }
 
-.wdx-hero-preview .wdx-laptop {
+/* SampleDevices' own .wdx-devices is normally full page width with room
+   below the phone for whatever follows it — here it fills this narrower
+   hero column instead, so the reserved bottom space isn't needed. */
+.wdx-hero-preview .wdx-devices {
   width: 100%;
+  padding-bottom: 0;
 }
 
 .wdx-hero-headline {
@@ -14667,6 +14671,8 @@ body:has(.compare-bar) {
 }
 
 .wdx-intro-grid {
+  position: relative;
+  overflow: hidden;
   width: min(1180px, calc(100% - 64px));
   margin: 0 auto;
   display: grid;
@@ -14677,6 +14683,28 @@ body:has(.compare-bar) {
   border: 1px solid var(--fdv-line);
   border-top: 3px solid var(--fdv-accent);
   background: #fbf9f4;
+}
+
+/* Faded diagonal line pattern (owner, 2026-09-28: "take some ideas from the
+   project listing sections' backgrounds" — same recipe as the homepage's
+   Featured/New listings and Key Features cards: a tinted
+   repeating-linear-gradient masked with a radial-gradient so it fades at
+   the edges instead of hard-cutting at the box). Each section below gets
+   its own tint/angle so the page reads with that same listing-page rhythm
+   without repeating one colour section after section. */
+.wdx-intro-grid::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(135deg, transparent 0 18px, rgba(244, 123, 54, 0.1) 18px 19px);
+  -webkit-mask-image: radial-gradient(ellipse 75% 85% at center, #000 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 75% 85% at center, #000 40%, transparent 100%);
+}
+
+.wdx-intro-grid > * {
+  position: relative;
+  z-index: 1;
 }
 
 .wdx-statement {
@@ -14780,9 +14808,30 @@ body:has(.compare-bar) {
 /* Style variety — real listing photos, 3-up grid of plain cards (photo +
    type/city caption only, no invented copy). */
 .wdx-styles {
+  position: relative;
+  overflow: hidden;
   padding: 100px 0;
   background: var(--fdv-paper);
   border-top: 1px solid var(--fdv-line);
+}
+
+/* A fine grid (two directions), same construction as the homepage's
+   developer-contact-card pattern. */
+.wdx-styles::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(16, 24, 40, 0.05) 28px 29px),
+    repeating-linear-gradient(90deg, transparent 0 28px, rgba(16, 24, 40, 0.05) 28px 29px);
+  -webkit-mask-image: radial-gradient(ellipse 85% 100% at center, #000 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 85% 100% at center, #000 40%, transparent 100%);
+}
+
+.wdx-styles > * {
+  position: relative;
+  z-index: 1;
 }
 
 .wdx-styles-grid {
@@ -14917,9 +14966,27 @@ body:has(.compare-bar) {
 
 /* What's included */
 .wdx-included {
+  position: relative;
+  overflow: hidden;
   padding: 130px 0 110px;
   background: var(--fdv-paper);
   border-top: 1px solid var(--fdv-line);
+}
+
+/* Grey horizontal lines, same recipe as the homepage's Key Features card. */
+.wdx-included::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(90deg, transparent 0 15px, rgba(120, 113, 108, 0.12) 15px 16px);
+  -webkit-mask-image: radial-gradient(ellipse 80% 90% at center, #000 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 80% 90% at center, #000 40%, transparent 100%);
+}
+
+.wdx-included > * {
+  position: relative;
+  z-index: 1;
 }
 
 .wdx-included-grid {
@@ -14957,9 +15024,27 @@ body:has(.compare-bar) {
 
 /* Homepage sections band */
 .wdx-sections {
+  position: relative;
+  overflow: hidden;
   padding: 110px 0;
   background: #efe9dc;
   border-top: 1px solid var(--fdv-line);
+}
+
+/* Blue diagonal lines — same tint as the homepage's New listings card. */
+.wdx-sections::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(135deg, transparent 0 18px, rgba(64, 105, 135, 0.16) 18px 19px);
+  -webkit-mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
+  mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
+}
+
+.wdx-sections > * {
+  position: relative;
+  z-index: 1;
 }
 
 .wdx-sections-inner {
@@ -15050,9 +15135,29 @@ body:has(.compare-bar) {
 }
 
 .wdx-compare-card-dark {
+  position: relative;
+  overflow: hidden;
   background: var(--fdv-ink);
   border-color: var(--fdv-ink);
   color: #fff;
+}
+
+/* Faint white diagonal lines — the dark card is the one place on this row
+   that gets the texture, a deliberate contrast against the plain light card
+   beside it. */
+.wdx-compare-card-dark::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(45deg, transparent 0 14px, rgba(255, 255, 255, 0.05) 14px 15px);
+  -webkit-mask-image: radial-gradient(ellipse 90% 90% at center, #000 35%, transparent 100%);
+  mask-image: radial-gradient(ellipse 90% 90% at center, #000 35%, transparent 100%);
+}
+
+.wdx-compare-card-dark > * {
+  position: relative;
+  z-index: 1;
 }
 
 .wdx-compare-card-dark p {
@@ -15071,9 +15176,28 @@ body:has(.compare-bar) {
 
 /* Process */
 .wdx-process {
+  position: relative;
+  overflow: hidden;
   padding: 60px 0 130px;
   background: var(--fdv-paper);
   border-top: 1px solid var(--fdv-line);
+}
+
+/* Gold diagonal lines — same hue as the developer-alert card elsewhere on
+   the site, as a straight-line pattern instead of that card's dotted one. */
+.wdx-process::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(135deg, transparent 0 18px, rgba(163, 129, 46, 0.14) 18px 19px);
+  -webkit-mask-image: radial-gradient(ellipse 80% 90% at center, #000 35%, transparent 100%);
+  mask-image: radial-gradient(ellipse 80% 90% at center, #000 35%, transparent 100%);
+}
+
+.wdx-process > * {
+  position: relative;
+  z-index: 1;
 }
 
 .wdx-process-list {
@@ -15124,9 +15248,28 @@ body:has(.compare-bar) {
    (the site's established FAQ style) instead of a bespoke serif divider
    list, per the owner's "be consistent with other pages" request. */
 .wdx-faq {
+  position: relative;
+  overflow: hidden;
   padding: 90px 0 140px;
   background: #efe9dc;
   border-top: 1px solid var(--fdv-line);
+}
+
+/* Deep green diagonal lines — the sample site's own accent colour, a nod to
+   Halcyon Residences without repeating a tint already used higher up. */
+.wdx-faq::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(45deg, transparent 0 18px, rgba(21, 65, 58, 0.1) 18px 19px);
+  -webkit-mask-image: radial-gradient(ellipse 75% 90% at center, #000 35%, transparent 100%);
+  mask-image: radial-gradient(ellipse 75% 90% at center, #000 35%, transparent 100%);
+}
+
+.wdx-faq > * {
+  position: relative;
+  z-index: 1;
 }
 
 .wdx-faq-list {
@@ -15187,11 +15330,29 @@ body:has(.compare-bar) {
 
 /* Closing call to action */
 .wdx-cta {
+  position: relative;
+  overflow: hidden;
   padding: 120px 0;
   background: var(--fdv-ink);
   color: #fff;
   text-align: center;
   border-top: 1px solid var(--fdv-line);
+}
+
+/* Faint white diagonal lines on the closing dark band. */
+.wdx-cta::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(135deg, transparent 0 20px, rgba(255, 255, 255, 0.06) 20px 21px);
+  -webkit-mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
+  mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
+}
+
+.wdx-cta > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* "List your project instead" — a real outlined pill button here (unlike

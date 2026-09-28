@@ -110,10 +110,9 @@ function ScaledPreview({ src, title, base }: { src: string; title: string; base:
   );
 }
 
-/** Just the laptop (browser bar + live scaled preview), no phone — used in
- * the hero, where there's only room for one device next to the headline.
- * Shares the same live preview as SampleDevices below. */
-export function HeroLaptopPreview() {
+/** Just the laptop (browser bar + live scaled preview), no phone — the
+ * building block SampleDevices below adds the phone to. */
+function HeroLaptopPreview() {
   return (
     <div className="wdx-laptop">
       <div className="wdx-browser-bar" aria-hidden="true">
@@ -125,7 +124,10 @@ export function HeroLaptopPreview() {
   );
 }
 
-/** The laptop + phone pair shown on /web-design, both live previews of the sample homepage. */
+/** The laptop + phone pair, both live previews of the sample homepage —
+ * shown in the hero (next to the headline) and again in the full sample
+ * band below it. Owner, 2026-09-28: the hero needs the same phone-plus-
+ * laptop preview as the sample section, not just the laptop alone. */
 export function SampleDevices() {
   return (
     <div className="wdx-devices">

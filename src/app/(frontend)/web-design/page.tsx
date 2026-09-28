@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Gauge, LayoutTemplate, MessageCircle, Search, Smartphone, Globe } from "lucide-react";
 import { ScrollReveal } from "@/components/marketplace/scroll-reveal";
-import { HeroLaptopPreview, SampleDevices } from "@/components/marketplace/web-design-frames";
+import { SampleDevices } from "@/components/marketplace/web-design-frames";
 import { SAMPLE_IMAGES } from "@/components/web-design-sample/sample-data";
 import { getAllProjects } from "@/lib/project-store";
 
@@ -112,7 +112,7 @@ export default async function WebDesignPage() {
             </div>
           </div>
           <div className="wdx-hero-preview" aria-hidden="true">
-            <HeroLaptopPreview />
+            <SampleDevices />
           </div>
         </div>
       </section>

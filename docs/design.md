@@ -1559,6 +1559,39 @@ what a developer's own site can be.
   `.smp-root ul { margin: 0 }` (specificity 0,1,1) silently beat every single-class
   margin rule (`.smp-facts { margin: 0 auto }`).
 
+### Two follow-up polish passes (owner, 2026-09-27/28) — see the two commits'
+own messages for the full list (dropped the serif font site-wide for
+consistency, numbered circles → bordered step cards → "Step N" cards for
+"How it works", FAQ switched to the site's standard accordion, a real
+"Every project looks different" section using 6 real published listings —
+never presented as delivered client sites). Two further changes worth their
+own note:
+
+- **Hero now shows the laptop AND phone preview**, not just the laptop
+  (owner, 2026-09-28: "the other section has the scrolling mobile phone...
+  can you have that on the hero too"). `SampleDevices` (the laptop+phone
+  pair already used in the live-sample band) is reused directly in the hero
+  instead of a laptop-only variant — `HeroLaptopPreview` is now an internal
+  building block, not exported. `.wdx-hero-preview .wdx-devices` overrides
+  its normal bottom padding (meant for whatever follows it lower on the
+  page) to zero since there's nothing below it in the hero. Still hidden
+  below 1000px, same as before.
+- **Every section has its own faded diagonal line pattern** (owner,
+  2026-09-28: "take some ideas from the project listing sections'
+  backgrounds — the one with blue, one with different colors"): the exact
+  recipe the homepage already uses on New listings/Key Features/the
+  developer-contact-card — a tinted `repeating-linear-gradient` masked with
+  a radial-gradient so it fades at the box's edges instead of hard-cutting —
+  reused here with a different tint per section so no two backgrounds in a
+  row repeat the same colour: orange on the intro card, a fine grey grid on
+  the style-variety band, grey horizontal on "What's included", **blue**
+  diagonal on "Everything a buyer looks for" (the exact tint the owner
+  pointed at), gold on the process cards, deep green on the FAQ band, and
+  faint white on both dark bands (the CTA and the dark compare card). Each
+  section keeps `position: relative; overflow: hidden` plus a `> *`
+  `z-index: 1` rule so its own content sits above the pattern, same
+  construction as `.new-listings-section > *`.
+
 ## Social publishing (Project → Social tab)
 
 Full guide: `docs/social-publishing.md`. In short: `npm run social:generate
