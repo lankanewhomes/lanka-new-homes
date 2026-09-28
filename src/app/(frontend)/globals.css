@@ -11456,6 +11456,74 @@ body:has(.compare-bar) {
   color: #1f1f1f;
 }
 
+/* Contact popup (owner, 2026-09-28: /web-design's bottom-bar "Contact" item
+   opens this instead of linking to /contact) — the same form, in an
+   overlay. Same z-index as .request-info-overlay (the other enquiry-style
+   dialog on the site), so the two never fight for stacking order. */
+.contact-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 250;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(20, 22, 26, 0.55);
+}
+
+.contact-modal-dialog {
+  width: min(480px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 0;
+  padding: 28px 26px;
+  box-shadow: 0 20px 60px rgba(10, 15, 23, 0.25);
+}
+
+.contact-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.contact-modal-head h2 {
+  font-family: var(--font-ref-sans);
+  font-size: 20px;
+  font-weight: 400;
+  color: #1f1f1f;
+}
+
+.contact-modal-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  background: transparent;
+  color: #1f1f1f;
+  cursor: pointer;
+}
+
+.contact-modal-close:hover {
+  color: #f47b36;
+}
+
+@media (max-width: 560px) {
+  .contact-modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .contact-modal-dialog {
+    width: 100%;
+    max-height: 92vh;
+    max-height: 92svh;
+  }
+}
+
 .guide-page-related {
   margin-top: 44px;
   padding-top: 30px;

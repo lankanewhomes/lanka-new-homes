@@ -2,23 +2,11 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronDown, Gauge, LayoutTemplate, MessageCircle, Search, Smartphone, Globe } from "lucide-react";
-import { QuickjumpBar } from "@/components/marketplace/quickjump-bar";
 import { ScrollReveal } from "@/components/marketplace/scroll-reveal";
 import { SampleDevices } from "@/components/marketplace/web-design-frames";
 import { SampleSiteSwitcher } from "@/components/marketplace/web-design-sample-switcher";
+import { WebDesignQuickjump } from "@/components/marketplace/web-design-quickjump";
 import { SAMPLE_IMAGES } from "@/components/web-design-sample/sample-data";
-
-// Section ids QuickjumpBar links to, in reading order — every `id` below
-// must match a section further down the page exactly once.
-const QUICKJUMP_ITEMS = [
-  { href: "#sample", label: "Sample" },
-  { href: "#included", label: "Included" },
-  { href: "#homepage", label: "Homepage" },
-  { href: "#compare", label: "Compare" },
-  { href: "#process", label: "Process" },
-  { href: "#faq", label: "FAQ" },
-  { href: "#contact", label: "Contact" },
-] as const;
 
 // Dropped the editorial Fraunces serif this page used to share with
 // /for-developers (owner, 2026-09-27: "all the content thats realted to
@@ -236,7 +224,7 @@ export default function WebDesignPage() {
         </div>
       </section>
 
-      <QuickjumpBar items={QUICKJUMP_ITEMS} gateSelector=".wdx-hero" />
+      <WebDesignQuickjump />
     </div>
   );
 }

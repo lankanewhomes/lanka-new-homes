@@ -1819,6 +1819,43 @@ gone; `.contact-page-bg`/`.contact-hero`/`.contact-cards`/
   removed from it on the owner's own instruction ("Just put support email
   only"); that contact detail isn't shown anywhere else on the page now.
 
+### `/web-design`'s bottom bar cut to 2 items; "Contact" opens a popup, not a page (2026-09-28, later still)
+
+Owner: "on the sticky menu only two should be enough" and "the contact...
+not to the page... when they click on it it should be a pop-up" — the
+7-item quickjump bar built earlier the same day
+(`#sample`/`#included`/`#homepage`/`#compare`/`#process`/`#faq`/`#contact`)
+is replaced by just two: **Samples** (still `#sample`, renamed from
+"Sample") and **Contact**, which opens the `/contact` form inline instead
+of linking anywhere. The section `id`s from the old 7-item bar are left in
+place (harmless, still valid anchor targets — the hero's own "See a sample
+homepage" link still uses `#sample`), only the bar's item list changed.
+
+- **`QuickjumpBar` (`quickjump-bar.tsx`) now accepts either kind of
+  item**: `{ href, label }` renders an `<a>` (unchanged), `{ onClick,
+  label }` renders a `<button>` — both use the exact same
+  `.listing-hero-quickjump-btn` class, so no new CSS was needed here
+  either (that class already resets `border`/`background`/font for any
+  element type). Items are keyed by `label` now, not `href`, since `href`
+  is optional.
+- **`ContactModal` (new, `contact-modal.tsx`)** renders the existing
+  `ContactForm` — the same component `/contact` uses — inside a fixed
+  overlay/dialog (`.contact-modal-overlay`, `z-index: 250`, same layer as
+  `.request-info-overlay`, the site's other enquiry-style dialog) with a
+  close button, and locks page scroll while open. Follows this page's own
+  rules: `.contact-modal-dialog` is `border-radius: 0`, its `h2` is
+  `font-weight: 400` — same "no radius, no bold" instructions as the real
+  `/contact` page, since it's the same form.
+- **`WebDesignQuickjump` (new, `web-design-quickjump.tsx`)** is the small
+  client component actually mounted on the page — holds the modal's
+  open/closed state and renders the 2-item `QuickjumpBar` plus
+  `ContactModal` together, so `page.tsx` just renders one component instead
+  of wiring the modal state itself.
+- **Mobile**: below 560px the modal becomes a bottom sheet
+  (`align-items: flex-end`, full width, `max-height: 92svh`) rather than a
+  centred dialog, matching the full-width tab-bar treatment the bottom bar
+  itself already gets on phones.
+
 ## Social publishing (Project → Social tab)
 
 Full guide: `docs/social-publishing.md`. In short: `npm run social:generate

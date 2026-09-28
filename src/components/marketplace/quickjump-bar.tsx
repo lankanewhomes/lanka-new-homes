@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+export type QuickjumpItem = { label: string } & ({ href: string; onClick?: undefined } | { href?: undefined; onClick: () => void });
+
 /**
  * A floating bottom section-jump menu — the same bar/behavior as a listing
  * page's own `.listing-hero-quickjump-bar` (reuses its exact CSS classes on
@@ -12,8 +14,12 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
  * it becomes the page's own bottom tab bar, always shown, sliding sideways
  * with a tap-to-scroll arrow + one-time "peek" nudge when the links don't
  * all fit. Owner, 2026-09-28: "add floating bottom sticky, like listings".
+ * Each item is either a plain section link (`href`) or a button
+ * (`onClick`) — used for a "Contact" item that opens a popup instead of
+ * navigating (owner, same day: "when they click on it it should be a
+ * pop-up", not the /contact page).
  */
-export function QuickjumpBar({ items, gateSelector }: { items: readonly { href: string; label: string }[]; gateSelector: string }) {
+export function QuickjumpBar({ items, gateSelector }: { items: readonly QuickjumpItem[]; gateSelector: string }) {
   const barRef = useRef<HTMLDivElement>(null);
   const [pastGate, setPastGate] = useState(false);
   const [scroll, setScroll] = useState({ overflowing: false, left: false, right: false });
@@ -95,11 +101,17 @@ export function QuickjumpBar({ items, gateSelector }: { items: readonly { href: 
       className={`listing-hero-quickjump-bar${items.length > 6 ? " is-scrollable" : ""}${scroll.overflowing ? " is-overflowing" : ""}${scroll.left ? " has-more-left" : ""}${scroll.right ? " has-more-right" : ""}${pastGate ? " is-visible" : ""}`}
       aria-label="Quick jump"
     >
-      {items.map((item) => (
-        <a key={item.href} href={item.href} className="listing-hero-quickjump-btn">
-          <span className="listing-hero-quickjump-label">{item.label}</span>
-        </a>
-      ))}
+      {items.map((item) =>
+        item.href ? (
+          <a key={item.label} href={item.href} className="listing-hero-quickjump-btn">
+            <span className="listing-hero-quickjump-label">{item.label}</span>
+          </a>
+        ) : (
+          <button key={item.label} type="button" onClick={item.onClick} className="listing-hero-quickjump-btn">
+            <span className="listing-hero-quickjump-label">{item.label}</span>
+          </button>
+        )
+      )}
       <button
         type="button"
         className="listing-hero-quickjump-more listing-hero-quickjump-more-left"
