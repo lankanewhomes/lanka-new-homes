@@ -14806,9 +14806,9 @@ body:has(.compare-bar) {
 }
 
 /* Sample-site switcher (owner, 2026-09-28: "need more sample websites") —
-   picks which of the three live samples SampleDevices shows below. Same
-   pill shape as .location-chip-row's filter buttons elsewhere on the site,
-   just two lines (site name + property type) instead of one. */
+   picks which of the three live samples SampleDevices shows below. Square
+   corners (owner, same day: "not a radius") to match this page's own boxy
+   card language, not a pill. */
 .wdx-sample-tabs {
   width: min(1180px, calc(100% - 64px));
   margin: 0 auto 32px;
@@ -14823,7 +14823,7 @@ body:has(.compare-bar) {
   gap: 2px;
   padding: 10px 18px;
   border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 999px;
+  border-radius: 0;
   background: transparent;
   color: #f1eee6;
   cursor: pointer;
