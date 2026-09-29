@@ -11,6 +11,7 @@ import { getAllConstructionCompanies } from "@/lib/construction-company-store";
 import { toAbsoluteUrl } from "@/lib/seo";
 import { allProjectCategories } from "@/lib/listing-categories";
 import { guides } from "@/lib/guides";
+import { blogPosts } from "@/lib/blog";
 import { constructionCompanyPages } from "@/lib/construction-company-categories";
 import type { CompanyProfile } from "@/types";
 
@@ -106,6 +107,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
     },
     {
+      url: toAbsoluteUrl("/blog"),
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.6,
+    },
+    {
       url: toAbsoluteUrl("/land"),
       lastModified: now,
       changeFrequency: "daily",
@@ -179,6 +186,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
+  const blogRoutes: MetadataRoute.Sitemap = Object.values(blogPosts).map((post) => ({
+    url: toAbsoluteUrl(post.path),
+    lastModified: post.publishDate,
+    changeFrequency: "monthly",
+    priority: 0.6,
+    images: imagesOrEmpty(post.heroImage),
+  }));
+
   const constructionCompanyRoutes: MetadataRoute.Sitemap = Object.values(constructionCompanyPages).map((config) => ({
     url: toAbsoluteUrl(config.path),
     lastModified: now,
@@ -210,5 +225,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     images: imagesOrEmpty(land.heroImage),
   }));
 
-  return [...staticRoutes, ...projectCategoryRoutes, ...guideRoutes, ...constructionCompanyRoutes, ...projectRoutes, ...developerRoutes, ...landRoutes, ...neighborhoodRoutes, ...partnerDirectoryRoutes];
+  return [...staticRoutes, ...projectCategoryRoutes, ...guideRoutes, ...blogRoutes, ...constructionCompanyRoutes, ...projectRoutes, ...developerRoutes, ...landRoutes, ...neighborhoodRoutes, ...partnerDirectoryRoutes];
 }

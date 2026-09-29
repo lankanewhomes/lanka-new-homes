@@ -81,6 +81,8 @@ export default function WebDesignPage() {
             Moved below the marquee the same day ("after the buttons have
             the image, then the fields like photo gallery and everything"),
             so it reads CTAs → image → list instead of CTAs → list → image. */}
+        {/* Owner, 2026-09-29: "on top of this... i need a heading". */}
+        <p className="wdx-hero-chips-title">Everything we can put on your homepage</p>
         <ul className="wdx-hero-chips" aria-label="What we can put on your homepage">
           {HOMEPAGE_SECTIONS.map((label) => (
             <li key={label}>{label}</li>
@@ -132,7 +134,10 @@ export default function WebDesignPage() {
         <div className="wdx-faq-list" data-reveal>
           {FAQS.map((item) => (
             <details className="wdx-faq-item" key={item.q}>
-              <summary>{item.q}</summary>
+              <summary>
+                {item.q}
+                <ChevronDown size={18} strokeWidth={2} aria-hidden="true" className="wdx-faq-item-chevron" />
+              </summary>
               <p>{item.a}</p>
             </details>
           ))}

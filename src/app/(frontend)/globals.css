@@ -13148,12 +13148,18 @@ body:has(.compare-bar) {
 
 /* Owner, 2026-09-29: "you can also add the badhes on the hero section
    also" — real badge pills, no descriptions, under the fineprint. */
+.fdv-hero-badges-title {
+  margin: 28px 0 12px;
+  font-size: 13px;
+  font-weight: 400;
+  color: #b8b8b4;
+}
+
 .fdv-hero-badges {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 10px;
-  margin-top: 28px;
 }
 
 /* Real project media sliding right to left, same recipe as /web-design's
@@ -13542,161 +13548,6 @@ body:has(.compare-bar) {
 }
 
 /* 6 — INTERNATIONAL BUYERS */
-.fdv-international {
-  padding: 130px 0;
-  background: #efe9dc;
-  border-top: 1px solid var(--fdv-line);
-}
-
-.fdv-international-inner {
-  width: min(760px, calc(100% - 44px));
-  margin: 0 auto;
-  text-align: center;
-}
-
-.fdv-international h2 {
-  margin: 0 0 20px;
-  font-family: var(--fdv-serif);
-  font-weight: 400;
-  font-size: 38px;
-  line-height: 1.22;
-  color: var(--fdv-ink);
-  text-wrap: balance;
-}
-
-.fdv-international p {
-  margin: 0 auto;
-  max-width: 480px;
-  font-size: 16px;
-  line-height: 1.7;
-  color: var(--fdv-muted);
-}
-
-.fdv-locations {
-  list-style: none;
-  margin: 44px 0 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-}
-
-.fdv-locations li {
-  padding: 10px 20px;
-  border: 1px solid var(--fdv-line);
-  font-size: 13px;
-  letter-spacing: 0.02em;
-  color: var(--fdv-ink);
-}
-
-@media (max-width: 640px) {
-  .fdv-international {
-    padding: 90px 0;
-  }
-
-  .fdv-international h2 {
-    font-size: 28px;
-  }
-}
-
-/* 7 — PROJECT PRESENTATION composition */
-.fdv-composition {
-  padding: 40px 0 130px;
-  background: #fff;
-  border-top: 1px solid var(--fdv-line);
-}
-
-.fdv-composition-grid {
-  width: min(1180px, calc(100% - 64px));
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(2, minmax(160px, 1fr));
-  gap: 14px;
-}
-
-.fdv-composition-tile {
-  position: relative;
-  overflow: hidden;
-  background: var(--fdv-line);
-}
-
-.fdv-composition-tile-large {
-  grid-column: span 2;
-  grid-row: span 2;
-}
-
-.fdv-composition-tile-plan {
-  grid-row: span 2;
-}
-
-.fdv-composition-tile-plan .fdv-reason-img {
-  padding: 16px;
-}
-
-.fdv-composition-tile:hover .fdv-reason-img {
-  transform: scale(1.06);
-}
-
-.fdv-composition-tag {
-  position: absolute;
-  left: 14px;
-  bottom: 14px;
-  z-index: 1;
-  padding: 6px 12px;
-  background: rgba(21, 20, 26, 0.78);
-  color: #fff;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-@media (max-width: 900px) {
-  .fdv-composition-grid {
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: none;
-  }
-
-  .fdv-composition-tile,
-  .fdv-composition-tile-large,
-  .fdv-composition-tile-plan {
-    grid-column: span 1;
-    grid-row: span 1;
-    aspect-ratio: 4 / 3;
-  }
-}
-
-/* 7.5 — BADGES */
-.fdv-badges {
-  padding: 40px 0 120px;
-  background: var(--fdv-paper);
-  border-top: 1px solid var(--fdv-line);
-}
-
-.fdv-badge-grid {
-  width: min(1180px, calc(100% - 64px));
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-}
-
-.fdv-badge-card {
-  border: 1px solid var(--fdv-line);
-  background: #fff;
-  padding: 24px 26px;
-}
-
-.fdv-badge-card p {
-  margin: 14px 0 0;
-  font-size: 14px;
-  line-height: 1.6;
-  color: var(--fdv-muted);
-}
-
 /* .listing-badge-pill and the plain .badge-* colour classes carry no shape
    of their own outside the specific parent rows they're normally nested in
    (.stats-contact-card-badge / .home-card-badge-row) — this supplies a
@@ -14499,8 +14350,12 @@ body:has(.compare-bar) {
    (already white, unchanged sitewide). The section itself gets an explicit
    white band, full-bleed, so this "proof" showcase reads as a clean break
    from the page's warm cream background instead of blending into it. */
+/* Owner, 2026-09-29: "do a white backgeound for the sectiob" (white, not
+   the paper cream) + "the cards i dont need background" — scoped to just
+   this section so the real .home-project-card everywhere else on the site
+   (homepage, /projects, etc.) keeps its own card look. */
 .fdv-live-listings {
-  background: var(--fdv-paper);
+  background: #fff;
   padding: 60px 0 130px;
   border-top: 1px solid var(--fdv-line);
 }
@@ -14509,6 +14364,12 @@ body:has(.compare-bar) {
   width: min(1180px, calc(100% - 64px));
   margin: 0 auto;
   grid-template-columns: repeat(3, 1fr);
+}
+
+.fdv-showcase-grid .home-project-card {
+  background: none;
+  border: none;
+  padding: 0;
 }
 
 @media (max-width: 900px) {
@@ -14523,57 +14384,67 @@ body:has(.compare-bar) {
   }
 }
 
-/* 10 — PREMIUM CTA */
+/* 10 — PREMIUM CTA — redesigned to match a reference the owner shared,
+   2026-09-29: a plain dark band (no photo), a two-tone headline on the
+   left, a pill button on the right. */
 .fdv-cta-final {
-  position: relative;
-  min-height: 72vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
+  background: var(--fdv-ink);
+  padding: 90px 0;
   color: #fff;
-  text-align: center;
 }
 
-.fdv-cta-final-media {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-}
-
-.fdv-cta-final-overlay {
-  background: rgba(10, 9, 12, 0.72);
-}
-
-.fdv-cta-final-content {
-  position: relative;
-  z-index: 1;
+.fdv-cta-final-inner {
+  width: min(1180px, calc(100% - 64px));
+  margin: 0 auto;
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   align-items: center;
-  width: min(620px, calc(100% - 44px));
-  padding: 60px 0;
+  justify-content: space-between;
+  gap: 32px;
 }
 
-.fdv-cta-final-content h2 {
-  margin: 0 0 16px;
-  font-family: var(--fdv-serif);
+.fdv-cta-final-text h2 {
+  margin: 0 0 12px;
   font-weight: 400;
-  font-size: 44px;
-  line-height: 1.15;
+  font-size: 34px;
+  line-height: 1.25;
+  max-width: 640px;
   text-wrap: balance;
 }
 
-.fdv-cta-final-content p {
-  margin: 0 0 32px;
-  font-size: 16px;
-  line-height: 1.6;
-  color: #e4e2dd;
+.fdv-cta-final-muted {
+  color: #6b6b6b;
+}
+
+.fdv-cta-final-text .fdv-hero-fineprint {
+  margin: 0;
+}
+
+/* Matches the footer's own "List your project" pill exactly (owner,
+   2026-09-29: "please be constant with design") — not the arrow-circle
+   button family used on /contact and the listing popup. */
+.fdv-cta-final-button {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  padding: 14px 28px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  text-decoration: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.fdv-cta-final-button:hover {
+  background: #f47b36;
+  border-color: #f47b36;
 }
 
 @media (max-width: 640px) {
-  .fdv-cta-final-content h2 {
-    font-size: 30px;
+  .fdv-cta-final-text h2 {
+    font-size: 26px;
   }
 }
 
@@ -14987,13 +14858,20 @@ body:has(.compare-bar) {
    padding-bottom here is what used to be .wdx-hero-content's own trailing
    space, now that this list is the section's last element instead of the
    CTAs. */
+.wdx-hero-chips-title {
+  margin: 32px 0 12px;
+  text-align: center;
+  font-size: 13px;
+  color: #b8b8b4;
+}
+
 .wdx-hero-chips {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 10px;
   width: min(640px, 100%);
-  margin: 32px auto 0;
+  margin: 0 auto;
   padding: 0 0 48px;
   list-style: none;
 }
@@ -15493,7 +15371,7 @@ body:has(.compare-bar) {
   position: relative;
   overflow: hidden;
   padding: 90px 0 140px;
-  background: var(--fdv-paper);
+  background: #efe9dc;
   border-top: 1px solid var(--fdv-line);
 }
 
@@ -15514,19 +15392,24 @@ body:has(.compare-bar) {
   z-index: 1;
 }
 
-/* Redesigned again (owner, 2026-09-29: "needs a new deisng") — a plain
-   divided list instead of individual bordered cards: one top divider for
-   the whole list, a border-bottom per row, and a circular "+" that
-   rotates into a "×" on open rather than swapping glyphs. */
+/* Redesigned again (owner, 2026-09-29: "design faq like this", with a
+   reference screenshot) — a dark boxed panel: closed questions dim, the
+   open one full white, a chevron (not a "+") that flips on open. */
 .wdx-faq-list {
   width: min(760px, calc(100% - 64px));
   margin: 0 auto;
-  border-top: 1px solid var(--fdv-line);
+  background: var(--fdv-ink);
+  border-radius: 0;
+  padding: 4px 28px;
 }
 
 .wdx-faq-item {
-  border-bottom: 1px solid var(--fdv-line);
-  padding: 26px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 22px 0;
+}
+
+.wdx-faq-item:last-child {
+  border-bottom: none;
 }
 
 .wdx-faq-item summary {
@@ -15534,42 +15417,42 @@ body:has(.compare-bar) {
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 400;
-  color: var(--fdv-ink);
+  color: rgba(255, 255, 255, 0.45);
   cursor: pointer;
   list-style: none;
+  transition: color 0.15s ease;
+}
+
+.wdx-faq-item:hover summary {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.wdx-faq-item[open] summary {
+  color: #fff;
 }
 
 .wdx-faq-item summary::-webkit-details-marker {
   display: none;
 }
 
-.wdx-faq-item summary::after {
-  content: "+";
+.wdx-faq-item-chevron {
   flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border: 1px solid var(--fdv-line);
-  border-radius: 50%;
-  font-size: 16px;
-  color: var(--fdv-ink);
+  color: inherit;
   transition: transform 0.2s ease;
 }
 
-.wdx-faq-item[open] summary::after {
-  transform: rotate(45deg);
+.wdx-faq-item[open] .wdx-faq-item-chevron {
+  transform: rotate(180deg);
 }
 
 .wdx-faq-item p {
   margin: 14px 0 0;
   max-width: 640px;
-  font-size: 15.5px;
+  font-size: 15px;
   line-height: 1.7;
-  color: var(--fdv-muted);
+  color: #b8b8b4;
 }
 
 

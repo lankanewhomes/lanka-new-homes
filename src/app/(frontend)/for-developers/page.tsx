@@ -42,7 +42,27 @@ const HERO_SLUG = "capitol-twinpeaks";
 const PRODUCT_PREVIEW_SLUG = "viva-la-vida";
 const SHOWCASE_SLUGS = ["capitol-twinpeaks", "viva-la-vida", "imaarat-bambalapitiya"];
 
-const LOCATIONS = ["Sri Lanka", "Canada", "United Kingdom", "Australia", "United States", "UAE"];
+// Every real badge a listing can earn (see docs/design.md "Status / badge
+// pills"), one place — owner, 2026-09-29: "if in the future i ever add any
+// new badhes make sure to add it" + "there haas to be more badges". Add a
+// badge here and it shows in the hero automatically, instead of being
+// hand-copied into a second place. `fdv-badge-pill` gives every one of
+// these its shape (padding, radius, size) — `.listing-badge-pill` alone
+// has none of its own (it depends on a parent context class everywhere
+// else it's used), which is why Verified/Responds rendered unstyled
+// before this was added to their className too ("also fix the badges
+// styling").
+const BADGES = [
+  { key: "verified", label: "Verified", className: "listing-badge-pill badge-verified fdv-badge-pill", icon: ShieldCheck },
+  { key: "responder", label: "Responds within 1 hour", className: "listing-badge-pill badge-responder fdv-badge-pill", icon: Zap },
+  { key: "featured", label: "Featured", className: "badge-featured fdv-badge-pill", icon: null },
+  { key: "premium", label: "Premium", className: "badge-premium fdv-badge-pill", icon: null },
+  { key: "move-in-now", label: "Move-In Now", className: "badge-move-in-now fdv-badge-pill", icon: null },
+  { key: "quick-move-in", label: "Quick Move-In", className: "badge-quick-move-in fdv-badge-pill", icon: null },
+  { key: "availability", label: "Limited Units", className: "listing-badge-pill badge-availability fdv-badge-pill", icon: null },
+  { key: "marketing", label: "BOI Approved", className: "listing-badge-pill badge-marketing fdv-badge-pill", icon: null },
+  { key: "location", label: "Beachfront", className: "listing-badge-pill badge-location fdv-badge-pill", icon: null },
+] as const;
 
 export default async function ForDevelopersPage() {
   const [heroProject, productProject, showcaseProjects] = await Promise.all([
@@ -97,17 +117,17 @@ export default async function ForDevelopersPage() {
           <p className="fdv-hero-fineprint">Always free to list.</p>
 
           {/* Owner, 2026-09-29: "you can also add the badhes on the hero
-              section also" — same real badge pills as the Badges section
-              further down, without their descriptions. */}
+              section also" — real badge pills, all six (was four — "add a
+              title and add all the badges"), from the BADGES config above
+              so a future new badge type only needs adding there. */}
+          <p className="fdv-hero-badges-title">Badges your listing can earn</p>
           <div className="fdv-hero-badges" aria-hidden="true">
-            <span className="listing-badge-pill badge-verified">
-              <ShieldCheck className="h-3 w-3" aria-hidden="true" /> Verified
-            </span>
-            <span className="listing-badge-pill badge-responder">
-              <Zap className="h-3 w-3" aria-hidden="true" /> Responds within 1 hour
-            </span>
-            <span className="badge-featured fdv-badge-pill">Featured</span>
-            <span className="badge-premium fdv-badge-pill">Premium</span>
+            {BADGES.map((badge) => (
+              <span key={badge.key} className={badge.className}>
+                {badge.icon ? <badge.icon className="h-3 w-3" aria-hidden="true" /> : null}
+                {badge.label}
+              </span>
+            ))}
           </div>
         </div>
 
@@ -228,101 +248,6 @@ export default async function ForDevelopersPage() {
         </section>
       ) : null}
 
-      {/* 6 — INTERNATIONAL BUYERS */}
-      <section className="fdv-international" aria-label="International reach">
-        <div className="fdv-international-inner">
-          <h2 data-reveal>Sri Lankan property doesn&apos;t stop at Sri Lanka.</h2>
-          <p data-reveal>
-            LankaNewHomes makes it easier for people researching property from Sri Lanka and overseas to
-            discover new developments in one place.
-          </p>
-          <ul className="fdv-locations" data-reveal>
-            {LOCATIONS.map((location) => (
-              <li key={location}>{location}</li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      {/* 7 — PROJECT PRESENTATION composition */}
-      <section className="fdv-composition" aria-label="Everything buyers need">
-        <div className="fdv-section-head" data-reveal>
-          <h2>Everything buyers need to make a decision.</h2>
-        </div>
-        <div className="fdv-composition-grid" data-reveal>
-          {presentationPhotos[0] ? (
-            <div className="fdv-composition-tile fdv-composition-tile-large">
-              <Image src={presentationPhotos[0].image} alt="" fill sizes="(min-width: 900px) 40vw, 100vw" className="fdv-reason-img" />
-              <span className="fdv-composition-tag">Photography</span>
-            </div>
-          ) : null}
-          {presentationFloorPlan ? (
-            <div className="fdv-composition-tile fdv-composition-tile-plan">
-              <Image src={presentationFloorPlan.image} alt="" fill sizes="(min-width: 900px) 22vw, 100vw" className="fdv-reason-img fdv-reason-img-plan" />
-              <span className="fdv-composition-tag">Floor plans</span>
-            </div>
-          ) : null}
-          {presentationPhotos[1] ? (
-            <div className="fdv-composition-tile">
-              <Image src={presentationPhotos[1].image} alt="" fill sizes="(min-width: 900px) 22vw, 100vw" className="fdv-reason-img" />
-              <span className="fdv-composition-tag">Amenities</span>
-            </div>
-          ) : null}
-          {presentationRoadMap ? (
-            <div className="fdv-composition-tile">
-              <Image src={presentationRoadMap.image} alt="" fill sizes="(min-width: 900px) 22vw, 100vw" className="fdv-reason-img" />
-              <span className="fdv-composition-tag">Road map</span>
-            </div>
-          ) : null}
-          {presentationPhotos[2] ? (
-            <div className="fdv-composition-tile">
-              <Image src={presentationPhotos[2].image} alt="" fill sizes="(min-width: 900px) 22vw, 100vw" className="fdv-reason-img" />
-              <span className="fdv-composition-tag">Virtual walkthrough</span>
-            </div>
-          ) : null}
-        </div>
-      </section>
-
-      {/* 7.5 — BADGES */}
-      <section className="fdv-badges" aria-label="Trust badges">
-        <div className="fdv-section-head" data-reveal>
-          <h2>Badges that make buyers click through.</h2>
-          <p className="fdv-section-sub">
-            Earned automatically from real activity on your listing — never sold, never assigned by hand.
-          </p>
-        </div>
-        <div className="fdv-badge-grid" data-reveal>
-          <div className="fdv-badge-card">
-            <span className="listing-badge-pill badge-verified fdv-badge-pill">
-              <ShieldCheck className="h-3 w-3" aria-hidden="true" /> Verified
-            </span>
-            <p>Shown automatically once a project has any active paid package.</p>
-          </div>
-          <div className="fdv-badge-card">
-            <span className="listing-badge-pill badge-responder fdv-badge-pill">
-              <Zap className="h-3 w-3" aria-hidden="true" /> Responds within 1 hour
-            </span>
-            <p>Earned when you reply to at least 80% of inquiries within an hour, over the last 90 days.</p>
-          </div>
-          <div className="fdv-badge-card">
-            <span className="badge-featured fdv-badge-pill">Featured</span>
-            <p>Boosts your project into featured placements across the homepage and search.</p>
-          </div>
-          <div className="fdv-badge-card">
-            <span className="badge-premium fdv-badge-pill">Premium</span>
-            <p>Developer Pro and Campaign — top placement plus the full analytics dashboard below.</p>
-          </div>
-          <div className="fdv-badge-card">
-            <span className="badge-move-in-now fdv-badge-pill">Move-In Now</span>
-            <p>Marked when a project is fully complete and ready for immediate handover.</p>
-          </div>
-          <div className="fdv-badge-card">
-            <span className="badge-quick-move-in fdv-badge-pill">Quick Move-In</span>
-            <p>Shown automatically when one of your unit types is flagged as quick move-in.</p>
-          </div>
-        </div>
-      </section>
-
       {/* 8 — ANALYTICS DASHBOARD */}
       <section className="fdv-control" aria-label="Developer analytics dashboard">
         <div className="fdv-control-inner">
@@ -397,19 +322,20 @@ export default async function ForDevelopersPage() {
         </section>
       ) : null}
 
-      {/* 10 — PREMIUM CTA */}
+      {/* 10 — PREMIUM CTA — redesigned to match a reference the owner shared,
+          2026-09-29 (a dark, plain-background band: a two-tone headline
+          left, a pill button right, no photo). Button style matches the
+          footer's own "List your project" pill exactly (owner, same day:
+          "please be constant with design"), not the arrow-circle pattern
+          used on /contact and the listing popup — those are a different,
+          already-established button family for a different context. */}
       <section className="fdv-cta-final" aria-label="Get started">
-        {heroProject ? (
-          <div className="fdv-cta-final-media">
-            <Image src={heroProject.heroImage} alt="" fill sizes="100vw" className="fdv-immersive-img" />
-            <div className="fdv-immersive-overlay fdv-cta-final-overlay" />
+        <div className="fdv-cta-final-inner" data-reveal>
+          <div className="fdv-cta-final-text">
+            <h2><span className="fdv-cta-final-muted">Let&apos;s put your projects</span> on the map.</h2>
+            <p className="fdv-hero-fineprint">Always free to list.</p>
           </div>
-        ) : null}
-        <div className="fdv-cta-final-content" data-reveal>
-          <h2>Let&apos;s put your projects on the map.</h2>
-          <p>Join LankaNewHomes and give your developments the visibility and presentation they deserve.</p>
-          <Link href="/developers/register" className="fdv-cta-primary">Register as a Developer</Link>
-          <p className="fdv-hero-fineprint">Always free to list.</p>
+          <Link href="/developers/register" className="fdv-cta-final-button">Register as a Developer</Link>
         </div>
       </section>
     </div>
