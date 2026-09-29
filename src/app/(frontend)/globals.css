@@ -14934,8 +14934,8 @@ body:has(.compare-bar) {
    headline, instead of leaving that side of the hero empty photo. */
 .wdx-hero-content-split {
   display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
-  gap: 48px;
+  grid-template-columns: 0.85fr 1.15fr;
+  gap: 40px;
   align-items: center;
 }
 
@@ -14956,8 +14956,8 @@ body:has(.compare-bar) {
   margin: 0 0 22px;
   max-width: 14ch;
   font-weight: 400;
-  font-size: 72px;
-  line-height: 1.04;
+  font-size: 48px;
+  line-height: 1.1;
   letter-spacing: -0.02em;
   text-wrap: balance;
   color: #fff;
@@ -14981,10 +14981,24 @@ body:has(.compare-bar) {
 /* "See a sample homepage" (owner, 2026-09-28: "needs a better design, with
    an arrow pointing down") — a chevron makes clear this scrolls down the
    page rather than navigating away, and nudges gently to draw the eye. */
+/* A real outlined button (white border) instead of a plain underlined
+   link, so it reads as a second real choice next to "Talk to us about a
+   site" — same treatment as the closing CTA's "List your project
+   instead". */
 .wdx-hero-sample-link {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  padding: 14px 28px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 0;
+  color: #fff;
+}
+
+.wdx-hero-sample-link:hover {
+  background: #fff;
+  color: var(--fdv-ink);
+  opacity: 1;
 }
 
 .wdx-hero-sample-arrow {
@@ -15015,70 +15029,6 @@ body:has(.compare-bar) {
 /* Introduction — a bordered card with an accent top edge, same card
    language as the compare/process/FAQ cards elsewhere on this page,
    instead of a plain unboxed text block (2nd redesign). */
-.wdx-intro {
-  padding: 90px 0;
-  background: #fff;
-  border-top: 1px solid var(--fdv-line);
-}
-
-.wdx-intro-grid {
-  position: relative;
-  overflow: hidden;
-  width: min(1180px, calc(100% - 64px));
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: 80px;
-  align-items: start;
-  padding: 56px;
-  border: 1px solid var(--fdv-line);
-  border-top: 3px solid var(--fdv-accent);
-  background: #fbf9f4;
-}
-
-/* Faded diagonal line pattern (owner, 2026-09-28: "take some ideas from the
-   project listing sections' backgrounds" — same recipe as the homepage's
-   Featured/New listings and Key Features cards: a tinted
-   repeating-linear-gradient masked with a radial-gradient so it fades at
-   the edges instead of hard-cutting at the box). Each section below gets
-   its own tint/angle so the page reads with that same listing-page rhythm
-   without repeating one colour section after section. */
-.wdx-intro-grid::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-image: repeating-linear-gradient(135deg, transparent 0 18px, rgba(244, 123, 54, 0.1) 18px 19px);
-  -webkit-mask-image: radial-gradient(ellipse 75% 85% at center, #000 40%, transparent 100%);
-  mask-image: radial-gradient(ellipse 75% 85% at center, #000 40%, transparent 100%);
-}
-
-.wdx-intro-grid > * {
-  position: relative;
-  z-index: 1;
-}
-
-.wdx-statement {
-  margin: 0;
-  font-weight: 400;
-  font-size: 46px;
-  line-height: 1.16;
-  letter-spacing: -0.02em;
-  text-wrap: balance;
-}
-
-.wdx-intro-copy {
-  padding-top: 12px;
-}
-
-.wdx-intro-copy p {
-  margin: 0;
-  max-width: 440px;
-  font-size: 17px;
-  line-height: 1.75;
-  color: var(--fdv-muted);
-}
-
 /* Section heads shared by the lighter bands */
 .wdx-section-head {
   width: min(1180px, calc(100% - 64px));
@@ -15090,9 +15040,9 @@ body:has(.compare-bar) {
 .wdx-section-head h2 {
   margin: 0;
   font-weight: 400;
-  font-size: 42px;
-  line-height: 1.14;
-  letter-spacing: -0.02em;
+  font-size: 30px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
   text-wrap: balance;
 }
 
@@ -15106,11 +15056,31 @@ body:has(.compare-bar) {
 
 /* Live sample */
 .wdx-sample {
+  position: relative;
   padding: 120px 0 120px;
   background: var(--fdv-ink);
   color: #f1eee6;
   overflow: hidden;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Same faded diagonal-line recipe as the homepage's card backgrounds
+   (tinted repeating-linear-gradient, masked with a radial-gradient so it
+   fades at the edges) — kept simple: one subtle, low-contrast pattern for
+   this whole dark section, not a busy multi-layer effect. */
+.wdx-sample::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(135deg, transparent 0 18px, rgba(255, 255, 255, 0.035) 18px 19px);
+  -webkit-mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
+}
+
+.wdx-sample > * {
+  position: relative;
+  z-index: 1;
 }
 
 .wdx-sample-head {
@@ -15122,9 +15092,9 @@ body:has(.compare-bar) {
   margin: 0;
   max-width: 16ch;
   font-weight: 400;
-  font-size: 54px;
-  line-height: 1.08;
-  letter-spacing: -0.02em;
+  font-size: 34px;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
   text-wrap: balance;
   color: #fff;
 }
@@ -15347,7 +15317,7 @@ body:has(.compare-bar) {
 .wdx-included-icon {
   width: 28px;
   height: 28px;
-  color: var(--fdv-accent);
+  color: var(--fdv-ink);
 }
 
 .wdx-included-item h3 {
@@ -15444,19 +15414,21 @@ body:has(.compare-bar) {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 44px 40px 40px;
+  padding: 26px 28px 24px;
   border: 1px solid var(--fdv-line);
   background: #fbf9f4;
 }
 
 .wdx-compare-card svg {
+  width: 22px;
+  height: 22px;
   color: var(--fdv-accent);
 }
 
 .wdx-compare-card h3 {
-  margin: 22px 0 12px;
+  margin: 14px 0 8px;
   font-weight: 700;
-  font-size: 24px;
+  font-size: 20px;
   line-height: 1.2;
 }
 
@@ -15473,7 +15445,7 @@ body:has(.compare-bar) {
    shorter. */
 .wdx-compare-card .fdv-text-link {
   margin-top: auto;
-  padding-top: 24px;
+  padding-top: 16px;
 }
 
 .wdx-compare-card-dark {
@@ -15556,26 +15528,50 @@ body:has(.compare-bar) {
    .wdx-faq-item elsewhere on this page (2nd redesign: a numbered circle
    badge read too close to /pricing's steps; a plain "Step N" label inside
    a real card is a clearer, more distinct treatment for a 4-step process). */
+/* Connected timeline (3rd redesign) — no bordered card, no small-caps
+   "eyebrow" label above the title (owner, 2026-09-28: "no eyebrow label
+   please"). A plain numbered circle sits on a horizontal connecting line
+   shared by all four steps, with the number worked directly into a
+   larger, bolder step title instead of a separate tag. */
 .wdx-process-item {
-  padding: 28px 24px 26px;
-  border: 1px solid var(--fdv-line);
-  background: #fbf9f4;
+  position: relative;
+  padding-top: 44px;
 }
 
-.wdx-process-step-label {
-  display: block;
-  margin-bottom: 14px;
-  font-size: 12px;
+.wdx-process-item::before {
+  content: "";
+  position: absolute;
+  top: 15px;
+  left: 30px;
+  right: -40px;
+  height: 1px;
+  background: var(--fdv-line);
+}
+
+.wdx-process-item:last-child::before {
+  display: none;
+}
+
+.wdx-process-marker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--fdv-ink);
+  border-radius: 50%;
+  background: var(--fdv-paper);
+  font-size: 13px;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--fdv-accent);
 }
 
 .wdx-process-item h3 {
   margin: 0 0 10px;
   font-weight: 700;
-  font-size: 18px;
+  font-size: 20px;
   line-height: 1.3;
 }
 
@@ -15705,9 +15701,9 @@ body:has(.compare-bar) {
 .wdx-cta h2 {
   margin: 0 0 16px;
   font-weight: 400;
-  font-size: 46px;
-  line-height: 1.12;
-  letter-spacing: -0.02em;
+  font-size: 32px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
   text-wrap: balance;
 }
 
@@ -15724,7 +15720,7 @@ body:has(.compare-bar) {
 
 @media (max-width: 1000px) {
   .wdx-hero-headline {
-    font-size: 56px;
+    font-size: 40px;
   }
 
   .wdx-hero-content-split {
@@ -15763,7 +15759,6 @@ body:has(.compare-bar) {
     font-size: 40px;
   }
 
-  .wdx-intro,
   .wdx-included,
   .wdx-compare,
   .wdx-styles {
@@ -15775,17 +15770,6 @@ body:has(.compare-bar) {
     width: calc(100% - 44px);
   }
 
-  .wdx-intro-grid {
-    grid-template-columns: 1fr;
-    gap: 32px;
-    width: calc(100% - 44px);
-    padding: 28px 24px;
-  }
-
-  .wdx-statement {
-    font-size: 32px;
-  }
-
   .wdx-section-head {
     width: calc(100% - 44px);
     margin-left: 22px;
@@ -15794,7 +15778,7 @@ body:has(.compare-bar) {
 
   .wdx-section-head h2,
   .wdx-cta h2 {
-    font-size: 32px;
+    font-size: 26px;
   }
 
   .wdx-sample {
@@ -15813,7 +15797,7 @@ body:has(.compare-bar) {
   }
 
   .wdx-sample-head h2 {
-    font-size: 36px;
+    font-size: 28px;
   }
 
   /* On a phone the laptop preview would be too small to read, so show just the

@@ -101,21 +101,6 @@ export default function WebDesignPage() {
         </div>
       </section>
 
-      {/* 2 — INTRODUCTION */}
-      <section className="wdx-intro" aria-label="Why a dedicated site">
-        <div className="wdx-intro-grid">
-          <h2 className="wdx-statement" data-reveal>A listing gets you found. A website tells your story.</h2>
-          <div className="wdx-intro-copy" data-reveal>
-            <p>
-              Your LankaNewHomes listing puts your project in front of buyers actively searching right now. A dedicated
-              website is different — it&apos;s where you send every other lead: a Facebook ad, a signboard QR code, a
-              referral, a business card. It&apos;s the version of your project that&apos;s entirely yours.
-            </p>
-            <Link href="/contact" className="fdv-text-link">Talk to us about a site →</Link>
-          </div>
-        </div>
-      </section>
-
       {/* 3 — LIVE SAMPLE */}
       <section className="wdx-sample" id="sample" aria-label="Sample homepage">
         <div className="wdx-sample-head" data-reveal>
@@ -190,7 +175,7 @@ export default function WebDesignPage() {
         <ol className="wdx-process-list">
           {PROCESS.map((step, index) => (
             <li className="wdx-process-item" key={step.title} data-reveal>
-              <span className="wdx-process-step-label">Step {index + 1}</span>
+              <div className="wdx-process-marker" aria-hidden="true">{index + 1}</div>
               <h3>{step.title}</h3>
               <p>{step.body}</p>
             </li>
@@ -202,6 +187,7 @@ export default function WebDesignPage() {
       <section className="wdx-faq" id="faq" aria-label="Questions">
         <div className="wdx-section-head" data-reveal>
           <h2>What developers ask us.</h2>
+          <p>The questions that come up most before someone commits to a site.</p>
         </div>
         <div className="wdx-faq-list" data-reveal>
           {FAQS.map((item) => (
