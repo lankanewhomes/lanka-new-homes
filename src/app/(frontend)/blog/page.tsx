@@ -3,7 +3,7 @@ import { blogPosts } from "@/lib/blog";
 import { BlogListing } from "@/components/marketplace/blog-listing";
 
 export const metadata: Metadata = {
-  title: "Blog",
+  title: "News & Insights",
   description: "Buying guides, market insights, and web design advice for property developers, from LankaNewHomes.",
   alternates: { canonical: "/blog" },
 };
@@ -14,13 +14,17 @@ export const metadata: Metadata = {
 // rest, plus category filter pills and a Newest/Oldest sort — see
 // blog-listing.tsx for why that component borrows only the parts of the
 // reference that map to real data (one content type, real categories).
+// On-page title is "News & Insights" (owner, 2026-09-29 — picked over
+// "Blog"/"Insights"/"Resources"); nav and footer links still say "Blog",
+// a shorter label than fits well in that spot — only asked to change the
+// page's own title.
 export default function BlogPage() {
   const posts = Object.values(blogPosts).sort((a, b) => (a.publishDate < b.publishDate ? 1 : -1));
 
   return (
     <div className="fdv-page blog-page">
       <div className="blog-page-head">
-        <h1>Blog</h1>
+        <h1>News &amp; Insights</h1>
         <p className="blog-page-lede">Buying guides, market insights, and web design advice for property developers.</p>
       </div>
 
