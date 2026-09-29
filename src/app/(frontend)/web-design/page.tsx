@@ -72,6 +72,15 @@ export default function WebDesignPage() {
               <ChevronDown size={16} strokeWidth={2.5} aria-hidden="true" className="wdx-hero-sample-arrow" />
             </a>
           </div>
+          {/* Owner, 2026-09-29: "on web-design hero you can have these info"
+              — the "what goes on a homepage" section's own list, folded
+              into the hero instead of its own section further down the
+              page (which was deleted — see the git history for its JSX). */}
+          <ul className="wdx-hero-chips" aria-label="What we can put on your homepage">
+            {HOMEPAGE_SECTIONS.map((label) => (
+              <li key={label}>{label}</li>
+            ))}
+          </ul>
         </div>
         <HeroMarquee />
       </section>
@@ -87,21 +96,6 @@ export default function WebDesignPage() {
         </div>
         <div data-reveal>
           <SampleSiteSwitcher />
-        </div>
-      </section>
-
-      {/* 5 — WHAT GOES ON A HOMEPAGE */}
-      <section className="wdx-sections" id="homepage" aria-label="What we can put on your homepage">
-        <div className="wdx-sections-inner">
-          <div className="wdx-section-head" data-reveal>
-            <h2>Everything a buyer looks for, in one place.</h2>
-            <p>The sample shows what a typical development site can carry. We choose the sections that suit your project.</p>
-          </div>
-          <ul className="wdx-chip-list" data-reveal>
-            {HOMEPAGE_SECTIONS.map((label) => (
-              <li key={label}>{label}</li>
-            ))}
-          </ul>
         </div>
       </section>
 

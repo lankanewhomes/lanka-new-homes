@@ -14892,6 +14892,40 @@ body:has(.compare-bar) {
   gap: 28px;
 }
 
+/* Folded in from the deleted "What goes on a homepage" section (owner,
+   2026-09-29: "on web-design hero you can have these info") — a quiet
+   chip row under the CTAs, light-on-dark instead of the old section's
+   light-background cream chips. */
+.wdx-hero-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  width: min(640px, 100%);
+  margin: 32px auto 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wdx-hero-chips li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  font-size: 12.5px;
+  color: #e4e2dd;
+}
+
+.wdx-hero-chips li::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+}
+
 /* "See a sample homepage" (owner, 2026-09-28: "needs a better design, with
    an arrow pointing down") — a chevron makes clear this scrolls down the
    page rather than navigating away, and nudges gently to draw the eye. */
@@ -15262,66 +15296,6 @@ body:has(.compare-bar) {
 }
 
 
-/* Homepage sections band */
-.wdx-sections {
-  position: relative;
-  overflow: hidden;
-  padding: 110px 0;
-  background: #efe9dc;
-  border-top: 1px solid var(--fdv-line);
-}
-
-/* Blue diagonal lines — same tint as the homepage's New listings card. */
-.wdx-sections::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-image: repeating-linear-gradient(135deg, transparent 0 18px, rgba(64, 105, 135, 0.16) 18px 19px);
-  -webkit-mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
-  mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
-}
-
-.wdx-sections > * {
-  position: relative;
-  z-index: 1;
-}
-
-.wdx-sections-inner {
-  width: 100%;
-}
-
-.wdx-sections .wdx-section-head {
-  margin-bottom: 40px;
-}
-
-.wdx-chip-list {
-  width: min(1180px, calc(100% - 64px));
-  margin: 0 auto;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.wdx-chip-list li {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 20px;
-  border: 1px solid #d3cbb9;
-  background: #fbf8f1;
-  font-size: 15px;
-  font-weight: 500;
-}
-
-.wdx-chip-list li::before {
-  content: "";
-  width: 7px;
-  height: 7px;
-  background: var(--fdv-ink);
-}
 
 /* Listing vs website */
 .wdx-compare {
@@ -15622,14 +15596,6 @@ body:has(.compare-bar) {
 
   .wdx-compare-card {
     padding: 32px 26px;
-  }
-
-  .wdx-sections {
-    padding: 80px 0;
-  }
-
-  .wdx-chip-list {
-    width: calc(100% - 44px);
   }
 
   .wdx-faq {
