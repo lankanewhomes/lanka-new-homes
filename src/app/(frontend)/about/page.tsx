@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Building2, Search } from "lucide-react";
 import { getAllProjects } from "@/lib/project-store";
 import { getAllLands } from "@/lib/land-store";
 import { getAllDevelopers } from "@/lib/developer-store";
@@ -12,6 +13,36 @@ export const metadata: Metadata = {
   description: "LankaNewHomes is Sri Lanka's marketplace for new homes, developments, and developer-led land projects — connecting buyers directly with developers and builders across the island.",
   alternates: { canonical: "/about" },
 };
+
+// Owner, 2026-09-29: "redesifn the about us page. https://www.amini.ai/about"
+// — that page's structure is hero → stats → mission → values → team →
+// careers → footer CTA. We don't fabricate a team or careers section (no
+// real bios, headshots or job openings exist to show), so this borrows the
+// parts that map to something real — a dark hero, the real live-count
+// stats this page already had, a mission statement, and a values section
+// grounded in facts already stated elsewhere on the site (always-free
+// listing, the Verified/Responds badges, the pricing-on-every-listing
+// rule) — and closes with the existing developers/buyers split, restyled
+// to the .fdv-page visual language shared with /web-design, /for-developers
+// and /contact instead of the plain long-form .guide-page template.
+const VALUES = [
+  {
+    title: "Always free to list",
+    body: "Every project on LankaNewHomes is listed for free, permanently — not a limited-time offer.",
+  },
+  {
+    title: "Direct to the developer",
+    body: "Enquiries go straight to the project's own team. No agent, no middleman, no added fees.",
+  },
+  {
+    title: "Verified & responsive",
+    body: "Developers earn a Verified badge, and a “Responds within 1 hour” badge once they've proven fast to reply.",
+  },
+  {
+    title: "Every listing complete",
+    body: "Real photography, floor plans and pricing on every project page — never a placeholder or a locked PDF.",
+  },
+] as const;
 
 export default async function AboutPage() {
   const [projects, lands, developers, neighborhoods] = await Promise.all([
@@ -31,80 +62,106 @@ export default async function AboutPage() {
   ];
 
   return (
-    <article className="guide-page about-page">
-      <div className="guide-page-intro">
-        <p className="guide-page-eyebrow">About LankaNewHomes</p>
-        <h1>One place to discover what&apos;s being built in Sri Lanka.</h1>
-        <div className="guide-page-answer">
-          <p>
+    <div className="fdv-page about-page">
+      <section className="fdv-hero" aria-label="About LankaNewHomes">
+        <div className="fdv-hero-content">
+          <h1 className="fdv-hero-headline">One place to discover what&apos;s being built in Sri Lanka.</h1>
+          <p className="fdv-hero-sub">
             LankaNewHomes is Sri Lanka&apos;s marketplace for new homes, developments, and developer-led land
             projects — connecting buyers directly with developers and builders across the island.
           </p>
+          <div className="fdv-hero-ctas">
+            <Link href="/projects" className="fdv-cta-primary">Browse new homes</Link>
+            <Link href="/for-developers" className="fdv-cta-secondary">For developers</Link>
+          </div>
         </div>
-      </div>
+      </section>
 
-      <dl className="about-stats">
-        {stats.map((stat) => (
-          <div className="about-stat" key={stat.label}>
-            <dd>{stat.value}</dd>
-            <dt>{stat.label}</dt>
-          </div>
-        ))}
-      </dl>
-
-      <div className="guide-page-sections">
-        <section className="guide-page-section">
-          <span className="guide-page-section-number">01</span>
-          <div>
-            <h2>What We Do</h2>
-            <p>
-              We bring Sri Lanka&apos;s new residential developments and developer land projects together in
-              one place. Explore <strong>condominiums, apartments, villas, houses, and residential land
-              projects</strong> from developers across the country — compare locations, pricing, floor plans,
-              amenities, and availability without searching across multiple developer websites.
-            </p>
-            <p>
-              LankaNewHomes is built specifically around <strong>new developer and builder projects</strong>,
-              giving buyers a dedicated place to discover what&apos;s being developed across Sri Lanka.
-            </p>
-          </div>
-        </section>
-
-        <section className="guide-page-section">
-          <span className="guide-page-section-number">02</span>
-          <div>
-            <h2>For Developers</h2>
-            <p>
-              LankaNewHomes gives developers and builders a dedicated platform to showcase their projects and
-              connect with people actively looking to buy. Create a public profile, manage your project
-              listings, receive lead alerts, and showcase your developments to buyers — whether you&apos;re
-              selling <strong>new apartments, condominiums, villas, houses, or developer-owned residential
-              land</strong>.
-            </p>
-            <div className="about-page-links" aria-label="For developers">
-              <Link href="/for-developers">Why developers list with us</Link>
-              <Link href="/developers/register">Register as a developer</Link>
+      <section aria-label="LankaNewHomes by the numbers">
+        <dl className="about-stats">
+          {stats.map((stat) => (
+            <div className="about-stat" key={stat.label}>
+              <dd>{stat.value}</dd>
+              <dt>{stat.label}</dt>
             </div>
-          </div>
-        </section>
+          ))}
+        </dl>
+      </section>
 
-        <section className="guide-page-section">
-          <span className="guide-page-section-number">03</span>
-          <div>
-            <h2>For Buyers</h2>
+      <section className="fdv-intro" aria-label="What we do">
+        <div className="fdv-intro-grid">
+          <p className="fdv-intro-statement">
+            Condominiums, apartments, villas, houses, and residential land projects from developers across the
+            country — all in one place.
+          </p>
+          <div className="fdv-intro-copy">
+            <p>
+              We bring Sri Lanka&apos;s new residential developments and developer land projects together, so
+              buyers can compare locations, pricing, floor plans, amenities, and availability without searching
+              across multiple developer websites. LankaNewHomes is built specifically around new developer and
+              builder projects, giving buyers a dedicated place to discover what&apos;s being developed across the
+              country.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="fdv-reasons" aria-label="What we stand for">
+        <div className="wdx-section-head" data-reveal>
+          <h2>What we stand for.</h2>
+        </div>
+        <div className="fdv-reasons-grid about-values-grid" data-reveal>
+          {VALUES.map((value) => (
+            <div className="fdv-reason-simple" key={value.title}>
+              <h3>{value.title}</h3>
+              <p>{value.body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="wdx-compare" aria-label="For developers or for buyers">
+        <div className="wdx-section-head" data-reveal>
+          <h2>Whether you&apos;re building or buying.</h2>
+        </div>
+        <div className="wdx-compare-grid">
+          <div className="wdx-compare-card wdx-compare-card-dark" data-reveal>
+            <Building2 size={26} strokeWidth={1.4} aria-hidden="true" />
+            <h3>For Developers</h3>
+            <p>
+              Create a public profile, manage your project listings, receive lead alerts, and showcase your
+              developments to buyers — whether you&apos;re selling new apartments, condominiums, villas, houses, or
+              developer-owned residential land.
+            </p>
+            <Link href="/for-developers" className="fdv-text-link">Why developers list with us →</Link>
+          </div>
+          <div className="wdx-compare-card" data-reveal>
+            <Search size={26} strokeWidth={1.4} aria-hidden="true" />
+            <h3>For Buyers</h3>
             <p>
               Discover new homes and developer land projects by location or property type. Explore project
-              details, view floor plans, amenities and locations, save your favourites, and request
-              information directly from the developer or sales team behind each project.
+              details, view floor plans, amenities and locations, and request information directly from the
+              developer or sales team behind each project.
             </p>
-            <div className="about-page-links" aria-label="For buyers">
-              <Link href="/projects">Browse new homes</Link>
-              <Link href="/land">Browse land</Link>
-              <Link href="/guides">Buyer guides</Link>
-            </div>
+            <Link href="/projects" className="fdv-text-link">Browse new homes →</Link>
           </div>
-        </section>
-      </div>
-    </article>
+        </div>
+      </section>
+
+      <section className="fdv-cta-final" aria-label="Get started">
+        <div className="fdv-cta-final-inner" data-reveal>
+          <div className="fdv-cta-final-text">
+            <h2>
+              <span className="fdv-cta-final-muted">Whether you&apos;re building or buying,</span> there&apos;s a
+              place for you here.
+            </h2>
+          </div>
+          <div className="about-cta-buttons">
+            <Link href="/developers/register" className="fdv-cta-final-button">Register as a developer</Link>
+            <Link href="/projects" className="fdv-cta-final-button">Browse new homes</Link>
+          </div>
+        </div>
+      </section>
+    </div>
   );
 }

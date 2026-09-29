@@ -11682,32 +11682,49 @@ body:has(.compare-bar) {
   color: #f47b36;
 }
 
-/* Styling pass bringing /about in line with /web-design (owner, 2026-09-29:
-   "now you have an idea of what i want in a page. redesign this also.
-   /about") — scoped to .about-page specifically rather than the shared
-   .guide-page-* rules above, which /guides articles also use and weren't
-   part of this ask: no bold on the page's actual headings (matching the
-   hero headline / section headings on /web-design), no orange on the
-   eyebrow label (matching the "I don't like orange/accent colour on
-   eyebrow labels either" preference applied elsewhere this session). */
-.about-page .guide-page-eyebrow {
-  font-weight: 600;
-  color: #1f1f1f;
+/* Full redesign, 2026-09-29 (owner: "redesifn the about us page.
+   https://www.amini.ai/about") — /about moved from the plain long-form
+   .guide-page template to the same .fdv-page visual language as
+   /web-design, /for-developers and /contact (dark hero, .wdx-section-head,
+   .fdv-reasons/.wdx-compare bands). .about-stats/.about-stat above are the
+   one piece kept from the old template — still real, live counts, just
+   re-set here for the new page's wider container instead of .guide-page's
+   820px reading width. */
+.about-page .about-stats {
+  width: min(1180px, calc(100% - 64px));
+  margin: 0 auto;
+  border: none;
+  padding: 64px 0;
 }
 
-.about-page .guide-page-intro h1,
-.about-page .guide-page-section h2 {
-  font-weight: 400;
+.about-values-grid {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.about-cta-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+@media (max-width: 900px) {
+  .about-values-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 560px) {
-  .about-stats {
+  .about-page .about-stats {
     grid-template-columns: repeat(2, 1fr);
     gap: 22px 16px;
   }
 
   .about-stat dd {
     font-size: 26px;
+  }
+
+  .about-values-grid {
+    grid-template-columns: 1fr;
   }
 }
 
