@@ -3674,6 +3674,7 @@ export function Header() {
         <div className="site-brand-group">
           <Link href="/" className="site-logo site-wordmark" aria-label="LankaNewHomes home">
             <span className="wordmark-line">Lanka</span>
+            <span className="wordmark-rule" aria-hidden="true" />
             <span className="wordmark-line">NewHomes</span>
           </Link>
           <div className="language-segmented" role="group" aria-label="Language switcher">
@@ -3793,12 +3794,14 @@ export function Header() {
   );
 }
 
-// Footer brand is the plain-text wordmark (Lanka·New·Homes with "New" in
-// brand orange), not /logo.svg — the old approach inverted the whole SVG to
-// white for the dark background, which turned the orange house badge into a
-// blank white square. The same wordmark exists as a standalone asset at
-// public/logo-wordmark.svg / logo-wordmark-white.svg (Archivo 700 outlined
-// to paths) for use outside the site.
+// Footer brand is the plain-text wordmark (`.footer-wordmark`, shares
+// `.wordmark-line`/`.wordmark-rule` with the header's `.site-wordmark`),
+// not /logo.svg — the old approach inverted the whole SVG to white for the
+// dark background, which turned the orange house badge into a blank white
+// square. Bold orange, stacked, rule through the middle (owner, 2026-09-29)
+// — the standalone public/logo-wordmark.svg / -white.svg assets and the
+// OG image / email templates still use the older plain 700-weight style
+// and haven't been regenerated to match yet.
 export function Footer() {
   return (
     <footer className="site-footer">
@@ -3815,6 +3818,7 @@ export function Footer() {
         <div className="footer-brand-row">
           <Link href="/" className="footer-wordmark" aria-label="LankaNewHomes home">
             <span className="wordmark-line">Lanka</span>
+            <span className="wordmark-rule" aria-hidden="true" />
             <span className="wordmark-line">NewHomes</span>
           </Link>
           <Link href="/for-developers" className="footer-cta">List your project</Link>

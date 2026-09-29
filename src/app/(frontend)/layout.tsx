@@ -22,7 +22,10 @@ const siteUrl = getSiteUrl();
 // Helvetica/Neue Haas Grotesk. Revert: remove this block + the `variable`
 // class on <html> below, and set --font-ref-sans back to the system stack
 // in globals.css.
-const bodyFont = Archivo({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-avenir-trial" });
+// 900 is loaded only for the wordmark logo (owner, 2026-09-29: bold
+// stacked wordmark with a connecting rule through it, replacing the
+// plain-text 700 mark) — everything else on the site still uses 400-700.
+const bodyFont = Archivo({ subsets: ["latin"], weight: ["400", "500", "600", "700", "900"], variable: "--font-avenir-trial" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
