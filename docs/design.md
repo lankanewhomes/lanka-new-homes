@@ -1868,6 +1868,28 @@ for Samples (already used on this page for "Designed for your project")
 and `MessageCircle` for Contact (the site's existing contact icon — see
 `profile-view.tsx`'s "Contact {developer}" button).
 
+### Hero CTAs -> image -> chip list order; "See examples" button (2026-09-29)
+
+Owner: "after the buttons have the image then you have the fields like
+photo gallery and everything" — reordered the hero so `<HeroMarquee />`
+(the sliding sample-site image strip) sits directly under the CTAs, with
+the `.wdx-hero-chips` list (the "what goes on a homepage" tags, folded
+into the hero the same day per the section above) last instead of
+between them. `.wdx-hero-chips` now carries the trailing
+`padding-bottom` that used to live on `.wdx-hero-content` (48px desktop,
+64px under 760px), since it's the section's last element now, not the
+CTAs — everything else about either element is unchanged, only their
+order.
+
+Also renamed the hero's secondary CTA from "See a sample homepage" to
+"See examples" (shorter, matches the bottom quickjump bar's "Samples"
+label). On mobile (≤760px) the two hero buttons now sit side by side
+instead of wrapping to their own lines — owner: "on mobile left have the
+CTA and the right have examples" — `.wdx-hero-ctas` is `flex-wrap:
+nowrap` there with each button `flex: 1 1 0`; the primary button's longer
+text wraps to two lines at that width rather than overflowing, which is
+fine since it's inside a fixed-height pill either way.
+
 ## Social publishing (Project → Social tab)
 
 Full guide: `docs/social-publishing.md`. In short: `npm run social:generate

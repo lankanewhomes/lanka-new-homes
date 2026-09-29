@@ -14933,7 +14933,6 @@ body:has(.compare-bar) {
   z-index: 1;
   width: min(1180px, calc(100% - 64px));
   margin: 0 auto;
-  padding-bottom: 48px;
   text-align: center;
 }
 
@@ -14966,8 +14965,13 @@ body:has(.compare-bar) {
 
 /* Folded in from the deleted "What goes on a homepage" section (owner,
    2026-09-29: "on web-design hero you can have these info") — a quiet
-   chip row under the CTAs, light-on-dark instead of the old section's
-   light-background cream chips. */
+   chip row, light-on-dark instead of the old section's light-background
+   cream chips. Moved below the marquee the same day ("after the buttons
+   have the image, then the fields like photo gallery and everything"),
+   so it now reads CTAs -> image -> list instead of CTAs -> list -> image.
+   padding-bottom here is what used to be .wdx-hero-content's own trailing
+   space, now that this list is the section's last element instead of the
+   CTAs. */
 .wdx-hero-chips {
   display: flex;
   flex-wrap: wrap;
@@ -14975,7 +14979,7 @@ body:has(.compare-bar) {
   gap: 10px;
   width: min(640px, 100%);
   margin: 32px auto 0;
-  padding: 0;
+  padding: 0 0 48px;
   list-style: none;
 }
 
@@ -15574,11 +15578,26 @@ body:has(.compare-bar) {
   .wdx-hero-content {
     width: min(560px, calc(100% - 44px));
     padding-top: 48px;
-    padding-bottom: 64px;
   }
 
   .wdx-hero-headline {
     font-size: 40px;
+  }
+
+  /* Side by side, not stacked (owner, 2026-09-29: "on mobile left have
+     the CTA and the right have [the] examples") — each button takes half
+     the row and its own text wraps rather than the pair overflowing. */
+  .wdx-hero-ctas {
+    flex-wrap: nowrap;
+    gap: 10px;
+  }
+
+  .wdx-hero-ctas .fdv-cta-primary,
+  .wdx-hero-ctas .wdx-hero-sample-link {
+    flex: 1 1 0;
+    justify-content: center;
+    padding: 13px 10px;
+    font-size: 13px;
   }
 
   .wdx-marquee {
@@ -15591,6 +15610,10 @@ body:has(.compare-bar) {
 
   .wdx-marquee-frame {
     width: 220px;
+  }
+
+  .wdx-hero-chips {
+    padding-bottom: 64px;
   }
 
   .wdx-compare,

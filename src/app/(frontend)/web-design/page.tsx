@@ -68,21 +68,24 @@ export default function WebDesignPage() {
           <div className="wdx-hero-ctas">
             <Link href="/contact" className="fdv-cta-primary">Talk to us about a site</Link>
             <a href="#sample" className="fdv-cta-secondary wdx-hero-sample-link">
-              See a sample homepage
+              See examples
               <ChevronDown size={16} strokeWidth={2.5} aria-hidden="true" className="wdx-hero-sample-arrow" />
             </a>
           </div>
-          {/* Owner, 2026-09-29: "on web-design hero you can have these info"
-              — the "what goes on a homepage" section's own list, folded
-              into the hero instead of its own section further down the
-              page (which was deleted — see the git history for its JSX). */}
-          <ul className="wdx-hero-chips" aria-label="What we can put on your homepage">
-            {HOMEPAGE_SECTIONS.map((label) => (
-              <li key={label}>{label}</li>
-            ))}
-          </ul>
         </div>
         <HeroMarquee />
+        {/* Owner, 2026-09-29: "on web-design hero you can have these info"
+            — the "what goes on a homepage" section's own list, folded
+            into the hero instead of its own section further down the
+            page (which was deleted — see the git history for its JSX).
+            Moved below the marquee the same day ("after the buttons have
+            the image, then the fields like photo gallery and everything"),
+            so it reads CTAs → image → list instead of CTAs → list → image. */}
+        <ul className="wdx-hero-chips" aria-label="What we can put on your homepage">
+          {HOMEPAGE_SECTIONS.map((label) => (
+            <li key={label}>{label}</li>
+          ))}
+        </ul>
       </section>
 
       {/* 3 — LIVE SAMPLE */}
