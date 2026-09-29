@@ -5,8 +5,7 @@ import { ShieldCheck, Zap } from "lucide-react";
 import { getProjectBySlug } from "@/lib/project-store";
 import { ListingGridCard } from "@/components/marketplace/listing-page";
 import { ScrollReveal } from "@/components/marketplace/scroll-reveal";
-import { ScaledPreview, DESKTOP } from "@/components/marketplace/web-design-frames";
-import { formatLkr } from "@/lib/format";
+import { ScaledPreview, PRODUCT_PREVIEW } from "@/components/marketplace/web-design-frames";
 
 export const revalidate = 300;
 
@@ -206,40 +205,16 @@ export default async function ForDevelopersPage() {
             <div className="fdv-product-preview">
               <div className="wdx-browser-bar" aria-hidden="true">
                 <span className="wdx-browser-dots"><i /><i /><i /></span>
-                <span className="wdx-browser-url">lankanewhomes.com/projects/{productProject.slug}</span>
+                <span className="wdx-browser-url">www.lankanewhomes.com</span>
               </div>
               <ScaledPreview
                 src={`/projects/${productProject.slug}`}
                 title={`${productProject.name} — live listing preview`}
-                base={DESKTOP}
+                base={PRODUCT_PREVIEW}
               />
             </div>
 
-            <div className="fdv-product-rows">
-              <div className="fdv-product-row">
-                <span className="fdv-product-row-label">Pricing</span>
-                <span className="fdv-product-row-value">{formatLkr(productProject.startingPriceLkr)} onward</span>
-              </div>
-              <div className="fdv-product-row">
-                <span className="fdv-product-row-label">Floor plans</span>
-                <span className="fdv-product-row-value">{productProject.floorPlans?.length ?? 0} unit types</span>
-              </div>
-              <div className="fdv-product-row">
-                <span className="fdv-product-row-label">Amenities</span>
-                <span className="fdv-product-row-value">{productProject.amenities?.length ?? 0} listed</span>
-              </div>
-              <div className="fdv-product-row">
-                <span className="fdv-product-row-label">Media</span>
-                <span className="fdv-product-row-value">
-                  {productProject.gallery?.length ?? 0} photos
-                  {productProject.videos?.length ? `, ${productProject.videos.length} videos` : ""}
-                  {productProject.brochureUrl ? ", brochure" : ""}
-                </span>
-              </div>
-              <div className="fdv-product-row">
-                <span className="fdv-product-row-label">Map</span>
-                <span className="fdv-product-row-value">Location &amp; road map</span>
-              </div>
+            <div className="fdv-product-foot">
               <Link href={`/projects/${productProject.slug}`} className="fdv-cta-secondary fdv-product-cta">
                 View the live page →
               </Link>

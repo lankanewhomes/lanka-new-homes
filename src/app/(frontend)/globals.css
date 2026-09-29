@@ -13406,10 +13406,36 @@ body:has(.compare-bar) {
 }
 
 /* 4 — SHOW THE PRODUCT */
+/* Two-line grid pattern (owner, 2026-09-29: "apply a background with...
+   two lines, like a square... I don't want it to look plain") — none of
+   this page's other sections (intro, reasons, control, live-listings,
+   cta-final) carry any pattern, so this alone makes it stand out from
+   them. Same technique /web-design's sample band uses
+   (.wdx-sample::before), brand orange instead of white since this sits
+   on a light background, not a dark one. */
 .fdv-showcase-product {
+  position: relative;
+  overflow: hidden;
   padding: 60px 0 130px;
   background: var(--fdv-paper);
   border-top: 1px solid var(--fdv-line);
+}
+
+.fdv-showcase-product::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(244, 123, 54, 0.1) 28px 29px),
+    repeating-linear-gradient(90deg, transparent 0 28px, rgba(244, 123, 54, 0.1) 28px 29px);
+  -webkit-mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
+}
+
+.fdv-showcase-product > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* Simplified — dropped the heavy drop-shadow for a plain border (owner,
@@ -13431,39 +13457,17 @@ body:has(.compare-bar) {
   border-bottom: 1px solid var(--fdv-line);
 }
 
-.fdv-product-rows {
-  padding: 8px 40px 36px;
-}
-
-.fdv-product-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 24px;
-  padding: 18px 0;
-  border-bottom: 1px solid var(--fdv-line);
-}
-
-.fdv-product-row:last-of-type {
-  border-bottom: none;
-}
-
-.fdv-product-row-label {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--fdv-muted);
-}
-
-.fdv-product-row-value {
-  font-size: 16px;
-  color: var(--fdv-ink);
-  text-align: right;
+/* Owner, 2026-09-29: "on the bottom you put those all information, all
+   the fields, please take it off, but keep that live site [link] with
+   the arrow on it" — the label/value rows (.fdv-product-row, now
+   removed) used to fill this; now it's just the one CTA, centred, below
+   the taller preview instead of stacked inside a list. */
+.fdv-product-foot {
+  padding: 24px 40px 32px;
+  text-align: center;
 }
 
 .fdv-product-cta {
-  margin-top: 24px;
   color: var(--fdv-ink);
 }
 
@@ -13474,22 +13478,6 @@ body:has(.compare-bar) {
   font-style: italic;
   font-family: var(--fdv-serif);
   color: var(--fdv-muted);
-}
-
-@media (max-width: 760px) {
-  .fdv-product-rows {
-    padding-left: 22px;
-    padding-right: 22px;
-  }
-
-  .fdv-product-row {
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .fdv-product-row-value {
-    text-align: left;
-  }
 }
 
 /* 5 — LARGE IMAGE + TEXT */

@@ -1515,6 +1515,33 @@ in/Sign up and the language switcher is `22px` (was `16px`) — those two sit
 back-to-back at the bottom of the panel and read as cramped together at the
 tighter spacing.
 
+**"A better way to present your developments" showcase trimmed (2026-09-29,
+later)**: the `.fdv-product-rows` label/value list (Pricing, Floor plans,
+Amenities, Media, Map) under the live `/projects/{slug}` preview is gone —
+owner: "on the bottom you put those all information, all the fields,
+please take it off, but keep that live site [link] with the arrow on it."
+Only the "View the live page →" link remains, now centred in its own
+`.fdv-product-foot` below the preview instead of sitting inside the
+removed rows list. Three other changes the same request:
+- **The preview is noticeably taller** — a new `PRODUCT_PREVIEW` base
+  (`1280x1150`, `web-design-frames.tsx`) used only here, separate from the
+  shared `DESKTOP` (`1280x800`) constant `/web-design`'s sample switcher
+  still uses, so this didn't change anything there. Owner: "make it
+  bigger... more heights... so it doesn't take long" — more of the real
+  page fits in view per frame, so `ScaledPreview`'s auto-scroll (see its
+  own comment in that file) has less distance left to travel.
+- **The fake browser-bar URL is now just `www.lankanewhomes.com`**, not
+  `lankanewhomes.com/projects/{slug}` — owner: "don't show the project
+  listing link."
+- **New background**: a two-line grid pattern (`.fdv-showcase-product::before`,
+  same 0deg+90deg `repeating-linear-gradient` technique as `/web-design`'s
+  `.wdx-sample::before`, brand orange instead of white since this sits on
+  a light background) — owner: "apply a background with... two lines,
+  like a square... I don't want it to look plain." None of this page's
+  other sections (intro, reasons, control, live-listings, cta-final) carry
+  any pattern, so this alone makes it stand out from them without needing
+  a different base colour.
+
 ## /web-design redesign + the sample site (2026-09-26)
 
 **`/web-design`** was rebuilt in the same premium/editorial system as

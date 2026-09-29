@@ -5,6 +5,11 @@ import Image from "next/image";
 
 export const DESKTOP = { width: 1280, height: 800 };
 const PHONE = { width: 390, height: 800 };
+/** Taller than DESKTOP — /for-developers' own showcase preview only (owner,
+ * 2026-09-29: "make it bigger... more heights... so it doesn't take long"
+ * — more of the real page fits in view at once, so the auto-scroll has
+ * less distance left to cover before a visitor's seen the whole thing). */
+export const PRODUCT_PREVIEW = { width: 1280, height: 1150 };
 /** Auto-scroll speed inside a preview, in the sample page's own CSS px per second. */
 const AUTO_SCROLL_PX_PER_SECOND = 90;
 
