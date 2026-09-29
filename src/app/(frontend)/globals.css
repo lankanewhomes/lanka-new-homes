@@ -15038,25 +15038,27 @@ body:has(.compare-bar) {
    using a barely-different near-black wasn't different enough) — a
    noticeably lighter, warmer brown, not just a slight hue shift, so the
    seam between the hero and this section actually reads. */
+/* Owner, 2026-09-29: "needs a different ackgreound and the lines cna it be
+   boxes" — a deep slate blue (a genuinely different hue from the hero's
+   near-black and the page's other dark bands, not just a lightness tweak),
+   and a crossed grid of thin lines instead of one diagonal set. */
 .wdx-sample {
   position: relative;
   padding: 120px 0 120px;
-  background: #332920;
+  background: #1a2430;
   color: #f1eee6;
   overflow: hidden;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Same faded diagonal-line recipe as the homepage's card backgrounds
-   (tinted repeating-linear-gradient, masked with a radial-gradient so it
-   fades at the edges) — kept simple: one subtle, low-contrast pattern for
-   this whole dark section, not a busy multi-layer effect. */
 .wdx-sample::before {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background-image: repeating-linear-gradient(135deg, transparent 0 18px, rgba(255, 255, 255, 0.035) 18px 19px);
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(255, 255, 255, 0.05) 28px 29px),
+    repeating-linear-gradient(90deg, transparent 0 28px, rgba(255, 255, 255, 0.05) 28px 29px);
   -webkit-mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
   mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
 }
