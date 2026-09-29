@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { ChevronDown, Gauge, LayoutTemplate, MessageCircle, Search, Smartphone, Globe } from "lucide-react";
 import { ScrollReveal } from "@/components/marketplace/scroll-reveal";
 import { HeroMarquee } from "@/components/marketplace/web-design-frames";
 import { SampleSiteSwitcher } from "@/components/marketplace/web-design-sample-switcher";
 import { WebDesignQuickjump } from "@/components/marketplace/web-design-quickjump";
-import { SAMPLE_IMAGES } from "@/components/web-design-sample/sample-data";
 
 // Dropped the editorial Fraunces serif this page used to share with
 // /for-developers (owner, 2026-09-27: "all the content thats realted to
@@ -76,10 +74,6 @@ export default function WebDesignPage() {
 
       {/* 1 — HERO */}
       <section className="wdx-hero" aria-label="Website design for developers">
-        <div className="wdx-hero-media">
-          <Image src={SAMPLE_IMAGES.hero} alt="" fill priority sizes="100vw" className="wdx-hero-img" />
-          <div className="wdx-hero-overlay" />
-        </div>
         <div className="wdx-hero-content">
           <h1 className="wdx-hero-headline">Your project deserves a website of its own.</h1>
           <p className="wdx-hero-sub">

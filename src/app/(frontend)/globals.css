@@ -14896,6 +14896,9 @@ body:has(.compare-bar) {
 /* src/app/(sample)/ for the sample site itself and its own stylesheet.    */
 /* ---------------------------------------------------------------------- */
 
+/* Solid colour instead of a photo (owner, 2026-09-28) — same dark ink used
+   for the other dark bands on this page (.wdx-cta, .wdx-compare-card-dark),
+   so the hero reads as part of the same system rather than a one-off. */
 .wdx-hero {
   position: relative;
   min-height: 88vh;
@@ -14903,24 +14906,8 @@ body:has(.compare-bar) {
   flex-direction: column;
   justify-content: flex-end;
   overflow: hidden;
+  background: var(--fdv-ink);
   color: #fff;
-}
-
-.wdx-hero-media {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-}
-
-.wdx-hero-img {
-  object-fit: cover;
-  object-position: 60% center;
-}
-
-.wdx-hero-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(10, 9, 12, 0.3) 0%, rgba(10, 9, 12, 0.45) 45%, rgba(10, 9, 12, 0.9) 100%);
 }
 
 .wdx-hero-content {
@@ -14929,10 +14916,11 @@ body:has(.compare-bar) {
   width: min(1180px, calc(100% - 64px));
   margin: 0 auto;
   padding-bottom: 48px;
+  text-align: center;
 }
 
 .wdx-hero-headline {
-  margin: 0 0 22px;
+  margin: 0 auto 22px;
   max-width: 14ch;
   font-weight: 400;
   font-size: 48px;
@@ -14943,7 +14931,7 @@ body:has(.compare-bar) {
 }
 
 .wdx-hero-sub {
-  margin: 0 0 34px;
+  margin: 0 auto 34px;
   max-width: 520px;
   font-size: 17px;
   line-height: 1.65;
@@ -14954,6 +14942,7 @@ body:has(.compare-bar) {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
   gap: 28px;
 }
 
