@@ -41,7 +41,6 @@ export default function ContactPage() {
         </div>
 
         <div className="contact-cta-panel">
-          <ArrowUpRight className="contact-cta-arrow" aria-hidden="true" />
           <h2>List your project</h2>
           <p>Looking to list a project, advertise on the homepage, or explore placements? Register as a developer to get started.</p>
           <Link href="/developers/register" className="contact-cta-link">Register as a developer <ArrowUpRight size={15} aria-hidden="true" /></Link>

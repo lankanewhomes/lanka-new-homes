@@ -3,6 +3,8 @@
 import { ArrowRight, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { FormEvent, useState } from "react";
+import { PhoneField, type PhoneValue } from "./phone-field";
+import { buildInternationalPhone, DEFAULT_PHONE_COUNTRY } from "@/lib/phone";
 
 const AUDIENCE_OPTIONS = [
   { value: "general", label: "General inquiries" },
@@ -12,13 +14,18 @@ const AUDIENCE_OPTIONS = [
 
 /** The /contact page's own general-inquiry form, posting to /api/contact
  * (a plain email, not a Payload lead — see that route's own comment).
- * Field set/layout follow a reference the owner shared, 2026-09-28. */
+ * Field set — owner, 2026-09-28: "have these for the forms, name, company,
+ * email, number, who are you trying to reach, tell us more about your
+ * inquiry, all of them needs to be in different row" — one field per row,
+ * no side-by-side pairs (an earlier version split first/last name and
+ * paired company with a role field; both dropped for this exact list). The
+ * phone field reuses PhoneField, the same country-code + number picker as
+ * the site's other enquiry forms, rather than a one-off plain input. */
 export function ContactForm() {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [name, setName] = useState("");
   const [company, setCompany] = useState("");
-  const [jobTitle, setJobTitle] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState<PhoneValue>({ country: DEFAULT_PHONE_COUNTRY, national: "" });
   const [audience, setAudience] = useState("");
   const [message, setMessage] = useState("");
   const [updatesOptIn, setUpdatesOptIn] = useState(false);
@@ -34,7 +41,15 @@ export function ContactForm() {
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ firstName, lastName, company, jobTitle, email, audience, message, updatesOptIn }),
+        body: JSON.stringify({
+          name,
+          company,
+          email,
+          phone: buildInternationalPhone(phone.country, phone.national),
+          audience,
+          message,
+          updatesOptIn,
+        }),
       });
       if (!response.ok) throw new Error("failed");
       setSubmitted(true);
@@ -48,39 +63,32 @@ export function ContactForm() {
   if (submitted) {
     return (
       <div className="contact-form-sent" role="status">
-        <p>Thanks, {firstName || "there"} — your message is on its way. We usually reply within one business day.</p>
+        <p>Thanks, {name || "there"} — your message is on its way. We usually reply within one business day.</p>
       </div>
     );
   }
 
   return (
     <form className="contact-form" onSubmit={onSubmit}>
-      <div className="contact-form-row">
-        <label className="contact-form-field">
-          <span className="sr-only">First name</span>
-          <input value={firstName} onChange={(event) => setFirstName(event.target.value)} required placeholder="First name" autoComplete="given-name" />
-        </label>
-        <label className="contact-form-field">
-          <span className="sr-only">Last name</span>
-          <input value={lastName} onChange={(event) => setLastName(event.target.value)} required placeholder="Last name" autoComplete="family-name" />
-        </label>
-      </div>
+      <label className="contact-form-field">
+        <span className="sr-only">Name</span>
+        <input value={name} onChange={(event) => setName(event.target.value)} required placeholder="Name" autoComplete="name" />
+      </label>
 
-      <div className="contact-form-row">
-        <label className="contact-form-field">
-          <span className="sr-only">Company (optional)</span>
-          <input value={company} onChange={(event) => setCompany(event.target.value)} placeholder="Company (optional)" autoComplete="organization" />
-        </label>
-        <label className="contact-form-field">
-          <span className="sr-only">Role (optional)</span>
-          <input value={jobTitle} onChange={(event) => setJobTitle(event.target.value)} placeholder="Role (optional)" autoComplete="organization-title" />
-        </label>
-      </div>
+      <label className="contact-form-field">
+        <span className="sr-only">Company (optional)</span>
+        <input value={company} onChange={(event) => setCompany(event.target.value)} placeholder="Company (optional)" autoComplete="organization" />
+      </label>
 
       <label className="contact-form-field">
         <span className="sr-only">Email</span>
         <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} required placeholder="Email" autoComplete="email" />
       </label>
+
+      <div className="contact-form-field">
+        <span className="sr-only" id="contact-form-phone-label">Phone number (optional)</span>
+        <PhoneField value={phone} onChange={setPhone} labelId="contact-form-phone-label" />
+      </div>
 
       <label className="contact-form-field">
         <span className="sr-only">Who are you trying to reach?</span>

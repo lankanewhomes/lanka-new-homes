@@ -7538,12 +7538,10 @@ a.developer-profile-press-title {
   right: 20px;
 }
 
-.request-info-dialog-brochure .request-info-field input,
-.request-info-dialog-brochure .request-info-field textarea,
-.request-info-dialog-brochure .request-info-phone-flag {
-  border-radius: 0;
-}
-
+/* Square corners on the fields are now the default everywhere (see
+   .request-info-field input/textarea and .request-info-phone-flag above) —
+   this used to be brochure-only, kept here just for the success-state
+   buttons that are still brochure-specific. */
 .request-info-dialog-brochure .request-info-success button:not(.request-info-submit-big) {
   border-radius: 0;
 }
@@ -7593,7 +7591,11 @@ a.developer-profile-press-title {
   min-height: 44px;
   padding: 0 16px;
   border: 1px solid #c8c8c8;
-  border-radius: 8px;
+  /* Square corners everywhere, matching /contact's own field styling
+     (owner, 2026-09-28: "the styling... needs to be like what you have on
+     contact page") — the brochure variant already did this on its own; now
+     every variant of this dialog does. */
+  border-radius: 0;
   font-size: 15px;
   font-family: var(--font-ref-sans);
   color: #1f1f1f;
@@ -7623,7 +7625,7 @@ a.developer-profile-press-title {
   align-items: center;
   padding: 0 12px;
   border: 1px solid #c8c8c8;
-  border-radius: 8px;
+  border-radius: 0;
   background: #f7f7f7;
   color: #1f1f1f;
   font-size: 14px;
@@ -7718,23 +7720,42 @@ a.developer-profile-press-title {
   color: #c0392b;
 }
 
+/* Same two-part arrow-circle + pill treatment as /contact's own submit
+   button (.contact-form-submit) — owner, 2026-09-28: "the button needs to
+   be like what you have on contact page" — kept full-width here since this
+   button sits in a narrower modal, unlike /contact's inline one. */
 .request-info-submit-big {
   width: 100%;
-  min-height: 48px;
+  min-height: 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 0 28px;
   border-radius: 999px;
   background: #f47b36;
   border: 1px solid #f47b36;
-  color: #fff;
-  font-size: 14px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  color: #1f1f1f;
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
 }
 
+.request-info-submit-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #fff;
+  color: #1f1f1f;
+  flex-shrink: 0;
+}
+
 .request-info-submit-big:hover {
-  background: #e0692a;
-  border-color: #e0692a;
+  background: #ff9a5c;
+  border-color: #ff9a5c;
 }
 
 .request-info-submit-big:disabled {
@@ -7742,6 +7763,10 @@ a.developer-profile-press-title {
   border-color: #e6e6e6;
   color: #a8a8a8;
   cursor: not-allowed;
+}
+
+.request-info-submit-big:disabled .request-info-submit-icon {
+  color: #a8a8a8;
 }
 
 .request-info-success {
@@ -11268,15 +11293,6 @@ body:has(.compare-bar) {
   padding: 32px 34px;
 }
 
-.contact-cta-arrow {
-  position: absolute;
-  top: 28px;
-  right: 30px;
-  width: 20px;
-  height: 20px;
-  color: #f47b36;
-}
-
 .contact-cta-panel h2 {
   font-family: var(--font-ref-sans);
   font-size: 20px;
@@ -11317,17 +11333,6 @@ body:has(.compare-bar) {
   gap: 18px;
 }
 
-.contact-form-row {
-  display: grid;
-  gap: 18px;
-}
-
-@media (min-width: 481px) {
-  .contact-form-row {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
 .contact-form-field {
   display: grid;
 }
@@ -11356,6 +11361,14 @@ body:has(.compare-bar) {
 .contact-form-field select:focus {
   outline: none;
   border-color: #f47b36;
+}
+
+/* PhoneField (shared with the site's other enquiry forms) brings its own
+   rounded country-code chip — squared off here to match this page's own
+   square-corners convention instead of looking like a mismatched import. */
+.contact-form-field .request-info-phone-flag {
+  border-color: #dcdcd8;
+  background: #fff;
 }
 
 .contact-form-select-wrap {

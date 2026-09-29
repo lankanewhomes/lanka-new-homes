@@ -41,6 +41,7 @@ import {
   Bell,
   Bike,
   Bird,
+  ArrowRight,
   Droplets,
   Flame,
   Footprints,
@@ -2177,6 +2178,7 @@ export function RequestInfoDialog({
             {errorMessage ? <p className="request-info-error">{errorMessage}</p> : null}
 
             <button type="submit" className="request-info-submit-big" disabled={submitting || !agreed}>
+              <span className="request-info-submit-icon" aria-hidden="true"><ArrowRight size={16} strokeWidth={2.5} /></span>
               {submitting ? "Sending..." : isBrochure ? "Download Brochure" : isInquiry ? "Send" : "Submit Form"}
             </button>
           </form>

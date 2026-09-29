@@ -25,20 +25,18 @@ const AUDIENCE_LABELS: Record<string, string> = {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const firstName = typeof body?.firstName === "string" ? body.firstName.trim() : "";
-    const lastName = typeof body?.lastName === "string" ? body.lastName.trim() : "";
+    const name = typeof body?.name === "string" ? body.name.trim() : "";
     const company = typeof body?.company === "string" ? body.company.trim() : "";
-    const jobTitle = typeof body?.jobTitle === "string" ? body.jobTitle.trim() : "";
     const email = typeof body?.email === "string" ? body.email.trim() : "";
+    const phone = typeof body?.phone === "string" ? body.phone.trim() : "";
     const audience = typeof body?.audience === "string" ? body.audience.trim() : "";
     const message = typeof body?.message === "string" ? body.message.trim() : "";
     const updatesOptIn = body?.updatesOptIn === true;
 
-    if (!firstName || !lastName || !email || !audience || !message) {
+    if (!name || !email || !audience || !message) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const name = `${firstName} ${lastName}`.trim();
     const audienceLabel = AUDIENCE_LABELS[audience] ?? audience;
 
     const isTest = !isProductionDeployment();
@@ -54,7 +52,7 @@ export async function POST(req: Request) {
     const detailLines = [
       `Reaching: ${audienceLabel}`,
       company ? `Company: ${company}` : null,
-      jobTitle ? `Role: ${jobTitle}` : null,
+      phone ? `Phone: ${phone}` : null,
       `Updates opt-in: ${updatesOptIn ? "yes" : "no"}`,
     ].filter((line): line is string => Boolean(line));
 
