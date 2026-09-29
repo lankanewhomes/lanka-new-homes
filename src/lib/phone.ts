@@ -41,6 +41,54 @@ const PRIMARY_ISO_FOR_DIAL: Record<string, string> = {
   "1": "US", "7": "RU", "39": "IT", "44": "GB", "47": "NO", "61": "AU", "212": "MA", "262": "RE", "290": "SH", "358": "FI", "590": "GP", "599": "CW",
 };
 
+// Static, not `Intl.DisplayNames(...).of(iso)` at runtime — that call can
+// return different strings (and therefore sort the "others" list into a
+// different order) between the Node/ICU build the server runs and a
+// visitor's own browser, which showed up as a real hydration mismatch
+// (2026-09-29: the phone-country <select>'s "British Indian Ocean
+// Territory"/"British Virgin Islands" pair rendered in swapped order,
+// server vs client). Generated once from Intl.DisplayNames and frozen
+// here so every environment renders the exact same list.
+const REGION_NAMES: Record<string, string> = {
+  AF: "Afghanistan", AL: "Albania", DZ: "Algeria", AS: "American Samoa", AD: "Andorra", AO: "Angola", AI: "Anguilla",
+  AG: "Antigua & Barbuda", AR: "Argentina", AM: "Armenia", AW: "Aruba", AU: "Australia", AT: "Austria",
+  AZ: "Azerbaijan", BS: "Bahamas", BH: "Bahrain", BD: "Bangladesh", BB: "Barbados", BY: "Belarus", BE: "Belgium",
+  BZ: "Belize", BJ: "Benin", BM: "Bermuda", BT: "Bhutan", BO: "Bolivia", BA: "Bosnia & Herzegovina", BW: "Botswana",
+  BR: "Brazil", IO: "British Indian Ocean Territory", VG: "British Virgin Islands", BN: "Brunei", BG: "Bulgaria",
+  BF: "Burkina Faso", BI: "Burundi", KH: "Cambodia", CM: "Cameroon", CA: "Canada", CV: "Cape Verde",
+  KY: "Cayman Islands", CF: "Central African Republic", TD: "Chad", CL: "Chile", CN: "China", CO: "Colombia",
+  KM: "Comoros", CG: "Congo - Brazzaville", CD: "Congo - Kinshasa", CK: "Cook Islands", CR: "Costa Rica",
+  CI: "Côte d’Ivoire", HR: "Croatia", CU: "Cuba", CW: "Curaçao", CY: "Cyprus", CZ: "Czechia", DK: "Denmark",
+  DJ: "Djibouti", DM: "Dominica", DO: "Dominican Republic", EC: "Ecuador", EG: "Egypt", SV: "El Salvador",
+  GQ: "Equatorial Guinea", ER: "Eritrea", EE: "Estonia", SZ: "Eswatini", ET: "Ethiopia", FK: "Falkland Islands",
+  FO: "Faroe Islands", FJ: "Fiji", FI: "Finland", FR: "France", GF: "French Guiana", PF: "French Polynesia",
+  GA: "Gabon", GM: "Gambia", GE: "Georgia", DE: "Germany", GH: "Ghana", GI: "Gibraltar", GR: "Greece", GL: "Greenland",
+  GD: "Grenada", GP: "Guadeloupe", GU: "Guam", GT: "Guatemala", GN: "Guinea", GW: "Guinea-Bissau", GY: "Guyana",
+  HT: "Haiti", HN: "Honduras", HK: "Hong Kong SAR China", HU: "Hungary", IS: "Iceland", IN: "India", ID: "Indonesia",
+  IR: "Iran", IQ: "Iraq", IE: "Ireland", IL: "Israel", IT: "Italy", JM: "Jamaica", JP: "Japan", JO: "Jordan",
+  KZ: "Kazakhstan", KE: "Kenya", KI: "Kiribati", XK: "Kosovo", KW: "Kuwait", KG: "Kyrgyzstan", LA: "Laos",
+  LV: "Latvia", LB: "Lebanon", LS: "Lesotho", LR: "Liberia", LY: "Libya", LI: "Liechtenstein", LT: "Lithuania",
+  LU: "Luxembourg", MO: "Macao SAR China", MG: "Madagascar", MW: "Malawi", MY: "Malaysia", MV: "Maldives", ML: "Mali",
+  MT: "Malta", MH: "Marshall Islands", MQ: "Martinique", MR: "Mauritania", MU: "Mauritius", YT: "Mayotte",
+  MX: "Mexico", FM: "Micronesia", MD: "Moldova", MC: "Monaco", MN: "Mongolia", ME: "Montenegro", MS: "Montserrat",
+  MA: "Morocco", MZ: "Mozambique", MM: "Myanmar (Burma)", NA: "Namibia", NR: "Nauru", NP: "Nepal", NL: "Netherlands",
+  NC: "New Caledonia", NZ: "New Zealand", NI: "Nicaragua", NE: "Niger", NG: "Nigeria", NU: "Niue",
+  NF: "Norfolk Island", KP: "North Korea", MK: "North Macedonia", MP: "Northern Mariana Islands", NO: "Norway",
+  OM: "Oman", PK: "Pakistan", PW: "Palau", PS: "Palestinian Territories", PA: "Panama", PG: "Papua New Guinea",
+  PY: "Paraguay", PE: "Peru", PH: "Philippines", PL: "Poland", PT: "Portugal", PR: "Puerto Rico", QA: "Qatar",
+  RE: "Réunion", RO: "Romania", RU: "Russia", RW: "Rwanda", SH: "St. Helena", KN: "St. Kitts & Nevis", LC: "St. Lucia",
+  PM: "St. Pierre & Miquelon", VC: "St. Vincent & Grenadines", WS: "Samoa", SM: "San Marino",
+  ST: "São Tomé & Príncipe", SA: "Saudi Arabia", SN: "Senegal", RS: "Serbia", SC: "Seychelles", SL: "Sierra Leone",
+  SG: "Singapore", SX: "Sint Maarten", SK: "Slovakia", SI: "Slovenia", SB: "Solomon Islands", SO: "Somalia",
+  ZA: "South Africa", KR: "South Korea", SS: "South Sudan", ES: "Spain", LK: "Sri Lanka", SD: "Sudan", SR: "Suriname",
+  SE: "Sweden", CH: "Switzerland", SY: "Syria", TW: "Taiwan", TJ: "Tajikistan", TZ: "Tanzania", TH: "Thailand",
+  TL: "Timor-Leste", TG: "Togo", TK: "Tokelau", TO: "Tonga", TT: "Trinidad & Tobago", TN: "Tunisia", TR: "Türkiye",
+  TM: "Turkmenistan", TC: "Turks & Caicos Islands", TV: "Tuvalu", VI: "U.S. Virgin Islands", UG: "Uganda",
+  UA: "Ukraine", AE: "United Arab Emirates", GB: "United Kingdom", US: "United States", UY: "Uruguay",
+  UZ: "Uzbekistan", VU: "Vanuatu", VE: "Venezuela", VN: "Vietnam", WF: "Wallis & Futuna", YE: "Yemen", ZM: "Zambia",
+  ZW: "Zimbabwe",
+};
+
 export const DEFAULT_PHONE_COUNTRY = "LK";
 
 /** Countries shown first — where Sri Lankan buyers and expats mostly are. */
@@ -55,11 +103,7 @@ const MAX_DIAL_LENGTH = 4;
 export type PhoneCountry = { iso: string; dial: string; name: string; flag: string };
 
 function regionName(iso: string): string {
-  try {
-    return new Intl.DisplayNames(["en"], { type: "region" }).of(iso) ?? iso;
-  } catch {
-    return iso;
-  }
+  return REGION_NAMES[iso] ?? iso;
 }
 
 /** Regional-indicator flag emoji for an ISO alpha-2 code (the form the old "🇱🇰 +94" label used). */
