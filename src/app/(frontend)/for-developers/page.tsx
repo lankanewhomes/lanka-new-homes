@@ -60,6 +60,19 @@ export default async function ForDevelopersPage() {
   const presentationFloorPlan = productProject?.floorPlans?.[0];
   const presentationRoadMap = productProject?.roadMapImages?.[0];
 
+  // Hero marquee — real project media, not stock (same rule as the rest of
+  // this page), covering the range of what a project page can carry: a
+  // photo, floor plans, amenities, a road map (owner, 2026-09-29: "showing
+  // the image of the house, floor plans, amenities, road map, block
+  // plan... make sure there is effect. scrolling").
+  const heroMarqueeItems = [
+    productProject ? { src: productProject.heroImage, label: "Photography" } : null,
+    presentationFloorPlan ? { src: presentationFloorPlan.image, label: "Floor plans" } : null,
+    presentationPhotos[0] ? { src: presentationPhotos[0].image, label: "Amenities" } : null,
+    presentationRoadMap ? { src: presentationRoadMap.image, label: "Road map" } : null,
+    presentationPhotos[1] ? { src: presentationPhotos[1].image, label: "Gallery" } : null,
+  ].filter((item): item is { src: string; label: string } => Boolean(item));
+
   return (
     <div className="fdv-page">
       <ScrollReveal />
@@ -82,7 +95,34 @@ export default async function ForDevelopersPage() {
           {/* Owner, 2026-09-29: "for devloeprs its free to list always" — not
               "at the moment", which read as a limited-time offer. */}
           <p className="fdv-hero-fineprint">Always free to list.</p>
+
+          {/* Owner, 2026-09-29: "you can also add the badhes on the hero
+              section also" — same real badge pills as the Badges section
+              further down, without their descriptions. */}
+          <div className="fdv-hero-badges" aria-hidden="true">
+            <span className="listing-badge-pill badge-verified">
+              <ShieldCheck className="h-3 w-3" aria-hidden="true" /> Verified
+            </span>
+            <span className="listing-badge-pill badge-responder">
+              <Zap className="h-3 w-3" aria-hidden="true" /> Responds within 1 hour
+            </span>
+            <span className="badge-featured fdv-badge-pill">Featured</span>
+            <span className="badge-premium fdv-badge-pill">Premium</span>
+          </div>
         </div>
+
+        {heroMarqueeItems.length > 0 ? (
+          <div className="fdv-hero-marquee" aria-hidden="true">
+            <div className="fdv-hero-marquee-track">
+              {[...heroMarqueeItems, ...heroMarqueeItems].map((item, index) => (
+                <div className="fdv-hero-marquee-frame" key={`${item.label}-${index}`}>
+                  <Image src={item.src} alt="" fill sizes="320px" className="fdv-hero-marquee-img" />
+                  <span className="fdv-hero-marquee-tag">{item.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null}
       </section>
 
       {/* 2 — INTRODUCTION */}
