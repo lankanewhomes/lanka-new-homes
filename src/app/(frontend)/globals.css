@@ -15655,6 +15655,83 @@ body:has(.compare-bar) {
   margin: 0 auto 90px;
 }
 
+/* Filter pills + sort, above the featured band — owner, 2026-09-29:
+   "blog pag elike this" (amini.ai/resources#blog). */
+.blog-filter-bar {
+  width: min(1180px, calc(100% - 64px));
+  margin: 0 auto 40px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(23, 20, 15, 0.12);
+}
+
+.blog-filter-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.blog-filter-pill {
+  padding: 8px 16px;
+  border: 1px solid rgba(23, 20, 15, 0.18);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--fdv-muted);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.blog-filter-pill:hover {
+  border-color: rgba(23, 20, 15, 0.4);
+  color: var(--fdv-ink);
+}
+
+.blog-filter-pill.is-active {
+  background: var(--fdv-ink);
+  border-color: var(--fdv-ink);
+  color: #fff;
+}
+
+.blog-sort {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--fdv-muted);
+  white-space: nowrap;
+}
+
+.blog-sort-control {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.blog-sort-control select {
+  appearance: none;
+  padding: 8px 30px 8px 14px;
+  border: 1px solid rgba(23, 20, 15, 0.18);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--fdv-ink);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.blog-sort-chevron {
+  position: absolute;
+  right: 12px;
+  pointer-events: none;
+  color: var(--fdv-muted);
+}
+
 /* Featured article — dark band, own full-width background; the grid/text
    inside it stays at the site's usual 1180px reading width. */
 .blog-hero {
@@ -15834,6 +15911,11 @@ body:has(.compare-bar) {
 }
 
 @media (max-width: 760px) {
+  .blog-filter-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
   .blog-hero-inner {
     grid-template-columns: 1fr;
     gap: 0;
