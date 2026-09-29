@@ -13039,26 +13039,53 @@ body:has(.compare-bar) {
   color: var(--fdv-ink);
 }
 
+/* Dark ink, not orange (owner, 2026-09-29: "I don't want the button
+   orange bg... only orange I want is for submit button") — orange is now
+   reserved for form Submit buttons (.contact-form-submit) only. This base
+   rule assumes a light background (true for its one light-bg usage, the
+   blog article's closing CTA on --fdv-paper); the 4 other usages
+   (.fdv-hero on /about /for-developers, .wdx-hero on /web-design,
+   .wdx-sample-foot's sample switcher) sit on dark hero/section
+   backgrounds where a dark-ink button would nearly disappear, so those
+   get an inverted override below (white fill, dark text) — same
+   "invert for a dark context" pattern .wdx-hero-sample-link and
+   .wdx-hero .fdv-cta-secondary already use. */
 .fdv-cta-primary {
   display: inline-flex;
   align-items: center;
   padding: 15px 30px;
-  background: var(--fdv-accent);
-  border: 1px solid var(--fdv-accent);
+  background: var(--fdv-ink);
+  border: 1px solid var(--fdv-ink);
   border-radius: 0;
   font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.01em;
-  color: #17140f;
+  color: #fff;
   text-decoration: none;
-  transition: background-color 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, transform 0.25s ease;
 }
 
 .fdv-cta-primary:hover {
-  background: #ff8c4d;
-  border-color: #ff8c4d;
+  background: #2c2a33;
+  border-color: #2c2a33;
   text-decoration: none;
   transform: translateY(-1px);
+}
+
+.fdv-hero .fdv-cta-primary,
+.wdx-hero .fdv-cta-primary,
+.wdx-sample-foot .fdv-cta-primary {
+  background: #fff;
+  border-color: #fff;
+  color: var(--fdv-ink);
+}
+
+.fdv-hero .fdv-cta-primary:hover,
+.wdx-hero .fdv-cta-primary:hover,
+.wdx-sample-foot .fdv-cta-primary:hover {
+  background: transparent;
+  border-color: #fff;
+  color: #fff;
 }
 
 .fdv-cta-secondary {
