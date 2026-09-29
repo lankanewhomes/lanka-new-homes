@@ -81,7 +81,7 @@ export default function WebDesignPage() {
         <div className="wdx-sample-head" data-reveal>
           <h2>See what your site could look like.</h2>
           <p>
-            We built three complete sample homepages for three fictional developments, each with its own look — pick
+            We built six complete sample homepages for six fictional developments, each with its own look — pick
             one below. Every section is something we can build for your project — watch it scroll, or open the full page.
           </p>
         </div>

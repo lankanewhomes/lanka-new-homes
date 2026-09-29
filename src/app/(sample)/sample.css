@@ -1,19 +1,23 @@
 /* ------------------------------------------------------------------------ */
-/* Sample developer websites (/web-design/sample/*) — three of them, each a  */
-/* fictional, standalone site with none of LankaNewHomes' own look:          */
-/* Halcyon Residences (garden villas — deep green + cream + brass, Cormorant */
-/* Garamond + DM Sans), Meridian Heights (an apartment tower — steel blue +  */
-/* electric teal, Space Grotesk + Inter) and Azure Cove (beachfront villas — */
-/* navy + terracotta + sand, Fraunces + Work Sans). All three share this ONE */
-/* file and the same `.smp-*` markup/classes (see sample-site.tsx and the    */
-/* theme-*.ts files) — only the palette differs, via the `[data-theme]`      */
-/* blocks at the end of this file overriding the custom properties declared  */
-/* below (Halcyon's own values are the defaults, so its markup needs no      */
-/* [data-theme] block of its own). Every colour a theme should be able to    */
-/* change reads one of these `--smp-*` variables rather than a literal hex   */
-/* value — a plain `#fff`/`rgba(...)` left in the rules below is deliberate: */
-/* it's white text or a shadow that works the same regardless of theme.      */
-/* Mobile-first: base rules are the phone layout.                            */
+/* Sample developer websites (/web-design/sample/*), each a fictional,       */
+/* standalone site with none of LankaNewHomes' own look: Halcyon Residences  */
+/* (garden villas — deep green + cream + brass, Cormorant Garamond + DM      */
+/* Sans), Meridian Heights (an apartment tower — steel blue + electric teal, */
+/* Space Grotesk + Inter), Azure Cove (beachfront villas — navy + terracotta */
+/* + sand, Fraunces + Work Sans), Obsidian Villas (architectural villas —    */
+/* black/white/grey only, including the photography, Archivo + Manrope),    */
+/* Highgrove Estate (hillside tea-estate villas — forest green + wood-brown, */
+/* Newsreader + Karla) and Willow Court (family townhouses — sage green +    */
+/* mustard, Poppins + Source Sans 3). All of them share this ONE file and    */
+/* the same `.smp-*` markup/classes (see                                     */
+/* sample-site.tsx and the theme-*.ts files) — only the palette differs, via */
+/* the `[data-theme]` blocks below, overriding the custom properties         */
+/* declared below (Halcyon's own values are the defaults, so its markup      */
+/* needs no [data-theme] block of its own). Every colour a theme should be   */
+/* able to change reads one of these `--smp-*` variables rather than a       */
+/* literal hex value — a plain `#fff`/`rgba(...)` left in the rules below is */
+/* deliberate: it's white text or a shadow that works the same regardless of */
+/* theme. Mobile-first: base rules are the phone layout.                     */
 /* ------------------------------------------------------------------------ */
 
 html:has(.smp-root) {
@@ -112,6 +116,83 @@ html:has(.smp-root) {
   --smp-map-water: #a9d2d8;
   --smp-map-park: #cddbc0;
   --smp-map-pulse: rgba(193, 96, 47, 0.28);
+}
+
+/* ---- Obsidian Villas: pure black/white/grey — no colour anywhere,
+   including the photography (see the `img` filter rule below). ---- */
+.smp-root[data-theme="obsidian"] {
+  --smp-bg: #ffffff;
+  --smp-paper: #f7f7f7;
+  --smp-sand: #e8e8e8;
+  --smp-ink: #0a0a0a;
+  --smp-green: #161616;
+  --smp-green-deep: #000000;
+  --smp-brass: #3a3a3a;
+  --smp-brass-light: #5c5c5c;
+  --smp-line: #d9d9d9;
+  --smp-muted: #5e5e5e;
+  --smp-on-dark: #f5f5f5;
+  --smp-on-dark-muted: #b8b8b8;
+  --smp-on-dark-faint: #7a7a7a;
+  --smp-eyebrow-light: #c7c7c7;
+  --smp-hero-text-muted: #d6d6d6;
+  --smp-map-land: #ececec;
+  --smp-map-water: #cfcfcf;
+  --smp-map-park: #dcdcdc;
+  --smp-map-pulse: rgba(0, 0, 0, 0.18);
+}
+
+/* Every photo on this theme is desaturated, regardless of the source photo's
+   own colours — the point of a "black and white" sample is that nothing on
+   the page reads as colour, not that the palette happens to be grey. */
+.smp-root[data-theme="obsidian"] img {
+  filter: grayscale(1) contrast(1.05);
+}
+
+/* ---- Highgrove Estate: forest green + warm wood-brown, hill-country ---- */
+.smp-root[data-theme="highgrove"] {
+  --smp-bg: #f3f1ea;
+  --smp-paper: #faf8f3;
+  --smp-sand: #e6e1d3;
+  --smp-ink: #1d2a20;
+  --smp-green: #2b4a34;
+  --smp-green-deep: #1a2f21;
+  --smp-brass: #8a6b3d;
+  --smp-brass-light: #ab8a56;
+  --smp-line: #ddd6c3;
+  --smp-muted: #5c6459;
+  --smp-on-dark: #eef1ea;
+  --smp-on-dark-muted: #c3cbc0;
+  --smp-on-dark-faint: #8b9587;
+  --smp-eyebrow-light: #cbb37a;
+  --smp-hero-text-muted: #dfe3d8;
+  --smp-map-land: #e9e4d4;
+  --smp-map-water: #b8cdc7;
+  --smp-map-park: #c3d6b5;
+  --smp-map-pulse: rgba(138, 107, 61, 0.28);
+}
+
+/* ---- Willow Court: sage green + mustard, friendly and mid-market ---- */
+.smp-root[data-theme="willow-court"] {
+  --smp-bg: #f6f4ec;
+  --smp-paper: #fbfaf5;
+  --smp-sand: #ece7d6;
+  --smp-ink: #262620;
+  --smp-green: #3d4f3a;
+  --smp-green-deep: #28331f;
+  --smp-brass: #c98a3a;
+  --smp-brass-light: #dba85f;
+  --smp-line: #ded6bd;
+  --smp-muted: #62604f;
+  --smp-on-dark: #f1efe4;
+  --smp-on-dark-muted: #c9cabb;
+  --smp-on-dark-faint: #8d9081;
+  --smp-eyebrow-light: #e8c27a;
+  --smp-hero-text-muted: #e6e4d5;
+  --smp-map-land: #ece6d3;
+  --smp-map-water: #b9cdc0;
+  --smp-map-park: #cddbb0;
+  --smp-map-pulse: rgba(201, 138, 58, 0.28);
 }
 
 .smp-root *,

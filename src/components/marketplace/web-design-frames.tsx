@@ -8,9 +8,9 @@ const PHONE = { width: 390, height: 800 };
 /** Auto-scroll speed inside a preview, in the sample page's own CSS px per second. */
 const AUTO_SCROLL_PX_PER_SECOND = 90;
 
-/** The three sample sites, for the browse switcher on /web-design's live-sample
+/** The sample sites, for the browse switcher on /web-design's live-sample
  * band (web-design-sample-switcher.tsx) — one real, live site each, not a
- * mockup. Adding a 4th sample means adding one line here plus its own
+ * mockup. Adding another sample means adding one line here plus its own
  * theme file + routes (see theme-meridian.ts's comment).
  *
  * heroImage: a real screenshot of that sample site's own hero (nav, headline,
@@ -24,7 +24,16 @@ export const SAMPLE_SITES = [
   { id: "halcyon", label: "Halcyon Residences", propertyType: "Garden villas", browserUrl: "halcyonresidences.lk", embedSrc: "/web-design/sample/embed", href: "/web-design/sample", heroImage: "/web-design/marquee-halcyon.jpg" },
   { id: "meridian", label: "Meridian Heights", propertyType: "Apartment tower", browserUrl: "meridianheights.lk", embedSrc: "/web-design/sample/meridian/embed", href: "/web-design/sample/meridian", heroImage: "/web-design/marquee-meridian.jpg" },
   { id: "azure-cove", label: "Azure Cove", propertyType: "Beachfront villas", browserUrl: "azurecove.lk", embedSrc: "/web-design/sample/azure-cove/embed", href: "/web-design/sample/azure-cove", heroImage: "/web-design/marquee-azure-cove.jpg" },
+  { id: "obsidian", label: "Obsidian Villas", propertyType: "Architectural villas", browserUrl: "obsidianvillas.lk", embedSrc: "/web-design/sample/obsidian/embed", href: "/web-design/sample/obsidian", heroImage: "/web-design/marquee-obsidian.jpg" },
+  { id: "highgrove", label: "Highgrove Estate", propertyType: "Hillside villas", browserUrl: "highgroveestate.lk", embedSrc: "/web-design/sample/highgrove/embed", href: "/web-design/sample/highgrove", heroImage: "/web-design/marquee-highgrove.jpg" },
+  { id: "willow-court", label: "Willow Court", propertyType: "Townhouses", browserUrl: "willowcourt.lk", embedSrc: "/web-design/sample/willow-court/embed", href: "/web-design/sample/willow-court", heroImage: "/web-design/marquee-willow-court.jpg" },
 ] as const;
+
+/** How many sites the hero marquee shows — capped so the hero stays light as
+ * more samples get added (owner, 2026-09-28: "create more 10 sample
+ * websites"); the full list above is always browsable in the Live Sample
+ * band further down the page via SampleSiteSwitcher. */
+const HERO_MARQUEE_COUNT = 4;
 
 /**
  * A live, scaled-down preview of the sample site: an iframe of the real page,
@@ -168,7 +177,7 @@ function MarqueeFrame({ site }: { site: (typeof SAMPLE_SITES)[number] }) {
   );
 }
 
-/** Continuously slides all three sample sites' hero photos right to left
+/** Continuously slides a curated subset of the sample sites' hero photos right to left
  * in the hero, under the headline — owner, 2026-09-28, referencing a
  * Webflow template's hero. The track holds two copies of the same
  * three-frame set back to back so the CSS animation (wdx-marquee-slide,
@@ -177,7 +186,8 @@ function MarqueeFrame({ site }: { site: (typeof SAMPLE_SITES)[number] }) {
  * the same sample content already reachable (and properly labelled) from
  * the "Live sample" section below, not new information. */
 export function HeroMarquee() {
-  const frames = [...SAMPLE_SITES, ...SAMPLE_SITES];
+  const featured = SAMPLE_SITES.slice(0, HERO_MARQUEE_COUNT);
+  const frames = [...featured, ...featured];
   return (
     <div className="wdx-marquee" aria-hidden="true">
       <div className="wdx-marquee-track">

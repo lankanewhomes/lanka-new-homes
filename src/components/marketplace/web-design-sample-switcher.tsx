@@ -6,7 +6,7 @@ import { useState } from "react";
 import { SAMPLE_SITES, SampleDevices } from "./web-design-frames";
 
 /**
- * Lets a visitor browse all three sample sites from the live-sample band on
+ * Lets a visitor browse all the sample sites from the live-sample band on
  * /web-design (owner, 2026-09-28: "need more sample websites, built them") —
  * a row of pills picks which theme SampleDevices' laptop+phone preview shows,
  * and "Open the full sample" / the caption below follow the selection. Each
