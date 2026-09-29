@@ -15684,3 +15684,234 @@ body:has(.compare-bar) {
   }
 
 }
+
+/* ---------------------------------------------------------------------- */
+/* /blog (2026-09-29) — layout follows a reference the owner shared        */
+/* (amini.ai): a plain listing with posts as a list (thumbnail, category,  */
+/* title, byline), and an article page with a centred title/byline, a      */
+/* hero image, then plain H2-sectioned body copy. Config lives in          */
+/* src/lib/blog.ts, same "add a record, not a bespoke page" pattern as     */
+/* guides.ts. No bold headings, matching the rest of the site this         */
+/* session's own convention.                                               */
+/* ---------------------------------------------------------------------- */
+
+.blog-page {
+  width: min(820px, calc(100% - 48px));
+  margin: 48px auto 90px;
+}
+
+.blog-page-head {
+  margin-bottom: 48px;
+}
+
+.blog-page-head h1 {
+  margin: 0 0 14px;
+  font-family: var(--font-ref-sans);
+  font-weight: 400;
+  font-size: 40px;
+  line-height: 1.15;
+  color: #1f1f1f;
+}
+
+.blog-page-lede {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #6b6355;
+  max-width: 60ch;
+}
+
+.blog-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.blog-list-item {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 28px;
+  padding: 32px 0;
+  border-top: 1px solid #eee8db;
+}
+
+.blog-list-thumb {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #eee8db;
+}
+
+.blog-list-thumb-img {
+  object-fit: cover;
+}
+
+.blog-list-category {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6b6355;
+}
+
+.blog-list-copy h2 {
+  margin: 0 0 10px;
+  font-weight: 400;
+  font-size: 22px;
+  line-height: 1.3;
+  color: #1f1f1f;
+}
+
+.blog-list-copy h2 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.blog-list-copy h2 a:hover {
+  text-decoration: underline;
+}
+
+.blog-list-excerpt {
+  margin: 0 0 10px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #4a4a4a;
+}
+
+.blog-list-byline {
+  margin: 0;
+  font-size: 13px;
+  color: #8a8680;
+}
+
+@media (max-width: 640px) {
+  .blog-list-item {
+    grid-template-columns: 1fr;
+  }
+}
+
+.blog-article {
+  width: min(760px, calc(100% - 48px));
+  margin: 48px auto 0;
+}
+
+.blog-article-head {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.blog-article-category {
+  margin: 0 0 14px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fdv-ink);
+}
+
+.blog-article-head h1 {
+  margin: 0 0 16px;
+  font-family: var(--font-ref-sans);
+  font-weight: 400;
+  font-size: 38px;
+  line-height: 1.2;
+  color: #1f1f1f;
+  text-wrap: balance;
+}
+
+.blog-article-byline {
+  margin: 0;
+  font-size: 14px;
+  color: #6b6355;
+}
+
+.blog-article-hero {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  margin: 0 0 48px;
+  overflow: hidden;
+}
+
+.blog-article-hero-img {
+  object-fit: cover;
+}
+
+.blog-article-body {
+  font-size: 17px;
+  line-height: 1.75;
+  color: #2c2c2c;
+}
+
+.blog-article-intro {
+  margin: 0 0 40px;
+  font-size: 19px;
+  line-height: 1.65;
+  color: #3a382f;
+}
+
+.blog-article-body section {
+  margin-bottom: 36px;
+}
+
+.blog-article-body h2 {
+  margin: 0 0 12px;
+  font-weight: 400;
+  font-size: 22px;
+  line-height: 1.35;
+  color: #1f1f1f;
+}
+
+.blog-article-body p {
+  margin: 0;
+}
+
+.blog-article-cta {
+  margin-top: 60px;
+  padding: 44px 40px;
+  background: var(--fdv-paper);
+  text-align: center;
+  border-top: 1px solid #eee8db;
+}
+
+.blog-article-cta h2 {
+  margin: 0 0 12px;
+  font-weight: 400;
+  font-size: 24px;
+  color: var(--fdv-ink);
+}
+
+.blog-article-cta p {
+  margin: 0 0 24px;
+  font-size: 15px;
+  color: var(--fdv-muted);
+}
+
+.blog-article-cta-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.blog-article-back {
+  margin: 32px 0 90px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.blog-article-back a {
+  color: var(--fdv-ink);
+  text-decoration: underline;
+}
+
+@media (max-width: 560px) {
+  .blog-article-head h1 {
+    font-size: 28px;
+  }
+
+  .blog-page-head h1 {
+    font-size: 30px;
+  }
+}

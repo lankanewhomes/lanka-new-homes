@@ -2474,3 +2474,31 @@ A neighborhood row exists for every area with a published project (`/neighborhoo
 - **Landmark photos live in Known Landmarks (owner, 2026-09-21; trial on Colombo 14).** A gallery item with a `landmark` (must equal a Nearby place's name exactly) is shown in that landmark's card in the Known Landmarks section (photo panel with caption and credit; landmarks with a photo are listed first) and is left out of the "Photos of X" section; items without a `landmark` still form the Photos section, which is hidden when empty. Not yet rolled out to the other pages.
 - **Photos: at least 5 per page** (`heroImage` + `gallery`), showing famous landmarks of the area (a well-known school, park, mall, temple, beach, station) — sharp, at least ~2400 px wide for the hero and ~1800 px for gallery photos, no blur, watermarks, night noise or heavy filters. Sources: Unsplash, Pexels, and Wikimedia Commons (CC0 / CC BY / CC BY-SA only). Check that a Commons file really shows the place (search hits match on words, not location — "Richmond Castle" returned Yorkshire). Every photo carries a caption saying what it shows (and "nearby, about N km" when it is not in the area) and a `credit` line; the hero's credit goes in `heroImageCredit` and prints under the gallery. Files are copied to R2 under `neighborhoods/<slug>/` (so `images.pexels.com` / `upload.wikimedia.org` never need to be allowed hosts). Where a small suburb has no photographed landmarks of its own, use the nearest famous ones and caption them honestly.
 - The `/neighborhoods` index (`src/app/(frontend)/neighborhoods/page.tsx`) reuses the `/developers` A–Z directory layout and shows each area's project count.
+
+## /blog (2026-09-29)
+
+Rebuilt from a "check back soon" stub (`robots: noindex`) into a real,
+indexed blog, following a reference the owner shared (an amini.ai blog
+post + its resources/blog listing page):
+- **Config-driven**, same pattern as `guides.ts`: `src/lib/blog.ts` holds a
+  `BlogPost` type and a `blogPosts` record (slug, title, excerpt, category,
+  author, publishDate, readMinutes, heroImage, intro, `sections[]`). Adding
+  a post means adding a record, not a bespoke page.
+- **`/blog`** (`src/app/(frontend)/blog/page.tsx`): a plain header, then
+  posts as a **list** (thumbnail left, category tag, title, excerpt,
+  byline) — not a card grid, matching the reference. No featured-post
+  slot, category filter or pagination yet; add once there are enough posts
+  to need them.
+- **`/blog/[slug]`** (dynamic route, `generateStaticParams` over
+  `blogPosts`): centred title, byline (author · date · read time) under
+  it, a full-width hero image, then plain H2-sectioned body copy — no
+  sidebar, table of contents, social-share row or newsletter signup (none
+  of those exist anywhere else on this site). Closes with an `.fdv-page`
+  CTA card (see /web-design's own primary/secondary buttons) pointing at
+  `/web-design` and `/for-developers`, then a "back to all posts" link.
+- Both pages wrap in `.fdv-page` for its `--fdv-*` colour tokens (the same
+  ones `/web-design`, `/for-developers` and `/pricing`'s Placement section
+  read) rather than inventing a fourth palette.
+- First post: "7 Ways Sri Lankan Developers Can Make Their Project
+  Websites Sell More Units" — developer-facing content marketing for the
+  web-design service, not buyer-side SEO. See `docs/seo-strategy.md`.
