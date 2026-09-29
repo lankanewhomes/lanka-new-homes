@@ -14814,11 +14814,13 @@ body:has(.compare-bar) {
   color: #fff;
 }
 
+/* Owner, 2026-09-29: "needs moe padding on top... and bottom". */
 .wdx-hero-content {
   position: relative;
   z-index: 1;
   width: min(1180px, calc(100% - 64px));
   margin: 0 auto;
+  padding: 56px 0 40px;
   text-align: center;
 }
 
