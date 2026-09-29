@@ -9,35 +9,22 @@ whenever a new convention is set or an existing one changes.
 
 Site brand is "LankaNewHomes" (contact: lankanewhomes@gmail.com, canonical
 domain: lankanewhomes.com — set as `FALLBACK_SITE_URL` in `src/lib/seo.ts`).
-The brand mark is a **plain-text wordmark, stacked on two lines, with a
-horizontal rule through the middle connecting the lines** (owner supplied a
-reference logo and said "make mine like this", 2026-09-29 — supersedes the
-plain one-colour/no-rule mark set 2026-09-07):
+The brand mark is a **plain-text wordmark, stacked on two lines, one
+colour, no icon** (set by the owner 2026-09-07):
 
     Lanka
-    ──────
     NewHomes
 
-Archivo **900** (heaviest weight, loaded only for this — everything else on
-the site stays 400-700), letter-spacing −0.02em, brand orange `#f47b36` —
-same colour on the light Header and the dark Footer (deliberately not
-flipped to white per background, so the mark itself stays one fixed
-colour like the reference). Both the Header (`.site-wordmark`, 17px) and
-the Footer (`.footer-wordmark`, 24px) render it as live text — two
-`<span class="wordmark-line">` either side of a `<span class="wordmark-rule">`
-inside the home link — never as an image. The rule is `position: absolute`,
-sized in `em` (`height: 0.08em`, overhangs `0.05em` past each edge) and
-coloured via `background: currentColor` so it always matches the text
-colour without a separate value to keep in sync.
-
-**Not yet updated to match** (flagged, not touched by this change): the
-standalone `public/logo-wordmark.svg` / `-white.svg` assets (still the old
-700-weight, no-rule style; `public/logo.svg`, the older orange house-badge
-version, no longer exists), `src/app/(frontend)/opengraph-image.tsx`, the 6
-transactional email templates' inline wordmark markup, and the CMS admin
-nav brand — all of these currently render an even older single-line style
-with only "New" in orange, which was already inconsistent with the site
-chrome before this change and remains so after it.
+Archivo 700, letter-spacing −0.02em, `#1d1d22` on light backgrounds, white
+on dark. No orange, no house badge. Both the Header (`.site-wordmark`, 17px)
+and the Footer (`.footer-wordmark`, 24px) render it as live text — two
+`<span class="wordmark-line">` inside the home link — never as an image. The
+standalone asset (outlined to paths, no font dependency) is at
+`public/logo-wordmark.svg` (dark) and `public/logo-wordmark-white.svg`
+(white); regenerate with fontkit from the Archivo TTF if the text changes.
+`public/logo.svg` (the old orange house badge + wordmark) is no longer used
+in the site chrome; it's kept only because OG/social images still reference
+it — replace those before deleting it.
 
 Footer (`Footer` in `components.tsx`, `.site-footer` / `.footer-inner` in
 globals.css): dark `#1c1c20`, content in the sitewide 1290px container so it

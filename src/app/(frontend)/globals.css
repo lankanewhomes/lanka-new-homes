@@ -159,21 +159,12 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
 .site-brand-group { display: flex; align-items: center; gap: 14px; }
 .site-logo { display: flex; align-items: center; }
 .site-logo-img { height: 32px; width: auto; }
-/* Brand mark (header + footer share the line/rule markup): two stacked
-   lines, "Lanka" over "NewHomes", heavy weight, brand orange, a horizontal
-   rule through the middle connecting the two lines — set 2026-09-29,
-   replacing the plain black/white 700-weight mark from 2026-09-07 (owner
-   supplied a reference: bold stacked wordmark, one colour, a rule linking
-   the lines). Orange now on both the light header and the dark footer
-   (kept one colour rather than flipping per background, like the
-   reference) — this reverses the 09-07 "no orange" call on purpose.
-   `position: relative` + `.wordmark-rule` (position: absolute, sized in em
-   so it scales with font-size) is shared by both `.site-wordmark` and
-   `.footer-wordmark` below. */
-.site-wordmark { position: relative; display: inline-flex; flex-direction: column; align-items: flex-start; gap: 1px; font-family: var(--font-ref-sans); font-weight: 900; font-size: 17px; line-height: 1; letter-spacing: -0.02em; color: #f47b36; text-decoration: none; }
+/* Plain-text brand mark (header + footer share the line markup): two stacked
+   lines, "Lanka" over "NewHomes", one colour, no icon — set 2026-09-07.
+   Header is dark on white; the footer variant below flips to white. */
+.site-wordmark { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 1px; font-family: var(--font-ref-sans); font-weight: 700; font-size: 17px; line-height: 1; letter-spacing: -0.02em; color: #1d1d22; text-decoration: none; }
 .site-wordmark:hover { text-decoration: none; }
 .wordmark-line { display: block; white-space: nowrap; }
-.wordmark-rule { position: absolute; left: -0.05em; right: -0.05em; top: 50%; height: 0.08em; background: currentColor; transform: translateY(-50%); pointer-events: none; }
 .footer-logo-img { height: 32px; width: auto; filter: brightness(0) invert(1); }
 .site-header nav, .header-actions { display: flex; gap: 39px; align-items: center; font-size: 14px; font-weight: 550; }.site-header a:hover { text-decoration: underline; }
 .header-actions { gap: 14px; }.sign-up { padding: 11px 21px; background: #f47b36; border: 1px solid #f47b36; color: #24221e; }
@@ -8128,17 +8119,16 @@ a.developer-profile-press-title {
 }
 
 .footer-wordmark {
-  position: relative;
   display: inline-flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 2px;
   font-family: var(--font-ref-sans);
   font-size: 24px;
-  font-weight: 900;
+  font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1;
-  color: #f47b36;
+  color: #fff;
   text-decoration: none;
 }
 
