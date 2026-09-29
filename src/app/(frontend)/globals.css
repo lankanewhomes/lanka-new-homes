@@ -15343,23 +15343,34 @@ body:has(.compare-bar) {
 
 /* FAQ — same bordered-card accordion pattern as .guide-page-faq-item
    (the site's established FAQ style) instead of a bespoke serif divider
-   list, per the owner's "be consistent with other pages" request. */
+   list, per the owner's "be consistent with other pages" request. This is
+   the last section on the page (the closing CTA band was removed earlier)
+   — owner, 2026-09-29: "needs a new background... box lines different
+   from other sections" and "too much spacing on the bottom". Background
+   moved from a bespoke #efe9dc (only otherwise used on /for-developers'
+   unrelated Analytics section — not a real shared token) to
+   --fdv-paper, the same "paper" cream every other section on this page
+   family already uses. The line pattern moved from a green diagonal tied
+   specifically to Halcyon Residences (this section's own comment used to
+   say so) to the brand's own orange accent — the switcher above now
+   cycles through 6 sample sites, so a single sample's colour here read as
+   arbitrary rather than intentional. Bottom padding matches the top
+   (90px) now that nothing follows it, instead of the old 140px that
+   assumed a CTA band was still coming after it. */
 .wdx-faq {
   position: relative;
   overflow: hidden;
-  padding: 90px 0 140px;
-  background: #efe9dc;
+  padding: 90px 0;
+  background: var(--fdv-paper);
   border-top: 1px solid var(--fdv-line);
 }
 
-/* Deep green diagonal lines — the sample site's own accent colour, a nod to
-   Halcyon Residences without repeating a tint already used higher up. */
 .wdx-faq::before {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background-image: repeating-linear-gradient(45deg, transparent 0 18px, rgba(21, 65, 58, 0.1) 18px 19px);
+  background-image: repeating-linear-gradient(45deg, transparent 0 18px, rgba(244, 123, 54, 0.12) 18px 19px);
   -webkit-mask-image: radial-gradient(ellipse 75% 90% at center, #000 35%, transparent 100%);
   mask-image: radial-gradient(ellipse 75% 90% at center, #000 35%, transparent 100%);
 }
@@ -15573,8 +15584,12 @@ body:has(.compare-bar) {
   .wdx-faq {
     /* .wdx-faq is now the last section (the closing CTA band was removed) —
        clears the fixed bottom quickjump tab bar (~76px + the iPhone safe
-       area), same reasoning as the listing pages' own bottom-bar clearance. */
-    padding-bottom: calc(84px + 76px + env(safe-area-inset-bottom));
+       area), same reasoning as the listing pages' own bottom-bar clearance.
+       32px of its own breathing room on top of that, not 84px (owner,
+       2026-09-29: "too much spacing on the bottom" — the tan/green
+       background this used to be on made the excess less obvious; the
+       lighter --fdv-paper background this is now on showed it clearly). */
+    padding-bottom: calc(32px + 76px + env(safe-area-inset-bottom));
   }
 
   .wdx-faq-list {
