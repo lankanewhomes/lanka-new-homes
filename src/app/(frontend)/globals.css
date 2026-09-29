@@ -15601,6 +15601,18 @@ body:has(.compare-bar) {
 /* matching the rest of the site this session's own convention.            */
 /* ---------------------------------------------------------------------- */
 
+/* flow-root: .blog-page-head's own top margin was collapsing straight
+   through .blog-page (its first child, no border/padding above it to stop
+   it), pushing .blog-page's whole box — including its --fdv-paper
+   background — down by 48px and leaving a plain white gap above it
+   (owner: "on top of the blog page, there's a gap... remove that for
+   desktop and mobile"). A new block formatting context contains the
+   margin instead, so it reads as space inside the cream background
+   rather than a gap above it. */
+.blog-page {
+  display: flow-root;
+}
+
 .blog-page-head {
   width: min(1180px, calc(100% - 64px));
   margin: 48px auto 40px;
@@ -15651,7 +15663,7 @@ body:has(.compare-bar) {
 .blog-filter-pill {
   padding: 8px 16px;
   border: 1px solid rgba(23, 20, 15, 0.18);
-  border-radius: 999px;
+  border-radius: 0;
   background: transparent;
   color: var(--fdv-muted);
   font-size: 13px;
@@ -15690,7 +15702,7 @@ body:has(.compare-bar) {
   appearance: none;
   padding: 8px 30px 8px 14px;
   border: 1px solid rgba(23, 20, 15, 0.18);
-  border-radius: 999px;
+  border-radius: 0;
   background: transparent;
   color: var(--fdv-ink);
   font-size: 13px;
@@ -15815,9 +15827,18 @@ body:has(.compare-bar) {
   gap: 32px;
 }
 
+/* Bordered card (owner, 2026-09-29: "needs a border around it, be
+   consistent with the design") — same treatment as this page family's
+   other cards (.wdx-compare-card, .fdv-placement-card): 1px
+   var(--fdv-line), white background, square corners, internal padding.
+   The image bleeds to the card's own edges (negative margin equal to the
+   padding) rather than sitting inset with a gap around it. */
 .blog-card {
   display: flex;
   flex-direction: column;
+  padding: 16px 20px 24px;
+  border: 1px solid var(--fdv-line);
+  background: #fff;
 }
 
 .blog-card-media {
@@ -15826,7 +15847,7 @@ body:has(.compare-bar) {
   aspect-ratio: 4 / 3;
   overflow: hidden;
   background: var(--fdv-paper);
-  margin-bottom: 16px;
+  margin: -16px -20px 16px;
 }
 
 .blog-card-media-img {

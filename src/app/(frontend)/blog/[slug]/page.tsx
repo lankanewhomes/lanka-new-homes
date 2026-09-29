@@ -68,7 +68,6 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         <p>We design and build dedicated websites for property developments — a new site, or a rebuild of one that isn&apos;t working.</p>
         <div className="blog-article-cta-links">
           <Link href="/web-design" className="fdv-cta-primary">See our web design service</Link>
-          <Link href="/for-developers" className="fdv-cta-secondary">Why developers list with us</Link>
         </div>
       </div>
 
