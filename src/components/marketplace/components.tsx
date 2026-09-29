@@ -2147,7 +2147,7 @@ export function RequestInfoDialog({
             </label>
 
             <div className="request-info-field">
-              <span>How would you like to get in touch?<span className="request-info-star">*</span></span>
+              <span className="request-info-field-visible-label">How would you like to get in touch?</span>
               <div className="request-info-radio-row">
                 {(["Phone", "Text", "Email"] as const).map((method) => (
                   <label key={method} className="request-info-radio">

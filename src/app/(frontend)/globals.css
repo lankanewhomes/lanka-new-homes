@@ -6080,10 +6080,11 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   margin: 0 auto 34px;
   padding: 44px 40px;
   background: #1f1f1f;
-  /* Flat black rectangle, no radius, no orange border — the only orange
-     left in this section is the eyebrow label and the bullet ticks (owner,
-     2026-09-24: "dont use orange color except the bullet points... leave
-     for developers also"). Shadow-lifted still, just square-cornered. */
+  /* Flat black rectangle, no radius. The eyebrow label and bullet ticks
+     were orange until 2026-09-29 (owner: "icon and eyeborrow needs to be
+     different color. be consistant") — both now white, matching each
+     other and the heading, so the CTA button is the only orange left in
+     this band. Shadow-lifted still, just square-cornered. */
   box-shadow: 0 24px 60px rgba(31, 31, 31, 0.18);
   color: #fff;
   font-family: var(--font-ref-sans);
@@ -6091,7 +6092,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 
 .free-listing-band-eyebrow {
   margin: 0 0 10px;
-  color: #f47b36;
+  color: #fff;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.18em;
@@ -6141,8 +6142,8 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: #f47b36;
-  color: #fff;
+  background: #fff;
+  color: #1f1f1f;
 }
 
 .free-listing-band-tick svg {
@@ -7577,7 +7578,25 @@ a.developer-profile-press-title {
   margin-bottom: 14px;
 }
 
-.request-info-field > span {
+/* No visible label above each field — matches /contact's own form (owner,
+   2026-09-29: "on the pop up contact form... i dont [want] these label.
+   Name*, phone nbmer"), relying on each input's placeholder text instead.
+   The "how would you like to get in touch" radio group and the message's
+   live character count have no placeholder equivalent, so those two stay
+   visible. */
+.request-info-field > span:not(.request-info-field-visible-label):not(.request-info-char-count) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.request-info-field-visible-label {
   display: block;
   margin-bottom: 6px;
   font-size: 14px;
@@ -7722,10 +7741,11 @@ a.developer-profile-press-title {
 
 /* Same two-part arrow-circle + pill treatment as /contact's own submit
    button (.contact-form-submit) — owner, 2026-09-28: "the button needs to
-   be like what you have on contact page" — kept full-width here since this
-   button sits in a narrower modal, unlike /contact's inline one. */
+   be like what you have on contact page". Full-width only on mobile (owner,
+   2026-09-29: "on desktop the pop up form button dont make it full
+   width") — see the width: 100% override below. */
 .request-info-submit-big {
-  width: 100%;
+  width: auto;
   min-height: 52px;
   display: inline-flex;
   align-items: center;
@@ -7793,6 +7813,10 @@ a.developer-profile-press-title {
 
   .request-info-dialog h2 {
     font-size: 20px;
+  }
+
+  .request-info-submit-big {
+    width: 100%;
   }
 }
 
@@ -13051,30 +13075,20 @@ body:has(.compare-bar) {
 }
 
 /* 1 — HERO */
+/* Solid background, no photo (owner, 2026-09-29: "you need ot change the
+   hero section. re design the devloerps page") — matches /web-design's own
+   hero, centered instead of the old bottom-anchored/left-aligned photo
+   hero. */
 .fdv-hero {
   position: relative;
-  min-height: 92vh;
+  min-height: 82vh;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
+  background: var(--fdv-ink);
   color: #fff;
-}
-
-.fdv-hero-media {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-}
-
-.fdv-hero-media-img {
-  object-fit: cover;
-  transform: scale(1.03);
-}
-
-.fdv-hero-media-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(10, 9, 12, 0.15) 0%, rgba(10, 9, 12, 0.35) 55%, rgba(10, 9, 12, 0.86) 100%);
+  text-align: center;
 }
 
 .fdv-hero-content {
@@ -13082,23 +13096,20 @@ body:has(.compare-bar) {
   z-index: 1;
   width: min(720px, calc(100% - 64px));
   margin: 0 auto;
-  padding-bottom: 88px;
-  text-align: left;
 }
 
 .fdv-hero-headline {
-  margin: 0 0 22px;
-  font-family: var(--fdv-serif);
+  margin: 0 auto 22px;
   font-weight: 400;
-  font-size: 62px;
-  line-height: 1.08;
-  letter-spacing: -0.01em;
+  font-size: 48px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
   text-wrap: balance;
   color: #fff;
 }
 
 .fdv-hero-sub {
-  margin: 0 0 34px;
+  margin: 0 auto 34px;
   max-width: 480px;
   font-size: 17px;
   line-height: 1.6;
@@ -13109,6 +13120,7 @@ body:has(.compare-bar) {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
   gap: 28px;
 }
 
@@ -13116,32 +13128,25 @@ body:has(.compare-bar) {
   color: #fff;
 }
 
-/* .fdv-eyebrow's base colour is dark ink (see its own rule) — needs lifting
-   here since this eyebrow sits over the hero photo's dark gradient, same
-   reasoning /web-design's hero used for its own (since-removed) eyebrow. */
-.fdv-hero .fdv-eyebrow {
-  color: #fff;
-}
-
 @media (max-width: 760px) {
   .fdv-hero {
-    min-height: 82vh;
-    align-items: center;
+    min-height: 78vh;
+    padding-top: 48px;
   }
 
   .fdv-hero-content {
     width: min(560px, calc(100% - 44px));
-    padding-bottom: 0;
   }
 
   .fdv-hero-headline {
-    font-size: 38px;
+    font-size: 36px;
   }
 }
 
 /* 2 — INTRODUCTION */
 .fdv-intro {
   padding: 140px 0;
+  background: var(--fdv-paper);
 }
 
 .fdv-intro-grid {
@@ -13192,133 +13197,50 @@ body:has(.compare-bar) {
 }
 
 /* 3 — THREE BIG REASONS */
+/* Simplified to one section, three plain items — no photos, numbers or
+   kicker labels (owner, 2026-09-29: "put theses in 1 section... make it
+   simpler"). Full-bleed section (background below) with the grid as its
+   own width-constrained inner wrapper, matching the rest of this page's
+   sections. */
 .fdv-reasons {
+  padding: 100px 0;
+  background: #fff;
+  border-top: 1px solid var(--fdv-line);
+}
+
+.fdv-reasons-grid {
   width: min(1180px, calc(100% - 64px));
   margin: 0 auto;
-  padding: 40px 0 120px;
-  display: flex;
-  flex-direction: column;
-  gap: 110px;
-}
-
-.fdv-reason {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 72px;
-  align-items: center;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 48px;
 }
 
-.fdv-reason-reverse {
-  direction: rtl;
-}
-
-.fdv-reason-reverse > * {
-  direction: ltr;
-}
-
-.fdv-reason-media {
-  position: relative;
-  aspect-ratio: 5 / 4;
-  overflow: hidden;
-  background: var(--fdv-line);
-}
-
-.fdv-reason-img {
-  object-fit: cover;
-  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.fdv-reason-img-plan {
-  object-fit: contain;
-  background: #fff;
-  padding: 24px;
-}
-
-.fdv-reason-media:hover .fdv-reason-img {
-  transform: scale(1.05);
-}
-
-.fdv-reason-media-dark {
-  background: var(--fdv-ink);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 48px;
-}
-
-.fdv-reason-contact-preview {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 16px;
-  max-width: 320px;
-}
-
-.fdv-reason-contact-line {
-  margin: 0;
-  font-family: var(--fdv-serif);
-  font-style: italic;
-  font-size: 20px;
-  line-height: 1.5;
-  color: #fff;
-}
-
-.fdv-reason-contact-tag {
-  font-size: 12.5px;
-  color: #9a968c;
-}
-
-.fdv-reason-number {
-  display: block;
-  margin-bottom: 8px;
-  font-family: var(--fdv-serif);
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--fdv-accent);
-}
-
-.fdv-reason-kicker {
-  margin: 0 0 18px;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--fdv-muted);
-}
-
-.fdv-reason-copy h3 {
-  margin: 0 0 18px;
-  font-family: var(--fdv-serif);
+.fdv-reason-simple h3 {
+  margin: 0 0 12px;
   font-weight: 400;
-  font-size: 32px;
-  line-height: 1.22;
+  font-size: 21px;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
   color: var(--fdv-ink);
   text-wrap: balance;
 }
 
-.fdv-reason-body {
+.fdv-reason-simple p {
   margin: 0;
   font-size: 15.5px;
   line-height: 1.75;
   color: var(--fdv-muted);
-  max-width: 420px;
 }
 
 @media (max-width: 900px) {
   .fdv-reasons {
-    gap: 64px;
-    padding: 20px 0 80px;
+    padding: 70px 0;
   }
 
-  .fdv-reason,
-  .fdv-reason-reverse {
+  .fdv-reasons-grid {
     grid-template-columns: 1fr;
-    direction: ltr;
-    gap: 28px;
-  }
-
-  .fdv-reason-copy h3 {
-    font-size: 26px;
+    gap: 40px;
   }
 }
 
@@ -13349,14 +13271,18 @@ body:has(.compare-bar) {
 /* 4 — SHOW THE PRODUCT */
 .fdv-showcase-product {
   padding: 60px 0 130px;
+  background: var(--fdv-paper);
+  border-top: 1px solid var(--fdv-line);
 }
 
+/* Simplified — dropped the heavy drop-shadow for a plain border (owner,
+   2026-09-29: "redesign this also", carrying over the same "make it
+   simpler" direction as the reasons section just above it). */
 .fdv-product-frame {
   width: min(1100px, calc(100% - 44px));
   margin: 0 auto;
   border: 1px solid var(--fdv-line);
   background: #fff;
-  box-shadow: 0 40px 80px -40px rgba(21, 20, 26, 0.25);
 }
 
 .fdv-product-photo {
@@ -13390,7 +13316,7 @@ body:has(.compare-bar) {
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--fdv-accent);
+  color: #fff;
 }
 
 .fdv-product-photo-caption h3 {
@@ -13530,9 +13456,14 @@ body:has(.compare-bar) {
 
 /* 6 — INTERNATIONAL BUYERS */
 .fdv-international {
+  padding: 130px 0;
+  background: #efe9dc;
+  border-top: 1px solid var(--fdv-line);
+}
+
+.fdv-international-inner {
   width: min(760px, calc(100% - 44px));
   margin: 0 auto;
-  padding: 130px 0;
   text-align: center;
 }
 
@@ -13586,6 +13517,8 @@ body:has(.compare-bar) {
 /* 7 — PROJECT PRESENTATION composition */
 .fdv-composition {
   padding: 40px 0 130px;
+  background: #fff;
+  border-top: 1px solid var(--fdv-line);
 }
 
 .fdv-composition-grid {
@@ -13652,6 +13585,8 @@ body:has(.compare-bar) {
 /* 7.5 — BADGES */
 .fdv-badges {
   padding: 40px 0 120px;
+  background: var(--fdv-paper);
+  border-top: 1px solid var(--fdv-line);
 }
 
 .fdv-badge-grid {
@@ -13711,9 +13646,14 @@ body:has(.compare-bar) {
 
 /* 8 — ANALYTICS DASHBOARD */
 .fdv-control {
+  padding: 40px 0 130px;
+  background: #efe9dc;
+  border-top: 1px solid var(--fdv-line);
+}
+
+.fdv-control-inner {
   width: min(1180px, calc(100% - 64px));
   margin: 0 auto;
-  padding: 40px 0 130px;
   display: grid;
   grid-template-columns: 0.9fr 1.1fr;
   gap: 80px;
@@ -13871,56 +13811,13 @@ body:has(.compare-bar) {
 }
 
 @media (max-width: 900px) {
-  .fdv-control {
+  .fdv-control-inner {
     grid-template-columns: 1fr;
     gap: 36px;
   }
 
   .fdv-analytics-stats {
     grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-/* 9 — HOW IT WORKS */
-.fdv-how {
-  width: min(1180px, calc(100% - 64px));
-  margin: 0 auto;
-  padding: 40px 0 140px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 56px;
-}
-
-.fdv-how-number {
-  display: block;
-  margin-bottom: 20px;
-  font-family: var(--fdv-serif);
-  font-weight: 300;
-  font-size: 64px;
-  line-height: 1;
-  color: var(--fdv-line);
-}
-
-.fdv-how-step h3 {
-  margin: 0 0 10px;
-  font-family: var(--fdv-serif);
-  font-weight: 500;
-  font-size: 22px;
-  color: var(--fdv-ink);
-}
-
-.fdv-how-step p {
-  margin: 0;
-  font-size: 15px;
-  line-height: 1.6;
-  color: var(--fdv-muted);
-}
-
-@media (max-width: 760px) {
-  .fdv-how {
-    grid-template-columns: 1fr;
-    gap: 40px;
-    padding: 20px 0 90px;
   }
 }
 
@@ -14515,8 +14412,9 @@ body:has(.compare-bar) {
    white band, full-bleed, so this "proof" showcase reads as a clean break
    from the page's warm cream background instead of blending into it. */
 .fdv-live-listings {
-  background: #fff;
+  background: var(--fdv-paper);
   padding: 60px 0 130px;
+  border-top: 1px solid var(--fdv-line);
 }
 
 .fdv-showcase-grid {
