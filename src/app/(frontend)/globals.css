@@ -15984,6 +15984,17 @@ body:has(.compare-bar) {
   }
 }
 
+/* flow-root: same fix as .blog-page above — .blog-article-back's own
+   90px bottom margin (its last child) was collapsing straight through
+   this element (no border/padding below to stop it), leaving a plain
+   white gap between the article's --fdv-paper background and the footer
+   instead of 90px of cream space above it (found auditing spacing on
+   /contact, /blog and /blog/[slug] per the owner's "be consistent...
+   check for any spacing" request). */
+.blog-article {
+  display: flow-root;
+}
+
 .blog-article-hero {
   width: 100%;
   margin: 0 0 64px;
