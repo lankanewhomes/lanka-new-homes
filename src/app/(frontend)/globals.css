@@ -15655,13 +15655,14 @@ body:has(.compare-bar) {
 
   .wdx-faq {
     /* .wdx-faq is now the last section (the closing CTA band was removed) —
-       clears the fixed bottom quickjump tab bar (~76px + the iPhone safe
-       area), same reasoning as the listing pages' own bottom-bar clearance.
-       32px of its own breathing room on top of that, not 84px (owner,
-       2026-09-29: "too much spacing on the bottom" — the tan/green
-       background this used to be on made the excess less obvious; the
-       lighter --fdv-paper background this is now on showed it clearly). */
-    padding-bottom: calc(32px + 76px + env(safe-area-inset-bottom));
+       the 76px + iPhone safe area is real, required clearance for the
+       fixed bottom quickjump tab bar: tested with it removed and the last
+       1-2 accordion items land fully behind the bar, unreachable, once
+       scrolled into view. Only the discretionary breathing room on top of
+       that is negotiable — trimmed twice now (84px, then 32px, now 8px;
+       owner kept flagging "too much spacing on the bottom" even after the
+       first two cuts). */
+    padding-bottom: calc(8px + 76px + env(safe-area-inset-bottom));
   }
 
   .wdx-faq-list {
