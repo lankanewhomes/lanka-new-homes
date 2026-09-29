@@ -59,10 +59,11 @@ export default function WebDesignPage() {
       {/* 1 — HERO */}
       <section className="wdx-hero" aria-label="Website design for developers">
         <div className="wdx-hero-content">
-          <h1 className="wdx-hero-headline">Your project deserves a website of its own.</h1>
+          <h1 className="wdx-hero-headline">A website as serious as your project.</h1>
           <p className="wdx-hero-sub">
-            We design and build dedicated websites for property developments — a brand new site for a project that
-            doesn&apos;t have one yet, or a redesign of one that isn&apos;t working anymore.
+            We design and build a dedicated website for your development — built around your renders, floor plans
+            and brand, not a generic template. A new site if you don&apos;t have one, or a rebuild if the one you have
+            isn&apos;t working.
           </p>
           <div className="wdx-hero-ctas">
             <Link href="/contact" className="fdv-cta-primary">Talk to us about a site</Link>

@@ -15059,21 +15059,25 @@ body:has(.compare-bar) {
   margin-left: max(32px, calc((100% - 1180px) / 2));
 }
 
+/* Same heading/subhead styling as the homepage's "Popular searches" band
+   (.featured-listings-head h2 / .featured-listings-subhead) — owner,
+   2026-09-28: "use the same styling for the heading and sub heading". */
 .wdx-section-head h2 {
   margin: 0;
+  font-family: var(--font-ref-sans);
   font-weight: 400;
-  font-size: 30px;
-  line-height: 1.2;
-  letter-spacing: -0.01em;
+  font-size: 32px;
+  line-height: 1.15;
+  color: #1f1f1f;
   text-wrap: balance;
 }
 
 .wdx-section-head p:not(.fdv-eyebrow) {
   margin: 18px 0 0;
-  max-width: 560px;
-  font-size: 17px;
-  line-height: 1.7;
-  color: var(--fdv-muted);
+  max-width: 460px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #6b6355;
 }
 
 /* Live sample */
@@ -15653,6 +15657,7 @@ body:has(.compare-bar) {
   .wdx-section-head h2,
   .wdx-cta h2 {
     font-size: 26px;
+    line-height: 32px;
   }
 
   .wdx-sample {
