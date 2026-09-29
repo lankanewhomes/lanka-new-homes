@@ -11254,8 +11254,13 @@ body:has(.compare-bar) {
    NOT bold (owner: "I don't want bold") and the eyebrow is plain ink, not
    accent-coloured (owner, earlier the same session: doesn't like orange
    used for eyebrow labels) — both deviate from the reference on purpose. */
+/* Black page background (owner, 2026-09-29: "apply a black background") —
+   hero text lightened for contrast; the form card stays white (fields need
+   a light background to read), the CTA card below gets a border so it
+   doesn't visually disappear into the now-black page (it was already
+   near-black, #1a1a1a). */
 .contact-page-bg {
-  background: #f3f2ef;
+  background: #0a0a0a;
   padding: 64px 24px 90px;
 }
 
@@ -11270,7 +11275,7 @@ body:has(.compare-bar) {
   font-size: 34px;
   font-weight: 400;
   line-height: 1.2;
-  color: #1f1f1f;
+  color: #fff;
   margin-bottom: 16px;
   text-wrap: balance;
 }
@@ -11278,7 +11283,7 @@ body:has(.compare-bar) {
 .contact-hero-sub {
   font-size: 16px;
   line-height: 1.6;
-  color: #6b6b6b;
+  color: #b8b8b4;
   max-width: 52ch;
   margin: 0 auto;
 }
@@ -11286,32 +11291,42 @@ body:has(.compare-bar) {
 .contact-hero-line {
   margin-top: 18px;
   font-size: 13.5px;
-  color: #6b6b6b;
+  color: #b8b8b4;
 }
 
 .contact-hero-line a {
-  color: #1f1f1f;
+  color: #fff;
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
+/* Narrower than .contact-hero above it (owner, 2026-09-29: "form is too
+   big. too much width") — the intro text reads fine wider, but the form's
+   short fields didn't need the extra width. */
 .contact-cards {
-  width: min(700px, 100%);
+  width: min(480px, 100%);
   margin: 36px auto 0;
   display: grid;
   gap: 20px;
 }
 
+/* Owner, 2026-09-29: "for form to stand out can you do something" — a dark
+   shadow tuned for the page's old light background didn't read against the
+   new black one; a soft light glow does. An orange top edge was tried and
+   dropped the same day: "i dont need orange color please on contact form
+   except the button". */
 .contact-form-panel {
+  position: relative;
   background: #fff;
   border-radius: 0;
   padding: 36px 32px;
-  box-shadow: 0 1px 2px rgba(16, 16, 16, 0.04);
+  box-shadow: 0 30px 90px rgba(255, 255, 255, 0.08), 0 12px 30px rgba(0, 0, 0, 0.5);
 }
 
 .contact-cta-panel {
   position: relative;
   background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   color: #fff;
   border-radius: 0;
   padding: 32px 34px;
@@ -11384,7 +11399,7 @@ body:has(.compare-bar) {
 .contact-form-field textarea:focus,
 .contact-form-field select:focus {
   outline: none;
-  border-color: #f47b36;
+  border-color: #1f1f1f;
 }
 
 /* PhoneField (shared with the site's other enquiry forms) brings its own
@@ -15499,26 +15514,27 @@ body:has(.compare-bar) {
   z-index: 1;
 }
 
+/* Redesigned again (owner, 2026-09-29: "needs a new deisng") — a plain
+   divided list instead of individual bordered cards: one top divider for
+   the whole list, a border-bottom per row, and a circular "+" that
+   rotates into a "×" on open rather than swapping glyphs. */
 .wdx-faq-list {
-  width: min(860px, calc(100% - 64px));
+  width: min(760px, calc(100% - 64px));
   margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  border-top: 1px solid var(--fdv-line);
 }
 
 .wdx-faq-item {
-  border: 1px solid var(--fdv-line);
-  background: #fff;
-  padding: 16px 18px;
+  border-bottom: 1px solid var(--fdv-line);
+  padding: 26px 0;
 }
 
 .wdx-faq-item summary {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  font-size: 16px;
+  gap: 20px;
+  font-size: 18px;
   font-weight: 400;
   color: var(--fdv-ink);
   cursor: pointer;
@@ -15532,25 +15548,26 @@ body:has(.compare-bar) {
 .wdx-faq-item summary::after {
   content: "+";
   flex-shrink: 0;
-  font-size: 22px;
-  font-weight: 400;
-  color: var(--fdv-muted);
-  transition: transform 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--fdv-line);
+  border-radius: 50%;
+  font-size: 16px;
+  color: var(--fdv-ink);
+  transition: transform 0.2s ease;
 }
 
 .wdx-faq-item[open] summary::after {
-  content: "\2212";
-}
-
-.wdx-faq-item[open] summary {
-  color: var(--fdv-ink);
+  transform: rotate(45deg);
 }
 
 .wdx-faq-item p {
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid var(--fdv-line);
-  font-size: 15px;
+  margin: 14px 0 0;
+  max-width: 640px;
+  font-size: 15.5px;
   line-height: 1.7;
   color: var(--fdv-muted);
 }
