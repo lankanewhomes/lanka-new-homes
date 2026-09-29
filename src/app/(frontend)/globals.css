@@ -14144,8 +14144,13 @@ body:has(.compare-bar) {
    used live elsewhere) so a developer sees exactly what they'd get, not a
    generic icon. Almost every card here is "Coming soon" — see packages.ts
    and the placement-inventory memory for what's actually built. */
+/* This is the page's last section, nothing follows before the footer —
+   130px of bottom padding (matching the old top-padding-plus-some
+   convention) made a large, empty-looking cream gap before the footer
+   (owner flagged it as a styling issue on /pricing, 2026-09-29). Trimmed
+   to match the top padding, same fix as /web-design's FAQ section. */
 .fdv-placement {
-  padding: 70px 0 130px;
+  padding: 70px 0;
   border-top: 1px solid var(--fdv-line);
 }
 
@@ -14469,9 +14474,14 @@ body:has(.compare-bar) {
    site's own marketplace look (Archivo, orange accent, white cards) rather
    than /for-developers' separate editorial design system, since this page
    sits alongside the rest of the buyer/marketplace site. */
+/* Bottom padding matched to the top (was 100px) — stacked with
+   .fdv-placement's own bottom padding just above it (also trimmed, see
+   its own comment), the combined gap before the footer read as an
+   oversized, empty-looking band (owner flagged this as a styling issue
+   on /pricing, 2026-09-29). */
 .pricing-page {
   background: #faf8f5;
-  padding: 56px 24px 100px;
+  padding: 56px 24px;
 }
 
 .pricing-page-shell {
