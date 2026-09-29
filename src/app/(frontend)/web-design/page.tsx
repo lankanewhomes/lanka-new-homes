@@ -142,17 +142,6 @@ export default function WebDesignPage() {
         </div>
       </section>
 
-      {/* 9 — CTA */}
-      <section className="wdx-cta" id="contact" aria-label="Get started">
-        <div className="wdx-cta-inner" data-reveal>
-          <h2>Have a project that needs a website?</h2>
-          <p>Tell us about it — new site or redesign, we&apos;ll take it from there.</p>
-          <div className="wdx-hero-ctas">
-            <Link href="/contact" className="fdv-cta-primary">Get in touch</Link>
-          </div>
-        </div>
-      </section>
-
       <WebDesignQuickjump />
     </div>
   );

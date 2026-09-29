@@ -14921,7 +14921,7 @@ body:has(.compare-bar) {
 
 .wdx-hero-headline {
   margin: 0 auto 22px;
-  max-width: 14ch;
+  max-width: 24ch;
   font-weight: 400;
   font-size: 48px;
   line-height: 1.1;
@@ -15054,37 +15054,45 @@ body:has(.compare-bar) {
 /* Section heads shared by the lighter bands */
 .wdx-section-head {
   width: min(1180px, calc(100% - 64px));
+  max-width: 640px;
   margin: 0 auto 56px;
-  max-width: 760px;
-  margin-left: max(32px, calc((100% - 1180px) / 2));
+  text-align: center;
 }
 
-/* Same heading/subhead styling as the homepage's "Popular searches" band
-   (.featured-listings-head h2 / .featured-listings-subhead) — owner,
-   2026-09-28: "use the same styling for the heading and sub heading". */
+/* Same styling as the hero heading/sub (owner, 2026-09-28: "make sure
+   heading and description all of them matches the styling, i really like
+   the hero section heading and sub") — same weight, letter-spacing and
+   centering as .wdx-hero-headline/.wdx-hero-sub, sized down for a
+   body-section heading rather than a full hero (kept smaller per the
+   owner's earlier, separate "too big for all the sections" feedback). */
 .wdx-section-head h2 {
-  margin: 0;
-  font-family: var(--font-ref-sans);
+  margin: 0 auto;
   font-weight: 400;
   font-size: 32px;
-  line-height: 1.15;
-  color: #1f1f1f;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--fdv-ink);
   text-wrap: balance;
 }
 
 .wdx-section-head p:not(.fdv-eyebrow) {
-  margin: 18px 0 0;
-  max-width: 460px;
-  font-size: 15px;
-  line-height: 1.5;
-  color: #6b6355;
+  margin: 18px auto 0;
+  max-width: 480px;
+  font-size: 17px;
+  line-height: 1.65;
+  color: var(--fdv-muted);
 }
 
 /* Live sample */
+/* A visibly different dark tone from the hero's near-black --fdv-ink
+   (owner, 2026-09-28: "diff background" — twice, since a first attempt
+   using a barely-different near-black wasn't different enough) — a
+   noticeably lighter, warmer brown, not just a slight hue shift, so the
+   seam between the hero and this section actually reads. */
 .wdx-sample {
   position: relative;
   padding: 120px 0 120px;
-  background: var(--fdv-ink);
+  background: #332920;
   color: #f1eee6;
   overflow: hidden;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -15109,24 +15117,29 @@ body:has(.compare-bar) {
   z-index: 1;
 }
 
+/* Centered, matching the hero heading/sub's own styling (owner, 2026-09-28:
+   "make sure heading and description all of them matches the styling, i
+   really like the hero section heading and sub") — this band previously
+   left-aligned its heading, the only one on the page still doing so. */
 .wdx-sample-head {
   width: min(1180px, calc(100% - 64px));
+  max-width: 640px;
   margin: 0 auto 64px;
+  text-align: center;
 }
 
 .wdx-sample-head h2 {
-  margin: 0;
-  max-width: 16ch;
+  margin: 0 auto;
   font-weight: 400;
   font-size: 34px;
   line-height: 1.15;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
   text-wrap: balance;
   color: #fff;
 }
 
 .wdx-sample-head p:not(.fdv-eyebrow) {
-  margin: 20px 0 0;
+  margin: 20px auto 0;
   max-width: 520px;
   font-size: 17px;
   line-height: 1.7;
@@ -15469,7 +15482,7 @@ body:has(.compare-bar) {
   position: relative;
   overflow: hidden;
   padding: 90px 0 140px;
-  background: #efe9dc;
+  background: var(--fdv-paper);
   border-top: 1px solid var(--fdv-line);
 }
 
@@ -15510,7 +15523,7 @@ body:has(.compare-bar) {
   justify-content: space-between;
   gap: 12px;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--fdv-ink);
   cursor: pointer;
   list-style: none;
@@ -15534,7 +15547,7 @@ body:has(.compare-bar) {
 }
 
 .wdx-faq-item[open] summary {
-  color: var(--fdv-accent);
+  color: var(--fdv-ink);
 }
 
 .wdx-faq-item p {
@@ -15546,57 +15559,6 @@ body:has(.compare-bar) {
   color: var(--fdv-muted);
 }
 
-/* Closing call to action */
-.wdx-cta {
-  position: relative;
-  overflow: hidden;
-  padding: 120px 0;
-  background: var(--fdv-ink);
-  color: #fff;
-  text-align: center;
-  border-top: 1px solid var(--fdv-line);
-}
-
-/* Faint white diagonal lines on the closing dark band. */
-.wdx-cta::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-image: repeating-linear-gradient(135deg, transparent 0 20px, rgba(255, 255, 255, 0.06) 20px 21px);
-  -webkit-mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
-  mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
-}
-
-.wdx-cta > * {
-  position: relative;
-  z-index: 1;
-}
-
-.wdx-cta-inner {
-  width: min(720px, calc(100% - 64px));
-  margin: 0 auto;
-}
-
-.wdx-cta h2 {
-  margin: 0 0 16px;
-  font-weight: 400;
-  font-size: 32px;
-  line-height: 1.2;
-  letter-spacing: -0.01em;
-  text-wrap: balance;
-}
-
-.wdx-cta p {
-  margin: 0 0 36px;
-  font-size: 17px;
-  line-height: 1.65;
-  color: #bdb9ae;
-}
-
-.wdx-cta .wdx-hero-ctas {
-  justify-content: center;
-}
 
 @media (max-width: 1000px) {
   .wdx-hero-headline {
@@ -15650,12 +15612,12 @@ body:has(.compare-bar) {
 
   .wdx-section-head {
     width: calc(100% - 44px);
-    margin-left: 22px;
+    margin-left: auto;
+    margin-right: auto;
     margin-bottom: 36px;
   }
 
-  .wdx-section-head h2,
-  .wdx-cta h2 {
+  .wdx-section-head h2 {
     font-size: 26px;
     line-height: 32px;
   }
@@ -15724,7 +15686,10 @@ body:has(.compare-bar) {
   }
 
   .wdx-faq {
-    padding-bottom: 90px;
+    /* .wdx-faq is now the last section (the closing CTA band was removed) —
+       clears the fixed bottom quickjump tab bar (~76px + the iPhone safe
+       area), same reasoning as the listing pages' own bottom-bar clearance. */
+    padding-bottom: calc(84px + 76px + env(safe-area-inset-bottom));
   }
 
   .wdx-faq-list {
@@ -15733,9 +15698,4 @@ body:has(.compare-bar) {
     margin-right: auto;
   }
 
-  .wdx-cta {
-    /* Clears the fixed bottom quickjump tab bar (~76px + the iPhone safe
-       area), same reasoning as the listing pages' own bottom-bar clearance. */
-    padding: 84px 0 calc(84px + 76px + env(safe-area-inset-bottom));
-  }
 }
