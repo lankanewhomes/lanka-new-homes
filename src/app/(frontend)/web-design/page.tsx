@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronDown, Gauge, LayoutTemplate, MessageCircle, Search, Smartphone, Globe } from "lucide-react";
 import { ScrollReveal } from "@/components/marketplace/scroll-reveal";
-import { SampleDevices } from "@/components/marketplace/web-design-frames";
+import { HeroMarquee } from "@/components/marketplace/web-design-frames";
 import { SampleSiteSwitcher } from "@/components/marketplace/web-design-sample-switcher";
 import { WebDesignQuickjump } from "@/components/marketplace/web-design-quickjump";
 import { SAMPLE_IMAGES } from "@/components/web-design-sample/sample-data";
@@ -80,25 +80,21 @@ export default function WebDesignPage() {
           <Image src={SAMPLE_IMAGES.hero} alt="" fill priority sizes="100vw" className="wdx-hero-img" />
           <div className="wdx-hero-overlay" />
         </div>
-        <div className="wdx-hero-content wdx-hero-content-split">
-          <div>
-            <h1 className="wdx-hero-headline">Your project deserves a website of its own.</h1>
-            <p className="wdx-hero-sub">
-              We design and build dedicated websites for property developments — a brand new site for a project that
-              doesn&apos;t have one yet, or a redesign of one that isn&apos;t working anymore.
-            </p>
-            <div className="wdx-hero-ctas">
-              <Link href="/contact" className="fdv-cta-primary">Talk to us about a site</Link>
-              <a href="#sample" className="fdv-cta-secondary wdx-hero-sample-link">
-                See a sample homepage
-                <ChevronDown size={16} strokeWidth={2.5} aria-hidden="true" className="wdx-hero-sample-arrow" />
-              </a>
-            </div>
-          </div>
-          <div className="wdx-hero-preview" aria-hidden="true">
-            <SampleDevices />
+        <div className="wdx-hero-content">
+          <h1 className="wdx-hero-headline">Your project deserves a website of its own.</h1>
+          <p className="wdx-hero-sub">
+            We design and build dedicated websites for property developments — a brand new site for a project that
+            doesn&apos;t have one yet, or a redesign of one that isn&apos;t working anymore.
+          </p>
+          <div className="wdx-hero-ctas">
+            <Link href="/contact" className="fdv-cta-primary">Talk to us about a site</Link>
+            <a href="#sample" className="fdv-cta-secondary wdx-hero-sample-link">
+              See a sample homepage
+              <ChevronDown size={16} strokeWidth={2.5} aria-hidden="true" className="wdx-hero-sample-arrow" />
+            </a>
           </div>
         </div>
+        <HeroMarquee />
       </section>
 
       {/* 3 — LIVE SAMPLE */}

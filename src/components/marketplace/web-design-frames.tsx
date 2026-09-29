@@ -26,7 +26,7 @@ export const SAMPLE_SITES = [
  * hovering hands control back so they can scroll it themselves. Same-origin,
  * so the parent may drive the iframe's scroll. Skipped for reduced-motion.
  */
-function ScaledPreview({ src, title, base }: { src: string; title: string; base: { width: number; height: number } }) {
+function ScaledPreview({ src, title, base, autoScroll = true }: { src: string; title: string; base: { width: number; height: number }; autoScroll?: boolean }) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLIFrameElement>(null);
   const [scale, setScale] = useState<number | null>(null);
@@ -44,7 +44,12 @@ function ScaledPreview({ src, title, base }: { src: string; title: string; base:
   useEffect(() => {
     const wrap = wrapRef.current;
     const frame = frameRef.current;
-    if (!wrap || !frame || scale === null) return;
+    // autoScroll: false for the hero marquee (HeroMarquee below) — those
+    // frames already slide horizontally via CSS; scrolling each one's own
+    // content vertically at the same time would be two kinds of motion at
+    // once, and IntersectionObserver-driven pausing gets unreliable for an
+    // element that's constantly entering/leaving view horizontally anyway.
+    if (!wrap || !frame || scale === null || !autoScroll) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     let raf = 0;
@@ -107,7 +112,7 @@ function ScaledPreview({ src, title, base }: { src: string; title: string; base:
     // navigated iframe would jump straight to whatever scroll position the
     // PREVIOUS sample had reached, since the iframe element (and its
     // `contentWindow`) is reused across a plain `src` change, not remounted.
-  }, [scale, src]);
+  }, [scale, src, autoScroll]);
 
   return (
     <div ref={wrapRef} className="wdx-preview" style={{ aspectRatio: `${base.width} / ${base.height}` }}>
@@ -137,6 +142,42 @@ function HeroLaptopPreview({ embedSrc = SAMPLE_SITES[0].embedSrc, browserUrl = S
         <span className="wdx-browser-url">{browserUrl}</span>
       </div>
       <ScaledPreview src={embedSrc} title={title} base={DESKTOP} />
+    </div>
+  );
+}
+
+/** A single browser-chrome frame for the hero marquee — a smaller, static
+ * (no internal auto-scroll) version of HeroLaptopPreview, since the whole
+ * frame is already in continuous horizontal motion. */
+function MarqueeFrame({ site }: { site: (typeof SAMPLE_SITES)[number] }) {
+  return (
+    <div className="wdx-marquee-frame" aria-hidden="true">
+      <div className="wdx-browser-bar">
+        <span className="wdx-browser-dots"><i /><i /><i /></span>
+        <span className="wdx-browser-url">{site.browserUrl}</span>
+      </div>
+      <ScaledPreview src={site.embedSrc} title={`${site.label} preview`} base={DESKTOP} autoScroll={false} />
+    </div>
+  );
+}
+
+/** Continuously slides all three sample sites' browser frames right to
+ * left in the hero, next to the headline — owner, 2026-09-28, referencing
+ * a Webflow template's hero. The track holds two copies of the same
+ * three-frame set back to back so the CSS animation (wdx-marquee-slide,
+ * translateX 0 -> -50%) loops seamlessly; @media (prefers-reduced-motion)
+ * turns it off in globals.css. `aria-hidden` on the whole thing — it's
+ * the same sample content already reachable (and properly labelled) from
+ * the "Live sample" section below, not new information. */
+export function HeroMarquee() {
+  const frames = [...SAMPLE_SITES, ...SAMPLE_SITES];
+  return (
+    <div className="wdx-marquee" aria-hidden="true">
+      <div className="wdx-marquee-track">
+        {frames.map((site, index) => (
+          <MarqueeFrame site={site} key={`${site.id}-${index}`} />
+        ))}
+      </div>
     </div>
   );
 }

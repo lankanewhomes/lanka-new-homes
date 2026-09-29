@@ -14900,7 +14900,8 @@ body:has(.compare-bar) {
   position: relative;
   min-height: 88vh;
   display: flex;
-  align-items: flex-end;
+  flex-direction: column;
+  justify-content: flex-end;
   overflow: hidden;
   color: #fff;
 }
@@ -14927,29 +14928,7 @@ body:has(.compare-bar) {
   z-index: 1;
   width: min(1180px, calc(100% - 64px));
   margin: 0 auto;
-  padding-bottom: 96px;
-}
-
-/* A live scrolling preview of the sample site sits to the right of the
-   headline, instead of leaving that side of the hero empty photo. */
-.wdx-hero-content-split {
-  display: grid;
-  grid-template-columns: 0.85fr 1.15fr;
-  gap: 40px;
-  align-items: center;
-}
-
-.wdx-hero-preview {
-  justify-self: end;
-  width: 100%;
-}
-
-/* SampleDevices' own .wdx-devices is normally full page width with room
-   below the phone for whatever follows it — here it fills this narrower
-   hero column instead, so the reserved bottom space isn't needed. */
-.wdx-hero-preview .wdx-devices {
-  width: 100%;
-  padding-bottom: 0;
+  padding-bottom: 48px;
 }
 
 .wdx-hero-headline {
@@ -15024,6 +15003,73 @@ body:has(.compare-bar) {
 .wdx-hero .fdv-eyebrow {
   color: #ff9a5c;
   text-shadow: 0 1px 14px rgba(10, 9, 12, 0.7);
+}
+
+/* Hero marquee — the three sample sites' browser frames sliding right to
+   left in a full-width band under the headline (owner, 2026-09-28,
+   referencing a Webflow SaaS template's hero). Edge-fading mask instead of
+   a hard cut, so frames slide out of view rather than clipping abruptly. */
+.wdx-marquee {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  overflow: hidden;
+  padding-top: 36px;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 10%, #000 90%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 10%, #000 90%, transparent 100%);
+}
+
+.wdx-marquee-track {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  width: max-content;
+  animation: wdx-marquee-slide 32s linear infinite;
+}
+
+@keyframes wdx-marquee-slide {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wdx-marquee-track {
+    animation: none;
+  }
+}
+
+@media (hover: hover) {
+  .wdx-marquee-track:hover {
+    animation-play-state: paused;
+  }
+}
+
+.wdx-marquee-frame {
+  flex: 0 0 auto;
+  width: 360px;
+  overflow: hidden;
+  border-radius: 10px 10px 3px 3px;
+  border: 1px solid #34323d;
+  background: #23212a;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5);
+}
+
+.wdx-marquee-frame .wdx-browser-bar {
+  height: 32px;
+  gap: 10px;
+  padding: 0 12px;
+}
+
+.wdx-marquee-frame .wdx-browser-url {
+  max-width: 220px;
+  padding: 4px 10px;
+  font-size: 11px;
+}
+
+/* Decorative and already in constant horizontal motion — dragging its
+   scroll position with a mouse would fight the slide. */
+.wdx-marquee-frame .wdx-preview iframe {
+  pointer-events: none;
 }
 
 /* Introduction — a bordered card with an accent top edge, same card
@@ -15723,12 +15769,8 @@ body:has(.compare-bar) {
     font-size: 40px;
   }
 
-  .wdx-hero-content-split {
-    grid-template-columns: 1fr;
-  }
-
-  .wdx-hero-preview {
-    display: none;
+  .wdx-marquee-frame {
+    width: 280px;
   }
 
   .wdx-included-grid {
@@ -15757,6 +15799,18 @@ body:has(.compare-bar) {
 
   .wdx-hero-headline {
     font-size: 40px;
+  }
+
+  .wdx-marquee {
+    padding-top: 28px;
+  }
+
+  .wdx-marquee-track {
+    gap: 16px;
+  }
+
+  .wdx-marquee-frame {
+    width: 220px;
   }
 
   .wdx-included,
