@@ -15531,10 +15531,45 @@ body:has(.compare-bar) {
   }
 
   .wdx-sample-head,
-  .wdx-sample-tabs,
   .wdx-sample-foot,
   .wdx-devices {
     width: calc(100% - 44px);
+  }
+
+  /* Sticky on mobile only (owner, 2026-09-29: "when you're scrolling down
+     and you get to this section, is it possible to do a sticky menu on
+     top... this is for mobile only") — the tabs stay reachable while
+     scrolling through the sample preview below, instead of scrolling out
+     of view after the first screenful. Sticks to the very top since
+     .site-header isn't itself fixed (position: relative, scrolls away
+     normally, so no header height to offset by). Redesigned from the
+     desktop version's wrapped 2-row grid into a single horizontally
+     scrollable row — six wrapped rows would make a tall, clumsy sticky
+     bar; a compact scrolling strip is what actually works stuck to the
+     top. .wdx-sample's own overflow: hidden (for its line-pattern mask)
+     scopes the stickiness to this section, so the bar un-sticks and
+     scrolls away normally once the section ends, rather than staying
+     stuck all the way to the FAQ below it. */
+  .wdx-sample-tabs {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    width: 100%;
+    margin: 0 0 24px;
+    padding: 12px 22px;
+    background: #1a2430;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .wdx-sample-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .wdx-sample-tab {
+    flex: 0 0 auto;
   }
 
   .wdx-sample-head {
