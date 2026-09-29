@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ChevronDown, Gauge, LayoutTemplate, MessageCircle, Search, Smartphone, Globe } from "lucide-react";
+import { ChevronDown, LayoutTemplate, Search } from "lucide-react";
 import { ScrollReveal } from "@/components/marketplace/scroll-reveal";
 import { HeroMarquee } from "@/components/marketplace/web-design-frames";
 import { SampleSiteSwitcher } from "@/components/marketplace/web-design-sample-switcher";
@@ -29,15 +29,6 @@ export const metadata: Metadata = {
   },
 };
 
-const INCLUDED = [
-  { icon: LayoutTemplate, title: "Designed for your project", body: "A dedicated site built from the ground up around your brand, your renders and your floor plans — not a template with your logo dropped in." },
-  { icon: Smartphone, title: "Mobile-first", body: "Most buyers browse on their phone first. Every site is designed for a phone, then scaled up — not the other way around." },
-  { icon: Search, title: "SEO from day one", body: "Page structure, metadata and site speed are part of the build, not bolted on afterward — so the site is actually findable once it's live." },
-  { icon: MessageCircle, title: "Lead capture built in", body: "Contact forms, WhatsApp click-to-chat and brochure downloads — whatever gets a genuine enquiry from a visitor to your team, wired in from the start." },
-  { icon: Gauge, title: "Fast, and built to stay that way", body: "Modern tooling and optimised images, no bloat — a site that loads quickly on an average connection, not just on a fast office Wi-Fi." },
-  { icon: Globe, title: "Your own domain", body: "Your address, your brand. For a redesign we keep your existing domain and any content that's still working." },
-] as const;
-
 const HOMEPAGE_SECTIONS = [
   "Hero and key facts",
   "Residences with plans and pricing",
@@ -49,13 +40,6 @@ const HOMEPAGE_SECTIONS = [
   "Enquiry form and WhatsApp",
   "Brochure download",
   "Buyers from any country",
-] as const;
-
-const PROCESS = [
-  { title: "Tell us about the project", body: "Send over what you have — renders, floor plans, brand guidelines, an existing site if there is one — and what you want the new site to do." },
-  { title: "We design it", body: "A look and structure built around your project specifically, not a generic template with your logo dropped in." },
-  { title: "You review, we refine", body: "You see it before it's built — changes at this stage are quick, not a rebuild." },
-  { title: "We build and launch it", body: "Live on your domain, connected to your forms and contact channels, ready for traffic." },
 ] as const;
 
 const FAQS = [
@@ -105,22 +89,6 @@ export default function WebDesignPage() {
         </div>
       </section>
 
-      {/* 4 — WHAT'S INCLUDED */}
-      <section className="wdx-included" id="included" aria-label="What every site includes">
-        <div className="wdx-section-head" data-reveal>
-          <h2>Built properly, from the first line.</h2>
-        </div>
-        <div className="wdx-included-grid">
-          {INCLUDED.map((item) => (
-            <div className="wdx-included-item" key={item.title} data-reveal>
-              <item.icon className="wdx-included-icon" strokeWidth={1.4} aria-hidden="true" />
-              <h3>{item.title}</h3>
-              <p>{item.body}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* 5 — WHAT GOES ON A HOMEPAGE */}
       <section className="wdx-sections" id="homepage" aria-label="What we can put on your homepage">
         <div className="wdx-sections-inner">
@@ -155,22 +123,6 @@ export default function WebDesignPage() {
             <Link href="/contact" className="fdv-text-link">Talk to us about a site →</Link>
           </div>
         </div>
-      </section>
-
-      {/* 7 — PROCESS */}
-      <section className="wdx-process" id="process" aria-label="How it works">
-        <div className="wdx-section-head" data-reveal>
-          <h2>Four steps from &ldquo;we need a site&rdquo; to a live one.</h2>
-        </div>
-        <ol className="wdx-process-list">
-          {PROCESS.map((step, index) => (
-            <li className="wdx-process-item" key={step.title} data-reveal>
-              <div className="wdx-process-marker" aria-hidden="true">{index + 1}</div>
-              <h3>{step.title}</h3>
-              <p>{step.body}</p>
-            </li>
-          ))}
-        </ol>
       </section>
 
       {/* 8 — FAQ */}

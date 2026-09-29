@@ -14994,10 +14994,16 @@ body:has(.compare-bar) {
   text-shadow: 0 1px 14px rgba(10, 9, 12, 0.7);
 }
 
-/* Hero marquee — the three sample sites' browser frames sliding right to
-   left in a full-width band under the headline (owner, 2026-09-28,
-   referencing a Webflow SaaS template's hero). Edge-fading mask instead of
-   a hard cut, so frames slide out of view rather than clipping abruptly. */
+/* Hero marquee — the three sample sites' hero photos sliding right to left
+   in a full-width band under the headline (owner, 2026-09-28, referencing
+   a Webflow SaaS template's hero). Plain static images, no browser chrome
+   and no live iframes (owner, same day: "just put the images, dont have
+   the browser... taking too much time to load and rendering issue" — six
+   iframes each loading a real page made the slide look stuck rather than
+   moving). Edge-fading mask instead of a hard cut, so frames slide out of
+   view rather than clipping abruptly. No pause-on-hover either, since it's
+   aria-hidden background content — a cursor resting over the hero to read
+   the headline shouldn't be able to freeze it. */
 .wdx-marquee {
   position: relative;
   z-index: 1;
@@ -15027,38 +15033,19 @@ body:has(.compare-bar) {
   }
 }
 
-@media (hover: hover) {
-  .wdx-marquee-track:hover {
-    animation-play-state: paused;
-  }
-}
-
 .wdx-marquee-frame {
+  position: relative;
   flex: 0 0 auto;
-  width: 360px;
+  width: 420px;
+  aspect-ratio: 1280 / 645;
   overflow: hidden;
-  border-radius: 10px 10px 3px 3px;
-  border: 1px solid #34323d;
-  background: #23212a;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5);
 }
 
-.wdx-marquee-frame .wdx-browser-bar {
-  height: 32px;
-  gap: 10px;
-  padding: 0 12px;
-}
-
-.wdx-marquee-frame .wdx-browser-url {
-  max-width: 220px;
-  padding: 4px 10px;
-  font-size: 11px;
-}
-
-/* Decorative and already in constant horizontal motion — dragging its
-   scroll position with a mouse would fight the slide. */
-.wdx-marquee-frame .wdx-preview iframe {
-  pointer-events: none;
+.wdx-marquee-frame-img {
+  object-fit: cover;
 }
 
 /* Introduction — a bordered card with an accent top edge, same card
@@ -15311,63 +15298,6 @@ body:has(.compare-bar) {
   transform: translateX(-50%);
 }
 
-/* What's included */
-.wdx-included {
-  position: relative;
-  overflow: hidden;
-  padding: 130px 0 110px;
-  background: var(--fdv-paper);
-  border-top: 1px solid var(--fdv-line);
-}
-
-/* Grey horizontal lines, same recipe as the homepage's Key Features card. */
-.wdx-included::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-image: repeating-linear-gradient(90deg, transparent 0 15px, rgba(120, 113, 108, 0.12) 15px 16px);
-  -webkit-mask-image: radial-gradient(ellipse 80% 90% at center, #000 40%, transparent 100%);
-  mask-image: radial-gradient(ellipse 80% 90% at center, #000 40%, transparent 100%);
-}
-
-.wdx-included > * {
-  position: relative;
-  z-index: 1;
-}
-
-.wdx-included-grid {
-  width: min(1180px, calc(100% - 64px));
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 56px 48px;
-}
-
-.wdx-included-item {
-  padding-top: 26px;
-  border-top: 1px solid var(--fdv-line);
-}
-
-.wdx-included-icon {
-  width: 28px;
-  height: 28px;
-  color: var(--fdv-ink);
-}
-
-.wdx-included-item h3 {
-  margin: 22px 0 10px;
-  font-weight: 700;
-  font-size: 22px;
-  line-height: 1.25;
-}
-
-.wdx-included-item p {
-  margin: 0;
-  font-size: 15.5px;
-  line-height: 1.7;
-  color: var(--fdv-muted);
-}
 
 /* Homepage sections band */
 .wdx-sections {
@@ -15427,7 +15357,7 @@ body:has(.compare-bar) {
   content: "";
   width: 7px;
   height: 7px;
-  background: var(--fdv-accent);
+  background: var(--fdv-ink);
 }
 
 /* Listing vs website */
@@ -15457,7 +15387,7 @@ body:has(.compare-bar) {
 .wdx-compare-card svg {
   width: 22px;
   height: 22px;
-  color: var(--fdv-accent);
+  color: var(--fdv-ink);
 }
 
 .wdx-compare-card h3 {
@@ -15509,6 +15439,10 @@ body:has(.compare-bar) {
   z-index: 1;
 }
 
+.wdx-compare-card-dark svg {
+  color: #fff;
+}
+
 .wdx-compare-card-dark p {
   color: #bdb9ae;
 }
@@ -15523,99 +15457,6 @@ body:has(.compare-bar) {
   border-color: var(--fdv-accent);
 }
 
-/* Process */
-.wdx-process {
-  position: relative;
-  overflow: hidden;
-  padding: 60px 0 130px;
-  background: var(--fdv-paper);
-  border-top: 1px solid var(--fdv-line);
-}
-
-/* Gold diagonal lines — same hue as the developer-alert card elsewhere on
-   the site, as a straight-line pattern instead of that card's dotted one. */
-.wdx-process::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-image: repeating-linear-gradient(135deg, transparent 0 18px, rgba(163, 129, 46, 0.14) 18px 19px);
-  -webkit-mask-image: radial-gradient(ellipse 80% 90% at center, #000 35%, transparent 100%);
-  mask-image: radial-gradient(ellipse 80% 90% at center, #000 35%, transparent 100%);
-}
-
-.wdx-process > * {
-  position: relative;
-  z-index: 1;
-}
-
-.wdx-process-list {
-  width: min(1180px, calc(100% - 64px));
-  margin: 0 auto;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 40px;
-}
-
-/* Bordered step cards — same card language as .wdx-compare-card and
-   .wdx-faq-item elsewhere on this page (2nd redesign: a numbered circle
-   badge read too close to /pricing's steps; a plain "Step N" label inside
-   a real card is a clearer, more distinct treatment for a 4-step process). */
-/* Connected timeline (3rd redesign) — no bordered card, no small-caps
-   "eyebrow" label above the title (owner, 2026-09-28: "no eyebrow label
-   please"). A plain numbered circle sits on a horizontal connecting line
-   shared by all four steps, with the number worked directly into a
-   larger, bolder step title instead of a separate tag. */
-.wdx-process-item {
-  position: relative;
-  padding-top: 44px;
-}
-
-.wdx-process-item::before {
-  content: "";
-  position: absolute;
-  top: 15px;
-  left: 30px;
-  right: -40px;
-  height: 1px;
-  background: var(--fdv-line);
-}
-
-.wdx-process-item:last-child::before {
-  display: none;
-}
-
-.wdx-process-marker {
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  border: 1px solid var(--fdv-ink);
-  border-radius: 50%;
-  background: var(--fdv-paper);
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.wdx-process-item h3 {
-  margin: 0 0 10px;
-  font-weight: 700;
-  font-size: 20px;
-  line-height: 1.3;
-}
-
-.wdx-process-item p {
-  margin: 0;
-  font-size: 15.5px;
-  line-height: 1.7;
-  color: var(--fdv-muted);
-}
 
 /* FAQ — same bordered-card accordion pattern as .guide-page-faq-item
    (the site's established FAQ style) instead of a bespoke serif divider
@@ -15762,17 +15603,8 @@ body:has(.compare-bar) {
     width: 280px;
   }
 
-  .wdx-included-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
   .wdx-styles-grid {
     grid-template-columns: repeat(2, 1fr);
-  }
-
-  .wdx-process-list {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 48px 40px;
   }
 }
 
@@ -15802,7 +15634,6 @@ body:has(.compare-bar) {
     width: 220px;
   }
 
-  .wdx-included,
   .wdx-compare,
   .wdx-styles {
     padding: 80px 0;
@@ -15865,8 +15696,7 @@ body:has(.compare-bar) {
   }
 
   .wdx-included-grid,
-  .wdx-compare-grid,
-  .wdx-process-list {
+  .wdx-compare-grid {
     width: calc(100% - 44px);
     grid-template-columns: 1fr;
     gap: 40px;
@@ -15886,10 +15716,6 @@ body:has(.compare-bar) {
 
   .wdx-chip-list {
     width: calc(100% - 44px);
-  }
-
-  .wdx-process {
-    padding-bottom: 80px;
   }
 
   .wdx-faq {

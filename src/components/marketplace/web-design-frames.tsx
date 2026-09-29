@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 
 const DESKTOP = { width: 1280, height: 800 };
 const PHONE = { width: 390, height: 800 };
@@ -10,11 +11,19 @@ const AUTO_SCROLL_PX_PER_SECOND = 90;
 /** The three sample sites, for the browse switcher on /web-design's live-sample
  * band (web-design-sample-switcher.tsx) — one real, live site each, not a
  * mockup. Adding a 4th sample means adding one line here plus its own
- * theme file + routes (see theme-meridian.ts's comment). */
+ * theme file + routes (see theme-meridian.ts's comment).
+ *
+ * heroImage: a real screenshot of that sample site's own hero (nav, headline,
+ * photo — not a bare stock photo) for the hero marquee — owner, 2026-09-28:
+ * "the images needs to be of a websites. like you had the website before"
+ * (after an earlier pass used the theme's raw Unsplash photo instead, which
+ * read as generic property photography rather than "a website"). Captured
+ * at public/web-design/marquee-<id>.jpg — regenerate if a sample's hero
+ * design changes. */
 export const SAMPLE_SITES = [
-  { id: "halcyon", label: "Halcyon Residences", propertyType: "Garden villas", browserUrl: "halcyonresidences.lk", embedSrc: "/web-design/sample/embed", href: "/web-design/sample" },
-  { id: "meridian", label: "Meridian Heights", propertyType: "Apartment tower", browserUrl: "meridianheights.lk", embedSrc: "/web-design/sample/meridian/embed", href: "/web-design/sample/meridian" },
-  { id: "azure-cove", label: "Azure Cove", propertyType: "Beachfront villas", browserUrl: "azurecove.lk", embedSrc: "/web-design/sample/azure-cove/embed", href: "/web-design/sample/azure-cove" },
+  { id: "halcyon", label: "Halcyon Residences", propertyType: "Garden villas", browserUrl: "halcyonresidences.lk", embedSrc: "/web-design/sample/embed", href: "/web-design/sample", heroImage: "/web-design/marquee-halcyon.jpg" },
+  { id: "meridian", label: "Meridian Heights", propertyType: "Apartment tower", browserUrl: "meridianheights.lk", embedSrc: "/web-design/sample/meridian/embed", href: "/web-design/sample/meridian", heroImage: "/web-design/marquee-meridian.jpg" },
+  { id: "azure-cove", label: "Azure Cove", propertyType: "Beachfront villas", browserUrl: "azurecove.lk", embedSrc: "/web-design/sample/azure-cove/embed", href: "/web-design/sample/azure-cove", heroImage: "/web-design/marquee-azure-cove.jpg" },
 ] as const;
 
 /**
@@ -146,24 +155,22 @@ function HeroLaptopPreview({ embedSrc = SAMPLE_SITES[0].embedSrc, browserUrl = S
   );
 }
 
-/** A single browser-chrome frame for the hero marquee — a smaller, static
- * (no internal auto-scroll) version of HeroLaptopPreview, since the whole
- * frame is already in continuous horizontal motion. */
+/** A single frame for the hero marquee — a plain static photo, not a live
+ * iframe (owner, 2026-09-28: "just put the images, dont have the browser...
+ * taking too much time to load and rendering issue" — six iframes each
+ * loading a real page was heavy and made the slide look stuck rather than
+ * moving). No browser chrome either, per the same note. */
 function MarqueeFrame({ site }: { site: (typeof SAMPLE_SITES)[number] }) {
   return (
     <div className="wdx-marquee-frame" aria-hidden="true">
-      <div className="wdx-browser-bar">
-        <span className="wdx-browser-dots"><i /><i /><i /></span>
-        <span className="wdx-browser-url">{site.browserUrl}</span>
-      </div>
-      <ScaledPreview src={site.embedSrc} title={`${site.label} preview`} base={DESKTOP} autoScroll={false} />
+      <Image src={site.heroImage} alt="" fill sizes="(max-width: 760px) 220px, (max-width: 1000px) 280px, 420px" className="wdx-marquee-frame-img" />
     </div>
   );
 }
 
-/** Continuously slides all three sample sites' browser frames right to
- * left in the hero, next to the headline — owner, 2026-09-28, referencing
- * a Webflow template's hero. The track holds two copies of the same
+/** Continuously slides all three sample sites' hero photos right to left
+ * in the hero, under the headline — owner, 2026-09-28, referencing a
+ * Webflow template's hero. The track holds two copies of the same
  * three-frame set back to back so the CSS animation (wdx-marquee-slide,
  * translateX 0 -> -50%) loops seamlessly; @media (prefers-reduced-motion)
  * turns it off in globals.css. `aria-hidden` on the whole thing — it's
