@@ -12928,12 +12928,17 @@ body:has(.compare-bar) {
 
 /* ---------------------------------------------------------------------- */
 /* /for-developers redesign (2026-09-13) — premium/editorial treatment,   */
-/* fully separate `.fdv-*` namespace from the `.fd-*` block above, which   */
-/* /web-design still uses as-is. Warm paper + near-black + the site's own */
-/* accent orange, used sparingly; Fraunces serif (scoped via the page's   */
-/* own next/font variable, --fdv-font-serif) for editorial headlines only */
-/* — the rest of the site stays sans-only per the "Colors & type" note    */
-/* above. Every photo is a real project's own image, not stock/mockup.    */
+/* fully separate `.fdv-*` namespace from the `.fd-*` block above. Warm    */
+/* paper + near-black + the site's own accent orange, used sparingly.     */
+/* Originally used a Fraunces serif (--fdv-font-serif) for headlines —    */
+/* dropped 2026-09-29 (owner: "use some of the idea from web-design and   */
+/* redesign... /for-developers", a styling-consistency pass) for the same */
+/* reason /web-design already dropped its own copy of this serif: the     */
+/* site is sans-only per the "Colors & type" note above. --fdv-serif now  */
+/* just points at the site's own sans stack, so every rule below that     */
+/* still says `font-family: var(--fdv-serif)` renders in that sans stack  */
+/* without needing each one edited individually. Every photo is a real    */
+/* project's own image, not stock/mockup.                                 */
 /* ---------------------------------------------------------------------- */
 
 .fdv-page {
@@ -12942,18 +12947,22 @@ body:has(.compare-bar) {
   --fdv-line: #e2ddd0;
   --fdv-muted: #6b6558;
   --fdv-accent: #f47b36;
-  --fdv-serif: var(--fdv-font-serif), Georgia, serif;
+  --fdv-serif: var(--font-ref-sans);
   background: var(--fdv-paper);
   color: var(--fdv-ink);
 }
 
+/* Plain ink, not accent orange (owner, 2026-09-28, re: eyebrow labels
+   elsewhere on the site: "I don't like orange/accent colour on eyebrow
+   labels either") — applied here 2026-09-29 as part of bringing this page
+   in line with /web-design's own styling. */
 .fdv-eyebrow {
   margin: 0 0 16px;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--fdv-accent);
+  color: var(--fdv-ink);
 }
 
 .fdv-cta-primary {
@@ -13086,6 +13095,13 @@ body:has(.compare-bar) {
 }
 
 .fdv-hero .fdv-cta-secondary {
+  color: #fff;
+}
+
+/* .fdv-eyebrow's base colour is dark ink (see its own rule) — needs lifting
+   here since this eyebrow sits over the hero photo's dark gradient, same
+   reasoning /web-design's hero used for its own (since-removed) eyebrow. */
+.fdv-hero .fdv-eyebrow {
   color: #fff;
 }
 
@@ -15594,6 +15610,7 @@ body:has(.compare-bar) {
 
   .wdx-hero-content {
     width: min(560px, calc(100% - 44px));
+    padding-top: 48px;
     padding-bottom: 64px;
   }
 

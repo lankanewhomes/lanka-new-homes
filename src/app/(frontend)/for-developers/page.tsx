@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Fraunces } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
 import { ShieldCheck, Zap } from "lucide-react";
@@ -11,22 +10,18 @@ import { formatLkr } from "@/lib/format";
 
 export const revalidate = 300;
 
-// Serif is scoped to this page only (see docs/design.md "Colors & type" —
-// the rest of the site is deliberately sans-only). This redesign's brief
-// explicitly asked for an editorial serif on major headlines "if the
-// existing brand system allows it" — it doesn't, site-wide, so this is a
-// one-page exception, not a change to that convention.
+// Dropped the editorial Fraunces serif this page used to load for its own
+// headlines (owner, 2026-09-29: a styling-consistency pass bringing this
+// page in line with /web-design, which dropped the same serif earlier for
+// the same reason — docs/design.md's "no serif anywhere on the site" rule).
+// --fdv-serif (globals.css) now just points at the site's sans stack, so
+// every heading rule below that still reads `font-family: var(--fdv-serif)`
+// needed no individual edit.
 //
 // This page also uses its own `fdv-` class namespace rather than the
 // site's existing `.fd-*` classes below — those are shared with
 // /web-design (hero, cards, CTA band, etc.), and this redesign only
 // touches /for-developers, so it gets a fully separate set of styles.
-const displaySerif = Fraunces({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
-  style: ["normal", "italic"],
-  variable: "--fdv-font-serif",
-});
 
 export const metadata: Metadata = {
   title: "List Your Development on LankaNewHomes | For Developers & Builders",
@@ -69,7 +64,7 @@ export default async function ForDevelopersPage() {
   const presentationRoadMap = productProject?.roadMapImages?.[0];
 
   return (
-    <div className={`fdv-page ${displaySerif.variable}`}>
+    <div className="fdv-page">
       <ScrollReveal />
 
       {/* 1 — HERO */}
