@@ -13395,52 +13395,13 @@ body:has(.compare-bar) {
   background: #fff;
 }
 
-.fdv-product-photo {
-  position: relative;
-  aspect-ratio: 16 / 8;
-}
-
-.fdv-product-photo-img {
-  object-fit: cover;
-}
-
-.fdv-product-photo-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(0deg, rgba(10, 9, 12, 0.78) 0%, rgba(10, 9, 12, 0) 55%);
-}
-
-.fdv-product-photo-caption {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 32px 40px;
-  color: #fff;
-}
-
-.fdv-product-status {
-  display: inline-block;
-  margin-bottom: 10px;
-  font-size: 11.5px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #fff;
-}
-
-.fdv-product-photo-caption h3 {
-  margin: 0 0 4px;
-  font-family: var(--fdv-serif);
-  font-weight: 400;
-  font-size: 30px;
-  color: #fff;
-}
-
-.fdv-product-photo-caption p {
-  margin: 0;
-  font-size: 14px;
-  color: #d8d6d2;
+/* A live iframe of the real /projects/{slug} page (see ScaledPreview in
+   web-design-frames.tsx), browser-chrome-wrapped with the same
+   .wdx-browser-bar/.wdx-preview rules /web-design's sample switcher uses —
+   deliberately shared, since both are "here's a real, live page" previews. */
+.fdv-product-preview {
+  overflow: hidden;
+  border-bottom: 1px solid var(--fdv-line);
 }
 
 .fdv-product-rows {
@@ -13489,14 +13450,9 @@ body:has(.compare-bar) {
 }
 
 @media (max-width: 760px) {
-  .fdv-product-photo-caption,
   .fdv-product-rows {
     padding-left: 22px;
     padding-right: 22px;
-  }
-
-  .fdv-product-photo {
-    aspect-ratio: 4 / 5;
   }
 
   .fdv-product-row {

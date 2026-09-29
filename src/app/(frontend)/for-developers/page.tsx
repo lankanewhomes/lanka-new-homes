@@ -5,6 +5,7 @@ import { ShieldCheck, Zap } from "lucide-react";
 import { getProjectBySlug } from "@/lib/project-store";
 import { ListingGridCard } from "@/components/marketplace/listing-page";
 import { ScrollReveal } from "@/components/marketplace/scroll-reveal";
+import { ScaledPreview, DESKTOP } from "@/components/marketplace/web-design-frames";
 import { formatLkr } from "@/lib/format";
 
 export const revalidate = 300;
@@ -190,7 +191,11 @@ export default async function ForDevelopersPage() {
         </div>
       </section>
 
-      {/* 4 — SHOW THE PRODUCT */}
+      {/* 4 — SHOW THE PRODUCT — a live iframe of the real /projects/{slug}
+          page, not a static photo with a fabricated overlay caption (owner,
+          2026-09-29: "can you show the acutal hero section and over
+          section"). Same ScaledPreview component /web-design's sample
+          switcher uses; see its comment in web-design-frames.tsx. */}
       {productProject ? (
         <section className="fdv-showcase-product" aria-label="A real project page">
           <div className="fdv-section-head" data-reveal>
@@ -198,20 +203,16 @@ export default async function ForDevelopersPage() {
           </div>
 
           <div className="fdv-product-frame" data-reveal>
-            <div className="fdv-product-photo">
-              <Image
-                src={productProject.heroImage}
-                alt=""
-                fill
-                sizes="(min-width: 1100px) 1100px, 100vw"
-                className="fdv-product-photo-img"
-              />
-              <div className="fdv-product-photo-overlay" />
-              <div className="fdv-product-photo-caption">
-                <span className="fdv-product-status">{productProject.status}</span>
-                <h3>{productProject.name}</h3>
-                <p>{productProject.location}</p>
+            <div className="fdv-product-preview">
+              <div className="wdx-browser-bar" aria-hidden="true">
+                <span className="wdx-browser-dots"><i /><i /><i /></span>
+                <span className="wdx-browser-url">lankanewhomes.com/projects/{productProject.slug}</span>
               </div>
+              <ScaledPreview
+                src={`/projects/${productProject.slug}`}
+                title={`${productProject.name} — live listing preview`}
+                base={DESKTOP}
+              />
             </div>
 
             <div className="fdv-product-rows">

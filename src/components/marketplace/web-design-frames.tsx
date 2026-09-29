@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
-const DESKTOP = { width: 1280, height: 800 };
+export const DESKTOP = { width: 1280, height: 800 };
 const PHONE = { width: 390, height: 800 };
 /** Auto-scroll speed inside a preview, in the sample page's own CSS px per second. */
 const AUTO_SCROLL_PX_PER_SECOND = 90;
@@ -36,15 +36,23 @@ export const SAMPLE_SITES = [
 const HERO_MARQUEE_COUNT = 4;
 
 /**
- * A live, scaled-down preview of the sample site: an iframe of the real page,
- * laid out at its true desktop/phone width and shrunk with a CSS transform to
- * fit whatever width it is given. While it is on screen and nobody is hovering
- * it, it drifts down the page on its own (and jumps back to the top at the
- * end), so a visitor sees the whole design without touching anything;
- * hovering hands control back so they can scroll it themselves. Same-origin,
- * so the parent may drive the iframe's scroll. Skipped for reduced-motion.
+ * A live, scaled-down preview of a real page: an iframe laid out at its true
+ * desktop/phone width and shrunk with a CSS transform to fit whatever width
+ * it is given. While it is on screen and nobody is hovering it, it drifts
+ * down the page on its own (and jumps back to the top at the end), so a
+ * visitor sees the whole design without touching anything; hovering hands
+ * control back so they can scroll it themselves. Same-origin, so the parent
+ * may drive the iframe's scroll. Skipped for reduced-motion.
+ *
+ * Exported — /for-developers reuses this for its "A better way to present
+ * your developments" section (owner, 2026-09-29: "can you show the acutal
+ * hero section and over section"), pointed at a real `/projects/{slug}`
+ * page instead of a sample-site embed. That page carries the site's own
+ * header/nav/footer, which is the point there: it's showing a developer
+ * exactly what their listing looks like on LankaNewHomes, not a standalone
+ * site design the way the /web-design samples are.
  */
-function ScaledPreview({ src, title, base, autoScroll = true }: { src: string; title: string; base: { width: number; height: number }; autoScroll?: boolean }) {
+export function ScaledPreview({ src, title, base, autoScroll = true }: { src: string; title: string; base: { width: number; height: number }; autoScroll?: boolean }) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLIFrameElement>(null);
   const [scale, setScale] = useState<number | null>(null);
