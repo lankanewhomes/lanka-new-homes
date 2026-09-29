@@ -14207,7 +14207,8 @@ body:has(.compare-bar) {
    generic icon. Almost every card here is "Coming soon" — see packages.ts
    and the placement-inventory memory for what's actually built. */
 .fdv-placement {
-  padding: 20px 0 130px;
+  padding: 70px 0 130px;
+  border-top: 1px solid var(--fdv-line);
 }
 
 .fdv-placement-grid {
