@@ -15709,22 +15709,24 @@ body:has(.compare-bar) {
 }
 
 /* ---------------------------------------------------------------------- */
-/* /blog (2026-09-29) — layout follows a reference the owner shared        */
-/* (amini.ai): a plain listing with posts as a list (thumbnail, category,  */
-/* title, byline), and an article page with a centred title/byline, a      */
-/* hero image, then plain H2-sectioned body copy. Config lives in          */
-/* src/lib/blog.ts, same "add a record, not a bespoke page" pattern as     */
-/* guides.ts. No bold headings, matching the rest of the site this         */
-/* session's own convention.                                               */
+/* /blog (2026-09-29) — a dark full-bleed "Featured article" band (newest  */
+/* post, image + content split) above a card grid for the rest, and an     */
+/* article page with its own dark hero band (back link, title, byline,     */
+/* image) over plain white H2-sectioned body copy — reworked the same day  */
+/* from the original plain thumbnail-list version to match two amini.ai    */
+/* references the owner shared (its /resources listing and one blog post).*/
+/* No category eyebrow anywhere ("delete the eyebrow label on the          */
+/* articles") — every hero/card band's own background spans the full      */
+/* width via a plain block wrapper; only the content inside is             */
+/* width-constrained ("article background needs to be full width, the     */
+/* text stays where it is"). Config lives in src/lib/blog.ts, same "add a  */
+/* record, not a bespoke page" pattern as guides.ts. No bold headings,     */
+/* matching the rest of the site this session's own convention.            */
 /* ---------------------------------------------------------------------- */
 
-.blog-page {
-  width: min(820px, calc(100% - 48px));
-  margin: 48px auto 90px;
-}
-
 .blog-page-head {
-  margin-bottom: 48px;
+  width: min(1180px, calc(100% - 64px));
+  margin: 48px auto 40px;
 }
 
 .blog-page-head h1 {
@@ -15733,127 +15735,276 @@ body:has(.compare-bar) {
   font-weight: 400;
   font-size: 40px;
   line-height: 1.15;
-  color: #1f1f1f;
+  color: var(--fdv-ink);
 }
 
 .blog-page-lede {
   margin: 0;
   font-size: 16px;
   line-height: 1.6;
-  color: #6b6355;
+  color: var(--fdv-muted);
   max-width: 60ch;
 }
 
-.blog-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.blog-page > .blog-page-lede {
+  width: min(1180px, calc(100% - 64px));
+  margin: 0 auto 90px;
 }
 
-.blog-list-item {
+/* Featured article — dark band, own full-width background; the grid/text
+   inside it stays at the site's usual 1180px reading width. */
+.blog-hero {
+  width: 100%;
+  margin: 0 0 64px;
+  background: var(--fdv-ink);
+  color: #fff;
+}
+
+.blog-hero-inner {
+  width: min(1180px, calc(100% - 64px));
+  margin: 0 auto;
   display: grid;
-  grid-template-columns: 240px 1fr;
-  gap: 28px;
-  padding: 32px 0;
-  border-top: 1px solid #eee8db;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 56px;
 }
 
-.blog-list-thumb {
+.blog-hero-media {
+  position: relative;
+  align-self: stretch;
+  min-height: 360px;
+}
+
+.blog-hero-media-img {
+  object-fit: cover;
+}
+
+.blog-hero-content {
+  padding: 48px 0;
+}
+
+.blog-hero-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 18px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fdv-accent);
+}
+
+.blog-hero-eyebrow::before {
+  content: "";
+  width: 3px;
+  height: 14px;
+  background: var(--fdv-accent);
+}
+
+.blog-hero-content h2 {
+  margin: 0 0 16px;
+  font-weight: 400;
+  font-size: 32px;
+  line-height: 1.22;
+  text-wrap: balance;
+}
+
+.blog-hero-content h2 a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.blog-hero-content h2 a:hover {
+  text-decoration: underline;
+}
+
+.blog-hero-excerpt {
+  margin: 0 0 24px;
+  max-width: 48ch;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #cfcbc2;
+}
+
+.blog-hero-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 32px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.blog-hero-link:hover {
+  color: var(--fdv-accent);
+}
+
+.blog-hero-byline {
+  margin: 0;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  font-size: 13px;
+  color: #a8a49b;
+}
+
+.blog-grid {
+  list-style: none;
+  width: min(1180px, calc(100% - 64px));
+  margin: 0 auto;
+  padding: 0 0 90px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+
+.blog-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.blog-card-media {
   position: relative;
   display: block;
   aspect-ratio: 4 / 3;
   overflow: hidden;
-  background: #eee8db;
+  background: var(--fdv-paper);
+  margin-bottom: 16px;
 }
 
-.blog-list-thumb-img {
+.blog-card-media-img {
   object-fit: cover;
 }
 
-.blog-list-category {
+.blog-card-copy h3 {
   margin: 0 0 8px;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #6b6355;
-}
-
-.blog-list-copy h2 {
-  margin: 0 0 10px;
   font-weight: 400;
-  font-size: 22px;
+  font-size: 19px;
   line-height: 1.3;
-  color: #1f1f1f;
+  color: var(--fdv-ink);
 }
 
-.blog-list-copy h2 a {
+.blog-card-copy h3 a {
   color: inherit;
   text-decoration: none;
 }
 
-.blog-list-copy h2 a:hover {
+.blog-card-copy h3 a:hover {
   text-decoration: underline;
 }
 
-.blog-list-excerpt {
+.blog-card-excerpt {
   margin: 0 0 10px;
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.6;
-  color: #4a4a4a;
+  color: var(--fdv-muted);
 }
 
-.blog-list-byline {
-  margin: 0;
+.blog-card-byline {
+  margin: 0 0 10px;
+  font-size: 12px;
+  color: #9a9488;
+}
+
+.blog-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: 13px;
-  color: #8a8680;
+  font-weight: 600;
+  color: var(--fdv-accent);
+  text-decoration: none;
+}
+
+.blog-card-link:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+  .blog-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  .blog-hero-inner {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .blog-hero-media {
+    min-height: 240px;
+  }
+
+  .blog-hero-content {
+    padding: 32px 0;
+  }
+
+  .blog-hero-content h2 {
+    font-size: 25px;
+  }
 }
 
 @media (max-width: 640px) {
-  .blog-list-item {
+  .blog-grid {
     grid-template-columns: 1fr;
   }
 }
 
-.blog-article {
-  width: min(760px, calc(100% - 48px));
-  margin: 48px auto 0;
+.blog-article-hero {
+  width: 100%;
+  margin: 0 0 64px;
+  background: var(--fdv-ink);
+  color: #fff;
 }
 
-.blog-article-head {
-  text-align: center;
-  margin-bottom: 32px;
+.blog-article-hero-inner {
+  width: min(1180px, calc(100% - 64px));
+  margin: 0 auto;
+  padding: 64px 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 56px;
 }
 
-.blog-article-category {
-  margin: 0 0 14px;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--fdv-ink);
+.blog-article-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 28px;
+  font-size: 14px;
+  color: #a8a49b;
+  text-decoration: none;
 }
 
-.blog-article-head h1 {
-  margin: 0 0 16px;
+.blog-article-back-link:hover {
+  color: #fff;
+}
+
+.blog-article-hero-text h1 {
+  margin: 0 0 20px;
   font-family: var(--font-ref-sans);
   font-weight: 400;
-  font-size: 38px;
-  line-height: 1.2;
-  color: #1f1f1f;
+  font-size: 40px;
+  line-height: 1.18;
+  color: #fff;
   text-wrap: balance;
 }
 
 .blog-article-byline {
   margin: 0;
   font-size: 14px;
-  color: #6b6355;
+  line-height: 1.7;
+  color: #a8a49b;
 }
 
-.blog-article-hero {
+.blog-article-hero-media {
   position: relative;
-  aspect-ratio: 16 / 9;
-  margin: 0 0 48px;
+  aspect-ratio: 4 / 3;
   overflow: hidden;
 }
 
@@ -15862,36 +16013,46 @@ body:has(.compare-bar) {
 }
 
 .blog-article-body {
+  width: min(760px, calc(100% - 48px));
+  margin: 0 auto;
   font-size: 17px;
   line-height: 1.75;
   color: #2c2c2c;
 }
 
 .blog-article-intro {
-  margin: 0 0 40px;
+  margin: 0 0 48px;
   font-size: 19px;
   line-height: 1.65;
   color: #3a382f;
 }
 
 .blog-article-body section {
-  margin-bottom: 36px;
+  margin-bottom: 48px;
 }
 
 .blog-article-body h2 {
-  margin: 0 0 12px;
+  margin: 0 0 16px;
   font-weight: 400;
-  font-size: 22px;
+  font-size: 24px;
   line-height: 1.35;
   color: #1f1f1f;
 }
 
-.blog-article-body p {
+/* Scoped to a <section>'s own paragraph, not .blog-article-intro (also a
+   <p>, but a direct child of .blog-article-body, not nested in a
+   <section>) — an unscoped ".blog-article-body p" selector has higher
+   specificity than ".blog-article-intro" and was zeroing out its own
+   48px margin-bottom, collapsing the gap before the first H2 to nothing
+   (owner flagged exactly this spot: "needs spacing... 1. Use real
+   photography and renders..."). */
+.blog-article-body section p {
   margin: 0;
 }
 
 .blog-article-cta {
-  margin-top: 60px;
+  width: min(760px, calc(100% - 48px));
+  margin: 60px auto 0;
   padding: 44px 40px;
   background: var(--fdv-paper);
   text-align: center;
@@ -15929,9 +16090,17 @@ body:has(.compare-bar) {
   text-decoration: underline;
 }
 
+@media (max-width: 760px) {
+  .blog-article-hero-inner {
+    grid-template-columns: 1fr;
+    padding: 40px 0;
+    gap: 24px;
+  }
+}
+
 @media (max-width: 560px) {
-  .blog-article-head h1 {
-    font-size: 28px;
+  .blog-article-hero-text h1 {
+    font-size: 27px;
   }
 
   .blog-page-head h1 {

@@ -2506,21 +2506,58 @@ post + its resources/blog listing page):
   `BlogPost` type and a `blogPosts` record (slug, title, excerpt, category,
   author, publishDate, readMinutes, heroImage, intro, `sections[]`). Adding
   a post means adding a record, not a bespoke page.
-- **`/blog`** (`src/app/(frontend)/blog/page.tsx`): a plain header, then
-  posts as a **list** (thumbnail left, category tag, title, excerpt,
-  byline) — not a card grid, matching the reference. No featured-post
-  slot, category filter or pagination yet; add once there are enough posts
-  to need them.
-- **`/blog/[slug]`** (dynamic route, `generateStaticParams` over
-  `blogPosts`): centred title, byline (author · date · read time) under
-  it, a full-width hero image, then plain H2-sectioned body copy — no
-  sidebar, table of contents, social-share row or newsletter signup (none
-  of those exist anywhere else on this site). Closes with an `.fdv-page`
-  CTA card (see /web-design's own primary/secondary buttons) pointing at
-  `/web-design` and `/for-developers`, then a "back to all posts" link.
 - Both pages wrap in `.fdv-page` for its `--fdv-*` colour tokens (the same
   ones `/web-design`, `/for-developers` and `/pricing`'s Placement section
   read) rather than inventing a fourth palette.
 - First post: "7 Ways Sri Lankan Developers Can Make Their Project
   Websites Sell More Units" — developer-facing content marketing for the
   web-design service, not buyer-side SEO. See `docs/seo-strategy.md`.
+
+### Rebuilt again the same day: featured hero + card grid, dark article hero
+
+The initial version above (plain thumbnail list, centred article title)
+didn't match the reference closely enough — the owner sent the two amini.ai
+URLs directly and asked for both pages to look like them, plus "I need to
+have featured article on the hero section." Rebuilt both:
+- **`/blog`**: the newest post now renders as a **dark full-bleed
+  "Featured article" band** (`.blog-hero`) — image left, content right
+  (stacks on mobile): a small `FEATURED ARTICLE` eyebrow (orange, with a
+  short vertical accent bar — this is a section label, not the post's own
+  category, so it's unrelated to the eyebrow removal below), title,
+  excerpt, "Read article →" link, a divider, then the byline. Remaining
+  posts (`rest`, everything after the first when sorted newest-first) render
+  below as a plain 3-column card grid (`.blog-grid`/`.blog-card`, 2 columns
+  under 900px, 1 under 640px) — hidden entirely while there's only one
+  post, so nothing repeats the featured post as its own "grid of one".
+  No category filter pills or pagination — still only one real category,
+  not worth building; add once there are enough posts.
+- **`/blog/[slug]`**: the centred title block is now a **dark full-bleed
+  hero band** (`.blog-article-hero`) matching the listing's — "← All
+  posts" back link, title, byline on the left, the post's hero image on
+  the right (stacks on mobile), instead of a plain centred title over a
+  separately-boxed image.
+- **No category eyebrow anywhere** (owner, same session: "delete the
+  eyebrow label on the articles. WEB DESIGN") — the old `.blog-list-category`
+  / `.blog-article-category` elements are gone from both pages; `category`
+  stays in the `BlogPost` type for later (e.g. a filter bar) but nothing
+  reads it today.
+- **Every dark band is a full-width block with a width-constrained inner
+  container** ("article background needs to be full width, the text stays
+  where it is") — `.blog-hero`/`.blog-article-hero` are plain `width: 100%`
+  wrappers; `.blog-hero-inner`/`.blog-article-hero-inner` inside them carry
+  the actual `min(1180px, ...)` reading width. The old `.blog-article`
+  wrapper that constrained the *entire* article (title, hero image, body)
+  to 760px is gone — each section now sets its own width, which is what
+  lets the hero bands run edge to edge while the body text stays narrow.
+- **Fixed a specificity bug** while in there: `.blog-article-body p {
+  margin: 0 }` was unscoped, so it also matched `.blog-article-intro`
+  (also a `<p>`, and a class selector alone loses to a class+element one)
+  and silently zeroed its 48px `margin-bottom` — the intro paragraph
+  butted straight up against the first H2 ("1. Use real photography and
+  renders...") with no gap. This is exactly what the owner flagged
+  ("needs spacing... the biggest difference. 1. Use real photography...").
+  Rescoped to `.blog-article-body section p` (only a section's own
+  paragraph, not the intro, which is a direct child of `.blog-article-body`
+  and not nested in a `<section>`) — also bumped section spacing from
+  36px/40px to a flat 48px while fixing it, closer to the reference's own
+  rhythm.
