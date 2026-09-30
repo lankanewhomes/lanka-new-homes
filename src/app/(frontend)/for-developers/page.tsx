@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ShieldCheck, Zap } from "lucide-react";
+import { ArrowRight, ShieldCheck, Zap } from "lucide-react";
 import { getProjectBySlug } from "@/lib/project-store";
 import { ListingGridCard } from "@/components/marketplace/listing-page";
 import { ScrollReveal } from "@/components/marketplace/scroll-reveal";
@@ -110,7 +110,10 @@ export default async function ForDevelopersPage() {
           </p>
           <div className="fdv-hero-ctas">
             <Link href="/developers/register" className="fdv-cta-primary">Register as a Developer</Link>
-            <a href="#introduction" className="fdv-cta-secondary">Explore the platform</a>
+            <a href="#show-product" className="fdv-cta-secondary fdv-hero-explore-link">
+              Explore the platform
+              <ArrowRight size={16} strokeWidth={2.5} aria-hidden="true" />
+            </a>
           </div>
           {/* Owner, 2026-09-29: "for devloeprs its free to list always" — not
               "at the moment", which read as a limited-time offer. */}
@@ -145,60 +148,22 @@ export default async function ForDevelopersPage() {
         ) : null}
       </section>
 
-      {/* 2 — INTRODUCTION */}
-      <section className="fdv-intro" id="introduction" aria-label="Introduction">
-        <div className="fdv-intro-grid">
-          <h2 className="fdv-intro-statement" data-reveal>Your development deserves more than a listing.</h2>
-          <div className="fdv-intro-copy" data-reveal>
-            <p>
-              LankaNewHomes gives developers a dedicated place to present their projects beautifully, reach
-              active property buyers, and generate direct enquiries.
-            </p>
-            <Link href="/developers/register" className="fdv-text-link">Register as a developer →</Link>
-          </div>
-        </div>
-      </section>
-
-      {/* 3 — WHY DEVELOPERS LIST HERE — one simple section, not three large
-          alternating photo blocks (owner, 2026-09-29: "put theses in 1
-          section... make it simpler" — dropped the numbers, kicker labels,
-          photos and the fake chat-bubble mockup, keeping just the three
-          actual reasons). */}
-      <section className="fdv-reasons" aria-label="Why developers list here">
-        <div className="fdv-reasons-grid">
-          <div className="fdv-reason-simple" data-reveal>
-            <h3>Reach buyers actively searching for new property.</h3>
-            <p>
-              Your projects appear alongside other new developments, homes, apartments, villas and land
-              projects being researched by buyers right now.
-            </p>
-          </div>
-          <div className="fdv-reason-simple" data-reveal>
-            <h3>Give every project the presentation it deserves.</h3>
-            <p>
-              Photography, floor plans, pricing, amenities, videos, brochures, maps and virtual tours come
-              together in one premium project page.
-            </p>
-          </div>
-          <div className="fdv-reason-simple" data-reveal>
-            <h3>Turn interest into direct enquiries.</h3>
-            <p>
-              Make it easy for interested buyers to request information and connect with your development
-              team — the moment they submit, you have it.
-            </p>
-          </div>
-        </div>
-      </section>
-
       {/* 4 — SHOW THE PRODUCT — a live iframe of the real /projects/{slug}
           page, not a static photo with a fabricated overlay caption (owner,
           2026-09-29: "can you show the acutal hero section and over
           section"). Same ScaledPreview component /web-design's sample
-          switcher uses; see its comment in web-design-frames.tsx. */}
+          switcher uses; see its comment in web-design-frames.tsx. The
+          Introduction and "Why developers list here" sections that used to
+          precede this were deleted the same day ("delelte this section" —
+          owner pasted both) — this is now the hero's "#introduction"
+          scroll target (renamed below to "#show-product"). */}
       {productProject ? (
-        <section className="fdv-showcase-product" aria-label="A real project page">
+        <section className="fdv-showcase-product" id="show-product" aria-label="A real project page">
           <div className="fdv-section-head" data-reveal>
             <h2>A better way to present your developments.</h2>
+            <p className="fdv-section-sub">
+              An iframe of a real, live listing, not a static photo — see exactly what a buyer sees.
+            </p>
           </div>
 
           <div className="fdv-product-frame" data-reveal>

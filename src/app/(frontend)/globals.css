@@ -11655,7 +11655,6 @@ body:has(.compare-bar) {
   font-size: 11.5px;
   font-weight: 600;
   letter-spacing: 0.04em;
-  text-transform: uppercase;
   color: #6b6355;
 }
 
@@ -11695,6 +11694,45 @@ body:has(.compare-bar) {
   margin: 0 auto;
   border: none;
   padding: 64px 0;
+}
+
+/* Owner, 2026-09-29: "needs a backgeound apttern like box" — same crossed-
+   box texture as /web-design's Live Sample band (.wdx-sample::before),
+   scoped to /about's own hero so /for-developers' hero (marquee already
+   fills that space) isn't affected. */
+.about-page .fdv-hero {
+  position: relative;
+}
+
+.about-page .fdv-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(255, 255, 255, 0.05) 28px 29px),
+    repeating-linear-gradient(90deg, transparent 0 28px, rgba(255, 255, 255, 0.05) 28px 29px);
+  -webkit-mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
+}
+
+/* Owner, 2026-09-29: "these should be under the hero buttons" — moved
+   inside .fdv-hero-content (dark bg), so it needs light text and the
+   hero's own narrower (720px) width instead of the wide band above. */
+.about-hero-stats {
+  width: auto;
+  margin: 40px auto 0;
+  padding: 24px 0 0;
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.about-hero-stats .about-stat dd {
+  color: #fff;
+}
+
+.about-hero-stats .about-stat dt {
+  color: #b8b8b4;
 }
 
 .about-values-grid {
@@ -13153,11 +13191,13 @@ body:has(.compare-bar) {
   text-align: center;
 }
 
+/* Owner, 2026-09-29: "need paddin gon top" (for-developers hero headline). */
 .fdv-hero-content {
   position: relative;
   z-index: 1;
   width: min(720px, calc(100% - 64px));
   margin: 0 auto;
+  padding-top: 48px;
 }
 
 .fdv-hero-headline {
@@ -13188,6 +13228,21 @@ body:has(.compare-bar) {
 
 .fdv-hero .fdv-cta-secondary {
   color: #fff;
+}
+
+/* Owner, 2026-09-29: "need border witha arrow" — bordered pill + arrow,
+   same recipe as /web-design's own hero secondary link
+   (.wdx-hero-sample-link), not the plain underline .fdv-cta-secondary is
+   everywhere else. */
+.fdv-hero-explore-link {
+  padding: 14px 28px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.fdv-hero-explore-link:hover {
+  background: #fff;
+  color: var(--fdv-ink);
+  opacity: 1;
 }
 
 /* Owner, 2026-09-29: "you can also add the badhes on the hero section
@@ -15149,10 +15204,11 @@ body:has(.compare-bar) {
   border-color: rgba(255, 255, 255, 0.4);
 }
 
+/* Owner, 2026-09-29: "i dont want active orange color. make it black." */
 .wdx-sample-tab.is-active {
-  background: var(--fdv-accent);
-  border-color: var(--fdv-accent);
-  color: #17140f;
+  background: var(--fdv-ink);
+  border-color: var(--fdv-ink);
+  color: #fff;
 }
 
 .wdx-sample-tab-name {

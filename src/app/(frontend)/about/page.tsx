@@ -74,35 +74,18 @@ export default async function AboutPage() {
             <Link href="/projects" className="fdv-cta-primary">Browse new homes</Link>
             <Link href="/for-developers" className="fdv-cta-secondary">For developers</Link>
           </div>
-        </div>
-      </section>
 
-      <section aria-label="LankaNewHomes by the numbers">
-        <dl className="about-stats">
-          {stats.map((stat) => (
-            <div className="about-stat" key={stat.label}>
-              <dd>{stat.value}</dd>
-              <dt>{stat.label}</dt>
-            </div>
-          ))}
-        </dl>
-      </section>
-
-      <section className="fdv-intro" aria-label="What we do">
-        <div className="fdv-intro-grid">
-          <p className="fdv-intro-statement">
-            Condominiums, apartments, villas, houses, and residential land projects from developers across the
-            country — all in one place.
-          </p>
-          <div className="fdv-intro-copy">
-            <p>
-              We bring Sri Lanka&apos;s new residential developments and developer land projects together, so
-              buyers can compare locations, pricing, floor plans, amenities, and availability without searching
-              across multiple developer websites. LankaNewHomes is built specifically around new developer and
-              builder projects, giving buyers a dedicated place to discover what&apos;s being developed across the
-              country.
-            </p>
-          </div>
+          {/* Owner, 2026-09-29: "these should be under the hero buttons" —
+              moved from its own standalone section (previously right after
+              the hero) into the hero itself. */}
+          <dl className="about-stats about-hero-stats" aria-label="LankaNewHomes by the numbers">
+            {stats.map((stat) => (
+              <div className="about-stat" key={stat.label}>
+                <dd>{stat.value}</dd>
+                <dt>{stat.label}</dt>
+              </div>
+            ))}
+          </dl>
         </div>
       </section>
 
