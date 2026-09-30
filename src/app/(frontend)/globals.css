@@ -11701,22 +11701,6 @@ body:has(.compare-bar) {
    box texture as /web-design's Live Sample band (.wdx-sample::before),
    scoped to /about's own hero so /for-developers' hero (marquee already
    fills that space) isn't affected. */
-.about-page .fdv-hero {
-  position: relative;
-}
-
-.about-page .fdv-hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-image:
-    repeating-linear-gradient(0deg, transparent 0 28px, rgba(255, 255, 255, 0.05) 28px 29px),
-    repeating-linear-gradient(90deg, transparent 0 28px, rgba(255, 255, 255, 0.05) 28px 29px);
-  -webkit-mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
-  mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
-}
-
 /* Owner, 2026-09-29: "these should be under the hero buttons" — moved
    inside .fdv-hero-content (dark bg), so it needs light text and the
    hero's own narrower (720px) width instead of the wide band above. */
@@ -13350,6 +13334,25 @@ body:has(.compare-bar) {
   text-align: center;
 }
 
+/* Owner, 2026-09-29: "needs lines for this bakcgoeund" -> "box" ->
+   "different sizes" — two overlaid grids (a fine one, a coarser one), not
+   one uniform repeat, so the boxes read as varied rather than a single
+   flat tile. Every .fdv-hero gets this now (/for-developers, /about),
+   not just the one it was first added to. */
+.fdv-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 22px, rgba(255, 255, 255, 0.04) 22px 23px),
+    repeating-linear-gradient(90deg, transparent 0 22px, rgba(255, 255, 255, 0.04) 22px 23px),
+    repeating-linear-gradient(0deg, transparent 0 88px, rgba(255, 255, 255, 0.07) 88px 89px),
+    repeating-linear-gradient(90deg, transparent 0 88px, rgba(255, 255, 255, 0.07) 88px 89px);
+  -webkit-mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
+}
+
 /* Owner, 2026-09-29: "need paddin gon top" (for-developers hero headline). */
 .fdv-hero-content {
   position: relative;
@@ -13393,9 +13396,13 @@ body:has(.compare-bar) {
    same recipe as /web-design's own hero secondary link
    (.wdx-hero-sample-link), not the plain underline .fdv-cta-secondary is
    everywhere else. */
+/* Owner, 2026-09-29: "explore the premium buttons needs have radius" —
+   matches the pill radius the hero's "Register as a developer" button
+   (.fdv-cta-final-button) already has. */
 .fdv-hero-explore-link {
   padding: 14px 28px;
   border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 999px;
 }
 
 .fdv-hero-explore-link:hover {
@@ -13800,37 +13807,34 @@ body:has(.compare-bar) {
   border-top: 1px solid var(--fdv-line);
 }
 
+/* Owner, 2026-09-29: "do the cards int a row" — the copy sits above,
+   full-width, and the 3 illustrative examples form a row below it,
+   instead of the old 2-column copy-left/panel-right layout (which only
+   ever fit one stacked card). */
 .fdv-control-inner {
   width: min(1180px, calc(100% - 64px));
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: 0.9fr 1.1fr;
-  gap: 80px;
-  align-items: center;
-}
-
-.fdv-control-copy h2 {
-  margin: 0 0 18px;
-  font-family: var(--fdv-serif);
-  font-weight: 400;
-  font-size: 36px;
-  line-height: 1.22;
-  color: var(--fdv-ink);
-  text-wrap: balance;
-}
-
-.fdv-control-copy p {
-  margin: 0;
-  max-width: 400px;
-  font-size: 15.5px;
-  line-height: 1.7;
-  color: var(--fdv-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
 }
 
 .fdv-control-panel-wrap {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 24px;
+}
+
+.fdv-analytics-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 900px) {
+  .fdv-analytics-row {
+    grid-template-columns: 1fr;
+  }
 }
 
 .fdv-analytics-frame {
@@ -13874,9 +13878,11 @@ body:has(.compare-bar) {
   color: #fff;
 }
 
+/* 2 columns, not 4 — these cards are now a third of the row's width
+   ("do the cards int a row"), too narrow for 4 stats across. */
 .fdv-analytics-stats {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 10px;
   margin-bottom: 20px;
 }

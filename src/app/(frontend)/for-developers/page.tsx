@@ -58,10 +58,32 @@ const SHOWCASE_SLUGS = ["capitol-twinpeaks", "viva-la-vida", "imaarat-bambalapit
 // for 3 of the real showcase projects (so it also visibly backs up the
 // caption below: "every developer gets this... for each of their own
 // projects"), each with its own illustrative (not real) numbers.
+//
+// Owner, same day: "this section. needs to show the dashbaord we have
+// from backend" — the real dashboard (ListingAnalyticsPanel.tsx) is a
+// Payload admin component behind a developer login, tied to one real
+// project's real data; it can't be embedded on a public marketing page
+// the way the live listing preview above is. Instead this mockup's fields
+// now match that real panel's actual stats and copy (Pages / session,
+// and the Lead Status row using the real statuses from
+// LEAD_STATUS_OPTIONS in collections/Leads.ts — New/Contacted/Site
+// visit/Closed) rather than a loosely-invented approximation.
 const ANALYTICS_EXAMPLES = [
-  { views: "2,145", inquiries: "38", inquiryRate: "1.8%", avgTime: "96s", viewsPoints: "0,60 40,55 80,48 120,50 160,35 200,30 240,20 280,18 320,10", inquiriesPoints: "0,82 40,80 80,78 120,75 160,72 200,68 240,60 280,58 320,50" },
-  { views: "3,860", inquiries: "72", inquiryRate: "1.9%", avgTime: "112s", viewsPoints: "0,70 40,62 80,58 120,44 160,40 200,26 240,22 280,14 320,8", inquiriesPoints: "0,85 40,80 80,74 120,70 160,64 200,58 240,52 280,44 320,36" },
-  { views: "1,290", inquiries: "21", inquiryRate: "1.6%", avgTime: "84s", viewsPoints: "0,66 40,64 80,60 120,56 160,50 200,42 240,34 280,24 320,16", inquiriesPoints: "0,88 40,86 80,84 120,80 160,76 200,70 240,64 280,58 320,52" },
+  {
+    views: "2,145", inquiries: "38", inquiryRate: "1.8%", avgTime: "96s", pagesPerSession: "2.4",
+    viewsPoints: "0,60 40,55 80,48 120,50 160,35 200,30 240,20 280,18 320,10", inquiriesPoints: "0,82 40,80 80,78 120,75 160,72 200,68 240,60 280,58 320,50",
+    leadStatus: [{ label: "New", count: 6 }, { label: "Contacted", count: 19 }, { label: "Site visit", count: 9 }, { label: "Closed", count: 4 }],
+  },
+  {
+    views: "3,860", inquiries: "72", inquiryRate: "1.9%", avgTime: "112s", pagesPerSession: "2.8",
+    viewsPoints: "0,70 40,62 80,58 120,44 160,40 200,26 240,22 280,14 320,8", inquiriesPoints: "0,85 40,80 80,74 120,70 160,64 200,58 240,52 280,44 320,36",
+    leadStatus: [{ label: "New", count: 11 }, { label: "Contacted", count: 34 }, { label: "Site visit", count: 18 }, { label: "Closed", count: 9 }],
+  },
+  {
+    views: "1,290", inquiries: "21", inquiryRate: "1.6%", avgTime: "84s", pagesPerSession: "2.1",
+    viewsPoints: "0,66 40,64 80,60 120,56 160,50 200,42 240,34 280,24 320,16", inquiriesPoints: "0,88 40,86 80,84 120,80 160,76 200,70 240,64 280,58 320,52",
+    leadStatus: [{ label: "New", count: 3 }, { label: "Contacted", count: 10 }, { label: "Site visit", count: 5 }, { label: "Closed", count: 3 }],
+  },
 ] as const;
 
 // Owner, 2026-09-29: "for-devlopers faq needs to look this this faq
@@ -139,7 +161,7 @@ export default async function ForDevelopersPage() {
             {/* Owner, 2026-09-29: "same styling as list your project. same
                 as the footer. please be constant with design" — the
                 footer/final-CTA pill, not the solid-fill .fdv-cta-primary. */}
-            <Link href="/developers/register" className="fdv-cta-final-button">Register as a Developer</Link>
+            <Link href="/developers/register" className="fdv-cta-final-button">Register as a developer</Link>
             <a href="#show-product" className="fdv-cta-secondary fdv-hero-explore-link">
               Explore the platform
               <ArrowRight size={16} strokeWidth={2.5} aria-hidden="true" />
@@ -148,20 +170,6 @@ export default async function ForDevelopersPage() {
           {/* Owner, 2026-09-29: "for devloeprs its free to list always" — not
               "at the moment", which read as a limited-time offer. */}
           <p className="fdv-hero-fineprint">Always free to list.</p>
-
-          {/* Owner, 2026-09-29: "you can also add the badhes on the hero
-              section also" — real badge pills, all six (was four — "add a
-              title and add all the badges"), from the BADGES config above
-              so a future new badge type only needs adding there. */}
-          <p className="fdv-hero-badges-title">Badges your listing can earn</p>
-          <div className="fdv-hero-badges" aria-hidden="true">
-            {BADGES.map((badge) => (
-              <span key={badge.key} className={badge.className}>
-                {badge.icon ? <badge.icon className="h-3 w-3" aria-hidden="true" /> : null}
-                {badge.label}
-              </span>
-            ))}
-          </div>
         </div>
 
         {heroMarqueeItems.length > 0 ? (
@@ -176,6 +184,19 @@ export default async function ForDevelopersPage() {
             </div>
           </div>
         ) : null}
+
+        {/* Owner, 2026-09-29: "put these below the imagee" — moved out of
+            .fdv-hero-content to after the marquee, same placement
+            /web-design uses for its own hero chip list below its marquee. */}
+        <p className="fdv-hero-badges-title">Badges your listing can earn</p>
+        <div className="fdv-hero-badges" aria-hidden="true">
+          {BADGES.map((badge) => (
+            <span key={badge.key} className={badge.className}>
+              {badge.icon ? <badge.icon className="h-3 w-3" aria-hidden="true" /> : null}
+              {badge.label}
+            </span>
+          ))}
+        </div>
       </section>
 
       {/* 4 — SHOW THE PRODUCT — a live iframe of the real /projects/{slug}
@@ -222,7 +243,7 @@ export default async function ForDevelopersPage() {
       {/* 8 — ANALYTICS DASHBOARD */}
       <section className="fdv-control" id="analytics" aria-label="Developer analytics dashboard">
         <div className="fdv-control-inner">
-        <div className="fdv-control-copy" data-reveal>
+        <div className="wdx-section-head" data-reveal>
           <h2>See exactly how buyers find your listing.</h2>
           <p>
             Views, inquiries, response performance and traffic sources — the same Listing Analytics tab
@@ -230,6 +251,7 @@ export default async function ForDevelopersPage() {
           </p>
         </div>
         <div className="fdv-control-panel-wrap" data-reveal>
+          <div className="fdv-analytics-row">
           {ANALYTICS_EXAMPLES.map((example, index) => (
             <div className="fdv-analytics-frame" aria-hidden="true" key={index}>
               <div className="fdv-analytics-toolbar">
@@ -259,6 +281,10 @@ export default async function ForDevelopersPage() {
                   <span className="fdv-analytics-stat-label">Avg. time on page</span>
                   <span className="fdv-analytics-stat-value">{example.avgTime}</span>
                 </div>
+                <div className="fdv-analytics-stat">
+                  <span className="fdv-analytics-stat-label">Pages / session</span>
+                  <span className="fdv-analytics-stat-value">{example.pagesPerSession}</span>
+                </div>
               </div>
               <svg className="fdv-analytics-chart" viewBox="0 0 320 90" preserveAspectRatio="none">
                 <polyline className="fdv-analytics-chart-line fdv-analytics-chart-line-views" points={example.viewsPoints} />
@@ -268,8 +294,14 @@ export default async function ForDevelopersPage() {
                 <span><i className="fdv-analytics-dot fdv-analytics-dot-views" aria-hidden="true" />Views</span>
                 <span><i className="fdv-analytics-dot fdv-analytics-dot-inquiries" aria-hidden="true" />Inquiries</span>
               </div>
+              <div className="fdv-analytics-leadstatus">
+                {example.leadStatus.map((row) => (
+                  <span key={row.label}>{row.label}: <strong>{row.count}</strong></span>
+                ))}
+              </div>
             </div>
           ))}
+          </div>
           <p className="fdv-analytics-caption">
             Illustrative example — every developer gets this exact dashboard, live, for each of their own projects.
           </p>
@@ -292,9 +324,10 @@ export default async function ForDevelopersPage() {
       ) : null}
 
       {/* 9 — FAQ */}
-      <section className="fdv-reasons" id="faq" aria-label="Questions">
+      <section className="wdx-faq" id="faq" aria-label="Questions">
         <div className="wdx-section-head" data-reveal>
           <h2>Questions developers ask us.</h2>
+          <p>The questions that come up most before a developer lists their first project.</p>
         </div>
         <div className="wdx-faq-list" data-reveal>
           {FAQS.map((item) => (
@@ -319,7 +352,7 @@ export default async function ForDevelopersPage() {
             <h2><span className="fdv-cta-final-muted">Let&apos;s put your projects</span> on the map.</h2>
             <p className="fdv-hero-fineprint">Always free to list.</p>
           </div>
-          <Link href="/developers/register" className="fdv-cta-final-button">Register as a Developer</Link>
+          <Link href="/developers/register" className="fdv-cta-final-button">Register as a developer</Link>
         </div>
       </section>
 
