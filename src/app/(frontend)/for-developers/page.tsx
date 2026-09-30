@@ -64,6 +64,21 @@ const ANALYTICS_EXAMPLES = [
   { views: "1,290", inquiries: "21", inquiryRate: "1.6%", avgTime: "84s", viewsPoints: "0,66 40,64 80,60 120,56 160,50 200,42 240,34 280,24 320,16", inquiriesPoints: "0,88 40,86 80,84 120,80 160,76 200,70 240,64 280,58 320,52" },
 ] as const;
 
+// Owner, 2026-09-29: "for-devlopers faq needs to look this this faq
+// [neighborhoods]... be constant please" — this page had no FAQ before;
+// added using the same .guide-page-faq-item accordion every other FAQ on
+// the site uses. Content is grounded in facts already stated elsewhere on
+// this page (always-free listing, the badges, the analytics dashboard),
+// not invented.
+const FAQS = [
+  { q: "Is it really free to list?", a: "Yes — every project stays free to list, permanently. A paid package adds extra reach (better search placement, homepage rotation), not a base listing fee." },
+  { q: "How do I get started?", a: "Register as a developer, then add your first project. It goes live once approved." },
+  { q: "How do buyer enquiries reach me?", a: "Every enquiry submitted on your listing reaches you the moment it's sent — no delay, no middleman." },
+  { q: "Can I list more than one project?", a: "Yes, there's no limit on the number of free listings a developer account can have." },
+  { q: "What do the Verified and “Responds within 1 hour” badges mean?", a: "Verified confirms a real, active developer account. “Responds within 1 hour” is earned by replying to enquiries quickly — both are things buyers specifically look for." },
+  { q: "Do I need to provide my own photos and floor plans?", a: "Yes — real photography, floor plans and pricing are what make a listing complete. We don't publish placeholder content in their place." },
+] as const;
+
 const BADGES = [
   { key: "verified", label: "Verified", className: "listing-badge-pill badge-verified fdv-badge-pill", icon: ShieldCheck },
   { key: "responder", label: "Responds within 1 hour", className: "listing-badge-pill badge-responder fdv-badge-pill", icon: Zap },
@@ -275,6 +290,21 @@ export default async function ForDevelopersPage() {
           </div>
         </section>
       ) : null}
+
+      {/* 9 — FAQ */}
+      <section className="fdv-reasons" id="faq" aria-label="Questions">
+        <div className="wdx-section-head" data-reveal>
+          <h2>Questions developers ask us.</h2>
+        </div>
+        <div className="wdx-faq-list" data-reveal>
+          {FAQS.map((item) => (
+            <details className="guide-page-faq-item" key={item.q}>
+              <summary>{item.q}</summary>
+              <p>{item.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
 
       {/* 10 — PREMIUM CTA — redesigned to match a reference the owner shared,
           2026-09-29 (a dark, plain-background band: a two-tone headline

@@ -11203,13 +11203,14 @@ body:has(.compare-bar) {
   margin-bottom: 10px;
 }
 
+/* Owner, 2026-09-29: "dont put bold" — was 600. */
 .guide-page-faq-item summary {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 400;
   color: #1f1f1f;
   cursor: pointer;
   list-style: none;
@@ -15553,67 +15554,14 @@ body:has(.compare-bar) {
   z-index: 1;
 }
 
-/* Redesigned again (owner, 2026-09-29: "design faq like this", with a
-   reference screenshot) — a dark boxed panel: closed questions dim, the
-   open one full white, a chevron (not a "+") that flips on open. */
+/* Owner, 2026-09-29: "faq needs to look this this faq [neighborhoods]...
+   be constant please" — dropped the dark-boxed-panel treatment (this used
+   to be its own bespoke style) for the same bordered-card accordion
+   (.guide-page-faq-item, globals.css) every other FAQ on the site uses.
+   This wrapper is now just a width-constrained layout box. */
 .wdx-faq-list {
   width: min(760px, calc(100% - 64px));
   margin: 0 auto;
-  background: var(--fdv-ink);
-  border-radius: 0;
-  padding: 4px 28px;
-}
-
-.wdx-faq-item {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-  padding: 22px 0;
-}
-
-.wdx-faq-item:last-child {
-  border-bottom: none;
-}
-
-.wdx-faq-item summary {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  font-size: 17px;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.45);
-  cursor: pointer;
-  list-style: none;
-  transition: color 0.15s ease;
-}
-
-.wdx-faq-item:hover summary {
-  color: rgba(255, 255, 255, 0.75);
-}
-
-.wdx-faq-item[open] summary {
-  color: #fff;
-}
-
-.wdx-faq-item summary::-webkit-details-marker {
-  display: none;
-}
-
-.wdx-faq-item-chevron {
-  flex-shrink: 0;
-  color: inherit;
-  transition: transform 0.2s ease;
-}
-
-.wdx-faq-item[open] .wdx-faq-item-chevron {
-  transform: rotate(180deg);
-}
-
-.wdx-faq-item p {
-  margin: 14px 0 0;
-  max-width: 640px;
-  font-size: 15px;
-  line-height: 1.7;
-  color: #b8b8b4;
 }
 
 

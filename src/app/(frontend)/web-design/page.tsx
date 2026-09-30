@@ -104,7 +104,10 @@ export default function WebDesignPage() {
         </div>
       </section>
 
-      {/* 8 — FAQ */}
+      {/* 8 — FAQ — same bordered-card accordion (.guide-page-faq-item) as
+          /guides and /neighborhoods, not a bespoke dark-panel style (owner,
+          2026-09-29: "faq needs to look this this faq [neighborhoods'] ...
+          be constant please"). */}
       <section className="wdx-faq" id="faq" aria-label="Questions">
         <div className="wdx-section-head" data-reveal>
           <h2>What developers ask us.</h2>
@@ -112,11 +115,8 @@ export default function WebDesignPage() {
         </div>
         <div className="wdx-faq-list" data-reveal>
           {FAQS.map((item) => (
-            <details className="wdx-faq-item" key={item.q}>
-              <summary>
-                {item.q}
-                <ChevronDown size={18} strokeWidth={2} aria-hidden="true" className="wdx-faq-item-chevron" />
-              </summary>
+            <details className="guide-page-faq-item" key={item.q}>
+              <summary>{item.q}</summary>
               <p>{item.a}</p>
             </details>
           ))}
