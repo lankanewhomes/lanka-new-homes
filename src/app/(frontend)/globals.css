@@ -13433,7 +13433,7 @@ body:has(.compare-bar) {
 /* Owner, 2026-09-29: "you can also add the badhes on the hero section
    also" — real badge pills, no descriptions, under the fineprint. */
 .fdv-hero-badges-title {
-  margin: 28px 0 12px;
+  margin: 0 0 12px;
   font-size: 13px;
   font-weight: 400;
   color: #b8b8b4;
@@ -13444,6 +13444,16 @@ body:has(.compare-bar) {
   flex-wrap: wrap;
   justify-content: center;
   gap: 10px;
+}
+
+/* Owner, 2026-09-30: "too spacing. put it closer" — one flex child of
+   .fdv-hero, not two, so the hero's own 48px gap only applies once
+   (between the marquee and this whole group), not again between the
+   title and the badge row inside it. */
+.fdv-hero-badges-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 /* Real project media sliding right to left, same recipe as /web-design's

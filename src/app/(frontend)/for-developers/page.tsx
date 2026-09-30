@@ -187,15 +187,21 @@ export default async function ForDevelopersPage() {
 
         {/* Owner, 2026-09-29: "put these below the imagee" — moved out of
             .fdv-hero-content to after the marquee, same placement
-            /web-design uses for its own hero chip list below its marquee. */}
-        <p className="fdv-hero-badges-title">Badges your listing can earn</p>
-        <div className="fdv-hero-badges" aria-hidden="true">
-          {BADGES.map((badge) => (
-            <span key={badge.key} className={badge.className}>
-              {badge.icon ? <badge.icon className="h-3 w-3" aria-hidden="true" /> : null}
-              {badge.label}
-            </span>
-          ))}
+            /web-design uses for its own hero chip list below its marquee.
+            Wrapped in one group (owner, 2026-09-30: "too spacing. put it
+            closer") — as two separate direct children of .fdv-hero, the
+            parent's own 48px flex gap was stacking on top of the title's
+            own margin, doubling up the gap between them. */}
+        <div className="fdv-hero-badges-group">
+          <p className="fdv-hero-badges-title">Badges your listing can earn</p>
+          <div className="fdv-hero-badges" aria-hidden="true">
+            {BADGES.map((badge) => (
+              <span key={badge.key} className={badge.className}>
+                {badge.icon ? <badge.icon className="h-3 w-3" aria-hidden="true" /> : null}
+                {badge.label}
+              </span>
+            ))}
+          </div>
         </div>
       </section>
 
