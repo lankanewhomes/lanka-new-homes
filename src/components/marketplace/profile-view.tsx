@@ -207,7 +207,7 @@ export function ProfileView({
             ) : (
               <div className="developer-profile-list">
                 {visibleProjects.map((project) => (
-                  <Link href={`/projects/${project.slug}`} key={project.slug} className="developer-profile-row">
+                  <Link href={`${project.isLand ? "/land" : "/projects"}/${project.slug}`} key={project.slug} className="developer-profile-row">
                     <div className="developer-profile-row-image">
                       {project.heroImage ? <Image src={project.heroImage} alt={project.name} width={150} height={110} /> : <House size={28} />}
                     </div>

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { DeveloperProfileView } from "@/components/marketplace/developer-profile-view";
 import { getAllDevelopers, getDeveloperBySlug } from "@/lib/developer-store";
+import { landToProjectShape } from "@/lib/land-to-project";
+import { getAllLands } from "@/lib/land-store";
 import { getAllProjects } from "@/lib/project-store";
 import { getApprovedReviewsByDeveloperSlug } from "@/lib/review-store";
 import { toAbsoluteUrl } from "@/lib/seo";
@@ -65,7 +67,15 @@ export default async function DeveloperProfilePage({ params }: DeveloperProfileP
   if (!developer) return notFound();
 
   const allProjects = await getAllProjects();
-  const developerProjects = allProjects.filter((p) => p.developerSlug === slug);
+  const allLands = await getAllLands();
+  // A developer's raw land parcels (e.g. Bonavista Phase 2) belong on their
+  // profile alongside their built projects — reshaped via landToProjectShape
+  // (same adapter the /land detail page uses) and marked isLand so
+  // ProfileView links to /land/<slug> instead of /projects/<slug>.
+  const developerLands = allLands
+    .filter((land) => land.sellerType === "developer" && land.sellerSlug === slug)
+    .map(landToProjectShape);
+  const developerProjects = [...allProjects.filter((p) => p.developerSlug === slug), ...developerLands];
   const reviews = await getApprovedReviewsByDeveloperSlug(slug);
 
   const structuredData = {

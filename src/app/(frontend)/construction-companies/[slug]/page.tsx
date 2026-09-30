@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getAllConstructionCompanies, getConstructionCompanyBySlug } from "@/lib/construction-company-store";
+import { landToProjectShape } from "@/lib/land-to-project";
+import { getAllLands } from "@/lib/land-store";
 import { getAllProjects } from "@/lib/project-store";
 import { getApprovedReviewsByEntity } from "@/lib/review-store";
 import { CompanyProfileDetailView } from "@/components/marketplace/company-profile-views";
@@ -36,7 +38,14 @@ export default async function ConstructionCompanyPage({ params }: ConstructionCo
   if (!company) return notFound();
 
   const allProjects = await getAllProjects();
-  const projects = allProjects.filter((project) => project.additionalBuilderSlugs?.includes(slug));
+  const allLands = await getAllLands();
+  // Land sold directly by this construction company (sellerType
+  // "construction_company") — same reasoning as the developer profile
+  // page's equivalent merge.
+  const companyLands = allLands
+    .filter((land) => land.sellerType === "construction_company" && land.sellerSlug === slug)
+    .map(landToProjectShape);
+  const projects = [...allProjects.filter((project) => project.additionalBuilderSlugs?.includes(slug)), ...companyLands];
   const reviews = await getApprovedReviewsByEntity("construction-company", slug);
 
   return (

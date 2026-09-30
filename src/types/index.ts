@@ -289,6 +289,11 @@ export type Project = SeoFields & {
   tapWater?: string;
   type: string;
   status: ProjectStatus;
+  /** True only on a Land record reshaped into this Project shape via
+   * landToProjectShape() (see land-to-project.ts) for reuse in shared
+   * listing UI — its real detail page lives at /land/<slug>, not
+   * /projects/<slug>. Absent/false on every genuine Project. */
+  isLand?: boolean;
   isFeatured?: boolean;
   isMoveInNow?: boolean;
   isDesignBuild?: boolean;

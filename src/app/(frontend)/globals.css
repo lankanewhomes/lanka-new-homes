@@ -14095,7 +14095,9 @@ body:has(.compare-bar) {
    instead of the old 2-column copy-left/panel-right layout (which only
    ever fit one stacked card). */
 .fdv-control-inner {
-  width: min(1180px, calc(100% - 64px));
+  /* Owner, 2026-09-30: "dont put full width. do it like new listing
+     ssection width" — matches .new-listings-section's own cap exactly. */
+  width: min(1280px, calc(100% - 64px));
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -14107,8 +14109,24 @@ body:has(.compare-bar) {
    gap, giving ~104px between the description and whatever followed it.
    The flex gap alone is enough here (same fix as .fdv-hero-badges-group
    earlier: "too spacing. put it closer"). */
+/* Owner, 2026-09-30: "align to the the left the text" — this section's
+   heading now matches the homepage "New listings" heading style
+   (.featured-listings-head: left-aligned, not narrowed to a centered
+   640px column) instead of the site's usual centered .wdx-section-head. */
 .fdv-control-inner > .wdx-section-head {
   margin-bottom: 0;
+  max-width: none;
+  text-align: left;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* The paragraph's own margin: auto (for the normal centered layout) would
+   otherwise still center its 480px box even with text-align: left set
+   above — it needs pinning to the left edge too. */
+.fdv-control-inner > .wdx-section-head p:not(.fdv-eyebrow) {
+  margin-left: 0;
+  margin-right: 0;
 }
 
 .fdv-control-panel-wrap {
