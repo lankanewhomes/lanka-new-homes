@@ -11836,9 +11836,32 @@ body:has(.compare-bar) {
   background: #fff;
 }
 
+/* Owner, 2026-09-30: "change the background i ahve told you beofre what
+   to do" — the same crossed-box texture used elsewhere on the site
+   (Live Sample, /about's hero, /for-developers' hero and final CTA)
+   instead of a flat paper background. */
 .press-section-alt {
+  position: relative;
+  overflow: hidden;
   background: var(--fdv-paper);
   border-top: 1px solid var(--fdv-line);
+}
+
+.press-section-alt::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(21, 20, 26, 0.05) 28px 29px),
+    repeating-linear-gradient(90deg, transparent 0 28px, rgba(21, 20, 26, 0.05) 28px 29px);
+  -webkit-mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
+}
+
+.press-section-alt > * {
+  position: relative;
+  z-index: 1;
 }
 
 .press-contact-card {
