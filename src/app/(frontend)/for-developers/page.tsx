@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ShieldCheck, Zap } from "lucide-react";
+import { ArrowRight, FileText, LayoutGrid, MessageCircle, ShieldCheck, Zap } from "lucide-react";
 import { getProjectBySlug } from "@/lib/project-store";
 import { ListingGridCard } from "@/components/marketplace/listing-page";
 import { ScrollReveal } from "@/components/marketplace/scroll-reveal";
@@ -84,6 +84,16 @@ const ANALYTICS_EXAMPLES = [
     viewsPoints: "0,66 40,64 80,60 120,56 160,50 200,42 240,34 280,24 320,16", inquiriesPoints: "0,88 40,86 80,84 120,80 160,76 200,70 240,64 280,58 320,52",
     leadStatus: [{ label: "New", count: 3 }, { label: "Contacted", count: 10 }, { label: "Site visit", count: 5 }, { label: "Closed", count: 3 }],
   },
+] as const;
+
+// Owner, 2026-09-30: "having 1 analytics is grwat. but have some other
+// feautes also" — real, already-established capabilities every listing
+// has (not invented for this section), shown alongside the analytics
+// example rather than replacing it.
+const PLATFORM_FEATURES = [
+  { icon: MessageCircle, label: "Direct WhatsApp & phone enquiries" },
+  { icon: LayoutGrid, label: "Unlimited photos & floor plans" },
+  { icon: FileText, label: "Brochure downloads" },
 ] as const;
 
 // Owner, 2026-09-29: "for-devlopers faq needs to look this this faq
@@ -216,11 +226,9 @@ export default async function ForDevelopersPage() {
           scroll target (renamed below to "#show-product"). */}
       {productProject ? (
         <section className="fdv-showcase-product" id="show-product" aria-label="A real project page">
-          <div className="fdv-section-head" data-reveal>
+          <div className="wdx-section-head" data-reveal>
             <h2>A better way to present your developments.</h2>
-            <p className="fdv-section-sub">
-              An iframe of a real, live listing, not a static photo — see exactly what a buyer sees.
-            </p>
+            <p>An iframe of a real, live listing, not a static photo — see exactly what a buyer sees.</p>
           </div>
 
           <div className="fdv-product-frame" data-reveal>
@@ -256,6 +264,20 @@ export default async function ForDevelopersPage() {
             included on every one of your projects from day one.
           </p>
         </div>
+
+        {/* Owner, 2026-09-30: "having 1 analytics is grwat. but have some
+            other feautes also" — real capabilities every listing already
+            has, alongside the analytics example rather than in place of
+            it. */}
+        <ul className="fdv-platform-features" data-reveal aria-label="Also included on every listing">
+          {PLATFORM_FEATURES.map((feature) => (
+            <li key={feature.label}>
+              <feature.icon className="h-4 w-4" aria-hidden="true" />
+              {feature.label}
+            </li>
+          ))}
+        </ul>
+
         <div className="fdv-control-panel-wrap" data-reveal>
           <div className="fdv-analytics-row">
           {ANALYTICS_EXAMPLES.map((example, index) => (
@@ -317,9 +339,9 @@ export default async function ForDevelopersPage() {
 
       {showcaseProjects.length > 0 ? (
         <section className="fdv-live-listings" id="listings" aria-label="Live listings">
-          <div className="fdv-section-head" data-reveal>
+          <div className="wdx-section-head" data-reveal>
             <h2>This is what a listing looks like.</h2>
-            <p className="fdv-section-sub">Not a mockup — real, currently-published listings, shown the exact way buyers browse them.</p>
+            <p>Not a mockup — real, currently-published listings, shown the exact way buyers browse them.</p>
           </div>
           <div className="home-card-grid fdv-showcase-grid" data-reveal>
             {showcaseProjects.map((project) => (

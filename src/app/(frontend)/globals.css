@@ -13490,9 +13490,14 @@ body:has(.compare-bar) {
   color: #b8b8b4;
 }
 
+/* Owner, 2026-09-30: "these badhes can be in 2 row. masoanry." — a
+   column-flowing grid pinned to 2 rows (badges fill down each column,
+   then start a new one) instead of a flex-wrap row that reflows to
+   however many rows fit the viewport width. */
 .fdv-hero-badges {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-rows: repeat(2, auto);
+  grid-auto-flow: column;
   justify-content: center;
   gap: 10px;
 }
@@ -13501,10 +13506,13 @@ body:has(.compare-bar) {
    .fdv-hero, not two, so the hero's own 48px gap only applies once
    (between the marquee and this whole group), not again between the
    title and the badge row inside it. */
+/* Owner, 2026-09-30: "this section needs padding on the bttom" (the
+   badges row, the last thing in the hero before the next section). */
 .fdv-hero-badges-group {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding-bottom: 48px;
 }
 
 /* Real project media sliding right to left, same recipe as /web-design's
@@ -13579,6 +13587,14 @@ body:has(.compare-bar) {
   .fdv-hero-marquee-frame {
     width: 220px;
   }
+
+  /* The 2-row column-flow grid needs a fixed viewport width to look right
+     (5 columns × 2 rows) — on a phone that's wider than the screen, so it
+     falls back to a plain wrapping row here. */
+  .fdv-hero-badges {
+    display: flex;
+    flex-wrap: wrap;
+  }
 }
 
 /* 2 — INTRODUCTION */
@@ -13647,7 +13663,7 @@ body:has(.compare-bar) {
 .fdv-reasons {
   position: relative;
   overflow: hidden;
-  padding: 100px 0;
+  padding: 48px 0;
   background: #fff;
   border-top: 1px solid var(--fdv-line);
 }
@@ -13746,10 +13762,16 @@ body:has(.compare-bar) {
    them. Same technique /web-design's sample band uses
    (.wdx-sample::before), brand orange instead of white since this sits
    on a light background, not a dark one. */
+/* Owner, 2026-09-30: "top and bottom should ahve the same padding for
+   each section" — was 60px/130px. */
+/* Owner, 2026-09-30: "other section on web-design and for-devloerps pages
+   have the same padding as hero section" — every section on these two
+   pages now matches .fdv-hero's own 48px, instead of each section picking
+   its own value. */
 .fdv-showcase-product {
   position: relative;
   overflow: hidden;
-  padding: 60px 0 130px;
+  padding: 48px 0;
   background: var(--fdv-paper);
   border-top: 1px solid var(--fdv-line);
 }
@@ -13800,8 +13822,21 @@ body:has(.compare-bar) {
   text-align: center;
 }
 
+/* Owner, 2026-09-30: "this need to have border" — was the plain underline
+   .fdv-cta-secondary is elsewhere; a dark-on-light border since this sits
+   on a light section, not a hero. */
 .fdv-product-cta {
+  padding: 14px 28px;
+  border: 1px solid var(--fdv-line);
+  border-radius: 999px;
   color: var(--fdv-ink);
+}
+
+.fdv-product-cta:hover {
+  background: var(--fdv-ink);
+  border-color: var(--fdv-ink);
+  color: #fff;
+  opacity: 1;
 }
 
 .fdv-caption {
@@ -13904,8 +13939,10 @@ body:has(.compare-bar) {
 }
 
 /* 8 — ANALYTICS DASHBOARD */
+/* Owner, 2026-09-30: "top and bottom should ahve the same padding for
+   each section" — was 40px/130px. */
 .fdv-control {
-  padding: 40px 0 130px;
+  padding: 48px 0;
   background: #efe9dc;
   border-top: 1px solid var(--fdv-line);
 }
@@ -13920,6 +13957,30 @@ body:has(.compare-bar) {
   display: flex;
   flex-direction: column;
   gap: 48px;
+}
+
+/* Owner, 2026-09-30: "having 1 analytics is grwat. but have some other
+   feautes also" — a plain row of real, already-established capabilities. */
+.fdv-platform-features {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px 28px;
+}
+
+.fdv-platform-features li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--fdv-muted);
+}
+
+.fdv-platform-features li svg {
+  color: var(--fdv-accent);
 }
 
 .fdv-control-panel-wrap {
@@ -14679,9 +14740,11 @@ body:has(.compare-bar) {
    the paper cream) + "the cards i dont need background" — scoped to just
    this section so the real .home-project-card everywhere else on the site
    (homepage, /projects, etc.) keeps its own card look. */
+/* Owner, 2026-09-30: "top and bottom should ahve the same padding for
+   each section" — was 60px/130px. */
 .fdv-live-listings {
   background: #fff;
-  padding: 60px 0 130px;
+  padding: 48px 0;
   border-top: 1px solid var(--fdv-line);
 }
 
@@ -14719,7 +14782,7 @@ body:has(.compare-bar) {
 .fdv-cta-final {
   position: relative;
   background: var(--fdv-ink);
-  padding: 110px 0;
+  padding: 48px 0;
   color: #fff;
   overflow: hidden;
 }
@@ -15191,12 +15254,16 @@ body:has(.compare-bar) {
 }
 
 /* Owner, 2026-09-29: "needs moe padding on top... and bottom". */
+/* Owner, 2026-09-30: "hero text padding are different. make it like
+   for-develoeprs" — matches .fdv-hero-content exactly (padding-top only,
+   no bottom padding), superseding the earlier "needs moe padding on
+   top... and bottom" pass on this same rule. */
 .wdx-hero-content {
   position: relative;
   z-index: 1;
   width: min(1180px, calc(100% - 64px));
   margin: 0 auto;
-  padding: 56px 0 40px;
+  padding-top: 48px;
   text-align: center;
 }
 
@@ -15422,7 +15489,7 @@ body:has(.compare-bar) {
    and a crossed grid of thin lines instead of one diagonal set. */
 .wdx-sample {
   position: relative;
-  padding: 120px 0 120px;
+  padding: 48px 0;
   background: #1a2430;
   color: #f1eee6;
   overflow: hidden;
@@ -15666,20 +15733,42 @@ body:has(.compare-bar) {
    arbitrary rather than intentional. Bottom padding matches the top
    (90px) now that nothing follows it, instead of the old 140px that
    assumed a CTA band was still coming after it. */
+/* Owner, 2026-09-30: "this section needs a different backgeound...
+   totaly differnt color" (was the same --fdv-paper cream as the sections
+   around it) -> tried a deep green -> "make it other color" -> a deep
+   warm brown instead, distinct from every other dark tone already used
+   on these pages (--fdv-ink, .wdx-sample's slate blue). The section
+   head's own h2/p need a light-text override since they sit directly on
+   this background, unlike the FAQ cards (.guide-page-faq-item), which
+   carry their own white bg. */
 .wdx-faq {
   position: relative;
   overflow: hidden;
-  padding: 90px 0;
-  background: var(--fdv-paper);
+  padding: 48px 0;
+  background: #2e2018;
   border-top: 1px solid var(--fdv-line);
 }
 
+.wdx-faq .wdx-section-head h2 {
+  color: #fff;
+}
+
+.wdx-faq .wdx-section-head p {
+  color: #b8c4bb;
+}
+
+/* Owner, 2026-09-30: "this lines needs ot be also sqaure but difernt from
+   other sections" — a crossed (square) grid like the rest of the site,
+   but kept in the brand orange instead of white/dark lines, so it still
+   reads as its own thing next to the other box-textured sections. */
 .wdx-faq::before {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background-image: repeating-linear-gradient(45deg, transparent 0 18px, rgba(244, 123, 54, 0.12) 18px 19px);
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 24px, rgba(244, 123, 54, 0.12) 24px 25px),
+    repeating-linear-gradient(90deg, transparent 0 24px, rgba(244, 123, 54, 0.12) 24px 25px);
   -webkit-mask-image: radial-gradient(ellipse 75% 90% at center, #000 35%, transparent 100%);
   mask-image: radial-gradient(ellipse 75% 90% at center, #000 35%, transparent 100%);
 }
