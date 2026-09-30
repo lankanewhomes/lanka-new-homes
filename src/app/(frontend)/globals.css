@@ -15097,13 +15097,16 @@ body:has(.compare-bar) {
   color: #b9b5aa;
 }
 
+/* Owner, 2026-09-29: "put this in center... on the bottom center" — the
+   button and its caption stacked and centered, not a left-aligned row. */
 .wdx-sample-foot {
   width: min(1180px, calc(100% - 64px));
   margin: 72px auto 0;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   align-items: center;
-  gap: 18px 28px;
+  text-align: center;
+  gap: 14px;
 }
 
 .wdx-sample-foot .fdv-cta-primary {

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ChevronDown, LayoutTemplate, Search } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { ScrollReveal } from "@/components/marketplace/scroll-reveal";
 import { HeroMarquee } from "@/components/marketplace/web-design-frames";
 import { SampleSiteSwitcher } from "@/components/marketplace/web-design-sample-switcher";
@@ -101,27 +101,6 @@ export default function WebDesignPage() {
         </div>
         <div data-reveal>
           <SampleSiteSwitcher />
-        </div>
-      </section>
-
-      {/* 6 — LISTING VS WEBSITE */}
-      <section className="wdx-compare" id="compare" aria-label="A listing or a website">
-        <div className="wdx-section-head" data-reveal>
-          <h2>A listing to get discovered. A site to close the sale.</h2>
-        </div>
-        <div className="wdx-compare-grid">
-          <div className="wdx-compare-card" data-reveal>
-            <Search size={26} strokeWidth={1.4} aria-hidden="true" />
-            <h3>A LankaNewHomes listing</h3>
-            <p>Puts your project in front of buyers already searching. Free to list, live in minutes — no design work needed from you.</p>
-            <Link href="/for-developers" className="fdv-text-link">Why developers list with us →</Link>
-          </div>
-          <div className="wdx-compare-card wdx-compare-card-dark" data-reveal>
-            <LayoutTemplate size={26} strokeWidth={1.4} aria-hidden="true" />
-            <h3>A dedicated project website</h3>
-            <p>Your own domain and brand, built around this project specifically — where every other lead you generate (ads, signboards, referrals) ends up.</p>
-            <Link href="/contact" className="fdv-text-link">Talk to us about a site →</Link>
-          </div>
         </div>
       </section>
 
