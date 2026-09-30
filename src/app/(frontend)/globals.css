@@ -14995,14 +14995,16 @@ body:has(.compare-bar) {
   list-style: none;
 }
 
+/* Owner, 2026-09-29: "need a differnt backgeound" (was #fff, same as the
+   page around it) + "no bold" (was 600). */
 .neighborhood-nearby-areas a,
 .neighborhood-nearby-areas span {
   display: inline-block;
   padding: 9px 16px;
   border: 1px solid #e4e2db;
-  background: #fff;
+  background: #faf7f0;
   font-size: 13.5px;
-  font-weight: 600;
+  font-weight: 400;
   color: #1f1f1f;
   text-decoration: none;
   transition: border-color 0.15s ease, color 0.15s ease;
