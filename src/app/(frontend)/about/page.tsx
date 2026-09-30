@@ -72,7 +72,11 @@ export default async function AboutPage() {
           </p>
           <div className="fdv-hero-ctas">
             <Link href="/projects" className="fdv-cta-primary">Browse new homes</Link>
-            <Link href="/for-developers" className="fdv-cta-secondary">For developers</Link>
+            {/* Owner, 2026-09-30: "For developers needs a border" — same
+                bordered pill /for-developers' own hero secondary button
+                uses (.fdv-hero-explore-link), not the plain underline
+                .fdv-cta-secondary is elsewhere. */}
+            <Link href="/for-developers" className="fdv-cta-secondary fdv-hero-explore-link">For developers</Link>
           </div>
 
           {/* Owner, 2026-09-29: "these should be under the hero buttons" —

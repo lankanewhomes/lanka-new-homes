@@ -11716,6 +11716,14 @@ body:has(.compare-bar) {
   padding: 64px 0;
 }
 
+/* Owner, 2026-09-30: "these buttons shouldnt have Browse new homes / For
+   developers bold" — .fdv-cta-primary/.fdv-cta-secondary are shared with
+   /web-design and /contact (not mentioned, left as-is), so this is scoped
+   to /about's own hero buttons rather than changed site-wide. */
+.about-page .fdv-hero-ctas a {
+  font-weight: 400;
+}
+
 /* Owner, 2026-09-29: "needs a backgeound apttern like box" — same crossed-
    box texture as /web-design's Live Sample band (.wdx-sample::before),
    scoped to /about's own hero so /for-developers' hero (marquee already
@@ -13612,10 +13620,33 @@ body:has(.compare-bar) {
    simpler"). Full-bleed section (background below) with the grid as its
    own width-constrained inner wrapper, matching the rest of this page's
    sections. */
+/* Owner, 2026-09-30: "change this or redesign it. also make sure
+   backgreound" (What we stand for) — same crossed-box texture as the
+   rest of the site, adapted for this section's light background (dark
+   lines, not white ones). */
 .fdv-reasons {
+  position: relative;
+  overflow: hidden;
   padding: 100px 0;
   background: #fff;
   border-top: 1px solid var(--fdv-line);
+}
+
+.fdv-reasons::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(21, 20, 26, 0.04) 28px 29px),
+    repeating-linear-gradient(90deg, transparent 0 28px, rgba(21, 20, 26, 0.04) 28px 29px);
+  -webkit-mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
+}
+
+.fdv-reasons > * {
+  position: relative;
+  z-index: 1;
 }
 
 .fdv-reasons-grid {
@@ -15113,6 +15144,30 @@ body:has(.compare-bar) {
   overflow: hidden;
   background: var(--fdv-ink);
   color: #fff;
+}
+
+/* Owner, 2026-09-30: "needa lines for hero. make sure same as about us
+   page hero. the background" — same two-scale box texture as .fdv-hero
+   (/about, /for-developers). `.wdx-hero > *` puts every direct child
+   above it — .wdx-hero-chips-title/.wdx-hero-chips have no z-index of
+   their own (unlike .wdx-hero-content/.wdx-marquee, which already do). */
+.wdx-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 22px, rgba(255, 255, 255, 0.04) 22px 23px),
+    repeating-linear-gradient(90deg, transparent 0 22px, rgba(255, 255, 255, 0.04) 22px 23px),
+    repeating-linear-gradient(0deg, transparent 0 88px, rgba(255, 255, 255, 0.07) 88px 89px),
+    repeating-linear-gradient(90deg, transparent 0 88px, rgba(255, 255, 255, 0.07) 88px 89px);
+  -webkit-mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
+}
+
+.wdx-hero > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* Owner, 2026-09-29: "needs moe padding on top... and bottom". */
