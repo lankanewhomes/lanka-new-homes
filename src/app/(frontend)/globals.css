@@ -8344,18 +8344,37 @@ a.developer-profile-press-title {
   font-weight: 400;
 }
 
-/* /admin-login, /developers/login, /developers/register only. Styled as a
-   floating card matching the buyer-facing login/signup popup
-   (.auth-modal-card) — same width, radius, shadow and padding — instead of
-   the form sitting bare on the page. */
+/* /admin-login, /developers/login, /developers/register,
+   /developers/forgot-password only. Styled as a floating card matching
+   the buyer-facing login/signup popup (.auth-modal-card) — same width,
+   radius, shadow and padding — instead of the form sitting bare on the
+   page. Wrapped in .payload-auth-bg (a plain full-width band) rather than
+   sitting straight on the page's own white background — a white card
+   with only a soft shadow to mark its edge, on an equally white page,
+   made the shadow's blur read as a large foggy "empty" gap above and
+   below it instead of a crisp card (owner, 2026-09-30: mobile spacing on
+   /developers/register and /developers/login "on top and also... on the
+   bottom... be consistent"). The margin that used to live here moved to
+   the wrapper's own padding, and the shadow is tighter now that it has
+   real contrast to work against instead of doing all the work itself. */
+.payload-auth-bg {
+  /* Literal colour, not var(--fdv-paper) — that token only exists inside
+     .fdv-page, which none of these 4 pages carry; the variable silently
+     resolved to nothing and the background stayed transparent. Same hex
+     --fdv-paper itself resolves to, so it still matches the "paper"
+     colour every .fdv-page section elsewhere on the site uses. */
+  background: #f7f4ee;
+  padding: 48px 0 64px;
+}
+
 .payload-auth-page {
   width: 100%;
   max-width: 420px;
-  margin: 56px auto 90px;
+  margin: 0 auto;
   background: #fff;
   border-radius: 0;
   padding: 44px 32px 32px;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
 }
 
 .payload-auth-page h1 {

@@ -2588,3 +2588,33 @@ have featured article on the hero section." Rebuilt both:
   and not nested in a `<section>`) — also bumped section spacing from
   36px/40px to a flat 48px while fixing it, closer to the reference's own
   rhythm.
+
+## Payload auth pages (`/admin-login`, `/developers/login`,
+`/developers/register`, `/developers/forgot-password`) (2026-09-30)
+
+These 4 pages share `.payload-auth-page` — a white card (border-radius 0,
+shadow) meant to look like the buyer-facing login/signup popup
+(`.auth-modal-card`). It used to sit straight on the page's own plain
+white background with nothing but a `0 24px 60px rgba(0,0,0,0.18)` shadow
+marking its edge — since the card and the page were the same colour, that
+shadow's blur read as a large, foggy "empty" gap above and below the card
+rather than a crisp floating card. Owner: mobile spacing on
+`/developers/register` and `/developers/login`, "on top and also...on
+the bottom... be consistent."
+
+Fixed by wrapping the card in a new `.payload-auth-bg` (plain full-width
+band, `padding: 48px 0 64px`) with its own visible background, so the
+card has real contrast to sit against; the shadow dropped to `0 12px 32px
+rgba(0,0,0,0.12)` now that it isn't doing all the work of implying an
+edge by itself, and the margin that used to live on `.payload-auth-page`
+moved to the wrapper's padding instead (`margin: 0 auto` now). One gotcha
+along the way: the wrapper's background was first written as `var(--fdv-paper)`,
+which resolved to nothing — that token only exists inside `.fdv-page`,
+which none of these 4 pages carry — so the "fix" initially changed
+nothing. Uses the literal hex (`#f7f4ee`, the same value `--fdv-paper`
+itself holds) instead.
+
+Applying to a page means wrapping its existing
+`<div className="static-page-shell auth-page payload-auth-page">` in
+`<div className="payload-auth-bg">` — the inner div's classes are
+unchanged.

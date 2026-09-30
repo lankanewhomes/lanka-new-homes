@@ -13,17 +13,19 @@ export const metadata: Metadata = {
 // Linked from both /developers/login and /admin-login.
 export default function DeveloperForgotPasswordPage() {
   return (
-    <div className="static-page-shell auth-page payload-auth-page">
-      <h1>Reset your password</h1>
-      <p className="static-page-lede auth-page-lede">
-        Enter the email on your account and we&apos;ll send you a link to set a new password.
-      </p>
+    <div className="payload-auth-bg">
+      <div className="static-page-shell auth-page payload-auth-page">
+        <h1>Reset your password</h1>
+        <p className="static-page-lede auth-page-lede">
+          Enter the email on your account and we&apos;ll send you a link to set a new password.
+        </p>
 
-      <PayloadForgotPasswordForm />
+        <PayloadForgotPasswordForm />
 
-      <p className="static-page-note auth-page-note">
-        Remembered it? <Link href="/developers/login">Log in</Link>.
-      </p>
+        <p className="static-page-note auth-page-note">
+          Remembered it? <Link href="/developers/login">Log in</Link>.
+        </p>
+      </div>
     </div>
   );
 }
