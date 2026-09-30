@@ -121,11 +121,21 @@
 }
 
 @layer base {
+  /* Found 2026-09-30 chasing "the hero images need to scroll, a carousel
+     effect" on /for-developers and /web-design: this universal !important
+     override — present since the very first commit that scaffolded
+     Payload/shadcn (2026-09-02) — has been silently disabling every
+     `animation` and `transition` declared anywhere on the site ever
+     since, including ones authored much later that were never actually
+     seen running: both hero marquees (wdx-marquee-slide), the FAQ
+     chevron rotation, the "see a sample" arrow nudge, every button/card
+     hover transition, and more. Each of those already has its own
+     @media (prefers-reduced-motion: reduce) override where it matters,
+     so a blanket site-wide kill switch was never the right way to
+     handle that — this just removes it and lets each animation run as
+     designed. */
   * {
     @apply border-border outline-ring/50;
-    animation: none !important;
-    transition: none !important;
-    scroll-behavior: auto !important;
   }
 
   body {
