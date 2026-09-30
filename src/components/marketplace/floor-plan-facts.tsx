@@ -24,16 +24,21 @@ const yesNoValue = (value: unknown) => (hasText(value) ? value : undefined);
 
 type FactRow = { label: string; value: React.ReactNode };
 
+// Owner, 2026-09-29: "downloads shouldnt be there., deposit, floor finish,
+// pantry" — dropped from the fact sheet (both breakpoints). Pantry and
+// Floor finish still show in the Key Features list further down the page
+// (floorPlanFeatureGroup in components.tsx) — that's a separate section
+// the owner wasn't referring to.
 const FLOOR_PLAN_FACTS_DESKTOP = [
   "Plan type", "Beds", "Baths", "Ensuite baths", "Powder room", "Total SqFt", "Interior SqFt", "Balcony", "Balcony SqFt", "Terrace SqFt", "Land extent",
-  "Ceiling height", "Floor range", "Aspect", "View", "Price LKR", "Per SqFt", "Maintenance / mo", "Deposit", "Parking", "Parking type",
-  "Storage", "Utility area", "Maid's room", "Pantry", "Handover condition", "Furnishing", "AC provision", "Hot water", "Floor finish",
-  "Units in plan", "Units available", "Availability", "Available floors", "Downloads",
+  "Ceiling height", "Floor range", "Aspect", "View", "Price LKR", "Per SqFt", "Maintenance / mo", "Parking", "Parking type",
+  "Storage", "Utility area", "Maid's room", "Handover condition", "Furnishing", "AC provision", "Hot water",
+  "Units in plan", "Units available", "Availability", "Available floors",
 ];
 
 const FLOOR_PLAN_FACTS_MOBILE = [
   "Total SqFt", "Interior SqFt", "Balcony", "Balcony SqFt", "Land extent", "Per SqFt", "Maintenance / mo", "Floor range", "View", "Ceiling height", "Parking",
-  "Storage", "Utility area", "Maid's room", "Handover condition", "Furnishing", "Units available", "Availability", "Available floors", "Downloads",
+  "Storage", "Utility area", "Maid's room", "Handover condition", "Furnishing", "Units available", "Availability", "Available floors",
 ];
 
 // Developer's per-floor tracker (FloorPlan.floorAvailability) → "2, 28 of 28
@@ -71,39 +76,19 @@ function floorPlanFactRows(plan: FloorPlan, balcony?: string): Map<string, FactR
   add("Price LKR", hasNumber(plan.startingPriceLkr) ? `From ${formatLkr(plan.startingPriceLkr)}` : undefined);
   add("Per SqFt", hasNumber(plan.pricePerSqFtLkr) ? `${formatLkr(plan.pricePerSqFtLkr)} / SqFt` : undefined);
   add("Maintenance / mo", hasNumber(plan.maintenancePerMonthLkr) ? `${formatLkr(plan.maintenancePerMonthLkr)} / month` : undefined);
-  add("Deposit", hasText(plan.deposit) ? plan.deposit : undefined);
   add("Parking", hasNumber(plan.parkingSpaces) ? plan.parkingSpaces : undefined);
   add("Parking type", hasText(plan.parkingType) ? plan.parkingType : undefined);
   add("Storage", yesNoValue(plan.storage));
   add("Utility area", yesNoValue(plan.utilityArea));
   add("Maid's room", yesNoValue(plan.maidsRoom));
-  add("Pantry", yesNoValue(plan.pantry));
   add("Handover condition", hasText(plan.handoverCondition) ? plan.handoverCondition : undefined);
   add("Furnishing", hasText(plan.furnishing) ? plan.furnishing : undefined);
   add("AC provision", hasText(plan.acProvision) ? plan.acProvision : undefined);
   add("Hot water", hasText(plan.hotWater) ? plan.hotWater : undefined);
-  add("Floor finish", hasText(plan.floorFinish) ? plan.floorFinish : undefined);
   add("Units in plan", hasNumber(plan.unitsInPlan) ? plan.unitsInPlan : undefined);
   add("Units available", hasNumber(plan.unitsAvailable) ? plan.unitsAvailable : undefined);
   add("Availability", hasText(plan.availability) ? plan.availability : undefined);
   add("Available floors", availableFloorsValue(plan));
-  // Ground/First/Second-floor images for a multi-storey unit are shown as
-  // browsable lightbox photos on the plan's hero (components.tsx) instead —
-  // this row is only for genuinely downloadable files (PDFs), so it doesn't
-  // duplicate them under a misleading "Downloads" label.
-  const downloadableDocs = (plan.planDocuments ?? []).filter((doc) => !/\.(jpe?g|png|webp|avif)(\?|$)/i.test(doc.url));
-  add(
-    "Downloads",
-    downloadableDocs.length ? (
-      <span className="floor-plan-downloads">
-        {downloadableDocs.map((doc, index) => (
-          <a key={`${doc.url}-${index}`} href={doc.url} target="_blank" rel="noreferrer">
-            {doc.label}
-          </a>
-        ))}
-      </span>
-    ) : undefined,
-  );
   return rows;
 }
 
