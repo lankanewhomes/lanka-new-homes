@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
-import { Building2, Search } from "lucide-react";
 import { getAllProjects } from "@/lib/project-store";
 import { getAllLands } from "@/lib/land-store";
 import { getAllDevelopers } from "@/lib/developer-store";
@@ -103,33 +103,36 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      <section className="wdx-compare" aria-label="For developers or for buyers">
-        <div className="wdx-section-head" data-reveal>
-          <h2>Whether you&apos;re building or buying.</h2>
-        </div>
-        <div className="wdx-compare-grid">
-          <div className="wdx-compare-card wdx-compare-card-dark" data-reveal>
-            <Building2 size={26} strokeWidth={1.4} aria-hidden="true" />
-            <h3>For Developers</h3>
+      {/* Owner, 2026-09-29: "add more section... also add some images also
+          please" — real project photography, not stock, same rule as the
+          rest of the site's marketing pages. */}
+      {projects.length > 0 ? (
+        <section className="about-showcase" aria-label="What's already on LankaNewHomes">
+          <div className="wdx-section-head" data-reveal>
+            <h2>See what&apos;s already on LankaNewHomes.</h2>
             <p>
-              Create a public profile, manage your project listings, receive lead alerts, and showcase your
-              developments to buyers — whether you&apos;re selling new apartments, condominiums, villas, houses, or
-              developer-owned residential land.
+              A sample of the real developments already listed — apartments, villas, houses and residential
+              land, from developers across the island.
             </p>
-            <Link href="/for-developers" className="fdv-text-link">Why developers list with us →</Link>
           </div>
-          <div className="wdx-compare-card" data-reveal>
-            <Search size={26} strokeWidth={1.4} aria-hidden="true" />
-            <h3>For Buyers</h3>
-            <p>
-              Discover new homes and developer land projects by location or property type. Explore project
-              details, view floor plans, amenities and locations, and request information directly from the
-              developer or sales team behind each project.
-            </p>
-            <Link href="/projects" className="fdv-text-link">Browse new homes →</Link>
+          <div className="about-showcase-grid" data-reveal>
+            {projects.slice(0, 6).map((project) => (
+              <Link href={`/projects/${project.slug}`} className="about-showcase-card" key={project.slug}>
+                <div className="about-showcase-card-media">
+                  <Image
+                    src={project.heroImage}
+                    alt={project.name}
+                    fill
+                    sizes="(min-width: 900px) 33vw, 50vw"
+                    className="about-showcase-card-img"
+                  />
+                </div>
+                <span className="about-showcase-card-label">{project.name}</span>
+              </Link>
+            ))}
           </div>
-        </div>
-      </section>
+        </section>
+      ) : null}
 
       <section className="fdv-cta-final" aria-label="Get started">
         <div className="fdv-cta-final-inner" data-reveal>

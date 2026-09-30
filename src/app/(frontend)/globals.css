@@ -11745,6 +11745,64 @@ body:has(.compare-bar) {
   gap: 12px;
 }
 
+/* Owner, 2026-09-29: "add more section... add some images also please" —
+   real project photography, boxed cards matching the standing "add lines,
+   box" direction. */
+.about-showcase {
+  padding: 100px 0;
+  background: var(--fdv-paper);
+  border-top: 1px solid var(--fdv-line);
+}
+
+.about-showcase-grid {
+  width: min(1180px, calc(100% - 64px));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.about-showcase-card {
+  display: block;
+  border: 1px solid var(--fdv-line);
+  background: #fff;
+  text-decoration: none;
+  transition: border-color 0.2s ease;
+}
+
+.about-showcase-card:hover {
+  border-color: var(--fdv-ink);
+}
+
+.about-showcase-card-media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+}
+
+.about-showcase-card-img {
+  object-fit: cover;
+}
+
+.about-showcase-card-label {
+  display: block;
+  padding: 14px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--fdv-ink);
+}
+
+@media (max-width: 900px) {
+  .about-showcase-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .about-showcase-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 900px) {
   .about-values-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -13405,7 +13463,16 @@ body:has(.compare-bar) {
   margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 48px;
+  gap: 20px;
+}
+
+/* Owner, 2026-09-29: "re design this" (What we stand for) + the standing
+   rule that followed ("add lines, box, etc.") — a bordered box per value
+   instead of plain stacked text with no boundary. */
+.fdv-reason-simple {
+  border: 1px solid var(--fdv-line);
+  padding: 32px 28px;
+  background: var(--fdv-paper);
 }
 
 .fdv-reason-simple h3 {
@@ -15345,104 +15412,6 @@ body:has(.compare-bar) {
   transform: translateX(-50%);
 }
 
-
-
-/* Listing vs website */
-.wdx-compare {
-  padding: 130px 0 110px;
-  background: #fff;
-  border-top: 1px solid var(--fdv-line);
-}
-
-.wdx-compare-grid {
-  width: min(1180px, calc(100% - 64px));
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-}
-
-.wdx-compare-card {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 26px 28px 24px;
-  border: 1px solid var(--fdv-line);
-  background: #fbf9f4;
-}
-
-.wdx-compare-card svg {
-  width: 22px;
-  height: 22px;
-  color: var(--fdv-ink);
-}
-
-.wdx-compare-card h3 {
-  margin: 14px 0 8px;
-  font-weight: 700;
-  font-size: 20px;
-  line-height: 1.2;
-}
-
-.wdx-compare-card p {
-  margin: 0;
-  font-size: 16px;
-  line-height: 1.7;
-  color: var(--fdv-muted);
-}
-
-/* Pushes each card's link to the bottom of the (flex-column) card
-   regardless of paragraph length, so the two links align across the row
-   instead of sitting right under whichever paragraph happens to be
-   shorter. */
-.wdx-compare-card .fdv-text-link {
-  margin-top: auto;
-  padding-top: 16px;
-}
-
-.wdx-compare-card-dark {
-  position: relative;
-  overflow: hidden;
-  background: var(--fdv-ink);
-  border-color: var(--fdv-ink);
-  color: #fff;
-}
-
-/* Faint white diagonal lines — the dark card is the one place on this row
-   that gets the texture, a deliberate contrast against the plain light card
-   beside it. */
-.wdx-compare-card-dark::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-image: repeating-linear-gradient(45deg, transparent 0 14px, rgba(255, 255, 255, 0.05) 14px 15px);
-  -webkit-mask-image: radial-gradient(ellipse 90% 90% at center, #000 35%, transparent 100%);
-  mask-image: radial-gradient(ellipse 90% 90% at center, #000 35%, transparent 100%);
-}
-
-.wdx-compare-card-dark > * {
-  position: relative;
-  z-index: 1;
-}
-
-.wdx-compare-card-dark svg {
-  color: #fff;
-}
-
-.wdx-compare-card-dark p {
-  color: #bdb9ae;
-}
-
-.wdx-compare-card-dark .fdv-text-link {
-  color: #fff;
-  border-color: #fff;
-}
-
-.wdx-compare-card-dark .fdv-text-link:hover {
-  color: var(--fdv-accent);
-  border-color: var(--fdv-accent);
-}
 
 
 /* FAQ — same bordered-card accordion pattern as .guide-page-faq-item
