@@ -8398,7 +8398,12 @@ a.developer-profile-press-title {
      --fdv-paper itself resolves to, so it still matches the "paper"
      colour every .fdv-page section elsewhere on the site uses. */
   background: #f7f4ee;
-  padding: 48px 0 64px;
+  /* Cut again (48px/64px -> 16px/24px, owner 2026-09-30: "there's some
+     space between the breadcrumbs and... the other section on the
+     bottom... remove it") — the earlier 48/64 was sized to replace the
+     shadow-bleed gap it fixed, but still read as too much once it had a
+     visible colour of its own instead of just fixing a bug. */
+  padding: 16px 0 24px;
 }
 
 .payload-auth-page {
@@ -11319,7 +11324,7 @@ body:has(.compare-bar) {
   position: relative;
   overflow: hidden;
   background: #0a0a0a;
-  padding: 64px 24px 90px;
+  padding: 96px 24px;
 }
 
 /* Owner, 2026-09-30: "for this we needs box backgeround" — box (crossed
@@ -11896,8 +11901,10 @@ body:has(.compare-bar) {
 /* /press (owner, 2026-09-29: "create it like this" — a Planned.com-style
    press page). Bordered boxes throughout, per the standing "add lines,
    box" direction — see feedback_new_sections_need_lines_boxes memory. */
+/* Owner, 2026-09-30: "apply that also to contact, web-design, press,
+   pages also" — same 96px top/bottom rhythm as /for-developers' hero. */
 .press-section {
-  padding: 90px 0;
+  padding: 96px 0;
   background: #fff;
 }
 
@@ -13813,10 +13820,13 @@ body:has(.compare-bar) {
    have the same padding as hero section" — every section on these two
    pages now matches .fdv-hero's own 48px, instead of each section picking
    its own value. */
+/* Owner, 2026-09-30: "do that same padding for other section on that
+   page" — the hero's own effective top/bottom rhythm (its 48px section
+   padding plus its content/badges' own 48px, ≈96px total) applied here. */
 .fdv-showcase-product {
   position: relative;
   overflow: hidden;
-  padding: 48px 0;
+  padding: 96px 0;
   background: var(--fdv-paper);
   border-top: 1px solid var(--fdv-line);
 }
@@ -13985,10 +13995,35 @@ body:has(.compare-bar) {
 /* 8 — ANALYTICS DASHBOARD */
 /* Owner, 2026-09-30: "top and bottom should ahve the same padding for
    each section" — was 40px/130px. */
+/* Owner, 2026-09-30: "apply a blue bacgroind, like you have for other
+   page. web-design" -> "the blue can be light gray" — a light gray
+   instead, so the section head/platform-features/analytics caption stay
+   on their normal dark-ink colors (no light-text override needed).
+   "it needs lines alsol boxes" — the box texture too, dark lines since
+   the background is light here (not white, like the dark sections). */
 .fdv-control {
-  padding: 48px 0;
-  background: #efe9dc;
+  position: relative;
+  overflow: hidden;
+  padding: 96px 0;
+  background: #eceef0;
   border-top: 1px solid var(--fdv-line);
+}
+
+.fdv-control::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(21, 20, 26, 0.05) 28px 29px),
+    repeating-linear-gradient(90deg, transparent 0 28px, rgba(21, 20, 26, 0.05) 28px 29px);
+  -webkit-mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
+}
+
+.fdv-control > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* Owner, 2026-09-29: "do the cards int a row" — the copy sits above,
@@ -14788,7 +14823,7 @@ body:has(.compare-bar) {
    each section" — was 60px/130px. */
 .fdv-live-listings {
   background: #fff;
-  padding: 48px 0;
+  padding: 96px 0;
   border-top: 1px solid var(--fdv-line);
 }
 
@@ -15532,7 +15567,7 @@ body:has(.compare-bar) {
    and a crossed grid of thin lines instead of one diagonal set. */
 .wdx-sample {
   position: relative;
-  padding: 48px 0;
+  padding: 96px 0;
   background: #1a2430;
   color: #f1eee6;
   overflow: hidden;
@@ -15777,17 +15812,17 @@ body:has(.compare-bar) {
    assumed a CTA band was still coming after it. */
 /* Owner, 2026-09-30: "this section needs a different backgeound...
    totaly differnt color" (was the same --fdv-paper cream as the sections
-   around it) -> tried a deep green -> "make it other color" -> a deep
-   warm brown instead, distinct from every other dark tone already used
-   on these pages (--fdv-ink, .wdx-sample's slate blue). The section
-   head's own h2/p need a light-text override since they sit directly on
-   this background, unlike the FAQ cards (.guide-page-faq-item), which
-   carry their own white bg. */
+   around it) -> deep green -> "make it other color" -> deep warm brown
+   -> "i dont like this backgroun" -> "make it black. white lines box
+   boxes" — plain black, matching /contact's own black background. The
+   section head's own h2/p need a light-text override since they sit
+   directly on this background, unlike the FAQ cards
+   (.guide-page-faq-item), which carry their own white bg. */
 .wdx-faq {
   position: relative;
   overflow: hidden;
-  padding: 48px 0;
-  background: #2e2018;
+  padding: 96px 0;
+  background: #0a0a0a;
   border-top: 1px solid var(--fdv-line);
 }
 
@@ -15796,22 +15831,23 @@ body:has(.compare-bar) {
 }
 
 .wdx-faq .wdx-section-head p {
-  color: #b8c4bb;
+  color: #b8b8b4;
 }
 
 /* Owner, 2026-09-30: "this lines needs ot be also sqaure but difernt from
-   other sections" (orange, not white/dark) -> "Replace all the
-   crossed-line textures site-wide" — a dot-grid like every other
-   section now, kept in the brand orange so it still reads as its own
-   thing next to them. */
+   other sections" (orange) -> "Replace all the crossed-line textures
+   site-wide" -> "alternate please" (back to box) -> "make it black. white
+   lines box boxes" -> "whte lines... and big boxes" — white crossed
+   lines, a much bigger cell size (60px) than the other box-textured
+   sections' 22-28px, so it reads as "big boxes" specifically. */
 .wdx-faq::before {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
   background-image:
-    repeating-linear-gradient(0deg, transparent 0 24px, rgba(244, 123, 54, 0.12) 24px 25px),
-    repeating-linear-gradient(90deg, transparent 0 24px, rgba(244, 123, 54, 0.12) 24px 25px);
+    repeating-linear-gradient(0deg, transparent 0 60px, rgba(255, 255, 255, 0.08) 60px 61px),
+    repeating-linear-gradient(90deg, transparent 0 60px, rgba(255, 255, 255, 0.08) 60px 61px);
   -webkit-mask-image: radial-gradient(ellipse 75% 90% at center, #000 35%, transparent 100%);
   mask-image: radial-gradient(ellipse 75% 90% at center, #000 35%, transparent 100%);
 }
