@@ -104,6 +104,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { SiteLanguage, useLanguage } from "@/components/layout/language-provider";
 import { compactLkr, formatLkr, formatOfficeHours, splitSentences } from "@/lib/format";
+import { planTitleWithFloor } from "@/lib/floor-plan-title";
 import { Amenity, Article, Developer, FloorPlan, Lead, Location, NearbyPlace, Project } from "@/types";
 import { localizedProjectCopy, useListingT } from "@/lib/i18n/use-listing-t";
 import { floorPlanSummarySentence } from "@/lib/i18n/floor-plan-sentence";
@@ -2651,7 +2652,7 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
                   <span className="badge-featured">Featured</span>
                 </div>
               ) : null}
-              <h4>{plan.planName}</h4>
+              <h4>{planTitleWithFloor(plan.planName, plan.floorRange)}</h4>
               <p className="plans-home-price">{plan.startingPriceLkr > 0 ? tPrice(`From ${formatLkr(plan.startingPriceLkr)}`) : <span className="badge-contact-pricing">{t("Contact for pricing")}</span>}</p>
               <p className="plans-home-type">{plan.planType || project.type}</p>
               <div className="plans-home-facts">
