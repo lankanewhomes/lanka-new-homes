@@ -6,6 +6,7 @@ import { getProjectBySlug } from "@/lib/project-store";
 import { ListingGridCard } from "@/components/marketplace/listing-page";
 import { ScrollReveal } from "@/components/marketplace/scroll-reveal";
 import { ScaledPreview, PRODUCT_PREVIEW } from "@/components/marketplace/web-design-frames";
+import { ForDevelopersQuickjump } from "@/components/marketplace/for-developers-quickjump";
 
 export const revalidate = 300;
 
@@ -52,6 +53,17 @@ const SHOWCASE_SLUGS = ["capitol-twinpeaks", "viva-la-vida", "imaarat-bambalapit
 // else it's used), which is why Verified/Responds rendered unstyled
 // before this was added to their className too ("also fix the badges
 // styling").
+// Owner, 2026-09-29: "this is create [great]. keep the content. but add 2
+// more illustrative example.es." — the same panel design/content, shown
+// for 3 of the real showcase projects (so it also visibly backs up the
+// caption below: "every developer gets this... for each of their own
+// projects"), each with its own illustrative (not real) numbers.
+const ANALYTICS_EXAMPLES = [
+  { views: "2,145", inquiries: "38", inquiryRate: "1.8%", avgTime: "96s", viewsPoints: "0,60 40,55 80,48 120,50 160,35 200,30 240,20 280,18 320,10", inquiriesPoints: "0,82 40,80 80,78 120,75 160,72 200,68 240,60 280,58 320,50" },
+  { views: "3,860", inquiries: "72", inquiryRate: "1.9%", avgTime: "112s", viewsPoints: "0,70 40,62 80,58 120,44 160,40 200,26 240,22 280,14 320,8", inquiriesPoints: "0,85 40,80 80,74 120,70 160,64 200,58 240,52 280,44 320,36" },
+  { views: "1,290", inquiries: "21", inquiryRate: "1.6%", avgTime: "84s", viewsPoints: "0,66 40,64 80,60 120,56 160,50 200,42 240,34 280,24 320,16", inquiriesPoints: "0,88 40,86 80,84 120,80 160,76 200,70 240,64 280,58 320,52" },
+] as const;
+
 const BADGES = [
   { key: "verified", label: "Verified", className: "listing-badge-pill badge-verified fdv-badge-pill", icon: ShieldCheck },
   { key: "responder", label: "Responds within 1 hour", className: "listing-badge-pill badge-responder fdv-badge-pill", icon: Zap },
@@ -109,7 +121,10 @@ export default async function ForDevelopersPage() {
             A premium platform built to showcase Sri Lanka&apos;s newest homes, developments and land projects.
           </p>
           <div className="fdv-hero-ctas">
-            <Link href="/developers/register" className="fdv-cta-primary">Register as a Developer</Link>
+            {/* Owner, 2026-09-29: "same styling as list your project. same
+                as the footer. please be constant with design" — the
+                footer/final-CTA pill, not the solid-fill .fdv-cta-primary. */}
+            <Link href="/developers/register" className="fdv-cta-final-button">Register as a Developer</Link>
             <a href="#show-product" className="fdv-cta-secondary fdv-hero-explore-link">
               Explore the platform
               <ArrowRight size={16} strokeWidth={2.5} aria-hidden="true" />
@@ -190,7 +205,7 @@ export default async function ForDevelopersPage() {
       ) : null}
 
       {/* 8 — ANALYTICS DASHBOARD */}
-      <section className="fdv-control" aria-label="Developer analytics dashboard">
+      <section className="fdv-control" id="analytics" aria-label="Developer analytics dashboard">
         <div className="fdv-control-inner">
         <div className="fdv-control-copy" data-reveal>
           <h2>See exactly how buyers find your listing.</h2>
@@ -200,48 +215,46 @@ export default async function ForDevelopersPage() {
           </p>
         </div>
         <div className="fdv-control-panel-wrap" data-reveal>
-          <div className="fdv-analytics-frame" aria-hidden="true">
-            <div className="fdv-analytics-toolbar">
-              <span className="fdv-analytics-title">Listing Analytics</span>
-              <div className="fdv-analytics-ranges">
-                <span className="fdv-analytics-range">Last 7 days</span>
-                <span className="fdv-analytics-range fdv-analytics-range-active">Last 28 days</span>
-                <span className="fdv-analytics-range">Last 90 days</span>
+          {ANALYTICS_EXAMPLES.map((example, index) => (
+            <div className="fdv-analytics-frame" aria-hidden="true" key={index}>
+              <div className="fdv-analytics-toolbar">
+                <span className="fdv-analytics-title">
+                  Listing Analytics{showcaseProjects[index] ? ` — ${showcaseProjects[index].name}` : ""}
+                </span>
+                <div className="fdv-analytics-ranges">
+                  <span className="fdv-analytics-range">Last 7 days</span>
+                  <span className="fdv-analytics-range fdv-analytics-range-active">Last 28 days</span>
+                  <span className="fdv-analytics-range">Last 90 days</span>
+                </div>
+              </div>
+              <div className="fdv-analytics-stats">
+                <div className="fdv-analytics-stat">
+                  <span className="fdv-analytics-stat-label">Views</span>
+                  <span className="fdv-analytics-stat-value">{example.views}</span>
+                </div>
+                <div className="fdv-analytics-stat">
+                  <span className="fdv-analytics-stat-label">Inquiries</span>
+                  <span className="fdv-analytics-stat-value">{example.inquiries}</span>
+                </div>
+                <div className="fdv-analytics-stat">
+                  <span className="fdv-analytics-stat-label">Inquiry rate</span>
+                  <span className="fdv-analytics-stat-value">{example.inquiryRate}</span>
+                </div>
+                <div className="fdv-analytics-stat">
+                  <span className="fdv-analytics-stat-label">Avg. time on page</span>
+                  <span className="fdv-analytics-stat-value">{example.avgTime}</span>
+                </div>
+              </div>
+              <svg className="fdv-analytics-chart" viewBox="0 0 320 90" preserveAspectRatio="none">
+                <polyline className="fdv-analytics-chart-line fdv-analytics-chart-line-views" points={example.viewsPoints} />
+                <polyline className="fdv-analytics-chart-line fdv-analytics-chart-line-inquiries" points={example.inquiriesPoints} />
+              </svg>
+              <div className="fdv-analytics-legend">
+                <span><i className="fdv-analytics-dot fdv-analytics-dot-views" aria-hidden="true" />Views</span>
+                <span><i className="fdv-analytics-dot fdv-analytics-dot-inquiries" aria-hidden="true" />Inquiries</span>
               </div>
             </div>
-            <div className="fdv-analytics-stats">
-              <div className="fdv-analytics-stat">
-                <span className="fdv-analytics-stat-label">Views</span>
-                <span className="fdv-analytics-stat-value">2,145</span>
-              </div>
-              <div className="fdv-analytics-stat">
-                <span className="fdv-analytics-stat-label">Inquiries</span>
-                <span className="fdv-analytics-stat-value">38</span>
-              </div>
-              <div className="fdv-analytics-stat">
-                <span className="fdv-analytics-stat-label">Inquiry rate</span>
-                <span className="fdv-analytics-stat-value">1.8%</span>
-              </div>
-              <div className="fdv-analytics-stat">
-                <span className="fdv-analytics-stat-label">Avg. time on page</span>
-                <span className="fdv-analytics-stat-value">96s</span>
-              </div>
-            </div>
-            <svg className="fdv-analytics-chart" viewBox="0 0 320 90" preserveAspectRatio="none">
-              <polyline
-                className="fdv-analytics-chart-line fdv-analytics-chart-line-views"
-                points="0,60 40,55 80,48 120,50 160,35 200,30 240,20 280,18 320,10"
-              />
-              <polyline
-                className="fdv-analytics-chart-line fdv-analytics-chart-line-inquiries"
-                points="0,82 40,80 80,78 120,75 160,72 200,68 240,60 280,58 320,50"
-              />
-            </svg>
-            <div className="fdv-analytics-legend">
-              <span><i className="fdv-analytics-dot fdv-analytics-dot-views" aria-hidden="true" />Views</span>
-              <span><i className="fdv-analytics-dot fdv-analytics-dot-inquiries" aria-hidden="true" />Inquiries</span>
-            </div>
-          </div>
+          ))}
           <p className="fdv-analytics-caption">
             Illustrative example — every developer gets this exact dashboard, live, for each of their own projects.
           </p>
@@ -250,7 +263,7 @@ export default async function ForDevelopersPage() {
       </section>
 
       {showcaseProjects.length > 0 ? (
-        <section className="fdv-live-listings" aria-label="Live listings">
+        <section className="fdv-live-listings" id="listings" aria-label="Live listings">
           <div className="fdv-section-head" data-reveal>
             <h2>This is what a listing looks like.</h2>
             <p className="fdv-section-sub">Not a mockup — real, currently-published listings, shown the exact way buyers browse them.</p>
@@ -279,6 +292,8 @@ export default async function ForDevelopersPage() {
           <Link href="/developers/register" className="fdv-cta-final-button">Register as a Developer</Link>
         </div>
       </section>
+
+      <ForDevelopersQuickjump />
     </div>
   );
 }

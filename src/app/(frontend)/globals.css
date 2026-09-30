@@ -14435,13 +14435,33 @@ body:has(.compare-bar) {
 /* 10 — PREMIUM CTA — redesigned to match a reference the owner shared,
    2026-09-29: a plain dark band (no photo), a two-tone headline on the
    left, a pill button on the right. */
+/* Owner, 2026-09-29: "lets redesign this section... keep the button" —
+   same crossed-box texture as /web-design's Live Sample band and /about's
+   hero, for a section that otherwise had zero visual texture. The button
+   itself (.fdv-cta-final-button) is untouched. */
 .fdv-cta-final {
+  position: relative;
   background: var(--fdv-ink);
-  padding: 90px 0;
+  padding: 110px 0;
   color: #fff;
+  overflow: hidden;
+}
+
+.fdv-cta-final::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(255, 255, 255, 0.05) 28px 29px),
+    repeating-linear-gradient(90deg, transparent 0 28px, rgba(255, 255, 255, 0.05) 28px 29px);
+  -webkit-mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
 }
 
 .fdv-cta-final-inner {
+  position: relative;
+  z-index: 1;
   width: min(1180px, calc(100% - 64px));
   margin: 0 auto;
   display: flex;
