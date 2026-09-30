@@ -146,7 +146,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
 
       <div className="project-page-content">
         <ProjectStatsChips project={project} />
-        <ProjectDescriptionSection project={project} />
+        <ProjectDescriptionSection project={project} developer={developer} />
 
         <ProjectNarrativeDetails project={project} />
 

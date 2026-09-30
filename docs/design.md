@@ -2618,3 +2618,32 @@ Applying to a page means wrapping its existing
 `<div className="static-page-shell auth-page payload-auth-page">` in
 `<div className="payload-auth-bg">` — the inner div's classes are
 unchanged.
+
+## Project Overview: a "Source" credit line (2026-09-30)
+
+Owner: "under the [Overview] paragraph you need to put a source, where
+did you get those infos... the name of the company and mostly is the
+builders... give it a link." `ProjectDescriptionSection`
+(`components.tsx`) now takes an optional `developer` prop; when
+`developer.website` is set, a small `Source: <developer name>` line
+(linked, `.project-description-source`) renders right under the
+description paragraph, separated by a thin divider.
+
+- **Only the real prose description gets this**, not the floor-plan
+  branch of the same component (a summary built from our own structured
+  facts — bedrooms, price, status — not sourced from anywhere external).
+- **Never shown without a real link** — no `developer.website`, no line;
+  never fabricated.
+- **No extra fetch needed**: every call site that renders the non-floor-plan
+  branch (`/projects/[slug]/page.tsx`, the CMS `listing-preview.tsx`)
+  already fetches the project's `Developer` record for other things
+  (WhatsApp link, "Responds within 1 hour" badge) — just passed it
+  through as a new prop. The floor-plan/land-plot call sites
+  (`/projects/[slug]/floor-plans/[id]`, `/land/[slug]/plots/[id]`) don't
+  pass `developer` here since that branch doesn't use it.
+- CSS: `.project-description-shell p.project-description-source`
+  deliberately repeats the `p` element selector to match
+  `.project-description-shell > p:last-child`'s specificity and win on
+  source order — otherwise that earlier, broader rule (same specificity
+  otherwise) would apply the main paragraph's own larger/darker style to
+  this line instead of its own smaller, muted one.

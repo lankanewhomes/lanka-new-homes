@@ -3238,7 +3238,7 @@ export function TruncatedDescription({ text, paragraphs = false }: { text: strin
   );
 }
 
-export function ProjectDescriptionSection({ project, floorPlan, headingOverride }: { project: Project; floorPlan?: FloorPlan; headingOverride?: string }) {
+export function ProjectDescriptionSection({ project, floorPlan, headingOverride, developer }: { project: Project; floorPlan?: FloorPlan; headingOverride?: string; developer?: Developer }) {
   const { t, language } = useListingT();
   // A specific floor plan has its own detail page (linked from the main
   // project page, which already shows the project-wide highlights/
@@ -3303,6 +3303,18 @@ export function ProjectDescriptionSection({ project, floorPlan, headingOverride 
         </ul>
       ) : null}
       <TruncatedDescription text={fullText} />
+      {/* Owner, 2026-09-30: "under the paragraph you need to put a source,
+          where did you get those infos... the name of the company and
+          mostly is the builders... give it a link." Only the description
+          itself is credited (not the floor-plan branch above, which is a
+          summary built from our own structured data, not sourced prose) —
+          and only when the developer actually has a real website to link
+          to, never a fabricated one. */}
+      {developer?.website ? (
+        <p className="project-description-source">
+          {t("Source")}: <a href={developer.website} target="_blank" rel="noopener noreferrer">{project.developerName}</a>
+        </p>
+      ) : null}
     </section>
   );
 }
