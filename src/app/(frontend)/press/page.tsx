@@ -23,6 +23,8 @@ const BRAND_ASSETS = [
 export default function PressPage() {
   return (
     <div className="fdv-page press-page">
+      {/* Owner, 2026-09-30: "this can be in the hero section" — Media
+          inquiries moved out of its own section, into the hero. */}
       <section className="fdv-hero" aria-label="Press">
         <div className="fdv-hero-content">
           <h1 className="fdv-hero-headline">Press &amp; media.</h1>
@@ -30,16 +32,10 @@ export default function PressPage() {
             Media inquiries and brand assets for LankaNewHomes, Sri Lanka&apos;s marketplace for new homes and
             developer-led land projects.
           </p>
-        </div>
-      </section>
-
-      <section className="press-section" aria-label="Media inquiries">
-        <div className="wdx-section-head" data-reveal>
-          <h2>Media inquiries.</h2>
-        </div>
-        <div className="press-contact-card" data-reveal>
-          <p>For all press and media inquiries, please contact:</p>
-          <a href="mailto:support@lankanewhomes.com" className="press-contact-email">support@lankanewhomes.com</a>
+          <div className="press-contact-card">
+            <p>For all press and media inquiries, please contact:</p>
+            <a href="mailto:support@lankanewhomes.com" className="press-contact-email">support@lankanewhomes.com</a>
+          </div>
         </div>
       </section>
 

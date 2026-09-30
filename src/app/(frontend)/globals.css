@@ -2674,14 +2674,25 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   box-shadow: 0 8px 24px rgba(16, 24, 40, 0.1);
 }
 
+/* Owner, 2026-09-30: "check this websie backgeound for inspiration...
+   the lines" (webdesignetobicoke.ca) -> confirmed as a dot-grid, not
+   lines -> "Replace all the crossed-line textures site-wide" -> "some
+   sections needs box, some are like dots you have right now. alternate
+   please" — so this new radial-gradient dot-grid recipe stayed on some
+   sections (this one, .fdv-showcase-product, .fdv-reasons,
+   .fdv-cta-final, .wdx-sample, .press-section-alt, .contact-page-bg, and
+   the other core-site sections below) while the hero (.fdv-hero/
+   .wdx-hero) and FAQ (.wdx-faq) went back to the original crossed-line
+   box texture, so a page alternates between the two as you scroll
+   instead of every section using the same one (color/opacity kept close
+   to each section's own original line texture, just as dots instead). */
 .stats-contact-card::before {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background-image:
-    repeating-linear-gradient(0deg, transparent 0 28px, rgba(16, 24, 40, 0.05) 28px 29px),
-    repeating-linear-gradient(90deg, transparent 0 28px, rgba(16, 24, 40, 0.05) 28px 29px);
+  background-image: radial-gradient(rgba(16, 24, 40, 0.12) 1.5px, transparent 0);
+  background-size: 22px 22px;
   -webkit-mask-image: radial-gradient(ellipse 90% 100% at center, #000 40%, transparent 100%);
   mask-image: radial-gradient(ellipse 90% 100% at center, #000 40%, transparent 100%);
 }
@@ -3682,7 +3693,8 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background-image: repeating-linear-gradient(135deg, transparent 0 18px, rgba(64, 105, 135, 0.16) 18px 19px);
+  background-image: radial-gradient(rgba(64, 105, 135, 0.35) 1.5px, transparent 0);
+  background-size: 18px 18px;
   -webkit-mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
   mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
 }
@@ -4824,7 +4836,8 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   inset: 0;
   pointer-events: none;
   opacity: 0.6;
-  background-image: repeating-linear-gradient(90deg, transparent 0 15px, rgba(120, 113, 108, 0.1) 15px 16px);
+  background-image: radial-gradient(rgba(120, 113, 108, 0.35) 1.5px, transparent 0);
+  background-size: 16px 16px;
   -webkit-mask-image: radial-gradient(ellipse 70% 80% at center, #000 45%, transparent 100%);
   mask-image: radial-gradient(ellipse 70% 80% at center, #000 45%, transparent 100%);
 }
@@ -5359,8 +5372,9 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 
 .sales-alert-top {
   position: relative;
-  background: #faf8f3;
-  background-image: repeating-linear-gradient(135deg, rgba(163, 129, 46, 0.09) 0 1px, transparent 1px 14px);
+  background-color: #faf8f3;
+  background-image: radial-gradient(rgba(163, 129, 46, 0.3) 1.5px, transparent 0);
+  background-size: 14px 14px;
   border-radius: 0;
   padding: 32px 32px 28px;
 }
@@ -11299,9 +11313,32 @@ body:has(.compare-bar) {
    a light background to read), the CTA card below gets a border so it
    doesn't visually disappear into the now-black page (it was already
    near-black, #1a1a1a). */
+/* Owner, 2026-09-30: "THIS PAGE ALSO NEED A NEW LINES BACKGREOUND" — same
+   dot-grid texture as the rest of the site. */
 .contact-page-bg {
+  position: relative;
+  overflow: hidden;
   background: #0a0a0a;
   padding: 64px 24px 90px;
+}
+
+/* Owner, 2026-09-30: "for this we needs box backgeround" — box (crossed
+   lines), matching the hero treatment on every other page, not dots. */
+.contact-page-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 22px, rgba(255, 255, 255, 0.04) 22px 23px),
+    repeating-linear-gradient(90deg, transparent 0 22px, rgba(255, 255, 255, 0.04) 22px 23px);
+  -webkit-mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
+}
+
+.contact-page-bg > * {
+  position: relative;
+  z-index: 1;
 }
 
 .contact-hero {
@@ -11880,9 +11917,8 @@ body:has(.compare-bar) {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background-image:
-    repeating-linear-gradient(0deg, transparent 0 28px, rgba(21, 20, 26, 0.05) 28px 29px),
-    repeating-linear-gradient(90deg, transparent 0 28px, rgba(21, 20, 26, 0.05) 28px 29px);
+  background-image: radial-gradient(rgba(21, 20, 26, 0.14) 1.5px, transparent 0);
+  background-size: 22px 22px;
   -webkit-mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
   mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
 }
@@ -11892,9 +11928,12 @@ body:has(.compare-bar) {
   z-index: 1;
 }
 
+/* Owner, 2026-09-30: "this can be in the hero section" — moved from its
+   own section into the hero, so it needs its own top margin now (the
+   hero centers its content with no gap of its own between children). */
 .press-contact-card {
   width: min(560px, calc(100% - 44px));
-  margin: 0 auto;
+  margin: 32px auto 0;
   padding: 36px;
   border: 1px solid var(--fdv-line);
   background: #fff;
@@ -13378,10 +13417,12 @@ body:has(.compare-bar) {
   text-decoration: none;
 }
 
+/* Owner, 2026-09-30: "very light orange. Always free to list." — was a
+   neutral gray. */
 .fdv-hero-fineprint {
   margin: 28px 0 0;
   font-size: 12.5px;
-  color: #c9c6c0;
+  color: #ffd9b3;
 }
 
 /* 1 — HERO */
@@ -13405,10 +13446,15 @@ body:has(.compare-bar) {
 }
 
 /* Owner, 2026-09-29: "needs lines for this bakcgoeund" -> "box" ->
-   "different sizes" — two overlaid grids (a fine one, a coarser one), not
-   one uniform repeat, so the boxes read as varied rather than a single
-   flat tile. Every .fdv-hero gets this now (/for-developers, /about),
-   not just the one it was first added to. */
+   "different sizes" -> (2026-09-30) "check this websie backgeound for
+   inspiration... the lines" (webdesignetobicoke.ca, actually a dot-grid)
+   -> "Replace all the crossed-line textures site-wide" -> "some sections
+   needs box, some are like dots... alternate please" — back to the
+   original crossed-line box texture (two overlaid scales, a fine one and
+   a coarser one, for the "different sizes" idea), since the hero on
+   every page now stays the box style while the section after it
+   alternates to dots. Every .fdv-hero gets this (/for-developers,
+   /about, /press). */
 .fdv-hero::before {
   content: "";
   position: absolute;
@@ -13673,9 +13719,8 @@ body:has(.compare-bar) {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background-image:
-    repeating-linear-gradient(0deg, transparent 0 28px, rgba(21, 20, 26, 0.04) 28px 29px),
-    repeating-linear-gradient(90deg, transparent 0 28px, rgba(21, 20, 26, 0.04) 28px 29px);
+  background-image: radial-gradient(rgba(21, 20, 26, 0.12) 1.5px, transparent 0);
+  background-size: 22px 22px;
   -webkit-mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
   mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
 }
@@ -13781,9 +13826,8 @@ body:has(.compare-bar) {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background-image:
-    repeating-linear-gradient(0deg, transparent 0 28px, rgba(244, 123, 54, 0.1) 28px 29px),
-    repeating-linear-gradient(90deg, transparent 0 28px, rgba(244, 123, 54, 0.1) 28px 29px);
+  background-image: radial-gradient(rgba(244, 123, 54, 0.3) 1.5px, transparent 0);
+  background-size: 22px 22px;
   -webkit-mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
   mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
 }
@@ -14792,9 +14836,8 @@ body:has(.compare-bar) {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background-image:
-    repeating-linear-gradient(0deg, transparent 0 28px, rgba(255, 255, 255, 0.05) 28px 29px),
-    repeating-linear-gradient(90deg, transparent 0 28px, rgba(255, 255, 255, 0.05) 28px 29px);
+  background-image: radial-gradient(rgba(255, 255, 255, 0.14) 1.5px, transparent 0);
+  background-size: 22px 22px;
   -webkit-mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
   mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
 }
@@ -15501,9 +15544,8 @@ body:has(.compare-bar) {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background-image:
-    repeating-linear-gradient(0deg, transparent 0 28px, rgba(255, 255, 255, 0.05) 28px 29px),
-    repeating-linear-gradient(90deg, transparent 0 28px, rgba(255, 255, 255, 0.05) 28px 29px);
+  background-image: radial-gradient(rgba(255, 255, 255, 0.14) 1.5px, transparent 0);
+  background-size: 22px 22px;
   -webkit-mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
   mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
 }
@@ -15758,9 +15800,10 @@ body:has(.compare-bar) {
 }
 
 /* Owner, 2026-09-30: "this lines needs ot be also sqaure but difernt from
-   other sections" — a crossed (square) grid like the rest of the site,
-   but kept in the brand orange instead of white/dark lines, so it still
-   reads as its own thing next to the other box-textured sections. */
+   other sections" (orange, not white/dark) -> "Replace all the
+   crossed-line textures site-wide" — a dot-grid like every other
+   section now, kept in the brand orange so it still reads as its own
+   thing next to them. */
 .wdx-faq::before {
   content: "";
   position: absolute;

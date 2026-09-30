@@ -367,22 +367,10 @@ export default async function ForDevelopersPage() {
         </div>
       </section>
 
-      {/* 10 — PREMIUM CTA — redesigned to match a reference the owner shared,
-          2026-09-29 (a dark, plain-background band: a two-tone headline
-          left, a pill button right, no photo). Button style matches the
-          footer's own "List your project" pill exactly (owner, same day:
-          "please be constant with design"), not the arrow-circle pattern
-          used on /contact and the listing popup — those are a different,
-          already-established button family for a different context. */}
-      <section className="fdv-cta-final" aria-label="Get started">
-        <div className="fdv-cta-final-inner" data-reveal>
-          <div className="fdv-cta-final-text">
-            <h2><span className="fdv-cta-final-muted">Let&apos;s put your projects</span> on the map.</h2>
-            <p className="fdv-hero-fineprint">Always free to list.</p>
-          </div>
-          <Link href="/developers/register" className="fdv-cta-final-button">Register as a developer</Link>
-        </div>
-      </section>
+      {/* Owner, 2026-09-30: "deelte this section" — the closing 'Let's put
+          your projects on the map' CTA band. The hero already has its own
+          'Register as a developer' button, so the page still ends with a
+          clear call to action via the quickjump menu below. */}
 
       <ForDevelopersQuickjump />
     </div>
