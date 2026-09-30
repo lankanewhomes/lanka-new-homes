@@ -272,7 +272,7 @@ export const syncDeveloperToSupabase: CollectionAfterChangeHook = async ({ doc, 
       phone: d.contact_phone,
       socialLinks: d.socialLinks,
       verificationStatus: d.verification_status,
-      // "Responds within 1 hour" — computed by src/lib/response-badge.ts.
+      // "Responds within 24 hours" — computed by src/lib/response-badge.ts.
       respondsWithinHour: Boolean((d.response_stats as AnyDoc | undefined)?.responds_within_hour),
       responseStats: d.response_stats
         ? {

@@ -1873,7 +1873,7 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
         </Link>
         {developer?.respondsWithinHour ? (
           <span className="listing-badge-pill badge-responder stats-contact-card-badge" title="Answered at least 80% of inquiries within an hour over the last 90 days">
-            <Zap className="h-3 w-3" aria-hidden="true" /> {t("Responds within 1 hour")}
+            <Zap className="h-3 w-3" aria-hidden="true" /> {t("Responds within 24 hours")}
           </span>
         ) : null}
         {isPaidPackageTier(project.package) ? (
@@ -3431,7 +3431,18 @@ export function ProjectNarrativeDetails({ project }: { project: Project }) {
         ? renderEntityLink(project.neighborhood, project.neighborhoodSlug, "/neighborhoods", "overview-link")
         : <span className="overview-link">{project.neighborhood}</span>,
     },
-    { label: "District", show: isFact(project.district), value: project.district },
+    {
+      label: "District",
+      show: isFact(project.district),
+      // Owner, 2026-09-30: "you can slso give a link for colombo and ither
+      // district in the facts sectiob" — Colombo has its own dedicated
+      // collection page (/projects/colombo); other districts don't yet,
+      // so they fall back to search results, same pattern the
+      // Neighborhood row above already uses when it has no linked page.
+      value: project.district === "Colombo"
+        ? <Link href="/projects/colombo" className="overview-link">Colombo</Link>
+        : <Link href={`/search?q=${encodeURIComponent(project.district ?? "")}`} className="overview-link">{project.district}</Link>,
+    },
     // Not in the ordered list above — kept after it so the links to the
     // company profile pages aren't lost.
     { label: "Construction started", show: isFact(constructionStarted), value: constructionStarted },

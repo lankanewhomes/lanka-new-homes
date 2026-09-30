@@ -92,7 +92,7 @@ export default async function FloorPlanDetailPage({ params }: FloorPlanPageProps
         plansHomesNavLabel="Other floor plans"
         whatsappHref={listingWhatsAppHref(developer?.socialLinks?.whatsapp, project.name, floorPlan.planName)}
         extraBadges={[
-          ...(developer?.respondsWithinHour ? [{ label: "Responds within 1 hour", kind: "responder" as const }] : []),
+          ...(developer?.respondsWithinHour ? [{ label: "Responds within 24 hours", kind: "responder" as const }] : []),
           ...(isPaidPackageTier(project.package) ? [{ label: "Verified", kind: "verified" as const }] : []),
           ...(floorPlan.startingPriceLkr === 0 ? [{ label: "Contact for pricing", kind: "contact-pricing" as const }] : []),
         ]}

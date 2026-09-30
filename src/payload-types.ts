@@ -297,7 +297,7 @@ export interface Developer {
     whatsapp?: string | null;
   };
   /**
-   * Earned, not entered: over the last 90 days, at least 5 leads old enough to judge and 80% of them answered (moved off "New") within an hour. Shows as a "Responds within 1 hour" badge on the profile and every listing.
+   * Earned, not entered: over the last 90 days, at least 5 leads old enough to judge and 80% of them answered (moved off "New") within 24 hours. Shows as a "Responds within 24 hours" badge on the profile and every listing. (Field names below keep their original "hour" wording — internal only, not user-facing.)
    */
   response_stats?: {
     responds_within_hour?: boolean | null;
@@ -6541,7 +6541,7 @@ export interface Land {
    * Read-only — mirrors the developer's plan when this land listing is one of their picked featured slots (Developers → Placements tab). Only applies when Seller Type is 'developer'; construction-company/builder listings have no plan system today.
    */
   package?: ('free' | 'featured' | 'featured-plus' | 'developer-pro' | 'campaign') | null;
-  landSizePerches: number;
+  landSizePerches?: number | null;
   landSizeAcres?: number | null;
   /**
    * Choose one, or two for a mixed-use parcel (e.g. Residential + Commercial).
@@ -6572,7 +6572,7 @@ export interface Land {
    */
   titleType?: string | null;
   surveyPlanStatus?: string | null;
-  priceLkr: number;
+  priceLkr?: number | null;
   pricePerPerchLkrMin?: number | null;
   pricePerPerchLkrMax?: number | null;
   paymentPlanItems?: string[] | null;

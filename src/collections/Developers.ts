@@ -145,11 +145,11 @@ export const Developers: CollectionConfig = {
       access: { update: adminOnlyField },
       admin: {
         description:
-          'Earned, not entered: over the last 90 days, at least 5 leads old enough to judge and 80% of them answered (moved off "New") within an hour. Shows as a "Responds within 1 hour" badge on the profile and every listing.',
+          'Earned, not entered: over the last 90 days, at least 5 leads old enough to judge and 80% of them answered (moved off "New") within 24 hours. Shows as a "Responds within 24 hours" badge on the profile and every listing. (Field names below keep their original "hour" wording — internal only, not user-facing.)',
       },
       fields: [
-        { name: 'responds_within_hour', type: 'checkbox', label: 'Responds within 1 hour badge', defaultValue: false, admin: { readOnly: true } },
-        { name: 'within_hour_rate', type: 'number', label: 'Answered within 1 hour (%)', admin: { readOnly: true } },
+        { name: 'responds_within_hour', type: 'checkbox', label: 'Responds within 24 hours badge', defaultValue: false, admin: { readOnly: true } },
+        { name: 'within_hour_rate', type: 'number', label: 'Answered within 24 hours (%)', admin: { readOnly: true } },
         { name: 'median_minutes', type: 'number', label: 'Median first response (minutes)', admin: { readOnly: true } },
         { name: 'sample_size', type: 'number', label: 'Leads judged (last 90 days)', admin: { readOnly: true } },
         { name: 'computed_at', type: 'date', label: 'Last computed', admin: { readOnly: true, date: { pickerAppearance: 'dayAndTime' } } },
@@ -253,7 +253,15 @@ export const Developers: CollectionConfig = {
       label: 'Featured Land Listings',
       relationTo: 'lands',
       hasMany: true,
-      filterOptions: ({ id }): Where => (id ? { seller: { equals: id }, sellerType: { equals: 'developer' } } : { id: { equals: -1 } }),
+      // `seller` is polymorphic (relationTo: ['developers', 'construction-
+      // companies']) — must be queried as `seller.relationTo`/`seller.value`
+      // dotted paths, not `seller: { equals }` directly (Payload's Postgres
+      // adapter throws "Not supported" on that shape). Same fix as
+      // sync-developer-plan.ts's featured-lands query.
+      filterOptions: ({ id }): Where =>
+        id
+          ? { and: [{ 'seller.relationTo': { equals: 'developers' } }, { 'seller.value': { equals: id } }, { sellerType: { equals: 'developer' } }] }
+          : { id: { equals: -1 } },
       validate: (value, { siblingData }) => {
         const ids = Array.isArray(value) ? value : []
         const projectIds = Array.isArray((siblingData as { featuredProjectIds?: unknown[] })?.featuredProjectIds) ? (siblingData as { featuredProjectIds: unknown[] }).featuredProjectIds : []

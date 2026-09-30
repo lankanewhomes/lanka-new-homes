@@ -6,7 +6,7 @@ import { syncLeadToSupabase } from './hooks/sync-to-supabase'
 
 // The pipeline a developer moves each inquiry through. `response_minutes`
 // is stamped the first time a lead leaves "New" (hooks/lead-hooks.ts) —
-// that is what "responds within 1 hour" will be measured on.
+// that is what "responds within 24 hours" will be measured on.
 export const LEAD_STATUS_OPTIONS = [
   { label: 'New', value: 'new' },
   { label: 'Contacted', value: 'contacted' },

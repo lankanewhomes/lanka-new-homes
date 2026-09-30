@@ -145,7 +145,19 @@ export const syncFeaturedProjectsFromDeveloper: CollectionAfterChangeHook = asyn
 
   const { docs: lands } = await req.payload.find({
     collection: 'lands',
-    where: { seller: { equals: developerId }, sellerType: { equals: 'developer' } },
+    // `seller` is polymorphic (relationTo: ['developers', 'construction-
+    // companies']) — Payload's Postgres adapter doesn't support `seller:
+    // { equals: id }` directly on a polymorphic relationship (throws
+    // "Not supported" in getTableColumnFromPath), it needs the relationTo
+    // and value queried as separate dotted paths. Matches the working
+    // pattern in access.ts's ownerAccess().
+    where: {
+      and: [
+        { 'seller.relationTo': { equals: 'developers' } },
+        { 'seller.value': { equals: developerId } },
+        { sellerType: { equals: 'developer' } },
+      ],
+    },
     depth: 0,
     limit: 500,
     overrideAccess: true,

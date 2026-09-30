@@ -21,7 +21,7 @@ export async function GET(request: Request) {
   const payload = await getPayload({ config: payloadConfig });
 
   const result = await sendWeeklyAnalyticsDigests(payload);
-  // Same weekly tick re-judges every developer's "Responds within 1 hour"
+  // Same weekly tick re-judges every developer's "Responds within 24 hours"
   // badge, so it decays as the 90-day window slides and unanswered leads age.
   const responseBadges = await recomputeAllDeveloperResponseStats(payload).catch((error) => {
     console.error("Response badge sweep failed", error);

@@ -228,7 +228,7 @@ export function AnalyticsDashboard() {
                 <StatCard label="Awaiting your reply" value={data.leads.awaitingReply.toLocaleString()} />
                 <StatCard label="Avg first response" value={formatMinutes(data.leads.avgResponseMinutes)} />
                 <StatCard label="Median first response" value={formatMinutes(data.leads.medianResponseMinutes)} />
-                <StatCard label="Answered within 1 hour" value={data.leads.respondedWithinHourPercent === null ? "—" : `${data.leads.respondedWithinHourPercent}%`} />
+                <StatCard label="Answered within 24 hours" value={data.leads.respondedWithinHourPercent === null ? "—" : `${data.leads.respondedWithinHourPercent}%`} />
               </div>
               <div style={{ display: "grid", gridTemplateColumns: `repeat(${data.leads.stages.length}, 1fr)`, gap: 8 }}>
                 {data.leads.stages.map((stage, index) => (
@@ -240,7 +240,7 @@ export function AnalyticsDashboard() {
               </div>
               <div style={{ marginTop: 10, padding: "10px 12px", borderRadius: 6, border: "1px solid var(--theme-elevation-150)", background: "var(--theme-elevation-0)", fontSize: 13, display: "flex", gap: 10, alignItems: "baseline", flexWrap: "wrap" }}>
                 <strong style={{ color: data.leads.badge.earned ? "var(--theme-success-500)" : "inherit" }}>
-                  {data.leads.badge.earned ? "✓ “Responds within 1 hour” badge earned" : "“Responds within 1 hour” badge: not yet"}
+                  {data.leads.badge.earned ? "✓ “Responds within 24 hours” badge earned" : "“Responds within 24 hours” badge: not yet"}
                 </strong>
                 <span style={{ opacity: 0.7 }}>
                   {data.leads.badge.sampleSize} of {data.leads.badge.minSample} leads judged in the last {data.leads.badge.windowDays} days

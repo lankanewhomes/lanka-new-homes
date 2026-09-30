@@ -41,29 +41,35 @@ export default async function PricingPage() {
   const foundingDiscountPercent = Math.round(FOUNDING_DEVELOPER_DISCOUNT * 100);
 
   return (
-    <div className="pricing-page">
-      <div className="pricing-page-shell">
-        <div className="pricing-page-head">
-          {/* Headline/lede rewritten for the per-developer model (owner,
-              2026-09-24) — the old copy ("Upgrade any individual project")
-              described per-project billing, superseded by the 2026-09-24
-              restructure (buy one plan, pick which projects fill its
-              slots). */}
-          <h1>Simple pricing for developers</h1>
-          <p className="pricing-page-lede">
-            Listing your projects is always free. Choose a package, then pick which of your projects to feature. Swap them any time until your package ends.
+    <div className="fdv-page pricing-page">
+      {/* Owner, 2026-09-30: "the hero styling just like the web-design,
+          for-devloeprs, padding and everything" — was a plain centered
+          h1/lede with no hero band at all. Now the same .fdv-hero every
+          other marketing page uses (dark, centered, box texture, the same
+          top/bottom rhythm). The founding-developer banner sits just below
+          it rather than inside it, so it keeps its own light-background
+          styling instead of needing a dark-hero variant. */}
+      <section className="fdv-hero" aria-label="Pricing">
+        <div className="fdv-hero-content">
+          <h1 className="fdv-hero-headline">Simple pricing for developers</h1>
+          <p className="fdv-hero-sub">
+            Listing your projects is always free. Choose a package, then pick which of your projects to feature.
+            Swap them any time until your package ends.
           </p>
-          {/* "Founding developer" discount (owner, 2026-09-25) — only shown
-              while real slots remain; never invents a number if the count
-              couldn't be read. */}
-          {foundingSpotsRemaining !== null && foundingSpotsRemaining > 0 ? (
-            <p className="pricing-table-note-highlight" style={{ marginTop: 12 }}>
-              🎉 {foundingSpotsRemaining} of {FOUNDING_DEVELOPER_CAP} founding developer spot{foundingSpotsRemaining === 1 ? "" : "s"} left — get {foundingDiscountPercent}% off, locked in for as long as you stay subscribed.
-            </p>
-          ) : foundingSpotsRemaining === 0 ? (
-            <p className="pricing-table-note-highlight" style={{ marginTop: 12 }}>Founding developer pricing is now closed — all {FOUNDING_DEVELOPER_CAP} spots are taken.</p>
-          ) : null}
         </div>
+      </section>
+
+      <div className="pricing-page-shell">
+        {/* "Founding developer" discount (owner, 2026-09-25) — only shown
+            while real slots remain; never invents a number if the count
+            couldn't be read. */}
+        {foundingSpotsRemaining !== null && foundingSpotsRemaining > 0 ? (
+          <p className="pricing-table-note-highlight pricing-founding-banner">
+            🎉 {foundingSpotsRemaining} of {FOUNDING_DEVELOPER_CAP} founding developer spot{foundingSpotsRemaining === 1 ? "" : "s"} left — get {foundingDiscountPercent}% off, locked in for as long as you stay subscribed.
+          </p>
+        ) : foundingSpotsRemaining === 0 ? (
+          <p className="pricing-table-note-highlight pricing-founding-banner">Founding developer pricing is now closed — all {FOUNDING_DEVELOPER_CAP} spots are taken.</p>
+        ) : null}
 
         <PricingComparisonTable showCta />
 
@@ -109,12 +115,12 @@ export default async function PricingPage() {
           real samples (the same badge/chip/map-pin classes used live
           elsewhere on the site) rather than generic icons, so a developer
           sees exactly what they'd get. Almost everything here is planned,
-          not built — each card says so explicitly (owner, 2026-09-24).
-          Wrapped in .fdv-page for the --fdv-* colour tokens .fdv-placement
-          reads, same as /for-developers and /web-design. No eyebrow label
-          (owner, 2026-09-29: "delete any eyeborrow bales"). */}
-      <div className="fdv-page">
-        <section className="fdv-placement" aria-label="Where you'll be seen">
+          not built — each card says so explicitly (owner, 2026-09-24). The
+          --fdv-* colour tokens it reads now come from the whole-page
+          .fdv-page wrapper (added 2026-09-30) rather than its own inner
+          one. No eyebrow label (owner, 2026-09-29: "delete any eyeborrow
+          bales"). */}
+      <section className="fdv-placement" aria-label="Where you'll be seen">
           <div className="fdv-section-head" data-reveal>
             <h2>Exactly where a paid plan puts your project.</h2>
             <p className="fdv-section-sub">Real samples of each placement, and which plan unlocks it.</p>
@@ -217,7 +223,6 @@ export default async function PricingPage() {
             </div>
           </div>
         </section>
-      </div>
     </div>
   );
 }

@@ -27,6 +27,18 @@ import {
 // Access stays admin-only for create/update/delete for now — Projects'
 // per-owner edit access relies on a single relationTo (`developers`), and
 // generalizing that to Land's polymorphic seller wasn't part of this pass.
+
+// Owner-approved exception (2026-09-30): Jaysons Realty's land portfolio
+// publishes no price or size anywhere — "available on enquiry" only. Rather
+// than loosen priceLkr/landSizePerches for every land seller, the exemption
+// is scoped to exactly these slugs; everyone else still must publish a real
+// figure. See priceLkr/landSizePerches validate() below.
+const PRICE_OPTIONAL_LAND_SLUGS = new Set([
+  'bonavista-phase-2-nuwara-eliya',
+  'digana-land-development-kandy',
+  'ranna-rekawa-coastal-land',
+])
+
 export const Lands: CollectionConfig = {
   slug: 'lands',
   admin: {
@@ -102,7 +114,19 @@ export const Lands: CollectionConfig = {
         {
           label: 'Size & Land Details',
           fields: [
-            { name: 'landSizePerches', type: 'number', required: true },
+            {
+              name: 'landSizePerches',
+              type: 'number',
+              // NOT `required: true` — Payload generates a DB-level NOT
+              // NULL constraint straight off that flag regardless of a
+              // custom validate() override, so a per-row exemption can only
+              // be enforced in the validate() function below, not via the
+              // schema. Same scoped exemption as priceLkr below.
+              validate: (value: number | null | undefined, { siblingData }: { siblingData?: { slug?: string } }) => {
+                if (PRICE_OPTIONAL_LAND_SLUGS.has(siblingData?.slug ?? '')) return true
+                return value !== undefined && value !== null ? true : 'Land size (perches) is required.'
+              },
+            },
             { name: 'landSizeAcres', type: 'number' },
             { name: 'landUse', type: 'select', hasMany: true, options: LAND_USE_OPTIONS, admin: { description: 'Choose one, or two for a mixed-use parcel (e.g. Residential + Commercial).' } },
             { name: 'landType', type: 'text', admin: { description: 'e.g. Bare Land, Land with House, Paddy Land, Coconut Land' } },
@@ -121,7 +145,24 @@ export const Lands: CollectionConfig = {
           // separate Pricing tab.
           label: 'Pricing',
           fields: [
-            { name: 'priceLkr', type: 'number', required: true },
+            {
+              name: 'priceLkr',
+              type: 'number',
+              // NOT `required: true` — see the comment on landSizePerches
+              // above (Payload's Postgres adapter bakes `required: true`
+              // straight into a DB-level NOT NULL constraint, which a
+              // custom validate() can't override per-row). Required for
+              // every land listing except the handful (owner-approved,
+              // 2026-09-30) where the seller genuinely publishes no price
+              // anywhere — "available on enquiry" only (Jaysons Realty's
+              // investor-facing land portfolio). Scoped to exact slugs
+              // rather than loosened site-wide, since every other seller in
+              // the system does publish a real figure.
+              validate: (value: number | null | undefined, { siblingData }: { siblingData?: { slug?: string } }) => {
+                if (PRICE_OPTIONAL_LAND_SLUGS.has(siblingData?.slug ?? '')) return true
+                return value !== undefined && value !== null ? true : 'Price (LKR) is required.'
+              },
+            },
             { name: 'pricePerPerchLkrMin', type: 'number' },
             { name: 'pricePerPerchLkrMax', type: 'number' },
             { name: 'paymentPlanItems', type: 'text', hasMany: true },

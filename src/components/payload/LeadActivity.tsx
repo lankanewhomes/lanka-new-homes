@@ -171,14 +171,14 @@ export function LeadActivity() {
             <Stat label="Awaiting reply" value={data.totals.awaiting.toLocaleString()} tone={data.totals.awaiting > 0 ? "var(--theme-warning-500)" : undefined} />
             <Stat label="Answered" value={data.totals.answered.toLocaleString()} />
             <Stat label="Avg first response" value={formatMinutes(data.totals.avgMinutes)} />
-            <Stat label="Within 1 hour" value={data.totals.withinHourPercent === null ? "—" : `${data.totals.withinHourPercent}%`} />
+            <Stat label="Within 24 hours" value={data.totals.withinHourPercent === null ? "—" : `${data.totals.withinHourPercent}%`} />
             <Stat label="Alerts failed" value={data.totals.alertsFailed.toLocaleString()} tone={data.totals.alertsFailed > 0 ? "var(--theme-error-500)" : undefined} />
           </div>
 
           <h5 style={{ margin: "0 0 8px" }}>By developer</h5>
           <div style={{ border: "1px solid var(--theme-elevation-150)", borderRadius: 6, overflow: "hidden", background: "var(--theme-elevation-0)", marginBottom: 24 }}>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
-              <thead><tr style={{ background: "var(--theme-elevation-50)" }}><th style={th}>Developer</th><th style={th}>Leads</th><th style={th}>Awaiting</th><th style={th}>Answered</th><th style={th}>Avg response</th><th style={th}>Within 1 h</th><th style={th}>Alerts failed</th><th style={th}>Badge</th></tr></thead>
+              <thead><tr style={{ background: "var(--theme-elevation-50)" }}><th style={th}>Developer</th><th style={th}>Leads</th><th style={th}>Awaiting</th><th style={th}>Answered</th><th style={th}>Avg response</th><th style={th}>Within 24h</th><th style={th}>Alerts failed</th><th style={th}>Badge</th></tr></thead>
               <tbody>
                 {data.developers.length === 0 ? <tr><td colSpan={8} style={{ padding: 12, fontSize: 13, opacity: 0.65 }}>No leads in this period.</td></tr> : data.developers.map((d) => (
                   <tr key={String(d.id)} style={{ borderTop: "1px solid var(--theme-elevation-150)", fontSize: 13 }}>
@@ -189,7 +189,7 @@ export function LeadActivity() {
                     <td style={{ padding: "8px 12px" }}>{formatMinutes(d.avgMinutes)}</td>
                     <td style={{ padding: "8px 12px" }}>{d.withinHourPercent === null ? "—" : `${d.withinHourPercent}%`}</td>
                     <td style={{ padding: "8px 12px", color: d.alertsFailed ? "var(--theme-error-500)" : "inherit" }}>{d.alertsFailed}</td>
-                    <td style={{ padding: "8px 12px" }}>{d.badge ? <Pill label="Responds within 1 hour" color="#047857" /> : <span style={{ opacity: 0.5 }}>—</span>}</td>
+                    <td style={{ padding: "8px 12px" }}>{d.badge ? <Pill label="Responds within 24 hours" color="#047857" /> : <span style={{ opacity: 0.5 }}>—</span>}</td>
                   </tr>
                 ))}
               </tbody>

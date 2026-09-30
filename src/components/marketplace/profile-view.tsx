@@ -108,7 +108,7 @@ export function ProfileView({
         <p className="developer-profile-role">{entityLabel}</p>
         {"respondsWithinHour" in entity && entity.respondsWithinHour ? (
           <p className="developer-profile-badge" title="Answered at least 80% of inquiries within an hour over the last 90 days">
-            <Zap size={13} aria-hidden="true" /> {t("Responds within 1 hour")}
+            <Zap size={13} aria-hidden="true" /> {t("Responds within 24 hours")}
           </p>
         ) : null}
         {/* Verified is gated behind at least one project having an active

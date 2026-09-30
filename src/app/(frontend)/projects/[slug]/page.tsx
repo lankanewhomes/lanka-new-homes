@@ -133,7 +133,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
         roadMapImages={project.roadMapImages ?? []}
         blockPlanImages={project.blockPlanImages ?? []}
         extraBadges={[
-          ...(developer?.respondsWithinHour ? [{ label: "Responds within 1 hour", kind: "responder" as const }] : []),
+          ...(developer?.respondsWithinHour ? [{ label: "Responds within 24 hours", kind: "responder" as const }] : []),
           ...(isPaidPackageTier(project.package) ? [{ label: "Verified", kind: "verified" as const }] : []),
           ...(project.startingPriceLkr === 0 ? [{ label: "Contact for pricing", kind: "contact-pricing" as const }] : []),
           // availabilityBadge/marketingBadges (Limited Units, Popular, BOI

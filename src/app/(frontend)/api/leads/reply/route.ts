@@ -8,7 +8,7 @@ import { whatsappChatHref } from "@/lib/whatsapp";
 //   1. verify the signed token,
 //   2. if the lead is still "New", move it to Contacted — the Leads
 //      afterChange hook stamps first_response_at / response_minutes and
-//      re-judges the developer's "Responds within 1 hour" badge,
+//      re-judges the developer's "Responds within 24 hours" badge,
 //   3. record the tap under reply_events (admins see it on Lead activity),
 //   4. forward: WhatsApp → wa.me redirect; Call / Email → a tiny page that
 //      opens tel: / mailto: (a bare redirect to those schemes is unreliable

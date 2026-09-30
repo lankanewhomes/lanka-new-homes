@@ -36,7 +36,7 @@ const VALUES = [
   },
   {
     title: "Verified & responsive",
-    body: "Developers earn a Verified badge, and a “Responds within 1 hour” badge once they've proven fast to reply.",
+    body: "Developers earn a Verified badge, and a “Responds within 24 hours” badge once they've proven fast to reply.",
   },
   {
     title: "Every listing complete",

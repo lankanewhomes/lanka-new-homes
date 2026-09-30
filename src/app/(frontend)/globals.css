@@ -3402,6 +3402,20 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   color: #1f1f1f;
 }
 
+/* Owner, 2026-09-30: "spacing issue" — a short description renders as a
+   bare <p>{text}</p> (TruncatedDescription) with no margin rule of its
+   own, so the gap under "Overview" was whichever margin the browser's
+   default <p> style happened to add — inconsistent, and not the same
+   16px .project-description-highlights already uses in that same spot
+   when a project has highlights instead. :not([class]) keeps this scoped
+   to that bare case — .project-description-short/-full (the long-text
+   variant) already have their own deliberate margin: 12px 0 0 and must
+   keep it, not get overridden (a plain ".project-description-shell > p"
+   selector would have won over them on specificity). */
+.project-description-shell > p:not([class]) {
+  margin: 16px 0 0;
+}
+
 .project-description-shell > p:last-child,
 .project-description-short,
 .project-description-full {
@@ -3471,9 +3485,10 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   color: #6b6b6b;
 }
 
+/* Owner, 2026-09-30: "no bold please for all". */
 .project-description-source a {
   color: #1f1f1f;
-  font-weight: 600;
+  font-weight: 400;
   text-decoration: underline;
 }
 
@@ -11911,6 +11926,22 @@ body:has(.compare-bar) {
 /* /press (owner, 2026-09-29: "create it like this" — a Planned.com-style
    press page). Bordered boxes throughout, per the standing "add lines,
    box" direction — see feedback_new_sections_need_lines_boxes memory. */
+/* Owner, 2026-09-30: "padding is too much. fix it for hero section" —
+   .fdv-hero's 82vh min-height is sized for /for-developers'/about's
+   heroes, which are full of content (marquee, badges, stats); Press's
+   hero is just a headline, sub and one contact card, so the same
+   min-height left it mostly empty space. Scoped to this page only. */
+/* Owner, 2026-09-30: "too much spacing isnt supposed to be 48px" — this
+   was set to 96px, which then stacked with .fdv-hero-content's own 48px
+   top padding (the same mechanism /for-developers' hero uses to reach its
+   96px effective top) for ~144px total. The section itself should be
+   48px, same as /for-developers — the content's own padding does the
+   rest, same as there. */
+.press-page .fdv-hero {
+  min-height: auto;
+  padding: 48px 0;
+}
+
 /* Owner, 2026-09-30: "apply that also to contact, web-design, press,
    pages also" — same 96px top/bottom rhythm as /for-developers' hero. */
 .press-section {
@@ -11927,6 +11958,13 @@ body:has(.compare-bar) {
   overflow: hidden;
   background: var(--fdv-paper);
   border-top: 1px solid var(--fdv-line);
+}
+
+/* Owner, 2026-09-30: "too much spacing between... space spacing as" (the
+   hero's own sub-to-contact-card gap, .press-contact-card's 32px
+   margin-top) — was the shared .wdx-section-head's 56px margin-bottom. */
+.press-section-alt .wdx-section-head {
+  margin-bottom: 32px;
 }
 
 .press-section-alt::before {
@@ -13571,6 +13609,9 @@ body:has(.compare-bar) {
    title and the badge row inside it. */
 /* Owner, 2026-09-30: "this section needs padding on the bttom" (the
    badges row, the last thing in the hero before the next section). */
+/* Owner, 2026-09-30: "this should go under the badge" -> "put this back
+   to where it was" — reverted; CTAs/fineprint are back in
+   .fdv-hero-content, so this is the last thing in the hero again. */
 .fdv-hero-badges-group {
   display: flex;
   flex-direction: column;
@@ -13832,13 +13873,25 @@ body:has(.compare-bar) {
    its own value. */
 /* Owner, 2026-09-30: "do that same padding for other section on that
    page" — the hero's own effective top/bottom rhythm (its 48px section
-   padding plus its content/badges' own 48px, ≈96px total) applied here. */
+   padding plus its content/badges' own 48px, ≈96px total) applied here.
+   "i dont like this backgeound dont use it anymore" (the paper/orange-dot
+   combo) -> "use the blue one from other page" — same slate blue as
+   .wdx-sample; the section head needs a light-text override (the
+   analytics frame stays its own white card, unaffected). */
 .fdv-showcase-product {
   position: relative;
   overflow: hidden;
   padding: 96px 0;
-  background: var(--fdv-paper);
+  background: #1a2430;
   border-top: 1px solid var(--fdv-line);
+}
+
+.fdv-showcase-product .wdx-section-head h2 {
+  color: #fff;
+}
+
+.fdv-showcase-product .wdx-section-head p {
+  color: #b8b8b4;
 }
 
 .fdv-showcase-product::before {
@@ -13846,8 +13899,9 @@ body:has(.compare-bar) {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background-image: radial-gradient(rgba(244, 123, 54, 0.3) 1.5px, transparent 0);
-  background-size: 22px 22px;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(255, 255, 255, 0.05) 28px 29px),
+    repeating-linear-gradient(90deg, transparent 0 28px, rgba(255, 255, 255, 0.05) 28px 29px);
   -webkit-mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
   mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
 }
@@ -14048,28 +14102,13 @@ body:has(.compare-bar) {
   gap: 48px;
 }
 
-/* Owner, 2026-09-30: "having 1 analytics is grwat. but have some other
-   feautes also" — a plain row of real, already-established capabilities. */
-.fdv-platform-features {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px 28px;
-}
-
-.fdv-platform-features li {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  color: var(--fdv-muted);
-}
-
-.fdv-platform-features li svg {
-  color: var(--fdv-accent);
+/* Owner, 2026-09-30: "too much spacing between" — .wdx-section-head's own
+   margin-bottom (56px) was stacking on top of this container's 48px flex
+   gap, giving ~104px between the description and whatever followed it.
+   The flex gap alone is enough here (same fix as .fdv-hero-badges-group
+   earlier: "too spacing. put it closer"). */
+.fdv-control-inner > .wdx-section-head {
+  margin-bottom: 0;
 }
 
 .fdv-control-panel-wrap {
@@ -14078,19 +14117,53 @@ body:has(.compare-bar) {
   gap: 24px;
 }
 
-.fdv-analytics-row {
+/* Owner, 2026-09-30: "having 1 analytics is grwat. but have some other
+   feautes also" -> "1 card of analytics is good can you add other cards
+   different not anyaltytics" — real platform features as their own
+   bordered cards (icon, title, one line), not a plain pill list and not
+   more dashboard mockups. */
+.fdv-feature-cards {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
 }
 
+.fdv-feature-card {
+  border: 1px solid var(--fdv-line);
+  background: #fff;
+  padding: 24px;
+}
+
+.fdv-feature-card svg {
+  color: var(--fdv-accent);
+}
+
+.fdv-feature-card h3 {
+  margin: 14px 0 6px;
+  font-weight: 400;
+  font-size: 16px;
+  color: var(--fdv-ink);
+}
+
+.fdv-feature-card p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--fdv-muted);
+}
+
 @media (max-width: 900px) {
-  .fdv-analytics-row {
+  .fdv-feature-cards {
     grid-template-columns: 1fr;
   }
 }
 
+/* Owner, 2026-09-30: "1 card of analytics is good" — back to a single
+   card (was 1 of 3 in a row), so it gets its own max-width instead of
+   stretching to the full 1180px container. */
 .fdv-analytics-frame {
+  width: min(760px, 100%);
+  margin: 0 auto;
   border: 1px solid var(--fdv-line);
   background: #fff;
   padding: 22px 26px 26px;
@@ -14522,6 +14595,15 @@ body:has(.compare-bar) {
 .pricing-table-note-highlight {
   color: #f47b36;
   font-weight: 700;
+}
+
+/* Owner, 2026-09-30: new hero band pushed this out of .pricing-page-head
+   (which constrained it to 640px, centered) to a direct child of the wide
+   1280px .pricing-page-shell, so it needs that same constraint itself now. */
+.pricing-founding-banner {
+  max-width: 640px;
+  margin: 0 auto 32px;
+  text-align: center;
 }
 
 /* "?" info-circle on each feature row (FeatureInfoTooltip) — public
@@ -14970,18 +15052,42 @@ body:has(.compare-bar) {
    its own comment), the combined gap before the footer read as an
    oversized, empty-looking band (owner flagged this as a styling issue
    on /pricing, 2026-09-29). */
+/* Owner, 2026-09-30: "need a new backgeound" — the page's own padding
+   moved to .pricing-page-shell below (it used to live here, but the new
+   full-bleed .fdv-hero above the shell can't have side padding forced on
+   it by its own parent). */
 .pricing-page {
-  background: #faf8f5;
-  padding: 56px 24px;
+  position: relative;
+  overflow: hidden;
+  background: var(--fdv-paper);
+}
+
+.pricing-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(21, 20, 26, 0.12) 1.5px, transparent 0);
+  background-size: 22px 22px;
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at center, #000 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 80% 70% at center, #000 40%, transparent 100%);
+}
+
+.pricing-page > * {
+  position: relative;
+  z-index: 1;
 }
 
 .pricing-page-shell {
   /* Wide enough that all 5 tier columns fit without horizontal scroll on a
      normal desktop viewport (owner, 2026-09-24) — matches the site's other
      wide sections (e.g. .free-listing-band) rather than the narrower
-     640px-ish reading width used for prose pages. */
-  width: min(1280px, 100%);
+     640px-ish reading width used for prose pages. Padding moved here from
+     .pricing-page (2026-09-30) once that had to stay padding-free for the
+     new full-bleed .fdv-hero above it. */
+  width: min(1280px, calc(100% - 48px));
   margin: 0 auto;
+  padding: 56px 0;
 }
 
 .pricing-page-head {
@@ -15534,10 +15640,15 @@ body:has(.compare-bar) {
    language as the compare/process/FAQ cards elsewhere on this page,
    instead of a plain unboxed text block (2nd redesign). */
 /* Section heads shared by the lighter bands */
+/* Owner, 2026-09-30: "i like the spacing between descripn, and the
+   content... apply to that for all other section on for-devlopers and
+   web-design apges" — the gap the Analytics section ended up with once
+   its doubled-gap bug was fixed (48px), now the default for every
+   section head on both pages instead of the old 56px. */
 .wdx-section-head {
   width: min(1180px, calc(100% - 64px));
   max-width: 640px;
-  margin: 0 auto 56px;
+  margin: 0 auto 48px;
   text-align: center;
 }
 

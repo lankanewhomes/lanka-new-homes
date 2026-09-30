@@ -146,7 +146,7 @@ export const blogPosts: Record<string, BlogPost> = {
       },
       {
         heading: "Whether a real person responds quickly",
-        body: "An enquiry that gets a same-day reply is far more likely to turn into a viewing than one that sits for three days — buyers researching several projects at once simply move on to whichever developer responded first. This is also why LankaNewHomes' \"Responds within 1 hour\" badge is one buyers specifically look for on a listing.",
+        body: "An enquiry that gets a same-day reply is far more likely to turn into a viewing than one that sits for three days — buyers researching several projects at once simply move on to whichever developer responded first. This is also why LankaNewHomes' \"Responds within 24 hours\" badge is one buyers specifically look for on a listing.",
       },
     ],
   },

@@ -1,28 +1,32 @@
-// "Responds within 1 hour" — earned from real reply times, never claimed.
+// "Responds within 24 hours" — earned from real reply times, never claimed.
+//
+// Owner, 2026-09-30: "also make sure its not responds with 1 hour. 24
+// hours badge. make the changes to the whole website." — was 1 hour
+// (RESPONSE_BADGE_LIMIT_MINUTES = 60).
 //
 // Over the last RESPONSE_BADGE_WINDOW_DAYS, every lead on the developer's
-// projects that is at least an hour old counts; the share answered (moved
-// off "New", see hooks/lead-hooks.ts stampFirstResponse) within 60 minutes
-// is the rate. Unanswered leads count against it once they pass the hour —
-// so ignoring inquiries loses the badge, not just answering slowly. Badge =
-// at least RESPONSE_BADGE_MIN_SAMPLE such leads and a rate of at least
-// RESPONSE_BADGE_MIN_RATE_PERCENT. Recomputed when a lead is first
-// answered, and weekly by the analytics-digest cron so it decays as the
-// window slides.
+// projects that is at least a day old counts; the share answered (moved
+// off "New", see hooks/lead-hooks.ts stampFirstResponse) within
+// RESPONSE_BADGE_LIMIT_MINUTES is the rate. Unanswered leads count against
+// it once they pass that window — so ignoring inquiries loses the badge,
+// not just answering slowly. Badge = at least RESPONSE_BADGE_MIN_SAMPLE
+// such leads and a rate of at least RESPONSE_BADGE_MIN_RATE_PERCENT.
+// Recomputed when a lead is first answered, and weekly by the
+// analytics-digest cron so it decays as the window slides.
 
 import type { Payload, PayloadRequest } from 'payload'
 
 export const RESPONSE_BADGE_WINDOW_DAYS = 90
 export const RESPONSE_BADGE_MIN_SAMPLE = 5
 export const RESPONSE_BADGE_MIN_RATE_PERCENT = 80
-export const RESPONSE_BADGE_LIMIT_MINUTES = 60
-export const RESPONSE_BADGE_LABEL = 'Responds within 1 hour'
+export const RESPONSE_BADGE_LIMIT_MINUTES = 1440
+export const RESPONSE_BADGE_LABEL = 'Responds within 24 hours'
 
 export type ResponseStats = {
   earned: boolean
-  /** Leads in the window that are old enough to judge (≥ 1 hour). */
+  /** Leads in the window that are old enough to judge (≥ RESPONSE_BADGE_LIMIT_MINUTES). */
   sampleSize: number
-  /** 0–100 share of those answered within the hour; null with no sample. */
+  /** 0–100 share of those answered within the window; null with no sample. */
   withinHourRatePercent: number | null
   /** Median minutes over answered leads in the window; null when none. */
   medianMinutes: number | null

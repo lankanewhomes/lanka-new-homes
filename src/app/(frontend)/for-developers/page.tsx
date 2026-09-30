@@ -54,12 +54,12 @@ const SHOWCASE_SLUGS = ["capitol-twinpeaks", "viva-la-vida", "imaarat-bambalapit
 // before this was added to their className too ("also fix the badges
 // styling").
 // Owner, 2026-09-29: "this is create [great]. keep the content. but add 2
-// more illustrative example.es." — the same panel design/content, shown
-// for 3 of the real showcase projects (so it also visibly backs up the
-// caption below: "every developer gets this... for each of their own
-// projects"), each with its own illustrative (not real) numbers.
+// more illustrative example.es." -> (2026-09-30) "1 card of analytics is
+// good can you add other cards different not anyaltytics" — back to one
+// dashboard example (was 3 near-identical ones), sitting alongside real,
+// different feature cards instead of more analytics repeats.
 //
-// Owner, same day: "this section. needs to show the dashbaord we have
+// Owner, 2026-09-29: "this section. needs to show the dashbaord we have
 // from backend" — the real dashboard (ListingAnalyticsPanel.tsx) is a
 // Payload admin component behind a developer login, tied to one real
 // project's real data; it can't be embedded on a public marketing page
@@ -68,32 +68,21 @@ const SHOWCASE_SLUGS = ["capitol-twinpeaks", "viva-la-vida", "imaarat-bambalapit
 // and the Lead Status row using the real statuses from
 // LEAD_STATUS_OPTIONS in collections/Leads.ts — New/Contacted/Site
 // visit/Closed) rather than a loosely-invented approximation.
-const ANALYTICS_EXAMPLES = [
-  {
-    views: "2,145", inquiries: "38", inquiryRate: "1.8%", avgTime: "96s", pagesPerSession: "2.4",
-    viewsPoints: "0,60 40,55 80,48 120,50 160,35 200,30 240,20 280,18 320,10", inquiriesPoints: "0,82 40,80 80,78 120,75 160,72 200,68 240,60 280,58 320,50",
-    leadStatus: [{ label: "New", count: 6 }, { label: "Contacted", count: 19 }, { label: "Site visit", count: 9 }, { label: "Closed", count: 4 }],
-  },
-  {
-    views: "3,860", inquiries: "72", inquiryRate: "1.9%", avgTime: "112s", pagesPerSession: "2.8",
-    viewsPoints: "0,70 40,62 80,58 120,44 160,40 200,26 240,22 280,14 320,8", inquiriesPoints: "0,85 40,80 80,74 120,70 160,64 200,58 240,52 280,44 320,36",
-    leadStatus: [{ label: "New", count: 11 }, { label: "Contacted", count: 34 }, { label: "Site visit", count: 18 }, { label: "Closed", count: 9 }],
-  },
-  {
-    views: "1,290", inquiries: "21", inquiryRate: "1.6%", avgTime: "84s", pagesPerSession: "2.1",
-    viewsPoints: "0,66 40,64 80,60 120,56 160,50 200,42 240,34 280,24 320,16", inquiriesPoints: "0,88 40,86 80,84 120,80 160,76 200,70 240,64 280,58 320,52",
-    leadStatus: [{ label: "New", count: 3 }, { label: "Contacted", count: 10 }, { label: "Site visit", count: 5 }, { label: "Closed", count: 3 }],
-  },
-] as const;
+const ANALYTICS_EXAMPLE = {
+  views: "2,145", inquiries: "38", inquiryRate: "1.8%", avgTime: "96s", pagesPerSession: "2.4",
+  viewsPoints: "0,60 40,55 80,48 120,50 160,35 200,30 240,20 280,18 320,10", inquiriesPoints: "0,82 40,80 80,78 120,75 160,72 200,68 240,60 280,58 320,50",
+  leadStatus: [{ label: "New", count: 6 }, { label: "Contacted", count: 19 }, { label: "Site visit", count: 9 }, { label: "Closed", count: 4 }],
+} as const;
 
 // Owner, 2026-09-30: "having 1 analytics is grwat. but have some other
-// feautes also" — real, already-established capabilities every listing
-// has (not invented for this section), shown alongside the analytics
-// example rather than replacing it.
+// feautes also" -> "can you add other cards different not anyaltytics" —
+// real, already-established capabilities every listing has, each its own
+// proper card now (was a plain pill list) instead of more dashboard
+// mockups.
 const PLATFORM_FEATURES = [
-  { icon: MessageCircle, label: "Direct WhatsApp & phone enquiries" },
-  { icon: LayoutGrid, label: "Unlimited photos & floor plans" },
-  { icon: FileText, label: "Brochure downloads" },
+  { icon: MessageCircle, label: "Direct WhatsApp & phone enquiries", body: "Buyers reach you instantly — no delay, no missed messages." },
+  { icon: LayoutGrid, label: "Unlimited photos & floor plans", body: "Show every unit type and every angle, at no extra cost." },
+  { icon: FileText, label: "Brochure downloads", body: "A downloadable PDF brochure on every listing, ready to share." },
 ] as const;
 
 // Owner, 2026-09-29: "for-devlopers faq needs to look this this faq
@@ -107,13 +96,13 @@ const FAQS = [
   { q: "How do I get started?", a: "Register as a developer, then add your first project. It goes live once approved." },
   { q: "How do buyer enquiries reach me?", a: "Every enquiry submitted on your listing reaches you the moment it's sent — no delay, no middleman." },
   { q: "Can I list more than one project?", a: "Yes, there's no limit on the number of free listings a developer account can have." },
-  { q: "What do the Verified and “Responds within 1 hour” badges mean?", a: "Verified confirms a real, active developer account. “Responds within 1 hour” is earned by replying to enquiries quickly — both are things buyers specifically look for." },
+  { q: "What do the Verified and “Responds within 24 hours” badges mean?", a: "Verified confirms a real, active developer account. “Responds within 24 hours” is earned by replying to enquiries quickly — both are things buyers specifically look for." },
   { q: "Do I need to provide my own photos and floor plans?", a: "Yes — real photography, floor plans and pricing are what make a listing complete. We don't publish placeholder content in their place." },
 ] as const;
 
 const BADGES = [
   { key: "verified", label: "Verified", className: "listing-badge-pill badge-verified fdv-badge-pill", icon: ShieldCheck },
-  { key: "responder", label: "Responds within 1 hour", className: "listing-badge-pill badge-responder fdv-badge-pill", icon: Zap },
+  { key: "responder", label: "Responds within 24 hours", className: "listing-badge-pill badge-responder fdv-badge-pill", icon: Zap },
   { key: "featured", label: "Featured", className: "badge-featured fdv-badge-pill", icon: null },
   { key: "premium", label: "Premium", className: "badge-premium fdv-badge-pill", icon: null },
   { key: "move-in-now", label: "Move-In Now", className: "badge-move-in-now fdv-badge-pill", icon: null },
@@ -207,7 +196,7 @@ export default async function ForDevelopersPage() {
           <div className="fdv-hero-badges" aria-hidden="true">
             {BADGES.map((badge) => (
               <span key={badge.key} className={badge.className}>
-                {badge.icon ? <badge.icon className="h-3 w-3" aria-hidden="true" /> : null}
+                {badge.icon ? <badge.icon className="h-2.5 w-2.5" aria-hidden="true" /> : null}
                 {badge.label}
               </span>
             ))}
@@ -265,74 +254,70 @@ export default async function ForDevelopersPage() {
           </p>
         </div>
 
-        {/* Owner, 2026-09-30: "having 1 analytics is grwat. but have some
-            other feautes also" — real capabilities every listing already
-            has, alongside the analytics example rather than in place of
-            it. */}
-        <ul className="fdv-platform-features" data-reveal aria-label="Also included on every listing">
-          {PLATFORM_FEATURES.map((feature) => (
-            <li key={feature.label}>
-              <feature.icon className="h-4 w-4" aria-hidden="true" />
-              {feature.label}
-            </li>
-          ))}
-        </ul>
-
         <div className="fdv-control-panel-wrap" data-reveal>
-          <div className="fdv-analytics-row">
-          {ANALYTICS_EXAMPLES.map((example, index) => (
-            <div className="fdv-analytics-frame" aria-hidden="true" key={index}>
-              <div className="fdv-analytics-toolbar">
-                <span className="fdv-analytics-title">
-                  Listing Analytics{showcaseProjects[index] ? ` — ${showcaseProjects[index].name}` : ""}
-                </span>
-                <div className="fdv-analytics-ranges">
-                  <span className="fdv-analytics-range">Last 7 days</span>
-                  <span className="fdv-analytics-range fdv-analytics-range-active">Last 28 days</span>
-                  <span className="fdv-analytics-range">Last 90 days</span>
-                </div>
-              </div>
-              <div className="fdv-analytics-stats">
-                <div className="fdv-analytics-stat">
-                  <span className="fdv-analytics-stat-label">Views</span>
-                  <span className="fdv-analytics-stat-value">{example.views}</span>
-                </div>
-                <div className="fdv-analytics-stat">
-                  <span className="fdv-analytics-stat-label">Inquiries</span>
-                  <span className="fdv-analytics-stat-value">{example.inquiries}</span>
-                </div>
-                <div className="fdv-analytics-stat">
-                  <span className="fdv-analytics-stat-label">Inquiry rate</span>
-                  <span className="fdv-analytics-stat-value">{example.inquiryRate}</span>
-                </div>
-                <div className="fdv-analytics-stat">
-                  <span className="fdv-analytics-stat-label">Avg. time on page</span>
-                  <span className="fdv-analytics-stat-value">{example.avgTime}</span>
-                </div>
-                <div className="fdv-analytics-stat">
-                  <span className="fdv-analytics-stat-label">Pages / session</span>
-                  <span className="fdv-analytics-stat-value">{example.pagesPerSession}</span>
-                </div>
-              </div>
-              <svg className="fdv-analytics-chart" viewBox="0 0 320 90" preserveAspectRatio="none">
-                <polyline className="fdv-analytics-chart-line fdv-analytics-chart-line-views" points={example.viewsPoints} />
-                <polyline className="fdv-analytics-chart-line fdv-analytics-chart-line-inquiries" points={example.inquiriesPoints} />
-              </svg>
-              <div className="fdv-analytics-legend">
-                <span><i className="fdv-analytics-dot fdv-analytics-dot-views" aria-hidden="true" />Views</span>
-                <span><i className="fdv-analytics-dot fdv-analytics-dot-inquiries" aria-hidden="true" />Inquiries</span>
-              </div>
-              <div className="fdv-analytics-leadstatus">
-                {example.leadStatus.map((row) => (
-                  <span key={row.label}>{row.label}: <strong>{row.count}</strong></span>
-                ))}
+          <div className="fdv-analytics-frame" aria-hidden="true">
+            <div className="fdv-analytics-toolbar">
+              <span className="fdv-analytics-title">
+                Listing Analytics{showcaseProjects[0] ? ` — ${showcaseProjects[0].name}` : ""}
+              </span>
+              <div className="fdv-analytics-ranges">
+                <span className="fdv-analytics-range">Last 7 days</span>
+                <span className="fdv-analytics-range fdv-analytics-range-active">Last 28 days</span>
+                <span className="fdv-analytics-range">Last 90 days</span>
               </div>
             </div>
-          ))}
+            <div className="fdv-analytics-stats">
+              <div className="fdv-analytics-stat">
+                <span className="fdv-analytics-stat-label">Views</span>
+                <span className="fdv-analytics-stat-value">{ANALYTICS_EXAMPLE.views}</span>
+              </div>
+              <div className="fdv-analytics-stat">
+                <span className="fdv-analytics-stat-label">Inquiries</span>
+                <span className="fdv-analytics-stat-value">{ANALYTICS_EXAMPLE.inquiries}</span>
+              </div>
+              <div className="fdv-analytics-stat">
+                <span className="fdv-analytics-stat-label">Inquiry rate</span>
+                <span className="fdv-analytics-stat-value">{ANALYTICS_EXAMPLE.inquiryRate}</span>
+              </div>
+              <div className="fdv-analytics-stat">
+                <span className="fdv-analytics-stat-label">Avg. time on page</span>
+                <span className="fdv-analytics-stat-value">{ANALYTICS_EXAMPLE.avgTime}</span>
+              </div>
+              <div className="fdv-analytics-stat">
+                <span className="fdv-analytics-stat-label">Pages / session</span>
+                <span className="fdv-analytics-stat-value">{ANALYTICS_EXAMPLE.pagesPerSession}</span>
+              </div>
+            </div>
+            <svg className="fdv-analytics-chart" viewBox="0 0 320 90" preserveAspectRatio="none">
+              <polyline className="fdv-analytics-chart-line fdv-analytics-chart-line-views" points={ANALYTICS_EXAMPLE.viewsPoints} />
+              <polyline className="fdv-analytics-chart-line fdv-analytics-chart-line-inquiries" points={ANALYTICS_EXAMPLE.inquiriesPoints} />
+            </svg>
+            <div className="fdv-analytics-legend">
+              <span><i className="fdv-analytics-dot fdv-analytics-dot-views" aria-hidden="true" />Views</span>
+              <span><i className="fdv-analytics-dot fdv-analytics-dot-inquiries" aria-hidden="true" />Inquiries</span>
+            </div>
+            <div className="fdv-analytics-leadstatus">
+              {ANALYTICS_EXAMPLE.leadStatus.map((row) => (
+                <span key={row.label}>{row.label}: <strong>{row.count}</strong></span>
+              ))}
+            </div>
           </div>
           <p className="fdv-analytics-caption">
             Illustrative example — every developer gets this exact dashboard, live, for each of their own projects.
           </p>
+
+          {/* Owner, 2026-09-30: "1 card of analytics is good can you add
+              other cards different not anyaltytics" — real platform
+              features as their own cards, not more dashboard mockups. */}
+          <div className="fdv-feature-cards">
+            {PLATFORM_FEATURES.map((feature) => (
+              <div className="fdv-feature-card" key={feature.label}>
+                <feature.icon className="h-5 w-5" aria-hidden="true" />
+                <h3>{feature.label}</h3>
+                <p>{feature.body}</p>
+              </div>
+            ))}
+          </div>
         </div>
         </div>
       </section>

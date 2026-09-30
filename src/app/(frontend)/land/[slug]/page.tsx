@@ -119,7 +119,7 @@ export default async function LandDetailPage({ params }: LandPageProps) {
         backLabel="Land for Sale"
         statusLabelOverride={land.status}
         extraBadges={[
-          ...(developer?.respondsWithinHour ? [{ label: "Responds within 1 hour", kind: "responder" as const }] : []),
+          ...(developer?.respondsWithinHour ? [{ label: "Responds within 24 hours", kind: "responder" as const }] : []),
           // Verified is gated behind an active paid (Featured/Premium)
           // package now — Land has no package/subscription system yet
           // (that's Projects-only, src/lib/packages.ts), so no Land listing

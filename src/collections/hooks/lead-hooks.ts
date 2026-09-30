@@ -32,7 +32,7 @@ export const notifyDeveloperOfLead: CollectionAfterChangeHook = async ({ doc, op
 // Response-time tracking: the first time a lead leaves "New", stamp when
 // and how many minutes after it came in. Written with overrideAccess so the
 // admin-only field access on these two fields still keeps developers from
-// editing them by hand (the badge "responds within 1 hour" will be built on
+// editing them by hand (the badge "responds within 24 hours" will be built on
 // them). The nested update sets skipLeadHooks so this doesn't re-enter.
 export const stampFirstResponse: CollectionAfterChangeHook = async ({ doc, previousDoc, operation, req }) => {
   if (operation !== 'update' || req.context?.skipLeadHooks) return doc
@@ -57,7 +57,7 @@ export const stampFirstResponse: CollectionAfterChangeHook = async ({ doc, previ
     context: { skipLeadHooks: true, skipSupabaseSync: true },
     req,
   })
-  // A reply changes the developer's "Responds within 1 hour" standing.
+  // A reply changes the developer's "Responds within 24 hours" standing.
   try {
     const projectId = relId(doc.project)
     const project = projectId ? await req.payload.findByID({ collection: 'projects', id: projectId, depth: 0, overrideAccess: true, req }) : null

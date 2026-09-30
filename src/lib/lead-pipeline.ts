@@ -3,7 +3,7 @@ import { LEAD_STATUS_OPTIONS } from '@/collections/Leads'
 import { computeResponseStats, type ResponseStats } from '@/lib/response-badge'
 
 // Lead pipeline + response-time summary for the /cms Analytics dashboard
-// (and, later, the "responds within 1 hour" developer badge). All-time,
+// (and, later, the "responds within 24 hours" developer badge). All-time,
 // not date-range scoped: a lead's stage is where it stands today.
 export type LeadPipelineSummary = {
   total: number
@@ -13,10 +13,10 @@ export type LeadPipelineSummary = {
   /** Over leads that have a first response; null when none yet. */
   avgResponseMinutes: number | null
   medianResponseMinutes: number | null
-  /** Share of responded leads answered within an hour, 0–100; null when none. */
+  /** Share of responded leads answered within 24 hours, 0–100; null when none. */
   respondedWithinHourPercent: number | null
   respondedCount: number
-  /** "Responds within 1 hour" standing over the badge window (src/lib/response-badge.ts). */
+  /** "Responds within 24 hours" standing over the badge window (src/lib/response-badge.ts). */
   badge: ResponseStats
 }
 
