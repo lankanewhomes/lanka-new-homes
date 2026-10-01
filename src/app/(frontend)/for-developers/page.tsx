@@ -148,59 +148,57 @@ export default async function ForDevelopersPage() {
       {/* 1 — HERO — solid background, centered (owner, 2026-09-29: "you need
           ot change the hero section. re design the devloerps page"),
           matching /web-design's own hero rather than a full-bleed photo. */}
-      <section className="fdv-hero" aria-label="For property developers">
-        <div className="fdv-hero-content">
-          <h1 className="fdv-hero-headline">
-            Put your projects in front of the right buyers.
-          </h1>
-          <p className="fdv-hero-sub">
-            A premium platform built to showcase Sri Lanka&apos;s newest homes, developments and land projects.
-          </p>
-          <div className="fdv-hero-ctas">
-            {/* Owner, 2026-09-29: "same styling as list your project. same
-                as the footer. please be constant with design" — the
-                footer/final-CTA pill, not the solid-fill .fdv-cta-primary. */}
-            <Link href="/developers/register" className="fdv-cta-final-button">Register as a developer</Link>
-            <a href="#show-product" className="fdv-cta-secondary fdv-hero-explore-link">
-              Explore the platform
-              <ArrowRight size={16} strokeWidth={2.5} aria-hidden="true" />
-            </a>
-          </div>
-          {/* Owner, 2026-09-29: "for devloeprs its free to list always" — not
-              "at the moment", which read as a limited-time offer. */}
-          <p className="fdv-hero-fineprint">Always free to list.</p>
-        </div>
+      <section className="fdv-hero fdv-hero--split" aria-label="For property developers">
+        <div className="fdv-hero-split-inner">
+          <div className="fdv-hero-content">
+            <p className="fdv-hero-kicker">For developers</p>
+            <h1 className="fdv-hero-headline">
+              Put your projects in front of the right buyers.
+            </h1>
+            <p className="fdv-hero-sub">
+              A premium platform built to showcase Sri Lanka&apos;s newest homes, developments and land projects.
+            </p>
+            <div className="fdv-hero-ctas">
+              {/* Owner, 2026-09-29: "same styling as list your project. same
+                  as the footer. please be constant with design" — the
+                  footer/final-CTA pill, not the solid-fill .fdv-cta-primary. */}
+              <Link href="/developers/register" className="fdv-cta-final-button">Register as a developer</Link>
+              <a href="#show-product" className="fdv-cta-secondary fdv-hero-explore-link">
+                Explore the platform
+                <ArrowRight size={16} strokeWidth={2.5} aria-hidden="true" />
+              </a>
+            </div>
+            {/* Owner, 2026-09-29: "for devloeprs its free to list always" — not
+                "at the moment", which read as a limited-time offer. */}
+            <p className="fdv-hero-fineprint">Always free to list.</p>
 
-        {heroMarqueeItems.length > 0 ? (
-          <div className="fdv-hero-marquee" aria-hidden="true">
-            <div className="fdv-hero-marquee-track">
-              {[...heroMarqueeItems, ...heroMarqueeItems].map((item, index) => (
-                <div className="fdv-hero-marquee-frame" key={`${item.label}-${index}`}>
-                  <Image src={item.src} alt="" fill sizes="320px" className="fdv-hero-marquee-img" />
+            <div className="fdv-hero-badges-group">
+              <p className="fdv-hero-badges-title">Badges your listing can earn</p>
+              <div className="fdv-hero-badges" aria-hidden="true">
+                {BADGES.map((badge) => (
+                  <span key={badge.key} className={badge.className}>
+                    {badge.icon ? <badge.icon className="h-2.5 w-2.5" aria-hidden="true" /> : null}
+                    {badge.label}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Owner, 2026-09-30: "redesign the hero also, do your creativity
+              but follow the brand rule" — real project media (photo, floor
+              plan, road map…) composed as a bordered collage on the right,
+              replacing the old full-width scrolling marquee. */}
+          {heroMarqueeItems.length > 0 ? (
+            <div className="fdv-hero-collage" aria-hidden="true">
+              {heroMarqueeItems.slice(0, 4).map((item, index) => (
+                <div className={`fdv-hero-collage-frame fdv-hero-collage-frame-${index + 1}`} key={item.label}>
+                  <Image src={item.src} alt="" fill sizes="(max-width: 900px) 50vw, 320px" className="fdv-hero-marquee-img" priority={index === 0} />
                   <span className="fdv-hero-marquee-tag">{item.label}</span>
                 </div>
               ))}
             </div>
-          </div>
-        ) : null}
-
-        {/* Owner, 2026-09-29: "put these below the imagee" — moved out of
-            .fdv-hero-content to after the marquee, same placement
-            /web-design uses for its own hero chip list below its marquee.
-            Wrapped in one group (owner, 2026-09-30: "too spacing. put it
-            closer") — as two separate direct children of .fdv-hero, the
-            parent's own 48px flex gap was stacking on top of the title's
-            own margin, doubling up the gap between them. */}
-        <div className="fdv-hero-badges-group">
-          <p className="fdv-hero-badges-title">Badges your listing can earn</p>
-          <div className="fdv-hero-badges" aria-hidden="true">
-            {BADGES.map((badge) => (
-              <span key={badge.key} className={badge.className}>
-                {badge.icon ? <badge.icon className="h-2.5 w-2.5" aria-hidden="true" /> : null}
-                {badge.label}
-              </span>
-            ))}
-          </div>
+          ) : null}
         </div>
       </section>
 
@@ -255,6 +253,7 @@ export default async function ForDevelopersPage() {
         </div>
 
         <div className="fdv-control-panel-wrap" data-reveal>
+          <div className="fdv-analytics-col">
           <div className="fdv-analytics-frame" aria-hidden="true">
             <div className="fdv-analytics-toolbar">
               <span className="fdv-analytics-title">
@@ -305,6 +304,7 @@ export default async function ForDevelopersPage() {
           <p className="fdv-analytics-caption">
             Illustrative example — every developer gets this exact dashboard, live, for each of their own projects.
           </p>
+          </div>
 
           {/* Owner, 2026-09-30: "1 card of analytics is good can you add
               other cards different not anyaltytics" — real platform

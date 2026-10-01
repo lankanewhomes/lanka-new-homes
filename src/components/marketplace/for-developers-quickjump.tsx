@@ -1,6 +1,6 @@
 "use client";
 
-import { BarChart3, Building2, LayoutTemplate, UserPlus } from "lucide-react";
+import { BarChart3, Building2, CircleHelp, LayoutTemplate, UserPlus } from "lucide-react";
 import { QuickjumpBar } from "./quickjump-bar";
 
 /**
@@ -18,6 +18,7 @@ export function ForDevelopersQuickjump() {
         { href: "#show-product", label: "Overview", icon: LayoutTemplate },
         { href: "#analytics", label: "Analytics", icon: BarChart3 },
         { href: "#listings", label: "Listings", icon: Building2 },
+        { href: "#faq", label: "FAQ", icon: CircleHelp },
         { href: "/developers/register", label: "Register", icon: UserPlus },
       ]}
       gateSelector=".fdv-hero"

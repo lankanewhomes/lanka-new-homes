@@ -11316,8 +11316,11 @@ body:has(.compare-bar) {
   content: "\2212";
 }
 
+/* Owner, 2026-09-30: "when it drops down its turning into orange. I want a
+   different color. black. be consistent" — site-wide (every FAQ uses this
+   item), not just /for-developers. */
 .guide-page-faq-item[open] summary {
-  color: #f47b36;
+  color: #000;
 }
 
 .guide-page-faq-item p {
@@ -13367,7 +13370,9 @@ body:has(.compare-bar) {
   --fdv-muted: #6b6558;
   --fdv-accent: #f47b36;
   --fdv-serif: var(--font-ref-sans);
-  background: var(--fdv-paper);
+  /* Owner, 2026-09-30: "the backward background needs to be white" — the
+     page behind the section boxes is plain white, not the cream paper tone. */
+  background: #fff;
   color: var(--fdv-ink);
 }
 
@@ -14065,43 +14070,30 @@ body:has(.compare-bar) {
    on their normal dark-ink colors (no light-text override needed).
    "it needs lines alsol boxes" — the box texture too, dark lines since
    the background is light here (not white, like the dark sections). */
+/* Owner, 2026-09-30: "this section container shouldn't be full width...
+   do it like new listing section", then "remove the background" / "there
+   is background the blue remove it" — plain white section, contained at the
+   .new-listings-section width/padding, no blue fill or dot texture. */
 .fdv-control {
   position: relative;
-  overflow: hidden;
-  padding: 96px 0;
-  background: #eceef0;
-  border-top: 1px solid var(--fdv-line);
+  padding: 48px 0;
+  background: #fff;
 }
 
-.fdv-control::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-image:
-    repeating-linear-gradient(0deg, transparent 0 28px, rgba(21, 20, 26, 0.05) 28px 29px),
-    repeating-linear-gradient(90deg, transparent 0 28px, rgba(21, 20, 26, 0.05) 28px 29px);
-  -webkit-mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
-  mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
-}
-
-.fdv-control > * {
-  position: relative;
-  z-index: 1;
-}
-
-/* Owner, 2026-09-29: "do the cards int a row" — the copy sits above,
-   full-width, and the 3 illustrative examples form a row below it,
-   instead of the old 2-column copy-left/panel-right layout (which only
-   ever fit one stacked card). */
 .fdv-control-inner {
-  /* Owner, 2026-09-30: "dont put full width. do it like new listing
-     ssection width" — matches .new-listings-section's own cap exactly. */
-  width: min(1280px, calc(100% - 64px));
+  position: relative;
+  overflow: hidden;
+  width: min(1280px, calc(100% - 32px));
   margin: 0 auto;
+  padding: 56px 30px 52px;
   display: flex;
   flex-direction: column;
   gap: 48px;
+}
+
+.fdv-control-inner > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* Owner, 2026-09-30: "too much spacing between" — .wdx-section-head's own
@@ -14119,20 +14111,46 @@ body:has(.compare-bar) {
   text-align: left;
   margin-left: 0;
   margin-right: 0;
+  width: auto;
+}
+
+/* Owner, 2026-09-30: "font and size same as new listing section on home
+   page" — copies .featured-listings-head h2 / .featured-listings-subhead. */
+.fdv-control-inner > .wdx-section-head h2 {
+  margin: 0;
+  font-family: var(--font-ref-sans);
+  font-weight: 400;
+  font-size: 32px;
+  line-height: 1.15;
+  letter-spacing: normal;
+  color: #1f1f1f;
 }
 
 /* The paragraph's own margin: auto (for the normal centered layout) would
    otherwise still center its 480px box even with text-align: left set
    above — it needs pinning to the left edge too. */
 .fdv-control-inner > .wdx-section-head p:not(.fdv-eyebrow) {
-  margin-left: 0;
-  margin-right: 0;
+  margin: 8px 0 0;
+  max-width: 460px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #6b6355;
 }
 
+/* Owner, 2026-09-30: "have the analytics cards on the left and have these
+   three on the side" — analytics card left, the 3 feature cards stacked in
+   a column on the right. */
 .fdv-control-panel-wrap {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.fdv-analytics-col {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
 }
 
 /* Owner, 2026-09-30: "having 1 analytics is grwat. but have some other
@@ -14141,8 +14159,8 @@ body:has(.compare-bar) {
    bordered cards (icon, title, one line), not a plain pill list and not
    more dashboard mockups. */
 .fdv-feature-cards {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: 20px;
 }
 
@@ -14171,7 +14189,7 @@ body:has(.compare-bar) {
 }
 
 @media (max-width: 900px) {
-  .fdv-feature-cards {
+  .fdv-control-panel-wrap {
     grid-template-columns: 1fr;
   }
 }
@@ -14180,8 +14198,8 @@ body:has(.compare-bar) {
    card (was 1 of 3 in a row), so it gets its own max-width instead of
    stretching to the full 1180px container. */
 .fdv-analytics-frame {
-  width: min(760px, 100%);
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
   border: 1px solid var(--fdv-line);
   background: #fff;
   padding: 22px 26px 26px;
@@ -14274,8 +14292,22 @@ body:has(.compare-bar) {
 
 .fdv-analytics-legend {
   display: flex;
-  gap: 18px;
-  margin-top: 10px;
+  gap: 24px;
+  margin-top: 16px;
+}
+
+/* Owner, 2026-09-30: "they are too close together" — the lead-status
+   counts ("New: 6 Contacted: 19 ...") had no styling at all, so they ran
+   together as inline text directly under the legend. */
+.fdv-analytics-leadstatus {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--fdv-line);
+  font-size: 13px;
+  color: var(--fdv-muted);
 }
 
 .fdv-analytics-legend span {
@@ -16710,5 +16742,396 @@ body:has(.compare-bar) {
 
   .blog-page-head h1 {
     font-size: 30px;
+  }
+}
+
+/* Owner, 2026-09-30: "do the same styling for all the section on that page
+   except hero" -> "each section needs to have a container and different
+   background" — every non-hero /for-developers section is a contained box
+   (the .new-listings-section 1280px width/padding) on a plain white page,
+   each with its own soft, texture-free fill, and a left-aligned heading in
+   the homepage "New listings" heading style. No blue (owner removed it). */
+.fdv-page .fdv-control,
+.fdv-page .fdv-showcase-product,
+.fdv-page .fdv-live-listings,
+.fdv-page .wdx-faq {
+  background: #fff;
+  border-top: 0;
+  padding: 24px 0;
+}
+
+.fdv-page .fdv-showcase-product::before,
+.fdv-page .wdx-faq::before {
+  content: none;
+}
+
+.fdv-page .fdv-control-inner,
+.fdv-page .fdv-showcase-product > *,
+.fdv-page .fdv-live-listings > *,
+.fdv-page .wdx-faq > * {
+  box-sizing: border-box;
+}
+
+.fdv-page .fdv-showcase-product,
+.fdv-page .fdv-live-listings,
+.fdv-page .wdx-faq {
+  width: min(1280px, calc(100% - 32px));
+  /* 34px between boxes = .new-listings-section's own margin on the home
+     page (owner, 2026-09-30: "spacing just like the home page"). */
+  margin: 34px auto;
+  padding: 56px 30px 52px;
+}
+
+.fdv-page .fdv-control { padding: 0; }
+.fdv-page .fdv-control-inner { margin: 34px auto; }
+.fdv-page .fdv-control-inner { background: #f1f0ec; }
+.fdv-page .fdv-showcase-product { background: #f7f1e6; }
+.fdv-page .fdv-live-listings { background: #ecf1ea; }
+.fdv-page .wdx-faq { background: #f1ecf3; }
+
+.fdv-page .fdv-showcase-product .wdx-section-head,
+.fdv-page .fdv-live-listings .wdx-section-head,
+.fdv-page .wdx-faq .wdx-section-head {
+  width: 100%;
+  max-width: none;
+  margin: 0 0 32px;
+  text-align: left;
+}
+
+.fdv-page .fdv-showcase-product .wdx-section-head h2,
+.fdv-page .fdv-live-listings .wdx-section-head h2,
+.fdv-page .wdx-faq .wdx-section-head h2 {
+  margin: 0;
+  font-family: var(--font-ref-sans);
+  font-weight: 400;
+  font-size: 32px;
+  line-height: 1.15;
+  letter-spacing: normal;
+  color: #1f1f1f;
+}
+
+.fdv-page .fdv-showcase-product .wdx-section-head p,
+.fdv-page .fdv-live-listings .wdx-section-head p,
+.fdv-page .wdx-faq .wdx-section-head p {
+  margin: 8px 0 0;
+  max-width: 460px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #6b6355;
+}
+
+.fdv-page .fdv-showcase-grid,
+.fdv-page .wdx-faq-list {
+  width: 100%;
+}
+
+/* Owner, 2026-09-30: "the website preview is too big. make it small" — the
+   live-listing preview scales to its frame's width, so a narrower frame
+   shrinks the whole preview (height follows the same aspect ratio). */
+.fdv-page .fdv-product-frame {
+  width: min(520px, 100%);
+}
+
+/* Owner, 2026-09-30: "center it. Every project gets a dedicated
+   presentation." — centred under the (centred) preview. */
+.fdv-page .fdv-showcase-product .fdv-caption {
+  width: 100%;
+  margin: 16px 0 0;
+  text-align: center;
+}
+
+/* Owner, 2026-09-30: "each section you need to add lines, dots, boxes" —
+   each box keeps its flat tint plus a faint texture, alternating dots and
+   boxes (crossed lines) like the rest of the site. Dark ink at low alpha so
+   it reads on every tint. */
+.fdv-page .fdv-control-inner,
+.fdv-page .fdv-showcase-product,
+.fdv-page .fdv-live-listings,
+.fdv-page .wdx-faq {
+  position: relative;
+  overflow: hidden;
+}
+
+.fdv-page .fdv-control-inner::before,
+.fdv-page .fdv-showcase-product::before,
+.fdv-page .fdv-live-listings::before,
+.fdv-page .wdx-faq::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  -webkit-mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
+  mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
+}
+
+/* Dots */
+.fdv-page .fdv-control-inner::before,
+.fdv-page .fdv-live-listings::before {
+  background-image: radial-gradient(rgba(21, 20, 26, 0.18) 1.5px, transparent 0);
+  background-size: 18px 18px;
+}
+
+/* Boxes */
+.fdv-page .fdv-showcase-product::before,
+.fdv-page .wdx-faq::before {
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(21, 20, 26, 0.07) 28px 29px),
+    repeating-linear-gradient(90deg, transparent 0 28px, rgba(21, 20, 26, 0.07) 28px 29px);
+}
+
+.fdv-page .fdv-showcase-product > *,
+.fdv-page .fdv-live-listings > *,
+.fdv-page .wdx-faq > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== /for-developers hero redesign (owner, 2026-09-30: "redesign the hero
+   section also, do your creativity but follow the brand rule and padding,
+   styling") =====
+   Scoped to .fdv-hero--split because /about and /press share .fdv-hero. Keeps
+   the brand's dark box-textured hero; changes composition: left-aligned copy
+   in the same 1280px container as every section below, real project media as
+   a bordered collage on the right (replaces the full-width marquee), and
+   uniformly-sized badge pills. */
+.fdv-hero--split {
+  display: block;
+  min-height: 0;
+  padding: 96px 0;
+  text-align: left;
+}
+
+.fdv-hero-split-inner {
+  position: relative;
+  z-index: 1;
+  width: min(1280px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 0 30px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 56px;
+  align-items: center;
+}
+
+.fdv-hero--split .fdv-hero-content {
+  width: 100%;
+  margin: 0;
+  padding-top: 0;
+}
+
+.fdv-hero-kicker {
+  display: inline-block;
+  margin: 0 0 20px;
+  padding: 6px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #e4e2dd;
+}
+
+.fdv-hero--split .fdv-hero-headline {
+  margin: 0 0 22px;
+  font-size: 52px;
+  text-wrap: balance;
+}
+
+.fdv-hero--split .fdv-hero-sub {
+  margin: 0 0 34px;
+}
+
+.fdv-hero--split .fdv-hero-ctas {
+  justify-content: flex-start;
+}
+
+.fdv-hero--split .fdv-hero-fineprint {
+  margin: 18px 0 0;
+}
+
+.fdv-hero--split .fdv-hero-badges-group {
+  align-items: flex-start;
+  padding: 28px 0 0;
+  margin-top: 28px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+/* Owner, 2026-09-30: "these badges need fixing... some of them are too
+   big" — the column-flow grid stretched every badge to its column's widest
+   one, and .listing-badge-pill (Verified / Responds / Limited Units / BOI /
+   Beachfront) added its own larger padding. Now a plain wrapping row where
+   every pill is the same height and only as wide as its own text. */
+.fdv-hero--split .fdv-hero-badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+.fdv-hero--split .fdv-hero-badges .fdv-badge-pill {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 0;
+  height: 24px;
+  padding: 0 8px;
+  font-size: 10px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Collage: one tall frame + two stacked, like the listing hero grid. */
+.fdv-hero-collage {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  grid-template-rows: repeat(2, 1fr);
+  gap: 14px;
+  height: 460px;
+}
+
+.fdv-hero-collage .fdv-hero-collage-frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.fdv-hero-collage-frame-1 {
+  grid-row: 1 / 3;
+}
+
+@media (max-width: 900px) {
+  .fdv-hero--split {
+    padding: 56px 0;
+  }
+
+  .fdv-hero-split-inner {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding: 0 20px;
+  }
+
+  .fdv-hero--split .fdv-hero-headline {
+    font-size: 36px;
+  }
+
+  .fdv-hero-collage {
+    height: 320px;
+  }
+}
+
+/* Owner, 2026-09-30: "for the cards the transparent for that section" —
+   the listing cards in the "What a listing looks like" box let the tinted,
+   dotted background show through instead of sitting on solid white. */
+.fdv-page .fdv-showcase-grid .home-project-card {
+  background: transparent;
+}
+
+/* Hero redesign v2 (owner, 2026-09-30: "i don't like it ... redesign it") —
+   drops the split layout. The hero is now a contained dark box (same 1280px
+   width/34px rhythm as every section below), centred copy, uniform badges,
+   and a 4-tile strip of real project media. Overrides the v1 split rules
+   above (later = wins). */
+.fdv-page .fdv-hero--split {
+  background: #fff;
+  padding: 34px 0 0;
+  min-height: 0;
+  text-align: center;
+  overflow: visible;
+}
+
+.fdv-page .fdv-hero--split::before {
+  content: none;
+}
+
+.fdv-page .fdv-hero-split-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 48px;
+  padding: 80px 48px 64px;
+  background: var(--fdv-ink);
+  color: #fff;
+  overflow: hidden;
+}
+
+.fdv-page .fdv-hero-split-inner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 22px, rgba(255, 255, 255, 0.04) 22px 23px),
+    repeating-linear-gradient(90deg, transparent 0 22px, rgba(255, 255, 255, 0.04) 22px 23px),
+    repeating-linear-gradient(0deg, transparent 0 88px, rgba(255, 255, 255, 0.07) 88px 89px),
+    repeating-linear-gradient(90deg, transparent 0 88px, rgba(255, 255, 255, 0.07) 88px 89px);
+  -webkit-mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 100%);
+}
+
+.fdv-page .fdv-hero-split-inner > * {
+  position: relative;
+  z-index: 1;
+}
+
+.fdv-page .fdv-hero--split .fdv-hero-content {
+  width: min(760px, 100%);
+  margin: 0 auto;
+}
+
+.fdv-page .fdv-hero--split .fdv-hero-headline {
+  margin: 0 auto 22px;
+  font-size: 56px;
+}
+
+.fdv-page .fdv-hero--split .fdv-hero-sub {
+  margin: 0 auto 34px;
+}
+
+.fdv-page .fdv-hero--split .fdv-hero-ctas {
+  justify-content: center;
+}
+
+.fdv-page .fdv-hero--split .fdv-hero-badges-group {
+  align-items: center;
+  border-top: 0;
+  margin-top: 40px;
+  padding-top: 0;
+}
+
+.fdv-page .fdv-hero--split .fdv-hero-badges {
+  justify-content: center;
+  max-width: 640px;
+}
+
+/* 4 equal media tiles in a row. */
+.fdv-page .fdv-hero-collage {
+  width: 100%;
+  height: auto;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: none;
+  gap: 16px;
+}
+
+.fdv-page .fdv-hero-collage .fdv-hero-collage-frame {
+  aspect-ratio: 4 / 3;
+}
+
+.fdv-page .fdv-hero-collage-frame-1 {
+  grid-row: auto;
+}
+
+@media (max-width: 900px) {
+  .fdv-page .fdv-hero-split-inner {
+    padding: 56px 20px 40px;
+  }
+
+  .fdv-page .fdv-hero--split .fdv-hero-headline {
+    font-size: 36px;
+  }
+
+  .fdv-page .fdv-hero-collage {
+    grid-template-columns: repeat(2, 1fr);
   }
 }

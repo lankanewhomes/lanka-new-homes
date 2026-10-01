@@ -2647,3 +2647,22 @@ description paragraph, separated by a thin divider.
   source order — otherwise that earlier, broader rule (same specificity
   otherwise) would apply the main paragraph's own larger/darker style to
   this line instead of its own smaller, muted one.
+
+## Page section style: contained boxes (owner, 2026-09-30 — use for anything new)
+
+Set on `/for-developers` and meant as the default for any new or redesigned
+non-hero page section ("lets keep this in mind when designing anything new").
+
+- **Contained box, never full-bleed**: max-width 1280px (the
+  `.new-listings-section` width), 30px side / 56px top / 52px bottom padding,
+  centred on a plain white page.
+- **Each section its own soft, flat background** (different from its
+  neighbours, texture-free, **no blue** — owner removed it): e.g. #f1f0ec,
+  #f7f1e6, #ecf1ea, #f1ecf3.
+- **34px between boxes** — same as the home page's section margin.
+- **Heading**: left-aligned, same font/size as the home "New listings" head
+  (`.featured-listings-head` h2: ref-sans, 400, 32px, 1.15, #1f1f1f; sub
+  15px #6b6355, max 460px).
+- **Floating menu** (`QuickjumpBar`) lists every section anchor; add an item
+  whenever a section is added.
+- Dark/hero-style sections are the exception (hero only).
