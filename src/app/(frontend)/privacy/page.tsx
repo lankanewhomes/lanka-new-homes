@@ -9,9 +9,19 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <div className="static-page-shell">
-      <h1>Privacy Policy</h1>
-      <p className="static-page-lede">This page describes how LankaNewHomes collects, uses, and protects your information when you use our marketplace for new homes, developments, and land projects in Sri Lanka.</p>
+    <div className="fdv-page legal-page">
+      {/* Owner, 2026-09-30: "redesign this also" — same contained-box system as /about, /press and /contact; the policy text itself is unchanged. */}
+      <section className="fdv-hero fdv-hero--split" aria-label="Privacy Policy">
+        <div className="fdv-hero-split-inner legal-hero-inner">
+          <div className="fdv-hero-content">
+            <h1 className="fdv-hero-headline">Privacy Policy</h1>
+            <p className="fdv-hero-sub">This page describes how LankaNewHomes collects, uses, and protects your information when you use our marketplace for new homes, developments, and land projects in Sri Lanka.</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="fdv-box fdv-box--gray" aria-label="Policy text">
+        <div className="static-page-shell legal-card">
 
       <h2>Information we collect</h2>
       <p>We collect information you provide directly, including:</p>
@@ -60,6 +70,8 @@ export default function PrivacyPage() {
 
       <h2>Contact</h2>
       <p>Questions about this policy can be sent to <a href="mailto:support@lankanewhomes.com">support@lankanewhomes.com</a>.</p>
+        </div>
+      </section>
     </div>
   );
 }

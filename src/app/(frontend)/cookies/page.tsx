@@ -9,9 +9,19 @@ export const metadata: Metadata = {
 
 export default function CookiePolicyPage() {
   return (
-    <div className="static-page-shell">
-      <h1>Cookie Policy</h1>
-      <p className="static-page-lede">This page explains the cookies and similar technologies LankaNewHomes uses, and how you can control them.</p>
+    <div className="fdv-page legal-page">
+      {/* Owner, 2026-09-30: "redesign this also" — same contained-box system as /about, /press and /contact; the policy text itself is unchanged. */}
+      <section className="fdv-hero fdv-hero--split" aria-label="Cookie Policy">
+        <div className="fdv-hero-split-inner legal-hero-inner">
+          <div className="fdv-hero-content">
+            <h1 className="fdv-hero-headline">Cookie Policy</h1>
+            <p className="fdv-hero-sub">This page explains the cookies and similar technologies LankaNewHomes uses, and how you can control them.</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="fdv-box fdv-box--gray" aria-label="Policy text">
+        <div className="static-page-shell legal-card">
 
       <h2>What cookies are</h2>
       <p>Cookies are small text files stored on your device when you visit a website. We also use similar technologies like browser local storage for some features.</p>
@@ -39,6 +49,8 @@ export default function CookiePolicyPage() {
 
       <h2>Contact</h2>
       <p>Questions about this policy can be sent to <a href="mailto:support@lankanewhomes.com">support@lankanewhomes.com</a>. See also our <Link href="/privacy">Privacy Policy</Link>.</p>
+        </div>
+      </section>
     </div>
   );
 }

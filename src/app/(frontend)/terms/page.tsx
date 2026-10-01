@@ -9,9 +9,19 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <div className="static-page-shell">
-      <h1>Terms of Service</h1>
-      <p className="static-page-lede">By using LankaNewHomes, you agree to the following terms. Please read them carefully.</p>
+    <div className="fdv-page legal-page">
+      {/* Owner, 2026-09-30: "redesign this also" — same contained-box system as /about, /press and /contact; the policy text itself is unchanged. */}
+      <section className="fdv-hero fdv-hero--split" aria-label="Terms of Service">
+        <div className="fdv-hero-split-inner legal-hero-inner">
+          <div className="fdv-hero-content">
+            <h1 className="fdv-hero-headline">Terms of Service</h1>
+            <p className="fdv-hero-sub">By using LankaNewHomes, you agree to the following terms. Please read them carefully.</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="fdv-box fdv-box--gray" aria-label="Policy text">
+        <div className="static-page-shell legal-card">
 
       <h2>What LankaNewHomes is</h2>
       <p>LankaNewHomes is a marketplace that lists new construction projects, developments, and land parcels on behalf of developers, builders, and landowners across Sri Lanka. We do not own, develop, build, or sell the properties listed on this site — all transactions, negotiations, and agreements happen directly between buyers and the listed developer, builder, or seller. LankaNewHomes is not a party to any such transaction and is not a real estate broker or agent.</p>
@@ -51,6 +61,8 @@ export default function TermsPage() {
 
       <h2>Contact</h2>
       <p>Questions about these terms can be sent to <a href="mailto:support@lankanewhomes.com">support@lankanewhomes.com</a>.</p>
+        </div>
+      </section>
     </div>
   );
 }

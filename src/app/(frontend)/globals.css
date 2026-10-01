@@ -17806,3 +17806,27 @@ body:has(.compare-bar) {
   line-height: 1.5;
   color: var(--fdv-muted);
 }
+
+/* Legal pages (Privacy / Cookies / Terms) in the contained-box system
+   (owner, 2026-09-30). The hero is a single left column; the policy text sits
+   in a white bordered card inside a tinted box, content unchanged. */
+.fdv-page .fdv-hero-split-inner.legal-hero-inner {
+  grid-template-columns: minmax(0, 760px);
+}
+
+.legal-page .legal-card {
+  width: 100%;
+  max-width: 880px;
+  margin: 0;
+  padding: 36px 40px;
+  background: #fff;
+  border: 1px solid var(--fdv-line);
+}
+
+@media (max-width: 700px) {
+  .legal-page .legal-card {
+    padding: 24px 20px;
+  }
+}
+
+.legal-page .legal-card > :first-child { margin-top: 0; }
