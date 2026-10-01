@@ -2666,3 +2666,5 @@ non-hero page section ("lets keep this in mind when designing anything new").
 - **Floating menu** (`QuickjumpBar`) lists every section anchor; add an item
   whenever a section is added.
 - Dark/hero-style sections are the exception (hero only).
+- **No eyebrow labels** above headings (owner, 2026-09-30) — no small
+  uppercase tag/pill over a section or hero title.

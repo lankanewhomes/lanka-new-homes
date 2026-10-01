@@ -1,6 +1,6 @@
 "use client";
 
-import { BarChart3, Building2, CircleHelp, LayoutTemplate, UserPlus } from "lucide-react";
+import { Award, BarChart3, Building2, CircleHelp, LayoutTemplate, UserPlus } from "lucide-react";
 import { QuickjumpBar } from "./quickjump-bar";
 
 /**
@@ -16,6 +16,7 @@ export function ForDevelopersQuickjump() {
     <QuickjumpBar
       items={[
         { href: "#show-product", label: "Overview", icon: LayoutTemplate },
+        { href: "#badges", label: "Badges", icon: Award },
         { href: "#analytics", label: "Analytics", icon: BarChart3 },
         { href: "#listings", label: "Listings", icon: Building2 },
         { href: "#faq", label: "FAQ", icon: CircleHelp },

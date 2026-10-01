@@ -121,26 +121,6 @@ export default async function ForDevelopersPage() {
     ),
   ]);
 
-  const presentationPhotos = [
-    ...(productProject?.gallery ?? []).slice(0, 2),
-    ...(heroProject?.gallery ?? []).slice(0, 2),
-  ];
-  const presentationFloorPlan = productProject?.floorPlans?.[0];
-  const presentationRoadMap = productProject?.roadMapImages?.[0];
-
-  // Hero marquee — real project media, not stock (same rule as the rest of
-  // this page), covering the range of what a project page can carry: a
-  // photo, floor plans, amenities, a road map (owner, 2026-09-29: "showing
-  // the image of the house, floor plans, amenities, road map, block
-  // plan... make sure there is effect. scrolling").
-  const heroMarqueeItems = [
-    productProject ? { src: productProject.heroImage, label: "Photography" } : null,
-    presentationFloorPlan ? { src: presentationFloorPlan.image, label: "Floor plans" } : null,
-    presentationPhotos[0] ? { src: presentationPhotos[0].image, label: "Amenities" } : null,
-    presentationRoadMap ? { src: presentationRoadMap.image, label: "Road map" } : null,
-    presentationPhotos[1] ? { src: presentationPhotos[1].image, label: "Gallery" } : null,
-  ].filter((item): item is { src: string; label: string } => Boolean(item));
-
   return (
     <div className="fdv-page">
       <ScrollReveal />
@@ -151,7 +131,6 @@ export default async function ForDevelopersPage() {
       <section className="fdv-hero fdv-hero--split" aria-label="For property developers">
         <div className="fdv-hero-split-inner">
           <div className="fdv-hero-content">
-            <p className="fdv-hero-kicker">For developers</p>
             <h1 className="fdv-hero-headline">
               Put your projects in front of the right buyers.
             </h1>
@@ -171,34 +150,33 @@ export default async function ForDevelopersPage() {
             {/* Owner, 2026-09-29: "for devloeprs its free to list always" — not
                 "at the moment", which read as a limited-time offer. */}
             <p className="fdv-hero-fineprint">Always free to list.</p>
-
-            <div className="fdv-hero-badges-group">
-              <p className="fdv-hero-badges-title">Badges your listing can earn</p>
-              <div className="fdv-hero-badges" aria-hidden="true">
-                {BADGES.map((badge) => (
-                  <span key={badge.key} className={badge.className}>
-                    {badge.icon ? <badge.icon className="h-2.5 w-2.5" aria-hidden="true" /> : null}
-                    {badge.label}
-                  </span>
-                ))}
-              </div>
-            </div>
           </div>
 
-          {/* Owner, 2026-09-30: "redesign the hero also, do your creativity
-              but follow the brand rule" — real project media (photo, floor
-              plan, road map…) composed as a bordered collage on the right,
-              replacing the old full-width scrolling marquee. */}
-          {heroMarqueeItems.length > 0 ? (
-            <div className="fdv-hero-collage" aria-hidden="true">
-              {heroMarqueeItems.slice(0, 4).map((item, index) => (
-                <div className={`fdv-hero-collage-frame fdv-hero-collage-frame-${index + 1}`} key={item.label}>
-                  <Image src={item.src} alt="" fill sizes="(max-width: 900px) 50vw, 320px" className="fdv-hero-marquee-img" priority={index === 0} />
-                  <span className="fdv-hero-marquee-tag">{item.label}</span>
-                </div>
-              ))}
+          {/* Owner, 2026-09-30: "redesign this section, surprise me" — instead of
+              a media strip + a separate badge row, the hero shows one
+              listing as a buyer sees it, with every badge a listing can earn
+              pinned on its photo and the analytics a developer gets
+              underneath. Illustrative: the numbers are the same example
+              figures as the Analytics section. */}
+          <div className="fdv-hero-mock" aria-hidden="true">
+            <div className="fdv-hero-mock-card">
+              <div className="fdv-hero-mock-photo">
+                {heroProject?.heroImage ? (
+                  <Image src={heroProject.heroImage} alt="" fill sizes="(max-width: 900px) 90vw, 520px" className="fdv-hero-marquee-img" priority />
+                ) : null}
+              </div>
+              <div className="fdv-hero-mock-body">
+                <strong>{heroProject?.name ?? "Your project"}</strong>
+                <span>{heroProject?.location ?? "Sri Lanka"}</span>
+              </div>
+              <div className="fdv-hero-mock-stats">
+                <div><span>Views</span><strong>{ANALYTICS_EXAMPLE.views}</strong></div>
+                <div><span>Inquiries</span><strong>{ANALYTICS_EXAMPLE.inquiries}</strong></div>
+                <div><span>Inquiry rate</span><strong>{ANALYTICS_EXAMPLE.inquiryRate}</strong></div>
+              </div>
             </div>
-          ) : null}
+            <p className="fdv-hero-mock-caption">The analytics every listing gets. Illustrative example.</p>
+          </div>
         </div>
       </section>
 
@@ -240,6 +218,23 @@ export default async function ForDevelopersPage() {
           <p className="fdv-caption" data-reveal>Every project gets a dedicated presentation.</p>
         </section>
       ) : null}
+
+      {/* Owner, 2026-09-30: "create another section, not too big, for the
+          badges and remove it from the hero section" */}
+      <section className="fdv-box fdv-box--lilac fdv-badges-box" id="badges" aria-label="Listing badges">
+        <div className="wdx-section-head" data-reveal>
+          <h2>Badges your listing can earn.</h2>
+          <p>Real signals buyers look for, shown on your listing and on the search results.</p>
+        </div>
+        <div className="fdv-badges-row" data-reveal aria-hidden="true">
+          {BADGES.map((badge) => (
+            <span key={badge.key} className={badge.className}>
+              {badge.icon ? <badge.icon className="h-2.5 w-2.5" aria-hidden="true" /> : null}
+              {badge.label}
+            </span>
+          ))}
+        </div>
+      </section>
 
       {/* 8 — ANALYTICS DASHBOARD */}
       <section className="fdv-control" id="analytics" aria-label="Developer analytics dashboard">

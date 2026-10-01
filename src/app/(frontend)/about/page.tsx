@@ -44,6 +44,23 @@ const VALUES = [
   },
 ] as const;
 
+// Owner, 2026-09-30: new "How it works" section — grounded in what the site
+// already states elsewhere (free listing, direct enquiries), nothing invented.
+const STEPS = [
+  {
+    title: "Developers list for free",
+    body: "A developer registers, adds a project with real photography, floor plans and pricing, and it goes live once approved.",
+  },
+  {
+    title: "Buyers browse real listings",
+    body: "Buyers search by area, price and project type, compare homes side by side, and save the ones they like.",
+  },
+  {
+    title: "Enquiries go direct",
+    body: "Every enquiry reaches the project's own team the moment it's sent, by WhatsApp, phone or a form — no agent in between.",
+  },
+] as const;
+
 export default async function AboutPage() {
   const [projects, lands, developers, neighborhoods] = await Promise.all([
     getAllProjects(),
@@ -63,45 +80,66 @@ export default async function AboutPage() {
 
   return (
     <div className="fdv-page about-page">
-      <section className="fdv-hero" aria-label="About LankaNewHomes">
-        <div className="fdv-hero-content">
-          <h1 className="fdv-hero-headline">One place to discover what&apos;s being built in Sri Lanka.</h1>
-          <p className="fdv-hero-sub">
-            LankaNewHomes is Sri Lanka&apos;s marketplace for new homes, developments, and developer-led land
-            projects — connecting buyers directly with developers and builders across the island.
-          </p>
-          <div className="fdv-hero-ctas">
-            <Link href="/projects" className="fdv-cta-primary">Browse new homes</Link>
-            {/* Owner, 2026-09-30: "For developers needs a border" — same
-                bordered pill /for-developers' own hero secondary button
-                uses (.fdv-hero-explore-link), not the plain underline
-                .fdv-cta-secondary is elsewhere. */}
-            <Link href="/for-developers" className="fdv-cta-secondary fdv-hero-explore-link">For developers</Link>
+      {/* Owner, 2026-09-30: "about us page redesign like the for-developers
+          page. also if you need to add any section go ahead" — same
+          contained-box system as /for-developers (docs/design.md "Page
+          section style: contained boxes"): dark hero box, then tinted,
+          textured boxes with left-aligned headings. */}
+      <section className="fdv-hero fdv-hero--split" aria-label="About LankaNewHomes">
+        <div className="fdv-hero-split-inner">
+          <div className="fdv-hero-content">
+            <h1 className="fdv-hero-headline">One place to discover what&apos;s being built in Sri Lanka.</h1>
+            <p className="fdv-hero-sub">
+              LankaNewHomes is Sri Lanka&apos;s marketplace for new homes, developments, and developer-led land
+              projects — connecting buyers directly with developers and builders across the island.
+            </p>
+            <div className="fdv-hero-ctas">
+              <Link href="/projects" className="fdv-cta-final-button">Browse new homes</Link>
+              <Link href="/for-developers" className="fdv-cta-secondary fdv-hero-explore-link">For developers</Link>
+            </div>
           </div>
 
-          {/* Owner, 2026-09-29: "these should be under the hero buttons" —
-              moved from its own standalone section (previously right after
-              the hero) into the hero itself. */}
-          <dl className="about-stats about-hero-stats" aria-label="LankaNewHomes by the numbers">
-            {stats.map((stat) => (
-              <div className="about-stat" key={stat.label}>
-                <dd>{stat.value}</dd>
-                <dt>{stat.label}</dt>
-              </div>
-            ))}
-          </dl>
+          <div className="about-hero-panel">
+            <dl className="about-hero-panel-grid" aria-label="LankaNewHomes by the numbers">
+              {stats.map((stat) => (
+                <div className="about-hero-panel-stat" key={stat.label}>
+                  <dd>{stat.value}</dd>
+                  <dt>{stat.label}</dt>
+                </div>
+              ))}
+            </dl>
+            <p className="fdv-hero-mock-caption">Live counts from the platform.</p>
+          </div>
         </div>
       </section>
 
-      <section className="fdv-reasons" aria-label="What we stand for">
+      <section className="fdv-box fdv-box--gray" id="stand" aria-label="What we stand for">
         <div className="wdx-section-head" data-reveal>
           <h2>What we stand for.</h2>
+          <p>Four commitments that shape every listing and every enquiry on the platform.</p>
         </div>
-        <div className="fdv-reasons-grid about-values-grid" data-reveal>
-          {VALUES.map((value) => (
-            <div className="fdv-reason-simple" key={value.title}>
+        <div className="fdv-box-grid fdv-box-grid--4" data-reveal>
+          {VALUES.map((value, index) => (
+            <div className="fdv-box-card" key={value.title}>
+              <span className="fdv-box-card-num">{String(index + 1).padStart(2, "0")}</span>
               <h3>{value.title}</h3>
               <p>{value.body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="fdv-box fdv-box--cream" id="how" aria-label="How it works">
+        <div className="wdx-section-head" data-reveal>
+          <h2>How it works.</h2>
+          <p>From a developer&apos;s first listing to a buyer&apos;s first enquiry — three steps, no middleman.</p>
+        </div>
+        <div className="fdv-box-grid fdv-box-grid--3" data-reveal>
+          {STEPS.map((step, index) => (
+            <div className="fdv-box-card" key={step.title}>
+              <span className="fdv-box-card-num">{String(index + 1).padStart(2, "0")}</span>
+              <h3>{step.title}</h3>
+              <p>{step.body}</p>
             </div>
           ))}
         </div>
@@ -111,7 +149,7 @@ export default async function AboutPage() {
           please" — real project photography, not stock, same rule as the
           rest of the site's marketing pages. */}
       {projects.length > 0 ? (
-        <section className="about-showcase" aria-label="What's already on LankaNewHomes">
+        <section className="fdv-box fdv-box--sage about-showcase" id="listings" aria-label="What's already on LankaNewHomes">
           <div className="wdx-section-head" data-reveal>
             <h2>See what&apos;s already on LankaNewHomes.</h2>
             <p>
@@ -137,21 +175,6 @@ export default async function AboutPage() {
           </div>
         </section>
       ) : null}
-
-      <section className="fdv-cta-final" aria-label="Get started">
-        <div className="fdv-cta-final-inner" data-reveal>
-          <div className="fdv-cta-final-text">
-            <h2>
-              <span className="fdv-cta-final-muted">Whether you&apos;re building or buying,</span> there&apos;s a
-              place for you here.
-            </h2>
-          </div>
-          <div className="about-cta-buttons">
-            <Link href="/developers/register" className="fdv-cta-final-button">Register as a developer</Link>
-            <Link href="/projects" className="fdv-cta-final-button">Browse new homes</Link>
-          </div>
-        </div>
-      </section>
     </div>
   );
 }
