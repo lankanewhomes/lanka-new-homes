@@ -17876,3 +17876,13 @@ body:has(.compare-bar) {
     display: none;
   }
 }
+
+/* Owner, 2026-10-01: "no bold please" on the Privacy/Cookie/Terms pages —
+   headings and emphasised provider names render at normal weight. */
+.legal-page .legal-card h1,
+.legal-page .legal-card h2,
+.legal-page .legal-card h3,
+.legal-page .legal-card strong,
+.legal-page .legal-card b {
+  font-weight: 400;
+}

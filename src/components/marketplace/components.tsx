@@ -626,7 +626,7 @@ export function ProjectHero({
       // the building's photos as a stand-in for the floor plan (owner, 2026-09-21).
       ? []
       : [
-        { label: "Exterior", image: project.heroImage },
+        { label: project.isLand ? "Land view" : "Exterior", image: project.heroImage },
         // heroImage is almost always also the first (or an early) gallery
         // photo — without this filter that same image shows twice in the
         // grid (once as the main photo via heroImage, once again as a side
@@ -641,7 +641,9 @@ export function ProjectHero({
           .filter((item) => item.image !== project.heroImage && !/\/(amenities|floor-plans|road-map|block-plan)\//.test(item.image))
           .map((item, index) => ({
             ...item,
-            label: item.label?.trim() || fallbackPhotoLabels[index % fallbackPhotoLabels.length],
+            // Owner, 2026-10-01: land photos were labelled Bedroom / Washroom /
+            // Kitchen… — land listings get land-appropriate fallbacks instead.
+            label: item.label?.trim() || (project.isLand ? `Land photo ${index + 1}` : fallbackPhotoLabels[index % fallbackPhotoLabels.length]),
           })),
       ];
   const [photoIndex, setPhotoIndex] = useState(0);
@@ -2269,9 +2271,14 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
   const pricingHistory = project.pricingHistory?.filter((entry) => hasDisplayValue(entry.date) || hasDisplayValue(entry.note)) ?? [];
   const incentives = project.incentives?.filter((item) => hasDisplayValue(item)) ?? [];
   const depositStructure = project.depositPaymentStructure ?? project.paymentPlan;
-  const paymentLines = project.paymentPlanItems?.filter((item) => hasDisplayValue(item)).length
+  const allPaymentLines = project.paymentPlanItems?.filter((item) => hasDisplayValue(item)).length
     ? project.paymentPlanItems.filter((item) => hasDisplayValue(item))
     : (depositStructure ?? "").split(";").map((item) => item.trim()).filter((item) => hasDisplayValue(item));
+  // Owner, 2026-10-01: Gangani's published payment packages (A, B, C, A1,
+  // B1 — lines starting "Package …") show in their own column/card, apart
+  // from the listing's own deposit/payment lines.
+  const packageLines = allPaymentLines.filter((line) => /^Package\s/i.test(line));
+  const paymentLines = allPaymentLines.filter((line) => !/^Package\s/i.test(line));
   const includedUtilities = project.includedUtilities?.filter((item) => hasDisplayValue(item)) ?? [];
   const paidUtilities = project.paidUtilities?.filter((item) => hasDisplayValue(item.label) && hasDisplayValue(item.value)) ?? [];
   const addOns = project.pricingAddOns?.filter((item) => hasDisplayValue(item.label) && hasDisplayValue(item.value)) ?? [];
@@ -2431,6 +2438,24 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
                     {paymentLines.map((line, index) => <p key={`${line}-${index}`}>{line}</p>)}
                   </div>
                 </div>
+              </div>
+            </article>
+          ) : null}
+
+          {packageLines.length > 0 ? (
+            <article className="border border-[#c9ddf5] bg-white px-6 py-6 text-[#1f2321] shadow-[0_10px_28px_rgba(36,78,54,0.08)]">
+              <h3 className="text-[29px] font-semibold">Payment Packages</h3>
+
+              <div className="mt-7 space-y-4 text-[15px] leading-7">
+                {packageLines.map((line, index) => {
+                  const [name, ...rest] = line.split(" — ");
+                  return (
+                    <div key={`${line}-${index}`}>
+                      <p className="font-semibold">{name}</p>
+                      <p>{rest.join(" — ")}</p>
+                    </div>
+                  );
+                })}
               </div>
             </article>
           ) : null}
