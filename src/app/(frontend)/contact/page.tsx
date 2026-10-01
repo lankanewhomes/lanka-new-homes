@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { ContactForm } from "@/components/marketplace/contact-form";
 
@@ -42,21 +41,46 @@ export default function ContactPage() {
             <p className="contact-hero-email">
               Prefer email? <a href="mailto:support@lankanewhomes.com" className="press-contact-email">support@lankanewhomes.com</a>
             </p>
+            <div className="contact-hero-list">
+              <h2>List your project.</h2>
+              <p>
+                Looking to list a project, advertise on the homepage, or explore placements? Register as a
+                developer to get started.
+              </p>
+              <Link href="/developers/register" className="fdv-cta-final-button">Register as a developer</Link>
+            </div>
           </div>
           <div className="contact-form-panel contact-hero-form">
+            <div className="contact-form-head">
+              <h2>Send us a message.</h2>
+              <p>Tell us what you need and the team will reply within one business day.</p>
+            </div>
             <ContactForm />
           </div>
         </div>
       </section>
 
-      <section className="fdv-box fdv-box--cream" id="list" aria-label="List your project">
+      {/* Owner, 2026-09-30: "any section you need to add" — routes to the
+          real pages for each kind of enquiry. */}
+      <section className="fdv-box fdv-box--gray" id="reach" aria-label="Who to contact">
         <div className="wdx-section-head" data-reveal>
-          <h2>List your project.</h2>
-          <p>Looking to list a project, advertise on the homepage, or explore placements? Register as a developer to get started.</p>
+          <h2>Where to go.</h2>
+          <p>The quickest route for each kind of question.</p>
         </div>
-        <Link href="/developers/register" className="contact-box-cta" data-reveal>
-          Register as a developer <ArrowUpRight size={15} aria-hidden="true" />
-        </Link>
+        <div className="fdv-box-grid fdv-box-grid--3" data-reveal>
+          <Link href="/projects" className="fdv-box-card fdv-box-card-link">
+            <h3>Looking for a home or land</h3>
+            <p>Browse new homes and land, and enquire directly with the developer.</p>
+          </Link>
+          <Link href="/for-developers" className="fdv-box-card fdv-box-card-link">
+            <h3>Listing a project</h3>
+            <p>See how listing works and what every developer gets for free.</p>
+          </Link>
+          <Link href="/press" className="fdv-box-card fdv-box-card-link">
+            <h3>Press and media</h3>
+            <p>Brand assets and key facts for media use.</p>
+          </Link>
+        </div>
       </section>
     </div>
   );

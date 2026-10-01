@@ -183,6 +183,24 @@ export default async function AboutPage() {
       {/* Owner, 2026-09-29: "add more section... also add some images also
           please" — real project photography, not stock, same rule as the
           rest of the site's marketing pages. */}
+      {/* Owner, 2026-09-30: "any section you need to add, please add" — real
+          neighbourhood guides already on the site, linked. */}
+      {neighborhoods.length > 0 ? (
+        <section className="fdv-box fdv-box--lilac" id="areas" aria-label="Areas we cover">
+          <div className="wdx-section-head" data-reveal>
+            <h2>Areas we cover.</h2>
+            <p>Neighbourhood guides for the areas where new homes and land are being built.</p>
+          </div>
+          <ul className="about-areas" data-reveal>
+            {neighborhoods.slice(0, 24).map((area) => (
+              <li key={area.slug}>
+                <Link href={`/neighborhoods/${area.slug}`}>{area.name}</Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
       {showcaseProjects.length > 0 ? (
         <section className="fdv-box fdv-box--sage about-showcase" id="listings" aria-label="What's already on LankaNewHomes">
           <div className="wdx-section-head" data-reveal>

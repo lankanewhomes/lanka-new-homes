@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
 import { Download } from "lucide-react";
+import { getAllProjects } from "@/lib/project-store";
+import { getAllLands } from "@/lib/land-store";
+import { getAllDevelopers } from "@/lib/developer-store";
+import { getAllNeighborhoods } from "@/lib/neighborhood-store";
 
 export const metadata: Metadata = {
   title: "Press",
@@ -20,7 +24,20 @@ const BRAND_ASSETS = [
   { label: "Wordmark — white", href: "/logo-wordmark-white.svg", cardClassName: "press-asset-preview-dark" },
 ] as const;
 
-export default function PressPage() {
+export default async function PressPage() {
+  const [projects, lands, developers, neighborhoods] = await Promise.all([
+    getAllProjects(),
+    getAllLands(),
+    getAllDevelopers(),
+    getAllNeighborhoods(),
+  ]);
+  const facts = [
+    { label: "Live projects", value: projects.length },
+    { label: "Land projects", value: lands.length },
+    { label: "Developers & builders", value: developers.length },
+    { label: "Areas covered", value: neighborhoods.length },
+  ];
+
   return (
     <div className="fdv-page press-page">
       {/* Owner, 2026-09-30: "redesign the press page like about us page" —
@@ -60,6 +77,23 @@ export default function PressPage() {
             free to list, enquiries go straight to the project&apos;s own team, and each listing carries real
             photography, floor plans and pricing.
           </p>
+        </div>
+      </section>
+
+      {/* Owner, 2026-09-30: "any section you need to add" — live counts, the
+          same real figures /about shows (never estimated). */}
+      <section className="fdv-box fdv-box--sage" id="facts" aria-label="Key facts">
+        <div className="wdx-section-head" data-reveal>
+          <h2>Key facts.</h2>
+          <p>LankaNewHomes by the numbers, counted live from the platform.</p>
+        </div>
+        <div className="fdv-box-grid fdv-box-grid--4" data-reveal>
+          {facts.map((fact) => (
+            <div className="fdv-box-card press-fact" key={fact.label}>
+              <strong>{fact.value}</strong>
+              <span>{fact.label}</span>
+            </div>
+          ))}
         </div>
       </section>
 

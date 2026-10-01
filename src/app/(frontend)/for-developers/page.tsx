@@ -328,6 +328,31 @@ export default async function ForDevelopersPage() {
         </section>
       ) : null}
 
+      {/* Owner, 2026-09-30: "any section you need to add on this page, please
+          add" — a short how-it-works, grounded in the FAQ's own answers
+          (register, add a project, goes live once approved, enquiries
+          reach you instantly). */}
+      <section className="fdv-box fdv-box--cream" id="how" aria-label="How listing works">
+        <div className="wdx-section-head" data-reveal>
+          <h2>How listing works.</h2>
+          <p>Three steps from sign-up to your first enquiry.</p>
+        </div>
+        <div className="fdv-box-grid fdv-box-grid--3" data-reveal>
+          <div className="fdv-box-card">
+            <h3>Register as a developer</h3>
+            <p>Create your free developer account — there is no fee to list, ever.</p>
+          </div>
+          <div className="fdv-box-card">
+            <h3>Add your project</h3>
+            <p>Upload real photography, floor plans and pricing. Your listing goes live once approved.</p>
+          </div>
+          <div className="fdv-box-card">
+            <h3>Receive enquiries directly</h3>
+            <p>Every enquiry reaches your team the moment it&apos;s sent — by WhatsApp, phone or form.</p>
+          </div>
+        </div>
+      </section>
+
       {/* 9 — FAQ */}
       <section className="wdx-faq" id="faq" aria-label="Questions">
         <div className="wdx-section-head" data-reveal>

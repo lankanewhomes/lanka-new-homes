@@ -113,6 +113,30 @@ export default function WebDesignPage() {
         </div>
       </section>
 
+      {/* Owner, 2026-09-30: "any section you need to add" — grounded in the
+          FAQ's own answers (you review the design first; quoted per
+          project). */}
+      <section className="fdv-box fdv-box--gray" id="process" aria-label="How we work">
+        <div className="wdx-section-head" data-reveal>
+          <h2>How we work.</h2>
+          <p>A simple process, with your sign-off before anything is built.</p>
+        </div>
+        <div className="fdv-box-grid fdv-box-grid--3" data-reveal>
+          <div className="fdv-box-card">
+            <h3>Tell us about your project</h3>
+            <p>Share the size of the project and what you need. We quote for each one.</p>
+          </div>
+          <div className="fdv-box-card">
+            <h3>Review the design</h3>
+            <p>You see the design before it&apos;s built, and changes at that stage are quick.</p>
+          </div>
+          <div className="fdv-box-card">
+            <h3>Launch with enquiries wired in</h3>
+            <p>Enquiry form, WhatsApp click-to-chat and brochure downloads, so every lead reaches your team.</p>
+          </div>
+        </div>
+      </section>
+
       {/* 8 — FAQ — same bordered-card accordion (.guide-page-faq-item) as
           /guides and /neighborhoods, not a bespoke dark-panel style (owner,
           2026-09-29: "faq needs to look this this faq [neighborhoods'] ...
