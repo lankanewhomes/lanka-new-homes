@@ -728,7 +728,8 @@ export function ProjectHero({
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isLightboxOpen]);
-  const [lightboxView, setLightboxView] = useState<"photos" | "videos" | "map" | "roadMap" | "blockPlan" | "streetView" | "view360" | "interactiveMap">("photos");
+  const [lightboxView, setLightboxView] = useState<"photos" | "videos" | "map" | "roadMap" | "blockPlan" | "streetView" | "view360" | "interactiveMap" | "virtualTours">("photos");
+  const [tourIndex, setTourIndex] = useState(0);
   const [activeSection, setActiveSection] = useState("overview");
   const [requestInfoOpen, setRequestInfoOpen] = useState(false);
   // The brochure pill opens the same dialog as "Request info", just with
@@ -989,8 +990,19 @@ export function ProjectHero({
     {
       key: "virtual-tours",
       show: virtualTourCount > 0,
+      lightboxKey: "virtualTours",
+      // Owner, 2026-10-01: "virtual tours not working" — it only showed a
+      // placeholder photo; now it opens the real tour(s) in the lightbox.
       render: (className) => (
-        <button type="button" className={className} onClick={() => setActiveMedia("virtualTours")}>
+        <button
+          type="button"
+          className={className}
+          onClick={() => {
+            setTourIndex(0);
+            setLightboxView("virtualTours");
+            setIsLightboxOpen(true);
+          }}
+        >
           <Camera className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">{t("Virtual tours")} <span className="listing-hero-quickjump-count">{virtualTourCount}</span></span>
         </button>
       ),
@@ -1340,6 +1352,17 @@ export function ProjectHero({
                   360° View
                 </button>
               )}
+              {virtualTourCount > 0 && (
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={lightboxView === "virtualTours"}
+                  className={lightboxView === "virtualTours" ? "active" : undefined}
+                  onClick={() => setLightboxView("virtualTours")}
+                >
+                  Virtual tours
+                </button>
+              )}
               {hasInteractiveMap && (
                 <button
                   type="button"
@@ -1509,6 +1532,34 @@ export function ProjectHero({
                   </button>
                 )}
               </>
+            )}
+
+            {lightboxView === "virtualTours" && virtualTourCount > 0 && (
+              <div className="listing-photo-lightbox-tour">
+                <div className="listing-photo-lightbox-tour-bar">
+                  {(project.virtualTours ?? []).map((tour, index) => (
+                    <button
+                      key={tour.url}
+                      type="button"
+                      className={index === tourIndex ? "active" : undefined}
+                      onClick={() => setTourIndex(index)}
+                    >
+                      {tour.label}
+                    </button>
+                  ))}
+                  <a href={(project.virtualTours ?? [])[tourIndex]?.url} target="_blank" rel="noopener noreferrer">Open in new tab</a>
+                </div>
+                <iframe
+                  key={(project.virtualTours ?? [])[tourIndex]?.url}
+                  className="listing-photo-lightbox-map"
+                  title={(project.virtualTours ?? [])[tourIndex]?.label ?? "Virtual tour"}
+                  src={(project.virtualTours ?? [])[tourIndex]?.url}
+                  allow="fullscreen; xr-spatial-tracking; accelerometer; gyroscope"
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                />
+              </div>
             )}
 
             {lightboxView === "interactiveMap" && hasInteractiveMap && (

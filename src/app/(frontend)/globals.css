@@ -17950,3 +17950,51 @@ body:has(.compare-bar) {
   .home-stat strong { font-size: 24px; }
   .home-stat span { font-size: 11px; text-align: center; }
 }
+
+/* Virtual tours in the listing lightbox (owner, 2026-10-01): tour selector bar
+   over the embedded tour. */
+.listing-photo-lightbox-tour {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.listing-photo-lightbox-tour-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #1a1a1a;
+}
+
+.listing-photo-lightbox-tour-bar button,
+.listing-photo-lightbox-tour-bar a {
+  padding: 7px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: transparent;
+  color: #fff;
+  font-size: 13px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.listing-photo-lightbox-tour-bar button.active {
+  background: #fff;
+  color: #1a1a1a;
+}
+
+.listing-photo-lightbox-tour-bar a {
+  margin-left: auto;
+  border-color: transparent;
+  text-decoration: underline;
+}
+
+.listing-photo-lightbox-tour .listing-photo-lightbox-map {
+  position: static;
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  border: 0;
+}
