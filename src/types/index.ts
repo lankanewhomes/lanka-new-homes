@@ -489,7 +489,7 @@ export type Land = SeoFields & {
   landSizePerchesMax?: number;
   /** Embed link (e.g. Google My Maps plot map) shown from the hero's "Interactive map" button. */
   interactiveMapUrl?: string;
-  /** Embed link (e.g. Google Street View panorama) shown from the hero's "360° view" button. */
+  /** Embed link (e.g. Google Street View panorama) — used as the hero's Street View. */
   view360Url?: string;
   landSizeAcres?: number;
   priceLkr: number;

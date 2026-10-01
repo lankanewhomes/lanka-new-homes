@@ -98,7 +98,9 @@ export function landToProjectShape(land: Land): Project {
     heroImage: land.heroImage,
     gallery: land.gallery,
     interactiveMapUrl: land.interactiveMapUrl,
-    view360Url: land.view360Url,
+    // Owner, 2026-10-01: a land's 360° panorama IS its Street View — one button,
+    // not two. The stored panorama embed drives the hero's Street View.
+    streetViewUrl: land.view360Url,
     brochureUrl: land.brochureUrl,
     amenities: land.amenities ?? [],
     unitFeatures: land.unitFeatures,
