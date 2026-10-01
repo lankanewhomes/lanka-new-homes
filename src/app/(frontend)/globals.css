@@ -17541,3 +17541,56 @@ body:has(.compare-bar) {
   line-height: 1.7;
   color: var(--fdv-ink);
 }
+
+/* WhatsApp logo on the About "Enquiries go direct" card (owner, 2026-09-30:
+   "add a whatsapp logo") — WhatsApp brand green. */
+.about-whatsapp-logo {
+  display: block;
+  width: 28px;
+  height: 28px;
+  margin-top: 16px;
+  color: #25d366;
+}
+
+/* Contact page in the contained-box system (owner, 2026-09-30). The form
+   keeps its own white panel, just without the dark-page glow. */
+.contact-page .contact-form-box {
+  max-width: 560px;
+  box-shadow: none;
+  border: 1px solid var(--fdv-line);
+}
+
+.contact-page .contact-box-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  border: 1px solid var(--fdv-ink);
+  border-radius: 999px;
+  font-size: 15px;
+  color: var(--fdv-ink);
+  text-decoration: none;
+}
+
+.contact-page .contact-box-cta:hover {
+  background: var(--fdv-ink);
+  color: #fff;
+}
+
+/* Contact hero: copy + support email on the left only (owner, 2026-09-30:
+   "in the hero section move the support email to left"). */
+.fdv-page .fdv-hero-split-inner.contact-hero-inner {
+  grid-template-columns: minmax(0, 720px);
+}
+
+.contact-hero-email {
+  margin: 0;
+  font-size: 15px;
+  color: #e4e2dd;
+}
+
+.contact-hero-email .press-contact-email {
+  margin-left: 6px;
+  color: #fff;
+  border-bottom-color: #fff;
+}

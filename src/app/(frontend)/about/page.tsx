@@ -47,6 +47,16 @@ const VALUES = [
 
 // Owner, 2026-09-30: new "How it works" section — grounded in what the site
 // already states elsewhere (free listing, direct enquiries), nothing invented.
+// Same WhatsApp glyph the listing contact cards use (components.tsx
+// WhatsappIcon) — inlined because that one lives in a client module.
+function WhatsappLogo() {
+  return (
+    <svg viewBox="0 0 24 24" className="about-whatsapp-logo" fill="currentColor" aria-label="WhatsApp" role="img">
+      <path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2Zm5.6 14.3c-.2.6-1.3 1.2-1.8 1.3-.5.1-1 .1-3.5-1s-4.1-3.4-4.2-3.5c-.1-.2-1-1.3-1-2.5s.6-1.8.9-2.1c.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5.2.5.7 1.7.7 1.8.1.2.1.3 0 .5-.1.2-.1.3-.3.5l-.4.5c-.1.2-.3.3-.1.6.2.3.9 1.4 1.9 2.3 1.3 1.1 2.3 1.5 2.6 1.6.3.1.5.1.7-.1.2-.2.8-.9 1-1.2.2-.3.4-.2.7-.1.3.1 1.7.8 2 1 .3.1.5.2.6.3.1.2.1.7-.1 1.3Z" />
+    </svg>
+  );
+}
+
 const STEPS = [
   {
     title: "Developers list for free",
@@ -161,6 +171,7 @@ export default async function AboutPage() {
             <div className="fdv-box-card" key={step.title}>
               <h3>{step.title}</h3>
               <p>{step.body}</p>
+              {step.title === "Enquiries go direct" ? <WhatsappLogo /> : null}
             </div>
           ))}
         </div>

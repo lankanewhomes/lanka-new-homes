@@ -26,26 +26,45 @@ export const metadata: Metadata = {
 // route and the "Developer partnerships" content this page already had.
 export default function ContactPage() {
   return (
-    <div className="contact-page-bg">
-      <div className="contact-hero">
-        <h1>Get in touch with our team</h1>
-        <p className="contact-hero-sub">Have a question about a listing, a developer partnership, or the platform itself? Tell us more below and we&apos;ll get back to you within one business day.</p>
-        <p className="contact-hero-line">
-          Prefer email? <a href="mailto:support@lankanewhomes.com">support@lankanewhomes.com</a>
-        </p>
-      </div>
+    <div className="fdv-page contact-page">
+      {/* Owner, 2026-09-30: "redesign this also like the other pages
+          (for-developers, press)" — same contained-box system as /about,
+          /press and /for-developers (docs/design.md "Page section style:
+          contained boxes"): dark hero box, then tinted textured boxes. */}
+      <section className="fdv-hero fdv-hero--split" aria-label="Contact">
+        <div className="fdv-hero-split-inner contact-hero-inner">
+          <div className="fdv-hero-content">
+            <h1 className="fdv-hero-headline">Get in touch with our team.</h1>
+            <p className="fdv-hero-sub">
+              Have a question about a listing, a developer partnership, or the platform itself? Tell us more below
+              and we&apos;ll get back to you within one business day.
+            </p>
+            <p className="contact-hero-email">
+              Prefer email? <a href="mailto:support@lankanewhomes.com" className="press-contact-email">support@lankanewhomes.com</a>
+            </p>
+          </div>
+        </div>
+      </section>
 
-      <div className="contact-cards">
-        <div className="contact-form-panel">
+      <section className="fdv-box fdv-box--gray" id="message" aria-label="Send us a message">
+        <div className="wdx-section-head" data-reveal>
+          <h2>Send us a message.</h2>
+          <p>Tell us what you need and the team will reply within one business day.</p>
+        </div>
+        <div className="contact-form-panel contact-form-box" data-reveal>
           <ContactForm />
         </div>
+      </section>
 
-        <div className="contact-cta-panel">
-          <h2>List your project</h2>
+      <section className="fdv-box fdv-box--cream" id="list" aria-label="List your project">
+        <div className="wdx-section-head" data-reveal>
+          <h2>List your project.</h2>
           <p>Looking to list a project, advertise on the homepage, or explore placements? Register as a developer to get started.</p>
-          <Link href="/developers/register" className="contact-cta-link">Register as a developer <ArrowUpRight size={15} aria-hidden="true" /></Link>
         </div>
-      </div>
+        <Link href="/developers/register" className="contact-box-cta" data-reveal>
+          Register as a developer <ArrowUpRight size={15} aria-hidden="true" />
+        </Link>
+      </section>
     </div>
   );
 }
