@@ -17495,3 +17495,10 @@ body:has(.compare-bar) {
   line-height: 1;
   white-space: nowrap;
 }
+
+/* Owner, 2026-09-30: "/for-developers hero buttons ... style like Browse new
+   homes / For developers from the about page" — same normal (400) weight as
+   /about's hero buttons, shared across both split heroes. */
+.fdv-hero--split .fdv-hero-ctas a {
+  font-weight: 400;
+}

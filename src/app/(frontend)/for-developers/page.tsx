@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, FileText, LayoutGrid, MessageCircle, ShieldCheck, Zap } from "lucide-react";
+import { FileText, LayoutGrid, MessageCircle, ShieldCheck, Zap } from "lucide-react";
 import { getProjectBySlug } from "@/lib/project-store";
 import { ListingGridCard } from "@/components/marketplace/listing-page";
 import { ScrollReveal } from "@/components/marketplace/scroll-reveal";
@@ -142,10 +142,7 @@ export default async function ForDevelopersPage() {
                   as the footer. please be constant with design" — the
                   footer/final-CTA pill, not the solid-fill .fdv-cta-primary. */}
               <Link href="/developers/register" className="fdv-cta-final-button">Register as a developer</Link>
-              <a href="#show-product" className="fdv-cta-secondary fdv-hero-explore-link">
-                Explore the platform
-                <ArrowRight size={16} strokeWidth={2.5} aria-hidden="true" />
-              </a>
+              <a href="#show-product" className="fdv-cta-secondary fdv-hero-explore-link">Explore the platform</a>
             </div>
             {/* Owner, 2026-09-29: "for devloeprs its free to list always" — not
                 "at the moment", which read as a limited-time offer. */}
