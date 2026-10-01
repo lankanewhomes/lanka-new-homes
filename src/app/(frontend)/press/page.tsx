@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Download } from "lucide-react";
+import { SeoAboutBlock } from "@/components/marketplace/seo-about-block";
 import { getAllProjects } from "@/lib/project-store";
 import { getAllLands } from "@/lib/land-store";
 import { getAllDevelopers } from "@/lib/developer-store";
@@ -120,6 +121,14 @@ export default async function PressPage() {
           ))}
         </div>
       </section>
+
+      <SeoAboutBlock
+        title="Using the LankaNewHomes name and logo"
+        paragraphs={[
+          "Journalists, partners and developers are welcome to use the LankaNewHomes logo files above when writing about the company or a listing. Please use the logo as supplied, keep clear space around it, and do not change its colours, proportions or wording.",
+          "For interviews, data requests or comment on the Sri Lankan new-home market, use the contact page and tell us your outlet, your deadline and what you are working on. We aim to reply to media enquiries promptly.",
+        ]}
+      />
     </div>
   );
 }

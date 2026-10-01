@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { blogPosts } from "@/lib/blog";
+import { SeoAboutBlock } from "@/components/marketplace/seo-about-block";
 import { BlogListing } from "@/components/marketplace/blog-listing";
 
 export const metadata: Metadata = {
@@ -33,6 +34,14 @@ export default function BlogPage() {
       ) : (
         <p className="blog-page-lede">We&apos;re working on buying guides, market insights, and developer spotlights. Check back soon.</p>
       )}
+
+      <SeoAboutBlock
+        title="About News & Insights"
+        paragraphs={[
+          "News & Insights is where LankaNewHomes publishes practical writing for people who buy, sell or develop property in Sri Lanka: buying guides for new-build homes, notes on how the market and neighbourhoods are changing, and advice for developers on presenting their projects online.",
+          "Browse by category to find what is relevant to you, and sort by newest or oldest. Articles link through to the project, neighbourhood and developer pages they mention, so you can go from reading about an area to seeing the homes available there.",
+        ]}
+      />
     </div>
   );
 }

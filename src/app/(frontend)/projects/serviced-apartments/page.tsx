@@ -13,6 +13,7 @@ export default async function ServicedApartmentsPage() {
       breadcrumbs={category.breadcrumbs}
       h1={category.h1}
       intro={category.intro}
+      about={category.about}
       projects={projects}
       relatedPaths={category.relatedPaths}
     />

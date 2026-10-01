@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { buildBreadcrumbJsonLd, buildItemListJsonLd, jsonLdScriptProps } from "@/lib/seo";
+import { SeoAboutBlock } from "@/components/marketplace/seo-about-block";
 import { PartnerDirectoryCard } from "@/components/marketplace/partner-directory-card";
 import type { ConstructionCompanyPageConfig } from "@/lib/construction-company-categories";
 import type { ConstructionCompany } from "@/types";
@@ -46,6 +47,15 @@ export function ConstructionCompanyShell({ config, companies }: { config: Constr
           />
         ))}
       </div>
+
+      <SeoAboutBlock
+        title="Choosing a construction company"
+        paragraphs={[
+          `${config.intro} Each company below has its own profile with its location, years in business and contact details, so you can shortlist a few and speak to them directly.`,
+          "When you compare builders, ask to see completed projects similar to yours, confirm who will supervise the site, and request a written quotation that lists what is and is not included. For a home build it also helps to ask how variations are priced and how payments are tied to progress.",
+          "These companies are separate from the property developers on LankaNewHomes, who sell finished or planned homes. Use this directory if you own land and want to build, renovate or add a specialist feature, and use the Developers directory if you want to buy a new home.",
+        ]}
+      />
 
       {config.relatedPaths.length > 0 ? (
         <nav className="listing-related-links" aria-label="Related pages">

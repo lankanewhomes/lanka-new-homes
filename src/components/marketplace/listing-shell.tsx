@@ -1,5 +1,6 @@
 import { ListingPageBody } from "@/components/marketplace/listing-page";
 import { buildBreadcrumbJsonLd, buildItemListJsonLd, jsonLdScriptProps, type BreadcrumbEntry } from "@/lib/seo";
+import { SeoAboutBlock } from "@/components/marketplace/seo-about-block";
 import type { Project } from "@/types";
 
 export function ProjectListingShell({
@@ -13,6 +14,7 @@ export function ProjectListingShell({
   filterGroups,
   emptyStateText,
   citySectionHeading,
+  about,
 }: {
   breadcrumbs: BreadcrumbEntry[];
   h1: string;
@@ -25,6 +27,7 @@ export function ProjectListingShell({
   filterGroups?: { label: string; options: string[] }[];
   emptyStateText?: string;
   citySectionHeading?: string;
+  about?: { title: string; paragraphs: string[] };
 }) {
   const itemListJsonLd = buildItemListJsonLd(projects.map((project) => ({ name: project.name, url: `${basePath}/${project.slug}` })));
   const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbs);
@@ -35,6 +38,7 @@ export function ProjectListingShell({
       <script {...jsonLdScriptProps(breadcrumbJsonLd)} />
 
       <ListingPageBody projects={projects} h1={h1} eyebrow={eyebrow} singularEyebrow={singularEyebrow} intro={intro} basePath={basePath} filterGroups={filterGroups} emptyStateText={emptyStateText} citySectionHeading={citySectionHeading} />
+      {about ? <SeoAboutBlock title={about.title} paragraphs={about.paragraphs} /> : null}
     </div>
   );
 }

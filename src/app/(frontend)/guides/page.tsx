@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { SeoAboutBlock } from "@/components/marketplace/seo-about-block";
 import { guides } from "@/lib/guides";
 
 export const metadata: Metadata = {
@@ -25,6 +26,14 @@ export default function GuidesIndexPage() {
           </Link>
         ))}
       </div>
+      <SeoAboutBlock
+        title="How to use these guides"
+        paragraphs={[
+          "These guides explain the questions buyers ask most when looking at new-build property in Sri Lanka: whether foreigners can buy, how investment property works, and how a residency route such as the golden visa fits with a purchase. They are written in plain language for both local and overseas buyers.",
+          "Treat each guide as a starting point rather than legal advice. Rules on ownership, taxes and residency can change, so confirm the current position with a qualified lawyer or the relevant authority before you commit to a purchase.",
+          "When you are ready to look at homes, browse new projects by area or type on LankaNewHomes, compare payment plans and floor plans on each listing, and send an enquiry straight to the developer.",
+        ]}
+      />
     </div>
   );
 }

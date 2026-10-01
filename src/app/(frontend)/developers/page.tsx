@@ -1,3 +1,4 @@
+import { SeoAboutBlock } from "@/components/marketplace/seo-about-block";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllDevelopers } from "@/lib/developer-store";
@@ -107,6 +108,14 @@ export default async function DevelopersPage() {
           </div>
         ))}
       </div>
+      <SeoAboutBlock
+        title="About the developer directory"
+        paragraphs={[
+          `This directory lists the ${developers.length} property developers whose new homes and land are available on LankaNewHomes, from established groups to newer boutique developers. Each developer has a profile page showing who they are, where they build, and every project they have listed with us.`,
+          "Open a profile to see a developer's current and upcoming projects, their location and years in business, and to send an enquiry directly to their team. Comparing a developer's earlier work with their new launches is one of the most useful checks before you reserve a home.",
+          "Developers list on LankaNewHomes for free, and buyers contact them directly with no agent in between. If you develop property in Sri Lanka and want your projects here, register as a developer from the For Developers page.",
+        ]}
+      />
     </div>
   );
 }

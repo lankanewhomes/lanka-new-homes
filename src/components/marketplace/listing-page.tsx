@@ -476,7 +476,7 @@ export function ListingPageBody({
               <Search className="h-4 w-4" aria-hidden="true" />
               <input
                 type="text"
-                placeholder="Search by location, project name..."
+                placeholder="Search by place, name, or try “2 bed in Colombo under 50M”"
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
                 onFocus={() => setSearchFocused(true)}
