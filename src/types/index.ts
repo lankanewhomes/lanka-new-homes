@@ -485,6 +485,8 @@ export type Land = SeoFields & {
   city: string;
   province: string;
   landSizePerches: number;
+  /** Upper end when plots come in a range (landSizePerches is the lower end). */
+  landSizePerchesMax?: number;
   landSizeAcres?: number;
   priceLkr: number;
   pricePerPerchLkrMin?: number;

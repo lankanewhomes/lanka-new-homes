@@ -17859,3 +17859,12 @@ body:has(.compare-bar) {
   background: var(--fdv-ink);
   color: #fff;
 }
+
+/* Owner, 2026-09-30/10-01: "needs a background like lines, boxes" (See what
+   your site could look like) — more visible crossed lines on the dark sample
+   box. */
+.fdv-page .wdx-sample.fdv-box--dark::before {
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 32px, rgba(255, 255, 255, 0.16) 32px 33px),
+    repeating-linear-gradient(90deg, transparent 0 32px, rgba(255, 255, 255, 0.16) 32px 33px);
+}

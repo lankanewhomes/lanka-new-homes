@@ -127,6 +127,12 @@ export const Lands: CollectionConfig = {
                 return value !== undefined && value !== null ? true : 'Land size (perches) is required.'
               },
             },
+            {
+              name: 'landSizePerchesMax',
+              type: 'number',
+              label: 'Land size — upper end (perches)',
+              admin: { description: 'Optional. Set when plots come in a range (e.g. 10 to 18.9 perches): Land Size above is the smallest, this is the largest. Leave blank for a single size.' },
+            },
             { name: 'landSizeAcres', type: 'number' },
             { name: 'landUse', type: 'select', hasMany: true, options: LAND_USE_OPTIONS, admin: { description: 'Choose one, or two for a mixed-use parcel (e.g. Residential + Commercial).' } },
             { name: 'landType', type: 'text', admin: { description: 'e.g. Bare Land, Land with House, Paddy Land, Coconut Land' } },

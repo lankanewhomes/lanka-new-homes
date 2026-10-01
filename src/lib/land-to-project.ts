@@ -77,7 +77,7 @@ export function landToProjectShape(land: Land): Project {
     priceRange: land.priceLkr > 0 ? land.priceLkr.toLocaleString() : formatPerchPriceRange(land.pricePerPerchLkrMin, land.pricePerPerchLkrMax),
     bedrooms: "-",
     bathrooms: "-",
-    floorAreaRange: land.landSizePerches > 0 ? `${land.landSizePerches} perches` : "-",
+    floorAreaRange: formatLandSize(land) ?? "-",
     units: floorPlans.length,
     floors: 0,
     parking: "-",
@@ -125,6 +125,14 @@ function sellerHref(land: Land): string | undefined {
   return undefined;
 }
 
+/** "10 perches", or "10 to 18.9 perches" when the listing has a size range. */
+export function formatLandSize(land: Land): string | undefined {
+  const min = land.landSizePerches;
+  if (!(min > 0)) return undefined;
+  const max = land.landSizePerchesMax;
+  return max && max > min ? `${min} to ${max} perches` : `${min} perches`;
+}
+
 export function buildLandDetailRows(land: Land): { label: string; value: string; href?: string }[] {
   const plots = land.plots ?? [];
   const totalPlots = plots.length;
@@ -139,10 +147,12 @@ export function buildLandDetailRows(land: Land): { label: string; value: string;
     { label: "District", value: land.district },
     { label: "City", value: land.city },
     { label: "Province", value: land.province },
-    { label: "Road access", value: land.roadAccess },
+    { label: "Land size", value: formatLandSize(land) },
+    { label: "Road", value: land.roadAccess },
     { label: "Road width", value: land.roadWidthFt ? `${land.roadWidthFt} ft` : undefined },
     { label: "Electricity", value: land.electricity },
     { label: "Water", value: land.water },
+    { label: "Drain", value: (land.facilities ?? []).find((item) => /drain/i.test(item)) },
     { label: "Title / deed", value: land.titleType },
     { label: "Survey plan", value: land.surveyPlanStatus },
     { label: "Seller", value: land.sellerName, href: sellerHref(land) },
