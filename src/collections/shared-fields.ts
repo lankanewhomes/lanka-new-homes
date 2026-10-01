@@ -208,6 +208,23 @@ export const AMENITY_NAME_OPTIONS = [
   'Beachfront',
   'Sea View',
   'Lake View',
+  'Sauna',
+  'Steam Room',
+  'Jacuzzi',
+  'Mini Cinema',
+  'Pickleball Court',
+  'Function Room',
+  'Meeting Room',
+  'Karaoke Room',
+  'Pavilion',
+  'Leisure Deck',
+  'Walking Track',
+  'Pebble Walk',
+  'Viewing Lookout',
+  'Laundry Service',
+  'Cafe',
+  'Outdoor Multipurpose Court',
+  'Ambalama Gathering Space',
 ]
 
 export const amenitiesField: Field = {

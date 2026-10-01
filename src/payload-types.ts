@@ -3152,7 +3152,24 @@ export interface Project {
           | 'Gated Community'
           | 'Beachfront'
           | 'Sea View'
-          | 'Lake View';
+          | 'Lake View'
+          | 'Sauna'
+          | 'Steam Room'
+          | 'Jacuzzi'
+          | 'Mini Cinema'
+          | 'Pickleball Court'
+          | 'Function Room'
+          | 'Meeting Room'
+          | 'Karaoke Room'
+          | 'Pavilion'
+          | 'Leisure Deck'
+          | 'Walking Track'
+          | 'Pebble Walk'
+          | 'Viewing Lookout'
+          | 'Laundry Service'
+          | 'Cafe'
+          | 'Outdoor Multipurpose Court'
+          | 'Ambalama Gathering Space';
         id?: string | null;
       }[]
     | null;
@@ -6542,6 +6559,10 @@ export interface Land {
    */
   package?: ('free' | 'featured' | 'featured-plus' | 'developer-pro' | 'campaign') | null;
   landSizePerches?: number | null;
+  /**
+   * Optional. Set when plots come in a range (e.g. 10 to 18.9 perches): Land Size above is the smallest, this is the largest. Leave blank for a single size.
+   */
+  landSizePerchesMax?: number | null;
   landSizeAcres?: number | null;
   /**
    * Choose one, or two for a mixed-use parcel (e.g. Residential + Commercial).
@@ -6612,6 +6633,14 @@ export interface Land {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Embed link (e.g. a Google My Maps plot map) — opens from the "Interactive map" button in the listing hero.
+   */
+  interactiveMapUrl?: string | null;
+  /**
+   * Embed link (e.g. a Google Street View panorama, from Share > Embed a map) — opens from the "Street View" button in the listing hero. Leave blank to use the Coordinates.
+   */
+  view360Url?: string | null;
   /**
    * PDF URL — or upload a file in Media and paste its URL here.
    */
@@ -6687,7 +6716,24 @@ export interface Land {
           | 'Gated Community'
           | 'Beachfront'
           | 'Sea View'
-          | 'Lake View';
+          | 'Lake View'
+          | 'Sauna'
+          | 'Steam Room'
+          | 'Jacuzzi'
+          | 'Mini Cinema'
+          | 'Pickleball Court'
+          | 'Function Room'
+          | 'Meeting Room'
+          | 'Karaoke Room'
+          | 'Pavilion'
+          | 'Leisure Deck'
+          | 'Walking Track'
+          | 'Pebble Walk'
+          | 'Viewing Lookout'
+          | 'Laundry Service'
+          | 'Cafe'
+          | 'Outdoor Multipurpose Court'
+          | 'Ambalama Gathering Space';
         id?: string | null;
       }[]
     | null;
@@ -8070,6 +8116,7 @@ export interface LandsSelect<T extends boolean = true> {
   isTrending?: T;
   package?: T;
   landSizePerches?: T;
+  landSizePerchesMax?: T;
   landSizeAcres?: T;
   landUse?: T;
   landType?: T;
@@ -8110,6 +8157,8 @@ export interface LandsSelect<T extends boolean = true> {
         image?: T;
         id?: T;
       };
+  interactiveMapUrl?: T;
+  view360Url?: T;
   brochureUrl?: T;
   videos?:
     | T

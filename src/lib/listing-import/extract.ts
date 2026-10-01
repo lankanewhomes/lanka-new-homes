@@ -90,6 +90,17 @@ const AMENITY_SYNONYMS: Record<string, RegExp> = {
   Beachfront: /\bbeach ?front\b/i,
   "Sea View": /\b(sea|ocean) ?view/i,
   "Lake View": /\blake ?view/i,
+  "Sauna": /\bsauna\b/i,
+  "Steam Room": /\bsteam (room|bath)\b/i,
+  "Jacuzzi": /\b(jacuzzi|hot tub)\b/i,
+  "Mini Cinema": /\b(mini[\s-]*cinema|flexi[\s-]*cinema|home theat(er|re)|movie (room|theat(er|re)))\b/i,
+  "Pickleball Court": /\bpickle[\s-]*ball\b/i,
+  "Function Room": /\bfunction (room|hall|space)s?\b/i,
+  "Meeting Room": /\bmeeting rooms?\b/i,
+  "Karaoke Room": /\bkaraoke\b/i,
+  "Walking Track": /\bwalking (track|path)s?\b/i,
+  "Laundry Service": /\b(laundry|laundromat)\b/i,
+  "Cafe": /\bcaf[eé]\b/i,
 };
 
 const TYPE_KEYWORDS: [RegExp, string][] = [

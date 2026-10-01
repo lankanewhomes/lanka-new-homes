@@ -1,0 +1,36 @@
+-- New amenity options (owner, 2026-10-01): Sauna, Jacuzzi, mini cinema, pickleball court etc.
+-- Payload stores each select as a Postgres enum, one per collection that uses amenitiesField.
+alter type payload.enum_projects_amenities_name add value if not exists 'Sauna';
+alter type payload.enum_projects_amenities_name add value if not exists 'Steam Room';
+alter type payload.enum_projects_amenities_name add value if not exists 'Jacuzzi';
+alter type payload.enum_projects_amenities_name add value if not exists 'Mini Cinema';
+alter type payload.enum_projects_amenities_name add value if not exists 'Pickleball Court';
+alter type payload.enum_projects_amenities_name add value if not exists 'Function Room';
+alter type payload.enum_projects_amenities_name add value if not exists 'Meeting Room';
+alter type payload.enum_projects_amenities_name add value if not exists 'Karaoke Room';
+alter type payload.enum_projects_amenities_name add value if not exists 'Pavilion';
+alter type payload.enum_projects_amenities_name add value if not exists 'Leisure Deck';
+alter type payload.enum_projects_amenities_name add value if not exists 'Walking Track';
+alter type payload.enum_projects_amenities_name add value if not exists 'Pebble Walk';
+alter type payload.enum_projects_amenities_name add value if not exists 'Viewing Lookout';
+alter type payload.enum_projects_amenities_name add value if not exists 'Laundry Service';
+alter type payload.enum_projects_amenities_name add value if not exists 'Cafe';
+alter type payload.enum_projects_amenities_name add value if not exists 'Outdoor Multipurpose Court';
+alter type payload.enum_projects_amenities_name add value if not exists 'Ambalama Gathering Space';
+alter type payload.enum_lands_amenities_name add value if not exists 'Sauna';
+alter type payload.enum_lands_amenities_name add value if not exists 'Steam Room';
+alter type payload.enum_lands_amenities_name add value if not exists 'Jacuzzi';
+alter type payload.enum_lands_amenities_name add value if not exists 'Mini Cinema';
+alter type payload.enum_lands_amenities_name add value if not exists 'Pickleball Court';
+alter type payload.enum_lands_amenities_name add value if not exists 'Function Room';
+alter type payload.enum_lands_amenities_name add value if not exists 'Meeting Room';
+alter type payload.enum_lands_amenities_name add value if not exists 'Karaoke Room';
+alter type payload.enum_lands_amenities_name add value if not exists 'Pavilion';
+alter type payload.enum_lands_amenities_name add value if not exists 'Leisure Deck';
+alter type payload.enum_lands_amenities_name add value if not exists 'Walking Track';
+alter type payload.enum_lands_amenities_name add value if not exists 'Pebble Walk';
+alter type payload.enum_lands_amenities_name add value if not exists 'Viewing Lookout';
+alter type payload.enum_lands_amenities_name add value if not exists 'Laundry Service';
+alter type payload.enum_lands_amenities_name add value if not exists 'Cafe';
+alter type payload.enum_lands_amenities_name add value if not exists 'Outdoor Multipurpose Court';
+alter type payload.enum_lands_amenities_name add value if not exists 'Ambalama Gathering Space';

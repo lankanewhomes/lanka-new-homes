@@ -17998,3 +17998,22 @@ body:has(.compare-bar) {
   min-height: 0;
   border: 0;
 }
+
+/* Owner, 2026-10-01: "contact form needs a background with a line" — the form
+   card gets the site's crossed-line (box) texture behind its fields. */
+.contact-page .contact-hero-form {
+  background-color: #fff;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(21, 20, 26, 0.07) 28px 29px),
+    repeating-linear-gradient(90deg, transparent 0 28px, rgba(21, 20, 26, 0.07) 28px 29px);
+}
+
+/* Owner, 2026-10-01: the listing pages' "Download Brochure" and "Contact Us"
+   forms (one shared dialog) get the same crossed-line background as the
+   contact page form. */
+.request-info-dialog {
+  background-color: #fff;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(21, 20, 26, 0.07) 28px 29px),
+    repeating-linear-gradient(90deg, transparent 0 28px, rgba(21, 20, 26, 0.07) 28px 29px);
+}
