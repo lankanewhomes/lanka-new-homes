@@ -17830,3 +17830,32 @@ body:has(.compare-bar) {
 }
 
 .legal-page .legal-card > :first-child { margin-top: 0; }
+
+/* Sitemap page in the contained-box system (owner, 2026-09-30). */
+.sitemap-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  columns: 4 220px;
+  column-gap: 24px;
+}
+
+.sitemap-links li {
+  break-inside: avoid;
+  margin: 0 0 8px;
+}
+
+.sitemap-links a {
+  display: block;
+  padding: 9px 14px;
+  border: 1px solid var(--fdv-line);
+  background: #fff;
+  font-size: 14px;
+  color: var(--fdv-ink);
+  text-decoration: none;
+}
+
+.sitemap-links a:hover {
+  background: var(--fdv-ink);
+  color: #fff;
+}
