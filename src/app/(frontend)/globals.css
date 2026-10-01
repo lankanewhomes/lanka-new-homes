@@ -18172,3 +18172,24 @@ body:has(.compare-bar) {
   mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
 }
 .luxury-hero-two-stats > * { position: relative; z-index: 1; }
+
+/* Home hero background with the crossed-line texture (owner, 2026-10-01: "home hero section needs a background
+   also with lines"). The counts box inside it keeps its own lighter box. */
+.luxury-hero-two {
+  overflow: hidden;
+  padding-bottom: 40px;
+  background: #f1f0ec;
+}
+.luxury-hero-two::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(21, 20, 26, 0.07) 28px 29px),
+    repeating-linear-gradient(90deg, transparent 0 28px, rgba(21, 20, 26, 0.07) 28px 29px);
+  -webkit-mask-image: radial-gradient(ellipse 85% 100% at center, #000 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 85% 100% at center, #000 40%, transparent 100%);
+}
+.luxury-hero-two > * { position: relative; z-index: 1; }
+.luxury-hero-two .luxury-hero-two-stats { background: #fff; }

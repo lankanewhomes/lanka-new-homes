@@ -9,6 +9,8 @@ import type payloadConfigType from '../payload.config'
 
 loadEnv({ path: path.join(process.cwd(), '.env.local') })
 const dry = process.argv.includes('--dry')
+const onlyArg = process.argv.indexOf('--only')
+const only = onlyArg >= 0 ? process.argv[onlyArg + 1].split(',') : null
 const payloadConfig = ((await import('../payload.config')) as { default: typeof payloadConfigType }).default
 const { getPayload } = await import('payload')
 const payload = await getPayload({ config: payloadConfig })
@@ -45,6 +47,7 @@ for (const coll of ['projects', 'lands'] as const) {
   for (const doc of docs.docs as unknown as { id: number; slug: string; coordinates?: { lat?: number | null; lng?: number | null }; nearby?: Near[] }[]) {
     const lat = doc.coordinates?.lat, lng = doc.coordinates?.lng
     const nearby = doc.nearby ?? []
+    if (only && !only.includes(doc.slug)) continue
     if (lat == null || lng == null || !nearby.some((n) => n.lat == null)) continue
     let found = 0
     const next: Near[] = []
