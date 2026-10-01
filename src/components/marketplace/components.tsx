@@ -2335,7 +2335,7 @@ export function FloorPlanCard({ floorPlan }: { floorPlan: FloorPlan }) {
     <article className="grid gap-3 border border-stone-200 bg-white p-3">
       <Image src={floorPlan.image} alt={floorPlan.planName} width={1000} height={600} className="h-44 w-full object-cover" />
       <h4 className="text-base font-semibold">{floorPlan.planName}</h4>
-      <p className="text-sm text-stone-700">{floorPlan.bedrooms} Bed • {floorPlan.bathrooms} Bath • {floorPlan.floorAreaSqFt} sq.ft</p>
+      <p className="text-sm text-stone-700">{[floorPlan.bedrooms > 0 ? `${floorPlan.bedrooms} Bed` : "", floorPlan.bathrooms > 0 ? `${floorPlan.bathrooms} Bath` : "", `${floorPlan.floorAreaSqFt} sq.ft`].filter(Boolean).join(" • ")}</p>
       <p className="text-sm font-medium">From {formatLkr(floorPlan.startingPriceLkr)}</p>
       <StatusBadge status={floorPlan.availability} />
     </article>
@@ -2653,7 +2653,8 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
   );
 
   const availabilityOptions = useMemo(() => Array.from(new Set(floorPlans.map((plan) => plan.availability))), [floorPlans]);
-  const bedroomOptions = useMemo(() => Array.from(new Set(floorPlans.map((plan) => plan.bedrooms))).sort((a, b) => a - b), [floorPlans]);
+  // 0 means "not provided" (e.g. Vauxhall's penthouses) — never offered as a bedroom filter.
+  const bedroomOptions = useMemo(() => Array.from(new Set(floorPlans.map((plan) => plan.bedrooms).filter((count) => count > 0))).sort((a, b) => a - b), [floorPlans]);
 
   const activeFilterCount = availabilityFilter.size + bedroomFilter.size + (sortBy !== "default" ? 1 : 0);
 
