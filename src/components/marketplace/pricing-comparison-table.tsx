@@ -149,3 +149,63 @@ export function PricingComparisonTable({ showCta = false }: { showCta?: boolean 
     </div>
   );
 }
+
+// /pricing's card layout (owner, 2026-10-01: "redesign this" — the heavy black-outlined table became one
+// card per package, same rows/tooltips/values, same data from packages.ts). /for-developers keeps the table.
+export function PricingPlanCards({ showCta = false }: { showCta?: boolean }) {
+  return (
+    <div className="plan-cards-wrap">
+      <div className="plan-cards">
+        {PACKAGE_LIST.map((pkg, col) => {
+          const annualPrice = formatAnnualPrice(pkg);
+          const popular = pkg.tier === "developer-pro";
+          return (
+            <article key={pkg.tier} className={`plan-card${popular ? " plan-card--popular" : ""}`} aria-label={pkg.name}>
+              <header className="plan-card-head">
+                <div className="plan-card-tag-row">{popular && <span className="plan-card-popular">Most popular</span>}</div>
+                <h3 className="plan-card-name">{pkg.name}</h3>
+                {pkg.tier === "free" ? (
+                  <p className="plan-card-price">Free</p>
+                ) : (
+                  <p className="plan-card-price">
+                    {formatPackagePriceAmount(pkg)}
+                    <span className="plan-card-price-suffix">/month</span>
+                  </p>
+                )}
+                <p className="plan-card-annual">{annualPrice ? `or ${annualPrice}` : pkg.tier === "free" ? "No card needed" : "Negotiated per campaign"}</p>
+                {pkg.tier === "free" ? (
+                  showCta ? (
+                    <Link href="/developers/register" className="pricing-table-cta">
+                      List for free
+                    </Link>
+                  ) : null
+                ) : (
+                  <EarlyAccessButton plan={pkg.tier} planName={pkg.name} />
+                )}
+              </header>
+              <ul className="plan-card-rows">
+                {PACKAGE_FEATURE_ROWS.map((row) => {
+                  const bullets = tooltipBullets(row);
+                  return (
+                    <li key={row.key} className="plan-card-row">
+                      <span className="plan-card-row-label">
+                        {row.label}
+                        <FeatureInfoTooltip text={bullets} />
+                      </span>
+                      <span className="plan-card-row-value">
+                        <FeatureCell value={row.values[col]} tooltip={bullets} showRealBadge={row.key === "featured-badge"} />
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </article>
+          );
+        })}
+      </div>
+      <p className="plan-cards-note">
+        {PACKAGE_ALWAYS_INCLUDED} <span className="pricing-table-note-highlight">{PACKAGE_ANNUAL_BILLING_NOTE}</span>
+      </p>
+    </div>
+  );
+}

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
-import { PricingComparisonTable } from "@/components/marketplace/pricing-comparison-table";
+import { PricingPlanCards } from "@/components/marketplace/pricing-comparison-table";
 import { PricingQuickjump } from "@/components/marketplace/pricing-quickjump";
 import { ScrollReveal } from "@/components/marketplace/scroll-reveal";
 import { FOUNDING_DEVELOPER_CAP, FOUNDING_DEVELOPER_DISCOUNT, PACKAGE_LIST, formatPackagePriceAmount } from "@/lib/packages";
@@ -102,7 +102,7 @@ export default async function PricingPage() {
           <p className="pricing-table-note-highlight pricing-founding-banner">Founding developer pricing is now closed — all {FOUNDING_DEVELOPER_CAP} spots are taken.</p>
         ) : null}
         <div data-reveal>
-          <PricingComparisonTable showCta />
+          <PricingPlanCards showCta />
         </div>
         {/* The table's footnote says every plan includes verification; the badge below is specifically
             on FEATURED projects while a package is active (owner, 2026-09-24). */}
