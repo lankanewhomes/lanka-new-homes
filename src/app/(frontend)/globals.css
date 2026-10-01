@@ -17868,3 +17868,11 @@ body:has(.compare-bar) {
     repeating-linear-gradient(0deg, transparent 0 32px, rgba(255, 255, 255, 0.16) 32px 33px),
     repeating-linear-gradient(90deg, transparent 0 32px, rgba(255, 255, 255, 0.16) 32px 33px);
 }
+
+/* Owner, 2026-10-01: "on mobile for web-design page I don't need this in
+   hero: See examples" — hidden on phones only; desktop keeps it. */
+@media (max-width: 700px) {
+  .wdx-page .fdv-hero-explore-link {
+    display: none;
+  }
+}
