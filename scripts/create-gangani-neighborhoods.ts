@@ -46,11 +46,11 @@ async function mirrorPhoto(slug: string, label: string, p: Photo): Promise<strin
 for (const slug of slugs) {
   const file = path.join(dir, `${slug}.json`)
   if (!fs.existsSync(file)) { console.log('MISSING json', slug); continue }
-  const d = JSON.parse(fs.readFileSync(file, 'utf8')) as Record<string, any>
+  const d = JSON.parse(fs.readFileSync(file, 'utf8')) as Record<string, unknown> & { hero?: Photo; photos?: Photo[]; nearby?: Nearby[]; name: string; city: string; province: string; district: string; population?: string | null; approxLocation?: string | null; nearbyAreas?: string[]; latitude: number; longitude: number; mapRadiusKm: number; description: string; highlights?: string[]; faqs?: unknown[]; sources?: unknown[] }
   const exists = await payload.find({ collection: 'neighborhoods', where: { slug: { equals: slug } }, limit: 1, overrideAccess: true })
   if (exists.docs[0]) { console.log('exists', slug); continue }
 
-  const all: Photo[] = [d.hero, ...(d.photos ?? [])].filter(Boolean)
+  const all: Photo[] = [d.hero, ...(d.photos ?? [])].filter((p): p is Photo => Boolean(p))
   if (all.length < MIN_PHOTOS) { console.log('SKIP (<MIN_PHOTOS photos)', slug, all.length); continue }
 
   const gallery: Record<string, unknown>[] = []
