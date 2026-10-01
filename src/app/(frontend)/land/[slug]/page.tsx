@@ -28,6 +28,21 @@ export const revalidate = 60;
 
 type LandPageProps = { params: Promise<{ slug: string }> };
 
+// Titles get " | LankaNewHomes" appended by the root layout; search results cut off past ~60 characters
+// in total, so use the shorter form when the full one would overflow.
+const TITLE_BUDGET = 60 - " | LankaNewHomes".length;
+function fitTitle(full: string, short: string): string {
+  if (full.length <= TITLE_BUDGET) return full;
+  return short.length <= TITLE_BUDGET ? short : `${short.slice(0, TITLE_BUDGET - 1).trimEnd()}…`;
+}
+
+// A land listing with no written summary still needs a meta description (SEO audit, 2026-10-01).
+function fallbackLandDescription(land: { title: string; location: string; description?: string; landSizePerches?: number; sellerName?: string }): string {
+  const text = land.description?.replace(/\s+/g, " ").trim();
+  if (text) return text.length > 155 ? `${text.slice(0, 154).trimEnd()}…` : text;
+  return `${land.title} — land for sale in ${land.location}${land.sellerName ? ` by ${land.sellerName}` : ""}. See plot sizes, payment plans, nearby places and the location map on LankaNewHomes.`;
+}
+
 export async function generateMetadata({ params }: LandPageProps): Promise<Metadata> {
   const { slug } = await params;
   const land = await getLandBySlug(slug);
@@ -37,8 +52,8 @@ export async function generateMetadata({ params }: LandPageProps): Promise<Metad
   }
 
   return {
-    title: `${land.title} - Land for Sale in ${land.location}`,
-    description: land.summary,
+    title: fitTitle(`${land.title} - Land for Sale in ${land.location}`, `${land.title} - Land for Sale`),
+    description: land.summary?.trim() || fallbackLandDescription(land),
     alternates: { canonical: `/land/${land.slug}` },
     robots: land.status === "Sold" ? { index: false, follow: true } : undefined,
   };

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ContactForm } from "@/components/marketplace/contact-form";
 
 export const metadata: Metadata = {
-  title: "Contact",
+  title: "Contact Us – New Home & Developer Enquiries",
   description: "Get in touch with the LankaNewHomes team.",
   alternates: { canonical: "/contact" },
 };

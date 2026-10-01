@@ -10,7 +10,7 @@ import { getAllNeighborhoods } from "@/lib/neighborhood-store";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "About",
+  title: "About Us – Sri Lanka's New Homes Marketplace",
   description: "LankaNewHomes is Sri Lanka's marketplace for new homes, developments, and developer-led land projects — connecting buyers directly with developers and builders across the island.",
   alternates: { canonical: "/about" },
 };

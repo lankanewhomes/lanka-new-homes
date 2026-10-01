@@ -6,7 +6,7 @@ import { getAllDevelopers } from "@/lib/developer-store";
 import { getAllNeighborhoods } from "@/lib/neighborhood-store";
 
 export const metadata: Metadata = {
-  title: "Press",
+  title: "Press & Media – Brand Assets and Enquiries",
   description: "Media inquiries and brand assets for LankaNewHomes, Sri Lanka's marketplace for new homes and developer-led land projects.",
   alternates: { canonical: "/press" },
 };

@@ -46,7 +46,11 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
     };
   }
 
-  const title = `${project.name} - New Apartments in ${project.location}`;
+  const fullTitle = `${project.name} - New Apartments in ${project.location}`;
+  // The root layout appends " | LankaNewHomes"; keep the whole title within ~60 characters.
+  const titleBudget = 60 - " | LankaNewHomes".length;
+  const shortTitle = `${project.name} - New Apartments`;
+  const title = fullTitle.length <= titleBudget ? fullTitle : shortTitle.length <= titleBudget ? shortTitle : `${project.name.slice(0, titleBudget - 1).trimEnd()}…`;
   const description = `${project.summary} Starting from ${project.priceRange}. Explore floor plans, amenities, and availability.`;
   const canonicalPath = `/projects/${project.slug}`;
 

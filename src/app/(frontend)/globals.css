@@ -18075,3 +18075,19 @@ body:has(.compare-bar) {
     gap: 10px;
   }
 }
+
+/* /pricing redesign (owner, 2026-10-01) — contained boxes like /web-design and /for-developers. */
+.pricing-page .pricing-glance-row {
+  justify-content: space-between;
+  border-bottom: 1px solid #e6e2d8;
+  padding-bottom: 10px;
+}
+.pricing-page .pricing-glance-row:last-child { border-bottom: 0; padding-bottom: 0; }
+.pricing-page .pricing-box-packages .pricing-founding-banner { margin: 0 auto 24px; max-width: none; text-align: left; }
+.pricing-page .pricing-box-placements .fdv-placement-grid { width: 100%; }
+.pricing-page .fdv-box .pricing-page-footer-note { margin-top: 28px; text-align: left; }
+.pricing-page .fdv-box .pricing-page-note { justify-content: flex-start; margin-top: 24px; text-align: left; }
+.pricing-page .wdx-faq-list { display: grid; gap: 12px; max-width: 860px; }
+@media (max-width: 900px) {
+  .pricing-page .pricing-box-placements .fdv-placement-grid { grid-template-columns: 1fr; }
+}
