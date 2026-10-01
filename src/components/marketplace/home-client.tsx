@@ -158,6 +158,9 @@ export function HomeClient({
   const showPreviousHeroSlide = () => setHeroSlide((current) => (current - 1 + heroSlides.length) % heroSlides.length);
   const showNextHeroSlide = () => setHeroSlide((current) => (current + 1) % heroSlides.length);
 
+  // Real count of floor plans across every listed project (shown in the home stats band).
+  const floorPlanCount = useMemo(() => projects.reduce((total, project) => total + (project.floorPlans?.length ?? 0), 0), [projects]);
+
   const submitSearch = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const query = searchTerm.trim();
@@ -428,9 +431,9 @@ export function HomeClient({
             <strong>{lands.length}</strong>
             <span>Land listings</span>
           </Link>
-          <Link href="/developers" className="home-stat">
-            <strong>{developers.length}</strong>
-            <span>Developers</span>
+          <Link href="/projects" className="home-stat">
+            <strong>{floorPlanCount}</strong>
+            <span>Floor plans</span>
           </Link>
         </div>
       </section>
