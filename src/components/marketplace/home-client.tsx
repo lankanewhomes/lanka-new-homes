@@ -408,6 +408,24 @@ export function HomeClient({
     ) : null}
 
     <main className="home-content">
+      {/* Owner, 2026-10-01: "add small sections after hero showing how many
+          lands, projects, developers" — live counts (same figures /about and
+          /press show), each linking to its listing page. */}
+      <section className="home-stats" aria-label="LankaNewHomes by the numbers">
+        <Link href="/projects" className="home-stat">
+          <strong>{projects.length}</strong>
+          <span>Projects</span>
+        </Link>
+        <Link href="/land" className="home-stat">
+          <strong>{lands.length}</strong>
+          <span>Land listings</span>
+        </Link>
+        <Link href="/developers" className="home-stat">
+          <strong>{developers.length}</strong>
+          <span>Developers</span>
+        </Link>
+      </section>
+
       {featuredProjects.length > 0 ? (
         <section className="featured-projects-section" aria-label="Featured projects">
           <div className="featured-listings-head">

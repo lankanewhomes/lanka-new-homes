@@ -60,7 +60,8 @@ let n = 0
 for (const land of lands.docs as unknown as { id: number; slug: string; title: string }[]) {
   const site = siteByTitle.get(land.title)
   if (!site) { console.log('NO SITE MATCH', land.slug); continue }
-  const base = site.pay.map((l) => l.replace(/\s+/g, ' ').trim()).filter(Boolean)
+  // Exact site text, whitespace-normalised, with a leading capital (owner, 2026-10-01: "can be paid in instalments…" needs a capital C).
+  const base = site.pay.map((l) => l.replace(/\s+/g, ' ').trim()).filter(Boolean).map((l) => l[0].toUpperCase() + l.slice(1))
   await payload.update({ collection: 'lands', id: land.id, data: { paymentPlanItems: [...base, ...PACKAGES] } as never, overrideAccess: true })
   n++
 }

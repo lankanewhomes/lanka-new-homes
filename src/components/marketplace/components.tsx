@@ -728,7 +728,7 @@ export function ProjectHero({
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isLightboxOpen]);
-  const [lightboxView, setLightboxView] = useState<"photos" | "videos" | "map" | "roadMap" | "blockPlan" | "streetView" | "view360">("photos");
+  const [lightboxView, setLightboxView] = useState<"photos" | "videos" | "map" | "roadMap" | "blockPlan" | "streetView" | "view360" | "interactiveMap">("photos");
   const [activeSection, setActiveSection] = useState("overview");
   const [requestInfoOpen, setRequestInfoOpen] = useState(false);
   // The brochure pill opens the same dialog as "Request info", just with
@@ -970,8 +970,18 @@ export function ProjectHero({
     {
       key: "interactive-map",
       show: hasInteractiveMap,
+      lightboxKey: "interactiveMap",
+      // Owner, 2026-10-01: opens in the lightbox pop-up like Map / Street View,
+      // not in the hero's own surface.
       render: (className) => (
-        <button type="button" className={className} onClick={() => setActiveMedia("interactiveMap")}>
+        <button
+          type="button"
+          className={className}
+          onClick={() => {
+            setLightboxView("interactiveMap");
+            setIsLightboxOpen(true);
+          }}
+        >
           <Compass className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">Interactive map</span>
         </button>
       ),
@@ -1330,6 +1340,17 @@ export function ProjectHero({
                   360° View
                 </button>
               )}
+              {hasInteractiveMap && (
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={lightboxView === "interactiveMap"}
+                  className={lightboxView === "interactiveMap" ? "active" : undefined}
+                  onClick={() => setLightboxView("interactiveMap")}
+                >
+                  Interactive map
+                </button>
+              )}
               {hasStreetView && (
                 <button
                   type="button"
@@ -1488,6 +1509,16 @@ export function ProjectHero({
                   </button>
                 )}
               </>
+            )}
+
+            {lightboxView === "interactiveMap" && hasInteractiveMap && (
+              <iframe
+                className="listing-photo-lightbox-map"
+                title="Interactive map"
+                src={interactiveMapSrc}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
             )}
 
             {lightboxView === "streetView" && (
