@@ -58,7 +58,8 @@ const todo = only ? all.filter((l) => only.includes(l.slug)) : all
 // ---- developer ------------------------------------------------------------
 const devSlug = 'gangani-land-sales'
 const found = await payload.find({ collection: 'developers', where: { slug: { equals: devSlug } }, limit: 1, overrideAccess: true })
-let developer: { id: number | string } | undefined = found.docs[0] as never
+type Dev = { id: number | string }
+let developer: Dev | undefined = found.docs[0] as unknown as Dev | undefined
 if (!developer) {
   const logoSrc = 'https://www.ganganilandsales.com/wp-content/uploads/2024/10/GL-Logo-1-02.png'
   const { body, contentType } = await fetchWithLimit(logoSrc, { timeoutMs: 15000, maxBytes: 4 * 1024 * 1024 })
@@ -79,8 +80,8 @@ if (!developer) {
       socialLinks: { whatsapp: '+94772614429' },
     } as never,
     overrideAccess: true,
-  })) as never
-  console.log('Developer created', developer!.id)
+  })) as unknown as Dev
+  console.log('Developer created', developer.id)
 } else console.log('Developer exists', developer.id)
 
 // ---- lands ----------------------------------------------------------------
@@ -120,7 +121,7 @@ for (const l of todo) {
       slug: finalSlug,
       title: name,
       sellerType: 'developer',
-      seller: { relationTo: 'developers', value: developer!.id },
+      seller: { relationTo: 'developers', value: developer.id },
       sellerName: 'Gangani Land Sales',
       location: tidy(l.location),
       district,
