@@ -18141,3 +18141,12 @@ body:has(.compare-bar) {
 .developer-about-box h2 { margin: 0 0 14px; font-family: var(--font-ref-sans); font-size: 28px; font-weight: 400; color: #1f1f1f; }
 .developer-about-box p { max-width: 820px; margin: 0 0 12px; font-size: 15px; line-height: 1.65; color: #4a4a4a; }
 @media (max-width: 760px) { .developer-about-box { width: calc(100% - 32px); padding: 28px 18px; } }
+
+/* Live counts inside the hero panel, under the subtitle (owner, 2026-10-01). */
+.luxury-hero-two-stats { margin: 16px 0 0; max-width: 520px; }
+.luxury-hero-two-stats-lead { margin: 0 0 10px; font-size: 13px; line-height: 20px; color: #5f6876; }
+.luxury-hero-two-stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.luxury-hero-two-stats .home-stat { flex-direction: column; align-items: flex-start; gap: 4px; padding: 10px 12px; }
+.luxury-hero-two-stats .home-stat strong { font-size: 24px; }
+.luxury-hero-two-stats .home-stat span { font-size: 10.5px; }
+@media (max-width: 900px) { .luxury-hero-two-stats { margin-left: auto; margin-right: auto; } .luxury-hero-two-stats .home-stat { align-items: center; } }
