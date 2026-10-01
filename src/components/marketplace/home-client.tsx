@@ -1,5 +1,6 @@
 "use client";
 
+import { parseNaturalSearch } from "@/lib/natural-search";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -160,7 +161,9 @@ export function HomeClient({
   const submitSearch = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const query = searchTerm.trim();
-    router.push(query ? `/search?q=${encodeURIComponent(query)}` : "/search");
+    // "plots in Negombo" etc. go to the land page, everything else to project search.
+    const wantsLand = query ? parseNaturalSearch(query).land === true : false;
+    router.push(query ? `${wantsLand ? "/land" : "/search"}?q=${encodeURIComponent(query)}` : "/search");
     setMobileSearchOpen(false);
   };
 

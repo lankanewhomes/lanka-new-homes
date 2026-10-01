@@ -1,5 +1,6 @@
 "use client";
 
+import { bedroomsMatch, cityMatches, parseNaturalSearch, typeMatches } from "@/lib/natural-search";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
@@ -365,19 +366,36 @@ export function ListingPageBody({
     return searchablePages.filter((page) => page.keywords.includes(trimmedQuery)).slice(0, 5);
   }, [trimmedQuery]);
   const showPageSuggestions = searchFocused && matchingPages.length > 0;
+  // Plain-language search ("3 bedroom apartment in Colombo under 50M") — see src/lib/natural-search.ts. When a
+  // sentence is understood its parts become filters; otherwise the query is matched as plain text, as before.
+  const parsedSearch = useMemo(() => parseNaturalSearch(searchQuery, cityOptions), [searchQuery, cityOptions]);
   const regionFilteredProjects = useMemo(() => {
+    const understood = parsedSearch.chips.length > 0;
+    const textQuery = (understood ? parsedSearch.text : trimmedQuery).toLowerCase();
     let list = regionFilter === "All of Sri Lanka" ? projects : projects.filter((project) => project.city === regionFilter);
-    if (trimmedQuery) {
+    if (understood) {
+      list = list.filter((project) => {
+        if (parsedSearch.city && !cityMatches(project, parsedSearch.city)) return false;
+        if (parsedSearch.type && !typeMatches(project.type, parsedSearch.type)) return false;
+        if (parsedSearch.status && project.status !== parsedSearch.status) return false;
+        if (!bedroomsMatch(project, parsedSearch.minBeds, parsedSearch.maxBeds)) return false;
+        const price = project.startingPriceLkr;
+        if (parsedSearch.maxPriceLkr !== undefined && !(price > 0 && price <= parsedSearch.maxPriceLkr)) return false;
+        if (parsedSearch.minPriceLkr !== undefined && !(price >= parsedSearch.minPriceLkr)) return false;
+        return true;
+      });
+    }
+    if (textQuery) {
       list = list.filter((project) =>
-        (project.name ?? "").toLowerCase().includes(trimmedQuery) ||
-        (project.location ?? "").toLowerCase().includes(trimmedQuery) ||
-        (project.city ?? "").toLowerCase().includes(trimmedQuery) ||
-        (project.district ?? "").toLowerCase().includes(trimmedQuery)
+        (project.name ?? "").toLowerCase().includes(textQuery) ||
+        (project.location ?? "").toLowerCase().includes(textQuery) ||
+        (project.city ?? "").toLowerCase().includes(textQuery) ||
+        (project.district ?? "").toLowerCase().includes(textQuery)
       );
     }
     list = list.filter((project) => matchesFilters(project, filterSelections));
     return list;
-  }, [projects, regionFilter, trimmedQuery, filterSelections]);
+  }, [projects, regionFilter, trimmedQuery, filterSelections, parsedSearch]);
   const baseProjects = activeSelection ? activeSelection.projects : regionFilteredProjects;
   const searchPlaceLabel = trimmedQuery ? searchQuery.trim() : regionFilter !== "All of Sri Lanka" ? regionFilter : null;
 
@@ -568,6 +586,18 @@ export function ListingPageBody({
             <div className="listing-header-title">
               {!activeSelection && !trimmedQuery && regionFilter !== "All of Sri Lanka" ? (
                 <h1 className="listing-header-h1 listing-header-h1-dynamic">New developments in {regionFilter}</h1>
+              ) : !activeSelection && parsedSearch.chips.length > 0 ? (
+                <>
+                  <h1 className="listing-header-h1 listing-header-h1-dynamic">
+                    {sortedProjects.length === 1 ? "There is 1" : `There are ${sortedProjects.length.toLocaleString()}`} {sortedProjects.length === 1 ? (singularEyebrow ?? eyebrow) : eyebrow} matching your search
+                  </h1>
+                  <p className="listing-search-understood" aria-label="What we understood from your search">
+                    Understood as:{" "}
+                    {[...parsedSearch.chips, ...(parsedSearch.text ? [`“${parsedSearch.text}”`] : [])].map((chip) => (
+                      <span key={chip} className="listing-search-understood-chip">{chip}</span>
+                    ))}
+                  </p>
+                </>
               ) : activeSelection || searchPlaceLabel ? (
                 <h1 className="listing-header-h1 listing-header-h1-dynamic">
                   There {sortedProjects.length === 1 ? "is" : "are"} {sortedProjects.length.toLocaleString()} {sortedProjects.length === 1 ? (singularEyebrow ?? eyebrow) : eyebrow} for sale in {activeSelection ? activeSelection.label : searchPlaceLabel}

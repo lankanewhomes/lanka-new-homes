@@ -18131,3 +18131,7 @@ body:has(.compare-bar) {
 .plan-card-head { min-height: 0; }
 .plan-cards { row-gap: 14px; }
 @media (max-width: 760px) { .plan-card { display: flex; grid-row: auto; } .plan-card-rows { display: block; } }
+
+/* Plain-language search: "Understood as: [3 bedrooms] [Apartments] [Colombo]" under the results heading. */
+.listing-search-understood { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 6px 0 0; font-size: 13px; color: #6b6355; }
+.listing-search-understood-chip { padding: 2px 10px; border: 1px solid #d9d4c7; background: #faf7f2; font-size: 12.5px; color: #1f1f1f; }
