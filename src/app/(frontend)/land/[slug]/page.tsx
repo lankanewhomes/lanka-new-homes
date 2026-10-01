@@ -1,3 +1,4 @@
+import { toAbsoluteUrl } from "@/lib/seo";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CheckCircle2, CircleDollarSign, Compass, HousePlus, Layers, MapPin, Ruler, Tag } from "lucide-react";
@@ -126,8 +127,28 @@ export default async function LandDetailPage({ params }: LandPageProps) {
 
   const detailRows = buildLandDetailRows(land);
 
+  // Structured data so search engines and AI assistants can read the listing (SEO/AI audit, 2026-10-01).
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: land.title,
+    description: land.summary?.trim() || fallbackLandDescription(land),
+    image: [land.heroImage, ...(land.gallery ?? []).map((item) => item.image)].filter(Boolean),
+    category: "Land for sale",
+    brand: { "@type": "Brand", name: land.sellerName },
+    url: toAbsoluteUrl(`/land/${land.slug}`),
+    ...(land.priceLkr > 0
+      ? { offers: { "@type": "Offer", priceCurrency: "LKR", price: land.priceLkr, availability: land.status === "Sold" ? "https://schema.org/SoldOut" : "https://schema.org/InStock", url: toAbsoluteUrl(`/land/${land.slug}`) } }
+      : {}),
+    additionalProperty: [
+      { "@type": "PropertyValue", name: "Location", value: land.location },
+      { "@type": "PropertyValue", name: "Status", value: land.status },
+    ],
+  };
+
   return (
     <div className="space-y-8">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
       <ProjectHero
         project={project}
         backHref="/land"
