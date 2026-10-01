@@ -183,6 +183,8 @@ export const Lands: CollectionConfig = {
             galleryLikeField('gallery'),
             galleryLikeField('blockPlanImages', 'Block Plan Images'),
             galleryLikeField('roadMapImages', 'Road Map Images'),
+            { name: 'interactiveMapUrl', type: 'text', admin: { description: 'Embed link (e.g. a Google My Maps plot map) — opens from the "Interactive map" button in the listing hero.' } },
+            { name: 'view360Url', type: 'text', label: '360° View URL', admin: { description: 'Embed link (e.g. a Google Street View panorama) — opens from the "360° view" button in the listing hero.' } },
             { name: 'brochureUrl', type: 'text', label: 'Brochure URL', admin: { description: 'PDF URL — or upload a file in Media and paste its URL here.' } },
             {
               name: 'videos',

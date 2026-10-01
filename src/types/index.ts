@@ -487,6 +487,10 @@ export type Land = SeoFields & {
   landSizePerches: number;
   /** Upper end when plots come in a range (landSizePerches is the lower end). */
   landSizePerchesMax?: number;
+  /** Embed link (e.g. Google My Maps plot map) shown from the hero's "Interactive map" button. */
+  interactiveMapUrl?: string;
+  /** Embed link (e.g. Google Street View panorama) shown from the hero's "360° view" button. */
+  view360Url?: string;
   landSizeAcres?: number;
   priceLkr: number;
   pricePerPerchLkrMin?: number;

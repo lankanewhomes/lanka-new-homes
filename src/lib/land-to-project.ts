@@ -97,6 +97,8 @@ export function landToProjectShape(land: Land): Project {
     highlights: land.facilities ?? [],
     heroImage: land.heroImage,
     gallery: land.gallery,
+    interactiveMapUrl: land.interactiveMapUrl,
+    view360Url: land.view360Url,
     brochureUrl: land.brochureUrl,
     amenities: land.amenities ?? [],
     unitFeatures: land.unitFeatures,
