@@ -178,7 +178,12 @@ export default async function LandDetailPage({ params }: LandPageProps) {
 
         <AmenitiesShowcaseSection amenities={project.amenities} gallery={project.gallery} heroImage={project.heroImage} title="Facilities" />
 
-        <NeighborhoodSection nearby={project.nearby} neighborhoodName={project.neighborhood} neighborhoodSlug={cityNeighborhoodSlug} neighborhoodPageExists={Boolean(neighborhood)} />
+        <NeighborhoodSection
+          nearby={project.nearby}
+          neighborhoodName={project.neighborhood} neighborhoodSlug={cityNeighborhoodSlug} neighborhoodPageExists={Boolean(neighborhood)}
+          // Same preview card (photo, excerpt, highlights, guide link) the project page shows.
+          neighborhood={neighborhood ? { name: neighborhood.name, slug: neighborhood.slug, heroImage: neighborhood.heroImage, description: neighborhood.description, highlights: neighborhood.highlights } : undefined}
+        />
 
         <StatsContactCard project={project} developer={developer} requestInfoVariant="inquiry" />
 
