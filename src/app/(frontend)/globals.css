@@ -18150,3 +18150,25 @@ body:has(.compare-bar) {
 .luxury-hero-two-stats .home-stat strong { font-size: 24px; }
 .luxury-hero-two-stats .home-stat span { font-size: 10.5px; }
 @media (max-width: 900px) { .luxury-hero-two-stats { margin-left: auto; margin-right: auto; } .luxury-hero-two-stats .home-stat { align-items: center; } }
+
+/* Background for the hero live-counts block (owner, 2026-10-01: "need a background") — the same flat grey and
+   crossed-line texture as the other contained boxes. */
+.luxury-hero-two-stats {
+  position: relative;
+  overflow: hidden;
+  padding: 18px 18px 16px;
+  background: #f1f0ec;
+  border: 1px solid #e4e2db;
+}
+.luxury-hero-two-stats::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(21, 20, 26, 0.07) 28px 29px),
+    repeating-linear-gradient(90deg, transparent 0 28px, rgba(21, 20, 26, 0.07) 28px 29px);
+  -webkit-mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
+  mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
+}
+.luxury-hero-two-stats > * { position: relative; z-index: 1; }
