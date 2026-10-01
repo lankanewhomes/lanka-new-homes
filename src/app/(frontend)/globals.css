@@ -18123,3 +18123,11 @@ body:has(.compare-bar) {
 .plan-card-head { min-height: 206px; }
 .plan-card-row { min-height: 71px; box-sizing: border-box; }
 @media (max-width: 760px) { .plan-card-head, .plan-card-row { min-height: 0; } }
+
+/* Subgrid: header + every feature row line up across all cards even when a cell is taller (badge pills). */
+.plan-card { display: grid; grid-row: span var(--plan-rows, 13); grid-template-rows: subgrid; row-gap: 0; }
+.plan-card-rows { display: contents; }
+.plan-card-row { min-height: 0; background: #fff; }
+.plan-card-head { min-height: 0; }
+.plan-cards { row-gap: 14px; }
+@media (max-width: 760px) { .plan-card { display: flex; grid-row: auto; } .plan-card-rows { display: block; } }

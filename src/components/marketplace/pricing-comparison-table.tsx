@@ -155,7 +155,7 @@ export function PricingComparisonTable({ showCta = false }: { showCta?: boolean 
 export function PricingPlanCards({ showCta = false }: { showCta?: boolean }) {
   return (
     <div className="plan-cards-wrap">
-      <div className="plan-cards">
+      <div className="plan-cards" style={{ "--plan-rows": PACKAGE_FEATURE_ROWS.length + 1 } as React.CSSProperties}>
         {PACKAGE_LIST.map((pkg, col) => {
           const annualPrice = formatAnnualPrice(pkg);
           const popular = pkg.tier === "developer-pro";
