@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- these one-off scripts read arbitrary researched JSON */
 // Imports the John Keells Properties listings researched into JSON files
 // (one per listing; see the "kind" field: "project" or "land").
 //

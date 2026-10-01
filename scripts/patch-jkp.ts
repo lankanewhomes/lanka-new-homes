@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- these one-off scripts read arbitrary researched JSON */
 // Re-applies fields the first JKP import run dropped on CMS validation (city option,
 // floor plans missing a required startingPriceLkr/bedrooms). Assets were already
 // uploaded, so placeholders resolve straight to their public media URLs.
