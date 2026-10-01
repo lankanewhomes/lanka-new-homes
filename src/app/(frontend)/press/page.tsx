@@ -23,23 +23,47 @@ const BRAND_ASSETS = [
 export default function PressPage() {
   return (
     <div className="fdv-page press-page">
-      {/* Owner, 2026-09-30: "this can be in the hero section" — Media
-          inquiries moved out of its own section, into the hero. */}
-      <section className="fdv-hero" aria-label="Press">
-        <div className="fdv-hero-content">
-          <h1 className="fdv-hero-headline">Press &amp; media.</h1>
-          <p className="fdv-hero-sub">
-            Media inquiries and brand assets for LankaNewHomes, Sri Lanka&apos;s marketplace for new homes and
-            developer-led land projects.
-          </p>
-          <div className="press-contact-card">
-            <p>For all press and media inquiries, please contact:</p>
-            <a href="mailto:support@lankanewhomes.com" className="press-contact-email">support@lankanewhomes.com</a>
+      {/* Owner, 2026-09-30: "redesign the press page like about us page" —
+          same contained-box system as /about and /for-developers
+          (docs/design.md "Page section style: contained boxes"). Media
+          inquiries stay in the hero (owner, 2026-09-30: "this can be in the
+          hero section"). */}
+      <section className="fdv-hero fdv-hero--split" aria-label="Press">
+        <div className="fdv-hero-split-inner">
+          <div className="fdv-hero-content">
+            <h1 className="fdv-hero-headline">Press &amp; media.</h1>
+            <p className="fdv-hero-sub">
+              Media inquiries and brand assets for LankaNewHomes, Sri Lanka&apos;s marketplace for new homes and
+              developer-led land projects.
+            </p>
+          </div>
+          <div className="about-hero-panel">
+            <div className="press-contact-card press-hero-contact">
+              <p>For all press and media inquiries, please contact:</p>
+              <a href="mailto:support@lankanewhomes.com" className="press-contact-email">support@lankanewhomes.com</a>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="press-section press-section-alt" aria-label="Brand kit">
+      {/* New boilerplate box — the same description this site already
+          publishes (About page / site metadata), nothing invented. */}
+      <section className="fdv-box fdv-box--gray" id="about" aria-label="About LankaNewHomes">
+        <div className="wdx-section-head" data-reveal>
+          <h2>About LankaNewHomes.</h2>
+          <p>A short description for press use.</p>
+        </div>
+        <div className="fdv-box-card press-boilerplate" data-reveal>
+          <p>
+            LankaNewHomes is Sri Lanka&apos;s marketplace for new homes, developments, and developer-led land
+            projects — connecting buyers directly with developers and builders across the island. Every project is
+            free to list, enquiries go straight to the project&apos;s own team, and each listing carries real
+            photography, floor plans and pricing.
+          </p>
+        </div>
+      </section>
+
+      <section className="fdv-box fdv-box--cream" id="brand-kit" aria-label="Brand kit">
         <div className="wdx-section-head" data-reveal>
           <h2>Brand kit.</h2>
           <p>The LankaNewHomes wordmark, for press and media use.</p>

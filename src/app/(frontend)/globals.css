@@ -17502,3 +17502,42 @@ body:has(.compare-bar) {
 .fdv-hero--split .fdv-hero-ctas a {
   font-weight: 400;
 }
+
+/* Verified badge on the About "Verified & responsive" card (owner,
+   2026-09-30: "add a verified badge"). */
+.about-card-badge {
+  margin-top: 14px;
+  height: 24px;
+  padding: 0 8px;
+  line-height: 1;
+}
+
+/* Owner, 2026-09-30: "this can align to the left matching breadcrumbs" —
+   News & Insights heading + filter chips use the breadcrumb's own
+   container (.site-breadcrumb-inner: min(1290px, 100% - 48px)) so their left
+   edge lines up with "Home / ...". */
+.blog-page .blog-page-head,
+.blog-page .blog-filter-bar {
+  width: min(1290px, calc(100% - 48px));
+}
+
+/* Press page in the contained-box system (owner, 2026-09-30: "redesign the
+   press page like about us page"). */
+.press-page .press-hero-contact {
+  width: 100%;
+  margin: 0;
+  text-align: left;
+}
+
+.press-page .press-assets-grid {
+  width: 100%;
+  margin: 0;
+}
+
+.press-boilerplate p {
+  margin: 0;
+  max-width: 70ch;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--fdv-ink);
+}

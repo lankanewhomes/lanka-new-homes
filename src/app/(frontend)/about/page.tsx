@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { ShieldCheck } from "lucide-react";
 import { getAllProjects } from "@/lib/project-store";
 import { getAllLands } from "@/lib/land-store";
 import { getAllDevelopers } from "@/lib/developer-store";
@@ -61,6 +62,18 @@ const STEPS = [
   },
 ] as const;
 
+// Owner, 2026-09-30: "put actually of the buildings, not swimming pool,
+// backyard" — hand-picked projects whose hero image is the building's
+// exterior, in this order.
+const SHOWCASE_SLUGS = [
+  "rush-city-dematagoda",
+  "barrington-towers",
+  "rush-residencies-allen-dehiwala",
+  "raintree-villas-digana-kandy",
+  "imaarat-bambalapitiya",
+  "rush-tower-2-dehiwala",
+] as const;
+
 export default async function AboutPage() {
   const [projects, lands, developers, neighborhoods] = await Promise.all([
     getAllProjects(),
@@ -77,6 +90,10 @@ export default async function AboutPage() {
     { label: "Developers & Builders", value: developers.length },
     { label: "Areas Covered", value: neighborhoods.length },
   ];
+
+  const showcaseProjects = SHOWCASE_SLUGS
+    .map((slug) => projects.find((project) => project.slug === slug))
+    .filter((project): project is NonNullable<typeof project> => Boolean(project));
 
   return (
     <div className="fdv-page about-page">
@@ -119,11 +136,16 @@ export default async function AboutPage() {
           <p>Four commitments that shape every listing and every enquiry on the platform.</p>
         </div>
         <div className="fdv-box-grid fdv-box-grid--4" data-reveal>
-          {VALUES.map((value, index) => (
+          {VALUES.map((value) => (
             <div className="fdv-box-card" key={value.title}>
-              <span className="fdv-box-card-num">{String(index + 1).padStart(2, "0")}</span>
               <h3>{value.title}</h3>
               <p>{value.body}</p>
+              {value.title === "Verified & responsive" ? (
+                <span className="listing-badge-pill badge-verified fdv-badge-pill about-card-badge">
+                  <ShieldCheck className="h-2.5 w-2.5" aria-hidden="true" />
+                  Verified
+                </span>
+              ) : null}
             </div>
           ))}
         </div>
@@ -135,9 +157,8 @@ export default async function AboutPage() {
           <p>From a developer&apos;s first listing to a buyer&apos;s first enquiry — three steps, no middleman.</p>
         </div>
         <div className="fdv-box-grid fdv-box-grid--3" data-reveal>
-          {STEPS.map((step, index) => (
+          {STEPS.map((step) => (
             <div className="fdv-box-card" key={step.title}>
-              <span className="fdv-box-card-num">{String(index + 1).padStart(2, "0")}</span>
               <h3>{step.title}</h3>
               <p>{step.body}</p>
             </div>
@@ -148,7 +169,7 @@ export default async function AboutPage() {
       {/* Owner, 2026-09-29: "add more section... also add some images also
           please" — real project photography, not stock, same rule as the
           rest of the site's marketing pages. */}
-      {projects.length > 0 ? (
+      {showcaseProjects.length > 0 ? (
         <section className="fdv-box fdv-box--sage about-showcase" id="listings" aria-label="What's already on LankaNewHomes">
           <div className="wdx-section-head" data-reveal>
             <h2>See what&apos;s already on LankaNewHomes.</h2>
@@ -158,7 +179,7 @@ export default async function AboutPage() {
             </p>
           </div>
           <div className="about-showcase-grid" data-reveal>
-            {projects.slice(0, 6).map((project) => (
+            {showcaseProjects.map((project) => (
               <Link href={`/projects/${project.slug}`} className="about-showcase-card" key={project.slug}>
                 <div className="about-showcase-card-media">
                   <Image
