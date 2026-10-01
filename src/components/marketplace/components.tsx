@@ -104,6 +104,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { SiteLanguage, useLanguage } from "@/components/layout/language-provider";
 import { compactLkr, formatLkr, formatOfficeHours, splitSentences } from "@/lib/format";
+
+/** Payment packages shown before the "View more" toggle on a pricing card. */
+const PACKAGES_SHOWN = 3;
 import { planTitleWithFloor } from "@/lib/floor-plan-title";
 import { Amenity, Article, Developer, FloorPlan, Lead, Location, NearbyPlace, Project } from "@/types";
 import { localizedProjectCopy, useListingT } from "@/lib/i18n/use-listing-t";
@@ -2268,6 +2271,9 @@ export function AmenityGrid({ amenities }: { amenities: Amenity[] }) {
 
 export function PricingInformationLayout({ project, floorPlan }: { project: Project; floorPlan?: FloorPlan }) {
   const { t, tPrice } = useListingT();
+  // Owner, 2026-10-01: the payment packages are long — show the first three,
+  // the rest behind "View more".
+  const [showAllPackages, setShowAllPackages] = useState(false);
   const pricingHistory = project.pricingHistory?.filter((entry) => hasDisplayValue(entry.date) || hasDisplayValue(entry.note)) ?? [];
   const incentives = project.incentives?.filter((item) => hasDisplayValue(item)) ?? [];
   const depositStructure = project.depositPaymentStructure ?? project.paymentPlan;
@@ -2461,7 +2467,7 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
               <h3 className="text-[29px] font-semibold">Payment Packages</h3>
 
               <div className="mt-7 space-y-4 text-[15px] leading-7">
-                {packageGroups.map((group) => (
+                {(showAllPackages ? packageGroups : packageGroups.slice(0, PACKAGES_SHOWN)).map((group) => (
                   <div key={group.title}>
                     <p className="font-semibold">{group.title}</p>
                     <div className="space-y-1">
@@ -2469,6 +2475,16 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
                     </div>
                   </div>
                 ))}
+                {packageGroups.length > PACKAGES_SHOWN ? (
+                  <button
+                    type="button"
+                    className="text-[15px] underline underline-offset-4 hover:text-[#6b6355]"
+                    aria-expanded={showAllPackages}
+                    onClick={() => setShowAllPackages((open) => !open)}
+                  >
+                    {showAllPackages ? "View less" : "View more"}
+                  </button>
+                ) : null}
               </div>
             </article>
           ) : null}
