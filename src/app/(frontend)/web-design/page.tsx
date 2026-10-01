@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ChevronDown } from "lucide-react";
+import { Check } from "lucide-react";
 import { ScrollReveal } from "@/components/marketplace/scroll-reveal";
 import { HeroMarquee } from "@/components/marketplace/web-design-frames";
 import { SampleSiteSwitcher } from "@/components/marketplace/web-design-sample-switcher";
@@ -56,43 +56,52 @@ export default function WebDesignPage() {
     <div className="fdv-page wdx-page">
       <ScrollReveal />
 
+      {/* Owner, 2026-09-30: "redesign this page also" — same contained-box
+          system as /for-developers, /about, /press and /contact
+          (docs/design.md "Page section style: contained boxes"). */}
       {/* 1 — HERO */}
-      <section className="wdx-hero" aria-label="Website design for developers">
-        <div className="wdx-hero-content">
-          <h1 className="wdx-hero-headline">A website as serious as your project.</h1>
-          <p className="wdx-hero-sub">
-            We design and build a dedicated website for your development — built around your renders, floor plans
-            and brand, not a generic template. A new site if you don&apos;t have one, or a rebuild if the one you have
-            isn&apos;t working.
-          </p>
-          <div className="wdx-hero-ctas">
-            <Link href="/contact" className="fdv-cta-primary">Talk to us about a site</Link>
-            <a href="#sample" className="fdv-cta-secondary wdx-hero-sample-link">
-              See examples
-              <ChevronDown size={16} strokeWidth={2.5} aria-hidden="true" className="wdx-hero-sample-arrow" />
-            </a>
+      <section className="fdv-hero fdv-hero--split" aria-label="Website design for developers">
+        <div className="fdv-hero-split-inner">
+          <div className="fdv-hero-content">
+            <h1 className="fdv-hero-headline">A website as serious as your project.</h1>
+            <p className="fdv-hero-sub">
+              We design and build a dedicated website for your development — built around your renders, floor plans
+              and brand, not a generic template. A new site if you don&apos;t have one, or a rebuild if the one you have
+              isn&apos;t working.
+            </p>
+            <div className="fdv-hero-ctas">
+              <Link href="/contact" className="fdv-cta-final-button">Talk to us about a site</Link>
+              <a href="#sample" className="fdv-cta-secondary fdv-hero-explore-link">See examples</a>
+            </div>
+          </div>
+
+          {/* The old hero chip list, as a card beside the copy. */}
+          <div className="wdx-hero-checklist">
+            <p className="wdx-hero-checklist-title">Everything we can put on your homepage</p>
+            <ul aria-label="What we can put on your homepage">
+              {HOMEPAGE_SECTIONS.map((label) => (
+                <li key={label}>
+                  <Check size={14} strokeWidth={2.5} aria-hidden="true" />
+                  {label}
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
-        <HeroMarquee />
-        {/* Owner, 2026-09-29: "on web-design hero you can have these info"
-            — the "what goes on a homepage" section's own list, folded
-            into the hero instead of its own section further down the
-            page (which was deleted — see the git history for its JSX).
-            Moved below the marquee the same day ("after the buttons have
-            the image, then the fields like photo gallery and everything"),
-            so it reads CTAs → image → list instead of CTAs → list → image. */}
-        {/* Owner, 2026-09-29: "on top of this... i need a heading". */}
-        <p className="wdx-hero-chips-title">Everything we can put on your homepage</p>
-        <ul className="wdx-hero-chips" aria-label="What we can put on your homepage">
-          {HOMEPAGE_SECTIONS.map((label) => (
-            <li key={label}>{label}</li>
-          ))}
-        </ul>
       </section>
 
-      {/* 3 — LIVE SAMPLE */}
-      <section className="wdx-sample" id="sample" aria-label="Sample homepage">
-        <div className="wdx-sample-head" data-reveal>
+      <section className="fdv-box fdv-box--cream" id="built" aria-label="Built around your project">
+        <div className="wdx-section-head" data-reveal>
+          <h2>Built around your project.</h2>
+          <p>Your renders, floor plans and brand — not a generic template.</p>
+        </div>
+        <HeroMarquee />
+      </section>
+
+      {/* 3 — LIVE SAMPLE — dark box: the switcher/device frames are styled
+          for a dark surface. */}
+      <section className="fdv-box fdv-box--dark wdx-sample" id="sample" aria-label="Sample homepage">
+        <div className="wdx-section-head" data-reveal>
           <h2>See what your site could look like.</h2>
           <p>
             We built six complete sample homepages for six fictional developments, each with its own look — pick

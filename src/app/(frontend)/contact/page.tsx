@@ -32,7 +32,7 @@ export default function ContactPage() {
           /press and /for-developers (docs/design.md "Page section style:
           contained boxes"): dark hero box, then tinted textured boxes. */}
       <section className="fdv-hero fdv-hero--split" aria-label="Contact">
-        <div className="fdv-hero-split-inner contact-hero-inner">
+        <div className="fdv-hero-split-inner">
           <div className="fdv-hero-content">
             <h1 className="fdv-hero-headline">Get in touch with our team.</h1>
             <p className="fdv-hero-sub">
@@ -43,16 +43,9 @@ export default function ContactPage() {
               Prefer email? <a href="mailto:support@lankanewhomes.com" className="press-contact-email">support@lankanewhomes.com</a>
             </p>
           </div>
-        </div>
-      </section>
-
-      <section className="fdv-box fdv-box--gray" id="message" aria-label="Send us a message">
-        <div className="wdx-section-head" data-reveal>
-          <h2>Send us a message.</h2>
-          <p>Tell us what you need and the team will reply within one business day.</p>
-        </div>
-        <div className="contact-form-panel contact-form-box" data-reveal>
-          <ContactForm />
+          <div className="contact-form-panel contact-hero-form">
+            <ContactForm />
+          </div>
         </div>
       </section>
 

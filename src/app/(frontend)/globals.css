@@ -17542,14 +17542,23 @@ body:has(.compare-bar) {
   color: var(--fdv-ink);
 }
 
-/* WhatsApp logo on the About "Enquiries go direct" card (owner, 2026-09-30:
-   "add a whatsapp logo") — WhatsApp brand green. */
+/* Full WhatsApp logo (glyph + "WhatsApp" wordmark) on the About "Enquiries
+   go direct" card (owner, 2026-09-30: "it should say WhatsApp") — brand
+   green. */
 .about-whatsapp-logo {
-  display: block;
-  width: 28px;
-  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   margin-top: 16px;
   color: #25d366;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.about-whatsapp-logo svg {
+  width: 28px;
+  height: 28px;
 }
 
 /* Contact page in the contained-box system (owner, 2026-09-30). The form
@@ -17579,8 +17588,9 @@ body:has(.compare-bar) {
 
 /* Contact hero: copy + support email on the left only (owner, 2026-09-30:
    "in the hero section move the support email to left"). */
-.fdv-page .fdv-hero-split-inner.contact-hero-inner {
-  grid-template-columns: minmax(0, 720px);
+.contact-page .contact-hero-form {
+  box-shadow: none;
+  border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .contact-hero-email {
@@ -17591,6 +17601,81 @@ body:has(.compare-bar) {
 
 .contact-hero-email .press-contact-email {
   margin-left: 6px;
+  font-weight: 400; /* owner, 2026-09-30: "no bold please" */
   color: #fff;
   border-bottom-color: #fff;
+}
+
+/* Owner, 2026-09-30: "move these also to the left" — featured article band
+   and the article cards use the same breadcrumb-aligned container as the
+   heading and filter chips above them. */
+.blog-page .blog-hero-inner,
+.blog-page .blog-grid {
+  width: min(1290px, calc(100% - 48px));
+}
+
+/* /web-design in the contained-box system (owner, 2026-09-30). */
+.fdv-page .fdv-box--dark .wdx-section-head h2 {
+  color: #fff;
+}
+
+.fdv-page .fdv-box--dark .wdx-section-head p {
+  color: #b8b8b4;
+}
+
+.wdx-hero-checklist {
+  background: #fff;
+  color: var(--fdv-ink);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 4px;
+  padding: 28px 28px 24px;
+}
+
+.wdx-hero-checklist-title {
+  margin: 0 0 16px;
+  font-size: 16px;
+}
+
+.wdx-hero-checklist ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.wdx-hero-checklist li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--fdv-muted);
+}
+
+.wdx-hero-checklist li svg {
+  flex-shrink: 0;
+  color: var(--fdv-ink);
+}
+
+.fdv-page .fdv-box > .wdx-hero-marquee {
+  width: 100%;
+}
+
+/* Owner, 2026-09-30: "A website as serious as your project — align to the
+   top" — web-design hero's copy starts at the top edge of the box instead of
+   being vertically centred against the taller checklist card. */
+.wdx-page .fdv-hero-split-inner {
+  align-items: start;
+}
+
+/* Owner, 2026-09-30: "needs lines, boxes" (See what your site could look
+   like) — the dark sample box's crossed-line texture was too faint to see
+   behind the device frames; stronger lines, same box style as the other
+   dark boxes, and unmasked so it reaches the edges. */
+.fdv-page .wdx-sample.fdv-box--dark::before {
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(255, 255, 255, 0.09) 28px 29px),
+    repeating-linear-gradient(90deg, transparent 0 28px, rgba(255, 255, 255, 0.09) 28px 29px);
+  -webkit-mask-image: none;
+  mask-image: none;
 }
