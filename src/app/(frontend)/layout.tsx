@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Archivo } from "next/font/google";
-import { GoogleAnalytics, GoogleTagManager } from "@next/third-parties/google";
+import { DeferredGoogleTags } from "@/components/analytics/deferred-google-tags";
 import { Footer, Header } from "@/components/marketplace/components";
 import { BreadcrumbBar } from "@/components/layout/breadcrumb-bar";
 import { LanguageProvider } from "@/components/layout/language-provider";
@@ -59,8 +59,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full" suppressHydrationWarning>
         <script {...jsonLdScriptProps(buildOrganizationJsonLd())} />
         <script {...jsonLdScriptProps(buildWebsiteJsonLd())} />
-        {gaMeasurementId ? <GoogleAnalytics gaId={gaMeasurementId} /> : null}
-        {gtmContainerId ? <GoogleTagManager gtmId={gtmContainerId} /> : null}
+        <DeferredGoogleTags gaId={gaMeasurementId} gtmId={gtmContainerId} />
         <UtmCapture />
         <LanguageProvider>
           <AuthModalProvider>

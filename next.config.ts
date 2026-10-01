@@ -16,6 +16,7 @@ const r2Host = (() => {
 
 const nextConfig: NextConfig = {
   images: {
+    qualities: [60, 75],
     remotePatterns: [
       ...(r2Host ? [{ protocol: "https" as const, hostname: r2Host }] : []),
       {

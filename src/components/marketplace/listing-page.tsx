@@ -161,6 +161,8 @@ export function ListingGridCard({ project, basePath = "/projects" }: { project: 
             alt={`${project.name} in ${project.location}`}
             width={480}
             height={340}
+            quality={60}
+            sizes="(max-width: 760px) 100vw, 33vw"
             className="listing-grid-card-image"
           />
         ) : (

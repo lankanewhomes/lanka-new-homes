@@ -527,7 +527,7 @@ export function HomeClient({
         <div className="neighborhoods-grid">
           {neighborhoods.map((neighborhood) => (
             <Link href={`/search?city=${encodeURIComponent(neighborhood.name)}`} className="neighborhood-card" key={neighborhood.name}>
-              <Image src={neighborhood.image} alt={neighborhood.name} fill sizes="(max-width: 760px) 100vw, 33vw" />
+              <Image src={neighborhood.image} alt={neighborhood.name} fill quality={60} sizes="(max-width: 760px) 100vw, 33vw" />
               <span className="neighborhood-card-overlay" />
               <span className="neighborhood-card-title">{neighborhood.name}</span>
             </Link>
