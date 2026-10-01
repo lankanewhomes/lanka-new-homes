@@ -2277,14 +2277,26 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
   // Owner, 2026-10-01: Gangani's published payment packages (A, B, C, A1,
   // B1 — lines starting "Package …") show in their own column/card, apart
   // from the listing's own deposit/payment lines.
-  const packageLines = allPaymentLines.filter((line) => /^Package\s/i.test(line));
-  const paymentLines = allPaymentLines.filter((line) => !/^Package\s/i.test(line));
+  // Package headings look like "Package A — 6 or 12 months interest-free"; the
+  // lines after a heading (until the next one) are that package's rows.
+  const isPackageHeading = (line: string) => /^Package\s\w+\s—\s/.test(line);
+  const firstPackage = allPaymentLines.findIndex(isPackageHeading);
+  const paymentLines = (firstPackage < 0 ? allPaymentLines : allPaymentLines.slice(0, firstPackage)).flatMap((line) => splitSentences(line));
+  const packageGroups: { title: string; rows: string[] }[] = [];
+  if (firstPackage >= 0) {
+    for (const line of allPaymentLines.slice(firstPackage)) {
+      if (isPackageHeading(line)) packageGroups.push({ title: line, rows: [] });
+      else packageGroups[packageGroups.length - 1]?.rows.push(...splitSentences(line));
+    }
+  }
   const includedUtilities = project.includedUtilities?.filter((item) => hasDisplayValue(item)) ?? [];
   const paidUtilities = project.paidUtilities?.filter((item) => hasDisplayValue(item.label) && hasDisplayValue(item.value)) ?? [];
   const addOns = project.pricingAddOns?.filter((item) => hasDisplayValue(item.label) && hasDisplayValue(item.value)) ?? [];
   const pricingNotes = project.pricingNotes?.filter((note) => hasDisplayValue(note)) ?? [];
 
+  const perPerch = Boolean(project.isLand) && /per perch/i.test(project.priceRange ?? "");
   const pricingFields = [
+    { label: "Price range", value: perPerch && /\d\s-\s\d/.test(project.priceRange ?? "") ? `Rs. ${project.priceRange}` : "" },
     { label: "Available plan prices", value: project.availablePlanPrices },
     { label: "Pricing coming soon", value: project.pricingComingSoon },
     { label: "Average price per sqft", value: project.averagePricePerSqft },
@@ -2320,7 +2332,9 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
   // its own starting price and only its own plan-price line, not the whole
   // project's list. A plan with no price of its own falls back to the project's.
   const startingPriceLkr = floorPlan && floorPlan.startingPriceLkr > 0 ? floorPlan.startingPriceLkr : project.startingPriceLkr;
-  const startingPrice = startingPriceLkr > 0 ? `From ${formatLkr(startingPriceLkr)}` : "";
+  // A land priced per perch (Gangani, Prime Lands…) says so — "From Rs. 300,000
+  // per perch", with the full range as its own row.
+  const startingPrice = startingPriceLkr > 0 ? `From ${formatLkr(startingPriceLkr)}${perPerch ? " per perch" : ""}` : "";
   const planPrices = (floorPlan ? project.floorPlans.filter((plan) => plan.id === floorPlan.id) : project.floorPlans)
     .filter((plan) => plan.startingPriceLkr > 0)
     .map((plan) => `${plan.planName} — ${formatLkr(plan.startingPriceLkr)}`);
@@ -2442,20 +2456,19 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
             </article>
           ) : null}
 
-          {packageLines.length > 0 ? (
+          {packageGroups.length > 0 ? (
             <article className="border border-[#c9ddf5] bg-white px-6 py-6 text-[#1f2321] shadow-[0_10px_28px_rgba(36,78,54,0.08)]">
               <h3 className="text-[29px] font-semibold">Payment Packages</h3>
 
               <div className="mt-7 space-y-4 text-[15px] leading-7">
-                {packageLines.map((line, index) => {
-                  const [name, ...rest] = line.split(" — ");
-                  return (
-                    <div key={`${line}-${index}`}>
-                      <p className="font-semibold">{name}</p>
-                      <p>{rest.join(" — ")}</p>
+                {packageGroups.map((group) => (
+                  <div key={group.title}>
+                    <p className="font-semibold">{group.title}</p>
+                    <div className="space-y-1">
+                      {group.rows.map((row) => <p key={row}>{row}</p>)}
                     </div>
-                  );
-                })}
+                  </div>
+                ))}
               </div>
             </article>
           ) : null}
