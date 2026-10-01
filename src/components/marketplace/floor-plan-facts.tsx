@@ -76,7 +76,8 @@ function floorPlanFactRows(plan: FloorPlan, balcony?: string): Map<string, FactR
   add("Price LKR", hasNumber(plan.startingPriceLkr) ? `From ${formatLkr(plan.startingPriceLkr)}` : undefined);
   add("Per SqFt", hasNumber(plan.pricePerSqFtLkr) ? `${formatLkr(plan.pricePerSqFtLkr)} / SqFt` : undefined);
   add("Maintenance / mo", hasNumber(plan.maintenancePerMonthLkr) ? `${formatLkr(plan.maintenancePerMonthLkr)} / month` : undefined);
-  add("Parking", hasNumber(plan.parkingSpaces) ? plan.parkingSpaces : undefined);
+  // No count but the listing has parking (type or note) -> "Available" (owner, 2026-10-01).
+  add("Parking", hasNumber(plan.parkingSpaces) ? plan.parkingSpaces : hasText(plan.parkingType) ? "Available" : undefined);
   add("Parking type", hasText(plan.parkingType) ? plan.parkingType : undefined);
   add("Storage", yesNoValue(plan.storage));
   add("Utility area", yesNoValue(plan.utilityArea));
@@ -165,7 +166,7 @@ function resolveChip(plan: FloorPlan, key: FloorPlanChipKey, compact: boolean): 
     case "handoverCondition":
       return chip(hasText(plan.handoverCondition) ? plan.handoverCondition : undefined, "Handover");
     case "parking":
-      return chip(hasNumber(plan.parkingSpaces) ? `${plan.parkingSpaces}` : undefined, "Parking");
+      return chip(hasNumber(plan.parkingSpaces) ? `${plan.parkingSpaces}` : hasText(plan.parkingType) ? "Available" : undefined, "Parking");
     case "maidsRoom": {
       // "Yes" → the chip says what it is; custom text is shown as written; "No" is not a selling point.
       const value = hasText(plan.maidsRoom) && !/^no$/i.test(plan.maidsRoom.trim()) ? (/^yes$/i.test(plan.maidsRoom.trim()) ? "Maid's room" : plan.maidsRoom) : undefined;
