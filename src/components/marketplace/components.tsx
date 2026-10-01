@@ -125,6 +125,15 @@ const LazyMapPane = dynamic(() => import("@/components/marketplace/map-pane").th
   loading: () => <div className="listing-map-loading" aria-hidden="true">Loading map…</div>,
 });
 
+// Other words a developer may use for the same amenity photo.
+const AMENITY_IMAGE_HINTS: Record<string, string[]> = {
+  "Children's Area": ["kids play", "play area", "children"],
+  "Mini Cinema": ["cinema"],
+  "Kids Pool": ["kids pool", "children's pool"],
+  "Meditation Garden": ["meditation"],
+  "Roof Terrace": ["rooftop terrace", "roof terrace"],
+};
+
 const amenityIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   Pool: Waves,
   Gym: Dumbbell,
@@ -1961,7 +1970,7 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
   const developerSocialEntries = Object.entries(developer?.socialLinks ?? {}).filter(([, url]) => hasDisplayValue(url)) as [string, string][];
   // WhatsApp gets its own labelled tap-to-chat row (tracked like phone
   // clicks), so it's dropped from the social icon strip to avoid showing twice.
-  const contactWhatsAppHref = listingWhatsAppHref(developer?.socialLinks?.whatsapp, project.name);
+  const contactWhatsAppHref = listingWhatsAppHref(project.socialLinks?.whatsapp ?? developer?.socialLinks?.whatsapp, project.name);
   const socialEntries = (projectSocialEntries.length > 0 ? projectSocialEntries : developerSocialEntries)
     .filter(([platform]) => !(platform === "whatsapp" && contactWhatsAppHref));
 
@@ -2975,9 +2984,15 @@ export function AmenitiesShowcaseSection({ amenities, gallery, heroImage, title 
       // doesn't get borrowed as the "Beachfront" amenity image.
       const name = amenity.name.toLowerCase();
       const isAmenityPhoto = (item: { image: string }) => /\/amenities\//.test(item.image);
+      // Spacing/punctuation-insensitive ("Pickleball Court" finds "Pickle Ball Court") and a few
+      // synonyms for developers' own wording ("Kids Play Area" for "Children's Area").
+      const squash = (value: string) => value.toLowerCase().replace(/[^a-z0-9]/g, "");
+      const hints = (AMENITY_IMAGE_HINTS[amenity.name] ?? []).map(squash);
       const imageMatch =
         gallery.find((item) => isAmenityPhoto(item) && item.label.toLowerCase() === name) ??
         gallery.find((item) => isAmenityPhoto(item) && item.label.toLowerCase().includes(name)) ??
+        gallery.find((item) => isAmenityPhoto(item) && squash(item.label).includes(squash(amenity.name))) ??
+        gallery.find((item) => isAmenityPhoto(item) && hints.some((hint) => squash(item.label).includes(hint))) ??
         gallery.find((item) => item.label.toLowerCase().includes(name));
 
       return {
@@ -3210,7 +3225,7 @@ export function ListingSidebarCard({ project, developer }: { project: Project; d
   const address = hasDisplayValue(developer?.location) ? developer!.location : project.location;
   const hoursLines = formatOfficeHours(developer?.officeHours);
   const socialEntries = Object.entries(developer?.socialLinks ?? {}).filter(([, url]) => hasDisplayValue(url)) as [string, string][];
-  const salesWhatsAppHref = listingWhatsAppHref(developer?.socialLinks?.whatsapp, project.name);
+  const salesWhatsAppHref = listingWhatsAppHref(project.socialLinks?.whatsapp ?? developer?.socialLinks?.whatsapp, project.name);
 
   return (
     <div className="listing-sidebar-card">
@@ -4166,11 +4181,23 @@ export function NearbyPlacesAccordion({ groups }: { groups: ReturnType<typeof gr
             </button>
             {isOpen ? (
               <div className="key-features-row-body">
-                {group.items.map((place) => (
-                  <span key={place.name} className="key-features-item">
-                    <span className="key-features-item-label">{place.name}:</span> {hasDisplayValue(place.distanceKm) ? formatDistanceKm(place.distanceKm ?? 0) : "Nearby"}
-                  </span>
-                ))}
+                {group.items.map((place) => {
+                  // Travel times are stored in the name, e.g. "Odel (12 min by car)" — shown as
+                  // "Odel: 12 min by car" rather than "Odel (12 min by car): Nearby"
+                  // (owner, 2026-10-01: "how you structure this info is wrong").
+                  const timed = place.name.match(/^(.*?)\s*\(([^)]*\bmin(?:ute)?s?\b[^)]*)\)\s*$/i);
+                  const label = timed ? timed[1] : place.name;
+                  const value = hasDisplayValue(place.distanceKm)
+                    ? formatDistanceKm(place.distanceKm ?? 0)
+                    : timed
+                      ? timed[2].replace(/\bminutes?\b/i, "min").replace(/\s+/g, " ").trim()
+                      : "Nearby";
+                  return (
+                    <span key={place.name} className="key-features-item">
+                      <span className="key-features-item-label">{label}:</span> {value}
+                    </span>
+                  );
+                })}
               </div>
             ) : null}
           </div>

@@ -10,6 +10,7 @@ import { splitBalconyFeature } from "@/lib/balcony-features";
 import { planTitleWithFloor } from "@/lib/floor-plan-title";
 import { SimilarListingsSection } from "@/components/marketplace/similar-listings";
 import { FloorPlanFactSheet, FloorPlanStatsChips } from "@/components/marketplace/floor-plan-facts";
+import { withProjectParking } from "@/lib/floor-plan-parking";
 import {
   AmenitiesShowcaseSection,
   KeyFeaturesSection,
@@ -90,7 +91,7 @@ export default async function FloorPlanDetailPage({ params }: FloorPlanPageProps
         backHref={`/projects/${project.slug}`}
         backLabel={project.name}
         plansHomesNavLabel="Other floor plans"
-        whatsappHref={listingWhatsAppHref(developer?.socialLinks?.whatsapp, project.name, floorPlan.planName)}
+        whatsappHref={listingWhatsAppHref(project.socialLinks?.whatsapp ?? developer?.socialLinks?.whatsapp, project.name, floorPlan.planName)}
         extraBadges={[
           ...(developer?.respondsWithinHour ? [{ label: "Responds within 24 hours", kind: "responder" as const }] : []),
           ...(isPaidPackageTier(project.package) ? [{ label: "Verified", kind: "verified" as const }] : []),
@@ -99,10 +100,10 @@ export default async function FloorPlanDetailPage({ params }: FloorPlanPageProps
       />
 
       <div className="project-page-content">
-        <FloorPlanStatsChips floorPlan={floorPlan} />
+        <FloorPlanStatsChips floorPlan={withProjectParking(floorPlan, project)} />
         <ProjectDescriptionSection project={project} floorPlan={floorPlan} />
 
-        <FloorPlanFactSheet floorPlan={floorPlan} balcony={balcony} />
+        <FloorPlanFactSheet floorPlan={withProjectParking(floorPlan, project)} balcony={balcony} />
 
         <section id="pricing" className="space-y-3">
           <PricingInformationLayout project={project} floorPlan={floorPlan} />

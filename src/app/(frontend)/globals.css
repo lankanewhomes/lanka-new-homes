@@ -4960,8 +4960,8 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 }
 
 .construction-progress-step.is-reached .construction-progress-dot {
-  border-color: #f47b36;
-  background: #f47b36;
+  border-color: #1f1f1f; /* owner, 2026-10-01: no orange checkmarks */
+  background: #1f1f1f;
 }
 
 .construction-progress-line {
@@ -6648,7 +6648,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 .neighborhood-preview-body li::before {
   content: "✓";
   margin-right: 8px;
-  color: #f47b36;
+  color: #1f1f1f; /* owner, 2026-10-01: no orange checkmarks */
 }
 
 @media (max-width: 760px) {
@@ -14603,7 +14603,7 @@ body:has(.compare-bar) {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: #f47b36;
+  background: #1f1f1f; /* owner, 2026-10-01: no orange checkmarks */
   color: #fff;
 }
 
@@ -18024,5 +18024,54 @@ body:has(.compare-bar) {
   .request-info-dialog,
   .request-info-dialog.request-info-dialog-brochure {
     border-radius: 0;
+  }
+}
+
+/* Home counts: a contained box with a heading + sub and the crossed-line
+   background (owner, 2026-10-01). */
+.home-stats {
+  position: relative;
+  overflow: hidden;
+  display: block;
+  max-width: 1280px;
+  margin: 34px auto;
+  padding: 40px 30px 36px;
+  background: #f1f0ec;
+}
+
+.home-stats::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(21, 20, 26, 0.07) 28px 29px),
+    repeating-linear-gradient(90deg, transparent 0 28px, rgba(21, 20, 26, 0.07) 28px 29px);
+  -webkit-mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
+  mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
+}
+
+.home-stats > * {
+  position: relative;
+  z-index: 1;
+}
+
+.home-stats .featured-listings-head {
+  margin: 0 0 24px;
+}
+
+.home-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 640px) {
+  .home-stats {
+    padding: 28px 16px 24px;
+  }
+
+  .home-stats-grid {
+    gap: 10px;
   }
 }

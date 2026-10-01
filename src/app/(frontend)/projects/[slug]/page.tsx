@@ -129,7 +129,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
         project={project}
         backHref="/projects"
         backLabel="New Projects"
-        whatsappHref={listingWhatsAppHref(developer?.socialLinks?.whatsapp, project.name)}
+        whatsappHref={listingWhatsAppHref(project.socialLinks?.whatsapp ?? developer?.socialLinks?.whatsapp, project.name)}
         roadMapImages={project.roadMapImages ?? []}
         blockPlanImages={project.blockPlanImages ?? []}
         extraBadges={[

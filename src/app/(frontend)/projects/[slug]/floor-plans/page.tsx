@@ -46,7 +46,7 @@ export default async function FloorPlansPage({ params }: FloorPlansPageProps) {
         backHref={`/projects/${project.slug}`}
         backLabel={project.name}
         sectionNavBase={`/projects/${project.slug}`}
-        whatsappHref={listingWhatsAppHref(developer?.socialLinks?.whatsapp, project.name)}
+        whatsappHref={listingWhatsAppHref(project.socialLinks?.whatsapp ?? developer?.socialLinks?.whatsapp, project.name)}
         extraBadges={[
           ...(developer?.respondsWithinHour ? [{ label: "Responds within 24 hours", kind: "responder" as const }] : []),
           ...(isPaidPackageTier(project.package) ? [{ label: "Verified", kind: "verified" as const }] : []),

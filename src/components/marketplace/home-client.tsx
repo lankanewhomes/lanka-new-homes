@@ -412,18 +412,24 @@ export function HomeClient({
           lands, projects, developers" — live counts (same figures /about and
           /press show), each linking to its listing page. */}
       <section className="home-stats" aria-label="LankaNewHomes by the numbers">
-        <Link href="/projects" className="home-stat">
-          <strong>{projects.length}</strong>
-          <span>Projects</span>
-        </Link>
-        <Link href="/land" className="home-stat">
-          <strong>{lands.length}</strong>
-          <span>Land listings</span>
-        </Link>
-        <Link href="/developers" className="home-stat">
-          <strong>{developers.length}</strong>
-          <span>Developers</span>
-        </Link>
+        <div className="featured-listings-head">
+          <h2>Sri Lanka&apos;s new homes and land, in one place.</h2>
+          <p className="featured-listings-subhead">Live counts of what is listed on LankaNewHomes right now — straight from developers and builders.</p>
+        </div>
+        <div className="home-stats-grid">
+          <Link href="/projects" className="home-stat">
+            <strong>{projects.length}</strong>
+            <span>Projects</span>
+          </Link>
+          <Link href="/land" className="home-stat">
+            <strong>{lands.length}</strong>
+            <span>Land listings</span>
+          </Link>
+          <Link href="/developers" className="home-stat">
+            <strong>{developers.length}</strong>
+            <span>Developers</span>
+          </Link>
+        </div>
       </section>
 
       {featuredProjects.length > 0 ? (
