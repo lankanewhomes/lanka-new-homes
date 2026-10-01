@@ -2668,3 +2668,12 @@ non-hero page section ("lets keep this in mind when designing anything new").
 - Dark/hero-style sections are the exception (hero only).
 - **No eyebrow labels** above headings (owner, 2026-09-30) — no small
   uppercase tag/pill over a section or hero title.
+
+## /pricing page (redesigned 2026-10-01)
+
+Same system as /web-design and /for-developers: split dark hero ("Packages at a glance" card built from
+`PACKAGE_LIST`, so prices there never drift), then contained boxes — Packages (cream, comparison table +
+founding-spots banner), How it works (gray, 4 cards), Placements (sage, sample cards), FAQ (lilac). Floating
+`PricingQuickjump` lists every section anchor. **Owner: keep this page in sync with any future pricing /
+package / placement change** — update `src/lib/packages.ts`, the How-it-works copy, the Placements cards and the
+FAQ answers together, and remind the owner to regenerate the pricing PDF.
