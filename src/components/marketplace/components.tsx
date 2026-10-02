@@ -3830,7 +3830,7 @@ function MobileLandIcon({ size = 22 }: { size?: number }) {
 export function Header() {
   const { language, setLanguage } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [openMobileGroup, setOpenMobileGroup] = useState<"homes" | "land" | null>(null);
+  const [openMobileGroup, setOpenMobileGroup] = useState<"homes" | "land" | "company" | null>(null);
 
   const labels: Record<SiteLanguage, { homes: string; company: string; login: string; signup: string; menu: string; search: string }> = {
     en: {
@@ -3948,6 +3948,8 @@ export function Header() {
                 <Link href="/projects?type=Villas" onClick={() => setMobileMenuOpen(false)}>Villas</Link>
                 <Link href="/projects?type=Mixed+Use" onClick={() => setMobileMenuOpen(false)}>Mixed Use</Link>
                 <Link href="/projects?type=Housing" onClick={() => setMobileMenuOpen(false)}>Housing</Link>
+                <Link href="/projects?type=Township+Developments" onClick={() => setMobileMenuOpen(false)}>Township Developments</Link>
+                <Link href="/projects?type=Private+Residence" onClick={() => setMobileMenuOpen(false)}>Private Residence</Link>
                 <Link href="/projects?type=Townhouse" onClick={() => setMobileMenuOpen(false)}>Townhouse</Link>
               </>
             ) : null}
@@ -3971,6 +3973,27 @@ export function Header() {
                 <Link href="/land?landUse=Commercial" onClick={() => setMobileMenuOpen(false)}>Commercial</Link>
                 <Link href="/land?landUse=Agricultural" onClick={() => setMobileMenuOpen(false)}>Agricultural</Link>
                 <Link href="/land?landUse=Mixed+Use" onClick={() => setMobileMenuOpen(false)}>Mixed Use</Link>
+              </>
+            ) : null}
+          </div>
+          <div className="mobile-menu-group">
+            <button
+              type="button"
+              className={`mobile-menu-group-label mobile-menu-group-toggle${openMobileGroup === "company" ? " is-open" : ""}`}
+              aria-expanded={openMobileGroup === "company"}
+              onClick={() => setOpenMobileGroup(openMobileGroup === "company" ? null : "company")}
+            >
+              <span className="mobile-menu-group-toggle-label">
+                <MobileBuildingIcon /> {text.company}
+              </span>
+              <TablerChevronRight size={18} stroke={1} className="mobile-menu-group-chevron" aria-hidden="true" />
+            </button>
+            {openMobileGroup === "company" ? (
+              <>
+                <Link href="/about" onClick={() => setMobileMenuOpen(false)}>About</Link>
+                <Link href="/contact" onClick={() => setMobileMenuOpen(false)}>Contact</Link>
+                <Link href="/blog" onClick={() => setMobileMenuOpen(false)}>Blog</Link>
+                <Link href="/press" onClick={() => setMobileMenuOpen(false)}>Press</Link>
               </>
             ) : null}
           </div>
