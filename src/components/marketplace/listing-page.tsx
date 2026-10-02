@@ -4,8 +4,8 @@ import { bedroomsMatch, cityMatches, parseNaturalSearch, typeMatches } from "@/l
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { BedDouble, ChevronDown, ChevronLeft, ChevronRight, Heart, List, Map as MapIcon, Ruler, Scale, Search, MapPin, SlidersHorizontal, X, ArrowUpDown } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { BedDouble, Check, ChevronDown, ChevronLeft, ChevronRight, Heart, List, Map as MapIcon, Ruler, Scale, Search, MapPin, SlidersHorizontal, X, ArrowUpDown } from "lucide-react";
 import { formatLkr, withSqFt } from "@/lib/format";
 import { hasPremiumStyleBadge, planRotationWeight } from "@/lib/packages";
 import { useListingT } from "@/lib/i18n/use-listing-t";
@@ -126,6 +126,60 @@ function statusPillLabel(project: Project) {
   // through to the plain status. Mirrors isUpcomingMoveIn in components.tsx.
   if (project.completionYear >= new Date().getFullYear()) return `Move In ${project.completionYear}`;
   return project.status;
+}
+
+// Owner, 2026-10-02: "fix their filter also" — the filter pills used a hidden native <select>, so the open list was the
+// operating system's rounded menu. This is a square, spaced dropdown in the same style as the header menus. It closes
+// on picking an option, tapping outside, or pressing Escape.
+function FilterPill({ label, options, value, onChange }: { label: string; options: string[]; value: string; onChange: (value: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const isDefault = value === options[0];
+
+  useEffect(() => {
+    if (!open) return;
+    const onPointer = (event: PointerEvent) => {
+      if (rootRef.current && !rootRef.current.contains(event.target as Node)) setOpen(false);
+    };
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("pointerdown", onPointer);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onPointer);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  return (
+    <div ref={rootRef} className={`listing-filter-pill listing-filter-pill--custom${open ? " is-open" : ""}`}>
+      <button type="button" className="listing-filter-pill-button" aria-haspopup="listbox" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+        {isDefault ? label : value}
+        <ChevronDown className="h-3 w-3" aria-hidden="true" />
+      </button>
+      {open ? (
+        <ul className="listing-filter-menu" role="listbox" aria-label={label}>
+          {options.map((option) => (
+            <li key={option}>
+              <button
+                type="button"
+                role="option"
+                aria-selected={option === value}
+                onClick={() => {
+                  onChange(option);
+                  setOpen(false);
+                }}
+              >
+                <span>{option}</span>
+                {option === value ? <Check className="h-4 w-4" aria-hidden="true" /> : null}
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </div>
+  );
 }
 
 export function ListingGridCard({ project, basePath = "/projects" }: { project: Project; basePath?: string }) {
@@ -519,18 +573,13 @@ export function ListingPageBody({
 
             <div className="listing-filter-pills-center">
               {resolvedFilterGroups.map((group) => (
-                <label key={group.label} className="listing-filter-pill">
-                  {filterSelections[group.label] && filterSelections[group.label] !== group.options[0] ? filterSelections[group.label] : group.label}
-                  <ChevronDown className="h-3 w-3" aria-hidden="true" />
-                  <select
-                    value={filterSelections[group.label] ?? group.options[0]}
-                    onChange={(event) => setFilterSelections((prev) => ({ ...prev, [group.label]: event.target.value }))}
-                  >
-                    {group.options.map((option) => (
-                      <option key={option} value={option}>{option}</option>
-                    ))}
-                  </select>
-                </label>
+                <FilterPill
+                  key={group.label}
+                  label={group.label}
+                  options={group.options}
+                  value={filterSelections[group.label] ?? group.options[0]}
+                  onChange={(next) => setFilterSelections((prev) => ({ ...prev, [group.label]: next }))}
+                />
               ))}
 
               <div className="listing-filter-more-wrap listing-filter-more-wrap--desktop">
