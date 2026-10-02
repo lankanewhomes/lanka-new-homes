@@ -18332,3 +18332,49 @@ body:has(.compare-bar) {
 }
 .request-info-topbar { background: #f7f1e6; border-bottom-color: #e6dcc6; }
 .request-info-dialog input, .request-info-dialog textarea, .request-info-dialog select { background-color: #fff; }
+
+/* Hero chips: two rows that stretch to the search bar's full width (owner, 2026-10-01). */
+.luxury-hero-two-panel .hero-quick-links { display: flex; flex-wrap: wrap; gap: 8px; width: 100%; }
+.luxury-hero-two-panel .hero-quick-links > * { flex: 1 1 auto; white-space: nowrap; text-align: center; justify-content: center; padding-left: 10px; padding-right: 10px; }
+
+/* Live counts: lilac box + lines (different from the grey), number on top, label underneath. */
+.livabl-home .home-content > .home-stats { background: #f1ecf3; }
+.home-stats--row .home-stat { flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 18px 12px; }
+.home-stats--row .home-stat strong { font-size: 34px; }
+.home-stats--row .home-stat span { font-size: 14px; }
+
+/* For developers band: same look as the New listings box — blue-gray with the dotted texture (owner, 2026-10-01). */
+.free-listing-band { background: #eef2f4; border: 0; }
+.free-listing-band::before {
+  background-image: radial-gradient(rgba(64, 105, 135, 0.35) 1.5px, transparent 0);
+  background-size: 18px 18px;
+  -webkit-mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
+  mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
+}
+
+/* Footer content aligns with the home sections' width (New listings etc.: 1280px box minus the 18px page gutters)
+   (owner, 2026-10-01: "width meet to match other sections on the home page"). */
+.footer-inner { width: min(1244px, calc(100% - 36px)); }
+
+/* For developers band, take 4 (owner, 2026-10-01: "totally a different background and lines"): warm peach tint with
+   brand-orange diagonal lines — unlike every other home box (cream, grey, sage, lilac, blue-gray, black). */
+.free-listing-band { background: #fbe9dc; border: 1px solid #f3cdb1; }
+.free-listing-band::before {
+  background-image:
+    repeating-linear-gradient(45deg, transparent 0 22px, rgba(244, 123, 54, 0.16) 22px 23px),
+    repeating-linear-gradient(-45deg, transparent 0 22px, rgba(244, 123, 54, 0.16) 22px 23px);
+  background-size: auto;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+.free-listing-band-copy > p:last-child { color: #6b5446; }
+
+/* Home "Land for Sale in Sri Lanka" box: soft olive with horizontal ruled lines (owner, 2026-10-01: "different lines
+   and background") — distinct from the blue-gray dots of New listings. */
+.new-listings-section.land-listings-section { background: #f1f2e4; }
+.new-listings-section.land-listings-section::before {
+  background-image: repeating-linear-gradient(0deg, transparent 0 31px, rgba(96, 108, 52, 0.13) 31px 32px);
+  background-size: auto;
+  -webkit-mask-image: radial-gradient(ellipse 85% 100% at center, #000 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 85% 100% at center, #000 40%, transparent 100%);
+}

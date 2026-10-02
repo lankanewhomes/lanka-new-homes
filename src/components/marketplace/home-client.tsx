@@ -490,9 +490,9 @@ export function HomeClient({
       </section>
 
       {landListings.length > 0 ? (
-        <section className="new-listings-section" aria-label="Land for sale in Sri Lanka">
+        <section className="new-listings-section land-listings-section" aria-label="Land for sale in Sri Lanka">
           <div className="featured-listings-head">
-            <h2>Land for sale sri lanka</h2>
+            <h2>Land for Sale in Sri Lanka</h2>
             <p className="featured-listings-subhead">Residential, commercial, and agricultural land parcels for sale, listed by developers and landowners.</p>
           </div>
           <div className="featured-listings-shell">
