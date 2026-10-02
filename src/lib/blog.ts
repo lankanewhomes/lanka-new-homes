@@ -13,6 +13,8 @@ export type BlogPost = {
   author: string;
   publishDate: string; // ISO date, e.g. "2026-09-29"
   readMinutes: number;
+  /** The one article pinned to the top of /blog as the featured article (owner, 2026-10-02). Set on a single post. */
+  featured?: boolean;
   heroImage: string;
   intro: string;
   sections: BlogSection[];
@@ -124,6 +126,7 @@ export const blogPosts: Record<string, BlogPost> = {
     author: "LankaNewHomes",
     publishDate: "2026-10-01",
     readMinutes: 6,
+    featured: true,
     heroImage: unsplash("1600585154526-990dced4db0d", 2200),
     intro:
       "Watching how buyers actually browse new-home listings — what they click, what they skip, what makes them reach out versus move to the next project — shows the same handful of questions coming up in roughly the same order, regardless of budget or property type.",
