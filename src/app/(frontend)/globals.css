@@ -18550,14 +18550,10 @@ body:has(.compare-bar) {
     repeating-linear-gradient(90deg, transparent 0 63px, rgba(110, 88, 56, 0.2) 63px 64px);
 }
 
-/* New listings box (owner, 2026-10-01: "change bg … box different size"): soft mint with a small 36px teal box grid. */
-.new-listings-section:not(.land-listings-section) { background: #dfeae8; }
-.new-listings-section:not(.land-listings-section)::before {
-  background-image:
-    repeating-linear-gradient(0deg, transparent 0 35px, rgba(40, 100, 96, 0.2) 35px 36px),
-    repeating-linear-gradient(90deg, transparent 0 35px, rgba(40, 100, 96, 0.2) 35px 36px);
-  background-size: auto;
-}
+/* New listings box (owner, 2026-10-02: "apply a white background"): plain white with a thin light-grey edge so the box
+   still reads as a contained section. */
+.new-listings-section:not(.land-listings-section) { background: #fff; border: 1px solid #ececea; }
+.new-listings-section:not(.land-listings-section)::before { background-image: none; }
 
 /* For developers band, take 5 (owner, 2026-10-01: "change bg"): soft butter yellow with gold box lines. */
 .free-listing-band { background: #f4efcf; border: 1px solid #e6dc9f; }
