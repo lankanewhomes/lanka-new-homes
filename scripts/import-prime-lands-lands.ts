@@ -79,8 +79,9 @@ for (const r of all) {
   const perch = Number((L.find((v) => /^[\d,]+ LKR$/.test(v)) ?? '').replace(/[^\d]/g, '')) || 0
   const hotline = L[at('Hotline Numbers') + 1] ?? ''
   const aboutI = at('About This Property'), payI = at('Payment Plan'), brI = at('Brochure'), facI = at('Facilities')
-  const blkI = L.findIndex((v, i) => i > facI && ['Block Plan', 'Road Map', 'Videos', 'Location'].includes(v))
-  if (aboutI < 0 || payI < 0 || facI < 0 || blkI < 0) { console.log('SKIP (layout)', r.slug); continue }
+  const blkFound = L.findIndex((v, i) => i > facI && ['Block Plan', 'Road Map', 'Videos', 'Location'].includes(v))
+  const blkI = blkFound >= 0 ? blkFound : L.length
+  if (aboutI < 0 || payI < 0 || facI < 0) { console.log('SKIP (layout)', r.slug); continue }
   const headingI = L.findIndex((v, i) => i > aboutI && i < payI && v.length < 45 && /^(Location|Key|Why choose|Highlights)/i.test(v))
   const about = L.slice(aboutI + 1, headingI > 0 ? headingI : payI)
   const highlights = headingI > 0 ? L.slice(headingI + 1, payI) : []
@@ -123,7 +124,10 @@ for (const r of all) {
   const promo = !photos.mirrored.length && r.thumb[0] ? await mirrorRemoteFiles([r.thumb[0]], { keyPrefix: `${prefix}/gallery`, namePrefix: place.slug, label: 'promo', max: 1 }) : { mirrored: [], failed: [] }
   const block = blockSrc ? await mirrorRemoteFiles([blockSrc], { keyPrefix: `${prefix}/block-plan`, namePrefix: place.slug, label: 'block-plan', max: 1 }) : { mirrored: [], failed: [] }
   const road = roadSrc ? await mirrorRemoteFiles([roadSrc], { keyPrefix: `${prefix}/road-map`, namePrefix: place.slug, label: 'road-map', max: 1 }) : { mirrored: [], failed: [] }
-  const gallery = [...photos.mirrored, ...promo.mirrored].map((m) => ({ image: m.url, label: promo.mirrored.length ? 'Project artwork' : 'Photo' }))
+  // Lands whose page has no photo or promo artwork at all (owner, 2026-10-01: "add them") lead with the page's own
+  // block plan / road map image, labelled as such — never a made-up picture.
+  const planFallback = !photos.mirrored.length && !promo.mirrored.length ? (block.mirrored[0] ?? road.mirrored[0]) : undefined
+  const gallery = [...photos.mirrored, ...promo.mirrored, ...(planFallback ? [planFallback] : [])].map((m) => ({ image: m.url, label: planFallback ? (block.mirrored[0] ? 'Block Plan' : 'Road Map') : promo.mirrored.length ? 'Project artwork' : 'Photo' }))
   if (!gallery.length) { console.log('SKIP (no hero image)', place.slug); continue }
   const failures = [...photos.failed, ...promo.failed, ...block.failed, ...road.failed]
   if (failures.length) console.log('  image failures', place.slug, JSON.stringify(failures).slice(0, 300))

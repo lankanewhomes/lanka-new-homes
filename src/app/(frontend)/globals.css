@@ -18305,3 +18305,30 @@ body:has(.compare-bar) {
   mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
 }
 .seo-links-section > * { position: relative; z-index: 1; }
+
+/* Live counts: own box under the hero, same width as New listings (owner, 2026-10-01). */
+.livabl-home .home-content > .home-stats { margin: 0 auto 34px; padding: 28px 30px; }
+.home-stats-lead { margin: 0 0 16px; font-size: 15px; line-height: 1.5; color: #5f6876; }
+.home-stats--row .home-stat { background: #fff; }
+.home-stats--row .home-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+/* Hero search stretches to the full width of the hero's left column so its right edge lines up with the chips. */
+.luxury-hero-two-panel .luxury-hero-two-top-search { width: 100%; max-width: none; }
+
+/* Hero chips fill the same width as the stretched search bar, so both end on the same right edge. */
+.luxury-hero-two-panel .hero-quick-links { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 8px; width: 100%; }
+.luxury-hero-two-panel .hero-quick-links > * { text-align: center; justify-content: center; }
+.luxury-hero-two-panel .hero-quick-links { grid-template-columns: repeat(4, 1fr); }
+.luxury-hero-two-panel .hero-quick-links > * { white-space: nowrap; padding-left: 6px; padding-right: 6px; }
+
+/* Brochure / contact / inquiry popup: same cream + crossed-line background as the contact forms
+   (owner, 2026-10-01: "make it as the same background. for popup"). Fields stay white. */
+.request-info-dialog {
+  background-color: #f7f1e6;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(21, 20, 26, 0.06) 28px 29px),
+    repeating-linear-gradient(90deg, transparent 0 28px, rgba(21, 20, 26, 0.06) 28px 29px);
+  background-attachment: local;
+}
+.request-info-topbar { background: #f7f1e6; border-bottom-color: #e6dcc6; }
+.request-info-dialog input, .request-info-dialog textarea, .request-info-dialog select { background-color: #fff; }

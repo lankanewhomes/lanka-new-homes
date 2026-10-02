@@ -356,15 +356,6 @@ export function HomeClient({
       <div className="luxury-hero-two-panel">
           <h1>{t.heroTitle}</h1>
           <p className="luxury-hero-two-subheading">{t.heroSubtitle}</p>
-          {/* Owner, 2026-10-01: live counts moved here, straight after the hero subtitle. */}
-          <div className="luxury-hero-two-stats" aria-label="LankaNewHomes by the numbers">
-            <p className="luxury-hero-two-stats-lead">Live counts of what is listed on LankaNewHomes right now — straight from developers and builders.</p>
-            <div className="luxury-hero-two-stats-row">
-              <Link href="/projects" className="home-stat"><strong>{projects.length}</strong><span>Projects</span></Link>
-              <Link href="/land" className="home-stat"><strong>{lands.length}</strong><span>Land Listings</span></Link>
-              <Link href="/projects" className="home-stat"><strong>{floorPlanCount}</strong><span>Floor Plans</span></Link>
-            </div>
-          </div>
           <form className="hero-search luxury-hero-two-top-search" onSubmit={submitSearch}>
             <label><input aria-label="Search homes" value={searchTerm} onFocus={() => { setMobileSearchOpen(true); setDesktopSearchOpen(true); }} onChange={(event) => setSearchTerm(event.target.value)} placeholder={t.searchPlaceholder} /></label>
             <button type="button" className="hero-region-picker" aria-label="Select region"><MapPin size={17} /><span>{t.searchRegion}</span><ChevronDown size={16} /></button>
@@ -423,6 +414,16 @@ export function HomeClient({
     ) : null}
 
     <main className="home-content">
+      {/* Owner, 2026-10-01: live counts sit in their own box under the hero, same width as New listings. */}
+      <section className="home-stats home-stats--row" aria-label="LankaNewHomes by the numbers">
+        <p className="home-stats-lead">Live counts of what is listed on LankaNewHomes right now — straight from developers and builders.</p>
+        <div className="home-stats-grid">
+          <Link href="/projects" className="home-stat"><strong>{projects.length}</strong><span>Projects</span></Link>
+          <Link href="/land" className="home-stat"><strong>{lands.length}</strong><span>Land Listings</span></Link>
+          <Link href="/projects" className="home-stat"><strong>{floorPlanCount}</strong><span>Floor Plans</span></Link>
+        </div>
+      </section>
+
       {featuredProjects.length > 0 ? (
         <section className="featured-projects-section" aria-label="Featured projects">
           <div className="featured-listings-head">
