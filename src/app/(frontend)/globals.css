@@ -18552,13 +18552,16 @@ body:has(.compare-bar) {
     repeating-linear-gradient(90deg, transparent 0 63px, rgba(110, 88, 56, 0.2) 63px 64px);
 }
 
-/* New listings box (owner, 2026-10-01: "change bg … box different size"; 2026-10-02: "make the boxes bigger"): soft mint
-   with a 72px teal box grid. */
-.new-listings-section:not(.land-listings-section) { background: #dfeae8; }
+/* New listings box (owner, 2026-10-01: "change bg … box different size"; 2026-10-02: "make like 5 square"): soft mint
+   with a teal box grid sized so exactly 5 squares span the box width (the box is min(1244px, 100% of the viewport - 36px)). */
+.new-listings-section:not(.land-listings-section) {
+  --nl-cell: calc(min(1244px, 100vw - 36px) / 5);
+  background: #dfeae8;
+}
 .new-listings-section:not(.land-listings-section)::before {
   background-image:
-    repeating-linear-gradient(0deg, transparent 0 71px, rgba(40, 100, 96, 0.2) 71px 72px),
-    repeating-linear-gradient(90deg, transparent 0 71px, rgba(40, 100, 96, 0.2) 71px 72px);
+    repeating-linear-gradient(0deg, transparent 0 calc(var(--nl-cell) - 1px), rgba(40, 100, 96, 0.22) calc(var(--nl-cell) - 1px) var(--nl-cell)),
+    repeating-linear-gradient(90deg, transparent 0 calc(var(--nl-cell) - 1px), rgba(40, 100, 96, 0.22) calc(var(--nl-cell) - 1px) var(--nl-cell));
   background-size: auto;
 }
 
@@ -18583,10 +18586,15 @@ body:has(.compare-bar) {
 
 /* Land box: very light green (a touch greener than Explore by city's sage) with soft green box lines. */
 .new-listings-section.land-listings-section { background: #e8ede2; }
+/* Land box (owner, 2026-10-02: "make 5 square"): the grid is sized so exactly 5 squares span the box width. */
+.new-listings-section.land-listings-section {
+  --nl-cell: calc(min(1244px, 100vw - 36px) / 5);
+}
 .new-listings-section.land-listings-section::before {
   background-image:
-    repeating-linear-gradient(0deg, transparent 0 63px, rgba(85, 115, 75, 0.15) 63px 64px),
-    repeating-linear-gradient(90deg, transparent 0 63px, rgba(85, 115, 75, 0.15) 63px 64px);
+    repeating-linear-gradient(0deg, transparent 0 calc(var(--nl-cell) - 1px), rgba(85, 115, 75, 0.2) calc(var(--nl-cell) - 1px) var(--nl-cell)),
+    repeating-linear-gradient(90deg, transparent 0 calc(var(--nl-cell) - 1px), rgba(85, 115, 75, 0.2) calc(var(--nl-cell) - 1px) var(--nl-cell));
+  background-size: auto;
 }
 
 /* /guides redesign (owner, 2026-10-02): hero guide list + card helpers. */
