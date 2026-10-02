@@ -19461,3 +19461,15 @@ body:has(.compare-bar) {
 .account-avatar-field > :last-child {
   width: 100%;
 }
+
+/* Header account menu: the signed-in name above the email (owner, 2026-10-02). */
+.header-account-name {
+  margin: 0;
+  padding: 14px 0 0;
+  font-size: 16px;
+  color: #1f1f1f;
+}
+
+.header-account-name + .header-account-email {
+  padding-top: 2px;
+}

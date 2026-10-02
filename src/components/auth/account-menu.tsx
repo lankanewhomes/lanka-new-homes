@@ -54,7 +54,7 @@ export function AccountMenu({ loginLabel, signupLabel }: { loginLabel: string; s
   return (
     <div className="header-account">
       <button type="button" className="header-account-trigger" onClick={() => setOpen((v) => !v)}>
-        {user.email?.split("@")[0] ?? "Account"}
+        {user.fullName ?? user.email?.split("@")[0] ?? "Account"}
         {user.avatarUrl && !avatarFailed ? (
           // eslint-disable-next-line @next/next/no-img-element -- user-supplied URL from any host; next/image would need every host allow-listed
           <img src={user.avatarUrl} alt="" className="header-account-avatar" onError={() => setAvatarFailed(true)} />
@@ -64,6 +64,7 @@ export function AccountMenu({ loginLabel, signupLabel }: { loginLabel: string; s
       </button>
       {open && (
         <div className="header-account-menu">
+          {user.fullName ? <p className="header-account-name">{user.fullName}</p> : null}
           <p className="header-account-email">{user.email}</p>
           {user.role === "developer" ? (
             <Link href="/account" onClick={() => setOpen(false)}>
