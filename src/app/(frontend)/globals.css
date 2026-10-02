@@ -19625,3 +19625,17 @@ body:has(.compare-bar) {
     width: min(1244px, calc(100% - 36px));
   }
 }
+
+/* Footer copyright line centred on phones (owner, 2026-10-02: "make it center … mobile"). */
+@media (max-width: 760px) {
+  .footer-bottom {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .footer-bottom .copyright {
+    margin-top: 0;
+    width: 100%;
+    text-align: center;
+  }
+}
