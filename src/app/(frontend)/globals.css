@@ -19663,3 +19663,45 @@ body:has(.compare-bar) {
     text-align: center;
   }
 }
+
+/* Home on phones (owner, 2026-10-02): every section's content starts at the same 18px edge as the hero image, and the gap
+   between sections is a uniform 34px (it was 28px and 56px in places). */
+@media (max-width: 760px) {
+  .luxury-hero-two-bleed > .luxury-hero-two .luxury-hero-two-panel {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .lnh-home .home-content > .home-stats {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .lnh-home .new-listings-section,
+  .lnh-home .free-listing-band,
+  .lnh-home .neighborhoods-section,
+  .lnh-home .seo-links-section {
+    padding-left: calc(50vw - 50% + 0px);
+    padding-right: calc(50vw - 50% + 0px);
+  }
+
+  .lnh-home .home-content > .home-stats,
+  .lnh-home .new-listings-section,
+  .lnh-home .free-listing-band,
+  .lnh-home .neighborhoods-section,
+  .lnh-home .seo-links-section {
+    margin-top: 0;
+    margin-bottom: 34px;
+  }
+}
+
+/* No empty strip between the last home section and the footer on phones (owner, 2026-10-02). */
+@media (max-width: 760px) {
+  .lnh-home .home-content {
+    padding-bottom: 0;
+  }
+
+  .lnh-home .home-content > .seo-links-section:last-child {
+    margin-bottom: 0;
+  }
+}
