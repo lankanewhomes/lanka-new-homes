@@ -17889,7 +17889,8 @@ body:has(.compare-bar) {
 
 /* Owner, 2026-10-01: "no bold" on the Neighborhood nearby-place entries
    ("Bus route: 50 m") — label at normal weight, on land and project pages alike. */
-#neighborhood .key-features-item-label {
+#neighborhood .key-features-item-label,
+#key-features .key-features-item-label {
   font-weight: 400;
 }
 
@@ -18193,3 +18194,29 @@ body:has(.compare-bar) {
 }
 .luxury-hero-two > * { position: relative; z-index: 1; }
 .luxury-hero-two .luxury-hero-two-stats { background: #fff; }
+
+/* Home: tighter gap between the hero and the New listings box (owner, 2026-10-01) — 34px like every other box gap. */
+.luxury-hero-two { margin-bottom: 0; }
+.home-content { padding-top: 34px; }
+@media (max-width: 760px) { .home-content { padding-top: 34px; } }
+
+/* "About …" text blocks (developer profiles, directory, collections): grey box with the crossed-line texture
+   (owner, 2026-10-01: "new background and lines"). */
+.developer-about-box {
+  position: relative;
+  overflow: hidden;
+  background: #f1f0ec;
+  border: 1px solid #e4e2db;
+}
+.developer-about-box::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(21, 20, 26, 0.07) 28px 29px),
+    repeating-linear-gradient(90deg, transparent 0 28px, rgba(21, 20, 26, 0.07) 28px 29px);
+  -webkit-mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
+  mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
+}
+.developer-about-box > * { position: relative; z-index: 1; }

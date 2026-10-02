@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { BedDouble, Building2, ChevronDown, ChevronLeft, ChevronRight, Heart, List, Map as MapIcon, Ruler, Scale, Search, MapPin, SlidersHorizontal, X, ArrowUpDown } from "lucide-react";
-import { formatLkr } from "@/lib/format";
+import { formatLkr, withSqFt } from "@/lib/format";
 import { hasPremiumStyleBadge, planRotationWeight } from "@/lib/packages";
 import { useListingT } from "@/lib/i18n/use-listing-t";
 import { useSavedListing } from "@/lib/use-saved-listing";
@@ -245,7 +245,7 @@ export function ListingGridCard({ project, basePath = "/projects" }: { project: 
             <Ruler className="h-3.5 w-3.5" aria-hidden="true" />
             {isLand
               ? (hasLandSize ? project.floorAreaRange : "—")
-              : (project.floorAreaRange && project.floorAreaRange !== "-" ? `${project.floorAreaRange} SqFt` : "—")}
+              : (project.floorAreaRange && project.floorAreaRange !== "-" ? withSqFt(project.floorAreaRange) : "—")}
           </span>
           {isLand && project.type ? (
             <>

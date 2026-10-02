@@ -103,7 +103,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteLanguage, useLanguage } from "@/components/layout/language-provider";
-import { compactLkr, formatLkr, formatOfficeHours, splitSentences } from "@/lib/format";
+import { compactLkr, formatLkr, formatOfficeHours, splitSentences, stripSqFt, withSqFt } from "@/lib/format";
 
 /** Payment packages shown before the "View more" toggle on a pricing card. */
 const PACKAGES_SHOWN = 3;
@@ -1893,7 +1893,7 @@ export function ProjectStatsChips({ project, floorPlan, areaUnit = "SqFt" }: { p
         { key: "Property type", value: project.type },
         { key: "Beds", value: project.bedrooms },
         { key: "Baths", value: project.bathrooms },
-        { key: "SqFt", value: project.floorAreaRange },
+        { key: "SqFt", value: stripSqFt(project.floorAreaRange) },
         { key: "Listing status", value: project.status },
         ...(moveInYear ? [{ key: "Move in", value: moveInYear }] : []),
         ...(project.units > 0 ? [{ key: "Total Units", value: String(project.units) }] : []),
@@ -3580,7 +3580,7 @@ export function ProjectNarrativeDetails({ project }: { project: Project }) {
     { label: "Floor plans", show: project.floorPlans.length > 0, value: String(project.floorPlans.length) },
     { label: "Beds", show: isFact(project.bedrooms), value: project.bedrooms },
     { label: "Baths", show: isFact(project.bathrooms), value: project.bathrooms },
-    { label: "SqFt", show: isFact(project.floorAreaRange), value: `${project.floorAreaRange} SqFt` },
+    { label: "SqFt", show: isFact(project.floorAreaRange), value: withSqFt(project.floorAreaRange) },
     { label: "Avg floor area", show: Boolean(project.averageFloorAreaSqFt), value: project.averageFloorAreaSqFt ? `${project.averageFloorAreaSqFt.toLocaleString("en-US")} SqFt` : "" },
     { label: "Ceilings", show: isFact(project.ceilingInfo), value: project.ceilingInfo ?? "" },
     { label: "Ownership", show: isFact(project.ownership), value: project.ownership },

@@ -86,3 +86,13 @@ const SENTENCE_BREAK = new RegExp(`(?<!\\b(?:${NON_TERMINAL_ABBREVIATIONS.join("
 export function splitSentences(text: string | null | undefined): string[] {
   return (text ?? "").split(SENTENCE_BREAK).map((line) => line.trim()).filter(Boolean);
 }
+
+/** "471 - 1,011 sq ft" or "500" → always ends in exactly one "SqFt"/"sq ft" unit (never "…sq ft SqFt"). */
+export function withSqFt(range: string): string {
+  return /sq\.?\s*ft/i.test(range) ? range : `${range} SqFt`;
+}
+
+/** The same range without its unit, for chips that print the unit as a separate label. */
+export function stripSqFt(range: string): string {
+  return range.replace(/\s*sq\.?\s*ft\.?/i, "").trim();
+}

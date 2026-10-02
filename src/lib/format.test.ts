@@ -43,3 +43,13 @@ describe("splitSentences", () => {
     expect(splitSentences(undefined)).toEqual([]);
   });
 });
+
+import { stripSqFt, withSqFt } from "./format";
+describe("withSqFt / stripSqFt", () => {
+  it("never doubles the unit", () => {
+    expect(withSqFt("471 - 1,011 sq ft")).toBe("471 - 1,011 sq ft");
+    expect(withSqFt("500")).toBe("500 SqFt");
+    expect(stripSqFt("471 - 1,011 sq ft")).toBe("471 - 1,011");
+    expect(stripSqFt("500")).toBe("500");
+  });
+});

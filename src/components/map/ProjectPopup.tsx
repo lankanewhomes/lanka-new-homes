@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { BedDouble, Ruler, X } from "lucide-react";
-import { formatLkr } from "@/lib/format";
+import { formatLkr, withSqFt } from "@/lib/format";
 import type { Project } from "@/types";
 
 function statusPillLabel(project: Project) {
@@ -49,7 +49,7 @@ export function ProjectPopup({ project, basePath, onClose }: { project: Project;
           <span className="project-popup-fact-divider">|</span>
           <span className="project-popup-fact">
             <Ruler className="h-3.5 w-3.5" aria-hidden="true" />
-            {project.floorAreaRange && project.floorAreaRange !== "-" ? `${project.floorAreaRange} SqFt` : "—"}
+            {project.floorAreaRange && project.floorAreaRange !== "-" ? withSqFt(project.floorAreaRange) : "—"}
           </span>
         </div>
       </div>
