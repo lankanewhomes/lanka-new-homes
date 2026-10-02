@@ -18546,3 +18546,71 @@ body:has(.compare-bar) {
   color: rgba(255, 255, 255, 0.82);
   line-height: 1.7;
 }
+
+/* /guides "How to use these guides": short text left, picker box right. */
+.guides-howto-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 34px;
+  align-items: start;
+}
+
+.guides-howto-text h2 {
+  margin: 0 0 14px;
+  font-weight: 400;
+  color: #fff;
+}
+
+.guides-howto-text p {
+  margin: 0 0 14px;
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.7;
+}
+
+.guides-howto-box {
+  background: #fff;
+  color: var(--fdv-ink);
+  border-radius: 4px;
+  padding: 24px;
+}
+
+.guides-howto-box h3 {
+  margin: 0 0 8px;
+  font-weight: 400;
+  font-size: 20px;
+}
+
+.guides-howto-box ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.guides-howto-box li + li {
+  border-top: 1px solid var(--fdv-line);
+}
+
+.guides-howto-box a {
+  display: block;
+  padding: 14px 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.guides-howto-box a strong {
+  display: block;
+  font-weight: 400;
+  font-size: 17px;
+  text-decoration: underline;
+}
+
+.guides-howto-box a span {
+  display: block;
+  margin-top: 4px;
+  font-size: 14px;
+  color: var(--fdv-muted);
+}
+
+@media (max-width: 900px) {
+  .guides-howto-grid { grid-template-columns: 1fr; }
+}

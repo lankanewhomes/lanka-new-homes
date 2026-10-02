@@ -77,7 +77,6 @@ export function GuidePageShell({ guide }: { guide: Guide }) {
             <h2>{section.heading}</h2>
           </div>
           <div className="fdv-box-card guide-detail-card" data-reveal>
-            <span className="fdv-box-card-num">{String(index + 1).padStart(2, "0")}</span>
             <p>{section.body}</p>
           </div>
         </section>

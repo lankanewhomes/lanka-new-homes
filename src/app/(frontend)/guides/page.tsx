@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { SeoAboutBlock } from "@/components/marketplace/seo-about-block";
 import { guides } from "@/lib/guides";
 
 export const metadata: Metadata = {
@@ -84,9 +83,8 @@ export default function GuidesIndexPage() {
           <p>Each guide covers one topic in plain language and links to the homes it mentions.</p>
         </div>
         <div className="fdv-box-grid fdv-box-grid--3" data-reveal>
-          {guideList.map((guide, index) => (
+          {guideList.map((guide) => (
             <Link key={guide.slug} href={guide.path} className="fdv-box-card fdv-box-card-link">
-              <span className="fdv-box-card-num">{index + 1}</span>
               <h3>{guide.h1}</h3>
               <p>{guide.metaDescription}</p>
               <p className="guides-card-who">{WHO_FOR[guide.slug] ?? ""}</p>
@@ -101,9 +99,8 @@ export default function GuidesIndexPage() {
           <p>How a new-build purchase usually runs, from the first search to handover.</p>
         </div>
         <div className="fdv-box-grid fdv-box-grid--3" data-reveal>
-          {PROCESS.map((step, index) => (
+          {PROCESS.map((step) => (
             <div className="fdv-box-card" key={step.title}>
-              <span className="fdv-box-card-num">{index + 1}</span>
               <h3>{step.title}</h3>
               <p>{step.body}</p>
             </div>
@@ -143,16 +140,38 @@ export default function GuidesIndexPage() {
         </ul>
       </section>
 
-      <SeoAboutBlock
-        title="How to use these guides"
-        paragraphs={[
-          "These guides explain the questions buyers ask most when looking at new-build property in Sri Lanka: whether foreigners can buy, how investment property works, and how a residency route such as the golden visa fits with a purchase. They are written in plain language for both local and overseas buyers.",
-          "Treat each guide as a starting point rather than legal advice. Rules on ownership, taxes and residency can change, so confirm the current position with a qualified lawyer or the relevant authority before you commit to a purchase.",
-          "Foreign buyers should read the foreign ownership guide first, because it covers who can buy, which property types are open to overseas buyers and what to check before paying a deposit. Investors will find the investment property guide more useful, as it explains how to think about location, developer track record and payment plans. The golden visa guide covers the residency route linked to qualifying property investment.",
-          "Every guide links to the new projects, neighbourhoods and developer profiles it mentions, so you can move from reading about a topic to seeing real homes. If you have a question the guides do not answer, contact us and we will point you to the right developer or source.",
-          "When you are ready to look at homes, browse new projects by area or type on LankaNewHomes, compare payment plans and floor plans on each listing, and send an enquiry straight to the developer.",
-        ]}
-      />
+      {/* Owner, 2026-10-02: shorten the "How to use these guides" text and put
+          a box on its right — a "which guide first" picker built from the
+          same guide list. */}
+      <section className="fdv-box fdv-box--dark guides-howto" aria-label="How to use these guides">
+        <div className="guides-howto-grid">
+          <div className="guides-howto-text">
+            <h2>How to use these guides.</h2>
+            <p>
+              These guides answer the questions buyers ask most about new-build property in Sri Lanka, in plain
+              language for local and overseas buyers. Each one links to the projects, neighbourhoods and developers
+              it mentions.
+            </p>
+            <p>
+              Treat them as a starting point, not legal advice. Rules on ownership, taxes and residency can change,
+              so confirm the current position with a qualified lawyer or the relevant authority before you buy.
+            </p>
+          </div>
+          <div className="guides-howto-box">
+            <h3>Which guide first?</h3>
+            <ul>
+              {guideList.map((guide) => (
+                <li key={guide.slug}>
+                  <Link href={guide.path}>
+                    <strong>{guide.h1}</strong>
+                    <span>{WHO_FOR[guide.slug] ?? ""}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
