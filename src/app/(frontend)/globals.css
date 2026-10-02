@@ -18220,3 +18220,7 @@ body:has(.compare-bar) {
   mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
 }
 .developer-about-box > * { position: relative; z-index: 1; }
+
+/* Developer profile: "Show more" under long project/land lists. */
+.developer-profile-more { display: block; margin: 20px 0 0; padding: 12px 22px; border: 1px solid #1f1f1f; background: #fff; color: #1f1f1f; font-size: 14px; cursor: pointer; }
+.developer-profile-more:hover { background: #1f1f1f; color: #fff; }

@@ -13,7 +13,15 @@ import { useSavedProfile } from "@/lib/use-saved-profile";
 import { useListingT } from "@/lib/i18n/use-listing-t";
 import { Button } from "@/components/ui/button";
 
-type Tab = "projects" | "reviews" | "awards" | "press";
+type Tab = "projects" | "lands" | "reviews" | "awards" | "press";
+
+// Recent first: the newest year in the award's year text ("2025 & 2026" → 2026); undated ones go last.
+function awardYear(year: string | null | undefined): number {
+  const years = (year ?? "").match(/\d{4}/g)?.map(Number) ?? [];
+  return years.length ? Math.max(...years) : 0;
+}
+
+const LIST_PAGE_SIZE = 24;
 
 // The fields the profile page actually renders — satisfied by both Developer
 // and CompanyProfile, so one view serves all six directories.
@@ -45,6 +53,7 @@ export function ProfileView({
   const { saved: following, toggle: toggleFollow } = useSavedProfile(entityType, entity.slug);
   const { t, tPrice } = useListingT();
   const [locationFilter, setLocationFilter] = useState("all");
+  const [shown, setShown] = useState(LIST_PAGE_SIZE);
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [spotlightContactOpen, setSpotlightContactOpen] = useState(false);
   const formattedOfficeHours = formatOfficeHours(entity.officeHours);
@@ -52,9 +61,20 @@ export function ProfileView({
   const socialEntries = Object.entries(entity.socialLinks ?? {}).filter(([, url]) => Boolean(url)) as [string, string][];
   const followLabel = entityType === "developer" ? "Follow developer" : "Follow";
 
-  const locations = useMemo(() => Array.from(new Set(projects.map((project) => project.location))).sort(), [projects]);
+  // Built projects and land parcels are listed on separate tabs when a developer has both (owner, 2026-10-01).
+  const landProjects = useMemo(() => projects.filter((project) => project.isLand), [projects]);
+  const homeProjects = useMemo(() => projects.filter((project) => !project.isLand), [projects]);
+  const splitTabs = landProjects.length > 0 && homeProjects.length > 0;
+  const listProjects = tab === "lands" ? landProjects : splitTabs ? homeProjects : projects;
 
-  const visibleProjects = locationFilter === "all" ? projects : projects.filter((project) => project.location === locationFilter);
+  const locations = useMemo(() => Array.from(new Set(listProjects.map((project) => project.location))).sort(), [listProjects]);
+
+  const filteredProjects = locationFilter === "all" ? listProjects : listProjects.filter((project) => project.location === locationFilter);
+  const visibleProjects = filteredProjects.slice(0, shown);
+  const sortedAwards = useMemo(
+    () => [...(entity.awards ?? [])].sort((a, b) => awardYear(b.year) - awardYear(a.year)),
+    [entity.awards],
+  );
 
   const averageRating = reviews.length > 0 ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length : 0;
 
@@ -182,19 +202,20 @@ export function ProfileView({
 
       <div className="developer-profile-main">
         <div className="developer-profile-tabs" role="tablist">
-          <button type="button" role="tab" aria-selected={tab === "projects"} className={tab === "projects" ? "active" : undefined} onClick={() => setTab("projects")}>Projects</button>
+          <button type="button" role="tab" aria-selected={tab === "projects"} className={tab === "projects" ? "active" : undefined} onClick={() => { setTab("projects"); setLocationFilter("all"); setShown(LIST_PAGE_SIZE); }}>{splitTabs || homeProjects.length > 0 ? `Projects (${homeProjects.length})` : "Projects"}</button>
+          {splitTabs ? <button type="button" role="tab" aria-selected={tab === "lands"} className={tab === "lands" ? "active" : undefined} onClick={() => { setTab("lands"); setLocationFilter("all"); setShown(LIST_PAGE_SIZE); }}>Lands ({landProjects.length})</button> : null}
           <button type="button" role="tab" aria-selected={tab === "reviews"} className={tab === "reviews" ? "active" : undefined} onClick={() => setTab("reviews")}>Reviews</button>
           <button type="button" role="tab" aria-selected={tab === "awards"} className={tab === "awards" ? "active" : undefined} onClick={() => setTab("awards")}>Awards</button>
           <button type="button" role="tab" aria-selected={tab === "press"} className={tab === "press" ? "active" : undefined} onClick={() => setTab("press")}>Press mentions</button>
         </div>
 
-        {tab === "projects" ? (
+        {tab === "projects" || tab === "lands" ? (
           <section className="developer-profile-communities">
             {locations.length > 1 ? (
               <div className="developer-profile-communities-head developer-profile-communities-head-filter-only">
                 <div className="developer-profile-filter">
-                  <select value={locationFilter} onChange={(event) => setLocationFilter(event.target.value)} aria-label="Filter by location">
-                    <option value="all">All locations ({projects.length})</option>
+                  <select value={locationFilter} onChange={(event) => { setLocationFilter(event.target.value); setShown(LIST_PAGE_SIZE); }} aria-label="Filter by location">
+                    <option value="all">All locations ({listProjects.length})</option>
                     {locations.map((location) => <option key={location} value={location}>{location}</option>)}
                   </select>
                   <ChevronDown size={16} />
@@ -221,6 +242,11 @@ export function ProfileView({
                 ))}
               </div>
             )}
+            {filteredProjects.length > shown ? (
+              <button type="button" className="developer-profile-more" onClick={() => setShown((n) => n + LIST_PAGE_SIZE)}>
+                Show more ({filteredProjects.length - shown} remaining)
+              </button>
+            ) : null}
           </section>
         ) : tab === "reviews" ? (
           <section className="developer-profile-reviews-tab">
@@ -246,9 +272,9 @@ export function ProfileView({
           </section>
         ) : tab === "awards" ? (
           <section className="developer-profile-awards">
-            {entity.awards && entity.awards.length > 0 ? (
+            {sortedAwards.length > 0 ? (
               <div className="developer-profile-list-plain">
-                {entity.awards.map((award) => (
+                {sortedAwards.map((award) => (
                   <div key={award.title} className="developer-profile-award-row">
                     {award.imageUrl && (
                       <div className="developer-profile-award-image">
@@ -259,11 +285,6 @@ export function ProfileView({
                       <p className="developer-profile-award-title">{award.title}</p>
                       <p className="developer-profile-award-meta">{[award.issuer, award.year].filter(Boolean).join(" · ")}</p>
                       {award.description && <p className="developer-profile-award-description">{award.description}</p>}
-                      {award.url && (
-                        <a href={award.url} target="_blank" rel="noreferrer" className="developer-profile-award-link">
-                          Learn more
-                        </a>
-                      )}
                     </div>
                   </div>
                 ))}
