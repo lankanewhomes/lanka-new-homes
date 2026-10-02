@@ -18378,3 +18378,8 @@ body:has(.compare-bar) {
   -webkit-mask-image: radial-gradient(ellipse 85% 100% at center, #000 40%, transparent 100%);
   mask-image: radial-gradient(ellipse 85% 100% at center, #000 40%, transparent 100%);
 }
+
+/* About boxes align to the left edge of the page content above them (developer directory / profile), not centred in a
+   narrower box (owner, 2026-10-01: "align to the left … matching the developer directory"). */
+.developer-directory .developer-about-box,
+.developer-page .developer-about-box { width: 100%; margin: 34px 0 0; }
