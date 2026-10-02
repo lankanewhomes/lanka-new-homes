@@ -2687,7 +2687,7 @@ Redesigned 2026-10-02 in the contained-box system. `AccountShell`
 `AccountPageHero` is the dark split hero with one live count. Section boxes fill
 the column (`.account-page .account-main` overrides the 1280px centring). Cards
 are white with a 1px `#ececea` border and square corners (`.account-home-card`);
-action buttons are `.account-btn`. `/account` and `/account/saved` are done; the
-other sub-pages (developments, compare, alerts, enquiries, profile, settings)
-still use the old layout — move them onto `AccountShell` next. The login, signup
+action buttons are `.account-btn`. All account pages (dashboard, saved, developments,
+compare, alerts, enquiries, profile, settings) now use `AccountShell` +
+`AccountPageHero`; forms use `.account-panel`, `.account-field`, `.account-input`. The login, signup
 and password pages are intentionally left as they were.

@@ -35,7 +35,7 @@ export function AccountPageHero({
 }: {
   title: string;
   intro: string;
-  stat: { label: string; value: number };
+  stat?: { label: string; value: number };
   cta?: { label: string; href: string };
 }) {
   return (
@@ -50,14 +50,16 @@ export function AccountPageHero({
             </div>
           ) : null}
         </div>
-        <div className="about-hero-panel">
-          <dl className="about-hero-panel-grid directory-hero-stat" aria-label={stat.label}>
-            <div className="about-hero-panel-stat">
-              <dd>{stat.value}</dd>
-              <dt>{stat.label}</dt>
-            </div>
-          </dl>
-        </div>
+        {stat ? (
+          <div className="about-hero-panel">
+            <dl className="about-hero-panel-grid directory-hero-stat" aria-label={stat.label}>
+              <div className="about-hero-panel-stat">
+                <dd>{stat.value}</dd>
+                <dt>{stat.label}</dt>
+              </div>
+            </dl>
+          </div>
+        ) : null}
       </div>
     </section>
   );

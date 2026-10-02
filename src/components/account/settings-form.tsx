@@ -20,9 +20,9 @@ function NotificationToggles({ profile }: { profile: Profile }) {
   };
 
   return (
-    <div className="space-y-3 border border-stone-200 bg-white p-4">
-      <h2 className="text-sm font-semibold text-stone-900">Notifications</h2>
-      <label className="flex items-center justify-between gap-3 text-sm text-stone-700">
+    <div className="account-panel">
+      <h2>Notifications</h2>
+      <label className="account-toggle">
         Email notifications
         <input
           type="checkbox"
@@ -30,7 +30,7 @@ function NotificationToggles({ profile }: { profile: Profile }) {
           onChange={(event) => { setNotifyEmail(event.target.checked); save({ notify_email: event.target.checked }); }}
         />
       </label>
-      <label className="flex items-center justify-between gap-3 text-sm text-stone-700">
+      <label className="account-toggle">
         New-property alerts
         <input
           type="checkbox"
@@ -38,7 +38,7 @@ function NotificationToggles({ profile }: { profile: Profile }) {
           onChange={(event) => { setNotifyNewProperties(event.target.checked); save({ notify_new_properties: event.target.checked }); }}
         />
       </label>
-      <label className="flex items-center justify-between gap-3 text-sm text-stone-700">
+      <label className="account-toggle">
         Price-change alerts
         <input
           type="checkbox"
@@ -46,7 +46,7 @@ function NotificationToggles({ profile }: { profile: Profile }) {
           onChange={(event) => { setNotifyPriceChanges(event.target.checked); save({ notify_price_changes: event.target.checked }); }}
         />
       </label>
-      <label className="flex items-center justify-between gap-3 border-t border-stone-100 pt-3 text-sm text-stone-700">
+      <label className="account-toggle">
         Share my activity for marketing (privacy setting)
         <input
           type="checkbox"
@@ -54,7 +54,7 @@ function NotificationToggles({ profile }: { profile: Profile }) {
           onChange={(event) => { setMarketingOptIn(event.target.checked); save({ marketing_opt_in: event.target.checked }); }}
         />
       </label>
-      {status === "saved" ? <p className="text-xs text-emerald-700">Preferences saved.</p> : null}
+      {status === "saved" ? <p className="account-muted">Preferences saved.</p> : null}
     </div>
   );
 }
@@ -91,21 +91,23 @@ function PasswordForm() {
   };
 
   return (
-    <form onSubmit={submit} className="space-y-3 border border-stone-200 bg-white p-4">
-      <h2 className="text-sm font-semibold text-stone-900">Password</h2>
-      <label className="block space-y-1 text-xs font-medium text-stone-600">
+    <form onSubmit={submit} className="account-panel">
+      <h2>Password</h2>
+      <label className="account-field">
         New password
-        <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} className="w-full border border-stone-300 px-3 py-2 text-sm" />
+        <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} className="account-input" />
       </label>
-      <label className="block space-y-1 text-xs font-medium text-stone-600">
+      <label className="account-field">
         Confirm new password
-        <input type="password" value={confirm} onChange={(event) => setConfirm(event.target.value)} className="w-full border border-stone-300 px-3 py-2 text-sm" />
+        <input type="password" value={confirm} onChange={(event) => setConfirm(event.target.value)} className="account-input" />
       </label>
-      <button type="submit" disabled={status === "saving"} className="border border-stone-900 bg-stone-900 px-5 py-2 text-sm font-medium text-white hover:bg-stone-800 disabled:opacity-60">
-        {status === "saving" ? "Updating…" : "Update password"}
-      </button>
-      {status === "saved" ? <p className="text-xs text-emerald-700">Password updated.</p> : null}
-      {status === "error" ? <p className="text-xs text-red-700">{errorMessage}</p> : null}
+      <div className="account-chip-row">
+        <button type="submit" disabled={status === "saving"} className="account-btn account-btn--dark">
+          {status === "saving" ? "Updating…" : "Update password"}
+        </button>
+        {status === "saved" ? <span className="account-muted">Password updated.</span> : null}
+        {status === "error" ? <span className="account-error">{errorMessage}</span> : null}
+      </div>
     </form>
   );
 }
@@ -136,33 +138,29 @@ function DeleteAccount() {
   };
 
   return (
-    <div className="space-y-3 border border-red-200 bg-red-50 p-4">
-      <h2 className="text-sm font-semibold text-red-900">Delete account</h2>
-      <p className="text-xs text-red-800">
-        This permanently deletes your account, saved listings, saved developments, and saved searches. This can&apos;t be undone.
-      </p>
+    <div className="account-panel account-panel--danger">
+      <h2>Delete account</h2>
+      <p>This permanently deletes your account, saved listings, saved developments and saved searches. This cannot be undone.</p>
       {!confirming ? (
-        <button type="button" onClick={() => setConfirming(true)} className="border border-red-700 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-100">
-          Delete my account
-        </button>
+        <div className="account-chip-row">
+          <button type="button" onClick={() => setConfirming(true)} className="account-btn account-btn--danger">Delete my account</button>
+        </div>
       ) : (
-        <div className="flex flex-wrap items-center gap-2">
-          <button type="button" disabled={deleting} onClick={confirmDelete} className="border border-red-700 bg-red-700 px-4 py-2 text-sm font-medium text-white hover:bg-red-800 disabled:opacity-60">
+        <div className="account-chip-row">
+          <button type="button" disabled={deleting} onClick={confirmDelete} className="account-btn account-btn--danger-solid">
             {deleting ? "Deleting…" : "Yes, permanently delete my account"}
           </button>
-          <button type="button" disabled={deleting} onClick={() => setConfirming(false)} className="border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50">
-            Cancel
-          </button>
+          <button type="button" disabled={deleting} onClick={() => setConfirming(false)} className="account-btn">Cancel</button>
         </div>
       )}
-      {error ? <p className="text-xs text-red-700">{error}</p> : null}
+      {error ? <p className="account-error">{error}</p> : null}
     </div>
   );
 }
 
 export function SettingsForm({ profile }: { profile: Profile }) {
   return (
-    <div className="max-w-2xl space-y-4">
+    <div className="account-stack">
       <NotificationToggles profile={profile} />
       <PasswordForm />
       <DeleteAccount />

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getCurrentProfile } from "@/lib/auth";
-import { DashboardHeader, DashboardSidebar, ACCOUNT_NAV_LINKS } from "@/components/dashboard/components";
+import { AccountShell, AccountPageHero } from "@/components/account/account-shell";
 import { SettingsForm } from "@/components/account/settings-form";
 
 export const metadata: Metadata = {
@@ -14,12 +14,14 @@ export default async function SettingsPage() {
   if (!profile) redirect("/login");
 
   return (
-    <div className="grid gap-4 px-4 pt-6 pb-16 lg:grid-cols-[220px_1fr] lg:px-6 lg:pt-8">
-      <DashboardSidebar links={ACCOUNT_NAV_LINKS} />
-      <section className="space-y-4">
-        <DashboardHeader title="Settings" subtitle="Notifications, password, and privacy." />
+    <AccountShell active="/account/settings">
+      <AccountPageHero
+        title="Settings."
+        intro="Notifications, password and privacy."
+      />
+      <section className="fdv-box fdv-box--gray" id="settings" aria-label="Settings">
         <SettingsForm profile={profile} />
       </section>
-    </div>
+    </AccountShell>
   );
 }

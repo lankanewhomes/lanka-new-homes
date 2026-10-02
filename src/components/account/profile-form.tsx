@@ -44,40 +44,40 @@ export function ProfileForm({ profile }: { profile: Profile }) {
   };
 
   return (
-    <form onSubmit={save} className="max-w-2xl space-y-5 border border-stone-200 bg-white p-4">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <label className="space-y-1 text-xs font-medium text-stone-600">
+    <form onSubmit={save} className="account-panel">
+      <div className="account-grid account-grid--2">
+        <label className="account-field">
           Name
-          <input type="text" value={fullName} onChange={(event) => setFullName(event.target.value)} className="w-full border border-stone-300 px-3 py-2 text-sm" />
+          <input type="text" value={fullName} onChange={(event) => setFullName(event.target.value)} className="account-input" />
         </label>
-        <label className="space-y-1 text-xs font-medium text-stone-600">
+        <label className="account-field">
           Email
-          <input type="email" value={profile.email ?? ""} disabled className="w-full border border-stone-200 bg-stone-50 px-3 py-2 text-sm text-stone-500" />
+          <input type="email" value={profile.email ?? ""} disabled className="account-input" />
         </label>
-        <label className="space-y-1 text-xs font-medium text-stone-600">
+        <label className="account-field">
           Phone
-          <input type="tel" value={phone} onChange={(event) => setPhone(event.target.value)} className="w-full border border-stone-300 px-3 py-2 text-sm" />
+          <input type="tel" value={phone} onChange={(event) => setPhone(event.target.value)} className="account-input" />
         </label>
-        <label className="space-y-1 text-xs font-medium text-stone-600">
+        <label className="account-field">
           Profile photo
           <ImageUrlField value={avatarUrl} onChange={setAvatarUrl} folder="avatars" />
         </label>
       </div>
 
-      <label className="block space-y-1 text-xs font-medium text-stone-600">
+      <label className="account-field">
         Preferred locations (comma-separated)
-        <input type="text" value={preferredLocations} onChange={(event) => setPreferredLocations(event.target.value)} placeholder="Colombo, Kandy, Galle" className="w-full border border-stone-300 px-3 py-2 text-sm" />
+        <input type="text" value={preferredLocations} onChange={(event) => setPreferredLocations(event.target.value)} placeholder="Colombo, Kandy, Galle" className="account-input" />
       </label>
 
-      <div className="space-y-2">
-        <p className="text-xs font-medium text-stone-600">Preferred property types</p>
-        <div className="flex flex-wrap gap-2">
+      <div className="account-field">
+        Preferred property types
+        <div className="account-chip-row">
           {PROPERTY_TYPES.map((type) => (
             <button
               key={type}
               type="button"
               onClick={() => toggleType(type)}
-              className={`border px-3 py-1.5 text-xs font-medium ${preferredTypes.includes(type) ? "border-stone-900 bg-stone-900 text-white" : "border-stone-300 text-stone-700 hover:bg-stone-50"}`}
+              className={`account-btn${preferredTypes.includes(type) ? " account-btn--dark" : ""}`}
             >
               {type}
             </button>
@@ -85,29 +85,29 @@ export function ProfileForm({ profile }: { profile: Profile }) {
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <label className="space-y-1 text-xs font-medium text-stone-600">
+      <div className="account-grid account-grid--3">
+        <label className="account-field">
           Budget min (LKR)
-          <input type="number" min="0" value={budgetMin} onChange={(event) => setBudgetMin(event.target.value)} className="w-full border border-stone-300 px-3 py-2 text-sm" />
+          <input type="number" min="0" value={budgetMin} onChange={(event) => setBudgetMin(event.target.value)} className="account-input" />
         </label>
-        <label className="space-y-1 text-xs font-medium text-stone-600">
+        <label className="account-field">
           Budget max (LKR)
-          <input type="number" min="0" value={budgetMax} onChange={(event) => setBudgetMax(event.target.value)} className="w-full border border-stone-300 px-3 py-2 text-sm" />
+          <input type="number" min="0" value={budgetMax} onChange={(event) => setBudgetMax(event.target.value)} className="account-input" />
         </label>
-        <label className="space-y-1 text-xs font-medium text-stone-600">
+        <label className="account-field">
           Bedrooms
-          <select value={preferredBedrooms} onChange={(event) => setPreferredBedrooms(event.target.value)} className="w-full border border-stone-300 px-3 py-2 text-sm">
+          <select value={preferredBedrooms} onChange={(event) => setPreferredBedrooms(event.target.value)} className="account-input">
             {BEDROOM_OPTIONS.map((option) => <option key={option} value={option}>{option}</option>)}
           </select>
         </label>
       </div>
 
-      <div className="flex items-center gap-3">
-        <button type="submit" disabled={status === "saving"} className="border border-stone-900 bg-stone-900 px-5 py-2 text-sm font-medium text-white hover:bg-stone-800 disabled:opacity-60">
+      <div className="account-chip-row">
+        <button type="submit" disabled={status === "saving"} className="account-btn account-btn--dark">
           {status === "saving" ? "Saving…" : "Save changes"}
         </button>
-        {status === "saved" ? <span className="text-xs text-emerald-700">Saved.</span> : null}
-        {status === "error" ? <span className="text-xs text-red-700">Something went wrong — try again.</span> : null}
+        {status === "saved" ? <span className="account-muted">Saved.</span> : null}
+        {status === "error" ? <span className="account-error">Something went wrong. Try again.</span> : null}
       </div>
     </form>
   );

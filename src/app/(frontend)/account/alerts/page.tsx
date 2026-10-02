@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { X } from "lucide-react";
-import { DashboardHeader, DashboardSidebar, ACCOUNT_NAV_LINKS } from "@/components/dashboard/components";
+import { AccountShell, AccountPageHero } from "@/components/account/account-shell";
 import { useSavedSearches } from "@/lib/use-saved-searches";
 import { useAuthModal } from "@/components/auth/auth-modal-provider";
 
@@ -44,66 +44,80 @@ export default function AlertsPage() {
   };
 
   return (
-    <div className="grid gap-4 px-4 pt-6 pb-16 lg:grid-cols-[220px_1fr] lg:px-6 lg:pt-8">
-      <DashboardSidebar links={ACCOUNT_NAV_LINKS} />
-      <section className="space-y-4">
-        <DashboardHeader title="Saved searches & alerts" subtitle="Get notified when a new match comes on the market." />
+    <AccountShell active="/account/alerts">
+      <AccountPageHero
+        title="Saved searches and alerts."
+        intro="Get notified when a new match comes on the market. When a search has email notifications on, you get a weekly email whenever a new listing matches it."
+        stat={{ label: "Saved searches", value: searches.length }}
+      />
 
-        {loading ? null : !userId ? (
-          <div className="border border-stone-200 bg-white p-4">
-            <p className="text-sm text-stone-600">Log in to create saved-search alerts.</p>
-            <button type="button" onClick={() => openAuthModal({ mode: "login" })} className="mt-3 border border-stone-900 bg-stone-900 px-4 py-2 text-sm font-medium text-white hover:bg-stone-800">
-              Log in
-            </button>
+      {loading ? null : !userId ? (
+        <section className="fdv-box fdv-box--gray" id="login" aria-label="Log in">
+          <div className="fdv-box-card account-empty">
+            <p>Log in to create saved-search alerts.</p>
+            <button type="button" onClick={() => openAuthModal({ mode: "login" })} className="account-btn account-btn--dark">Log in</button>
           </div>
-        ) : (
-          <>
-            <form onSubmit={submit} className="grid gap-3 border border-stone-200 bg-white p-4 sm:grid-cols-4">
-              <label className="space-y-1 text-xs font-medium text-stone-600">
-                Property type
-                <select value={propertyType} onChange={(event) => setPropertyType(event.target.value)} className="w-full border border-stone-300 px-2 py-2 text-sm">
-                  {PROPERTY_TYPES.map((type) => <option key={type} value={type}>{type}</option>)}
-                </select>
-              </label>
-              <label className="space-y-1 text-xs font-medium text-stone-600">
-                Bedrooms
-                <select value={bedrooms} onChange={(event) => setBedrooms(event.target.value)} className="w-full border border-stone-300 px-2 py-2 text-sm">
-                  {BEDROOM_OPTIONS.map((option) => <option key={option} value={option}>{option}</option>)}
-                </select>
-              </label>
-              <label className="space-y-1 text-xs font-medium text-stone-600">
-                City
-                <input type="text" placeholder="e.g. Colombo" value={city} onChange={(event) => setCity(event.target.value)} className="w-full border border-stone-300 px-2 py-2 text-sm" />
-              </label>
-              <label className="space-y-1 text-xs font-medium text-stone-600">
-                Max price (Rs. millions)
-                <input type="number" min="0" placeholder="e.g. 50" value={maxPrice} onChange={(event) => setMaxPrice(event.target.value)} className="w-full border border-stone-300 px-2 py-2 text-sm" />
-              </label>
-              <button type="submit" className="sm:col-span-4 border border-stone-900 bg-stone-900 px-4 py-2 text-sm font-medium text-white hover:bg-stone-800">
-                Create alert
-              </button>
+        </section>
+      ) : (
+        <>
+          <section className="fdv-box fdv-box--gray" id="new-alert" aria-label="Create an alert">
+            <div className="wdx-section-head" data-reveal>
+              <h2>Create an alert.</h2>
+              <p>Choose what you are looking for, and we will tell you when it appears.</p>
+            </div>
+            <form onSubmit={submit} className="account-panel">
+              <div className="account-grid account-grid--4">
+                <label className="account-field">
+                  Property type
+                  <select value={propertyType} onChange={(event) => setPropertyType(event.target.value)} className="account-input">
+                    {PROPERTY_TYPES.map((type) => <option key={type} value={type}>{type}</option>)}
+                  </select>
+                </label>
+                <label className="account-field">
+                  Bedrooms
+                  <select value={bedrooms} onChange={(event) => setBedrooms(event.target.value)} className="account-input">
+                    {BEDROOM_OPTIONS.map((option) => <option key={option} value={option}>{option}</option>)}
+                  </select>
+                </label>
+                <label className="account-field">
+                  City
+                  <input type="text" placeholder="e.g. Colombo" value={city} onChange={(event) => setCity(event.target.value)} className="account-input" />
+                </label>
+                <label className="account-field">
+                  Max price (Rs. millions)
+                  <input type="number" min="0" placeholder="e.g. 50" value={maxPrice} onChange={(event) => setMaxPrice(event.target.value)} className="account-input" />
+                </label>
+              </div>
+              <div className="account-chip-row">
+                <button type="submit" className="account-btn account-btn--dark">Create alert</button>
+              </div>
             </form>
+          </section>
 
-            <p className="text-xs text-stone-500">When a search&apos;s email notifications are on, you&apos;ll get a weekly email whenever a new listing matches it.</p>
-
+          <section className="fdv-box fdv-box--cream" id="searches" aria-label="Your saved searches">
+            <div className="wdx-section-head" data-reveal>
+              <h2>Your saved searches.</h2>
+            </div>
             {searches.length === 0 ? (
-              <p className="text-sm text-stone-600">No saved searches yet.</p>
+              <div className="fdv-box-card account-empty">
+                <p>No saved searches yet.</p>
+              </div>
             ) : (
-              <div className="space-y-2">
+              <div className="account-stack">
                 {searches.map((search) => (
-                  <div key={search.id} className="flex flex-wrap items-center justify-between gap-2 border border-stone-200 bg-white p-3">
+                  <div key={search.id} className="account-panel account-search-row">
                     <div>
-                      <p className="text-sm font-medium text-stone-900">{search.name}</p>
-                      <Link href={`/search?q=${encodeURIComponent((search.filters as { city?: string }).city ?? "")}`} className="text-xs text-stone-500 hover:text-stone-800">
-                        View matching listings →
+                      <h2>{search.name}</h2>
+                      <Link href={`/search?q=${encodeURIComponent((search.filters as { city?: string }).city ?? "")}`} className="account-link">
+                        View matching listings
                       </Link>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <label className="flex items-center gap-2 text-xs text-stone-600">
-                        <input type="checkbox" checked={search.isActive} onChange={(event) => toggleActive(search.id, event.target.checked)} />
+                    <div className="account-chip-row">
+                      <label className="account-toggle account-toggle--inline">
                         Email notifications
+                        <input type="checkbox" checked={search.isActive} onChange={(event) => toggleActive(search.id, event.target.checked)} />
                       </label>
-                      <button type="button" aria-label={`Delete ${search.name}`} onClick={() => remove(search.id)} className="text-stone-400 hover:text-stone-700">
+                      <button type="button" aria-label={`Delete ${search.name}`} onClick={() => remove(search.id)} className="account-btn">
                         <X className="h-4 w-4" aria-hidden="true" />
                       </button>
                     </div>
@@ -111,9 +125,9 @@ export default function AlertsPage() {
                 ))}
               </div>
             )}
-          </>
-        )}
-      </section>
-    </div>
+          </section>
+        </>
+      )}
+    </AccountShell>
   );
 }
