@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SeoAboutBlock } from "@/components/marketplace/seo-about-block";
 import { notFound } from "next/navigation";
 import { DeveloperProfileView } from "@/components/marketplace/developer-profile-view";
 import { getAllDevelopers, getDeveloperBySlug } from "@/lib/developer-store";
@@ -107,6 +108,14 @@ export default async function DeveloperProfilePage({ params }: DeveloperProfileP
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       <DeveloperProfileView developer={developer} projects={developerProjects} reviews={reviews} />
+      <SeoAboutBlock
+        title={`About ${developer.name} on LankaNewHomes`}
+        paragraphs={[
+          `${developer.name} is a property developer${developer.location ? ` based in ${developer.location}` : ""} with ${developerProjects.length} listing${developerProjects.length === 1 ? "" : "s"} on LankaNewHomes. This page shows who they are and every project or land parcel they have listed with us.`,
+          "Open a listing to see its photos, floor plans, pricing from the developer and location on the map. Checking a developer's earlier and current work is one of the most useful steps before you reserve a home or buy a plot.",
+          `You can send an enquiry directly to ${developer.name}'s team from this page or from any of their listings. There is no agent in between, and listing on LankaNewHomes is free for developers.`,
+        ]}
+      />
     </div>
   );
 }

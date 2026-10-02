@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SeoAboutBlock } from "@/components/marketplace/seo-about-block";
 import { getAllConstructionCompanies } from "@/lib/construction-company-store";
 import { PartnerDirectoryCard } from "@/components/marketplace/partner-directory-card";
 import type { ConstructionCompany } from "@/types";
@@ -67,6 +68,15 @@ export default async function ConstructionCompaniesPage() {
           />
         ))}
       </div>
+      <SeoAboutBlock
+        title="About the construction company directory"
+        paragraphs={[
+          `This directory lists the ${companies.length} construction companies on LankaNewHomes, from established contractors to smaller specialist builders working across Sri Lanka. Each company has its own profile page showing who they are, where they work and how long they have been in business.`,
+          "Open a profile to see a company's location, years in business and contact details, and to get in touch directly. Comparing a few builders on their track record and the type of work they take on is one of the most useful steps before you commission a new home, a renovation or an extension.",
+          "Many buyers of land use a construction company to build their own home after they purchase a plot, while others hire a builder for a pool, a boundary wall or a full villa. Whatever the project, ask for a written quotation, a clear timeline and examples of finished work before you sign a contract.",
+          "Construction companies can be listed on LankaNewHomes for free, and enquiries go straight to the company with no agent in between. If you run a building firm in Sri Lanka and want to appear here, register from the For Developers page.",
+        ]}
+      />
     </div>
   );
 }

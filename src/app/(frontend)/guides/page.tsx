@@ -31,6 +31,8 @@ export default function GuidesIndexPage() {
         paragraphs={[
           "These guides explain the questions buyers ask most when looking at new-build property in Sri Lanka: whether foreigners can buy, how investment property works, and how a residency route such as the golden visa fits with a purchase. They are written in plain language for both local and overseas buyers.",
           "Treat each guide as a starting point rather than legal advice. Rules on ownership, taxes and residency can change, so confirm the current position with a qualified lawyer or the relevant authority before you commit to a purchase.",
+          "Foreign buyers should read the foreign ownership guide first, because it covers who can buy, which property types are open to overseas buyers and what to check before paying a deposit. Investors will find the investment property guide more useful, as it explains how to think about location, developer track record and payment plans. The golden visa guide covers the residency route linked to qualifying property investment.",
+          "Every guide links to the new projects, neighbourhoods and developer profiles it mentions, so you can move from reading about a topic to seeing real homes. If you have a question the guides do not answer, contact us and we will point you to the right developer or source.",
           "When you are ready to look at homes, browse new projects by area or type on LankaNewHomes, compare payment plans and floor plans on each listing, and send an enquiry straight to the developer.",
         ]}
       />

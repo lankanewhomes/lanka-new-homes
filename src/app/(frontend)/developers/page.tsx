@@ -9,20 +9,20 @@ import type { Developer } from "@/types";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "Developer Directory in Sri Lanka",
+  title: "Developers Directory in Sri Lanka",
   description: "Browse real estate developers building new apartment projects in Sri Lanka, listed alphabetically.",
   alternates: {
     canonical: "/developers",
   },
   openGraph: {
-    title: "Developer Directory in Sri Lanka",
+    title: "Developers Directory in Sri Lanka",
     description: "Browse real estate developers building new apartment projects in Sri Lanka, listed alphabetically.",
     url: "/developers",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Developer Directory in Sri Lanka",
+    title: "Developers Directory in Sri Lanka",
     description: "Browse real estate developers building new apartment projects in Sri Lanka, listed alphabetically.",
   },
 };

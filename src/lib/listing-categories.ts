@@ -86,7 +86,7 @@ export const projectCategories: Record<string, ProjectCategory> = {
     path: "/projects/villas",
     breadcrumbLabel: "Villas",
     breadcrumbs: [{ label: "Home", href: "/" }, { label: "New Projects", href: "/projects" }, { label: "Villas" }],
-    metaTitle: "New Villa Developments in Sri Lanka",
+    metaTitle: "New Villas in Sri Lanka – Villa Developments",
     metaDescription: "Browse new villa developments in Sri Lanka. Compare new build homes with private gardens, pools, and modern layouts across the island.",
     h1: "New Villa Developments in Sri Lanka",
     intro: "Looking for a new build home rather than an apartment? These new villa developments in Sri Lanka offer private gardens, standalone layouts, and often pool access, from coastal towns to Colombo's suburbs.",

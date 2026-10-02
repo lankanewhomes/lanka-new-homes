@@ -4,7 +4,7 @@ import { SeoAboutBlock } from "@/components/marketplace/seo-about-block";
 import { BlogListing } from "@/components/marketplace/blog-listing";
 
 export const metadata: Metadata = {
-  title: "News & Insights",
+  title: "Blog – News & Insights on Sri Lanka Property",
   description: "Buying guides, market insights, and web design advice for property developers, from LankaNewHomes.",
   alternates: { canonical: "/blog" },
 };
