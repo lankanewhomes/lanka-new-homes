@@ -18224,3 +18224,19 @@ body:has(.compare-bar) {
 /* Developer profile: "Show more" under long project/land lists. */
 .developer-profile-more { display: block; margin: 20px 0 0; padding: 12px 22px; border: 1px solid #1f1f1f; background: #fff; color: #1f1f1f; font-size: 14px; cursor: pointer; }
 .developer-profile-more:hover { background: #1f1f1f; color: #fff; }
+
+/* "List your project for free" band: crossed-line texture on the dark box (owner, 2026-10-01: "need a background
+   with lines"). Light lines at low opacity so the white copy stays readable. */
+.free-listing-band { position: relative; overflow: hidden; }
+.free-listing-band::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(255, 255, 255, 0.07) 28px 29px),
+    repeating-linear-gradient(90deg, transparent 0 28px, rgba(255, 255, 255, 0.07) 28px 29px);
+  -webkit-mask-image: radial-gradient(ellipse 85% 100% at center, #000 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 85% 100% at center, #000 40%, transparent 100%);
+}
+.free-listing-band > * { position: relative; z-index: 1; }
