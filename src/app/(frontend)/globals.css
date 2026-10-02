@@ -18444,3 +18444,17 @@ body:has(.compare-bar) {
     repeating-linear-gradient(90deg, transparent 0 39px, rgba(150, 120, 20, 0.22) 39px 40px);
 }
 .free-listing-band-copy > p:last-child { color: #6b6130; }
+
+/* Home listing cards: white card with a border (owner, 2026-10-01: "add a border and white background"). */
+.new-listings-section .listing-grid-card,
+.featured-listings-section .listing-grid-card { background: #fff; border: 1px solid #d9d9d2; padding: 10px; box-sizing: border-box; }
+.new-listings-section .listing-grid-card-body,
+.featured-listings-section .listing-grid-card-body { padding: 12px 4px 6px; }
+
+/* Land box: very light green (a touch greener than Explore by city's sage) with soft green box lines. */
+.new-listings-section.land-listings-section { background: #eef8e8; }
+.new-listings-section.land-listings-section::before {
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 63px, rgba(70, 135, 60, 0.17) 63px 64px),
+    repeating-linear-gradient(90deg, transparent 0 63px, rgba(70, 135, 60, 0.17) 63px 64px);
+}
