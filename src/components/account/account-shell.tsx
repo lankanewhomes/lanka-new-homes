@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ACCOUNT_NAV_LINKS } from "@/lib/account-nav";
+import { AccountMenu } from "@/components/account/account-menu";
 
 // Owner, 2026-10-02: new look for the buyer account area — a side menu beside
 // contained-box sections (docs/design.md "Page section style: contained
@@ -8,17 +8,7 @@ export function AccountShell({ active, children }: { active: string; children: R
   return (
     <div className="fdv-page account-page">
       <div className="account-shell">
-        <aside className="account-side">
-          <nav aria-label="Account menu">
-            <ul>
-              {ACCOUNT_NAV_LINKS.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href} aria-current={link.href === active ? "page" : undefined}>{link.label}</Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </aside>
+        <AccountMenu active={active} />
         <div className="account-main">{children}</div>
       </div>
     </div>
