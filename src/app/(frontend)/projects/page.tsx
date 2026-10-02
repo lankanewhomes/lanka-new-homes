@@ -6,7 +6,7 @@ import { ProjectListingShell } from "@/components/marketplace/listing-shell";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "New Development Projects in Sri Lanka | New Condos & Apartments",
+  title: "New Development Projects in Sri Lanka",
   description: "Browse new condominium and apartment projects in Sri Lanka. Compare ongoing and new construction projects with pricing, locations, and developer details.",
   alternates: {
     canonical: "/projects",

@@ -28,10 +28,10 @@ export const blogPosts: Record<string, BlogPost> = {
   "7-ways-to-make-your-project-website-sell-more-units": {
     slug: "7-ways-to-make-your-project-website-sell-more-units",
     path: "/blog/7-ways-to-make-your-project-website-sell-more-units",
-    metaTitle: "7 Ways Sri Lankan Developers Can Make Their Project Websites Sell More Units",
+    metaTitle: "7 Ways to Make Your Project Site Sell More",
     metaDescription:
       "Practical, specific ways to make a property development website actually convert visitors into enquiries — photography, pricing, contact, mobile, speed, and more.",
-    title: "7 Ways Sri Lankan Developers Can Make Their Project Websites Sell More Units",
+    title: "7 Ways to Make Your Project Site Sell More",
     excerpt:
       "A LankaNewHomes listing gets a project discovered. What happens after that — on the project's own website — is what actually decides whether an enquiry happens.",
     category: "Web design",
@@ -75,7 +75,7 @@ export const blogPosts: Record<string, BlogPost> = {
   "how-to-choose-the-right-lankanewhomes-package": {
     slug: "how-to-choose-the-right-lankanewhomes-package",
     path: "/blog/how-to-choose-the-right-lankanewhomes-package",
-    metaTitle: "How to Choose the Right LankaNewHomes Package for Your Project",
+    metaTitle: "Choosing the Right LankaNewHomes Package",
     metaDescription:
       "A plain-language walkthrough of LankaNewHomes' developer packages — Featured, Featured Plus, Developer Pro and Campaign — and which one actually fits your project.",
     title: "How to Choose the Right LankaNewHomes Package for Your Project",
@@ -114,7 +114,7 @@ export const blogPosts: Record<string, BlogPost> = {
   "what-buyers-actually-look-for-in-a-new-home-in-sri-lanka": {
     slug: "what-buyers-actually-look-for-in-a-new-home-in-sri-lanka",
     path: "/blog/what-buyers-actually-look-for-in-a-new-home-in-sri-lanka",
-    metaTitle: "What Buyers Actually Look For in a New Home in Sri Lanka",
+    metaTitle: "What Buyers Look For in a New Sri Lanka Home",
     metaDescription:
       "What new-home buyers in Sri Lanka actually check first — location and commute, floor plans and light, payment terms, and how far along construction really is.",
     title: "What Buyers Actually Look For in a New Home in Sri Lanka",

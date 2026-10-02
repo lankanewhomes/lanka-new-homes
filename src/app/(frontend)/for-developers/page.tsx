@@ -24,12 +24,12 @@ export const revalidate = 300;
 // touches /for-developers, so it gets a fully separate set of styles.
 
 export const metadata: Metadata = {
-  title: "List Your Development on LankaNewHomes | For Developers & Builders",
+  title: "List Your Project | For Developers",
   description:
     "A premium platform for discovering new property in Sri Lanka. Publish your development, present it beautifully, and reach buyers actively searching — free to list.",
   alternates: { canonical: "/for-developers" },
   openGraph: {
-    title: "List Your Development on LankaNewHomes | For Developers & Builders",
+    title: "List Your Project | For Developers",
     description:
       "A premium platform for discovering new property in Sri Lanka. Publish your development, present it beautifully, and reach buyers actively searching.",
     url: "/for-developers",

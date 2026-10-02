@@ -16,12 +16,12 @@ import { WebDesignQuickjump } from "@/components/marketplace/web-design-quickjum
 // loaded here.
 
 export const metadata: Metadata = {
-  title: "Website Design for Property Developers | LankaNewHomes",
+  title: "Website Design for Property Developers",
   description:
     "Beyond your LankaNewHomes listing — we design and build dedicated project websites for developers, or redesign an existing one, from scratch. See a sample homepage.",
   alternates: { canonical: "/web-design" },
   openGraph: {
-    title: "Website Design for Property Developers | LankaNewHomes",
+    title: "Website Design for Property Developers",
     description:
       "Beyond your LankaNewHomes listing — we design and build dedicated project websites for developers, or redesign an existing one, from scratch.",
     url: "/web-design",
