@@ -18513,3 +18513,36 @@ body:has(.compare-bar) {
   text-decoration: underline;
   color: inherit;
 }
+
+/* Guide detail pages (owner, 2026-10-02). */
+.guide-detail-card p {
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+.guide-detail-faqs {
+  display: grid;
+  gap: 14px;
+}
+
+.guide-detail-faq summary {
+  cursor: pointer;
+  font-size: 18px;
+  list-style-position: inside;
+}
+
+.guide-detail-faq p {
+  margin-top: 12px;
+}
+
+.guide-detail-note h2 {
+  margin: 0 0 12px;
+  font-weight: 400;
+  color: #fff;
+}
+
+.guide-detail-note p {
+  max-width: 820px;
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.7;
+}

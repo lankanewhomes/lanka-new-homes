@@ -17,65 +17,112 @@ const PAGE_LABELS: Record<string, string> = {
   "/guides/golden-visa": "Golden Visa Guide",
 };
 
-const GUIDE_EYEBROWS: Record<string, string> = {
-  "foreigners-buying-property": "Buyer's Guide",
-  "investment-property": "Investor's Guide",
-  "golden-visa": "Residency Guide",
-};
-
 export function GuidePageShell({ guide }: { guide: Guide }) {
   const breadcrumbJsonLd = buildBreadcrumbJsonLd(guide.breadcrumbs);
   const faqJsonLd = buildFaqJsonLd(guide.faqs);
 
+  const TINTS = ["gray", "cream", "lilac"] as const;
+
+  // Owner, 2026-10-02: "also this" (/guides/golden-visa and the other guide
+  // pages) after redesigning /guides — same contained-box system as /guides,
+  // /about and /press (docs/design.md "Page section style: contained
+  // boxes"). Copy still comes from src/lib/guides.ts; no eyebrow label.
   return (
-    <article className="guide-page">
+    <article className="fdv-page guides-page guide-detail">
       <script {...jsonLdScriptProps(breadcrumbJsonLd)} />
       {guide.faqs.length > 0 ? <script {...jsonLdScriptProps(faqJsonLd)} /> : null}
 
-      <div className="guide-page-intro">
-        <p className="guide-page-eyebrow">{GUIDE_EYEBROWS[guide.slug] ?? "Guide"}</p>
-        <h1>{guide.h1}</h1>
-        <div className="guide-page-answer">
-          <p>{guide.intro}</p>
-        </div>
-      </div>
-
-      <div className="guide-page-sections">
-        {guide.sections.map((section, index) => (
-          <section key={section.heading} className="guide-page-section">
-            <span className="guide-page-section-number">{String(index + 1).padStart(2, "0")}</span>
-            <div>
-              <h2>{section.heading}</h2>
-              <p>{section.body}</p>
+      <section className="fdv-hero fdv-hero--split" aria-label={guide.h1}>
+        <div className="fdv-hero-split-inner">
+          <div className="fdv-hero-content">
+            <h1 className="fdv-hero-headline">{guide.h1}</h1>
+            <p className="fdv-hero-sub">{guide.intro}</p>
+            <div className="fdv-hero-ctas">
+              <Link href="/projects" className="fdv-cta-final-button">Browse new homes</Link>
+              <Link href="/guides" className="fdv-cta-secondary fdv-hero-explore-link">All guides</Link>
             </div>
-          </section>
-        ))}
-      </div>
+          </div>
+
+          <div className="about-hero-panel">
+            <ol className="guides-hero-list" aria-label="In this guide">
+              {guide.sections.map((section, index) => (
+                <li key={section.heading}>
+                  <a href={`#section-${index + 1}`}>
+                    <span className="guides-hero-num">{index + 1}</span>
+                    <span>{section.heading}</span>
+                  </a>
+                </li>
+              ))}
+              {guide.faqs.length > 0 ? (
+                <li>
+                  <a href="#faq">
+                    <span className="guides-hero-num">?</span>
+                    <span>Frequently asked questions</span>
+                  </a>
+                </li>
+              ) : null}
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      {guide.sections.map((section, index) => (
+        <section
+          key={section.heading}
+          className={`fdv-box fdv-box--${TINTS[index % TINTS.length]}`}
+          id={`section-${index + 1}`}
+          aria-label={section.heading}
+        >
+          <div className="wdx-section-head" data-reveal>
+            <h2>{section.heading}</h2>
+          </div>
+          <div className="fdv-box-card guide-detail-card" data-reveal>
+            <span className="fdv-box-card-num">{String(index + 1).padStart(2, "0")}</span>
+            <p>{section.body}</p>
+          </div>
+        </section>
+      ))}
 
       {guide.faqs.length > 0 ? (
-        <section className="guide-page-faq" aria-label="Frequently asked questions">
-          <h2>Frequently Asked Questions</h2>
-          {guide.faqs.map((faq) => (
-            <details key={faq.question} className="guide-page-faq-item">
-              <summary>{faq.question}</summary>
-              <p>{faq.answer}</p>
-            </details>
-          ))}
+        <section className="fdv-box fdv-box--sage" id="faq" aria-label="Frequently asked questions">
+          <div className="wdx-section-head" data-reveal>
+            <h2>Frequently asked questions.</h2>
+          </div>
+          <div className="guide-detail-faqs" data-reveal>
+            {guide.faqs.map((faq) => (
+              <details key={faq.question} className="fdv-box-card guide-detail-faq">
+                <summary>{faq.question}</summary>
+                <p>{faq.answer}</p>
+              </details>
+            ))}
+          </div>
         </section>
       ) : null}
 
       {guide.relatedPaths.length > 0 ? (
-        <nav className="guide-page-related" aria-label="Related pages">
-          <p>Keep exploring</p>
-          <ul>
+        <section className="fdv-box fdv-box--gray" id="related" aria-label="Related pages">
+          <div className="wdx-section-head" data-reveal>
+            <h2>Keep exploring.</h2>
+            <p>Related guides and the homes they point to.</p>
+          </div>
+          <ul className="about-areas" data-reveal>
             {guide.relatedPaths.map((path) => (
               <li key={path}>
                 <Link href={path}>{PAGE_LABELS[path] ?? path}</Link>
               </li>
             ))}
           </ul>
-        </nav>
+        </section>
       ) : null}
+
+      <section className="fdv-box fdv-box--dark guide-detail-note" aria-label="Before you decide">
+        <h2>Before you decide.</h2>
+        <p>
+          This guide is a starting point, not legal advice. Rules on ownership, taxes and residency can change, so
+          confirm the current position with a qualified lawyer or the relevant authority before you commit to a
+          purchase.
+        </p>
+      </section>
     </article>
   );
 }
