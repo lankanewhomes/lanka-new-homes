@@ -1,6 +1,6 @@
 # Springfield Residencies
 
-- **Slug:** `springfield-residencies` · **Developer:** Global Housing & Real Estate (GHR Global) · **Published:** no (draft — preview at `/listing-preview/springfield-residencies`)
+- **Slug:** `springfield-residencies` · **Developer:** Global Housing & Real Estate (GHR Global) · **Published:** yes (published 2026-10-02) — live at `/projects/springfield-residencies`
 - **Source:** https://www.globalhousing.lk/projects/ongoing/springfield-residencies (developer's own CMS data + brochure)
 - **Location:** Springfield Residencies, Ranawakawatta Road, Thalawathugoda, Thalawathugoda
 - **Type / status:** Townhouse · Under Construction · units 16 · floors — · expected handover —
@@ -40,3 +40,20 @@
 - Only 8 units labelled per row on the brochure master plan (two rows of 8)
 
 _Generated 2026-10-02 from the research files used for the import._
+
+## Second pass: brochure additions applied (2026-10-02)
+
+- Floor-plan facts added: 1 plan updates · Key Features added: 4 · amenities added: 0 · nearby added: 0 · highlights offered: 0
+- Description addendum: no · marketing contact stored: yes
+- Left out on purpose (not added):
+  - Townhouse area (2,116 / 2,190 / 1,590 sq ft) — Brochure prints NO area figure anywhere; floor plan page gives only the unit footprint 7013 mm x 9200 mm (about 64.5 sq m, a derived figure not added). Neither 2,116 nor 2,190 is verifiable from the brochure.
+  - Perches / land extent, per-floor areas, balcony/terrace areas, room dimensions, ceiling height — Not printed in brochure
+  - Bathrooms 2.5 — Brochure plan shows 3 W/C (1 ground, 2 first floor), no bathrooms with showers labelled; stored 2.5 from CMS left unchanged, flag for review
+  - Master plan: 16 units in two rows of 8 (Unit 01-08 each), with green space and a pool/clubhouse-coloured block at row end — Matches stored unit count 16; pool block unlabelled, so no extra fact
+  - Brochure p.1 text: ideal for homeowners and investors, prime investment opportunity — marketing claim
+  - Other GHR projects ROI 120%/200% claims (pages 12-14) — marketing claim, and developer-level
+  - GHR credentials: 12 completed projects, 6 ongoing, 900+ units, 15 cities, No.1 hotel residency developer, construction/banking partners, past projects list — developer-level
+  - Head office: No. 75A Arnold Rathnayaka Mawatha, Colombo 10; Tel +94 11 266 5907 / 268 5867; info@globalgrouplk.com — developer-level contact; conflict check: marketing email marketing@globalgrouplk.com and info@globalgrouplk.com should be compared with website addresses, as the website's addresses were not available to me
+  - Map labels (Kalalgoda Road, Kottawa-Malabe Road, Battaramulla-Pannipitiya Road; category icons for medical, ATM, recreation, restaurants, fuel) — no named places or distances; all printed distances already stored in nearby
+  - Thalawathugoda description: surrounded by greenery and peaceful lakes, easy access to highways and expressways — neighbourhood-level, qualitative
+  - Page numbers — pages cited are the printed PG numbers (floor plan = PG 06)

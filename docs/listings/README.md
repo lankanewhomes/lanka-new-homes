@@ -45,11 +45,11 @@ One file per listing built from a developer's website — what was captured, whe
 - [Rush Broadway](rush-broadway-grandpass.md) — Apartments, Grandpass; 3 plans, 7 images, handover 2011
 - [Rush Villa](rush-villa-dehiwala.md) — Luxury Villas, Dehiwala; 0 plans, 10 images, handover 2010
 - [Rush Residencies, Colombo 6](rush-residencies-colombo-6.md) — Apartments, Colombo 6; 4 plans, 6 images, handover 2007
-- [Ocean Breeze Negombo - Phase 2](ocean-breeze-negombo-phase-two.md) — Apartments, Negombo; 22 plans, 36 images, brochure, handover — (draft)
-- [Ocean Breeze Hikkaduwa](ocean-breeze-residencies-hikkaduwa.md) — Serviced Apartment, Hikkaduwa; 8 plans, 40 images, brochure, handover — (draft)
-- [Ocean Breeze Galle](ocean-breeze-galle.md) — Apartments, Galle; 0 plans, 12 images, handover — (draft)
-- [Edmonton Bliss Residencies](edmonton-bliss-residencies.md) — Apartments, Colombo 5; 5 plans, 18 images, brochure, handover 2028 (draft)
-- [Park Road Residencies](park-road-colombo05.md) — Apartments, Colombo 5; 6 plans, 18 images, brochure, handover 2028 (draft)
-- [Springfield Residencies](springfield-residencies.md) — Townhouse, Thalawathugoda; 2 plans, 20 images, brochure, handover — (draft)
-- [The Kingdom Residencies, Sigiriya](the-kingdom-sigiriya.md) — Apartments, Sigiriya; 2 plans, 17 images, brochure, handover — (draft)
-- [Lakefront Residencies](lakefront-residencies.md) — Apartments, Nuwara Eliya; 10 plans, 37 images, brochure, handover — (draft)
+- [Ocean Breeze Negombo - Phase 2](ocean-breeze-negombo-phase-two.md) — Apartments, Negombo; 22 plans, 36 images, brochure, handover — (published)
+- [Ocean Breeze Hikkaduwa](ocean-breeze-residencies-hikkaduwa.md) — Serviced Apartment, Hikkaduwa; 8 plans, 40 images, brochure, handover — (published)
+- [Ocean Breeze Galle](ocean-breeze-galle.md) — Apartments, Galle; 0 plans, 12 images, handover — (published)
+- [Edmonton Bliss Residencies](edmonton-bliss-residencies.md) — Apartments, Colombo 5; 5 plans, 18 images, brochure, handover 2028 (published)
+- [Park Road Residencies](park-road-colombo05.md) — Apartments, Colombo 5; 6 plans, 18 images, brochure, handover 2028 (published)
+- [Springfield Residencies](springfield-residencies.md) — Townhouse, Thalawathugoda; 2 plans, 20 images, brochure, handover — (published)
+- [The Kingdom Residencies, Sigiriya](the-kingdom-sigiriya.md) — Apartments, Sigiriya; 2 plans, 17 images, brochure, handover — (published)
+- [Lakefront Residencies](lakefront-residencies.md) — Apartments, Nuwara Eliya; 10 plans, 37 images, brochure, handover — (published)

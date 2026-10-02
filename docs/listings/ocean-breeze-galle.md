@@ -1,6 +1,6 @@
 # Ocean Breeze Galle
 
-- **Slug:** `ocean-breeze-galle` · **Developer:** Global Housing & Real Estate (GHR Global) · **Published:** no (draft — preview at `/listing-preview/ocean-breeze-galle`)
+- **Slug:** `ocean-breeze-galle` · **Developer:** Global Housing & Real Estate (GHR Global) · **Published:** yes (published 2026-10-02) — live at `/projects/ocean-breeze-galle`
 - **Source:** https://www.globalhousing.lk/projects/ocean-breeze-galle (developer's own CMS data + brochure)
 - **Location:** Galle - Colombo Road, Galle, Galle
 - **Type / status:** Apartments · Coming Soon · units — · floors — · expected handover —

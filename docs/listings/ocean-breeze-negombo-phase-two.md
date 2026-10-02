@@ -1,6 +1,6 @@
 # Ocean Breeze Negombo - Phase 2
 
-- **Slug:** `ocean-breeze-negombo-phase-two` · **Developer:** Global Housing & Real Estate (GHR Global) · **Published:** no (draft — preview at `/listing-preview/ocean-breeze-negombo-phase-two`)
+- **Slug:** `ocean-breeze-negombo-phase-two` · **Developer:** Global Housing & Real Estate (GHR Global) · **Published:** yes (published 2026-10-02) — live at `/projects/ocean-breeze-negombo-phase-two`
 - **Source:** https://www.globalhousing.lk/projects/ongoing/ocean-breeze-negombo-phase-two (developer's own CMS data + brochure)
 - **Location:** Ocean Breeze Negombo Phase 2, Porutota Rd, Negombo, Negombo
 - **Type / status:** Apartments · Under Construction · units 298 · floors 25 · expected handover —
@@ -63,3 +63,24 @@
 - Contact email not set; brochure lists marketing@globalgrouplk.com and info@globalgrouplk.com, hotline 0768 78 78 78, marketing office No. 52 Sir Marcus Fernando Mawatha, Colombo 10.
 
 _Generated 2026-10-02 from the research files used for the import._
+
+## Second pass: brochure additions applied (2026-10-02)
+
+- Floor-plan facts added: 22 plan updates · Key Features added: 7 · amenities added: 2 · nearby added: 0 · highlights offered: 0
+- Description addendum: no · marketing contact stored: yes
+- Left out on purpose (not added):
+  - Unit total — Brochure p3 prints 298 apartments, matching stored value. 287 (CMS field) and 292 (tracker) are not in the brochure; keep 298.
+  - Available-unit count — Brochure prints no available/sold counts; stored 21 stays from developer site.
+  - Completion year — Not printed anywhere in the 56-page brochure.
+  - Number of floors — p3 says 25 floors: confirms stored 25. Plans show ground, P1-P2, R01-R21 (R13 skipped).
+  - Rooftop pool on '7th floor' — Brochure shows pool deck, clubhouse and fitness center on the 'Residential Floor R07' plan (p40); it does not say '7th floor' or 'podium roof'. R07 label vs physical floor is ambiguous; consider rewording.
+  - Area conflicts — Brochure: Type A 700, Type C 653, Type P 941 sq ft vs stored 702, 652, 940 (p19, p22). Left unchanged for owner decision.
+  - Beach distance — Brochure p49 says Negombo Beach 80M away; stored 50 m (from website). Conflict, not changed.
+  - Other nearby items — Phase 1 900 m/2 min, St Mary's 3 km/8 min, Fort 3.5 km/10 min, airport 8.5 km/25 min all already stored; walking-distance restaurants already stored.
+  - Room dimensions, ceiling heights, balcony areas, maid's room, pantry — Plans are not-to-scale illustrations with no readable dimensions; 'service room' label is not a verified maid's room.
+  - Balcony counts, view labels — View labels (Ocean View; Pool/City on K-P) and balcony counts already stored.
+  - ROI over 200% (Phase 1), over 120% (other projects), 'high yield', 'high occupancy', 'strong rental demand' — marketing claim
+  - Phase 1 operational, 12 completed projects, 900+ units, 15 cities, No.1 hotel residency developer, partners/banks/credentials, Hikkaduwa/Nuwara Eliya/Sigiriya sister projects — developer-level
+  - Contact email conflict — Brochure emails are info@/marketing@globalgrouplk.com; stored phone +94768787878 equals hotline 0768 78 78 78 (consistent). Website addresses may differ.
+  - Payment plan / prices — None printed in the brochure.
+  - Hotel management services — Mentioned for Phase 1 (p50) and already stored.
