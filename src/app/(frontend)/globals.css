@@ -19705,3 +19705,31 @@ body:has(.compare-bar) {
     margin-bottom: 0;
   }
 }
+
+/* Popular searches (owner, 2026-10-02: "different background please", mobile and desktop): the dark box becomes a warm
+   blush with terracotta box lines, so no two home sections share a colour. Text flips to dark. */
+.seo-links-section { background: #f5e8e0; }
+.seo-links-section::before {
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 55px, rgba(168, 98, 64, 0.18) 55px 56px),
+    repeating-linear-gradient(90deg, transparent 0 55px, rgba(168, 98, 64, 0.18) 55px 56px);
+}
+.seo-links-section .featured-listings-head h2 { color: #1f1f1f; }
+.seo-links-section .featured-listings-subhead { color: #6b5b4e; }
+.seo-links-column h3 { color: #8a7566; }
+.seo-links-column a { color: #1f1f1f; }
+.seo-links-column a:hover { color: #1f1f1f; text-decoration: underline; }
+
+/* Hero and developers band content line up with every other home section on desktop: 30px in from the box edge on both
+   sides (owner, 2026-10-02: "check other sections to make it align"). Phones already share one 18px edge. */
+@media (min-width: 761px) {
+  .luxury-hero-two-bleed > .luxury-hero-two {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+
+  .lnh-home .free-listing-band {
+    padding-left: 29px;
+    padding-right: 29px;
+  }
+}
