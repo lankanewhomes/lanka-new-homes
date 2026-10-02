@@ -18255,3 +18255,53 @@ body:has(.compare-bar) {
 /* Home counts labels in normal case — "Projects", "Land Listings", "Floor Plans" (owner, 2026-10-01). */
 .home-stat span,
 .luxury-hero-two-stats .home-stat span { text-transform: none; letter-spacing: 0; font-size: 13px; }
+
+/* For developers band, take 2 (owner, 2026-10-01: "need a different background"): warm cream with dark crossed
+   lines instead of black — text, ticks and button flip to dark to match. */
+.free-listing-band { background: #f7f1e6; color: #1f1f1f; box-shadow: none; border: 1px solid #e6dcc6; }
+.free-listing-band::before {
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(21, 20, 26, 0.07) 28px 29px),
+    repeating-linear-gradient(90deg, transparent 0 28px, rgba(21, 20, 26, 0.07) 28px 29px);
+}
+.free-listing-band-eyebrow, .free-listing-band h2 { color: #1f1f1f; }
+.free-listing-band-copy > p:last-child { color: #5f5a4e; }
+.free-listing-band-tick { background: #1f1f1f; color: #fff; }
+.free-listing-band-cta { border-color: #1f1f1f; color: #1f1f1f; }
+.free-listing-band-cta:hover { background: #f47b36; border-color: #f47b36; color: #fff; }
+.free-listing-band-link { color: #1f1f1f; }
+
+/* "Explore by city" box: soft sage with crossed lines (owner, 2026-10-01: "need a new background and lines"). */
+.neighborhoods-section { position: relative; overflow: hidden; background: #ecf1ea; }
+.neighborhoods-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(21, 20, 26, 0.07) 28px 29px),
+    repeating-linear-gradient(90deg, transparent 0 28px, rgba(21, 20, 26, 0.07) 28px 29px);
+  -webkit-mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
+  mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
+}
+.neighborhoods-section > * { position: relative; z-index: 1; }
+
+/* Home: hero → New listings gap = 34px (owner, 2026-10-01: "the gap … is too much"). The earlier .livabl-home rule
+   forced 120px; this wins on specificity. */
+.livabl-home .home-content { padding-top: 34px; }
+@media (max-width: 760px) { .livabl-home .home-content { padding-top: 34px; } }
+
+/* "Popular searches": dark box with light crossed lines (owner, 2026-10-01: "need a lines"). */
+.seo-links-section { position: relative; overflow: hidden; }
+.seo-links-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(255, 255, 255, 0.07) 28px 29px),
+    repeating-linear-gradient(90deg, transparent 0 28px, rgba(255, 255, 255, 0.07) 28px 29px);
+  -webkit-mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
+  mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
+}
+.seo-links-section > * { position: relative; z-index: 1; }
