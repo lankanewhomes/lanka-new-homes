@@ -60,7 +60,13 @@ export function ProfileForm({ profile }: { profile: Profile }) {
         </label>
         <label className="account-field">
           Profile photo
-          <ImageUrlField value={avatarUrl} onChange={setAvatarUrl} folder="avatars" />
+          <div className="account-avatar-field">
+            {avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element -- user-supplied URL from any host
+              <img src={avatarUrl} alt="Your profile photo" className="account-avatar" />
+            ) : null}
+            <ImageUrlField value={avatarUrl} onChange={setAvatarUrl} folder="avatars" />
+          </div>
         </label>
       </div>
 

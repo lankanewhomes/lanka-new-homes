@@ -4464,8 +4464,8 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 .plans-filter-option {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 12.5px;
+  gap: 12px;
+  font-size: 14px;
   color: #1f1f1f;
   cursor: pointer;
 }
@@ -8670,45 +8670,62 @@ a.developer-profile-press-title {
 .header-account-menu {
   position: absolute;
   right: 0;
-  top: calc(100% + 8px);
-  min-width: 200px;
+  top: calc(100% + 10px);
+  width: 300px;
+  max-width: calc(100vw - 32px);
   background: #fff;
-  border: 1px solid #e4e0d8;
-  border-radius: 10px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
-  padding: 8px;
+  border: 1px solid #d9d9d2;
+  border-radius: 0;
+  box-shadow: 0 18px 44px rgba(10, 15, 23, 0.16);
+  padding: 8px 20px 12px;
   display: grid;
-  gap: 2px;
-  z-index: 40;
+  gap: 0;
+  z-index: 60;
 }
 
 .header-account-menu a,
 .header-account-menu button {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 14px;
   width: 100%;
+  min-height: 48px;
   text-align: left;
-  padding: 9px 10px;
-  border-radius: 6px;
-  font-size: 14px;
+  padding: 0;
+  border-radius: 0;
+  border-top: 1px solid #ececea;
+  font-size: 15px;
+  font-weight: 400;
   color: #1f1f1f;
   background: none;
-  border: none;
+  border-left: 0;
+  border-right: 0;
+  border-bottom: 0;
   cursor: pointer;
 }
 
 .header-account-menu a:hover,
 .header-account-menu button:hover {
-  background: #f7f7f5;
+  background: none;
+  text-decoration: underline;
+}
+
+.header-account-menu-icon {
+  flex: none;
+  width: 18px;
+  height: 18px;
+}
+
+.header-account-logout {
+  margin-top: 6px;
 }
 
 .header-account-email {
-  padding: 6px 10px 10px;
+  padding: 14px 0 14px;
   font-size: 12px;
   color: #6b6355;
-  border-bottom: 1px solid #eee;
-  margin-bottom: 4px;
+  border-bottom: 0;
+  margin-bottom: 0;
   word-break: break-all;
 }
 
@@ -9045,6 +9062,14 @@ a.developer-profile-press-title {
   opacity: 1;
   overflow: hidden;
   transition: max-height 0.25s ease, opacity 0.2s ease, padding-bottom 0.25s ease, margin-bottom 0.25s ease, border-color 0.25s ease;
+}
+
+/* The "More filters" dropdown hangs below this bar, so the bar must not clip it, and it has to stack above the sticky
+   map pane that follows (owner, 2026-10-02: "the filter is behind the map"). Hidden state keeps its clipping. */
+.listing-search-bar:not(.is-hidden) {
+  position: relative;
+  z-index: 50;
+  overflow: visible;
 }
 
 .listing-search-bar.is-hidden {
@@ -9414,14 +9439,14 @@ a.developer-profile-press-title {
   top: calc(100% + 8px);
   right: 0;
   z-index: 41;
-  width: 280px;
-  max-height: min(70vh, 520px);
+  width: 360px;
+  max-height: min(78vh, 640px);
   overflow-y: auto;
   background: #fff;
   border: 1px solid #d8d8d8;
   border-radius: 0;
   box-shadow: 0 18px 44px rgba(10, 15, 23, 0.16);
-  padding: 16px;
+  padding: 24px;
 }
 
 .listing-filter-more-head {
@@ -9458,7 +9483,7 @@ a.developer-profile-press-title {
 }
 
 .listing-filter-more-group {
-  padding: 12px 0;
+  padding: 20px 0;
   border-top: 1px solid #ececec;
 }
 
@@ -9468,7 +9493,7 @@ a.developer-profile-press-title {
 }
 
 .listing-filter-more-group-label {
-  margin: 0 0 8px;
+  margin: 0 0 14px;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.4px;
@@ -9479,7 +9504,7 @@ a.developer-profile-press-title {
 .listing-filter-more-options {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 14px;
 }
 
 .listing-filter-more-option {
@@ -9517,13 +9542,13 @@ a.developer-profile-press-title {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  margin-top: 14px;
-  padding-top: 14px;
+  margin-top: 20px;
+  padding-top: 20px;
   border-top: 1px solid #ececec;
 }
 
 .listing-filter-more-reset {
-  font-size: 12.5px;
+  font-size: 14px;
   font-weight: 600;
   color: #1f1f1f;
   text-decoration: underline;
@@ -19402,4 +19427,37 @@ body:has(.compare-bar) {
   .account-page .account-main .fdv-hero-split-inner { padding: 36px 20px 32px; gap: 24px; }
   .account-page .account-main .fdv-box { padding: 36px 16px 32px; margin-bottom: 20px; }
   .account-page .account-main .fdv-hero { margin-bottom: 20px; }
+}
+
+/* Profile photo (owner, 2026-10-02: "when logged in the profile pic not displaying"). */
+.header-account-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #ececea;
+}
+
+.account-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #d9d9d2;
+  background: #fff;
+}
+
+.account-avatar--hero {
+  margin-bottom: 20px;
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.account-avatar-field {
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+}
+
+.account-avatar-field > :last-child {
+  width: 100%;
 }

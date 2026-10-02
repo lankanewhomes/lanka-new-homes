@@ -41,6 +41,7 @@ export default async function AccountPage() {
     <AccountDashboard
       name={profile.fullName ?? ""}
       email={profile.email ?? ""}
+      avatarUrl={profile.avatarUrl}
       savedProjects={savedProjects}
       followed={savedProfiles}
       savedSearchCount={savedSearches.length}

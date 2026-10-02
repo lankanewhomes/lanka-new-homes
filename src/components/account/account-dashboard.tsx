@@ -24,6 +24,7 @@ function prettySlug(slug: string) {
 export function AccountDashboard({
   name,
   email,
+  avatarUrl,
   savedProjects,
   followed,
   savedSearchCount,
@@ -32,6 +33,7 @@ export function AccountDashboard({
 }: {
   name: string;
   email: string;
+  avatarUrl?: string | null;
   savedProjects: Project[];
   followed: SavedProfileItem[];
   savedSearchCount: number;
@@ -60,6 +62,10 @@ export function AccountDashboard({
       <section className="fdv-hero fdv-hero--split" aria-label="My account">
         <div className="fdv-hero-split-inner">
           <div className="fdv-hero-content">
+            {avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element -- user-supplied URL from any host
+              <img src={avatarUrl} alt="" className="account-avatar account-avatar--hero" />
+            ) : null}
             <h1 className="fdv-hero-headline">Welcome back{name ? `, ${name}` : ""}.</h1>
             <p className="fdv-hero-sub">Signed in as {email}. Your saved homes, followed developers and enquiries are all here.</p>
             <div className="fdv-hero-ctas">

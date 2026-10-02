@@ -8,6 +8,7 @@ type CurrentUser = {
   email: string | null;
   role: "buyer" | "developer";
   developerSlug: string | null;
+  avatarUrl: string | null;
 } | null;
 
 export function useCurrentUser() {
@@ -28,13 +29,14 @@ export function useCurrentUser() {
         return;
       }
 
-      const { data: profile } = await supabase.from("profiles").select("role, developer_slug").eq("id", authUser.id).single();
+      const { data: profile } = await supabase.from("profiles").select("role, developer_slug, avatar_url").eq("id", authUser.id).single();
 
       setUser({
         id: authUser.id,
         email: authUser.email ?? null,
         role: profile?.role === "developer" ? "developer" : "buyer",
         developerSlug: profile?.developer_slug ?? null,
+        avatarUrl: profile?.avatar_url ?? null,
       });
       setLoading(false);
     };
