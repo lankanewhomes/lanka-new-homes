@@ -18783,3 +18783,284 @@ body:has(.compare-bar) {
 .similar-listings-section .listing-grid-card .listing-grid-card-body {
   padding: 12px 4px 6px;
 }
+
+/* /account dashboard (owner, 2026-10-02: "totally new design"). */
+.account-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.account-home-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 10px 16px;
+  background: #fff;
+  border: 1px solid #ececea;
+  color: inherit;
+  text-decoration: none;
+}
+
+.account-home-card:hover {
+  border-color: var(--fdv-ink);
+}
+
+.account-home-card-media {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.account-home-card-img {
+  object-fit: cover;
+}
+
+.account-home-card-name {
+  padding: 0 4px;
+  font-size: 17px;
+}
+
+.account-home-card-meta {
+  padding: 0 4px;
+  font-size: 14px;
+  color: var(--fdv-muted);
+}
+
+.account-empty {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.account-empty p {
+  margin: 0;
+}
+
+.account-link {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.account-more {
+  margin: 20px 0 0;
+}
+
+.account-follow-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.account-follow-list a {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: #fff;
+  border: 1px solid #ececea;
+  color: inherit;
+  text-decoration: none;
+}
+
+.account-follow-list a:hover {
+  border-color: var(--fdv-ink);
+}
+
+.account-follow-logo {
+  position: relative;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #ececea;
+  background: #faf9f6;
+}
+
+.account-follow-logo-img {
+  object-fit: contain;
+  padding: 4px;
+}
+
+.account-follow-text {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.account-follow-text span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-follow-text small {
+  font-size: 13px;
+  color: var(--fdv-muted);
+}
+
+.account-enquiry-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.account-enquiry-list li {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 24px;
+  padding: 16px 20px;
+  background: #fff;
+  border: 1px solid #ececea;
+}
+
+.account-enquiry-date {
+  font-size: 14px;
+  color: var(--fdv-muted);
+}
+
+.account-enquiry-status {
+  min-width: 90px;
+  padding: 4px 12px;
+  border: 1px solid #d9d9d2;
+  font-size: 13px;
+  text-align: center;
+  text-transform: capitalize;
+}
+
+@media (max-width: 900px) {
+  .account-card-grid,
+  .account-follow-list { grid-template-columns: 1fr; }
+  .account-enquiry-list li { grid-template-columns: 1fr auto; }
+  .account-enquiry-date { grid-column: 1; }
+}
+
+/* /account side menu + content column (owner, 2026-10-02: "i need to have the side menu and everything"). */
+.account-shell {
+  /* Same container as the breadcrumb bar above it, so the side menu's left edge lines up with "Home". */
+  width: min(1290px, calc(100% - 48px));
+  margin: 34px auto;
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 34px;
+  align-items: start;
+}
+
+.account-side {
+  position: sticky;
+  top: 24px;
+  padding: 20px;
+  background: #fff;
+  border: 1px solid #ececea;
+}
+
+.account-side ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.account-side a {
+  display: block;
+  padding: 10px 14px;
+  border: 1px solid #ececea;
+  color: inherit;
+  text-decoration: none;
+  font-size: 15px;
+}
+
+.account-side a:hover {
+  border-color: var(--fdv-ink);
+}
+
+.account-side a[aria-current="page"] {
+  background: var(--fdv-ink);
+  border-color: var(--fdv-ink);
+  color: #fff;
+}
+
+.account-main {
+  min-width: 0;
+}
+
+/* Section boxes fill the column beside the side menu instead of centring at 1280px. */
+.account-page .account-main .fdv-hero,
+.account-page .account-main .fdv-box,
+.account-page .account-main section.fdv-hero.fdv-hero--split {
+  width: 100%;
+  margin: 0 0 34px;
+}
+
+.account-page .account-main .fdv-hero-split-inner {
+  width: 100%;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 1100px) {
+  .account-page .account-main .fdv-hero-split-inner { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); }
+}
+
+.account-page .account-main > :last-child {
+  margin-bottom: 0;
+}
+
+/* Odd fifth stat spans the panel's full width. */
+.account-page .about-hero-panel-stat:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+  border-right: 0;
+}
+
+@media (max-width: 900px) {
+  .account-shell { grid-template-columns: 1fr; }
+  .account-side { position: static; }
+}
+
+/* Account sub-page cards: two-up grid and action buttons. */
+.account-card-grid--2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.account-card-actions {
+  margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 4px 0;
+}
+
+.account-btn {
+  padding: 9px 16px;
+  background: #fff;
+  border: 1px solid #d9d9d2;
+  color: inherit;
+  font: inherit;
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.account-btn:hover {
+  border-color: var(--fdv-ink);
+}
+
+.account-btn--dark {
+  background: var(--fdv-ink);
+  border-color: var(--fdv-ink);
+  color: #fff;
+}
+
+@media (max-width: 900px) {
+  .account-card-grid--2 { grid-template-columns: 1fr; }
+}

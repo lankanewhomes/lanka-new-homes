@@ -21,6 +21,7 @@ export default async function ArchitectsPage() {
       entityLabel="Architect"
       basePath="/architects"
       companies={architects}
+      layout="columns"
     />
   );
 }

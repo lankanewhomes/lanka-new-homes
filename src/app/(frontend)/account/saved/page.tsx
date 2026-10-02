@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getCurrentProfile } from "@/lib/auth";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
-import { DashboardHeader, DashboardSidebar, ACCOUNT_NAV_LINKS } from "@/components/dashboard/components";
+import { AccountShell, AccountPageHero } from "@/components/account/account-shell";
 import { SavedPropertiesList } from "@/components/account/saved-properties-list";
 import type { Project } from "@/types";
 
@@ -27,12 +27,16 @@ export default async function SavedListingsPage() {
     .filter((project): project is Project => Boolean(project));
 
   return (
-    <div className="grid gap-4 px-4 pt-6 pb-16 lg:grid-cols-[220px_1fr] lg:px-6 lg:pt-8">
-      <DashboardSidebar links={ACCOUNT_NAV_LINKS} />
-      <section>
-        <DashboardHeader title="Saved properties" subtitle="Listings you've bookmarked." />
+    <AccountShell active="/account/saved">
+      <AccountPageHero
+        title="Saved properties."
+        intro="The listings you have bookmarked. Compare them side by side or remove the ones you are done with."
+        stat={{ label: "Saved properties", value: projects.length }}
+        cta={{ label: "Browse new homes", href: "/projects" }}
+      />
+      <section className="fdv-box fdv-box--gray" id="saved" aria-label="Saved properties">
         <SavedPropertiesList userId={profile.id} initialProjects={projects} />
       </section>
-    </div>
+    </AccountShell>
   );
 }

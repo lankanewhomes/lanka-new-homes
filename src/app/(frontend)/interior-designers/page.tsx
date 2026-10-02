@@ -21,6 +21,7 @@ export default async function InteriorDesignersPage() {
       entityLabel="Interior Designer"
       basePath="/interior-designers"
       companies={designers}
+      layout="columns"
     />
   );
 }

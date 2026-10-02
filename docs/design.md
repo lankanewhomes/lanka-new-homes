@@ -2677,3 +2677,17 @@ founding-spots banner), How it works (gray, 4 cards), Placements (sage, sample c
 `PricingQuickjump` lists every section anchor. **Owner: keep this page in sync with any future pricing /
 package / placement change** — update `src/lib/packages.ts`, the How-it-works copy, the Placements cards and the
 FAQ answers together, and remind the owner to regenerate the pricing PDF.
+
+
+## Buyer account area (/account/*)
+
+Redesigned 2026-10-02 in the contained-box system. `AccountShell`
+(`src/components/account/account-shell.tsx`) puts the side menu
+(`ACCOUNT_NAV_LINKS`, `src/lib/account-nav.ts`) beside the content column;
+`AccountPageHero` is the dark split hero with one live count. Section boxes fill
+the column (`.account-page .account-main` overrides the 1280px centring). Cards
+are white with a 1px `#ececea` border and square corners (`.account-home-card`);
+action buttons are `.account-btn`. `/account` and `/account/saved` are done; the
+other sub-pages (developments, compare, alerts, enquiries, profile, settings)
+still use the old layout — move them onto `AccountShell` next. The login, signup
+and password pages are intentionally left as they were.
