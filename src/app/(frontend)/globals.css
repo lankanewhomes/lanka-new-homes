@@ -19527,7 +19527,7 @@ body:has(.compare-bar) {
     margin-bottom: 20px;
   }
   .account-page .account-main .fdv-hero-split-inner { padding: 36px 20px 32px; gap: 24px; }
-  .account-page .account-main .fdv-box { padding: 36px 16px 32px; margin-bottom: 20px; }
+  .account-page .account-main .fdv-box { padding: 36px 18px 32px; margin-bottom: 34px; }
   .account-page .account-main .fdv-hero { margin-bottom: 20px; }
 }
 
@@ -19644,11 +19644,7 @@ body:has(.compare-bar) {
 
 /* Home page: the header's inner container matches the hero and the sections below it (owner, 2026-10-02: "nav menu also
    should be same width as hero"). Other pages keep the 1290px header that lines up with their breadcrumbs. */
-@media (min-width: 761px) {
-  body:has(.lnh-home) .site-header-inner {
-    width: min(1244px, calc(100% - 36px));
-  }
-}
+
 
 /* Footer copyright line centred on phones (owner, 2026-10-02: "make it center … mobile"). */
 @media (max-width: 760px) {
@@ -19731,5 +19727,55 @@ body:has(.compare-bar) {
   .lnh-home .free-listing-band {
     padding-left: 29px;
     padding-right: 29px;
+  }
+}
+
+/* One container for every section page (owner, 2026-10-02: "make the sections consistent … like the new listings section on
+   the home page … do it for all the other pages"): header, breadcrumb, section boxes, hero and footer all share the home
+   page's 1244px container, so left edge, left padding (30px) and right padding match everywhere. The blog and the listing /
+   detail pages keep their own wider layouts. */
+@media (min-width: 761px) {
+  body:has(.fdv-page):not(:has(.blog-page)) .site-header-inner,
+  body:has(.fdv-page):not(:has(.blog-page)) .site-breadcrumb-inner,
+  body:has(.fdv-page):not(:has(.blog-page)) .footer-inner,
+  body:has(.lnh-home) .site-header-inner,
+  .fdv-page .fdv-box,
+  .fdv-page .fdv-hero-split-inner,
+  .account-shell {
+    width: min(1244px, calc(100% - 36px));
+  }
+
+  /* Hero content starts 30px in, like the section boxes below it. */
+  .fdv-page .fdv-hero-split-inner {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+}
+
+/* Phones: section boxes and heroes run edge to edge, with their content 18px in (the home page's phone layout). */
+@media (max-width: 760px) {
+  .fdv-page .fdv-box {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: 34px;
+    padding: 36px 18px 32px;
+  }
+
+  .fdv-page .fdv-hero-split-inner {
+    width: 100%;
+    padding: 36px 18px 32px;
+  }
+
+  .account-shell {
+    width: 100%;
+  }
+
+  .account-side {
+    margin: 0 18px;
+  }
+
+  .account-page .account-main .fdv-box {
+    margin-bottom: 34px;
   }
 }
