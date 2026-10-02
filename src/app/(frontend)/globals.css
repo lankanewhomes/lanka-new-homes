@@ -18240,3 +18240,18 @@ body:has(.compare-bar) {
   mask-image: radial-gradient(ellipse 85% 100% at center, #000 40%, transparent 100%);
 }
 .free-listing-band > * { position: relative; z-index: 1; }
+
+/* About blocks, take 3 (owner, 2026-10-01: "i dont like this … background"): dark box with the light crossed-line
+   texture — same look as the For developers band, so it reads as part of the site, not a grey card. */
+.developer-about-box { background: #1f1f1f; border-color: #1f1f1f; }
+.developer-about-box::before {
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(255, 255, 255, 0.07) 28px 29px),
+    repeating-linear-gradient(90deg, transparent 0 28px, rgba(255, 255, 255, 0.07) 28px 29px);
+}
+.developer-about-box h2 { color: #fff; }
+.developer-about-box p { color: rgba(255, 255, 255, 0.78); }
+
+/* Home counts labels in normal case — "Projects", "Land Listings", "Floor Plans" (owner, 2026-10-01). */
+.home-stat span,
+.luxury-hero-two-stats .home-stat span { text-transform: none; letter-spacing: 0; font-size: 13px; }

@@ -361,8 +361,8 @@ export function HomeClient({
             <p className="luxury-hero-two-stats-lead">Live counts of what is listed on LankaNewHomes right now — straight from developers and builders.</p>
             <div className="luxury-hero-two-stats-row">
               <Link href="/projects" className="home-stat"><strong>{projects.length}</strong><span>Projects</span></Link>
-              <Link href="/land" className="home-stat"><strong>{lands.length}</strong><span>Land listings</span></Link>
-              <Link href="/projects" className="home-stat"><strong>{floorPlanCount}</strong><span>Floor plans</span></Link>
+              <Link href="/land" className="home-stat"><strong>{lands.length}</strong><span>Land Listings</span></Link>
+              <Link href="/projects" className="home-stat"><strong>{floorPlanCount}</strong><span>Floor Plans</span></Link>
             </div>
           </div>
           <form className="hero-search luxury-hero-two-top-search" onSubmit={submitSearch}>

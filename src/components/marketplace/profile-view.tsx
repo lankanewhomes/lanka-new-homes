@@ -49,7 +49,8 @@ export function ProfileView({
   projects: Project[];
   reviews?: Review[];
 }) {
-  const [tab, setTab] = useState<Tab>("projects");
+  // A developer with only land parcels (e.g. Gangani Land Sales) opens on the Lands tab.
+  const [tab, setTab] = useState<Tab>(projects.length > 0 && projects.every((project) => project.isLand) ? "lands" : "projects");
   const { saved: following, toggle: toggleFollow } = useSavedProfile(entityType, entity.slug);
   const { t, tPrice } = useListingT();
   const [locationFilter, setLocationFilter] = useState("all");
@@ -64,8 +65,9 @@ export function ProfileView({
   // Built projects and land parcels are listed on separate tabs when a developer has both (owner, 2026-10-01).
   const landProjects = useMemo(() => projects.filter((project) => project.isLand), [projects]);
   const homeProjects = useMemo(() => projects.filter((project) => !project.isLand), [projects]);
-  const splitTabs = landProjects.length > 0 && homeProjects.length > 0;
-  const listProjects = tab === "lands" ? landProjects : splitTabs ? homeProjects : projects;
+  const hasLandsTab = landProjects.length > 0;
+  const hasProjectsTab = homeProjects.length > 0 || !hasLandsTab;
+  const listProjects = tab === "lands" ? landProjects : hasLandsTab ? homeProjects : projects;
 
   const locations = useMemo(() => Array.from(new Set(listProjects.map((project) => project.location))).sort(), [listProjects]);
 
@@ -202,8 +204,8 @@ export function ProfileView({
 
       <div className="developer-profile-main">
         <div className="developer-profile-tabs" role="tablist">
-          <button type="button" role="tab" aria-selected={tab === "projects"} className={tab === "projects" ? "active" : undefined} onClick={() => { setTab("projects"); setLocationFilter("all"); setShown(LIST_PAGE_SIZE); }}>{splitTabs || homeProjects.length > 0 ? `Projects (${homeProjects.length})` : "Projects"}</button>
-          {splitTabs ? <button type="button" role="tab" aria-selected={tab === "lands"} className={tab === "lands" ? "active" : undefined} onClick={() => { setTab("lands"); setLocationFilter("all"); setShown(LIST_PAGE_SIZE); }}>Lands ({landProjects.length})</button> : null}
+          {hasProjectsTab ? <button type="button" role="tab" aria-selected={tab === "projects"} className={tab === "projects" ? "active" : undefined} onClick={() => { setTab("projects"); setLocationFilter("all"); setShown(LIST_PAGE_SIZE); }}>{hasLandsTab ? `Projects (${homeProjects.length})` : "Projects"}</button> : null}
+          {hasLandsTab ? <button type="button" role="tab" aria-selected={tab === "lands"} className={tab === "lands" ? "active" : undefined} onClick={() => { setTab("lands"); setLocationFilter("all"); setShown(LIST_PAGE_SIZE); }}>Lands ({landProjects.length})</button> : null}
           <button type="button" role="tab" aria-selected={tab === "reviews"} className={tab === "reviews" ? "active" : undefined} onClick={() => setTab("reviews")}>Reviews</button>
           <button type="button" role="tab" aria-selected={tab === "awards"} className={tab === "awards" ? "active" : undefined} onClick={() => setTab("awards")}>Awards</button>
           <button type="button" role="tab" aria-selected={tab === "press"} className={tab === "press" ? "active" : undefined} onClick={() => setTab("press")}>Press mentions</button>
