@@ -18371,9 +18371,9 @@ body:has(.compare-bar) {
 
 /* Home "Land for Sale in Sri Lanka" box: soft olive with horizontal ruled lines (owner, 2026-10-01: "different lines
    and background") — distinct from the blue-gray dots of New listings. */
-.new-listings-section.land-listings-section { background: #f1f2e4; }
+.new-listings-section.land-listings-section { background: #e3e6d2; }
 .new-listings-section.land-listings-section::before {
-  background-image: repeating-linear-gradient(0deg, transparent 0 31px, rgba(96, 108, 52, 0.13) 31px 32px);
+  background-image: repeating-linear-gradient(0deg, transparent 0 31px, rgba(86, 98, 44, 0.2) 31px 32px);
   background-size: auto;
   -webkit-mask-image: radial-gradient(ellipse 85% 100% at center, #000 40%, transparent 100%);
   mask-image: radial-gradient(ellipse 85% 100% at center, #000 40%, transparent 100%);
@@ -18383,3 +18383,46 @@ body:has(.compare-bar) {
    narrower box (owner, 2026-10-01: "align to the left … matching the developer directory"). */
 .developer-directory .developer-about-box,
 .developer-page .developer-about-box { width: 100%; margin: 34px 0 0; }
+
+/* Hero background runs edge to edge; the hero content keeps its contained width (owner, 2026-10-01: "this section
+   full width. just the bg"). The grey + crossed lines moved from .luxury-hero-two to this full-width wrapper. */
+.luxury-hero-two-bleed {
+  position: relative;
+  width: 100%;
+  background: #f1f0ec;
+  margin-bottom: 0;
+  overflow: hidden;
+}
+.luxury-hero-two-bleed::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(21, 20, 26, 0.07) 28px 29px),
+    repeating-linear-gradient(90deg, transparent 0 28px, rgba(21, 20, 26, 0.07) 28px 29px);
+  -webkit-mask-image: radial-gradient(ellipse 85% 100% at center, #000 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 85% 100% at center, #000 40%, transparent 100%);
+}
+.luxury-hero-two-bleed > .luxury-hero-two { background: transparent; }
+.luxury-hero-two-bleed > .luxury-hero-two::before { display: none; }
+
+/* Box-grid lines (owner, 2026-10-01): bigger boxes on the Land box, medium boxes on the developers band. */
+.new-listings-section.land-listings-section::before {
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 63px, rgba(86, 98, 44, 0.2) 63px 64px),
+    repeating-linear-gradient(90deg, transparent 0 63px, rgba(86, 98, 44, 0.2) 63px 64px);
+}
+.free-listing-band::before {
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 39px, rgba(244, 123, 54, 0.2) 39px 40px),
+    repeating-linear-gradient(90deg, transparent 0 39px, rgba(244, 123, 54, 0.2) 39px 40px);
+}
+
+/* Land box, take 3 (owner, 2026-10-01: "change the bg"): muted warm greige with brown box lines. */
+.new-listings-section.land-listings-section { background: #e4ddd2; }
+.new-listings-section.land-listings-section::before {
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 63px, rgba(110, 88, 56, 0.2) 63px 64px),
+    repeating-linear-gradient(90deg, transparent 0 63px, rgba(110, 88, 56, 0.2) 63px 64px);
+}

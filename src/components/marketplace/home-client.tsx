@@ -342,6 +342,7 @@ export function HomeClient({
   ];
 
   return <div className="livabl-home">
+    <div className="luxury-hero-two-bleed">
     <section className="luxury-hero-two" aria-label="Luxury listing search hero">
       <div className="luxury-hero-two-media">
         <div className="luxury-hero-two-track" style={{ transform: `translateX(-${heroSlide * 100}%)` }}>
@@ -383,6 +384,7 @@ export function HomeClient({
           </div>
       </div>
     </section>
+    </div>
 
     {mobileSearchOpen ? (
       <div className="mobile-location-search" role="dialog" aria-modal="true" aria-label="Location search">
