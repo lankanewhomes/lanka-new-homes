@@ -58,29 +58,108 @@ export default async function NeighborhoodsPage() {
     }))
     .filter((group) => group.neighborhoods.length > 0);
 
-  return (
-    <div className="developer-directory">
-      <h1 className="text-3xl">Neighborhood Guides</h1>
-      <p className="text-sm text-stone-600">Areas across Sri Lanka where new homes are being built, listed A to Z. Each guide covers transport, schools, hospitals, typical prices and the projects for sale there.</p>
+  const withHomes = neighborhoods
+    .filter((neighborhood) => (projectCounts.get(neighborhood.slug) ?? 0) > 0)
+    .sort((a, b) => (projectCounts.get(b.slug) ?? 0) - (projectCounts.get(a.slug) ?? 0) || a.name.localeCompare(b.name))
+    .slice(0, 6);
+  const TINTS = ["gray", "cream", "lilac", "sage"] as const;
 
-      <div className="developer-directory-grid">
-        {groups.map((group) => (
-          <div key={group.label} className="developer-directory-card">
+  // Owner, 2026-10-02: redesign /neighborhoods in the contained-box system
+  // (docs/design.md "Page section style: contained boxes"), same as /about,
+  // /guides and /press. Counts are live; nothing estimated.
+  return (
+    <div className="fdv-page neighborhoods-page">
+      <section className="fdv-hero fdv-hero--split" aria-label="Neighborhood guides">
+        <div className="fdv-hero-split-inner">
+          <div className="fdv-hero-content">
+            <h1 className="fdv-hero-headline">Neighborhood guides for Sri Lanka.</h1>
+            <p className="fdv-hero-sub">
+              Areas across Sri Lanka where new homes are being built, listed A to Z. Each guide covers transport,
+              schools, hospitals and the projects for sale there.
+            </p>
+            <div className="fdv-hero-ctas">
+              <Link href="/projects" className="fdv-cta-final-button">Browse new homes</Link>
+              <Link href="/land" className="fdv-cta-secondary fdv-hero-explore-link">Land for sale</Link>
+            </div>
+          </div>
+          <div className="about-hero-panel">
+            <dl className="about-hero-panel-grid" aria-label="Neighborhood guides by the numbers">
+              <div className="about-hero-panel-stat">
+                <dd>{neighborhoods.length}</dd>
+                <dt>Areas covered</dt>
+              </div>
+              <div className="about-hero-panel-stat">
+                <dd>{[...projectCounts.keys()].filter((slug) => neighborhoods.some((n) => n.slug === slug)).length}</dd>
+                <dt>Areas with homes for sale</dt>
+              </div>
+            </dl>
+            <p className="fdv-hero-mock-caption">Live counts from the platform.</p>
+          </div>
+        </div>
+      </section>
+
+      {withHomes.length > 0 ? (
+        <section className="fdv-box fdv-box--sage" id="with-homes" aria-label="Areas with the most new homes">
+          <div className="wdx-section-head" data-reveal>
+            <h2>Where new homes are being built.</h2>
+            <p>The areas with the most projects listed right now.</p>
+          </div>
+          <div className="fdv-box-grid fdv-box-grid--3" data-reveal>
+            {withHomes.map((neighborhood) => {
+              const count = projectCounts.get(neighborhood.slug) ?? 0;
+              return (
+                <Link key={neighborhood.slug} href={`/neighborhoods/${neighborhood.slug}`} className="fdv-box-card fdv-box-card-link">
+                  <h3>{neighborhood.name}</h3>
+                  <p>{neighborhood.city}{neighborhood.district ? `, ${neighborhood.district}` : ""}</p>
+                  <p className="guides-card-who">{count} {count === 1 ? "project" : "projects"} for sale</p>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      ) : null}
+
+      {groups.map((group, index) => (
+        <section key={group.label} className={`fdv-box fdv-box--${TINTS[index % TINTS.length]}`} id={`letters-${index + 1}`} aria-label={`Areas ${group.label}`}>
+          <div className="wdx-section-head" data-reveal>
             <h2>{group.label}</h2>
+          </div>
+          <ul className="neighborhoods-chip-list" data-reveal>
+            {group.neighborhoods.map((neighborhood) => {
+              const count = projectCounts.get(neighborhood.slug) ?? 0;
+              return (
+                <li key={neighborhood.slug}>
+                  <Link href={`/neighborhoods/${neighborhood.slug}`}>
+                    {neighborhood.name}
+                    {count > 0 ? <span>{count} {count === 1 ? "project" : "projects"}</span> : null}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ))}
+
+      <section className="fdv-box fdv-box--dark guides-howto" aria-label="About the neighborhood guides">
+        <div className="guides-howto-grid">
+          <div className="guides-howto-text">
+            <h2>About the neighborhood guides.</h2>
+            <p>
+              Each guide describes one area: how to get around, the schools and hospitals nearby, famous places,
+              and the new projects and land for sale there.
+            </p>
+            <p>Use them to compare areas before you shortlist a project, then open a listing to see its own map.</p>
+          </div>
+          <div className="guides-howto-box">
+            <h3>Keep exploring</h3>
             <ul>
-              {group.neighborhoods.map((neighborhood) => {
-                const count = projectCounts.get(neighborhood.slug) ?? 0;
-                return (
-                  <li key={neighborhood.slug}>
-                    <Link href={`/neighborhoods/${neighborhood.slug}`}>{neighborhood.name}</Link>
-                    {count > 0 ? <span className="developer-directory-count">{count} {count === 1 ? "project" : "projects"}</span> : null}
-                  </li>
-                );
-              })}
+              <li><Link href="/projects"><strong>All new projects</strong><span>Apartments, villas and houses across Sri Lanka.</span></Link></li>
+              <li><Link href="/land"><strong>Land for sale</strong><span>Plots from developers and builders.</span></Link></li>
+              <li><Link href="/guides"><strong>Buying guides</strong><span>Foreign ownership, investment and residency.</span></Link></li>
             </ul>
           </div>
-        ))}
-      </div>
+        </div>
+      </section>
     </div>
   );
 }

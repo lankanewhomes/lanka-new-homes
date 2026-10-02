@@ -18614,3 +18614,33 @@ body:has(.compare-bar) {
 @media (max-width: 900px) {
   .guides-howto-grid { grid-template-columns: 1fr; }
 }
+
+/* /neighborhoods A-Z chip lists (owner, 2026-10-02). */
+.neighborhoods-chip-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.neighborhoods-chip-list a {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 10px 16px;
+  background: #fff;
+  border: 1px solid var(--fdv-line);
+  color: inherit;
+  text-decoration: none;
+}
+
+.neighborhoods-chip-list a:hover {
+  border-color: var(--fdv-ink);
+}
+
+.neighborhoods-chip-list a span {
+  font-size: 13px;
+  color: var(--fdv-muted);
+}
