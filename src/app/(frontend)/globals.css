@@ -18511,12 +18511,36 @@ body:has(.compare-bar) {
    full width. just the bg"). The grey + crossed lines moved from .luxury-hero-two to this full-width wrapper. */
 .luxury-hero-two-bleed {
   position: relative;
-  /* Same width and side edges as every other home section (owner, 2026-10-02: "make the hero section on home page
-     same width as other sections"): the 1280px home container minus its 18px side padding. */
+  /* Desktop: same width and side edges as every other home section (owner, 2026-10-02: "make the hero section on home
+     page same width as other sections"): the 1280px home container minus its 18px side padding. */
   width: min(1244px, calc(100% - 36px));
   background: #f1f0ec;
   margin: 34px auto 0;
   overflow: hidden;
+}
+
+/* Phones only (owner, 2026-10-02: "hero section bg on home page full width. content stays the same … for both mobile
+   only"): the hero background runs edge to edge while its content keeps the same inset as the sections below. */
+@media (max-width: 760px) {
+  .luxury-hero-two-bleed {
+    width: 100%;
+    margin: 0;
+    padding-top: 34px;
+  }
+
+  .luxury-hero-two-bleed > .luxury-hero-two {
+    width: min(1244px, calc(100% - 36px));
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* The live-counts box too: background edge to edge, text and tiles keep their 48px inset. */
+  .lnh-home .home-content > .home-stats {
+    margin-left: -18px;
+    margin-right: -18px;
+    padding-left: 48px;
+    padding-right: 48px;
+  }
 }
 .luxury-hero-two-bleed::before {
   content: "";
