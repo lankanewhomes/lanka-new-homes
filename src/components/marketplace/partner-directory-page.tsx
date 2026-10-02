@@ -25,6 +25,7 @@ export function PartnerDirectoryPage({
   entries,
   about,
   related,
+  layout = "cards",
   children,
 }: {
   title: string;
@@ -35,8 +36,20 @@ export function PartnerDirectoryPage({
   entries: PartnerDirectoryEntry[];
   about: { title: string; paragraphs: string[] };
   related: { label: string; href: string; note?: string }[];
+  /** "columns" lists names as buttons in A-F / G-L / M-R / S-Z columns, like /developers. */
+  layout?: "cards" | "columns";
   children?: React.ReactNode;
 }) {
+  const LETTER_GROUPS = [
+    { label: "A – F", test: (l: string) => l >= "A" && l <= "F" },
+    { label: "G – L", test: (l: string) => l >= "G" && l <= "L" },
+    { label: "M – R", test: (l: string) => l >= "M" && l <= "R" },
+    { label: "S – Z", test: (l: string) => l >= "S" && l <= "Z" },
+  ];
+  const groups = LETTER_GROUPS
+    .map((group) => ({ label: group.label, entries: entries.filter((entry) => group.test(entry.name.trim().charAt(0).toUpperCase())) }))
+    .filter((group) => group.entries.length > 0);
+
   return (
     <div className="fdv-page directory-page">
       {children}
@@ -67,7 +80,22 @@ export function PartnerDirectoryPage({
           <h2>All {nounPlural}, A to Z.</h2>
           <p>Open a profile to see their location, years in business and contact details.</p>
         </div>
-        {entries.length > 0 ? (
+        {entries.length > 0 && layout === "columns" ? (
+          <div className="directory-columns" data-reveal>
+            {groups.map((group) => (
+              <div className="fdv-box-card" key={group.label}>
+                <h3>{group.label}</h3>
+                <ul>
+                  {group.entries.map((entry) => (
+                    <li key={entry.slug}>
+                      <Link href={`${basePath}/${entry.slug}`}>{entry.name}</Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        ) : entries.length > 0 ? (
           <div className="partner-directory-grid" data-reveal>
             {entries.map((entry) => (
               <PartnerDirectoryCard

@@ -21,6 +21,7 @@ export default async function MarketingCompaniesPage() {
       entityLabel="Marketing Company"
       basePath="/marketing-companies"
       companies={companies}
+      layout="columns"
     />
   );
 }

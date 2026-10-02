@@ -75,8 +75,6 @@ export default async function DevelopersPage() {
     }))
     .filter((group) => group.developers.length > 0);
 
-  const TINTS = ["gray", "cream", "lilac", "sage"] as const;
-
   // Owner, 2026-10-02: redesign /developers in the contained-box system
   // shared with /about, /guides and /neighborhoods. Pinned Developer Pro /
   // Campaign developers keep their own section above the A-Z groups.
@@ -123,20 +121,26 @@ export default async function DevelopersPage() {
         </section>
       ) : null}
 
-      {groups.map((group, index) => (
-        <section key={group.label} className={`fdv-box fdv-box--${TINTS[index % TINTS.length]}`} id={`letters-${index + 1}`} aria-label={`Developers ${group.label}`}>
-          <div className="wdx-section-head" data-reveal>
-            <h2>{group.label}</h2>
-          </div>
-          <ul className="neighborhoods-chip-list" data-reveal>
-            {group.developers.map((developer) => (
-              <li key={developer.slug}>
-                <Link href={`/developers/${developer.slug}`}>{developer.name}</Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ))}
+      <section className="fdv-box fdv-box--gray" id="all-developers" aria-label="All developers, A to Z">
+        <div className="wdx-section-head" data-reveal>
+          <h2>All developers, A to Z.</h2>
+          <p>Open a profile to see every project a developer has listed.</p>
+        </div>
+        <div className="directory-columns" data-reveal>
+          {groups.map((group) => (
+            <div className="fdv-box-card" key={group.label}>
+              <h3>{group.label}</h3>
+              <ul>
+                {group.developers.map((developer) => (
+                  <li key={developer.slug}>
+                    <Link href={`/developers/${developer.slug}`}>{developer.name}</Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </section>
 
       <section className="fdv-box fdv-box--dark guides-howto" aria-label="About the developer directory">
         <div className="guides-howto-grid">

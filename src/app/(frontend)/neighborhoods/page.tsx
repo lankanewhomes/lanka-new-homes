@@ -62,7 +62,6 @@ export default async function NeighborhoodsPage() {
     .filter((neighborhood) => (projectCounts.get(neighborhood.slug) ?? 0) > 0)
     .sort((a, b) => (projectCounts.get(b.slug) ?? 0) - (projectCounts.get(a.slug) ?? 0) || a.name.localeCompare(b.name))
     .slice(0, 6);
-  const TINTS = ["gray", "cream", "lilac", "sage"] as const;
 
   // Owner, 2026-10-02: redesign /neighborhoods in the contained-box system
   // (docs/design.md "Page section style: contained boxes"), same as /about,
@@ -119,26 +118,32 @@ export default async function NeighborhoodsPage() {
         </section>
       ) : null}
 
-      {groups.map((group, index) => (
-        <section key={group.label} className={`fdv-box fdv-box--${TINTS[index % TINTS.length]}`} id={`letters-${index + 1}`} aria-label={`Areas ${group.label}`}>
-          <div className="wdx-section-head" data-reveal>
-            <h2>{group.label}</h2>
-          </div>
-          <ul className="neighborhoods-chip-list" data-reveal>
-            {group.neighborhoods.map((neighborhood) => {
-              const count = projectCounts.get(neighborhood.slug) ?? 0;
-              return (
-                <li key={neighborhood.slug}>
-                  <Link href={`/neighborhoods/${neighborhood.slug}`}>
-                    {neighborhood.name}
-                    {count > 0 ? <span>{count} {count === 1 ? "project" : "projects"}</span> : null}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
-      ))}
+      <section className="fdv-box fdv-box--gray" id="all-areas" aria-label="All areas, A to Z">
+        <div className="wdx-section-head" data-reveal>
+          <h2>All areas, A to Z.</h2>
+          <p>Open a guide to see transport, schools, hospitals and the projects for sale there.</p>
+        </div>
+        <div className="directory-columns" data-reveal>
+          {groups.map((group) => (
+            <div className="fdv-box-card" key={group.label}>
+              <h3>{group.label}</h3>
+              <ul>
+                {group.neighborhoods.map((neighborhood) => {
+                  const count = projectCounts.get(neighborhood.slug) ?? 0;
+                  return (
+                    <li key={neighborhood.slug}>
+                      <Link href={`/neighborhoods/${neighborhood.slug}`}>
+                        {neighborhood.name}
+                        {count > 0 ? <span>{count} {count === 1 ? "project" : "projects"}</span> : null}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </section>
 
       <section className="fdv-box fdv-box--dark guides-howto" aria-label="About the neighborhood guides">
         <div className="guides-howto-grid">

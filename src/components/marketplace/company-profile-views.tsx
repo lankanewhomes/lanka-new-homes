@@ -8,14 +8,17 @@ export function CompanyProfileListView({
   entityLabel,
   basePath,
   companies,
+  layout,
 }: {
   title: string;
   intro: string;
   entityLabel: string;
   basePath: string;
   companies: CompanyProfile[];
+  layout?: "cards" | "columns";
 }) {
-  const plural = `${entityLabel.toLowerCase()}s`;
+  const singular = entityLabel.toLowerCase();
+  const plural = singular.endsWith("y") ? `${singular.slice(0, -1)}ies` : `${singular}s`;
   return (
     <PartnerDirectoryPage
       title={`${title}.`}
@@ -24,6 +27,7 @@ export function CompanyProfileListView({
       nounPlural={plural}
       basePath={basePath}
       entries={companies}
+      layout={layout}
       about={{
         title: `About the ${entityLabel.toLowerCase()} directory.`,
         paragraphs: [

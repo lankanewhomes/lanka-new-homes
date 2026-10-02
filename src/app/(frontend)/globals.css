@@ -10363,6 +10363,37 @@ a.developer-profile-press-title {
   gap: 8px;
 }
 
+/* Land cards: three fixed columns (perches | land use) so every card lines up; dividers are column borders
+   (owner, 2026-10-02: "we need the perches data" — size is back in the row). */
+.listing-grid-card-facts-row.is-land {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: 0;
+}
+
+.listing-grid-card-facts-row.is-land .listing-grid-card-fact svg {
+  flex: none;
+}
+
+.listing-grid-card-facts-row.is-land .listing-grid-card-fact {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.listing-grid-card-facts-row.is-land .listing-grid-card-fact + .listing-grid-card-fact {
+  padding-left: 8px;
+  border-left: 1px solid #d8d2c6;
+}
+
+.listing-grid-card-facts-row .listing-grid-card-fact {
+  white-space: nowrap;
+}
+
+.listing-grid-card-fact {
+  white-space: nowrap;
+}
+
 .listing-grid-card-fact {
   display: flex;
   align-items: center;
@@ -18447,16 +18478,20 @@ body:has(.compare-bar) {
 
 /* Home listing cards: white card with a border (owner, 2026-10-01: "add a border and white background"). */
 .new-listings-section .listing-grid-card,
-.featured-listings-section .listing-grid-card { background: #fff; border: 1px solid #d9d9d2; padding: 10px; box-sizing: border-box; }
+.featured-listings-section .listing-grid-card { background: #fff; border: 0; border-radius: 0; padding: 10px; box-sizing: border-box; }
+.new-listings-section .listing-grid-card-media,
+.featured-listings-section .listing-grid-card-media,
+.new-listings-section .listing-grid-card-image,
+.featured-listings-section .listing-grid-card-image { border-radius: 0; }
 .new-listings-section .listing-grid-card-body,
 .featured-listings-section .listing-grid-card-body { padding: 12px 4px 6px; }
 
 /* Land box: very light green (a touch greener than Explore by city's sage) with soft green box lines. */
-.new-listings-section.land-listings-section { background: #eef8e8; }
+.new-listings-section.land-listings-section { background: #e8ede2; }
 .new-listings-section.land-listings-section::before {
   background-image:
-    repeating-linear-gradient(0deg, transparent 0 63px, rgba(70, 135, 60, 0.17) 63px 64px),
-    repeating-linear-gradient(90deg, transparent 0 63px, rgba(70, 135, 60, 0.17) 63px 64px);
+    repeating-linear-gradient(0deg, transparent 0 63px, rgba(85, 115, 75, 0.15) 63px 64px),
+    repeating-linear-gradient(90deg, transparent 0 63px, rgba(85, 115, 75, 0.15) 63px 64px);
 }
 
 /* /guides redesign (owner, 2026-10-02): hero guide list + card helpers. */
@@ -18668,4 +18703,83 @@ body:has(.compare-bar) {
 
 @media (max-width: 640px) {
   .directory-page .partner-directory-grid { grid-template-columns: 1fr; }
+}
+
+/* Developer A-Z columns (owner, 2026-10-02). */
+.directory-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.directory-columns h3 {
+  margin: 0 0 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--fdv-line);
+}
+
+.directory-columns ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.directory-columns a {
+  display: block;
+  padding: 10px 16px;
+  background: #fff;
+  border: 1px solid var(--fdv-line);
+  color: inherit;
+  text-decoration: none;
+}
+
+.directory-columns a:hover {
+  border-color: var(--fdv-ink);
+}
+
+.directory-columns a span {
+  margin-left: 10px;
+  font-size: 13px;
+  color: var(--fdv-muted);
+}
+
+/* /land and /projects listing cards (and their category pages): white background and a 1px border (owner, 2026-10-02). The home page's own card rules
+   (.new-listings-section) are unaffected. */
+.listing-page-shell .listing-grid-card {
+  background: #fff;
+  border: 1px solid #ececea;
+  border-radius: 0;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.listing-page-shell .listing-grid-card .listing-grid-card-media,
+.listing-page-shell .listing-grid-card .listing-grid-card-image {
+  border-radius: 0;
+}
+
+.listing-page-shell .listing-grid-card .listing-grid-card-body {
+  padding: 12px 4px 6px;
+}
+
+/* "Similar listings" cards: same white background, thin light-grey border and square corners as /projects and
+   /land (owner, 2026-10-02). */
+.similar-listings-section .listing-grid-card {
+  background: #fff;
+  border: 1px solid #ececea;
+  border-radius: 0;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.similar-listings-section .listing-grid-card .listing-grid-card-media,
+.similar-listings-section .listing-grid-card .listing-grid-card-image {
+  border-radius: 0;
+}
+
+.similar-listings-section .listing-grid-card .listing-grid-card-body {
+  padding: 12px 4px 6px;
 }

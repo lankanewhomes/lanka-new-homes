@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { BedDouble, Building2, ChevronDown, ChevronLeft, ChevronRight, Heart, List, Map as MapIcon, Ruler, Scale, Search, MapPin, SlidersHorizontal, X, ArrowUpDown } from "lucide-react";
+import { BedDouble, ChevronDown, ChevronLeft, ChevronRight, Heart, List, Map as MapIcon, Ruler, Scale, Search, MapPin, SlidersHorizontal, X, ArrowUpDown } from "lucide-react";
 import { formatLkr, withSqFt } from "@/lib/format";
 import { hasPremiumStyleBadge, planRotationWeight } from "@/lib/packages";
 import { useListingT } from "@/lib/i18n/use-listing-t";
@@ -163,7 +163,7 @@ export function ListingGridCard({ project, basePath = "/projects" }: { project: 
   };
 
   return (
-    <article className="listing-grid-card">
+    <article className={`listing-grid-card${isLand ? " is-land" : ""}`}>
       <Link href={href} className="listing-grid-card-media">
         {photos[photoIndex] ? (
           <Image
@@ -237,34 +237,28 @@ export function ListingGridCard({ project, basePath = "/projects" }: { project: 
         <p className="listing-grid-card-agency">{project.developerName}</p>
         <p className="listing-grid-card-address">{project.location}</p>
 
-        <div className="listing-grid-card-facts-row">
+        <div className={`listing-grid-card-facts-row${isLand ? " is-land" : ""}`}>
           {isLand ? (
-            <span className="listing-grid-card-fact">
-              <BedDouble className="h-3.5 w-3.5" aria-hidden="true" />
-              {project.units > 0 ? `${project.units} plot${project.units === 1 ? "" : "s"}` : "—"}
-            </span>
-          ) : (
-            <span className="listing-grid-card-fact">
-              <BedDouble className="h-3.5 w-3.5" aria-hidden="true" />
-              {project.bedrooms && project.bedrooms !== "-" ? `${project.bedrooms} bd` : "—"}
-            </span>
-          )}
-          <span className="listing-grid-card-fact-divider">|</span>
-          <span className="listing-grid-card-fact">
-            <Ruler className="h-3.5 w-3.5" aria-hidden="true" />
-            {isLand
-              ? (hasLandSize ? project.floorAreaRange : "—")
-              : (project.floorAreaRange && project.floorAreaRange !== "-" ? withSqFt(project.floorAreaRange) : "—")}
-          </span>
-          {isLand && project.type ? (
             <>
+              <span className="listing-grid-card-fact">
+                <Ruler className="h-3.5 w-3.5" aria-hidden="true" />
+                {hasLandSize ? project.floorAreaRange.replace(" to ", "–") : "—"}
+              </span>
+              <span className="listing-grid-card-fact">{project.type || "—"}</span>
+            </>
+          ) : (
+            <>
+              <span className="listing-grid-card-fact">
+                <BedDouble className="h-3.5 w-3.5" aria-hidden="true" />
+                {project.bedrooms && project.bedrooms !== "-" ? `${project.bedrooms} bd` : "—"}
+              </span>
               <span className="listing-grid-card-fact-divider">|</span>
               <span className="listing-grid-card-fact">
-                <Building2 className="h-3.5 w-3.5" aria-hidden="true" />
-                {project.type}
+                <Ruler className="h-3.5 w-3.5" aria-hidden="true" />
+                {project.floorAreaRange && project.floorAreaRange !== "-" ? withSqFt(project.floorAreaRange) : "—"}
               </span>
             </>
-          ) : null}
+          )}
         </div>
       </div>
     </article>
