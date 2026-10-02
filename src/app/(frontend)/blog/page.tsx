@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { blogPosts } from "@/lib/blog";
-import { SeoAboutBlock } from "@/components/marketplace/seo-about-block";
 import { BlogListing } from "@/components/marketplace/blog-listing";
 
 export const metadata: Metadata = {
@@ -9,39 +9,79 @@ export const metadata: Metadata = {
   alternates: { canonical: "/blog" },
 };
 
-// Layout follows the reference the owner shared, 2026-09-29 (amini.ai's
-// resources page): a dark full-bleed "Featured article" band (newest post
-// in the current filter, image + content split) above a card grid for the
-// rest, plus category filter pills and a Newest/Oldest sort — see
-// blog-listing.tsx for why that component borrows only the parts of the
-// reference that map to real data (one content type, real categories).
-// On-page title is "News & Insights" (owner, 2026-09-29 — picked over
-// "Blog"/"Insights"/"Resources"); nav and footer links still say "Blog",
-// a shorter label than fits well in that spot — only asked to change the
-// page's own title.
+// Owner, 2026-10-02: "redesign the blog page also" — same contained-box system as /about, /guides and the directories:
+// dark split hero with live counts, a tinted box holding the filters, featured article and article cards, and a closing
+// box with links. Everything shown is real (BlogPost data); no placeholder articles. On-page title stays "News & Insights"
+// (owner, 2026-09-29); the metadata title carries "Blog" to match the /blog URL.
 export default function BlogPage() {
   const posts = Object.values(blogPosts).sort((a, b) => (a.publishDate < b.publishDate ? 1 : -1));
+  const categoryCount = new Set(posts.map((post) => post.category)).size;
 
   return (
-    <div className="fdv-page blog-page">
-      <div className="blog-page-head">
-        <h1>News &amp; Insights</h1>
-        <p className="blog-page-lede">Buying guides, market insights, and web design advice for property developers.</p>
-      </div>
+    <div className="fdv-page blog-index">
+      <section className="fdv-hero fdv-hero--split" aria-label="News and insights">
+        <div className="fdv-hero-split-inner">
+          <div className="fdv-hero-content">
+            <h1 className="fdv-hero-headline">News &amp; insights.</h1>
+            <p className="fdv-hero-sub">
+              Buying guides, market insights, and web design advice for property developers, from LankaNewHomes.
+            </p>
+            <div className="fdv-hero-ctas">
+              <Link href="/guides" className="fdv-cta-final-button">Buying guides</Link>
+              <Link href="/for-developers" className="fdv-cta-secondary fdv-hero-explore-link">For developers</Link>
+            </div>
+          </div>
+          <div className="about-hero-panel">
+            <dl className="about-hero-panel-grid" aria-label="The blog by the numbers">
+              <div className="about-hero-panel-stat">
+                <dd>{posts.length}</dd>
+                <dt>{posts.length === 1 ? "Article" : "Articles"}</dt>
+              </div>
+              <div className="about-hero-panel-stat">
+                <dd>{categoryCount}</dd>
+                <dt>{categoryCount === 1 ? "Category" : "Categories"}</dt>
+              </div>
+            </dl>
+            <p className="fdv-hero-mock-caption">Live counts from the blog.</p>
+          </div>
+        </div>
+      </section>
 
-      {posts.length > 0 ? (
-        <BlogListing posts={posts} />
-      ) : (
-        <p className="blog-page-lede">We&apos;re working on buying guides, market insights, and developer spotlights. Check back soon.</p>
-      )}
+      <section className="fdv-box fdv-box--gray" id="articles" aria-label="Articles">
+        <div className="wdx-section-head" data-reveal>
+          <h2>Latest articles.</h2>
+          <p>Filter by topic, or sort by newest or oldest.</p>
+        </div>
+        {posts.length > 0 ? (
+          <BlogListing posts={posts} />
+        ) : (
+          <div className="fdv-box-card account-empty" data-reveal>
+            <p>We are working on buying guides, market insights and developer spotlights. Check back soon.</p>
+          </div>
+        )}
+      </section>
 
-      <SeoAboutBlock
-        title="About News & Insights"
-        paragraphs={[
-          "News & Insights is where LankaNewHomes publishes practical writing for people who buy, sell or develop property in Sri Lanka: buying guides for new-build homes, notes on how the market and neighbourhoods are changing, and advice for developers on presenting their projects online.",
-          "Browse by category to find what is relevant to you, and sort by newest or oldest. Articles link through to the project, neighbourhood and developer pages they mention, so you can go from reading about an area to seeing the homes available there.",
-        ]}
-      />
+      <section className="fdv-box fdv-box--dark guides-howto" aria-label="About News & Insights">
+        <div className="guides-howto-grid">
+          <div className="guides-howto-text">
+            <h2>About News &amp; Insights.</h2>
+            <p>
+              Practical writing for people who buy, sell or develop property in Sri Lanka: buying guides for new-build homes,
+              notes on how the market and neighbourhoods are changing, and advice for developers on presenting their projects
+              online.
+            </p>
+            <p>Articles link through to the project, neighbourhood and developer pages they mention.</p>
+          </div>
+          <div className="guides-howto-box">
+            <h3>Keep exploring</h3>
+            <ul>
+              <li><Link href="/guides"><strong>Buying guides</strong><span>Foreign ownership, investment and residency.</span></Link></li>
+              <li><Link href="/neighborhoods"><strong>Neighborhood guides</strong><span>Compare areas across Sri Lanka.</span></Link></li>
+              <li><Link href="/projects"><strong>New projects</strong><span>Apartments, villas and houses.</span></Link></li>
+            </ul>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
