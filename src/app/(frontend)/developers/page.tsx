@@ -1,4 +1,3 @@
-import { SeoAboutBlock } from "@/components/marketplace/seo-about-block";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllDevelopers } from "@/lib/developer-store";
@@ -76,46 +75,92 @@ export default async function DevelopersPage() {
     }))
     .filter((group) => group.developers.length > 0);
 
+  const TINTS = ["gray", "cream", "lilac", "sage"] as const;
+
+  // Owner, 2026-10-02: redesign /developers in the contained-box system
+  // shared with /about, /guides and /neighborhoods. Pinned Developer Pro /
+  // Campaign developers keep their own section above the A-Z groups.
   return (
-    <div className="developer-directory">
-      <h1 className="text-3xl">Developer Directory</h1>
-      <p className="text-sm text-stone-600">Companies developing new residential apartment projects in Sri Lanka, listed A to Z.</p>
+    <div className="fdv-page directory-page">
+      <section className="fdv-hero fdv-hero--split" aria-label="Developer directory">
+        <div className="fdv-hero-split-inner">
+          <div className="fdv-hero-content">
+            <h1 className="fdv-hero-headline">Property developers in Sri Lanka.</h1>
+            <p className="fdv-hero-sub">
+              Companies developing new residential projects in Sri Lanka, listed A to Z. Open a profile to see every
+              project they have listed.
+            </p>
+            <div className="fdv-hero-ctas">
+              <Link href="/projects" className="fdv-cta-final-button">Browse new homes</Link>
+              <Link href="/for-developers" className="fdv-cta-secondary fdv-hero-explore-link">List your project</Link>
+            </div>
+          </div>
+          <div className="about-hero-panel">
+            <dl className="about-hero-panel-grid directory-hero-stat" aria-label="Developer directory by the numbers">
+              <div className="about-hero-panel-stat">
+                <dd>{developers.length}</dd>
+                <dt>Developers listed</dt>
+              </div>
+            </dl>
+            <p className="fdv-hero-mock-caption">Live count from the platform.</p>
+          </div>
+        </div>
+      </section>
 
       {pinnedDevelopers.length > 0 ? (
-        <div className="developer-directory-pinned">
-          <h2>Developer Pro</h2>
-          <ul>
+        <section className="fdv-box fdv-box--sage" id="developer-pro" aria-label="Developer Pro">
+          <div className="wdx-section-head" data-reveal>
+            <h2>Developer Pro.</h2>
+            <p>Developers on a Developer Pro or Campaign package.</p>
+          </div>
+          <ul className="neighborhoods-chip-list" data-reveal>
             {pinnedDevelopers.map((developer) => (
               <li key={developer.slug}>
                 <Link href={`/developers/${developer.slug}`}>{developer.name}</Link>
               </li>
             ))}
           </ul>
-        </div>
+        </section>
       ) : null}
 
-      <div className="developer-directory-grid">
-        {groups.map((group) => (
-          <div key={group.label} className="developer-directory-card">
+      {groups.map((group, index) => (
+        <section key={group.label} className={`fdv-box fdv-box--${TINTS[index % TINTS.length]}`} id={`letters-${index + 1}`} aria-label={`Developers ${group.label}`}>
+          <div className="wdx-section-head" data-reveal>
             <h2>{group.label}</h2>
+          </div>
+          <ul className="neighborhoods-chip-list" data-reveal>
+            {group.developers.map((developer) => (
+              <li key={developer.slug}>
+                <Link href={`/developers/${developer.slug}`}>{developer.name}</Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+
+      <section className="fdv-box fdv-box--dark guides-howto" aria-label="About the developer directory">
+        <div className="guides-howto-grid">
+          <div className="guides-howto-text">
+            <h2>About the developer directory.</h2>
+            <p>
+              {`This directory lists the ${developers.length} property developers whose new homes and land are available on LankaNewHomes, from established groups to newer boutique developers. Each profile shows who they are, where they build, and every project they have listed with us.`}
+            </p>
+            <p>
+              Open a profile to see current and upcoming projects, location and years in business, and to send an
+              enquiry directly to their team. Developers list for free, and buyers contact them directly with no
+              agent in between.
+            </p>
+          </div>
+          <div className="guides-howto-box">
+            <h3>Keep exploring</h3>
             <ul>
-              {group.developers.map((developer) => (
-                <li key={developer.slug}>
-                  <Link href={`/developers/${developer.slug}`}>{developer.name}</Link>
-                </li>
-              ))}
+              <li><Link href="/projects"><strong>New projects</strong><span>Apartments, villas and houses.</span></Link></li>
+              <li><Link href="/construction-companies"><strong>Construction companies</strong><span>Builders for your own plot.</span></Link></li>
+              <li><Link href="/for-developers"><strong>For developers</strong><span>List your projects for free.</span></Link></li>
             </ul>
           </div>
-        ))}
-      </div>
-      <SeoAboutBlock
-        title="About the developer directory"
-        paragraphs={[
-          `This directory lists the ${developers.length} property developers whose new homes and land are available on LankaNewHomes, from established groups to newer boutique developers. Each developer has a profile page showing who they are, where they build, and every project they have listed with us.`,
-          "Open a profile to see a developer's current and upcoming projects, their location and years in business, and to send an enquiry directly to their team. Comparing a developer's earlier work with their new launches is one of the most useful checks before you reserve a home.",
-          "Developers list on LankaNewHomes for free, and buyers contact them directly with no agent in between. If you develop property in Sri Lanka and want your projects here, register as a developer from the For Developers page.",
-        ]}
-      />
+        </div>
+      </section>
     </div>
   );
 }

@@ -18644,3 +18644,28 @@ body:has(.compare-bar) {
   font-size: 13px;
   color: var(--fdv-muted);
 }
+
+/* Directory hero: a single stat fills the panel (owner, 2026-10-02). */
+.directory-hero-stat {
+  grid-template-columns: 1fr;
+}
+
+.directory-hero-stat .about-hero-panel-stat {
+  border-right: 0;
+  border-bottom: 0;
+}
+
+/* Directory pages: cards fill the contained box (owner, 2026-10-02). */
+.directory-page .partner-directory-grid {
+  width: 100%;
+  margin: 0;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 1000px) {
+  .directory-page .partner-directory-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .directory-page .partner-directory-grid { grid-template-columns: 1fr; }
+}

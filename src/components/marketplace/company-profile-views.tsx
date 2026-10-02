@@ -1,6 +1,6 @@
 import type { CompanyProfile, ProfileEntityType, Project, Review } from "@/types";
 import { ProfileView } from "@/components/marketplace/profile-view";
-import { PartnerDirectoryCard } from "@/components/marketplace/partner-directory-card";
+import { PartnerDirectoryPage } from "@/components/marketplace/partner-directory-page";
 
 export function CompanyProfileListView({
   title,
@@ -15,35 +15,28 @@ export function CompanyProfileListView({
   basePath: string;
   companies: CompanyProfile[];
 }) {
+  const plural = `${entityLabel.toLowerCase()}s`;
   return (
-    <div>
-      <div className="listing-page-intro">
-        <h1>{title}</h1>
-        <p>{intro}</p>
-      </div>
-
-      <p className="partner-directory-count">
-        {companies.length} {entityLabel.toLowerCase()}{companies.length === 1 ? "" : "s"}
-      </p>
-
-      <div className="partner-directory-grid">
-        {companies.map((company) => (
-          <PartnerDirectoryCard
-            key={company.slug}
-            slug={company.slug}
-            basePath={basePath}
-            name={company.name}
-            logo={company.logo}
-            location={company.location}
-            description={company.description}
-            yearsInBusiness={company.yearsInBusiness}
-            phone={company.phone}
-          />
-        ))}
-      </div>
-
-      {companies.length === 0 ? <p className="partner-directory-count">No {entityLabel.toLowerCase()}s listed yet.</p> : null}
-    </div>
+    <PartnerDirectoryPage
+      title={`${title}.`}
+      intro={intro}
+      noun={entityLabel.toLowerCase()}
+      nounPlural={plural}
+      basePath={basePath}
+      entries={companies}
+      about={{
+        title: `About the ${entityLabel.toLowerCase()} directory.`,
+        paragraphs: [
+          `This directory lists the ${companies.length} ${companies.length === 1 ? entityLabel.toLowerCase() : plural} connected to the new homes on LankaNewHomes. Each has a profile page showing who they are, where they work, how long they have been in business and the projects they are linked to.`,
+          `Open a profile to see their work and get in touch directly. Comparing a few ${plural} on their earlier projects is one of the most useful steps before you choose who to work with.`,
+        ],
+      }}
+      related={[
+        { label: "Developers", href: "/developers", note: "The companies building new homes." },
+        { label: "New projects", href: "/projects", note: "Apartments, villas and houses." },
+        { label: "Neighborhood guides", href: "/neighborhoods", note: "Compare areas across Sri Lanka." },
+      ]}
+    />
   );
 }
 

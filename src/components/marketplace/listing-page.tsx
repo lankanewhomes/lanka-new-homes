@@ -56,17 +56,22 @@ function upcomingMoveInYears(projects: Project[]): string[] {
   return Array.from(years).sort((a, b) => a - b).map(String);
 }
 
-function matchesFilters(project: Project, selections: Record<string, string>): boolean {
+export function matchesFilters(project: Project, selections: Record<string, string>): boolean {
   for (const [label, value] of Object.entries(selections)) {
     if (!value) continue;
     switch (label) {
       case "Home type":
-      case "Land use":
         if (value !== "Any" && project.type !== value) return false;
+        break;
+      case "Land use":
+        // A plot can have several uses — landToProjectShape joins them as "Residential & Commercial".
+        if (value !== "Any" && !project.type.split(" & ").includes(value)) return false;
         break;
       case "Any price": {
         if (value === "Any price") break;
-        const price = project.startingPriceLkr;
+        // Land with only a per-perch price carries that rate in startingPriceLkr — not a total, so it can't
+        // be placed in a total-price bucket.
+        const price = project.priceRange.includes("per perch") ? 0 : project.startingPriceLkr;
         if (value === "Under Rs. 30M" && !(price > 0 && price < 30_000_000)) return false;
         if (value === "Rs. 30M - 60M" && !(price >= 30_000_000 && price <= 60_000_000)) return false;
         if (value === "Rs. 60M+" && !(price > 60_000_000)) return false;
@@ -96,10 +101,14 @@ function matchesFilters(project: Project, selections: Record<string, string>): b
         break;
       case "Any size": {
         if (value === "Any size") break;
-        const perches = parseFloat(project.floorAreaRange);
-        if (value === "Under 20 perches" && !(perches > 0 && perches < 20)) return false;
-        if (value === "20 - 50 perches" && !(perches >= 20 && perches <= 50)) return false;
-        if (value === "50+ perches" && !(perches > 50)) return false;
+        // "10 to 12 perches" is a range: a plot matches a bucket if any part of its range falls inside it.
+        const sizes = (project.floorAreaRange.match(/\d+(?:\.\d+)?/g) ?? []).map(Number);
+        if (sizes.length === 0) return false;
+        const smallest = Math.min(...sizes);
+        const largest = Math.max(...sizes);
+        if (value === "Under 20 perches" && !(smallest < 20)) return false;
+        if (value === "20 - 50 perches" && !(largest >= 20 && smallest <= 50)) return false;
+        if (value === "50+ perches" && !(largest > 50)) return false;
         break;
       }
       case "For sale":

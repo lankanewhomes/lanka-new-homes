@@ -4024,6 +4024,10 @@ export function Footer() {
               <Link href="/neighborhoods">Neighborhoods</Link>
               <Link href="/developers">Developers</Link>
               <Link href="/construction-companies">Construction companies</Link>
+              <Link href="/architects">Architects</Link>
+              <Link href="/interior-designers">Interior designers</Link>
+              <Link href="/marketing-companies">Marketing companies</Link>
+              <Link href="/sales-companies">Sales companies</Link>
             </nav>
           </div>
 

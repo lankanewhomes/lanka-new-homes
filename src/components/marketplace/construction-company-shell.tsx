@@ -1,7 +1,5 @@
-import Link from "next/link";
 import { buildBreadcrumbJsonLd, buildItemListJsonLd, jsonLdScriptProps } from "@/lib/seo";
-import { SeoAboutBlock } from "@/components/marketplace/seo-about-block";
-import { PartnerDirectoryCard } from "@/components/marketplace/partner-directory-card";
+import { PartnerDirectoryPage } from "@/components/marketplace/partner-directory-page";
 import type { ConstructionCompanyPageConfig } from "@/lib/construction-company-categories";
 import type { ConstructionCompany } from "@/types";
 
@@ -21,54 +19,25 @@ export function ConstructionCompanyShell({ config, companies }: { config: Constr
   const breadcrumbJsonLd = buildBreadcrumbJsonLd(config.breadcrumbs);
 
   return (
-    <div>
-      <script {...jsonLdScriptProps(itemListJsonLd)} />
-      <script {...jsonLdScriptProps(breadcrumbJsonLd)} />
-
-      <div className="listing-page-intro">
-        <h1>{config.h1}</h1>
-        <p>{config.intro}</p>
-      </div>
-
-      <p className="partner-directory-count">{companies.length} compan{companies.length === 1 ? "y" : "ies"}</p>
-
-      <div className="partner-directory-grid">
-        {companies.map((company) => (
-          <PartnerDirectoryCard
-            key={company.slug}
-            slug={company.slug}
-            basePath="/construction-companies"
-            name={company.name}
-            logo={company.logo}
-            location={company.location}
-            description={company.description}
-            yearsInBusiness={company.yearsInBusiness}
-            phone={company.phone}
-          />
-        ))}
-      </div>
-
-      <SeoAboutBlock
-        title="Choosing a construction company"
-        paragraphs={[
-          `${config.intro} Each company below has its own profile with its location, years in business and contact details, so you can shortlist a few and speak to them directly.`,
+    <PartnerDirectoryPage
+      title={config.h1}
+      intro={config.intro}
+      noun="company"
+      nounPlural="companies"
+      basePath="/construction-companies"
+      entries={companies}
+      about={{
+        title: "Choosing a construction company.",
+        paragraphs: [
+          `${config.intro} Each company has its own profile with its location, years in business and contact details, so you can shortlist a few and speak to them directly.`,
           "When you compare builders, ask to see completed projects similar to yours, confirm who will supervise the site, and request a written quotation that lists what is and is not included. For a home build it also helps to ask how variations are priced and how payments are tied to progress.",
           "These companies are separate from the property developers on LankaNewHomes, who sell finished or planned homes. Use this directory if you own land and want to build, renovate or add a specialist feature, and use the Developers directory if you want to buy a new home.",
-        ]}
-      />
-
-      {config.relatedPaths.length > 0 ? (
-        <nav className="listing-related-links" aria-label="Related pages">
-          <p>Explore related pages:</p>
-          <ul>
-            {config.relatedPaths.map((path) => (
-              <li key={path}>
-                <Link href={path}>{PAGE_LABELS[path] ?? path}</Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      ) : null}
-    </div>
+        ],
+      }}
+      related={config.relatedPaths.map((path) => ({ label: PAGE_LABELS[path] ?? path, href: path }))}
+    >
+      <script {...jsonLdScriptProps(itemListJsonLd)} />
+      <script {...jsonLdScriptProps(breadcrumbJsonLd)} />
+    </PartnerDirectoryPage>
   );
 }
