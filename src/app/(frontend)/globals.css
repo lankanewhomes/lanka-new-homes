@@ -162,7 +162,7 @@ svg.lucide { stroke-width: 1.5; }
    instead of re-declaring font-family on each individual form control. */
 input, button, select, textarea { font-family: inherit; }
 
-/* Homepage inspired by the supplied Livabl reference */
+/* Homepage styles */
 body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-size: 14px; line-height: 20px; }
 .site-header { height: 82px; display: flex; align-items: center; background: #fff; position: relative; z-index: 90; }
 .site-header-inner { width: min(1290px, calc(100% - 48px)); margin: auto; display: flex; align-items: center; justify-content: space-between; }
@@ -463,7 +463,7 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
 .hero-search input { width: 100%; border: 0; outline: 0; color: #333; font-size: 14px; }
 .hero-search a { display: flex; align-items: center; gap: 15px; padding: 0 21px; min-height: 49px; color: #24221e; background: #f47b36; font-size: 14px; font-weight: 650; border-radius: 3px; }
 
-.livabl-home {
+.lnh-home {
   background: #fff;
   color: #1d2430;
 }
@@ -6181,14 +6181,14 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   font-weight: 400;
 }
 
-.livabl-home .home-content {
+.lnh-home .home-content {
   max-width: 1280px;
   margin: 0 auto;
   padding: 120px 18px 0;
 }
 
 @media (max-width: 760px) {
-  .livabl-home .home-content {
+  .lnh-home .home-content {
     padding-top: 40px;
   }
 }
@@ -6527,10 +6527,10 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
    .home-content's gutter. The padding grows by exactly what the margin pulls out, so the
    content inside stays where it was — only the background widens (owner, 2026-09-23). */
 @media (max-width: 760px) {
-  .livabl-home .new-listings-section,
-  .livabl-home .free-listing-band,
-  .livabl-home .neighborhoods-section,
-  .livabl-home .seo-links-section {
+  .lnh-home .new-listings-section,
+  .lnh-home .free-listing-band,
+  .lnh-home .neighborhoods-section,
+  .lnh-home .seo-links-section {
     margin-left: calc(50% - 50vw);
     margin-right: calc(50% - 50vw);
     padding-left: calc(50vw - 50% + 6px);
@@ -18409,10 +18409,10 @@ body:has(.compare-bar) {
 }
 .neighborhoods-section > * { position: relative; z-index: 1; }
 
-/* Home: hero → New listings gap = 34px (owner, 2026-10-01: "the gap … is too much"). The earlier .livabl-home rule
+/* Home: hero → New listings gap = 34px (owner, 2026-10-01: "the gap … is too much"). The earlier .lnh-home rule
    forced 120px; this wins on specificity. */
-.livabl-home .home-content { padding-top: 34px; }
-@media (max-width: 760px) { .livabl-home .home-content { padding-top: 34px; } }
+.lnh-home .home-content { padding-top: 34px; }
+@media (max-width: 760px) { .lnh-home .home-content { padding-top: 34px; } }
 
 /* "Popular searches": dark box with light crossed lines (owner, 2026-10-01: "need a lines"). */
 .seo-links-section { position: relative; overflow: hidden; }
@@ -18430,7 +18430,7 @@ body:has(.compare-bar) {
 .seo-links-section > * { position: relative; z-index: 1; }
 
 /* Live counts: own box under the hero, same width as New listings (owner, 2026-10-01). */
-.livabl-home .home-content > .home-stats { margin: 0 auto 34px; padding: 28px 30px; }
+.lnh-home .home-content > .home-stats { margin: 0 auto 34px; padding: 28px 30px; }
 .home-stats-lead { margin: 0 0 16px; font-size: 15px; line-height: 1.5; color: #5f6876; }
 .home-stats--row .home-stat { background: #fff; }
 .home-stats--row .home-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
@@ -18461,7 +18461,7 @@ body:has(.compare-bar) {
 .luxury-hero-two-panel .hero-quick-links > * { flex: 1 1 auto; white-space: nowrap; text-align: center; justify-content: center; padding-left: 10px; padding-right: 10px; }
 
 /* Live counts: lilac box + lines (different from the grey), number on top, label underneath. */
-.livabl-home .home-content > .home-stats { background: #f1ecf3; }
+.lnh-home .home-content > .home-stats { background: #f1ecf3; }
 .home-stats--row .home-stat { flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 18px 12px; }
 .home-stats--row .home-stat strong { font-size: 34px; }
 .home-stats--row .home-stat span { font-size: 14px; }
@@ -18511,9 +18511,11 @@ body:has(.compare-bar) {
    full width. just the bg"). The grey + crossed lines moved from .luxury-hero-two to this full-width wrapper. */
 .luxury-hero-two-bleed {
   position: relative;
-  width: 100%;
+  /* Same width and side edges as every other home section (owner, 2026-10-02: "make the hero section on home page
+     same width as other sections"): the 1280px home container minus its 18px side padding. */
+  width: min(1244px, calc(100% - 36px));
   background: #f1f0ec;
-  margin-bottom: 0;
+  margin: 34px auto 0;
   overflow: hidden;
 }
 .luxury-hero-two-bleed::before {
@@ -18550,10 +18552,15 @@ body:has(.compare-bar) {
     repeating-linear-gradient(90deg, transparent 0 63px, rgba(110, 88, 56, 0.2) 63px 64px);
 }
 
-/* New listings box (owner, 2026-10-02: "apply a white background"): plain white with a thin light-grey edge so the box
-   still reads as a contained section. */
-.new-listings-section:not(.land-listings-section) { background: #fff; border: 1px solid #ececea; }
-.new-listings-section:not(.land-listings-section)::before { background-image: none; }
+/* New listings box (owner, 2026-10-01: "change bg … box different size"; 2026-10-02: "make the boxes bigger"): soft mint
+   with a 72px teal box grid. */
+.new-listings-section:not(.land-listings-section) { background: #dfeae8; }
+.new-listings-section:not(.land-listings-section)::before {
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 71px, rgba(40, 100, 96, 0.2) 71px 72px),
+    repeating-linear-gradient(90deg, transparent 0 71px, rgba(40, 100, 96, 0.2) 71px 72px);
+  background-size: auto;
+}
 
 /* For developers band, take 5 (owner, 2026-10-01: "change bg"): soft butter yellow with gold box lines. */
 .free-listing-band { background: #f4efcf; border: 1px solid #e6dc9f; }
@@ -19601,4 +19608,12 @@ body:has(.compare-bar) {
 
 .listing-filter-menu button:hover {
   text-decoration: underline;
+}
+
+/* Home page: the header's inner container matches the hero and the sections below it (owner, 2026-10-02: "nav menu also
+   should be same width as hero"). Other pages keep the 1290px header that lines up with their breadcrumbs. */
+@media (min-width: 761px) {
+  body:has(.lnh-home) .site-header-inner {
+    width: min(1244px, calc(100% - 36px));
+  }
 }

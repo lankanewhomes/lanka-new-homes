@@ -341,7 +341,7 @@ export function HomeClient({
     { path: "/land", breadcrumbLabel: "Lands" },
   ];
 
-  return <div className="livabl-home">
+  return <div className="lnh-home">
     <div className="luxury-hero-two-bleed">
     <section className="luxury-hero-two" aria-label="Luxury listing search hero">
       <div className="luxury-hero-two-media">

@@ -265,7 +265,7 @@ identically to Featured/Move-In Now, just with different label text.
 ## Category listing pages (`/projects/*`, and the pattern for future
 directory-style pages like `/construction-companies/*`)
 
-Reference: Zolo/Livabl-style "Pre Construction & New Homes" layout.
+Reference: a "Pre Construction & New Homes" listing-page layout.
 Built from `src/lib/listing-categories.ts` (config) +
 `src/components/marketplace/listing-shell.tsx` (server: breadcrumb JSON-LD,
 ItemList JSON-LD, related links) + `listing-page.tsx` (client: filter bar,
