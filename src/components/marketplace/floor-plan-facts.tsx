@@ -31,13 +31,13 @@ type FactRow = { label: string; value: React.ReactNode };
 // the owner wasn't referring to.
 const FLOOR_PLAN_FACTS_DESKTOP = [
   "Plan type", "Beds", "Baths", "Ensuite baths", "Powder room", "Total SqFt", "Interior SqFt", "Balcony", "Balcony SqFt", "Terraces", "Terrace SqFt", "Land extent",
-  "Ceiling height", "Floor range", "Aspect", "View", "Price LKR", "Per SqFt", "Maintenance / mo", "Parking", "Parking type",
+  "Ceiling height", "Floor range", "Aspect", "View", "Price LKR", "Per SqFt", "Maintenance / mo", "Parking", "Parking type", "Visitor parking", "EV charging", "Carpark levels",
   "Storage", "Utility area", "Maid's room", "Handover condition", "Furnishing", "AC provision", "Hot water",
   "Units in plan", "Units available", "Availability", "Available floors",
 ];
 
 const FLOOR_PLAN_FACTS_MOBILE = [
-  "Total SqFt", "Interior SqFt", "Balcony", "Balcony SqFt", "Terraces", "Land extent", "Per SqFt", "Maintenance / mo", "Floor range", "View", "Ceiling height", "Parking",
+  "Total SqFt", "Interior SqFt", "Balcony", "Balcony SqFt", "Terraces", "Land extent", "Per SqFt", "Maintenance / mo", "Floor range", "View", "Ceiling height", "Parking", "Visitor parking", "EV charging", "Carpark levels",
   "Storage", "Utility area", "Maid's room", "Handover condition", "Furnishing", "Units available", "Availability", "Available floors",
 ];
 
@@ -50,7 +50,9 @@ function availableFloorsValue(plan: FloorPlan): string | undefined {
   return open.length ? `${open.join(", ")} (of ${floors.length} floors)` : `None — all ${floors.length} floors sold`;
 }
 
-function floorPlanFactRows(plan: FloorPlan, balcony?: string): Map<string, FactRow> {
+export type ProjectBuildingFacts = { visitorParking?: string; evCharging?: boolean; carparkLevels?: number };
+
+function floorPlanFactRows(plan: FloorPlan, balcony?: string, building?: ProjectBuildingFacts): Map<string, FactRow> {
   const rows = new Map<string, FactRow>();
   const add = (label: string, value: React.ReactNode | undefined) => {
     if (value === undefined || value === null || value === "") return;
@@ -82,6 +84,10 @@ function floorPlanFactRows(plan: FloorPlan, balcony?: string): Map<string, FactR
   // No count but the listing has parking (type or note) -> "Available" (owner, 2026-10-01).
   add("Parking", hasNumber(plan.parkingSpaces) ? plan.parkingSpaces : hasText(plan.parkingType) ? "Available" : undefined);
   add("Parking type", hasText(plan.parkingType) ? plan.parkingType : undefined);
+  // Building-wide facts (owner, 2026-10-03: show them on the plan page too; Architect stays listing-only).
+  add("Visitor parking", hasText(building?.visitorParking) ? building?.visitorParking : undefined);
+  add("EV charging", building?.evCharging ? "Yes" : undefined);
+  add("Carpark levels", hasNumber(building?.carparkLevels) ? building?.carparkLevels : undefined);
   add("Storage", yesNoValue(plan.storage));
   add("Utility area", yesNoValue(plan.utilityArea));
   add("Maid's room", yesNoValue(plan.maidsRoom));
@@ -96,8 +102,8 @@ function floorPlanFactRows(plan: FloorPlan, balcony?: string): Map<string, FactR
   return rows;
 }
 
-export function FloorPlanFactSheet({ floorPlan, balcony }: { floorPlan: FloorPlan; balcony?: string }) {
-  const rows = floorPlanFactRows(floorPlan, balcony);
+export function FloorPlanFactSheet({ floorPlan, balcony, building }: { floorPlan: FloorPlan; balcony?: string; building?: ProjectBuildingFacts }) {
+  const rows = floorPlanFactRows(floorPlan, balcony, building);
   const pick = (order: string[]) => order.map((label) => rows.get(label)).filter((row): row is FactRow => Boolean(row));
   const desktopRows = pick(FLOOR_PLAN_FACTS_DESKTOP);
   const mobileRows = pick(FLOOR_PLAN_FACTS_MOBILE);
