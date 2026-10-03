@@ -19907,10 +19907,10 @@ body:has(.compare-bar) {
   background: #fff;
   color: var(--fdv-ink);
   border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 4px;
-  padding: 32px 28px 28px;
+  border-radius: 0;
+  padding: 26px 24px 24px;
   width: 100%;
-  max-width: 480px;
+  max-width: 400px;
   justify-self: center;
 }
 
@@ -19931,4 +19931,16 @@ body:has(.compare-bar) {
     max-width: none;
     padding: 24px 18px;
   }
+}
+
+.login-page .login-step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin-bottom: 10px;
+  border: 1px solid #3a3a38;
+  font-size: 14px;
+  color: #3a3a38;
 }
