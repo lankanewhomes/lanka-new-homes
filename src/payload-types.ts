@@ -2886,6 +2886,10 @@ export interface Project {
   soldUnits?: number | null;
   floors?: number | null;
   carparkLevels?: number | null;
+  /**
+   * Shown as "Visitor parking" in the details table — "Yes", or any detail the developer gives (e.g. "12 visitor bays").
+   */
+  visitorParking?: string | null;
   parkingCount?: number | null;
   parkingType?:
     | (
@@ -7838,6 +7842,7 @@ export interface ProjectsSelect<T extends boolean = true> {
   soldUnits?: T;
   floors?: T;
   carparkLevels?: T;
+  visitorParking?: T;
   parkingCount?: T;
   parkingType?: T;
   parkingType_other?: T;

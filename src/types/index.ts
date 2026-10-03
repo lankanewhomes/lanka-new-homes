@@ -341,6 +341,7 @@ export type Project = SeoFields & {
   floors: number;
   /** Number of dedicated carpark floors/levels, when distinct from the residential floor count. */
   carparkLevels?: number;
+  visitorParking?: string;
   /** Average sale price across all units, when the source data provides a building-wide average distinct from startingPriceLkr (the lowest advertised price). */
   averageUnitPriceLkr?: number;
   /** Average unit floor area across the building, when the source data provides a building-wide average distinct from floorAreaRange. */

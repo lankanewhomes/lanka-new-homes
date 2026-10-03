@@ -31,7 +31,7 @@ const payload = await getPayload({ config: payloadConfig })
 const MIME: Record<string, string> = {
   jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp', svg: 'image/svg+xml', pdf: 'application/pdf',
 }
-const DEV_SLUG = 'global-housing-and-real-estate'
+const DEV_SLUG = process.env.DEV_SLUG ?? 'global-housing-and-real-estate'
 
 type DevAward = { title: string; issuer?: string | null; year?: string | number | null; description?: string | null; url?: string | null; imageFile?: string | null }
 type DevJson = {

@@ -422,6 +422,7 @@ export const Projects: CollectionConfig = {
             { name: 'soldUnits', type: 'number', label: 'Sold Units' },
             { name: 'floors', type: 'number' },
             { name: 'carparkLevels', type: 'number' },
+            { name: 'visitorParking', type: 'text', admin: { description: 'Shown as "Visitor parking" in the details table — "Yes", or any detail the developer gives (e.g. "12 visitor bays").' } },
             { name: 'parkingCount', type: 'number', label: 'Parking Count' },
             ...selectWithOther('parkingType', 'Parking Type', PARKING_TYPE_OPTIONS),
             { name: 'parking', type: 'text', label: 'Parking (Note)', admin: { description: 'Free-text description, e.g. "Laneway/rear access, Driveway" — shown alongside Parking Count/Type above.' } },

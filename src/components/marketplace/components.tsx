@@ -3587,6 +3587,8 @@ export function ProjectNarrativeDetails({ project }: { project: Project }) {
     // Free-text parking note (e.g. "1 dedicated bay per residence").
     { label: "Parking", show: isFact(parkingSummary), value: parkingSummary },
     { label: "Carpark levels", show: (project.carparkLevels ?? 0) > 0, value: String(project.carparkLevels ?? 0) },
+    { label: "Visitor parking", show: isFact(project.visitorParking), value: project.visitorParking ?? "" },
+    { label: "EV charging", show: project.amenities.some((amenity) => amenity.name === "EV Charging"), value: "Yes" },
     { label: "Security", show: isFact(project.security), value: project.security },
     { label: "Electricity", show: isFact(project.electricity), value: project.electricity ?? "" },
     { label: "Tap water", show: isFact(project.tapWater), value: project.tapWater ?? "" },
@@ -3654,6 +3656,7 @@ const MOBILE_FACT_SHEET_ORDER = [
   "Floors",
   "Ownership",
   "Parking",
+  "Visitor parking",
   "Address",
   "Neighborhood",
   "District",
