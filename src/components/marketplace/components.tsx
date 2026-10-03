@@ -2643,7 +2643,7 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
                   <div>
                     <p className="font-semibold">{financingField.label}</p>
                     <div className="space-y-1">
-                      {splitTerms(financingField.value ?? "").map((line) => <p key={line}>{line}</p>)}
+                      {splitSentences(financingField.value ?? "").map((line) => <p key={line}>{line}</p>)}
                     </div>
                   </div>
                 ) : null}
