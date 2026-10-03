@@ -130,20 +130,25 @@ export default async function LandDetailPage({ params }: LandPageProps) {
   // Structured data so search engines and AI assistants can read the listing (SEO/AI audit, 2026-10-01).
   const structuredData = {
     "@context": "https://schema.org",
-    "@type": "Product",
+    // Google's Product rich result needs offers/review/aggregateRating: land with no published price is a plain listing instead.
+    "@type": land.priceLkr > 0 ? "Product" : "RealEstateListing",
     name: land.title,
     description: land.summary?.trim() || fallbackLandDescription(land),
     image: [land.heroImage, ...(land.gallery ?? []).map((item) => item.image)].filter(Boolean),
     category: "Land for sale",
-    brand: { "@type": "Brand", name: land.sellerName },
+    ...(land.priceLkr > 0 ? { brand: { "@type": "Brand", name: land.sellerName } } : { provider: { "@type": "Organization", name: land.sellerName } }),
     url: toAbsoluteUrl(`/land/${land.slug}`),
     ...(land.priceLkr > 0
       ? { offers: { "@type": "Offer", priceCurrency: "LKR", price: land.priceLkr, availability: land.status === "Sold" ? "https://schema.org/SoldOut" : "https://schema.org/InStock", url: toAbsoluteUrl(`/land/${land.slug}`) } }
       : {}),
-    additionalProperty: [
-      { "@type": "PropertyValue", name: "Location", value: land.location },
-      { "@type": "PropertyValue", name: "Status", value: land.status },
-    ],
+    ...(land.priceLkr > 0
+      ? {
+          additionalProperty: [
+            { "@type": "PropertyValue", name: "Location", value: land.location },
+            { "@type": "PropertyValue", name: "Status", value: land.status },
+          ],
+        }
+      : {}),
   };
 
   return (

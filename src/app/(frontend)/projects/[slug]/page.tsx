@@ -94,32 +94,39 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
   ]);
   const similarListings = pickSimilarListings(project, allProjects, 4);
 
+  // Google's Product rich result needs a real offer (offers/review/aggregateRating): a listing with no published
+  // price is a plain RealEstateListing instead of a Product with a price of 0.
+  const hasPrice = project.startingPriceLkr > 0;
   const structuredData = {
     "@context": "https://schema.org",
-    "@type": "Product",
+    "@type": hasPrice ? "Product" : "RealEstateListing",
     name: project.name,
     description: project.summary,
     image: [project.heroImage, ...project.gallery.map((item) => item.image)],
-    brand: {
-      "@type": "Brand",
-      name: project.developerName,
-    },
-    offers: {
-      "@type": "Offer",
-      priceCurrency: "LKR",
-      price: project.startingPriceLkr,
-      availability:
-        project.status === "Coming Soon"
-          ? "https://schema.org/PreOrder"
-          : "https://schema.org/InStock",
-      url: toAbsoluteUrl(`/projects/${project.slug}`),
-    },
-    additionalProperty: [
-      { "@type": "PropertyValue", name: "Bedrooms", value: project.bedrooms },
-      { "@type": "PropertyValue", name: "Bathrooms", value: project.bathrooms },
-      { "@type": "PropertyValue", name: "Floor Area", value: project.floorAreaRange },
-      { "@type": "PropertyValue", name: "Status", value: project.status },
-    ],
+    ...(hasPrice
+      ? {
+          brand: {
+            "@type": "Brand",
+            name: project.developerName,
+          },
+          offers: {
+            "@type": "Offer",
+            priceCurrency: "LKR",
+            price: project.startingPriceLkr,
+            availability:
+              project.status === "Coming Soon"
+                ? "https://schema.org/PreOrder"
+                : "https://schema.org/InStock",
+            url: toAbsoluteUrl(`/projects/${project.slug}`),
+          },
+          additionalProperty: [
+            { "@type": "PropertyValue", name: "Bedrooms", value: project.bedrooms },
+            { "@type": "PropertyValue", name: "Bathrooms", value: project.bathrooms },
+            { "@type": "PropertyValue", name: "Floor Area", value: project.floorAreaRange },
+            { "@type": "PropertyValue", name: "Status", value: project.status },
+          ],
+        }
+      : { provider: { "@type": "Organization", name: project.developerName } }),
     url: toAbsoluteUrl(`/projects/${project.slug}`),
   };
 
