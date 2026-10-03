@@ -19906,12 +19906,28 @@ body:has(.compare-bar) {
 .login-page .login-card {
   background: #fff;
   color: var(--fdv-ink);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 0;
   border-radius: 0;
-  padding: 26px 24px 24px;
+  padding: 36px 32px 32px;
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
   justify-self: center;
+  /* Stands out against the dark hero (owner, 2026-10-03): wide white ring, a soft white glow behind it and a deep
+     drop shadow — no coloured border. */
+  box-shadow: 0 0 0 14px rgba(255, 255, 255, 0.14), 0 0 130px 24px rgba(255, 255, 255, 0.28), 0 40px 80px rgba(0, 0, 0, 0.6);
+}
+
+.login-page .login-card input {
+  min-height: 50px;
+  font-size: 16px;
+  border-color: #a9a498;
+  background: #fbfaf7;
+}
+
+.login-page .login-card input:focus {
+  border-color: #f47b36;
+  outline: 2px solid rgba(244, 123, 54, 0.25);
+  outline-offset: 0;
 }
 
 .login-page .login-card-title {
