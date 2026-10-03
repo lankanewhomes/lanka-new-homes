@@ -2436,7 +2436,6 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
     { label: "Utility / connection fees", value: project.utilityFees },
     { label: "Other applicable fees", value: project.otherFees },
     { label: "Price valid until", value: project.priceValidUntil },
-    { label: "Currency", value: project.startingPriceLkr > 0 ? "LKR (Sri Lankan Rupees)" : "" },
     { label: "Last updated", value: /^\d{4}-\d{2}-\d{2}$/.test(project.pricingUpdated ?? "") ? new Date(`${project.pricingUpdated}T00:00:00Z`).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" }) : project.pricingUpdated },
   ].filter((field) => hasDisplayValue(field.value) && !(floorPlan && field.label === "Available plan prices"));
 
