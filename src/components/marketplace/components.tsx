@@ -58,6 +58,8 @@ import {
   Car,
   Check,
   ChevronLeft,
+  ScrollText,
+  Wrench,
   ChevronDown,
   ChevronRight,
   CircleDollarSign,
@@ -610,6 +612,7 @@ export function ProjectHero({
   // own profile page "Follow" button uses (use-saved-profile.ts).
   const { saved: followingDeveloper, toggle: toggleFollowDeveloper } = useSavedDeveloper(project.developerSlug);
   const hasKeyFeatures = normalizeUnitFeaturesForDisplay(project.unitFeatures).some((group) => group.items.length > 0);
+  const hasOwnershipServices = normalizeUnitFeaturesForDisplay(project.ownershipServices).some((group) => group.items.length > 0);
   const hasCommercialAreas = (project.commercialAreas?.length ?? 0) > 0;
   const fallbackPhotoLabels = [
     "Exterior",
@@ -1149,6 +1152,9 @@ export function ProjectHero({
           <a href={navHref("pricing")} className={activeSection === "pricing" ? "active" : undefined} onClick={() => setActiveSection("pricing")}>{t("Pricing")}</a>
           {hasKeyFeatures ? (
             <a href={navHref("key-features")} className={activeSection === "key-features" ? "active" : undefined} onClick={() => setActiveSection("key-features")}>{t("Key Features")}</a>
+          ) : null}
+          {hasOwnershipServices ? (
+            <a href={navHref("ownership-services")} className={activeSection === "ownership-services" ? "active" : undefined} onClick={() => setActiveSection("ownership-services")}>{t("Ownership & Services")}</a>
           ) : null}
           <a href={navHref("plans-homes")} className={activeSection === "plans-homes" ? "active" : undefined} onClick={() => setActiveSection("plans-homes")}>{t(plansHomesNavLabel)}</a>
           {showAmenitiesAndNeighborhoodNav ? (
@@ -2410,21 +2416,28 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
 
   const perPerch = Boolean(project.isLand) && /per perch/i.test(project.priceRange ?? "");
   const pricingFields = [
-    { label: "Price range", value: perPerch && /\d\s-\s\d/.test(project.priceRange ?? "") ? `Rs. ${project.priceRange}` : "" },
+    { label: "Unit price range", value: perPerch && /\d\s-\s\d/.test(project.priceRange ?? "") ? `Rs. ${project.priceRange}` : "" },
     { label: "Available plan prices", value: project.availablePlanPrices },
     { label: "Pricing coming soon", value: project.pricingComingSoon },
-    { label: "Average price per sqft", value: project.averagePricePerSqft },
-    { label: "Monthly C.C./maint per sqft", value: project.monthlyMaintenancePerSqft },
-    { label: "Property tax", value: project.propertyTax },
-    { label: "Parking cost", value: project.parkingCost },
+    { label: "Price per sq ft", value: project.averagePricePerSqft },
+    { label: "Maintenance / management fee", value: project.monthlyMaintenancePerSqft },
+    { label: "Taxes & government charges", value: project.propertyTax },
+    { label: "Parking fee", value: project.parkingCost },
     { label: "Storage cost", value: project.storageCost },
     { label: "ⓘ Co-op fee realtors", value: project.coopFeeRealtors },
     { label: "Expected rental income", value: project.rentalIncome },
-    { label: "Reservation fee", value: project.reservationFee },
+    { label: "Reservation request", value: project.reservationFee },
+    { label: "Reservation deposit", value: project.reservationDeposit },
+    { label: "Down payment", value: project.downPayment },
+    { label: "Payment plan", value: project.paymentPlan && project.paymentPlan.trim() !== (project.depositPaymentStructure ?? "").trim() && project.depositPaymentStructure ? project.paymentPlan : "" },
+    { label: "Installment schedule", value: project.installmentSchedule },
     { label: "Mortgage / financing", value: project.financingOptions },
     { label: "Legal / transfer fees", value: project.legalFees },
-    { label: "Currency", value: project.startingPriceLkr > 0 ? "LKR (Sri Lankan rupees)" : "" },
-    { label: "Last updated", value: project.pricingUpdated },
+    { label: "Utility / connection fees", value: project.utilityFees },
+    { label: "Other applicable fees", value: project.otherFees },
+    { label: "Price valid until", value: project.priceValidUntil },
+    { label: "Currency", value: project.startingPriceLkr > 0 ? "LKR (Sri Lankan Rupees)" : "" },
+    { label: "Last updated", value: /^\d{4}-\d{2}-\d{2}$/.test(project.pricingUpdated ?? "") ? new Date(`${project.pricingUpdated}T00:00:00Z`).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" }) : project.pricingUpdated },
   ].filter((field) => hasDisplayValue(field.value) && !(floorPlan && field.label === "Available plan prices"));
 
   // On a floor-plan / plot page, this plan's own price figures come first; the
@@ -2441,6 +2454,13 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
       ].filter((field) => hasDisplayValue(field.value))
     : [];
   pricingFields.unshift(...planFields);
+  // Three columns (owner, 2026-10-03): Pricing & fees | Payment & deposit | Additional fees & charges.
+  const PAYMENT_LABELS = ["Reservation request", "Reservation deposit", "Down payment", "Payment plan", "Installment schedule", "Deposit (this plan)"];
+  const FEE_LABELS = ["Parking fee", "Maintenance / management fee", "Maintenance (this plan)", "Legal / transfer fees", "Taxes & government charges", "Utility / connection fees", "Storage cost", "ⓘ Co-op fee realtors", "Other applicable fees"];
+  const paymentFields = pricingFields.filter((field) => PAYMENT_LABELS.includes(field.label));
+  const financingField = pricingFields.find((field) => field.label === "Mortgage / financing");
+  const feeFields = pricingFields.filter((field) => FEE_LABELS.includes(field.label));
+  const mainFields = pricingFields.filter((field) => ![...PAYMENT_LABELS, ...FEE_LABELS, "Mortgage / financing"].includes(field.label));
 
   // Every listing gets a Pricing section — the sticky nav always links to
   // #pricing, and a buyer looks for price first. These rows come from
@@ -2460,7 +2480,8 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
   const hasAnyPricingDetail = Boolean(startingPrice) || planPrices.length > 0 || addOns.length > 0 || pricingFields.length > 0 || pricingHistory.length > 0 || includedUtilities.length > 0 || paidUtilities.length > 0;
 
   const hasPricingCard = true;
-  const hasDepositCard = paymentLines.length > 0;
+  const hasDepositCard = paymentLines.length > 0 || paymentFields.length > 0 || Boolean(financingField);
+  const hasFeesCard = feeFields.length > 0;
   const hasIncentivesCard = incentives.length > 0;
 
   return (
@@ -2487,7 +2508,7 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
         <div className="relative z-10 grid gap-6 lg:grid-cols-3">
           {hasPricingCard ? (
             <article className="border border-[#c9ddf5] bg-white px-6 py-6 text-[#1f2321] shadow-[0_10px_28px_rgba(36,78,54,0.08)]">
-              <h3 className="text-[29px] font-semibold">{t("Pricing and fees")}</h3>
+              <h3 className="text-[29px] font-semibold">{t("Pricing & fees")}</h3>
 
               <div className="mt-7 space-y-4 text-[15px] leading-7">
                 {startingPrice ? (
@@ -2517,7 +2538,7 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
                 {!hasAnyPricingDetail ? <p>Contact us for current pricing and availability.</p> : null}
                 {/* Editors often type several prices/notes as one paragraph ("2-Bedroom from Rs. …. 3-Bedroom
                     from Rs. …. Penthouses are sold out."); show one row per sentence (owner, 2026-09-23). */}
-                {pricingFields.map((field) => (
+                {mainFields.map((field) => (
                   <div key={field.label}>
                     <p className="font-semibold">{field.label}</p>
                     <div className="space-y-1">
@@ -2562,15 +2583,50 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
 
           {hasDepositCard ? (
             <article className="border border-[#c9ddf5] bg-white px-6 py-6 text-[#1f2321] shadow-[0_10px_28px_rgba(36,78,54,0.08)]">
-              <h3 className="text-[29px] font-semibold">{t("Deposit Structure")}</h3>
+              <h3 className="text-[29px] font-semibold">{t("Payment & deposit")}</h3>
 
               <div className="mt-7 space-y-4 text-[15px] leading-7">
-                <div>
-                  <p className="font-semibold">{t("Payment structure")}</p>
-                  <div className="space-y-1">
-                    {paymentLines.map((line, index) => <p key={`${line}-${index}`}>{line}</p>)}
+                {paymentFields.map((field) => (
+                  <div key={field.label}>
+                    <p className="font-semibold">{field.label}</p>
+                    <div className="space-y-1">
+                      {splitSentences(field.value).map((line) => <p key={line}>{line}</p>)}
+                    </div>
                   </div>
-                </div>
+                ))}
+                {paymentLines.length > 0 ? (
+                  <div>
+                    <p className="font-semibold">{t("Payment structure")}</p>
+                    <div className="space-y-1">
+                      {paymentLines.map((line, index) => <p key={`${line}-${index}`}>{line}</p>)}
+                    </div>
+                  </div>
+                ) : null}
+                {financingField ? (
+                  <div>
+                    <p className="font-semibold">{financingField.label}</p>
+                    <div className="space-y-1">
+                      {splitSentences(financingField.value).map((line) => <p key={line}>{line}</p>)}
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            </article>
+          ) : null}
+
+          {hasFeesCard ? (
+            <article className="border border-[#c9ddf5] bg-white px-6 py-6 text-[#1f2321] shadow-[0_10px_28px_rgba(36,78,54,0.08)]">
+              <h3 className="text-[29px] font-semibold">{t("Additional fees & charges")}</h3>
+
+              <div className="mt-7 space-y-4 text-[15px] leading-7">
+                {feeFields.map((field) => (
+                  <div key={field.label}>
+                    <p className="font-semibold">{field.label}</p>
+                    <div className="space-y-1">
+                      {splitSentences(field.value).map((line) => <p key={line}>{line}</p>)}
+                    </div>
+                  </div>
+                ))}
               </div>
             </article>
           ) : null}
@@ -2914,6 +2970,11 @@ function floorPlanFeatureGroup(plan: FloorPlan, label: string): { key: string; l
   return items.length ? { key: "floor-plan", label, items } : null;
 }
 
+// One published name per line (contractors etc.), stacked tight.
+function FactLines({ text }: { text: string }) {
+  return <>{text.split("\n").map((line) => line.trim()).filter(Boolean).map((line, index) => <span key={index} className="block">{line}</span>)}</>;
+}
+
 export function KeyFeaturesSection({ unitFeatures, floorPlan, floorPlanLabel = "This floor plan" }: { unitFeatures: unknown; floorPlan?: FloorPlan; floorPlanLabel?: string }) {
   const { t } = useListingT();
   const planGroup = floorPlan ? floorPlanFeatureGroup(floorPlan, floorPlanLabel) : null;
@@ -2950,6 +3011,47 @@ export function KeyFeaturesSection({ unitFeatures, floorPlan, floorPlanLabel = "
                 <div className="key-features-row-body">
                   {group.items.map((item, index) => (
                     <span key={`${item.field}-${item.value}-${index}`} className="key-features-item">
+                      {item.field ? <><span className="key-features-item-label">{item.field}:</span> {item.value}</> : item.value}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+export function OwnershipServicesSection({ ownershipServices }: { ownershipServices: unknown }) {
+  const { t } = useListingT();
+  const groups = normalizeUnitFeaturesForDisplay(ownershipServices)
+    .map((group) => ({ ...group, items: group.items.filter((item) => hasDisplayValue(item.value)) }))
+    .filter((group) => group.items.length > 0);
+  // Both groups start collapsed, like Key Features.
+  const [openKey, setOpenKey] = useState<string | null>(null);
+  if (!groups.length) return null;
+
+  return (
+    <section id="ownership-services" className="ownership-services-shell" aria-label="Ownership and services">
+      <div className="ownership-services-pattern" aria-hidden="true" />
+      <h2>{t("Ownership & Services")}</h2>
+      <div className="ownership-services-list">
+        {groups.map((group) => {
+          const isOpen = openKey === group.key;
+          const Icon = group.key.startsWith("After") ? Wrench : ScrollText;
+          return (
+            <div key={group.key} className={`ownership-services-accordion ${isOpen ? "open" : ""}`}>
+              <button type="button" className="ownership-services-trigger" aria-expanded={isOpen} onClick={() => setOpenKey(isOpen ? null : group.key)}>
+                <Icon className="h-6 w-6" aria-hidden="true" />
+                <span>{t(group.label)}</span>
+                <ChevronDown className="ownership-services-chevron h-6 w-6" aria-hidden="true" />
+              </button>
+              {isOpen ? (
+                <div className="key-features-row-body ownership-services-body">
+                  {group.items.map((item, index) => (
+                    <span key={`${item.field}-${index}`} className="key-features-item">
                       {item.field ? <><span className="key-features-item-label">{item.field}:</span> {item.value}</> : item.value}
                     </span>
                   ))}
@@ -3626,8 +3728,12 @@ export function ProjectNarrativeDetails({ project }: { project: Project }) {
     { label: "Architect", show: isFact(project.architectName), value: renderEntityLink(project.architectName ?? "", project.architectSlug, "/architects", "overview-link") },
     { label: "Structural engineer", show: isFact(project.structuralEngineer), value: project.structuralEngineer ?? "" },
     { label: "MEP consultant", show: isFact(project.mepConsultant), value: project.mepConsultant ?? "" },
-    { label: "Contractor", show: isFact(project.contractor), value: project.contractor ?? "" },
+    { label: "Main contractor", show: isFact(project.contractor), value: <FactLines text={project.contractor ?? ""} /> },
+    { label: "Superstructure contractor", show: isFact(project.superstructureContractor), value: <FactLines text={project.superstructureContractor ?? ""} /> },
+    { label: (project.finishingContractor ?? "").trim().split("\n").filter(Boolean).length > 1 ? "Finishing contractors" : "Finishing contractor", show: isFact(project.finishingContractor), value: <FactLines text={project.finishingContractor ?? ""} /> },
     { label: "Quantity surveyor", show: isFact(project.quantitySurveyor), value: project.quantitySurveyor ?? "" },
+    { label: "Landscape architect", show: isFact(project.landscapeArchitect), value: project.landscapeArchitect ?? "" },
+    { label: "Project manager", show: isFact(project.projectManagementCompany), value: project.projectManagementCompany ?? "" },
     { label: "Marketing company", show: isFact(project.marketingCompanyName), value: renderEntityLink(project.marketingCompanyName ?? "", project.marketingCompanySlug, "/marketing-companies", "overview-link") },
     { label: "Sales company", show: isFact(project.salesCompanyName), value: renderEntityLink(project.salesCompanyName ?? "", project.salesCompanySlug, "/sales-companies", "overview-link") },
     { label: "Interior designer", show: isFact(project.interiorDesignerName), value: renderEntityLink(project.interiorDesignerName ?? "", project.interiorDesignerSlug, "/interior-designers", "overview-link") },

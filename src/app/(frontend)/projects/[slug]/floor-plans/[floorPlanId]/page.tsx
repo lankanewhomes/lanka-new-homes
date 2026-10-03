@@ -14,6 +14,7 @@ import { withProjectParking } from "@/lib/floor-plan-parking";
 import {
   AmenitiesShowcaseSection,
   KeyFeaturesSection,
+  OwnershipServicesSection,
   PlansAndHomesSection,
   PricingInformationLayout,
   ProjectDescriptionSection,
@@ -117,6 +118,7 @@ export default async function FloorPlanDetailPage({ params }: FloorPlanPageProps
             parking, ensuite baths, maid's room…) already sit in the chips and fact sheet above;
             repeating them as an accordion group just duplicated that. Project-level groups only. */}
         <KeyFeaturesSection unitFeatures={keyFeatures} />
+        <OwnershipServicesSection ownershipServices={project.ownershipServices} />
 
         <AmenitiesShowcaseSection amenities={project.amenities} gallery={project.gallery} heroImage={project.heroImage} />
 

@@ -4952,7 +4952,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   margin: 0 auto;
   border: 1px solid #e5e5e4;
   background: #fff;
-  padding: 24px 28px 28px;
+  padding: 14px 20px 16px;
   font-family: var(--font-ref-sans);
 }
 
@@ -4961,8 +4961,8 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 28px;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
 .construction-progress-heading,
@@ -4981,18 +4981,18 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 }
 
 .construction-progress-year-pill {
-  padding: 5px 14px;
+  padding: 3px 11px;
   border-radius: 999px;
   background: #fef1e8;
   color: #c65a1e;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 400;
 }
 
 .construction-progress-track {
   display: flex;
   align-items: flex-start;
-  margin-bottom: 22px;
+  margin-bottom: 10px;
 }
 
 .construction-progress-step {
@@ -5005,8 +5005,8 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 }
 
 .construction-progress-dot {
-  width: 28px;
-  height: 28px;
+  width: 20px;
+  height: 20px;
   flex-shrink: 0;
   border-radius: 999px;
   border: 2px solid #d9d9d7;
@@ -5025,7 +5025,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 
 .construction-progress-line {
   position: absolute;
-  top: 13px;
+  top: 9px;
   left: 50%;
   width: 100%;
   height: 2px;
@@ -5037,8 +5037,8 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 }
 
 .construction-progress-step-label {
-  margin-top: 10px;
-  font-size: 13px;
+  margin-top: 6px;
+  font-size: 12px;
   font-weight: 400;
   color: #6b6b68;
   max-width: 110px;
@@ -5054,9 +5054,9 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   align-items: center;
   gap: 8px;
   margin: 0;
-  padding: 12px 16px;
+  padding: 7px 12px;
   border: 1px solid #e5e5e4;
-  font-size: 13px;
+  font-size: 12px;
   color: #4a4a48;
 }
 
@@ -5067,12 +5067,12 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   }
 
   .construction-progress-dot {
-    width: 24px;
-    height: 24px;
+    width: 18px;
+    height: 18px;
   }
 
   .construction-progress-line {
-    top: 11px;
+    top: 8px;
   }
 }
 
@@ -5725,7 +5725,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
      mobile; these two didn't, so they sat noticeably more inset than the
      rest of the page instead of matching it. */
   .construction-progress-shell {
-    padding: 18px;
+    padding: 12px 14px;
   }
 
   .construction-timeline-shell {
@@ -8207,8 +8207,9 @@ a.developer-profile-press-title {
   display: flex;
   align-items: center;
   min-height: 46px;
-  padding: 0;
-  border-top: 1px solid #ececea;
+  padding: 0 12px;
+  margin: 0 -12px;
+  border-top: 0;
   border-radius: 0;
   font-weight: 400;
   font-size: 15px;
@@ -8219,9 +8220,13 @@ a.developer-profile-press-title {
   border-top: 0;
 }
 
+.nav-dropdown a:hover {
+  background: rgba(69, 115, 155, 0.08);
+  color: #646464;
+}
+
 .nav-dropdown-menu a:hover {
-  background: none;
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 /* Site footer (Footer in components.tsx). Later in the file than the
@@ -8758,9 +8763,11 @@ a.developer-profile-press-title {
   width: 100%;
   min-height: 48px;
   text-align: left;
-  padding: 0;
+  padding: 0 12px;
+  margin: 0 -12px;
+  width: calc(100% + 24px);
   border-radius: 0;
-  border-top: 1px solid #ececea;
+  border-top: 0;
   font-size: 15px;
   font-weight: 400;
   color: #1f1f1f;
@@ -8773,8 +8780,9 @@ a.developer-profile-press-title {
 
 .header-account-menu a:hover,
 .header-account-menu button:hover {
-  background: none;
-  text-decoration: underline;
+  background: rgba(69, 115, 155, 0.08);
+  color: #646464;
+  text-decoration: none;
 }
 
 .header-account-menu-icon {
@@ -19940,4 +19948,139 @@ body:has(.compare-bar) {
 @media (max-width: 760px) {
   .blog-filterbar { flex-direction: column; align-items: stretch; }
   .blog-filterbar-end { justify-content: space-between; }
+}
+
+/* Draft article notice (owner, 2026-10-02). */
+.blog-draft-notice {
+  margin: 0;
+  padding: 12px 18px;
+  background: #fdf3e0;
+  border-bottom: 1px solid #f2d38a;
+  color: #92670c;
+  font-size: 15px;
+  text-align: center;
+}
+
+/* Top-level nav words ("New Homes for Sale", "Land", "Company") get the same tinted hover as the dropdown rows (owner,
+   2026-10-02). The tint stays on while the dropdown is open. Padding is offset by an equal negative margin so the words
+   do not move. */
+.nav-dropdown > a,
+.nav-dropdown > .nav-dropdown-label {
+  display: inline-block;
+  padding: 8px 12px;
+  margin: -8px -12px;
+}
+
+.nav-dropdown:hover > a,
+.nav-dropdown:focus-within > a,
+.nav-dropdown:hover > .nav-dropdown-label,
+.nav-dropdown:focus-within > .nav-dropdown-label {
+  background: rgba(69, 115, 155, 0.08);
+  color: #646464;
+  text-decoration: none;
+}
+
+.site-header .nav-dropdown a:hover {
+  text-decoration: none;
+}
+
+
+/* Ownership & Services — boxed section beside Key Features (owner, 2026-10-03): its own sage background with a
+   fine line grid, white accordion rows with divider lines. */
+.ownership-services-shell {
+  position: relative;
+  width: min(1160px, 100%);
+  margin: 0 auto;
+  overflow: hidden;
+  border: 1px solid #c9d8c6;
+  background: #e9f1e6;
+  padding: 32px;
+}
+
+.ownership-services-pattern {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.55;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 31px, rgba(86, 122, 80, 0.18) 31px 32px),
+    repeating-linear-gradient(90deg, transparent 0 31px, rgba(86, 122, 80, 0.18) 31px 32px);
+}
+
+.ownership-services-shell h2 {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 14px;
+  font-family: var(--font-ref-sans);
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.15;
+  color: #1f1f1f;
+}
+
+.ownership-services-list {
+  position: relative;
+  z-index: 1;
+  border: 1px solid #b9ccb5;
+  background: #fff;
+}
+
+.ownership-services-accordion {
+  border-top: 1px solid #cfdccb;
+}
+
+.ownership-services-accordion:first-child {
+  border-top: 0;
+}
+
+.ownership-services-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px;
+  background: #fff;
+  color: #3f4a3c;
+  font-family: var(--font-ref-sans);
+  font-size: 15px;
+  text-align: left;
+  transition: background-color 0.15s ease;
+}
+
+.ownership-services-trigger svg {
+  stroke-width: 1.5;
+}
+
+.ownership-services-trigger:hover {
+  background: #f3f8f1;
+}
+
+.ownership-services-trigger span {
+  flex: 1;
+}
+
+.ownership-services-accordion.open .ownership-services-trigger {
+  background: #eef5ec;
+  color: #2f5a2a;
+  box-shadow: inset 3px 0 0 #8db686;
+}
+
+.ownership-services-chevron {
+  transition: transform 0.15s ease;
+}
+
+.ownership-services-accordion.open .ownership-services-chevron {
+  transform: rotate(180deg);
+}
+
+/* Items reuse the Key Features row-body / item styles (same fonts); one column because the values are sentences. */
+.ownership-services-body {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (max-width: 760px) {
+  .ownership-services-shell {
+    padding: 22px 18px;
+  }
+
 }

@@ -293,7 +293,11 @@ export type Project = SeoFields & {
   structuralEngineer?: string;
   mepConsultant?: string;
   contractor?: string;
+  superstructureContractor?: string;
+  finishingContractor?: string;
   quantitySurveyor?: string;
+  landscapeArchitect?: string;
+  projectManagementCompany?: string;
   architectSlug?: string;
   marketingCompanyName?: string;
   marketingCompanySlug?: string;
@@ -348,6 +352,7 @@ export type Project = SeoFields & {
   floors: number;
   /** Number of dedicated carpark floors/levels, when distinct from the residential floor count. */
   carparkLevels?: number;
+  ownershipServices?: unknown;
   visitorParking?: string;
   /** Average sale price across all units, when the source data provides a building-wide average distinct from startingPriceLkr (the lowest advertised price). */
   averageUnitPriceLkr?: number;
@@ -366,6 +371,12 @@ export type Project = SeoFields & {
   averagePricePerSqft?: string;
   monthlyMaintenancePerSqft?: string;
   reservationFee?: string;
+  reservationDeposit?: string;
+  downPayment?: string;
+  installmentSchedule?: string;
+  priceValidUntil?: string;
+  utilityFees?: string;
+  otherFees?: string;
   financingOptions?: string;
   legalFees?: string;
   pricingUpdated?: string;

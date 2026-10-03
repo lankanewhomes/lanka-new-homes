@@ -3,6 +3,7 @@ import {
   CommercialAreasSection,
   ConstructionProgressSection,
   KeyFeaturesSection,
+  OwnershipServicesSection,
   NeighborhoodSection,
   PlansAndHomesSection,
   PricingInformationLayout,
@@ -64,6 +65,7 @@ export function ListingPreviewPage({
           </section>
 
           <KeyFeaturesSection unitFeatures={project.unitFeatures} />
+          <OwnershipServicesSection ownershipServices={project.ownershipServices} />
 
           <AmenitiesShowcaseSection amenities={project.amenities} gallery={project.gallery} heroImage={project.heroImage} />
 

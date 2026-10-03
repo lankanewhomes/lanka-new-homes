@@ -335,6 +335,37 @@ export const unitFeaturesField: Field = {
   ],
 }
 
+// "Ownership & Services" section (owner, 2026-10-03): two fixed groups of buyer-facing facts, shown in their own
+// boxed section next to Key Features. Same {key,label,items[{field,value}]} shape as unitFeatures so one normaliser serves both.
+export const OWNERSHIP_GROUP_OPTIONS = ['Ownership & Purchase', 'After-Sales & Services']
+export const OWNERSHIP_FIELD_OPTIONS = [
+  'Freehold / Leasehold', 'Foreign Ownership', 'Title Information', 'Buyer Eligibility', 'Purchase Requirements', 'Required Documents', 'Legal Requirements',
+  'Warranty', 'Handover Support', 'Property Management', 'Maintenance', 'Resident Services',
+]
+export const ownershipServicesField: Field = {
+  name: 'ownershipServices',
+  type: 'array',
+  label: 'Ownership & Services',
+  admin: { description: 'Shown in the "Ownership & Services" box on the listing. Only what the developer publishes.' },
+  fields: [
+    ...selectWithOther('key', 'Group', OWNERSHIP_GROUP_OPTIONS),
+    {
+      name: 'label',
+      type: 'text',
+      admin: { hidden: true },
+      hooks: { beforeChange: [({ siblingData }) => (typeof siblingData.key_other === 'string' && siblingData.key_other.trim() ? siblingData.key_other.trim() : siblingData.key ?? '')] },
+    },
+    {
+      name: 'items',
+      type: 'array',
+      fields: [
+        ...selectWithOther('field', 'Item', OWNERSHIP_FIELD_OPTIONS),
+        { name: 'value', type: 'text', required: true },
+      ],
+    },
+  ],
+}
+
 export const nearbyField: Field = {
   name: 'nearby',
   type: 'array',

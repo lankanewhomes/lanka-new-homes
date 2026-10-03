@@ -384,13 +384,29 @@ export interface Project {
    */
   mepConsultant?: string | null;
   /**
-   * Main/finishing contractors, as published (e.g. "Superstructure: A; finishing: B").
+   * Main contractor, as published (one per line).
    */
   contractor?: string | null;
   /**
-   * QS / project management firm, as published.
+   * As published, one per line.
+   */
+  superstructureContractor?: string | null;
+  /**
+   * As published, one per line (shown as a list).
+   */
+  finishingContractor?: string | null;
+  /**
+   * QS firm, as published.
    */
   quantitySurveyor?: string | null;
+  /**
+   * As published.
+   */
+  landscapeArchitect?: string | null;
+  /**
+   * Project management company, as published.
+   */
+  projectManagementCompany?: string | null;
   marketing_company?: (number | null) | MarketingCompany;
   sales_company?: (number | null) | SalesCompany;
   interior_designer?: (number | null) | InteriorDesigner;
@@ -2863,9 +2879,13 @@ export interface Project {
   coopFeeRealtors?: string | null;
   depositPaymentStructure?: string | null;
   /**
-   * Reservation / booking fee as the developer states it.
+   * What the developer says about requesting a reservation (e.g. whether it is free). Not a deposit — use Reservation deposit for that.
    */
   reservationFee?: string | null;
+  /**
+   * The reservation deposit amount/terms if published; otherwise e.g. "Not publicly specified; confirmed by the sales team at the time of reservation".
+   */
+  reservationDeposit?: string | null;
   /**
    * Bank loan / financing options the developer offers, as published.
    */
@@ -3318,6 +3338,46 @@ export interface Project {
                * Custom value, used when Value above doesn't have the right option.
                */
               value_other?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Shown in the "Ownership & Services" box on the listing. Only what the developer publishes.
+   */
+  ownershipServices?:
+    | {
+        key?: ('Ownership & Purchase' | 'After-Sales & Services') | null;
+        /**
+         * Custom value, used when Group above doesn't have the right option.
+         */
+        key_other?: string | null;
+        label?: string | null;
+        items?:
+          | {
+              field?:
+                | (
+                    | 'Freehold / Leasehold'
+                    | 'Foreign Ownership'
+                    | 'Title Information'
+                    | 'Buyer Eligibility'
+                    | 'Purchase Requirements'
+                    | 'Required Documents'
+                    | 'Legal Requirements'
+                    | 'Warranty'
+                    | 'Handover Support'
+                    | 'Property Management'
+                    | 'Maintenance'
+                    | 'Resident Services'
+                  )
+                | null;
+              /**
+               * Custom value, used when Item above doesn't have the right option.
+               */
+              field_other?: string | null;
+              value: string;
               id?: string | null;
             }[]
           | null;
@@ -7753,7 +7813,11 @@ export interface ProjectsSelect<T extends boolean = true> {
   structuralEngineer?: T;
   mepConsultant?: T;
   contractor?: T;
+  superstructureContractor?: T;
+  finishingContractor?: T;
   quantitySurveyor?: T;
+  landscapeArchitect?: T;
+  projectManagementCompany?: T;
   marketing_company?: T;
   sales_company?: T;
   interior_designer?: T;
@@ -7857,6 +7921,7 @@ export interface ProjectsSelect<T extends boolean = true> {
   coopFeeRealtors?: T;
   depositPaymentStructure?: T;
   reservationFee?: T;
+  reservationDeposit?: T;
   financingOptions?: T;
   legalFees?: T;
   pricingUpdated?: T;
@@ -7980,6 +8045,22 @@ export interface ProjectsSelect<T extends boolean = true> {
               field_other?: T;
               value?: T;
               value_other?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  ownershipServices?:
+    | T
+    | {
+        key?: T;
+        key_other?: T;
+        label?: T;
+        items?:
+          | T
+          | {
+              field?: T;
+              field_other?: T;
+              value?: T;
               id?: T;
             };
         id?: T;
