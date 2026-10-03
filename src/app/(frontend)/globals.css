@@ -4239,11 +4239,27 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   background: #f7f7f5;
 }
 
+/* Floor Plans / "Other floor plans" / Plots — one contained box with a fine line grid on a cool stone tint
+   (owner, 2026-10-03: background with lines on both, same colours). The cards inside stay white. */
 .plans-homes-shell {
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  background: #fff;
+  width: min(1160px, 100%);
+  margin: 0 auto;
+  padding: 32px;
+  border: 1px solid #d3dae2;
+  background-color: #eceff3;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 31px, rgba(96, 112, 133, 0.16) 31px 32px),
+    repeating-linear-gradient(90deg, transparent 0 31px, rgba(96, 112, 133, 0.16) 31px 32px);
+}
+
+.plans-homes-shell .plans-homes-head {
+  margin-top: 0;
+}
+
+@media (max-width: 760px) {
+  .plans-homes-shell {
+    padding: 22px 14px;
+  }
 }
 
 .plans-contact-banner {
