@@ -11,7 +11,6 @@ import { SimilarListingsSection } from "@/components/marketplace/similar-listing
 import {
   AmenitiesShowcaseSection,
   CommercialAreasSection,
-  ConstructionProgressSection,
   KeyFeaturesSection,
   OwnershipServicesSection,
   NeighborhoodSection,
@@ -163,7 +162,6 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
 
         <ProjectNarrativeDetails project={project} />
 
-        <ConstructionProgressSection project={project} />
 
         <section id="pricing" className="space-y-3">
           <PricingInformationLayout project={project} />
