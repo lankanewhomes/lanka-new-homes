@@ -290,6 +290,10 @@ export type Project = SeoFields & {
   developerSlug: string;
   developerName: string;
   architectName?: string;
+  structuralEngineer?: string;
+  mepConsultant?: string;
+  contractor?: string;
+  quantitySurveyor?: string;
   architectSlug?: string;
   marketingCompanyName?: string;
   marketingCompanySlug?: string;
@@ -361,6 +365,10 @@ export type Project = SeoFields & {
   pricingComingSoon?: string;
   averagePricePerSqft?: string;
   monthlyMaintenancePerSqft?: string;
+  reservationFee?: string;
+  financingOptions?: string;
+  legalFees?: string;
+  pricingUpdated?: string;
   propertyTax?: string;
   rentalIncome?: string;
   parkingCost?: string;

@@ -2420,6 +2420,11 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
     { label: "Storage cost", value: project.storageCost },
     { label: "ⓘ Co-op fee realtors", value: project.coopFeeRealtors },
     { label: "Expected rental income", value: project.rentalIncome },
+    { label: "Reservation fee", value: project.reservationFee },
+    { label: "Mortgage / financing", value: project.financingOptions },
+    { label: "Legal / transfer fees", value: project.legalFees },
+    { label: "Currency", value: project.startingPriceLkr > 0 ? "LKR (Sri Lankan rupees)" : "" },
+    { label: "Last updated", value: project.pricingUpdated },
   ].filter((field) => hasDisplayValue(field.value) && !(floorPlan && field.label === "Available plan prices"));
 
   // On a floor-plan / plot page, this plan's own price figures come first; the
@@ -3619,6 +3624,10 @@ export function ProjectNarrativeDetails({ project }: { project: Project }) {
     { label: "Construction started", show: isFact(constructionStarted), value: constructionStarted },
     { label: "Developer", show: isFact(project.developerName), value: renderEntityLink(project.developerName, project.developerSlug, "/developers", "overview-link") },
     { label: "Architect", show: isFact(project.architectName), value: renderEntityLink(project.architectName ?? "", project.architectSlug, "/architects", "overview-link") },
+    { label: "Structural engineer", show: isFact(project.structuralEngineer), value: project.structuralEngineer ?? "" },
+    { label: "MEP consultant", show: isFact(project.mepConsultant), value: project.mepConsultant ?? "" },
+    { label: "Contractor", show: isFact(project.contractor), value: project.contractor ?? "" },
+    { label: "Quantity surveyor", show: isFact(project.quantitySurveyor), value: project.quantitySurveyor ?? "" },
     { label: "Marketing company", show: isFact(project.marketingCompanyName), value: renderEntityLink(project.marketingCompanyName ?? "", project.marketingCompanySlug, "/marketing-companies", "overview-link") },
     { label: "Sales company", show: isFact(project.salesCompanyName), value: renderEntityLink(project.salesCompanyName ?? "", project.salesCompanySlug, "/sales-companies", "overview-link") },
     { label: "Interior designer", show: isFact(project.interiorDesignerName), value: renderEntityLink(project.interiorDesignerName ?? "", project.interiorDesignerSlug, "/interior-designers", "overview-link") },

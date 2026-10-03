@@ -375,6 +375,22 @@ export interface Project {
   name: string;
   developer: number | Developer;
   architect?: (number | null) | Architect;
+  /**
+   * Shown in the details table. Only what the developer publishes.
+   */
+  structuralEngineer?: string | null;
+  /**
+   * Mechanical, electrical and plumbing consultant/partner, as published.
+   */
+  mepConsultant?: string | null;
+  /**
+   * Main/finishing contractors, as published (e.g. "Superstructure: A; finishing: B").
+   */
+  contractor?: string | null;
+  /**
+   * QS / project management firm, as published.
+   */
+  quantitySurveyor?: string | null;
   marketing_company?: (number | null) | MarketingCompany;
   sales_company?: (number | null) | SalesCompany;
   interior_designer?: (number | null) | InteriorDesigner;
@@ -2846,6 +2862,22 @@ export interface Project {
   storageCost?: string | null;
   coopFeeRealtors?: string | null;
   depositPaymentStructure?: string | null;
+  /**
+   * Reservation / booking fee as the developer states it.
+   */
+  reservationFee?: string | null;
+  /**
+   * Bank loan / financing options the developer offers, as published.
+   */
+  financingOptions?: string | null;
+  /**
+   * Stamp duty, legal or transfer fees as the developer states them.
+   */
+  legalFees?: string | null;
+  /**
+   * Date the pricing above was last checked against the developer, e.g. 2026-10-03.
+   */
+  pricingUpdated?: string | null;
   incentives?: string[] | null;
   /**
    * Extras a buyer can add for more money, e.g. "Infinity pool upgrade" → "+$7,900-$15,800". Shown in the Pricing card.
@@ -7718,6 +7750,10 @@ export interface ProjectsSelect<T extends boolean = true> {
   name?: T;
   developer?: T;
   architect?: T;
+  structuralEngineer?: T;
+  mepConsultant?: T;
+  contractor?: T;
+  quantitySurveyor?: T;
   marketing_company?: T;
   sales_company?: T;
   interior_designer?: T;
@@ -7820,6 +7856,10 @@ export interface ProjectsSelect<T extends boolean = true> {
   storageCost?: T;
   coopFeeRealtors?: T;
   depositPaymentStructure?: T;
+  reservationFee?: T;
+  financingOptions?: T;
+  legalFees?: T;
+  pricingUpdated?: T;
   incentives?: T;
   pricingAddOns?:
     | T
