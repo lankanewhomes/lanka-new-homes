@@ -290,6 +290,7 @@ export type Project = SeoFields & {
   developerSlug: string;
   developerName: string;
   architectName?: string;
+  leadsTo?: string;
   structuralEngineer?: string;
   mepConsultant?: string;
   contractor?: string;
@@ -441,6 +442,8 @@ export type Project = SeoFields & {
     name: string;
     email: string;
     phone: string;
+    address?: string;
+    hours?: string;
   };
   /** Indexed column `projects.is_verified`. NOT yet mirrored by
    * projectToRow — see supabase/migrations/20260827120500_verification_workflow.sql. */
@@ -583,6 +586,8 @@ export type Land = SeoFields & {
     name: string;
     email: string;
     phone: string;
+    address?: string;
+    hours?: string;
   };
   /** Land packages (added 2026-09-25) — mirrors Project.package, but only
    * ever set when sellerType is "developer" (see hooks/sync-developer-plan.ts

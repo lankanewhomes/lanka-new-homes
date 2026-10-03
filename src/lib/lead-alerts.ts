@@ -115,8 +115,17 @@ export async function sendLeadAlerts(payload: Payload, lead: LeadLike, opts: { r
   if (!project) return { ...outcome, detail: 'project not found' }
 
   const developerId = relId(project.developer)
-  const developer = developerId ? ((await payload.findByID({ collection: 'developers', id: developerId, depth: 0, overrideAccess: true })) as unknown as AnyDoc | null) : null
-  if (!developer) return { ...outcome, detail: 'project has no developer' }
+  const developerDoc = developerId ? ((await payload.findByID({ collection: 'developers', id: developerId, depth: 0, overrideAccess: true })) as unknown as AnyDoc | null) : null
+  if (!developerDoc) return { ...outcome, detail: 'project has no developer' }
+
+  // "Leads go to" (docs/lead-routing.md): an agency that handles the sale (e.g. Invoke) receives the enquiry instead of the
+  // developer. Falls back to the developer when the setting is blank or the linked company has no contact email.
+  const leadsTo = text(project.leadsTo)
+  const companyCollection = leadsTo === 'Marketing company' ? 'marketing-companies' : leadsTo === 'Sales company' ? 'sales-companies' : null
+  const companyId = relId(leadsTo === 'Marketing company' ? project.marketing_company : leadsTo === 'Sales company' ? project.sales_company : null)
+  const companyDoc = companyCollection && companyId ? ((await payload.findByID({ collection: companyCollection, id: companyId, depth: 0, overrideAccess: true }).catch(() => null)) as unknown as AnyDoc | null) : null
+  // Everything below reads "the developer" — that is the enquiry's recipient: the agency when routed, otherwise the developer.
+  const developer = companyDoc && text(companyDoc.contact_email) ? companyDoc : developerDoc
 
   const alerts = (developer.lead_alerts as AnyDoc | undefined) ?? {}
   if (alerts.enabled === false) return { ...outcome, detail: 'alerts disabled for developer' }

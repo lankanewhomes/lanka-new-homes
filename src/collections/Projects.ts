@@ -209,6 +209,7 @@ export const Projects: CollectionConfig = {
             { name: 'landscapeArchitect', type: 'text', label: 'Landscape architect', admin: { description: 'As published.' } },
             { name: 'projectManagementCompany', type: 'text', label: 'Project manager', admin: { description: 'Project management company, as published.' } },
             { name: 'marketing_company', type: 'relationship', relationTo: 'marketing-companies', label: 'Marketing Company' },
+            { name: 'leadsTo', type: 'select', label: 'Leads go to', options: ['Developer', 'Sales company', 'Marketing company'], admin: { description: "Who receives enquiries about this listing. Blank = the developer. 'Marketing company'/'Sales company' sends alerts to that linked company's contact email instead (see docs/lead-routing.md)." } },
             { name: 'sales_company', type: 'relationship', relationTo: 'sales-companies', label: 'Sales Company' },
             { name: 'interior_designer', type: 'relationship', relationTo: 'interior-designers', label: 'Interior Designer' },
             { name: 'location', type: 'text' },

@@ -429,6 +429,8 @@ export const contactField: Field = {
     { name: 'name', type: 'text' },
     { name: 'email', type: 'email' },
     { name: 'phone', type: 'text' },
+    { name: 'address', type: 'text', admin: { description: "The listing's own sales-office address, if it has one." } },
+    { name: 'hours', type: 'text', label: 'Working hours', admin: { description: 'e.g. 9am-5pm' } },
   ],
 }
 

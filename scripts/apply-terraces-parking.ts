@@ -14,7 +14,7 @@ const { getPayload } = await import('payload')
 const payload = await getPayload({ config: cfg })
 
 // Whole projects held back: the brochure drawings are titled for a different project (needs the owner's confirmation).
-const HOLD_PROJECTS = new Set(['prime-evoke-kadawatha'])
+const HOLD_PROJECTS = new Set<string>() // Prime Evoke released 2026-10-03: owner confirmed the brochure drawings are the right plans
 // Counts the researcher could only give for part of the outdoor space (roof terraces only) — not stated as complete.
 const HOLD_PLANS_BY_PROJECT = new Set(['clover-thalawathugoda'])
 const DOUBTFUL = /ambig|approx|low[- ]conf|unclear|uncertain|same (t1|drawing|image)|placeholder|mismatch/i

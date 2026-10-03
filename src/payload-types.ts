@@ -408,6 +408,10 @@ export interface Project {
    */
   projectManagementCompany?: string | null;
   marketing_company?: (number | null) | MarketingCompany;
+  /**
+   * Who receives enquiries about this listing. Blank = the developer. 'Marketing company'/'Sales company' sends alerts to that linked company's contact email instead (see docs/lead-routing.md).
+   */
+  leadsTo?: ('Developer' | 'Sales company' | 'Marketing company') | null;
   sales_company?: (number | null) | SalesCompany;
   interior_designer?: (number | null) | InteriorDesigner;
   location?: string | null;
@@ -3698,6 +3702,14 @@ export interface Project {
     name?: string | null;
     email?: string | null;
     phone?: string | null;
+    /**
+     * The listing's own sales-office address, if it has one.
+     */
+    address?: string | null;
+    /**
+     * e.g. 9am-5pm
+     */
+    hours?: string | null;
   };
   /**
    * Auto-calculated from how many key fields are filled in.
@@ -7068,6 +7080,14 @@ export interface Land {
     name?: string | null;
     email?: string | null;
     phone?: string | null;
+    /**
+     * The listing's own sales-office address, if it has one.
+     */
+    address?: string | null;
+    /**
+     * e.g. 9am-5pm
+     */
+    hours?: string | null;
   };
   seo?: {
     seoTitle?: string | null;
@@ -7879,6 +7899,7 @@ export interface ProjectsSelect<T extends boolean = true> {
   landscapeArchitect?: T;
   projectManagementCompany?: T;
   marketing_company?: T;
+  leadsTo?: T;
   sales_company?: T;
   interior_designer?: T;
   location?: T;
@@ -8255,6 +8276,8 @@ export interface ProjectsSelect<T extends boolean = true> {
         name?: T;
         email?: T;
         phone?: T;
+        address?: T;
+        hours?: T;
       };
   completeness_score?: T;
   view_count?: T;
@@ -8448,6 +8471,8 @@ export interface LandsSelect<T extends boolean = true> {
         name?: T;
         email?: T;
         phone?: T;
+        address?: T;
+        hours?: T;
       };
   seo?:
     | T

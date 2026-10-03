@@ -19878,66 +19878,6 @@ body:has(.compare-bar) {
   color: #1f1f1f;
 }
 
-.ownership-services-list {
-  position: relative;
-  z-index: 1;
-  border: 1px solid #b9ccb5;
-  background: #fff;
-}
-
-.ownership-services-accordion {
-  border-top: 1px solid #cfdccb;
-}
-
-.ownership-services-accordion:first-child {
-  border-top: 0;
-}
-
-.ownership-services-trigger {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 16px;
-  background: #fff;
-  color: #3f4a3c;
-  font-family: var(--font-ref-sans);
-  font-size: 15px;
-  text-align: left;
-  transition: background-color 0.15s ease;
-}
-
-.ownership-services-trigger svg {
-  stroke-width: 1.5;
-}
-
-.ownership-services-trigger:hover {
-  background: #f3f8f1;
-}
-
-.ownership-services-trigger span {
-  flex: 1;
-}
-
-.ownership-services-accordion.open .ownership-services-trigger {
-  background: #eef5ec;
-  color: #2f5a2a;
-  box-shadow: inset 3px 0 0 #8db686;
-}
-
-.ownership-services-chevron {
-  transition: transform 0.15s ease;
-}
-
-.ownership-services-accordion.open .ownership-services-chevron {
-  transform: rotate(180deg);
-}
-
-/* Items reuse the Key Features row-body / item styles (same fonts); one column because the values are sentences. */
-.ownership-services-body {
-  grid-template-columns: minmax(0, 1fr);
-}
-
 @media (max-width: 760px) {
   .ownership-services-shell {
     padding: 22px 18px;

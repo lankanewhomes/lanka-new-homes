@@ -941,7 +941,7 @@ export function ProjectHero({
             setIsLightboxOpen(true);
           }}
         >
-          <MapPinned className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">{t("Road Map")}{roadMapItems.length > 1 ? <span className="listing-hero-quickjump-count">{roadMapItems.length}</span> : null}</span>
+          <MapPinned className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">{t("Road Map")}{roadMapItems.length > 1 ? <>{" "}<span className="listing-hero-quickjump-count">{roadMapItems.length}</span></> : null}</span>
         </button>
       ),
     },
@@ -959,7 +959,7 @@ export function ProjectHero({
             setIsLightboxOpen(true);
           }}
         >
-          <Layers className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">{t("Block Plan")}{blockPlanImages.length > 1 ? <span className="listing-hero-quickjump-count">{blockPlanImages.length}</span> : null}</span>
+          <Layers className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">{t("Block Plan")}{blockPlanImages.length > 1 ? <>{" "}<span className="listing-hero-quickjump-count">{blockPlanImages.length}</span></> : null}</span>
         </button>
       ),
     },
@@ -2019,6 +2019,17 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
           </a>
         )) : null}
 
+        {hasDisplayValue(project.contact?.address) ? (
+          <span className="stats-contact-card-row">
+            <MapPin className="h-4 w-4" aria-hidden="true" /> {project.contact.address}
+          </span>
+        ) : null}
+        {hasDisplayValue(project.contact?.hours) ? (
+          <span className="stats-contact-card-row">
+            <Clock3 className="h-4 w-4" aria-hidden="true" /> {project.contact.hours}
+          </span>
+        ) : null}
+
         {contactWhatsAppHref ? (
           <a
             href={contactWhatsAppHref}
@@ -3063,19 +3074,19 @@ export function OwnershipServicesSection({ ownershipServices }: { ownershipServi
     <section id="ownership-services" className="ownership-services-shell" aria-label="Ownership and services">
       <div className="ownership-services-pattern" aria-hidden="true" />
       <h2>{t("Ownership & Services")}</h2>
-      <div className="ownership-services-list">
+      <div className="key-features-list">
         {groups.map((group) => {
           const isOpen = openKey === group.key;
           const Icon = group.key.startsWith("After") ? Wrench : ScrollText;
           return (
-            <div key={group.key} className={`ownership-services-accordion ${isOpen ? "open" : ""}`}>
-              <button type="button" className="ownership-services-trigger" aria-expanded={isOpen} onClick={() => setOpenKey(isOpen ? null : group.key)}>
+            <div key={group.key} className={`key-features-row ${isOpen ? "open" : ""}`}>
+              <button type="button" className="key-features-row-trigger" aria-expanded={isOpen} onClick={() => setOpenKey(isOpen ? null : group.key)}>
                 <Icon className="h-6 w-6" aria-hidden="true" />
                 <span>{t(group.label)}</span>
-                <ChevronDown className="ownership-services-chevron h-6 w-6" aria-hidden="true" />
+                <ChevronDown className="key-features-chevron h-6 w-6" aria-hidden="true" />
               </button>
               {isOpen ? (
-                <div className="key-features-row-body ownership-services-body">
+                <div className="key-features-row-body">
                   {group.items.map((item, index) => (
                     <span key={`${item.field}-${index}`} className="key-features-item">
                       {item.field ? <><span className="key-features-item-label">{item.field}:</span> {item.value}</> : item.value}
