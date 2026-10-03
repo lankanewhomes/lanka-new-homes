@@ -67,7 +67,9 @@ function floorPlanFactRows(plan: FloorPlan, balcony?: string): Map<string, FactR
   // Not a plan field: the project's "Balcony: Private balcony" Key Features item (src/lib/balcony-features.ts).
   add("Balcony", hasText(balcony) ? balcony : undefined);
   add("Balcony SqFt", hasNumber(plan.balconySizeSqFt) ? sqft(plan.balconySizeSqFt) : undefined);
+  // Counted outdoor spaces, labelled with the developer's own word (Terraces / Balconies / Decks / Verandahs).
   add("Terraces", hasNumber(plan.terraces) ? (hasText(plan.terraceType) ? `${plan.terraces} (${plan.terraceType.toLowerCase()})` : plan.terraces) : undefined);
+  if (hasText(plan.outdoorSpace) && rows.has("Terraces")) rows.set("Terraces", { ...rows.get("Terraces")!, label: plan.outdoorSpace });
   add("Terrace SqFt", hasNumber(plan.terraceSqFt) ? sqft(plan.terraceSqFt) : undefined);
   add("Land extent", hasNumber(plan.landPerches) ? `${plan.landPerches} perches` : undefined);
   add("Ceiling height", hasText(plan.ceilingHeight) ? plan.ceilingHeight : undefined);

@@ -3342,6 +3342,10 @@ export interface Project {
         balconySizeSqFt?: number | null;
         terraceSqFt?: number | null;
         /**
+         * The developer's own word, plural: Terraces, Balconies, Decks, Verandahs (or e.g. Balconies & terraces). Shown as the label next to the count below; blank = Terraces.
+         */
+        outdoorSpace?: string | null;
+        /**
          * How many terraces this plan has (as drawn on the developer plan).
          */
         terraces?: number | null;
@@ -7979,6 +7983,7 @@ export interface ProjectsSelect<T extends boolean = true> {
         interiorSizeSqFt?: T;
         balconySizeSqFt?: T;
         terraceSqFt?: T;
+        outdoorSpace?: T;
         terraces?: T;
         terraceType?: T;
         landPerches?: T;
