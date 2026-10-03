@@ -2405,7 +2405,17 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
   // splits at the commas that start a new term (a figure, "then …") as well as at sentences and semicolons.
   const splitTerms = (text: string) =>
     splitSentences(text).flatMap((line) => line.split(/\s*;\s*/)).flatMap((line) => line.split(/,\s+(?=then\b|\d[\d.,]*\s?%|Rs\.?\s?\d|LKR\s?\d)/i)).map((line) => line.replace(/^then\s+/i, "").trim()).filter(Boolean);
-  const paymentLines = (firstPackage < 0 ? allPaymentLines : allPaymentLines.slice(0, firstPackage)).flatMap((line) => splitTerms(line));
+  const basePaymentLines = (firstPackage < 0 ? allPaymentLines : allPaymentLines.slice(0, firstPackage)).flatMap((line) => splitTerms(line));
+  // Payment structure reads as one list, a term per line (owner, 2026-10-03):
+  //   LKR 1,000,000 reservation / 30% down payment / 22 monthly instalments for the 70% balance
+  const reservationLine = hasDisplayValue(project.reservationDeposit)
+    ? (/^(?:rs\.?|lkr)?\s?[\d,.]+(?:\s*(?:million|mn))?$/i.test(project.reservationDeposit!.trim()) ? `${project.reservationDeposit!.trim()} reservation` : project.reservationDeposit!.trim())
+    : "";
+  const downPaymentLine = hasDisplayValue(project.downPayment)
+    ? (/down payment|deposit/i.test(project.downPayment!) ? project.downPayment!.trim() : project.downPayment!.trim().replace(/^(\d+(?:\.\d+)?%|(?:rs\.?|lkr)\s?[\d,.]+(?:\s*(?:million|mn))?)/i, "$1 down payment"))
+    : "";
+  const structureTerms = [reservationLine, downPaymentLine, ...(hasDisplayValue(project.installmentSchedule) ? splitTerms(project.installmentSchedule ?? "") : [])].filter(Boolean);
+  const paymentLines = [...structureTerms, ...basePaymentLines.filter((line) => !structureTerms.some((term) => term.toLowerCase() === line.toLowerCase()))];
   const packageGroups: { title: string; rows: string[] }[] = [];
   if (firstPackage >= 0) {
     for (const line of allPaymentLines.slice(firstPackage)) {
@@ -2431,10 +2441,7 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
     { label: "ⓘ Co-op fee realtors", value: project.coopFeeRealtors },
     { label: "Expected rental income", value: project.rentalIncome },
     { label: "Reservation request", value: project.reservationFee },
-    { label: "Reservation deposit", value: project.reservationDeposit },
-    { label: "Down payment", value: project.downPayment },
     { label: "Payment plan", value: project.paymentPlan && project.paymentPlan.trim() !== (project.depositPaymentStructure ?? "").trim() && project.depositPaymentStructure ? project.paymentPlan : "" },
-    { label: "Installment schedule", value: project.installmentSchedule },
     { label: "Mortgage / financing", value: project.financingOptions },
     { label: "Legal / transfer fees", value: project.legalFees },
     { label: "Utility / connection fees", value: project.utilityFees },
@@ -2474,7 +2481,7 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
   }
   pricingFields.push(...soldOutRows);
   // Three columns (owner, 2026-10-03): Pricing & fees | Payment & deposit | Additional fees & charges.
-  const PAYMENT_LABELS = ["Reservation request", "Reservation deposit", "Down payment", "Payment plan", "Installment schedule", "Deposit (this plan)"];
+  const PAYMENT_LABELS = ["Reservation request", "Payment plan", "Deposit (this plan)"];
   const FEE_LABELS = ["Parking fee", "Maintenance / management fee", "Maintenance (this plan)", "Legal / transfer fees", "Taxes & government charges", "Utility / connection fees", "Storage cost", "ⓘ Co-op fee realtors", "Other applicable fees"];
   const paymentFields = pricingFields.filter((field) => PAYMENT_LABELS.includes(field.label));
   const financingField = pricingFields.find((field) => field.label === "Mortgage / financing");
