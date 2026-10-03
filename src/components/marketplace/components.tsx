@@ -2401,7 +2401,11 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
   // lines after a heading (until the next one) are that package's rows.
   const isPackageHeading = (line: string) => /^Package\s\w+\s—\s/.test(line);
   const firstPackage = allPaymentLines.findIndex(isPackageHeading);
-  const paymentLines = (firstPackage < 0 ? allPaymentLines : allPaymentLines.slice(0, firstPackage)).flatMap((line) => splitSentences(line));
+  // One payment term per row (owner, 2026-10-03): "LKR 1,000,000 reservation, 30% down payment, then the 70% balance…"
+  // splits at the commas that start a new term (a figure, "then …") as well as at sentences and semicolons.
+  const splitTerms = (text: string) =>
+    splitSentences(text).flatMap((line) => line.split(/\s*;\s*/)).flatMap((line) => line.split(/,\s+(?=then\b|\d[\d.,]*\s?%|Rs\.?\s?\d|LKR\s?\d)/i)).map((line) => line.replace(/^then\s+/i, "").trim()).filter(Boolean);
+  const paymentLines = (firstPackage < 0 ? allPaymentLines : allPaymentLines.slice(0, firstPackage)).flatMap((line) => splitTerms(line));
   const packageGroups: { title: string; rows: string[] }[] = [];
   if (firstPackage >= 0) {
     for (const line of allPaymentLines.slice(firstPackage)) {
@@ -2416,8 +2420,8 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
 
   const perPerch = Boolean(project.isLand) && /per perch/i.test(project.priceRange ?? "");
   const pricingFields = [
-    { label: "Unit price range", value: perPerch && /\d\s-\s\d/.test(project.priceRange ?? "") ? `Rs. ${project.priceRange}` : "" },
-    { label: "Available plan prices", value: project.availablePlanPrices },
+    { label: "Price range", value: perPerch && /\d\s-\s\d/.test(project.priceRange ?? "") ? `Rs. ${project.priceRange}` : "" },
+    { label: "Unit price range", value: project.availablePlanPrices },
     { label: "Pricing coming soon", value: project.pricingComingSoon },
     { label: "Price per sq ft", value: project.averagePricePerSqft },
     { label: "Maintenance / management fee", value: project.monthlyMaintenancePerSqft },
@@ -2437,7 +2441,7 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
     { label: "Other applicable fees", value: project.otherFees },
     { label: "Price valid until", value: project.priceValidUntil },
     { label: "Last updated", value: /^\d{4}-\d{2}-\d{2}$/.test(project.pricingUpdated ?? "") ? new Date(`${project.pricingUpdated}T00:00:00Z`).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" }) : project.pricingUpdated },
-  ].filter((field) => hasDisplayValue(field.value) && !(floorPlan && field.label === "Available plan prices"));
+  ].filter((field) => hasDisplayValue(field.value) && !(floorPlan && field.label === "Unit price range"));
 
   // On a floor-plan / plot page, this plan's own price figures come first; the
   // project's pricing info (average, deposit structure, fees, add-ons…) follows
@@ -2453,13 +2457,29 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
       ].filter((field) => hasDisplayValue(field.value))
     : [];
   pricingFields.unshift(...planFields);
+  // "…Penthouses are sold out." is availability, not a price: it gets its own row (owner, 2026-10-03).
+  const soldOutRows: { label: string; value: string }[] = [];
+  for (const field of pricingFields) {
+    if (field.label !== "Unit price range" && field.label !== "Price range") continue;
+    const lines = splitSentences(field.value);
+    const sold = lines.filter((line) => /sold[- ]out/i.test(line));
+    if (!sold.length) continue;
+    field.value = lines.filter((line) => !/sold[- ]out/i.test(line)).join("\n");
+    // "Junior Penthouse, 4/5-Bedroom, and 5-Bedroom Penthouse units are sold out." → one "<type>: Sold out" line each.
+    const perType = sold.flatMap((line) => {
+      const m = line.match(/^(.*?)\s+units?\s+(?:are|is)\s+sold[- ]out\.?$/i);
+      return m ? m[1].split(/,\s*(?:and\s+)?|\s+and\s+/).map((name) => `${name.trim()}: Sold out`).filter((x) => x !== ": Sold out") : [line];
+    });
+    soldOutRows.push({ label: "Sold out", value: perType.join("\n") });
+  }
+  pricingFields.push(...soldOutRows);
   // Three columns (owner, 2026-10-03): Pricing & fees | Payment & deposit | Additional fees & charges.
   const PAYMENT_LABELS = ["Reservation request", "Reservation deposit", "Down payment", "Payment plan", "Installment schedule", "Deposit (this plan)"];
   const FEE_LABELS = ["Parking fee", "Maintenance / management fee", "Maintenance (this plan)", "Legal / transfer fees", "Taxes & government charges", "Utility / connection fees", "Storage cost", "ⓘ Co-op fee realtors", "Other applicable fees"];
   const paymentFields = pricingFields.filter((field) => PAYMENT_LABELS.includes(field.label));
   const financingField = pricingFields.find((field) => field.label === "Mortgage / financing");
   const feeFields = pricingFields.filter((field) => FEE_LABELS.includes(field.label));
-  const mainFields = pricingFields.filter((field) => ![...PAYMENT_LABELS, ...FEE_LABELS, "Mortgage / financing"].includes(field.label));
+  const mainFields = pricingFields.filter((field) => hasDisplayValue(field.value) && ![...PAYMENT_LABELS, ...FEE_LABELS, "Mortgage / financing"].includes(field.label));
 
   // Every listing gets a Pricing section — the sticky nav always links to
   // #pricing, and a buyer looks for price first. These rows come from
@@ -2541,7 +2561,7 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
                   <div key={field.label}>
                     <p className="font-semibold">{field.label}</p>
                     <div className="space-y-1">
-                      {splitSentences(field.value).map((line) => <p key={line}>{line}</p>)}
+                      {splitTerms(field.value ?? "").map((line) => <p key={line}>{line}</p>)}
                     </div>
                   </div>
                 ))}
@@ -2589,7 +2609,7 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
                   <div key={field.label}>
                     <p className="font-semibold">{field.label}</p>
                     <div className="space-y-1">
-                      {splitSentences(field.value).map((line) => <p key={line}>{line}</p>)}
+                      {splitTerms(field.value ?? "").map((line) => <p key={line}>{line}</p>)}
                     </div>
                   </div>
                 ))}
@@ -2605,7 +2625,7 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
                   <div>
                     <p className="font-semibold">{financingField.label}</p>
                     <div className="space-y-1">
-                      {splitSentences(financingField.value).map((line) => <p key={line}>{line}</p>)}
+                      {splitTerms(financingField.value ?? "").map((line) => <p key={line}>{line}</p>)}
                     </div>
                   </div>
                 ) : null}
@@ -2622,7 +2642,7 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
                   <div key={field.label}>
                     <p className="font-semibold">{field.label}</p>
                     <div className="space-y-1">
-                      {splitSentences(field.value).map((line) => <p key={line}>{line}</p>)}
+                      {splitTerms(field.value ?? "").map((line) => <p key={line}>{line}</p>)}
                     </div>
                   </div>
                 ))}
