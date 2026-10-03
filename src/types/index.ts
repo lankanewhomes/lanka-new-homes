@@ -107,6 +107,8 @@ export type FloorPlan = {
   interiorSizeSqFt?: number;
   balconySizeSqFt?: number;
   terraceSqFt?: number;
+  terraces?: number;
+  terraceType?: string;
   /** Plot size for villas / houses, in perches, as published. */
   landPerches?: number;
   /** As published, e.g. "3.0 m". */

@@ -537,6 +537,8 @@ export const Projects: CollectionConfig = {
                 { name: 'interiorSizeSqFt', type: 'number', label: 'Interior SqFt' },
                 { name: 'balconySizeSqFt', type: 'number', label: 'Balcony SqFt' },
                 { name: 'terraceSqFt', type: 'number', label: 'Terrace SqFt' },
+                { name: 'terraces', type: 'number', label: 'Terraces', admin: { description: 'How many terraces this plan has (as drawn on the developer plan).' } },
+                { name: 'terraceType', type: 'text', label: 'Terrace type', admin: { description: 'e.g. Open, Covered. Shown next to the terrace count.' } },
                 { name: 'landPerches', type: 'number', label: 'Land Extent (perches)', admin: { description: 'For villas / houses with their own plot — as published, e.g. 8.15.' } },
                 { name: 'ceilingHeight', type: 'text', label: 'Ceiling Height', admin: { description: 'As published, e.g. "3.0 m" or "10 ft".' } },
                 { name: 'floorRange', type: 'text', label: 'Floor Range', admin: { description: 'Which floors this plan sits on, e.g. "5–12" or "Ground".' } },

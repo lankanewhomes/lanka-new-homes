@@ -3342,6 +3342,14 @@ export interface Project {
         balconySizeSqFt?: number | null;
         terraceSqFt?: number | null;
         /**
+         * How many terraces this plan has (as drawn on the developer plan).
+         */
+        terraces?: number | null;
+        /**
+         * e.g. Open, Covered. Shown next to the terrace count.
+         */
+        terraceType?: string | null;
+        /**
          * For villas / houses with their own plot — as published, e.g. 8.15.
          */
         landPerches?: number | null;
@@ -7971,6 +7979,8 @@ export interface ProjectsSelect<T extends boolean = true> {
         interiorSizeSqFt?: T;
         balconySizeSqFt?: T;
         terraceSqFt?: T;
+        terraces?: T;
+        terraceType?: T;
         landPerches?: T;
         ceilingHeight?: T;
         floorRange?: T;

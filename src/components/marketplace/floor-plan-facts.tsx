@@ -30,14 +30,14 @@ type FactRow = { label: string; value: React.ReactNode };
 // (floorPlanFeatureGroup in components.tsx) — that's a separate section
 // the owner wasn't referring to.
 const FLOOR_PLAN_FACTS_DESKTOP = [
-  "Plan type", "Beds", "Baths", "Ensuite baths", "Powder room", "Total SqFt", "Interior SqFt", "Balcony", "Balcony SqFt", "Terrace SqFt", "Land extent",
+  "Plan type", "Beds", "Baths", "Ensuite baths", "Powder room", "Total SqFt", "Interior SqFt", "Balcony", "Balcony SqFt", "Terraces", "Terrace SqFt", "Land extent",
   "Ceiling height", "Floor range", "Aspect", "View", "Price LKR", "Per SqFt", "Maintenance / mo", "Parking", "Parking type",
   "Storage", "Utility area", "Maid's room", "Handover condition", "Furnishing", "AC provision", "Hot water",
   "Units in plan", "Units available", "Availability", "Available floors",
 ];
 
 const FLOOR_PLAN_FACTS_MOBILE = [
-  "Total SqFt", "Interior SqFt", "Balcony", "Balcony SqFt", "Land extent", "Per SqFt", "Maintenance / mo", "Floor range", "View", "Ceiling height", "Parking",
+  "Total SqFt", "Interior SqFt", "Balcony", "Balcony SqFt", "Terraces", "Land extent", "Per SqFt", "Maintenance / mo", "Floor range", "View", "Ceiling height", "Parking",
   "Storage", "Utility area", "Maid's room", "Handover condition", "Furnishing", "Units available", "Availability", "Available floors",
 ];
 
@@ -67,6 +67,7 @@ function floorPlanFactRows(plan: FloorPlan, balcony?: string): Map<string, FactR
   // Not a plan field: the project's "Balcony: Private balcony" Key Features item (src/lib/balcony-features.ts).
   add("Balcony", hasText(balcony) ? balcony : undefined);
   add("Balcony SqFt", hasNumber(plan.balconySizeSqFt) ? sqft(plan.balconySizeSqFt) : undefined);
+  add("Terraces", hasNumber(plan.terraces) ? (hasText(plan.terraceType) ? `${plan.terraces} (${plan.terraceType.toLowerCase()})` : plan.terraces) : undefined);
   add("Terrace SqFt", hasNumber(plan.terraceSqFt) ? sqft(plan.terraceSqFt) : undefined);
   add("Land extent", hasNumber(plan.landPerches) ? `${plan.landPerches} perches` : undefined);
   add("Ceiling height", hasText(plan.ceilingHeight) ? plan.ceilingHeight : undefined);
