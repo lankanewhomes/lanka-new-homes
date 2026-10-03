@@ -16,6 +16,7 @@ import {
   seoFields,
   selectWithOther,
   unitFeaturesField,
+  ownershipServicesField,
 } from './shared-fields'
 
 // Raw land parcels for sale — a separate inventory type from Projects, sold
@@ -203,6 +204,7 @@ export const Lands: CollectionConfig = {
             { name: 'facilities', type: 'text', hasMany: true, admin: { description: 'General parcel characteristics, e.g. "Wide Road", "Corner Plot"' } },
             amenitiesField,
             unitFeaturesField,
+            ownershipServicesField,
           ],
         },
         {

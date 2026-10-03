@@ -559,6 +559,8 @@ export type Land = SeoFields & {
   amenities?: Amenity[];
   /** In-unit finishes/features, same shape and editor as `Project.unitFeatures` — applies when the land is sold with a planned/model home rather than as a bare parcel. */
   unitFeatures?: KeyFeatureCategory[];
+  /** "Ownership & Services" accordion groups, same shape as `Project.ownershipServices`. */
+  ownershipServices?: KeyFeatureCategory[];
   /** Individual plots/lots within this land development — the "Floor Plans" equivalent for a subdivided parcel. Omit when the listing is a single, unsubdivided parcel. */
   plots?: LandPlot[];
   /** Total plot count when the developer publishes only a number (e.g. "Only 12 exclusive plots"), not individual plot data — falls back to plots.length when both are set. */

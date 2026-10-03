@@ -14,6 +14,7 @@ import { getAllConstructionCompanies } from "@/lib/construction-company-store";
 import {
   AmenitiesShowcaseSection,
   KeyFeaturesSection,
+  OwnershipServicesSection,
   LandDetailsTable,
   NeighborhoodSection,
   PlansAndHomesSection,
@@ -216,6 +217,7 @@ export default async function LandDetailPage({ params }: LandPageProps) {
         </section>
 
         <KeyFeaturesSection unitFeatures={project.unitFeatures} />
+        <OwnershipServicesSection ownershipServices={project.ownershipServices} />
 
         <AmenitiesShowcaseSection amenities={project.amenities} gallery={project.gallery} heroImage={project.heroImage} title="Facilities" />
 

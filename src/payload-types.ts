@@ -2887,6 +2887,26 @@ export interface Project {
    */
   reservationDeposit?: string | null;
   /**
+   * Down payment as the developer states it, e.g. "30% within 3 months".
+   */
+  downPayment?: string | null;
+  /**
+   * Instalment schedule as the developer states it.
+   */
+  installmentSchedule?: string | null;
+  /**
+   * Date until the published price/offer is valid, if the developer says so.
+   */
+  priceValidUntil?: string | null;
+  /**
+   * Water, electricity or other connection charges, as published.
+   */
+  utilityFees?: string | null;
+  /**
+   * Any other fee or charge the developer lists.
+   */
+  otherFees?: string | null;
+  /**
    * Bank loan / financing options the developer offers, as published.
    */
   financingOptions?: string | null;
@@ -6961,6 +6981,46 @@ export interface Land {
       }[]
     | null;
   /**
+   * Shown in the "Ownership & Services" box on the listing. Only what the developer publishes.
+   */
+  ownershipServices?:
+    | {
+        key?: ('Ownership & Purchase' | 'After-Sales & Services') | null;
+        /**
+         * Custom value, used when Group above doesn't have the right option.
+         */
+        key_other?: string | null;
+        label?: string | null;
+        items?:
+          | {
+              field?:
+                | (
+                    | 'Freehold / Leasehold'
+                    | 'Foreign Ownership'
+                    | 'Title Information'
+                    | 'Buyer Eligibility'
+                    | 'Purchase Requirements'
+                    | 'Required Documents'
+                    | 'Legal Requirements'
+                    | 'Warranty'
+                    | 'Handover Support'
+                    | 'Property Management'
+                    | 'Maintenance'
+                    | 'Resident Services'
+                  )
+                | null;
+              /**
+               * Custom value, used when Item above doesn't have the right option.
+               */
+              field_other?: string | null;
+              value: string;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
    * Use this when the developer publishes only a total plot count, not individual plot numbers/sizes/prices (e.g. "Only 12 exclusive plots") — populating the Plots array below would mean inventing per-plot data that was never published. Falls back to the Plots array's own length when both are set.
    */
   plotCount?: number | null;
@@ -7922,6 +7982,11 @@ export interface ProjectsSelect<T extends boolean = true> {
   depositPaymentStructure?: T;
   reservationFee?: T;
   reservationDeposit?: T;
+  downPayment?: T;
+  installmentSchedule?: T;
+  priceValidUntil?: T;
+  utilityFees?: T;
+  otherFees?: T;
   financingOptions?: T;
   legalFees?: T;
   pricingUpdated?: T;
@@ -8329,6 +8394,22 @@ export interface LandsSelect<T extends boolean = true> {
               field_other?: T;
               value?: T;
               value_other?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  ownershipServices?:
+    | T
+    | {
+        key?: T;
+        key_other?: T;
+        label?: T;
+        items?:
+          | T
+          | {
+              field?: T;
+              field_other?: T;
+              value?: T;
               id?: T;
             };
         id?: T;

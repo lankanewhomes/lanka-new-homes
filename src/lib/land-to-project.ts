@@ -104,6 +104,7 @@ export function landToProjectShape(land: Land): Project {
     brochureUrl: land.brochureUrl,
     amenities: land.amenities ?? [],
     unitFeatures: land.unitFeatures,
+    ownershipServices: land.ownershipServices,
     floorPlans,
     nearby: land.nearby,
     coordinates: land.coordinates,
