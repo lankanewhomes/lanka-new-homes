@@ -19900,3 +19900,35 @@ body:has(.compare-bar) {
   }
 
 }
+
+
+/* /login — web-design-style page (owner, 2026-10-03): split hero with the login form as a white card beside the copy. */
+.login-page .login-card {
+  background: #fff;
+  color: var(--fdv-ink);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 4px;
+  padding: 32px 28px 28px;
+  width: 100%;
+  max-width: 480px;
+  justify-self: center;
+}
+
+.login-page .login-card-title {
+  margin: 0 0 6px;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.login-page .fdv-box-card svg {
+  margin-bottom: 10px;
+  color: #3a3a38;
+}
+
+@media (max-width: 900px) {
+  .login-page .login-card {
+    max-width: none;
+    padding: 24px 18px;
+  }
+}

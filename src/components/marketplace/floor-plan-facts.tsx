@@ -30,15 +30,15 @@ type FactRow = { label: string; value: React.ReactNode };
 // (floorPlanFeatureGroup in components.tsx) — that's a separate section
 // the owner wasn't referring to.
 const FLOOR_PLAN_FACTS_DESKTOP = [
-  "Plan type", "Beds", "Baths", "Ensuite baths", "Powder room", "Total SqFt", "Interior SqFt", "Balcony", "Balcony SqFt", "Terraces", "Terrace SqFt", "Land extent",
+  "Plan type", "Beds", "Baths", "Units in plan", "Units available", "Availability", "Ensuite baths", "Powder room", "Total SqFt", "Interior SqFt", "Balcony", "Balcony SqFt", "Terraces", "Terrace SqFt", "Land extent",
   "Ceiling height", "Floor range", "Aspect", "View", "Price LKR", "Per SqFt", "Maintenance / mo", "Parking", "Parking type", "Visitor parking", "EV charging", "Carpark levels",
   "Storage", "Utility area", "Maid's room", "Handover condition", "Furnishing", "AC provision", "Hot water",
-  "Units in plan", "Units available", "Availability", "Available floors",
+  "Available floors",
 ];
 
 const FLOOR_PLAN_FACTS_MOBILE = [
-  "Total SqFt", "Interior SqFt", "Balcony", "Balcony SqFt", "Terraces", "Land extent", "Per SqFt", "Maintenance / mo", "Floor range", "View", "Ceiling height", "Parking", "Visitor parking", "EV charging", "Carpark levels",
-  "Storage", "Utility area", "Maid's room", "Handover condition", "Furnishing", "Units available", "Availability", "Available floors",
+  "Units in plan", "Units available", "Availability", "Total SqFt", "Interior SqFt", "Balcony", "Balcony SqFt", "Terraces", "Land extent", "Per SqFt", "Maintenance / mo", "Floor range", "View", "Ceiling height", "Parking", "Visitor parking", "EV charging", "Carpark levels",
+  "Storage", "Utility area", "Maid's room", "Handover condition", "Furnishing", "Available floors",
 ];
 
 // Developer's per-floor tracker (FloorPlan.floorAvailability) → "2, 28 of 28

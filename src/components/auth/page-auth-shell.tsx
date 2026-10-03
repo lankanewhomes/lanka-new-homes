@@ -8,12 +8,12 @@ import { AUTH_STEP_TITLES, AuthForm, type ModalStep } from "@/components/auth/au
 // step machine, same titles, same "no upfront tab to pick wrong" behavior.
 // This shell just supplies the page's own heading, updated as the step
 // changes, the same way the popup's <h2> does.
-export function PageAuthShell({ redirectTo }: { redirectTo: string }) {
+export function PageAuthShell({ redirectTo, variant = "page" }: { redirectTo: string; variant?: "page" | "card" }) {
   const [step, setStep] = useState<ModalStep>("email");
 
   return (
     <>
-      <h1>{AUTH_STEP_TITLES[step]}</h1>
+      {variant === "card" ? <h2 className="login-card-title">{AUTH_STEP_TITLES[step]}</h2> : <h1>{AUTH_STEP_TITLES[step]}</h1>}
       <AuthForm redirectTo={redirectTo} onStepChange={setStep} />
     </>
   );
