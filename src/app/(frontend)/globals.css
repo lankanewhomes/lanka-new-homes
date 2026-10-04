@@ -18317,7 +18317,8 @@ body:has(.compare-bar) {
 .lnh-home .home-content > .home-stats { margin: 0 auto 34px; padding: 28px 30px; }
 .home-stats-lead { margin: 0 0 16px; font-size: 15px; line-height: 1.5; color: #5f6876; }
 .home-stats--row .home-stat { background: #fff; }
-.home-stats--row .home-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.home-stats--row .home-stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+@media (max-width: 640px) { .home-stats--row .home-stats-grid { grid-template-columns: repeat(2, 1fr); } }
 
 /* Hero search stretches to the full width of the hero's left column so its right edge lines up with the chips. */
 .luxury-hero-two-panel .luxury-hero-two-top-search { width: 100%; max-width: none; }
