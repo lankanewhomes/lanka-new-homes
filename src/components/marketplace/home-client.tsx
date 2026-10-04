@@ -86,9 +86,11 @@ const SEO_LINK_GROUPS: { title: string; links: { label: string; href: string }[]
 export function HomeClient({
   projects,
   lands = [],
+  landPlotTotal = 0,
   developers = [],
   newListingsSince,
 }: {
+  landPlotTotal?: number;
   projects: Project[];
   lands?: Project[];
   developers?: Developer[];
@@ -160,8 +162,6 @@ export function HomeClient({
 
   // Real count of floor plans across every listed project (shown in the home stats band).
   const floorPlanCount = useMemo(() => projects.reduce((total, project) => total + (project.floorPlans?.length ?? 0), 0), [projects]);
-  // Land plots listed individually (each has its own page); lands arrive here in project shape, plots as floorPlans.
-  const landPlotCount = useMemo(() => lands.reduce((total, land) => total + (land.floorPlans?.length ?? 0), 0), [lands]);
 
   const submitSearch = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -425,7 +425,7 @@ export function HomeClient({
           <Link href="/projects" className="home-stat"><strong>{projects.length}</strong><span>Project Listings</span></Link>
           <Link href="/land" className="home-stat"><strong>{lands.length}</strong><span>Land Listings</span></Link>
           <Link href="/projects" className="home-stat"><strong>{floorPlanCount}</strong><span>Floor Plans</span></Link>
-          <Link href="/land" className="home-stat"><strong>{landPlotCount}</strong><span>Land Plots</span></Link>
+          <Link href="/land" className="home-stat"><strong>{landPlotTotal}</strong><span>Land Plots</span></Link>
         </div>
       </section>
 

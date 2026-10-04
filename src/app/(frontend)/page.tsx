@@ -13,5 +13,8 @@ export default async function Home() {
 
   // Computed here, on the server, so the cached HTML and the client's hydration
   // pass share one cutoff for the 30-day New listings window (see lib/new-listings.ts).
-  return <HomeClient projects={projects} lands={lands.map(landToProjectShape)} developers={developers} newListingsSince={newListingsCutoff()} />;
+  // Every land plot we know of: plots listed one by one, plus the developer-published plot count of lands that have no rows.
+  const landPlotTotal = lands.reduce((total, land) => total + ((land.plots ?? []).length || land.plotCount || 0), 0);
+
+  return <HomeClient projects={projects} lands={lands.map(landToProjectShape)} landPlotTotal={landPlotTotal} developers={developers} newListingsSince={newListingsCutoff()} />;
 }
