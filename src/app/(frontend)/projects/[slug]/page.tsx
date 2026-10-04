@@ -153,6 +153,8 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
           // (2026-09-18) — kept as editable /cms fields for internal
           // record-keeping, but the front-end no longer shows them.
           ...(project.locationBadges ?? []).map((label) => ({ label, kind: "location" as const })),
+          // The one marketing badge shown on the page (owner, 2026-10-04): the ICON net profit-sharing model.
+          ...(project.marketingBadges ?? []).filter((label) => label === "Profit-Share Model").map((label) => ({ label, kind: "marketing" as const })),
         ]}
       />
 

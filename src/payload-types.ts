@@ -2788,6 +2788,7 @@ export interface Project {
         | 'High Rental Potential'
         | 'BOI Approved Project'
         | 'Hospitality'
+        | 'Profit-Share Model'
       )[]
     | null;
   /**

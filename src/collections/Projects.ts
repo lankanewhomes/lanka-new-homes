@@ -81,6 +81,8 @@ const MARKETING_BADGE_OPTIONS = [
   // Added 2026-09-20 for hospitality-use projects (Excello's Rudra Wellness
   // Retreat / Panimozhi Club House) — owner asked for a "Hospitality" badge.
   'Hospitality',
+  // Added 2026-10-04 for Odiliya's ICON V Talpe (owner: "give a new badge" for the ICON 30-40% ROI net profit-sharing model).
+  'Profit-Share Model',
 ]
 
 const LOCATION_BADGE_OPTIONS = ['Beachfront', 'Ocean View', 'City View', 'Mountain View', 'Nature View', 'Prime Location', 'Gated Community']
