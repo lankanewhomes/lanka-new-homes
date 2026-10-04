@@ -51,6 +51,11 @@ export default function ContactPage() {
             </div>
           </div>
           <div className="contact-form-panel contact-hero-form">
+            {/* Owner, 2026-10-03: the developer login link sits on top of the contact form. */}
+            <Link href="/developers/login" className="contact-developer-login">
+              <span>Already a developer on LankaNewHomes?</span>
+              <span className="contact-developer-login-cta">Developer login &rarr;</span>
+            </Link>
             <div className="contact-form-head">
               <h2>Send us a message.</h2>
               <p>Tell us what you need and the team will reply within one business day.</p>

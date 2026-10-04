@@ -19960,3 +19960,38 @@ body:has(.compare-bar) {
   font-size: 14px;
   color: #3a3a38;
 }
+
+/* Developer login link on top of the contact form (owner, 2026-10-03). */
+.contact-developer-login {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 22px;
+  padding: 12px 16px;
+  border: 1px solid #d9d9d7;
+  background: #f6f5f1;
+  color: var(--fdv-ink);
+  font-size: 14px;
+  line-height: 1.4;
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+}
+
+.contact-developer-login:hover {
+  background: #eeece6;
+}
+
+.contact-developer-login-cta {
+  white-space: nowrap;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 520px) {
+  .contact-developer-login {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+}
