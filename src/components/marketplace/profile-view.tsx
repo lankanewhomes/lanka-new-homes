@@ -75,6 +75,11 @@ export function ProfileView({
   const landProjects = useMemo(() => projects.filter((project) => project.isLand), [projects]);
   const homeProjects = useMemo(() => projects.filter((project) => !project.isLand), [projects]);
   const hasLandsTab = landProjects.length > 0;
+  // Builders whose own site publishes no counters still get the row, from what is really listed here (never estimated).
+  const listingCountRows = [
+    { label: "Projects listed", value: String(homeProjects.length) },
+    { label: "Land listings", value: String(landProjects.length) },
+  ].filter((row) => row.value !== "0");
   const hasProjectsTab = homeProjects.length > 0 || !hasLandsTab;
   const listProjects = tab === "lands" ? landProjects : hasLandsTab ? homeProjects : projects;
 
@@ -183,6 +188,17 @@ export function ProfileView({
           </div>
         ) : null}
 
+        {(siteStatRows.length > 0 ? siteStatRows : listingCountRows).length > 0 ? (
+          <div className="developer-profile-stats" aria-label="Company stats">
+            {(siteStatRows.length > 0 ? siteStatRows : listingCountRows).map((row) => (
+              <div className="developer-profile-stat" key={row.label}>
+                <span className="developer-profile-stat-value">{row.value}</span>
+                <span className="developer-profile-stat-label">{row.label}</span>
+              </div>
+            ))}
+          </div>
+        ) : null}
+
         {socialEntries.length > 0 ? (
           <div className="developer-profile-socials" aria-label="Social media">
             {socialEntries.map(([platform, url]) => {
@@ -217,16 +233,6 @@ export function ProfileView({
       </aside>
 
       <div className="developer-profile-main">
-        {siteStatRows.length > 0 ? (
-          <div className="developer-profile-stats" aria-label="Company stats">
-            {siteStatRows.map((row) => (
-              <div className="developer-profile-stat" key={row.label}>
-                <span className="developer-profile-stat-value">{row.value}</span>
-                <span className="developer-profile-stat-label">{row.label}</span>
-              </div>
-            ))}
-          </div>
-        ) : null}
         <div className="developer-profile-tabs" role="tablist">
           {hasProjectsTab ? <button type="button" role="tab" aria-selected={tab === "projects"} className={tab === "projects" ? "active" : undefined} onClick={() => { setTab("projects"); setLocationFilter("all"); setShown(LIST_PAGE_SIZE); }}>{hasLandsTab ? `Projects (${homeProjects.length})` : "Projects"}</button> : null}
           {hasLandsTab ? <button type="button" role="tab" aria-selected={tab === "lands"} className={tab === "lands" ? "active" : undefined} onClick={() => { setTab("lands"); setLocationFilter("all"); setShown(LIST_PAGE_SIZE); }}>Lands ({landProjects.length})</button> : null}
