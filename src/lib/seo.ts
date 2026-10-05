@@ -79,6 +79,8 @@ export function buildWebsiteJsonLd() {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "LankaNewHomes",
+    // Google's "site name" row above a result comes from this; give it the spaced form too.
+    alternateName: ["Lanka New Homes"],
     url: getSiteUrl(),
     potentialAction: {
       "@type": "SearchAction",
