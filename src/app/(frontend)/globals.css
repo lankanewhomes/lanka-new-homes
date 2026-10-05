@@ -19996,3 +19996,19 @@ body:has(.compare-bar) {
     gap: 4px;
   }
 }
+
+/* Verified Developer / Featured pills on the developer profile use the same .listing-badge-pill shape as the listing hero. */
+.developer-profile-badge-row { margin: 8px 0 0; display: flex; }
+.developer-profile-badge-row .listing-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 3px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 3px 7px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+.stats-contact-card-badge.badge-featured { display: inline-flex; align-items: center; gap: 4px; }

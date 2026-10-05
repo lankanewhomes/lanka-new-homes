@@ -467,33 +467,6 @@ export function HomeClient({
         </section>
       ) : null}
 
-      {/* Free-listing pitch to developers, right after New listings — "your project could be
-          here too". Owner asked for it on the homepage but not in the hero (2026-09-24). */}
-      <section className="free-listing-band" aria-label="List your project for free">
-        <div className="free-listing-band-copy">
-          <p className="free-listing-band-eyebrow">For developers</p>
-          <h2>List your project for free</h2>
-          <p>Put your development in front of buyers across Sri Lanka at no cost. Upgrade only if you want more reach.</p>
-        </div>
-        <ul className="free-listing-band-points">
-          {["Full project page", "Photos, floor plans & brochure", "Buyer enquiries straight to you"].map((point) => (
-            <li key={point}>
-              <span className="free-listing-band-tick" aria-hidden="true"><Check strokeWidth={3} /></span>
-              {point}
-            </li>
-          ))}
-        </ul>
-        <div className="free-listing-band-actions">
-          <Link href="/for-developers" className="free-listing-band-cta">
-            List your project
-            <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
-          </Link>
-          {/* "See pricing" removed (owner, 2026-09-24): /pricing is still being
-              reviewed, unlinked from the whole site for now but kept live at
-              its URL — not deleted, just not reachable by clicking around. */}
-        </div>
-      </section>
-
       {landListings.length > 0 ? (
         <section className="new-listings-section land-listings-section" aria-label="Land for sale in Sri Lanka">
           <div className="featured-listings-head">
@@ -534,6 +507,33 @@ export function HomeClient({
           View more cities
           <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
         </Link>
+      </section>
+
+      {/* Free-listing pitch to developers, right after "Explore by city" (owner, 2026-10-05; first placed after New listings
+          on 2026-09-24). Not in the hero. */}
+      <section className="free-listing-band" aria-label="List your project for free">
+        <div className="free-listing-band-copy">
+          <p className="free-listing-band-eyebrow">For developers</p>
+          <h2>List your project for free</h2>
+          <p>Put your development in front of buyers across Sri Lanka at no cost. Upgrade only if you want more reach.</p>
+        </div>
+        <ul className="free-listing-band-points">
+          {["Full project page", "Photos, floor plans & brochure", "Buyer enquiries straight to you"].map((point) => (
+            <li key={point}>
+              <span className="free-listing-band-tick" aria-hidden="true"><Check strokeWidth={3} /></span>
+              {point}
+            </li>
+          ))}
+        </ul>
+        <div className="free-listing-band-actions">
+          <Link href="/for-developers" className="free-listing-band-cta">
+            List your project
+            <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+          </Link>
+          {/* "See pricing" removed (owner, 2026-09-24): /pricing is still being
+              reviewed, unlinked from the whole site for now but kept live at
+              its URL — not deleted, just not reachable by clicking around. */}
+        </div>
       </section>
 
       <section className="seo-links-section" aria-label="Popular searches">

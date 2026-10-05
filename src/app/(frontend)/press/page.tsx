@@ -35,6 +35,9 @@ export default async function PressPage() {
   const facts = [
     { label: "Live projects", value: projects.length },
     { label: "Land projects", value: lands.length },
+    // Same counts as the home stats: plots listed one by one plus developer-published plot counts, and every floor plan.
+    { label: "Land plots", value: lands.reduce((total, land) => total + ((land.plots ?? []).length || land.plotCount || 0), 0) },
+    { label: "Floor plans", value: projects.reduce((total, project) => total + (project.floorPlans?.length ?? 0), 0) },
     { label: "Developers & builders", value: developers.length },
     { label: "Areas covered", value: neighborhoods.length },
   ];
@@ -88,7 +91,7 @@ export default async function PressPage() {
           <h2>Key facts.</h2>
           <p>LankaNewHomes by the numbers, counted live from the platform.</p>
         </div>
-        <div className="fdv-box-grid fdv-box-grid--4" data-reveal>
+        <div className="fdv-box-grid fdv-box-grid--3" data-reveal>
           {facts.map((fact) => (
             <div className="fdv-box-card press-fact" key={fact.label}>
               <strong>{fact.value}</strong>

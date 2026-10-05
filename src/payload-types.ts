@@ -349,7 +349,7 @@ export interface Developer {
    */
   is_founding_developer?: boolean | null;
   /**
-   * Shows the "Verified builder" badge. Set automatically when the company confirms an email on its own website domain; an admin can also switch it on or off by hand.
+   * Shows the "Verified Developer" badge. Set automatically when the company confirms an email on its own website domain; an admin can also switch it on or off by hand.
    */
   domain_verified?: boolean | null;
   verified_domain?: string | null;
