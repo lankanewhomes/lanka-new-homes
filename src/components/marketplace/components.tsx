@@ -1997,14 +1997,14 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
             <Zap className="h-3 w-3" aria-hidden="true" /> {t("Responds within 24 hours")}
           </span>
         ) : null}
-        {developer?.domainVerified ? (
-          <span className="listing-badge-pill badge-verified stats-contact-card-badge" title={VERIFIED_DEVELOPER_TOOLTIP} aria-label={`${VERIFIED_DEVELOPER_LABEL}. ${VERIFIED_DEVELOPER_TOOLTIP}`}>
-            <Check className="h-3 w-3" aria-hidden="true" /> {t(VERIFIED_DEVELOPER_LABEL)}
-          </span>
-        ) : null}
         {isPaidPackageTier(project.package) ? (
           <span className="listing-badge-pill badge-featured stats-contact-card-badge" title={FEATURED_TOOLTIP}>
             <Star className="h-3 w-3" aria-hidden="true" fill="currentColor" /> {t(FEATURED_LABEL)}
+          </span>
+        ) : null}
+        {developer?.domainVerified ? (
+          <span className="listing-badge-pill badge-verified stats-contact-card-badge" title={VERIFIED_DEVELOPER_TOOLTIP} aria-label={`${VERIFIED_DEVELOPER_LABEL}. ${VERIFIED_DEVELOPER_TOOLTIP}`}>
+            <Check className="h-3 w-3" aria-hidden="true" /> {t(VERIFIED_DEVELOPER_LABEL)}
           </span>
         ) : null}
 

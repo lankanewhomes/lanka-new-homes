@@ -136,14 +136,14 @@ export function ProfileView({
         ) : null}
         {/* Verified Developer is free and earned by confirming a company-domain email; it never depends on payment.
             "Featured" is the separate paid pill (any active paid package on at least one project). */}
-        {"domainVerified" in entity && entity.domainVerified ? (
-          <p className="developer-profile-badge-row"><span className="listing-badge-pill badge-verified" title={VERIFIED_DEVELOPER_TOOLTIP} aria-label={`${VERIFIED_DEVELOPER_LABEL}. ${VERIFIED_DEVELOPER_TOOLTIP}`}>
-            <Check className="h-3 w-3" aria-hidden="true" /> {t(VERIFIED_DEVELOPER_LABEL)}
-          </span></p>
-        ) : null}
         {projects.some((project) => isPaidPackageTier(project.package)) ? (
           <p className="developer-profile-badge-row"><span className="listing-badge-pill badge-featured" title={FEATURED_TOOLTIP}>
             <Star className="h-3 w-3" aria-hidden="true" fill="currentColor" /> {t(FEATURED_LABEL)}
+          </span></p>
+        ) : null}
+        {"domainVerified" in entity && entity.domainVerified ? (
+          <p className="developer-profile-badge-row"><span className="listing-badge-pill badge-verified" title={VERIFIED_DEVELOPER_TOOLTIP} aria-label={`${VERIFIED_DEVELOPER_LABEL}. ${VERIFIED_DEVELOPER_TOOLTIP}`}>
+            <Check className="h-3 w-3" aria-hidden="true" /> {t(VERIFIED_DEVELOPER_LABEL)}
           </span></p>
         ) : null}
         <p className="developer-profile-reviews">
