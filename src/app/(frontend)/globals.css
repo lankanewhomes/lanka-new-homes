@@ -20012,3 +20012,13 @@ body:has(.compare-bar) {
   line-height: 1.4;
 }
 .stats-contact-card-badge.badge-featured { display: inline-flex; align-items: center; gap: 4px; }
+
+/* "★ Featured": solid brand orange with white text so the paid pill reads as promoted, in the listing hero, the
+   developer profile and the listing contact card (owner, 2026-10-05: "featured badge can be better color"). */
+.listing-hero-tags .badge-featured,
+.developer-profile-badge-row .badge-featured,
+.stats-contact-card-badge.badge-featured {
+  background: #f47b36;
+  border: 1px solid #f47b36;
+  color: #fff;
+}
