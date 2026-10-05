@@ -84,6 +84,19 @@ export const Developers: CollectionConfig = {
     { name: 'activeProjects', type: 'number', label: 'Active Projects' },
     { name: 'completedProjects', type: 'number', label: 'Completed Projects' },
     {
+      // Counters exactly as the company prints them on its own website ("100+", "13+"). Text, not numbers, so the "+" survives.
+      name: 'siteStats',
+      type: 'group',
+      label: 'Company stats (as published on the company site)',
+      admin: { description: 'Shown as a stat row on the public developer page. Copy the wording the company itself prints, e.g. "100+". Leave blank for any stat the company does not publish.' },
+      fields: [
+        { name: 'completed', type: 'text', label: 'Completed projects' },
+        { name: 'ongoing', type: 'text', label: 'Ongoing projects' },
+        { name: 'soldOut', type: 'text', label: 'Sold-out projects' },
+        { name: 'years', type: 'text', label: 'Years in business' },
+      ],
+    },
+    {
       name: 'coDevelopers',
       type: 'array',
       label: 'Co-Developers (external, not in system)',

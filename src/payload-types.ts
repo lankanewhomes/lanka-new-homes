@@ -238,6 +238,15 @@ export interface Developer {
   activeProjects?: number | null;
   completedProjects?: number | null;
   /**
+   * Shown as a stat row on the public developer page. Copy the wording the company itself prints, e.g. "100+". Leave blank for any stat the company does not publish.
+   */
+  siteStats?: {
+    completed?: string | null;
+    ongoing?: string | null;
+    soldOut?: string | null;
+    years?: string | null;
+  };
+  /**
    * Free-text credits for co-developers that don’t have a Developer record here — shown on the public builder page.
    */
   coDevelopers?:
@@ -7816,6 +7825,14 @@ export interface DevelopersSelect<T extends boolean = true> {
   yearsInBusiness?: T;
   activeProjects?: T;
   completedProjects?: T;
+  siteStats?:
+    | T
+    | {
+        completed?: T;
+        ongoing?: T;
+        soldOut?: T;
+        years?: T;
+      };
   coDevelopers?:
     | T
     | {

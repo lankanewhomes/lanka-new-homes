@@ -59,6 +59,14 @@ export function ProfileView({
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [spotlightContactOpen, setSpotlightContactOpen] = useState(false);
   const formattedOfficeHours = formatOfficeHours(entity.officeHours);
+  // Counters the company prints on its own site, shown exactly as printed ("100+"); blank ones drop out.
+  const siteStats = "siteStats" in entity ? entity.siteStats : undefined;
+  const siteStatRows = [
+    { label: "Completed projects", value: siteStats?.completed },
+    { label: "Ongoing projects", value: siteStats?.ongoing },
+    { label: "Sold-out projects", value: siteStats?.soldOut },
+    { label: "Years in business", value: siteStats?.years },
+  ].filter((row): row is { label: string; value: string } => Boolean(row.value && String(row.value).trim()));
   const coDevelopers = ((entity as ProfileEntity).coDevelopers ?? []).filter((entry) => entry.name);
   const socialEntries = Object.entries(entity.socialLinks ?? {}).filter(([, url]) => Boolean(url)) as [string, string][];
   const followLabel = entityType === "developer" ? "Follow developer" : "Follow";
@@ -128,12 +136,6 @@ export function ProfileView({
           </div>
         ) : null}
         <h1>{entity.name}</h1>
-        <p className="developer-profile-role">{entityLabel}</p>
-        {"respondsWithinHour" in entity && entity.respondsWithinHour ? (
-          <p className="developer-profile-badge" title="Answered at least 80% of inquiries within an hour over the last 90 days">
-            <Zap size={13} aria-hidden="true" /> {t("Responds within 24 hours")}
-          </p>
-        ) : null}
         {/* Verified Developer is free and earned by confirming a company-domain email; it never depends on payment.
             "Featured" is the separate paid pill (any active paid package on at least one project). */}
         {projects.some((project) => isPaidPackageTier(project.package)) ? (
@@ -145,6 +147,12 @@ export function ProfileView({
           <p className="developer-profile-badge-row"><span className="listing-badge-pill badge-verified" title={VERIFIED_DEVELOPER_TOOLTIP} aria-label={`${VERIFIED_DEVELOPER_LABEL}. ${VERIFIED_DEVELOPER_TOOLTIP}`}>
             <Check className="h-3 w-3" aria-hidden="true" /> {t(VERIFIED_DEVELOPER_LABEL)}
           </span></p>
+        ) : null}
+        <p className="developer-profile-role">{entityLabel}</p>
+        {"respondsWithinHour" in entity && entity.respondsWithinHour ? (
+          <p className="developer-profile-badge" title="Answered at least 80% of inquiries within an hour over the last 90 days">
+            <Zap size={13} aria-hidden="true" /> {t("Responds within 24 hours")}
+          </p>
         ) : null}
         <p className="developer-profile-reviews">
           {reviews.length > 0 ? (
@@ -209,6 +217,16 @@ export function ProfileView({
       </aside>
 
       <div className="developer-profile-main">
+        {siteStatRows.length > 0 ? (
+          <div className="developer-profile-stats" aria-label="Company stats">
+            {siteStatRows.map((row) => (
+              <div className="developer-profile-stat" key={row.label}>
+                <span className="developer-profile-stat-value">{row.value}</span>
+                <span className="developer-profile-stat-label">{row.label}</span>
+              </div>
+            ))}
+          </div>
+        ) : null}
         <div className="developer-profile-tabs" role="tablist">
           {hasProjectsTab ? <button type="button" role="tab" aria-selected={tab === "projects"} className={tab === "projects" ? "active" : undefined} onClick={() => { setTab("projects"); setLocationFilter("all"); setShown(LIST_PAGE_SIZE); }}>{hasLandsTab ? `Projects (${homeProjects.length})` : "Projects"}</button> : null}
           {hasLandsTab ? <button type="button" role="tab" aria-selected={tab === "lands"} className={tab === "lands" ? "active" : undefined} onClick={() => { setTab("lands"); setLocationFilter("all"); setShown(LIST_PAGE_SIZE); }}>Lands ({landProjects.length})</button> : null}

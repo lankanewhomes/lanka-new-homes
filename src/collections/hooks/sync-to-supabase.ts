@@ -272,6 +272,7 @@ export const syncDeveloperToSupabase: CollectionAfterChangeHook = async ({ doc, 
       phone: d.contact_phone,
       socialLinks: d.socialLinks,
       verificationStatus: d.verification_status,
+      siteStats: d.siteStats ?? undefined,
       // "Verified Developer" badge (company confirmed an email on its own domain).
       domainVerified: Boolean(d.domain_verified),
       verifiedDomain: d.verified_domain ?? undefined,

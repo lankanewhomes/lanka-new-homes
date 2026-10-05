@@ -238,6 +238,8 @@ export type Developer = SeoFields & {
   verificationStatus?: "pending" | "approved" | "rejected" | "changes_requested";
   /** "Verified Developer": the company confirmed an email on its own website domain. */
   domainVerified?: boolean;
+  /** Counters as the company prints them on its own site ("100+"). */
+  siteStats?: { completed?: string | null; ongoing?: string | null; soldOut?: string | null; years?: string | null };
   verifiedDomain?: string;
   /** "Responds within 24 hours" badge — earned from real lead reply times
    * (src/lib/response-badge.ts), recomputed on each first reply and weekly. */
