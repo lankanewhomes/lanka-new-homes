@@ -20046,7 +20046,7 @@ body:has(.compare-bar) {
     gap: 3px;
     padding: 8px 14px;
     margin: 0;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 400;
     color: #666;
     cursor: pointer;
@@ -20065,8 +20065,8 @@ body:has(.compare-bar) {
 /* Header search after the language switcher; nav pushed to the right beside the account buttons (owner, 2026-10-05). */
 .header-search { display: none; align-items: center; gap: 8px; height: 40px; padding: 0 12px; border: 1px solid #d8d8d8; background: #fff; color: #1f1f1f; }
 .header-search { padding-right: 0; }
-.header-search input { border: 0; outline: 0; background: transparent; font-size: 14px; width: 110px; color: #1f1f1f; }
-.header-search-button { height: 100%; padding: 0 14px; background: #f47b36; color: #fff; border: 0; font-size: 13px; cursor: pointer; }
+.header-search input { border: 0; outline: 0; background: transparent; font-size: 14px; width: 190px; color: #1f1f1f; }
+.header-search-button { display: flex; align-items: center; justify-content: center; height: 100%; padding: 0 12px; background: #f47b36; color: #fff; border: 0; font-size: 13px; cursor: pointer; }
 .header-search-button:hover { background: #e06a27; text-decoration: none; }
 @media (min-width: 981px) {
   .header-search { display: flex; }
@@ -20077,3 +20077,14 @@ body:has(.compare-bar) {
 
 /* Nav back in the centre (owner, 2026-10-05). */
 @media (min-width: 981px) { .site-header nav { margin: 0 auto; } }
+
+/* Language dropdown (owner, 2026-10-05). */
+.language-dropdown { position: relative; }
+.language-dropdown-button { display: flex; align-items: center; gap: 6px; height: 40px; padding: 0 12px; border: 1px solid #d9d9d2; background: #fff; color: #1f1f25; font-size: 13px; cursor: pointer; }
+.language-dropdown-chevron { transform: rotate(90deg); }
+.language-dropdown-menu { position: absolute; top: calc(100% + 4px); left: 0; min-width: 100%; z-index: 120; display: flex; flex-direction: column; background: #fff; border: 1px solid #d9d9d2; box-shadow: 0 12px 30px rgba(31, 31, 31, 0.12); }
+.language-dropdown-menu button { padding: 10px 14px; text-align: left; background: #fff; border: 0; border-bottom: 1px solid #eee; font-size: 13px; color: #1f1f25; cursor: pointer; white-space: nowrap; }
+.language-dropdown-menu button:last-child { border-bottom: 0; }
+.language-dropdown-menu button:hover { background: #f7f6f2; }
+.language-dropdown-menu button.active { background: #24221e; color: #fff; }
+.site-header nav .nav-icon, .site-header nav svg { stroke: currentColor; }

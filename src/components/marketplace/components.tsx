@@ -87,8 +87,6 @@ import {
   Navigation,
   Route,
   Briefcase,
-  House,
-  LandPlot,
   RotateCw,
   Phone,
   Ruler,
@@ -3949,6 +3947,7 @@ function MobileLandIcon({ size = 22 }: { size?: number }) {
 export function Header() {
   const { language, setLanguage } = useLanguage();
   const navPath = usePathname() ?? "";
+  const [langOpen, setLangOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openMobileGroup, setOpenMobileGroup] = useState<"homes" | "land" | "company" | null>(null);
 
@@ -3989,20 +3988,28 @@ export function Header() {
             <span className="wordmark-line">Lanka</span>
             <span className="wordmark-line">NewHomes</span>
           </Link>
-          <div className="language-segmented" role="group" aria-label="Language switcher">
-            <button type="button" className={language === "en" ? "active" : undefined} onClick={() => setLanguage("en")}>EN</button>
-            <button type="button" className={language === "si" ? "active" : undefined} onClick={() => setLanguage("si")}>සිංහල</button>
-            <button type="button" className={language === "ta" ? "active" : undefined} onClick={() => setLanguage("ta")}>தமிழ்</button>
+          <div className={`language-dropdown${langOpen ? " is-open" : ""}`} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setLangOpen(false); }}>
+            <button type="button" className="language-dropdown-button" aria-haspopup="listbox" aria-expanded={langOpen} aria-label="Language switcher" onClick={() => setLangOpen((open) => !open)}>
+              {language === "en" ? "EN" : language === "si" ? "සිංහල" : "தமிழ்"}
+              <TablerChevronRight size={14} stroke={1.5} className="language-dropdown-chevron" aria-hidden="true" />
+            </button>
+            {langOpen ? (
+              <div className="language-dropdown-menu" role="listbox">
+                {([["en", "EN"], ["si", "සිංහල"], ["ta", "தமிழ்"]] as const).map(([code, label]) => (
+                  <button key={code} type="button" role="option" aria-selected={language === code} className={language === code ? "active" : undefined} onClick={() => { setLanguage(code); setLangOpen(false); }}>{label}</button>
+                ))}
+              </div>
+            ) : null}
           </div>
           <form className="header-search" action="/search" method="get" role="search">
             <IconSearch size={16} stroke={1.75} aria-hidden="true" />
-            <input type="search" name="q" placeholder={text.search} aria-label={text.search} />
-            <button type="submit" className="header-search-button">{text.search}</button>
+            <input type="search" name="q" placeholder="City, project or developer" aria-label={text.search} />
+            <button type="submit" className="header-search-button" aria-label={text.search}><IconSearch size={18} stroke={1.75} aria-hidden="true" /></button>
           </form>
         </div>
         <nav>
           <div className={`nav-dropdown${navPath.startsWith("/projects") ? " is-active" : ""}`}>
-            <Link href="/projects"><House className="nav-icon" aria-hidden="true" strokeWidth={2} /><span>{text.homes}</span></Link>
+            <Link href="/projects"><MobileHomeIcon size={24} /><span>{text.homes}</span></Link>
             <div className="nav-dropdown-menu">
               <Link href="/projects?type=Condominium">Condominium</Link>
               <Link href="/projects?type=Apartments">Apartments</Link>
@@ -4016,7 +4023,7 @@ export function Header() {
             </div>
           </div>
           <div className={`nav-dropdown${navPath.startsWith("/land") ? " is-active" : ""}`}>
-            <Link href="/land"><LandPlot className="nav-icon" aria-hidden="true" strokeWidth={2} /><span>Land</span></Link>
+            <Link href="/land"><MobileLandIcon size={24} /><span>Land</span></Link>
             <div className="nav-dropdown-menu">
               <Link href="/land?landUse=Residential">Residential</Link>
               <Link href="/land?landUse=Commercial">Commercial</Link>
@@ -4026,7 +4033,7 @@ export function Header() {
             </div>
           </div>
           <div className={`nav-dropdown${["/about", "/contact", "/blog", "/press"].some((r) => navPath.startsWith(r)) ? " is-active" : ""}`}>
-            <span className="nav-dropdown-label"><Briefcase className="nav-icon" aria-hidden="true" strokeWidth={2} /><span>{text.company}</span></span>
+            <span className="nav-dropdown-label"><MobileBuildingIcon size={24} /><span>{text.company}</span></span>
             <div className="nav-dropdown-menu">
               <Link href="/about">About</Link>
               <Link href="/contact">Contact</Link>
