@@ -33,3 +33,12 @@ grants, or is granted by a paid package.
 If the developer changes the company website to a different domain (and the confirmed email's domain no longer fits the new
 one), the Developers `beforeChange` hook clears `domain_verified` and the verified_* fields. The /cms panel then shows the
 verify form again, so they re-verify with an email on the new domain.
+
+## Automatic verification (2026-10-05)
+
+A developer account can only log in after confirming its email. On every developer login, `autoVerifyDeveloperOnLogin`
+(`src/collections/hooks/auto-verify-developer.ts`) checks the linked company: if the account email is on the company's website
+domain (or an admin-approved extra domain), `domain_verified` is switched on, so no separate confirmation link is needed.
+Signing up with the email we already hold for an unclaimed company links the account to that page (Users `afterChange`).
+The invite email (`src/lib/developer-invite-email.ts`) tells developers whose email qualifies to register with it, confirm
+the email, and log in once; others get the manual steps.

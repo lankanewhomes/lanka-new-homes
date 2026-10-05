@@ -10,6 +10,7 @@ loadEnv({ path: path.join(process.cwd(), '.env.local') })
 const out = process.argv[2] ?? path.join(os.homedir(), 'Desktop', 'LankaNewHomes Developer Emails')
 fs.mkdirSync(out, { recursive: true })
 const { renderDeveloperInviteHTML, developerInviteSubject } = await import('../src/lib/developer-invite-email')
+const { checkEmailAgainstWebsite } = await import('../src/lib/developer-domain-verification')
 const cfg = ((await import('../payload.config')) as any).default
 const { getPayload } = await import('payload')
 const payload = await getPayload({ config: cfg })
@@ -21,7 +22,10 @@ for (const d of devs.docs as any[]) {
   const lands = (await payload.find({ collection: 'lands', where: { sellerName: { equals: d.name } } as any, limit: 500, depth: 0, pagination: false, overrideAccess: true })).docs as any[]
   // Only what is live on the site (drafts have isPublished === false).
   const live = (x: any) => x.isPublished !== false
-  const html = renderDeveloperInviteHTML({ name: d.name, slug: d.slug, projects: projects.filter(live).map((p) => p.name), lands: lands.filter(live).map((l) => l.title ?? l.name), phone: d.contact_phone, email: d.contact_email, address: d.location, website: d.website })
+  const html = renderDeveloperInviteHTML({ name: d.name, slug: d.slug, projects: projects.filter(live).map((p) => p.name), lands: lands.filter(live).map((l) => l.title ?? l.name), phone: d.contact_phone, email: d.contact_email, address: d.location, website: d.website,
+    autoVerify: Boolean(d.contact_email) && checkEmailAgainstWebsite(String(d.contact_email), d.website, d.extra_email_domains).ok,
+    // Enquiries reach the developer's own address unless a listing routes them to an agency (leadsTo).
+    leadsEmail: d.contact_email && !projects.filter(live).some((p) => p.leadsTo) ? String(d.contact_email) : null })
   fs.writeFileSync(path.join(out, `${d.slug}.html`), html)
   index.push(`${d.slug} | to: ${d.contact_email ?? '(no email on file)'} | subject: ${developerInviteSubject(d.name)} | ${projects.filter(live).length} projects, ${lands.filter(live).length} lands`)
 }

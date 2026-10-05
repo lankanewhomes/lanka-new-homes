@@ -2,6 +2,7 @@ import type { CollectionConfig, PayloadRequest } from 'payload'
 import { adminOnly, adminOnlyField, adminOrSelfById, hiddenUnlessAdmin, isAdmin } from './access'
 import { magicLinkEndpoints } from './auth/magic-link'
 import { renderPasswordResetEmailHTML, renderVerificationEmailHTML } from './auth/verification-email'
+import { autoVerifyDeveloperOnLogin } from './hooks/auto-verify-developer'
 
 function slugify(value: string): string {
   return value
@@ -67,6 +68,7 @@ export const Users: CollectionConfig = {
   },
   endpoints: magicLinkEndpoints,
   hooks: {
+    afterLogin: [autoVerifyDeveloperOnLogin],
     afterChange: [
       // A developer's linked company profile used to be created by a second
       // client-side request (PayloadLoginForm signup, POST /developers)
