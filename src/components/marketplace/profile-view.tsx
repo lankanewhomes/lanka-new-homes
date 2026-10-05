@@ -75,11 +75,6 @@ export function ProfileView({
   const landProjects = useMemo(() => projects.filter((project) => project.isLand), [projects]);
   const homeProjects = useMemo(() => projects.filter((project) => !project.isLand), [projects]);
   const hasLandsTab = landProjects.length > 0;
-  // Builders whose own site publishes no counters still get the row, from what is really listed here (never estimated).
-  const listingCountRows = [
-    { label: "Projects listed", value: String(homeProjects.length) },
-    { label: "Land listings", value: String(landProjects.length) },
-  ].filter((row) => row.value !== "0");
   const hasProjectsTab = homeProjects.length > 0 || !hasLandsTab;
   const listProjects = tab === "lands" ? landProjects : hasLandsTab ? homeProjects : projects;
 
@@ -202,9 +197,9 @@ export function ProfileView({
           </div>
         ) : null}
 
-        {(siteStatRows.length > 0 ? siteStatRows : listingCountRows).length > 0 ? (
+        {siteStatRows.length > 0 ? (
           <div className="developer-profile-stats" aria-label="Company stats">
-            {(siteStatRows.length > 0 ? siteStatRows : listingCountRows).map((row) => (
+            {siteStatRows.map((row) => (
               <div className="developer-profile-stat" key={row.label}>
                 <span className="developer-profile-stat-value">{row.value}</span>
                 <span className="developer-profile-stat-label">{row.label}</span>
