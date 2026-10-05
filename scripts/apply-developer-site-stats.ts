@@ -13,6 +13,7 @@ const STATS: Record<string, { completed?: string; ongoing?: string; soldOut?: st
   'gangani-land-sales': { years: '40+' }, // /about-us "Years of excellence"
   'devi-constructions': { completed: '100+', years: '22+' }, // homepage "Projects delivered", "Years on site"
   'rush-lanka-group': { completed: '20+', years: '34' }, // /about-us (homepage shows different numbers: left for review)
+  'global-housing-and-real-estate': { completed: '12', ongoing: '10', years: '20+' }, // homepage + footer "12 completed / 10 ongoing", "More than 20 years" (the /about page shows other numbers: not used)
   'nemra': { years: '15' }, // /about-us "15 years" (homepage says "over a decade"; owner asked to use the about page, 2026-10-05)
   'prime-lands': { years: '30' }, // /about-us "Years of Trust" (completed counts are split houses/apartments: not summed)
 }

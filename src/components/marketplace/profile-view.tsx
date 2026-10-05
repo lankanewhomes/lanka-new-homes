@@ -188,17 +188,6 @@ export function ProfileView({
           </div>
         ) : null}
 
-        {(siteStatRows.length > 0 ? siteStatRows : listingCountRows).length > 0 ? (
-          <div className="developer-profile-stats" aria-label="Company stats">
-            {(siteStatRows.length > 0 ? siteStatRows : listingCountRows).map((row) => (
-              <div className="developer-profile-stat" key={row.label}>
-                <span className="developer-profile-stat-value">{row.value}</span>
-                <span className="developer-profile-stat-label">{row.label}</span>
-              </div>
-            ))}
-          </div>
-        ) : null}
-
         {socialEntries.length > 0 ? (
           <div className="developer-profile-socials" aria-label="Social media">
             {socialEntries.map(([platform, url]) => {
@@ -210,6 +199,17 @@ export function ProfileView({
                 </a>
               );
             })}
+          </div>
+        ) : null}
+
+        {(siteStatRows.length > 0 ? siteStatRows : listingCountRows).length > 0 ? (
+          <div className="developer-profile-stats" aria-label="Company stats">
+            {(siteStatRows.length > 0 ? siteStatRows : listingCountRows).map((row) => (
+              <div className="developer-profile-stat" key={row.label}>
+                <span className="developer-profile-stat-value">{row.value}</span>
+                <span className="developer-profile-stat-label">{row.label}</span>
+              </div>
+            ))}
           </div>
         ) : null}
 

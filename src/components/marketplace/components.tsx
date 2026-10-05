@@ -1156,7 +1156,7 @@ export function ProjectHero({
             <a href={navHref("key-features")} className={activeSection === "key-features" ? "active" : undefined} onClick={() => setActiveSection("key-features")}>{t("Key Features")}</a>
           ) : null}
           {hasOwnershipServices ? (
-            <a href={navHref("ownership-services")} className={activeSection === "ownership-services" ? "active" : undefined} onClick={() => setActiveSection("ownership-services")}>{t("Ownership & Services")}</a>
+            <a href={navHref("ownership-services")} className={activeSection === "ownership-services" ? "active" : undefined} onClick={() => setActiveSection("ownership-services")}>{t(project.isLand ? "Services" : "Ownership & Services")}</a>
           ) : null}
           <a href={navHref("plans-homes")} className={activeSection === "plans-homes" ? "active" : undefined} onClick={() => setActiveSection("plans-homes")}>{t(plansHomesNavLabel)}</a>
           {showAmenitiesAndNeighborhoodNav ? (
@@ -3068,7 +3068,7 @@ export function KeyFeaturesSection({ unitFeatures, floorPlan, floorPlanLabel = "
   );
 }
 
-export function OwnershipServicesSection({ ownershipServices }: { ownershipServices: unknown }) {
+export function OwnershipServicesSection({ ownershipServices, title = "Ownership & Services" }: { ownershipServices: unknown; title?: string }) {
   const { t } = useListingT();
   const groups = normalizeUnitFeaturesForDisplay(ownershipServices)
     .map((group) => ({ ...group, items: group.items.filter((item) => hasDisplayValue(item.value)) }))
@@ -3080,7 +3080,7 @@ export function OwnershipServicesSection({ ownershipServices }: { ownershipServi
   return (
     <section id="ownership-services" className="ownership-services-shell" aria-label="Ownership and services">
       <div className="ownership-services-pattern" aria-hidden="true" />
-      <h2>{t("Ownership & Services")}</h2>
+      <h2>{t(title)}</h2>
       <div className="key-features-list">
         {groups.map((group) => {
           const isOpen = openKey === group.key;

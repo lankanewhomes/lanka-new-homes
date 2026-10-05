@@ -217,7 +217,7 @@ export default async function LandDetailPage({ params }: LandPageProps) {
         </section>
 
         <KeyFeaturesSection unitFeatures={project.unitFeatures} />
-        <OwnershipServicesSection ownershipServices={project.ownershipServices} />
+        <OwnershipServicesSection ownershipServices={project.ownershipServices} title="Services" />
 
         <AmenitiesShowcaseSection amenities={project.amenities} gallery={project.gallery} heroImage={project.heroImage} title="Facilities" />
 
