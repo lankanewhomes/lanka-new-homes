@@ -21,7 +21,7 @@ const BUYER_LINKS = [
   { href: "/account/settings", label: "Settings", Icon: Settings },
 ] as const;
 
-export function AccountMenu({ loginLabel, signupLabel }: { loginLabel: string; signupLabel: string }) {
+export function AccountMenu({ loginLabel, signupLabel, showSignup = true }: { loginLabel: string; signupLabel: string; showSignup?: boolean }) {
   const { user, loading } = useCurrentUser();
   const [open, setOpen] = useState(false);
   const [avatarFailed, setAvatarFailed] = useState(false);
@@ -36,9 +36,11 @@ export function AccountMenu({ loginLabel, signupLabel }: { loginLabel: string; s
         <button type="button" className="log-in header-link-button" onClick={() => openAuthModal({ mode: "login" })}>
           {loginLabel}
         </button>
-        <button type="button" className="sign-up header-link-button" onClick={() => openAuthModal({ mode: "signup" })}>
-          {signupLabel}
-        </button>
+        {showSignup ? (
+          <button type="button" className="sign-up header-link-button" onClick={() => openAuthModal({ mode: "signup" })}>
+            {signupLabel}
+          </button>
+        ) : null}
       </>
     );
   }

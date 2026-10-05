@@ -3939,7 +3939,7 @@ function MobileBuildingIcon({ size = 22 }: { size?: number }) {
 function MobileLandIcon({ size = 22 }: { size?: number }) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="#1f1f1f" width={size} height={size} aria-hidden="true">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9 4.5v15m6-15v15m-10.875 0h15.75c.621 0 1.125-.504 1.125-1.125V5.625c0-.621-.504-1.125-1.125-1.125H4.125C3.504 4.5 3 5.004 3 5.625v12.75c0 .621.504 1.125 1.125 1.125Z" />
+      <path strokeLinecap="butt" strokeLinejoin="miter" d="M9 4.5v15m6-15v15M3 4.5h18v15H3z" />
     </svg>
   );
 }
@@ -4074,7 +4074,8 @@ export function Header() {
           </div>
         </nav>
         <div className="header-actions">
-          <AccountMenu loginLabel={text.login} signupLabel={text.signup} />
+          {/* Log in is enough on desktop; the login form links to sign up (owner, 2026-10-05). */}
+          <AccountMenu loginLabel={text.login} signupLabel={text.signup} showSignup={false} />
         </div>
         <div className="mobile-header-actions">
           <Link href="/search" className="mobile-search-trigger" aria-label={text.search}>
