@@ -65,7 +65,7 @@ export const Developers: CollectionConfig = {
         if (operation !== 'update' || !originalDoc?.domain_verified || data.website === undefined || data.domain_verified === false) return data
         if (websiteDomain(data.website) === websiteDomain(originalDoc.website)) return data
         const vd = data.verified_domain ?? originalDoc.verified_domain
-        if (vd && checkEmailAgainstWebsite(`x@${vd}`, data.website).ok) return data
+        if (vd && checkEmailAgainstWebsite(`x@${vd}`, data.website, data.extra_email_domains ?? originalDoc.extra_email_domains).ok) return data
         return { ...data, domain_verified: false, verified_domain: null, verified_email: null, verified_at: null }
       },
     ],
@@ -360,6 +360,14 @@ export const Developers: CollectionConfig = {
       defaultValue: false,
       access: { update: adminOnlyField },
       admin: { description: 'Shows the "Verified Developer" badge. Set automatically when the company confirms an email on its own website domain; an admin can also switch it on or off by hand.' },
+    },
+    {
+      name: 'extra_email_domains',
+      type: 'text',
+      hasMany: true,
+      label: 'Approved extra email domains',
+      access: { update: adminOnlyField },
+      admin: { description: 'Admin only. Email domains (besides the website domain) accepted for Verified Developer, e.g. jkproperties.lk when the website is johnkeellsproperties.com.' },
     },
     { name: 'verified_domain', type: 'text', label: 'Verified domain', access: { update: adminOnlyField }, admin: { readOnly: true } },
     { name: 'verified_email', type: 'text', label: 'Verified email', access: { read: adminOnlyField, update: adminOnlyField }, admin: { readOnly: true } },

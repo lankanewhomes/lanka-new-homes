@@ -30,7 +30,7 @@ export async function GET(request: Request) {
   return NextResponse.json({
     verified: Boolean(developer.domain_verified),
     verifiedDomain: developer.verified_domain ?? null,
-    websiteDomain: websiteDomain(developer.website),
+    websiteDomain: (Array.isArray(developer.extra_email_domains) && developer.extra_email_domains[0]) || websiteDomain(developer.website),
     pending: Boolean(developer.verify_token_hash && developer.verify_expires && new Date(developer.verify_expires).getTime() > Date.now()),
   });
 }
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
 
   const body = await request.json().catch(() => null);
   const email = typeof body?.email === "string" ? body.email.trim().toLowerCase() : "";
-  const check = checkEmailAgainstWebsite(email, developer.website);
+  const check = checkEmailAgainstWebsite(email, developer.website, developer.extra_email_domains);
   if (!check.ok) return NextResponse.json({ error: check.reason }, { status: 400 });
 
   const last = developer.verify_last_sent ? new Date(developer.verify_last_sent).getTime() : 0;

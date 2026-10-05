@@ -361,6 +361,10 @@ export interface Developer {
    * Shows the "Verified Developer" badge. Set automatically when the company confirms an email on its own website domain; an admin can also switch it on or off by hand.
    */
   domain_verified?: boolean | null;
+  /**
+   * Admin only. Email domains (besides the website domain) accepted for Verified Developer, e.g. jkproperties.lk when the website is johnkeellsproperties.com.
+   */
+  extra_email_domains?: string[] | null;
   verified_domain?: string | null;
   verified_email?: string | null;
   verified_at?: string | null;
@@ -7898,6 +7902,7 @@ export interface DevelopersSelect<T extends boolean = true> {
   first_subscribed_at?: T;
   is_founding_developer?: T;
   domain_verified?: T;
+  extra_email_domains?: T;
   verified_domain?: T;
   verified_email?: T;
   verified_at?: T;

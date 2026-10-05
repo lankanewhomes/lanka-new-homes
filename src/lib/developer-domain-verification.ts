@@ -32,13 +32,16 @@ export function emailDomain(email: string): string {
 export type DomainCheck = { ok: true; domain: string } | { ok: false; reason: string }
 
 /** The email must be on the company's own website domain (or a subdomain of it), never a free mailbox provider. */
-export function checkEmailAgainstWebsite(email: string, website: unknown): DomainCheck {
+export function checkEmailAgainstWebsite(email: string, website: unknown, extraDomains: unknown = []): DomainCheck {
   const clean = email.trim().toLowerCase()
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clean)) return { ok: false, reason: 'Enter a valid email address.' }
   const siteDomain = websiteDomain(website)
   if (!siteDomain) return { ok: false, reason: 'Add your company website to your profile first, then verify with an email on that domain.' }
   const mailDomain = emailDomain(clean)
   if (FREE_EMAIL_DOMAINS.has(mailDomain)) return { ok: false, reason: `Use an email on your company's own domain (for example info@${siteDomain}), not a free mailbox like ${mailDomain}.` }
+  // Admin-approved extra domains for companies whose email domain differs from their website (e.g. a group's mail domain).
+  const approved = (Array.isArray(extraDomains) ? extraDomains : []).map((d) => String(d).trim().toLowerCase().replace(/^@/, '')).filter(Boolean)
+  if (approved.some((d) => mailDomain === d || mailDomain.endsWith(`.${d}`))) return { ok: true, domain: mailDomain }
   if (mailDomain !== siteDomain && !mailDomain.endsWith(`.${siteDomain}`)) return { ok: false, reason: `That email is on ${mailDomain}, but your website is ${siteDomain}. Use an address @${siteDomain}.` }
   return { ok: true, domain: siteDomain }
 }

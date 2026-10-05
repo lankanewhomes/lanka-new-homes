@@ -16,6 +16,11 @@ describe('developer domain verification', () => {
     expect(checkEmailAgainstWebsite('x@evilprimelands.lk', 'primelands.lk').ok).toBe(false)
     expect(checkEmailAgainstWebsite('x@primelands.lk', '').ok).toBe(false)
   })
+  it('accepts admin-approved extra domains', () => {
+    expect(checkEmailAgainstWebsite('info@jkproperties.lk', 'https://www.johnkeellsproperties.com').ok).toBe(false)
+    expect(checkEmailAgainstWebsite('info@jkproperties.lk', 'https://www.johnkeellsproperties.com', ['jkproperties.lk']).ok).toBe(true)
+    expect(checkEmailAgainstWebsite('x@gmail.com', 'https://www.johnkeellsproperties.com', ['gmail.com']).ok).toBe(false)
+  })
   it('hashes tokens deterministically', () => {
     const { token, hash } = newVerifyToken()
     expect(hashToken(token)).toBe(hash)
