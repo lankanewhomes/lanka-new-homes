@@ -13,7 +13,7 @@ export function VerifyDomainConfirm({ token }: { token: string }) {
     try {
       const res = await fetch("/api/developers/verify-domain/confirm", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token }) });
       const body = await res.json().catch(() => ({}));
-      if (res.ok) { setMessage(body.name ? `${body.name} is now a Verified builder.` : "You are now a Verified builder."); setState("done"); }
+      if (res.ok) { setMessage(body.name ? `${body.name} is now a Verified Developer.` : "You are now a Verified Developer."); setState("done"); }
       else { setMessage(body.error ?? "Something went wrong."); setState("error"); }
     } catch {
       setMessage("Something went wrong. Try again."); setState("error");
@@ -27,7 +27,7 @@ export function VerifyDomainConfirm({ token }: { token: string }) {
       <p>Confirm that you own the email address this link was sent to.</p>
       {state === "error" ? <p role="alert">{message}</p> : null}
       <button type="button" className="fdv-cta-final-button" onClick={confirm} disabled={state === "busy"}>
-        {state === "busy" ? "Confirming…" : "Confirm and get verified"}
+        {state === "busy" ? "Confirming…" : "Confirm and become a Verified Developer"}
       </button>
     </div>
   );

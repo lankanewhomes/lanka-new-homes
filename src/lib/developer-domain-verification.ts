@@ -1,6 +1,6 @@
 import { createHash, randomBytes } from 'node:crypto'
 
-// "Verified builder" (owner, 2026-10-04): a company earns the badge by confirming an email address on its own website
+// "Verified Developer" (internally "verified builder"; owner, 2026-10-04): a company earns the badge by confirming an email address on its own website
 // domain (e.g. info@primelands.lk for primelands.lk). See docs/verified-builder.md.
 
 /** Mailbox providers anyone can sign up for — never proof of owning a company domain. */
@@ -61,8 +61,8 @@ export function renderDomainVerificationEmailHTML({ companyName, domain, confirm
     <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px; width:100%; background:#ffffff; border:1px solid #e4e2db;">
       <tr><td style="padding:32px;">
         <p style="margin:0 0 16px; font-size:22px; color:#1f1f1f;">Confirm your company email</p>
-        <p style="margin:0 0 16px; font-size:15px; line-height:1.6; color:#3a3a38;">Confirm that you own an email address at <strong style="font-weight:400;">${esc(domain)}</strong> to add the <strong style="font-weight:400;">Verified builder</strong> badge to ${esc(companyName)} on LankaNewHomes.</p>
-        <p style="margin:0 0 24px;"><a href="${esc(confirmUrl)}" style="display:inline-block; background:#f47b36; color:#1f1f1f; text-decoration:none; padding:12px 24px; border-radius:999px; font-size:15px;">Confirm and get verified</a></p>
+        <p style="margin:0 0 16px; font-size:15px; line-height:1.6; color:#3a3a38;">Confirm that you own an email address at <strong style="font-weight:400;">${esc(domain)}</strong> to add the <strong style="font-weight:400;">Verified Developer</strong> badge to ${esc(companyName)} on LankaNewHomes.</p>
+        <p style="margin:0 0 24px;"><a href="${esc(confirmUrl)}" style="display:inline-block; background:#f47b36; color:#1f1f1f; text-decoration:none; padding:12px 24px; border-radius:999px; font-size:15px;">Confirm and become a Verified Developer</a></p>
         <p style="margin:0 0 8px; font-size:13px; line-height:1.6; color:#6b6b68;">This link works once and expires in 24 hours. If you didn't ask for this, you can ignore the email and nothing changes.</p>
         <p style="margin:0; font-size:13px; line-height:1.6; color:#6b6b68; word-break:break-all;">${esc(confirmUrl)}</p>
       </td></tr>

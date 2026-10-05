@@ -4,7 +4,8 @@ import { useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronDown, Heart, House, MessageCircle, ShieldCheck, Star, X, Zap } from "lucide-react";
+import { Check, ChevronDown, Heart, House, MessageCircle, Star, X, Zap } from "lucide-react";
+import { FEATURED_LABEL, FEATURED_TOOLTIP, VERIFIED_DEVELOPER_LABEL, VERIFIED_DEVELOPER_TOOLTIP } from "@/lib/developer-badges";
 import type { CoDeveloperEntry, CompanyProfile, Developer, ProfileEntityType, Project, Review } from "@/types";
 import { formatLkr, formatOfficeHours } from "@/lib/format";
 import { getPackage, isPaidPackageTier } from "@/lib/packages";
@@ -133,16 +134,16 @@ export function ProfileView({
             <Zap size={13} aria-hidden="true" /> {t("Responds within 24 hours")}
           </p>
         ) : null}
-        {/* Verified is gated behind at least one project having an active
-            paid (Featured/Premium) package, not admin approval anymore. */}
-        {projects.some((project) => isPaidPackageTier(project.package)) ? (
-          <p className="developer-profile-badge badge-verified" title="Verified by LankaNewHomes">
-            <ShieldCheck size={13} aria-hidden="true" /> {t("Verified")}
+        {/* Verified Developer is free and earned by confirming a company-domain email; it never depends on payment.
+            "Featured" is the separate paid pill (any active paid package on at least one project). */}
+        {"domainVerified" in entity && entity.domainVerified ? (
+          <p className="developer-profile-badge badge-verified" title={VERIFIED_DEVELOPER_TOOLTIP} aria-label={`${VERIFIED_DEVELOPER_LABEL}. ${VERIFIED_DEVELOPER_TOOLTIP}`}>
+            <Check size={13} aria-hidden="true" /> {t(VERIFIED_DEVELOPER_LABEL)}
           </p>
         ) : null}
-        {"domainVerified" in entity && entity.domainVerified ? (
-          <p className="developer-profile-badge badge-verified" title={`Confirmed an email on ${(entity as Developer).verifiedDomain ?? "its own website domain"}`}>
-            <ShieldCheck size={13} aria-hidden="true" /> {t("Verified builder")}
+        {projects.some((project) => isPaidPackageTier(project.package)) ? (
+          <p className="developer-profile-badge badge-featured" title={FEATURED_TOOLTIP}>
+            <Star size={13} aria-hidden="true" fill="currentColor" /> {t(FEATURED_LABEL)}
           </p>
         ) : null}
         <p className="developer-profile-reviews">

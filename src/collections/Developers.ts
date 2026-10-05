@@ -4,6 +4,7 @@ import { companyProfileFields, seoFields, socialLinksField } from './shared-fiel
 import { syncDeveloperDeleteToSupabase, syncDeveloperToSupabase } from './hooks/sync-to-supabase'
 import { syncFeaturedProjectsFromDeveloper } from './hooks/sync-developer-plan'
 import { maxFeaturedProjects, PACKAGE_LIST } from '@/lib/packages'
+import { checkEmailAgainstWebsite, websiteDomain } from '@/lib/developer-domain-verification'
 
 export const Developers: CollectionConfig = {
   slug: 'developers',
@@ -57,6 +58,15 @@ export const Developers: CollectionConfig = {
           return { ...data, user: req.user ? req.user.id : undefined, verification_status: 'pending' }
         }
         return data
+      },
+      // Verified Developer is tied to the company website's domain: change the website to a different domain and the
+      // badge is revoked until a company-domain email is confirmed again (subdomains of the old domain still count).
+      ({ data, originalDoc, operation }) => {
+        if (operation !== 'update' || !originalDoc?.domain_verified || data.website === undefined || data.domain_verified === false) return data
+        if (websiteDomain(data.website) === websiteDomain(originalDoc.website)) return data
+        const vd = data.verified_domain ?? originalDoc.verified_domain
+        if (vd && checkEmailAgainstWebsite(`x@${vd}`, data.website).ok) return data
+        return { ...data, domain_verified: false, verified_domain: null, verified_email: null, verified_at: null }
       },
     ],
     // syncFeaturedProjectsFromDeveloper runs after every save (not just
@@ -322,21 +332,21 @@ export const Developers: CollectionConfig = {
       label: 'Placements',
       admin: { components: { Field: '@/components/payload/DeveloperPlanPanel#DeveloperPlanPanel' } },
     },
-    // "Verified builder" — earned by confirming an email on the company's own domain (docs/verified-builder.md).
+    // "Verified Developer" (internally "verified builder") — earned by confirming an email on the company's own domain (docs/verified-builder.md).
     // Written only by the server routes (src/app/(frontend)/api/developers/verify-domain/*) or by an admin.
     {
       name: 'domainVerifyPanel',
       type: 'ui',
-      label: 'Verified builder',
+      label: 'Verified Developer',
       admin: { components: { Field: '@/components/payload/DeveloperVerifyPanel#DeveloperVerifyPanel' } },
     },
     {
       name: 'domain_verified',
       type: 'checkbox',
-      label: 'Verified builder',
+      label: 'Verified Developer',
       defaultValue: false,
       access: { update: adminOnlyField },
-      admin: { description: 'Shows the "Verified builder" badge. Set automatically when the company confirms an email on its own website domain; an admin can also switch it on or off by hand.' },
+      admin: { description: 'Shows the "Verified Developer" badge. Set automatically when the company confirms an email on its own website domain; an admin can also switch it on or off by hand.' },
     },
     { name: 'verified_domain', type: 'text', label: 'Verified domain', access: { update: adminOnlyField }, admin: { readOnly: true } },
     { name: 'verified_email', type: 'text', label: 'Verified email', access: { read: adminOnlyField, update: adminOnlyField }, admin: { readOnly: true } },

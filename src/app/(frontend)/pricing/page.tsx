@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ShieldCheck } from "lucide-react";
+import { Star } from "lucide-react";
 import { PricingPlanCards } from "@/components/marketplace/pricing-comparison-table";
 import { PricingQuickjump } from "@/components/marketplace/pricing-quickjump";
 import { ScrollReveal } from "@/components/marketplace/scroll-reveal";
@@ -107,10 +107,10 @@ export default async function PricingPage() {
         {/* The table's footnote says every plan includes verification; the badge below is specifically
             on FEATURED projects while a package is active (owner, 2026-09-24). */}
         <p className="pricing-page-note fd-badge-preview">
-          <span className="listing-badge-pill badge-verified" title="Verified by LankaNewHomes">
-            <ShieldCheck className="h-3 w-3" aria-hidden="true" /> Verified
+          <span className="listing-badge-pill badge-featured" title="Promoted listing">
+            <Star className="h-3 w-3" aria-hidden="true" fill="currentColor" /> Featured
           </span>
-          badge is added to your featured projects while your package is active.
+          badge is added to your projects while your package is active. The free Verified Developer badge is separate and never depends on a package.
         </p>
       </section>
 

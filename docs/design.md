@@ -778,22 +778,13 @@ builder card, and on the developer profile header; the Analytics
 dashboard shows the standing ("3 of 5 leads judged · 100% within the
 hour"). Thresholds are the constants at the top of that file.
 
-**"Verified" badge.** Set, not earned: an admin sets `Developer →
-Verification Status` to `approved` directly via the existing select field
-in `/cms` (already mirrored to Supabase as `verificationStatus`; no
-separate approve/reject UI was built — the select is the whole workflow).
-Shown as a cyan pill (`.badge-verified`, kind `verified` in the hero's
-`extraBadges`) in the exact same three spots as "Responds within 1 hour" —
-project / floor-plan / land heroes, the builder card
-(`StatsContactCard`), and the developer profile header — deliberately a
-different hue (cyan, not indigo/blue) since indigo is already
-`.badge-move-in-now` and blue is already used twice
-(`.listing-hero-tag-move-in`, `.badge-quick-move-in`). Note this is
-distinct from `Project.isVerified` (a separate, unrelated 7-item
-per-listing verification checklist on the Verification tab) — this badge
-reads `Developer.verificationStatus` only. No filter for verified
-developers exists yet — `/developers` is a bare A–Z directory with no
-filter UI at all today; left on `docs/todo.md` as a follow-up.
+**"Verified Developer" and "★ Featured" badges (2026-10-05).** Two separate pills, both `.badge-verified` / `.badge-featured`
+based. "✓ Verified Developer" (cyan, `.badge-verified`) is free and earned by confirming a company-domain email
+(`Developer.domainVerified`); "★ Featured" (gold, `.badge-featured`) is the paid pill for any active paid tier. The paid
+pill never says "Verified"; verification never depends on payment. Display rules (none / verified / featured / both),
+tooltips, surfaces and revocation are documented in `docs/verified-builder.md`; copy is in `src/lib/developer-badges.ts`.
+The older `Developer.verificationStatus` select no longer drives any badge. Not related to `Project.isVerified` (the
+per-listing verification checklist).
 
 ## Follow -> notification digest (weekly, buyer-facing)
 

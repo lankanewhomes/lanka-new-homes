@@ -73,7 +73,7 @@ export async function POST(request: Request) {
     replyTo: "developers@lankanewhomes.com",
     subject: `${live ? "" : `[TEST — not sent to ${email}] `}Confirm your company email on LankaNewHomes`,
     html: renderDomainVerificationEmailHTML({ companyName: String(developer.name ?? "your company"), domain: check.domain, confirmUrl }),
-    text: `Confirm that you own an email address at ${check.domain} to add the Verified builder badge to ${developer.name} on LankaNewHomes:\n\n${confirmUrl}\n\nThis link works once and expires in 24 hours. If you didn't ask for this, ignore this email.`,
+    text: `Confirm that you own an email address at ${check.domain} to add the Verified Developer badge to ${developer.name} on LankaNewHomes:\n\n${confirmUrl}\n\nThis link works once and expires in 24 hours. If you didn't ask for this, ignore this email.`,
   });
 
   return NextResponse.json({ ok: true, sentTo: live ? email : "the test inbox (non-production)" });

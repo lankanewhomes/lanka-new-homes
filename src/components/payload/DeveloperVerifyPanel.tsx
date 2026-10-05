@@ -5,7 +5,7 @@ import { useDocumentInfo } from "@payloadcms/ui";
 
 type Status = { verified: boolean; verifiedDomain: string | null; websiteDomain: string | null; pending: boolean };
 
-// "Verified builder" panel on the Developer edit form: the company confirms an email on its own website domain.
+// "Verified Developer" panel (internal name: verified builder) on the Developer edit form: the company confirms an email on its own website domain.
 export function DeveloperVerifyPanel() {
   const { id } = useDocumentInfo();
   const [status, setStatus] = useState<Status | null>(null);
@@ -33,10 +33,10 @@ export function DeveloperVerifyPanel() {
   // Admins editing someone else's profile get no status (it is the signed-in developer's own); they use the checkbox below.
   if (!status) return null;
   const box = { border: "1px solid var(--theme-elevation-150)", padding: 16, marginBottom: 24 } as const;
-  if (status.verified) return <div style={box}><p style={{ margin: 0 }}>Verified builder{status.verifiedDomain ? `: confirmed on ${status.verifiedDomain}` : ""}.</p></div>;
+  if (status.verified) return <div style={box}><p style={{ margin: 0 }}>Verified Developer{status.verifiedDomain ? `: confirmed on ${status.verifiedDomain}` : ""}.</p></div>;
   return (
     <div style={box}>
-      <p style={{ margin: "0 0 8px" }}>Get the free Verified builder badge: confirm an email address on your company website{status.websiteDomain ? ` (@${status.websiteDomain})` : ""}.</p>
+      <p style={{ margin: "0 0 8px" }}>Get the free Verified Developer badge: confirm an email address on your company website{status.websiteDomain ? ` (@${status.websiteDomain})` : ""}.</p>
       {status.websiteDomain ? (
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={`info@${status.websiteDomain}`} style={{ flex: "1 1 240px", padding: 8 }} />

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ShieldCheck } from "lucide-react";
+import { Check } from "lucide-react";
 import { getAllProjects } from "@/lib/project-store";
 import { getAllLands } from "@/lib/land-store";
 import { getAllDevelopers } from "@/lib/developer-store";
@@ -37,7 +37,7 @@ const VALUES = [
   },
   {
     title: "Verified & responsive",
-    body: "Developers earn a Verified badge, and a “Responds within 24 hours” badge once they've proven fast to reply.",
+    body: "Developers earn a free Verified Developer badge by confirming a company-domain email, and a “Responds within 24 hours” badge once they've proven fast to reply.",
   },
   {
     title: "Every listing complete",
@@ -155,8 +155,8 @@ export default async function AboutPage() {
               <p>{value.body}</p>
               {value.title === "Verified & responsive" ? (
                 <span className="listing-badge-pill badge-verified fdv-badge-pill about-card-badge">
-                  <ShieldCheck className="h-2.5 w-2.5" aria-hidden="true" />
-                  Verified
+                  <Check className="h-2.5 w-2.5" aria-hidden="true" />
+                  Verified Developer
                 </span>
               ) : null}
             </div>

@@ -9,6 +9,7 @@ import { useSavedListing } from "@/lib/use-saved-listing";
 import { useSavedDeveloper } from "@/lib/use-saved-developer";
 import { getStoredUtmParams, getTrafficSource, trackEvent } from "@/lib/ga4";
 import { hasPremiumStyleBadge, isPaidPackageTier } from "@/lib/packages";
+import { FEATURED_LABEL, FEATURED_TOOLTIP, VERIFIED_DEVELOPER_LABEL, VERIFIED_DEVELOPER_TOOLTIP } from "@/lib/developer-badges";
 import { getSessionId } from "@/components/marketplace/view-tracker";
 import {
   ApartmentIcon,
@@ -92,6 +93,7 @@ import {
   Share2,
   ShieldCheck,
   Square,
+  Star,
   SlidersHorizontal,
   Trees,
   ClipboardList,
@@ -589,7 +591,7 @@ export function ProjectHero({
   // Plain strings render with the generic .badge-extra color; pass an
   // object with `kind` to get a per-category color (availability /
   // marketing / location) so the badge groups are visually distinct.
-  extraBadges?: (string | { label: string; kind?: "availability" | "marketing" | "location" | "responder" | "verified" | "contact-pricing" })[];
+  extraBadges?: (string | { label: string; kind?: "availability" | "marketing" | "location" | "responder" | "verified" | "featured" | "contact-pricing"; title?: string })[];
   /** Land-only media that doesn't fit the Project shape: multiple road map
    * images, multiple block plan images, and a list of video links (rather
    * than the single gallery-label-matched road map image / single embed
@@ -1676,7 +1678,7 @@ export function ProjectHero({
                 </a>
               );
             }
-            return <span key={`${kind ?? "extra"}-${label}`} className={className}>{t(label)}</span>;
+            return <span key={`${kind ?? "extra"}-${label}`} className={className} title={typeof badge === "string" ? undefined : badge.title}>{t(label)}</span>;
           })}
         </div>
       ) : null}
@@ -1996,13 +1998,13 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
           </span>
         ) : null}
         {developer?.domainVerified ? (
-          <span className="listing-badge-pill badge-verified stats-contact-card-badge" title={`Confirmed an email on ${developer.verifiedDomain ?? "its own website domain"}`}>
-            <ShieldCheck className="h-3 w-3" aria-hidden="true" /> {t("Verified builder")}
+          <span className="listing-badge-pill badge-verified stats-contact-card-badge" title={VERIFIED_DEVELOPER_TOOLTIP} aria-label={`${VERIFIED_DEVELOPER_LABEL}. ${VERIFIED_DEVELOPER_TOOLTIP}`}>
+            <Check className="h-3 w-3" aria-hidden="true" /> {t(VERIFIED_DEVELOPER_LABEL)}
           </span>
         ) : null}
         {isPaidPackageTier(project.package) ? (
-          <span className="listing-badge-pill badge-verified stats-contact-card-badge" title="Verified by LankaNewHomes">
-            <ShieldCheck className="h-3 w-3" aria-hidden="true" /> {t("Verified")}
+          <span className="listing-badge-pill badge-featured stats-contact-card-badge" title={FEATURED_TOOLTIP}>
+            <Star className="h-3 w-3" aria-hidden="true" fill="currentColor" /> {t(FEATURED_LABEL)}
           </span>
         ) : null}
 

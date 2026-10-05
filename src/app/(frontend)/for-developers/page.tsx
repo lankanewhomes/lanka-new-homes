@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { FileText, LayoutGrid, MessageCircle, ShieldCheck, Zap } from "lucide-react";
+import { Check, FileText, LayoutGrid, MessageCircle, Zap } from "lucide-react";
 import { getProjectBySlug } from "@/lib/project-store";
 import { ListingGridCard } from "@/components/marketplace/listing-page";
 import { ScrollReveal } from "@/components/marketplace/scroll-reveal";
@@ -96,14 +96,14 @@ const FAQS = [
   { q: "How do I get started?", a: "Register as a developer, then add your first project. It goes live once approved." },
   { q: "How do buyer enquiries reach me?", a: "Every enquiry submitted on your listing reaches you the moment it's sent — no delay, no middleman." },
   { q: "Can I list more than one project?", a: "Yes, there's no limit on the number of free listings a developer account can have." },
-  { q: "What do the Verified and “Responds within 24 hours” badges mean?", a: "Verified confirms a real, active developer account. “Responds within 24 hours” is earned by replying to enquiries quickly — both are things buyers specifically look for." },
+  { q: "What do the Verified Developer and “Responds within 24 hours” badges mean?", a: "Verified Developer is free: you confirm an email address on your company website's domain and your company identity is marked as confirmed. It never depends on a package. “Responds within 24 hours” is earned by replying to enquiries quickly — both are things buyers specifically look for." },
   { q: "Do I need to provide my own photos and floor plans?", a: "Yes — real photography, floor plans and pricing are what make a listing complete. We don't publish placeholder content in their place." },
 ] as const;
 
 const BADGES = [
-  { key: "verified", label: "Verified", className: "listing-badge-pill badge-verified fdv-badge-pill", icon: ShieldCheck },
+  { key: "verified", label: "Verified Developer", className: "listing-badge-pill badge-verified fdv-badge-pill", icon: Check },
   { key: "responder", label: "Responds within 24 hours", className: "listing-badge-pill badge-responder fdv-badge-pill", icon: Zap },
-  { key: "featured", label: "Featured", className: "badge-featured fdv-badge-pill", icon: null },
+  { key: "featured", label: "★ Featured", className: "badge-featured fdv-badge-pill", icon: null },
   { key: "premium", label: "Premium", className: "badge-premium fdv-badge-pill", icon: null },
   { key: "move-in-now", label: "Move-In Now", className: "badge-move-in-now fdv-badge-pill", icon: null },
   { key: "quick-move-in", label: "Quick Move-In", className: "badge-quick-move-in fdv-badge-pill", icon: null },

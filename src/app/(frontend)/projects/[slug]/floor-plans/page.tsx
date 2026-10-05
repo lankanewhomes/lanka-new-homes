@@ -4,7 +4,8 @@ import { projects } from "@/data/projects";
 import { getAllProjects, getProjectBySlug } from "@/lib/project-store";
 import { getDeveloperBySlug } from "@/lib/developer-store";
 import { listingWhatsAppHref } from "@/lib/whatsapp";
-import { isPaidPackageTier } from "@/lib/packages";
+import { hasPremiumStyleBadge, isPaidPackageTier } from "@/lib/packages";
+import { FEATURED_TOOLTIP, VERIFIED_DEVELOPER_TOOLTIP } from "@/lib/developer-badges";
 import { pickSimilarListings } from "@/lib/similar-listings";
 import { SimilarListingsSection } from "@/components/marketplace/similar-listings";
 import { PlansAndHomesSection, ProjectHero, ProjectStatsChips, StatsContactCard } from "@/components/marketplace/components";
@@ -49,7 +50,9 @@ export default async function FloorPlansPage({ params }: FloorPlansPageProps) {
         whatsappHref={listingWhatsAppHref(project.socialLinks?.whatsapp ?? developer?.socialLinks?.whatsapp, project.name)}
         extraBadges={[
           ...(developer?.respondsWithinHour ? [{ label: "Responds within 24 hours", kind: "responder" as const }] : []),
-          ...(isPaidPackageTier(project.package) ? [{ label: "Verified", kind: "verified" as const }] : []),
+          ...(developer?.domainVerified ? [{ label: "✓ Verified Developer", kind: "verified" as const, title: VERIFIED_DEVELOPER_TOOLTIP }] : []),
+          // Paid pill: only when the hero isn't already showing its own Featured/Premium pill for this project.
+          ...(isPaidPackageTier(project.package) && !project.isFeatured && !hasPremiumStyleBadge(project.package) ? [{ label: "★ Featured", kind: "featured" as const, title: FEATURED_TOOLTIP }] : []),
           ...(project.startingPriceLkr === 0 ? [{ label: "Contact for pricing", kind: "contact-pricing" as const }] : []),
         ]}
       />

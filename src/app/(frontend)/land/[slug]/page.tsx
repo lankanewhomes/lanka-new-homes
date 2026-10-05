@@ -10,6 +10,7 @@ import { SimilarListingsSection } from "@/components/marketplace/similar-listing
 import { formatLkr } from "@/lib/format";
 import { getDeveloperBySlug } from "@/lib/developer-store";
 import { listingWhatsAppHref, toWhatsAppNumber } from "@/lib/whatsapp";
+import { VERIFIED_DEVELOPER_TOOLTIP } from "@/lib/developer-badges";
 import { getAllConstructionCompanies } from "@/lib/construction-company-store";
 import {
   AmenitiesShowcaseSection,
@@ -162,10 +163,9 @@ export default async function LandDetailPage({ params }: LandPageProps) {
         statusLabelOverride={land.status}
         extraBadges={[
           ...(developer?.respondsWithinHour ? [{ label: "Responds within 24 hours", kind: "responder" as const }] : []),
-          // Verified is gated behind an active paid (Featured/Premium)
-          // package now — Land has no package/subscription system yet
-          // (that's Projects-only, src/lib/packages.ts), so no Land listing
-          // can show Verified until that's built for Land too.
+          // Land has no package system yet (Projects-only, src/lib/packages.ts), so no "★ Featured" here; the free
+          // Verified Developer badge doesn't depend on a package, so it can show.
+          ...(developer?.domainVerified ? [{ label: "✓ Verified Developer", kind: "verified" as const, title: VERIFIED_DEVELOPER_TOOLTIP }] : []),
           ...(project.startingPriceLkr === 0 ? [{ label: "Contact for pricing", kind: "contact-pricing" as const }] : []),
           ...(land.badges ?? []),
         ]}

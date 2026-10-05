@@ -13,8 +13,8 @@ export default async function VerifyDomainPage({ searchParams }: { searchParams:
       <section className="fdv-hero fdv-hero--split" aria-label="Confirm your company email">
         <div className="fdv-hero-split-inner">
           <div className="fdv-hero-content">
-            <h1 className="fdv-hero-headline">Verified builder.</h1>
-            <p className="fdv-hero-sub">Confirm your company email to add the Verified builder badge to your profile.</p>
+            <h1 className="fdv-hero-headline">Verified Developer.</h1>
+            <p className="fdv-hero-sub">Confirm your company email to add the Verified Developer badge to your profile.</p>
           </div>
           <div className="login-card auth-page">
             <VerifyDomainConfirm token={token ?? ""} />
