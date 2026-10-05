@@ -66,6 +66,8 @@ export function ProfileView({
     { label: "Ongoing projects", value: siteStats?.ongoing },
     { label: "Sold-out projects", value: siteStats?.soldOut },
     { label: "Years in business", value: siteStats?.years },
+    // The year the company says it was founded (already on its profile), when it publishes no "years" counter.
+    { label: "Established", value: !siteStats?.years && "establishedYear" in entity && entity.establishedYear ? String(entity.establishedYear) : undefined },
   ].filter((row): row is { label: string; value: string } => Boolean(row.value && String(row.value).trim()));
   const coDevelopers = ((entity as ProfileEntity).coDevelopers ?? []).filter((entry) => entry.name);
   const socialEntries = Object.entries(entity.socialLinks ?? {}).filter(([, url]) => Boolean(url)) as [string, string][];
