@@ -58,6 +58,8 @@ const nextConfig: NextConfig = {
   // (2026-09-18), not just Colombo, and moved to /projects/luxury.
   async redirects() {
     return [
+      // Vercel serves the homepage at /index too (breadcrumb showed "Home / Index"); send it to the real URL.
+      { source: "/index", destination: "/", permanent: true },
       {
         source: "/projects/colombo/luxury",
         destination: "/projects/luxury",

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { AccountMenu } from "@/components/auth/account-menu";
 import { IconBrandFacebook, IconBrandInstagram, IconChevronRight as TablerChevronRight, IconMenu2, IconSearch, IconX as TablerX } from "@tabler/icons-react";
@@ -3948,6 +3948,21 @@ export function Header() {
   const { language, setLanguage } = useLanguage();
   const navPath = usePathname() ?? "";
   const [langOpen, setLangOpen] = useState(false);
+  const router = useRouter();
+  const [navQuery, setNavQuery] = useState("");
+  const [navSuggestions, setNavSuggestions] = useState<{ label: string; detail: string; href: string }[]>([]);
+  const [navSearchOpen, setNavSearchOpen] = useState(false);
+  useEffect(() => {
+    const q = navQuery.trim();
+    if (q.length < 2) { setNavSuggestions([]); return; }
+    const timer = setTimeout(() => {
+      fetch(`/api/search/suggest?q=${encodeURIComponent(q)}`)
+        .then((response) => response.json())
+        .then((data) => setNavSuggestions(Array.isArray(data?.suggestions) ? data.suggestions : []))
+        .catch(() => setNavSuggestions([]));
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [navQuery]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openMobileGroup, setOpenMobileGroup] = useState<"homes" | "land" | "company" | null>(null);
 
@@ -4001,10 +4016,26 @@ export function Header() {
               </div>
             ) : null}
           </div>
-          <form className="header-search" action="/search" method="get" role="search">
+          <form
+            className="header-search"
+            action="/search"
+            method="get"
+            role="search"
+            onSubmit={(event) => { event.preventDefault(); setNavSearchOpen(false); router.push(`/search?q=${encodeURIComponent(navQuery.trim())}`); }}
+            onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setNavSearchOpen(false); }}
+          >
             <IconSearch size={16} stroke={1.75} aria-hidden="true" />
-            <input type="search" name="q" placeholder="City, project or developer" aria-label={text.search} />
+            <input type="search" name="q" value={navQuery} autoComplete="off" onChange={(event) => { setNavQuery(event.target.value); setNavSearchOpen(true); }} onFocus={() => setNavSearchOpen(true)} placeholder="City, project or developer" aria-label={text.search} />
             <button type="submit" className="header-search-button" aria-label={text.search}><IconSearch size={18} stroke={1.75} aria-hidden="true" /></button>
+            {navSearchOpen && navSuggestions.length > 0 ? (
+              <div className="header-search-suggestions" role="listbox" aria-label="Search suggestions">
+                {navSuggestions.map((suggestion) => (
+                  <button key={`${suggestion.detail}-${suggestion.label}`} type="button" role="option" aria-selected={false} onMouseDown={(event) => event.preventDefault()} onClick={() => { setNavSearchOpen(false); setNavQuery(suggestion.label); router.push(suggestion.href); }}>
+                    <IconSearch size={16} aria-hidden="true" /><span>{suggestion.label}</span><small>{suggestion.detail}</small>
+                  </button>
+                ))}
+              </div>
+            ) : null}
           </form>
         </div>
         <nav>
@@ -4033,7 +4064,7 @@ export function Header() {
             </div>
           </div>
           <div className={`nav-dropdown${["/about", "/contact", "/blog", "/press"].some((r) => navPath.startsWith(r)) ? " is-active" : ""}`}>
-            <span className="nav-dropdown-label"><MobileBuildingIcon size={24} /><span>{text.company}</span></span>
+            <span className="nav-dropdown-label"><Briefcase className="nav-icon" aria-hidden="true" strokeWidth={1.5} /><span>{text.company}</span></span>
             <div className="nav-dropdown-menu">
               <Link href="/about">About</Link>
               <Link href="/contact">Contact</Link>
@@ -4116,7 +4147,7 @@ export function Header() {
               onClick={() => setOpenMobileGroup(openMobileGroup === "company" ? null : "company")}
             >
               <span className="mobile-menu-group-toggle-label">
-                <MobileBuildingIcon /> {text.company}
+                {text.company}
               </span>
               <TablerChevronRight size={18} stroke={1} className="mobile-menu-group-chevron" aria-hidden="true" />
             </button>

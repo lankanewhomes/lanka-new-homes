@@ -20088,3 +20088,13 @@ body:has(.compare-bar) {
 .language-dropdown-menu button:hover { background: #f7f6f2; }
 .language-dropdown-menu button.active { background: #24221e; color: #fff; }
 .site-header nav .nav-icon, .site-header nav svg { stroke: currentColor; }
+
+/* Header search suggestions: same look as the hero search dropdown. */
+.header-search { position: relative; }
+.header-search-suggestions { position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 130; border: 1px solid #cbd7e3; background: #edf3f8; box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14); }
+.header-search-suggestions button { width: 100%; min-height: 44px; display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 0 14px; border: 0; border-top: 1px solid #d8e2eb; background: #edf3f8; color: #202022; font-size: 14px; font-weight: 400; text-align: left; height: auto; cursor: pointer; }
+.header-search-suggestions button:first-child { border-top: 0; }
+.header-search-suggestions button:hover { background: #dce9f3; }
+.header-search-suggestions button svg { color: #f47b36; }
+.header-search-suggestions button span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.header-search-suggestions button small { color: #6b7280; font-size: 12px; }
