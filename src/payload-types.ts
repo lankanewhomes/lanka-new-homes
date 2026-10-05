@@ -349,6 +349,17 @@ export interface Developer {
    */
   is_founding_developer?: boolean | null;
   /**
+   * Shows the "Verified builder" badge. Set automatically when the company confirms an email on its own website domain; an admin can also switch it on or off by hand.
+   */
+  domain_verified?: boolean | null;
+  verified_domain?: string | null;
+  verified_email?: string | null;
+  verified_at?: string | null;
+  verify_token_hash?: string | null;
+  verify_expires?: string | null;
+  verify_pending_email?: string | null;
+  verify_last_sent?: string | null;
+  /**
    * Gates the "Developer approval" workflow — new self-registered developers start pending.
    */
   verification_status?: ('pending' | 'approved' | 'rejected' | 'changes_requested') | null;
@@ -7869,6 +7880,14 @@ export interface DevelopersSelect<T extends boolean = true> {
   featuredLandIds?: T;
   first_subscribed_at?: T;
   is_founding_developer?: T;
+  domain_verified?: T;
+  verified_domain?: T;
+  verified_email?: T;
+  verified_at?: T;
+  verify_token_hash?: T;
+  verify_expires?: T;
+  verify_pending_email?: T;
+  verify_last_sent?: T;
   verification_status?: T;
   seo?:
     | T

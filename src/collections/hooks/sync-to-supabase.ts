@@ -272,6 +272,9 @@ export const syncDeveloperToSupabase: CollectionAfterChangeHook = async ({ doc, 
       phone: d.contact_phone,
       socialLinks: d.socialLinks,
       verificationStatus: d.verification_status,
+      // "Verified builder" badge (company confirmed an email on its own domain).
+      domainVerified: Boolean(d.domain_verified),
+      verifiedDomain: d.verified_domain ?? undefined,
       // "Responds within 24 hours" — computed by src/lib/response-badge.ts.
       respondsWithinHour: Boolean((d.response_stats as AnyDoc | undefined)?.responds_within_hour),
       responseStats: d.response_stats

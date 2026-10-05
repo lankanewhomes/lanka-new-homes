@@ -1995,6 +1995,11 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
             <Zap className="h-3 w-3" aria-hidden="true" /> {t("Responds within 24 hours")}
           </span>
         ) : null}
+        {developer?.domainVerified ? (
+          <span className="listing-badge-pill badge-verified stats-contact-card-badge" title={`Confirmed an email on ${developer.verifiedDomain ?? "its own website domain"}`}>
+            <ShieldCheck className="h-3 w-3" aria-hidden="true" /> {t("Verified builder")}
+          </span>
+        ) : null}
         {isPaidPackageTier(project.package) ? (
           <span className="listing-badge-pill badge-verified stats-contact-card-badge" title="Verified by LankaNewHomes">
             <ShieldCheck className="h-3 w-3" aria-hidden="true" /> {t("Verified")}

@@ -236,6 +236,9 @@ export type Developer = SeoFields & {
   /** Indexed column `developers.verification_status`. NOT yet mirrored by
    * developerToRow — see supabase/migrations/20260827120500_verification_workflow.sql. */
   verificationStatus?: "pending" | "approved" | "rejected" | "changes_requested";
+  /** "Verified builder": the company confirmed an email on its own website domain. */
+  domainVerified?: boolean;
+  verifiedDomain?: string;
   /** "Responds within 24 hours" badge — earned from real lead reply times
    * (src/lib/response-badge.ts), recomputed on each first reply and weekly. */
   respondsWithinHour?: boolean;

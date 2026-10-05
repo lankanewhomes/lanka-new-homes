@@ -322,6 +322,30 @@ export const Developers: CollectionConfig = {
       label: 'Placements',
       admin: { components: { Field: '@/components/payload/DeveloperPlanPanel#DeveloperPlanPanel' } },
     },
+    // "Verified builder" — earned by confirming an email on the company's own domain (docs/verified-builder.md).
+    // Written only by the server routes (src/app/(frontend)/api/developers/verify-domain/*) or by an admin.
+    {
+      name: 'domainVerifyPanel',
+      type: 'ui',
+      label: 'Verified builder',
+      admin: { components: { Field: '@/components/payload/DeveloperVerifyPanel#DeveloperVerifyPanel' } },
+    },
+    {
+      name: 'domain_verified',
+      type: 'checkbox',
+      label: 'Verified builder',
+      defaultValue: false,
+      access: { update: adminOnlyField },
+      admin: { description: 'Shows the "Verified builder" badge. Set automatically when the company confirms an email on its own website domain; an admin can also switch it on or off by hand.' },
+    },
+    { name: 'verified_domain', type: 'text', label: 'Verified domain', access: { update: adminOnlyField }, admin: { readOnly: true } },
+    { name: 'verified_email', type: 'text', label: 'Verified email', access: { read: adminOnlyField, update: adminOnlyField }, admin: { readOnly: true } },
+    { name: 'verified_at', type: 'date', label: 'Verified at', access: { update: adminOnlyField }, admin: { readOnly: true } },
+    // Pending request (single-use link, 24 h). Only the sha-256 hash of the token is stored.
+    { name: 'verify_token_hash', type: 'text', access: { read: adminOnlyField, update: adminOnlyField }, admin: { hidden: true } },
+    { name: 'verify_expires', type: 'date', access: { read: adminOnlyField, update: adminOnlyField }, admin: { hidden: true } },
+    { name: 'verify_pending_email', type: 'text', access: { read: adminOnlyField, update: adminOnlyField }, admin: { hidden: true } },
+    { name: 'verify_last_sent', type: 'date', access: { read: adminOnlyField, update: adminOnlyField }, admin: { hidden: true } },
     {
       name: 'verification_status',
       type: 'select',

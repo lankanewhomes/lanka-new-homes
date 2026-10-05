@@ -1,4 +1,5 @@
 import { DeveloperPlanPanel as DeveloperPlanPanel_098505e37097b4e31e435c2abfcb8db4 } from '@/components/payload/DeveloperPlanPanel'
+import { DeveloperVerifyPanel as DeveloperVerifyPanel_ce4d2c1d15521de372507861fc6fe344 } from '@/components/payload/DeveloperVerifyPanel'
 import { CompletenessTodo as CompletenessTodo_e02911b42e48821b16fd5d9e40cf5034 } from '@/components/payload/CompletenessTodo'
 import { PreviewLinkPanel as PreviewLinkPanel_58de2ef0318e59b9fbb2898773569633 } from '@/components/payload/PreviewLinkPanel'
 import { YearPickerField as YearPickerField_4dc9f7e903015cdc77733f6107aaaf6d } from '@/components/payload/YearPickerField'
@@ -52,6 +53,7 @@ import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } f
 /** @type import('payload').ImportMap */
 export const importMap = {
   "@/components/payload/DeveloperPlanPanel#DeveloperPlanPanel": DeveloperPlanPanel_098505e37097b4e31e435c2abfcb8db4,
+  "@/components/payload/DeveloperVerifyPanel#DeveloperVerifyPanel": DeveloperVerifyPanel_ce4d2c1d15521de372507861fc6fe344,
   "@/components/payload/CompletenessTodo#CompletenessTodo": CompletenessTodo_e02911b42e48821b16fd5d9e40cf5034,
   "@/components/payload/PreviewLinkPanel#PreviewLinkPanel": PreviewLinkPanel_58de2ef0318e59b9fbb2898773569633,
   "@/components/payload/YearPickerField#YearPickerField": YearPickerField_4dc9f7e903015cdc77733f6107aaaf6d,

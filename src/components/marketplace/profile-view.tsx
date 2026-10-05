@@ -140,6 +140,11 @@ export function ProfileView({
             <ShieldCheck size={13} aria-hidden="true" /> {t("Verified")}
           </p>
         ) : null}
+        {"domainVerified" in entity && entity.domainVerified ? (
+          <p className="developer-profile-badge badge-verified" title={`Confirmed an email on ${(entity as Developer).verifiedDomain ?? "its own website domain"}`}>
+            <ShieldCheck size={13} aria-hidden="true" /> {t("Verified builder")}
+          </p>
+        ) : null}
         <p className="developer-profile-reviews">
           {reviews.length > 0 ? (
             <>
