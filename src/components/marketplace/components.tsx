@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import dynamic from "next/dynamic";
 import { AccountMenu } from "@/components/auth/account-menu";
 import { IconBrandFacebook, IconBrandInstagram, IconChevronRight as TablerChevronRight, IconMenu2, IconSearch, IconX as TablerX } from "@tabler/icons-react";
@@ -86,6 +87,7 @@ import {
   Navigation,
   Route,
   Briefcase,
+  House,
   RotateCw,
   Phone,
   Ruler,
@@ -3945,6 +3947,7 @@ function MobileLandIcon({ size = 22 }: { size?: number }) {
 
 export function Header() {
   const { language, setLanguage } = useLanguage();
+  const navPath = usePathname() ?? "";
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openMobileGroup, setOpenMobileGroup] = useState<"homes" | "land" | "company" | null>(null);
 
@@ -3992,8 +3995,11 @@ export function Header() {
           </div>
         </div>
         <nav>
-          <div className="nav-dropdown">
-            <Link href="/projects">{text.homes}</Link>
+          <div className={`nav-dropdown${navPath === "/" ? " is-active" : ""}`}>
+            <Link href="/"><House className="nav-icon" aria-hidden="true" strokeWidth={1.75} /><span>Home</span></Link>
+          </div>
+          <div className={`nav-dropdown${navPath.startsWith("/projects") ? " is-active" : ""}`}>
+            <Link href="/projects"><Building2 className="nav-icon" aria-hidden="true" strokeWidth={1.75} /><span>{text.homes}</span></Link>
             <div className="nav-dropdown-menu">
               <Link href="/projects?type=Condominium">Condominium</Link>
               <Link href="/projects?type=Apartments">Apartments</Link>
@@ -4006,8 +4012,8 @@ export function Header() {
               <Link href="/projects">All new homes</Link>
             </div>
           </div>
-          <div className="nav-dropdown">
-            <Link href="/land">Land</Link>
+          <div className={`nav-dropdown${navPath.startsWith("/land") ? " is-active" : ""}`}>
+            <Link href="/land"><Trees className="nav-icon" aria-hidden="true" strokeWidth={1.75} /><span>Land</span></Link>
             <div className="nav-dropdown-menu">
               <Link href="/land?landUse=Residential">Residential</Link>
               <Link href="/land?landUse=Commercial">Commercial</Link>
@@ -4016,8 +4022,8 @@ export function Header() {
               <Link href="/land">All land</Link>
             </div>
           </div>
-          <div className="nav-dropdown">
-            <span className="nav-dropdown-label">{text.company}</span>
+          <div className={`nav-dropdown${["/about", "/contact", "/blog", "/press"].some((r) => navPath.startsWith(r)) ? " is-active" : ""}`}>
+            <span className="nav-dropdown-label"><Briefcase className="nav-icon" aria-hidden="true" strokeWidth={1.75} /><span>{text.company}</span></span>
             <div className="nav-dropdown-menu">
               <Link href="/about">About</Link>
               <Link href="/contact">Contact</Link>
