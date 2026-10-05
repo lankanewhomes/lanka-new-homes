@@ -3954,7 +3954,7 @@ export function Header() {
   const [navSearchOpen, setNavSearchOpen] = useState(false);
   useEffect(() => {
     const q = navQuery.trim();
-    if (q.length < 2) { setNavSuggestions([]); return; }
+    if (q.length < 2) return;
     const timer = setTimeout(() => {
       fetch(`/api/search/suggest?q=${encodeURIComponent(q)}`)
         .then((response) => response.json())
@@ -4027,7 +4027,7 @@ export function Header() {
             <IconSearch size={16} stroke={1.75} aria-hidden="true" />
             <input type="search" name="q" value={navQuery} autoComplete="off" onChange={(event) => { setNavQuery(event.target.value); setNavSearchOpen(true); }} onFocus={() => setNavSearchOpen(true)} placeholder="City, project or developer" aria-label={text.search} />
             <button type="submit" className="header-search-button" aria-label={text.search}><IconSearch size={18} stroke={1.75} aria-hidden="true" /></button>
-            {navSearchOpen && navSuggestions.length > 0 ? (
+            {navSearchOpen && navQuery.trim().length >= 2 && navSuggestions.length > 0 ? (
               <div className="header-search-suggestions" role="listbox" aria-label="Search suggestions">
                 {navSuggestions.map((suggestion) => (
                   <button key={`${suggestion.detail}-${suggestion.label}`} type="button" role="option" aria-selected={false} onMouseDown={(event) => event.preventDefault()} onClick={() => { setNavSearchOpen(false); setNavQuery(suggestion.label); router.push(suggestion.href); }}>
