@@ -87,7 +87,7 @@ import {
   Navigation,
   Route,
   Briefcase,
-  House,
+  LandPlot,
   RotateCw,
   Phone,
   Ruler,
@@ -3993,13 +3993,14 @@ export function Header() {
             <button type="button" className={language === "si" ? "active" : undefined} onClick={() => setLanguage("si")}>සිංහල</button>
             <button type="button" className={language === "ta" ? "active" : undefined} onClick={() => setLanguage("ta")}>தமிழ்</button>
           </div>
+          <form className="header-search" action="/search" method="get" role="search">
+            <IconSearch size={16} stroke={1.75} aria-hidden="true" />
+            <input type="search" name="q" placeholder={text.search} aria-label={text.search} />
+          </form>
         </div>
         <nav>
-          <div className={`nav-dropdown${navPath === "/" ? " is-active" : ""}`}>
-            <Link href="/"><House className="nav-icon" aria-hidden="true" strokeWidth={1.75} /><span>Home</span></Link>
-          </div>
           <div className={`nav-dropdown${navPath.startsWith("/projects") ? " is-active" : ""}`}>
-            <Link href="/projects"><Building2 className="nav-icon" aria-hidden="true" strokeWidth={1.75} /><span>{text.homes}</span></Link>
+            <Link href="/projects"><Building2 className="nav-icon" aria-hidden="true" strokeWidth={2} /><span>{text.homes}</span></Link>
             <div className="nav-dropdown-menu">
               <Link href="/projects?type=Condominium">Condominium</Link>
               <Link href="/projects?type=Apartments">Apartments</Link>
@@ -4013,7 +4014,7 @@ export function Header() {
             </div>
           </div>
           <div className={`nav-dropdown${navPath.startsWith("/land") ? " is-active" : ""}`}>
-            <Link href="/land"><Trees className="nav-icon" aria-hidden="true" strokeWidth={1.75} /><span>Land</span></Link>
+            <Link href="/land"><LandPlot className="nav-icon" aria-hidden="true" strokeWidth={2} /><span>Land</span></Link>
             <div className="nav-dropdown-menu">
               <Link href="/land?landUse=Residential">Residential</Link>
               <Link href="/land?landUse=Commercial">Commercial</Link>
@@ -4023,7 +4024,7 @@ export function Header() {
             </div>
           </div>
           <div className={`nav-dropdown${["/about", "/contact", "/blog", "/press"].some((r) => navPath.startsWith(r)) ? " is-active" : ""}`}>
-            <span className="nav-dropdown-label"><Briefcase className="nav-icon" aria-hidden="true" strokeWidth={1.75} /><span>{text.company}</span></span>
+            <span className="nav-dropdown-label"><Briefcase className="nav-icon" aria-hidden="true" strokeWidth={2} /><span>{text.company}</span></span>
             <div className="nav-dropdown-menu">
               <Link href="/about">About</Link>
               <Link href="/contact">Contact</Link>

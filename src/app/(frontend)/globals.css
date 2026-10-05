@@ -20061,3 +20061,14 @@ body:has(.compare-bar) {
 
 /* Line under the header on every page (owner, 2026-10-05). */
 .site-header { border-bottom: 1px solid #e4e2db; }
+
+/* Header search after the language switcher; nav pushed to the right beside the account buttons (owner, 2026-10-05). */
+.header-search { display: none; align-items: center; gap: 8px; height: 40px; padding: 0 12px; border: 1px solid #d8d8d8; background: #fff; color: #1f1f1f; }
+.header-search input { border: 0; outline: 0; background: transparent; font-size: 14px; width: 150px; color: #1f1f1f; }
+@media (min-width: 981px) {
+  .header-search { display: flex; }
+  .site-brand-group { gap: 14px; }
+  .site-header nav { margin-left: auto; margin-right: 18px; }
+}
+/* Nav icons: bolder stroke when the section is current. */
+.site-header nav .nav-dropdown.is-active .nav-icon { stroke-width: 2.5; }
