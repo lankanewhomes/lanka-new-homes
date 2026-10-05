@@ -87,6 +87,7 @@ import {
   Navigation,
   Route,
   Briefcase,
+  House,
   LandPlot,
   RotateCw,
   Phone,
@@ -3996,11 +3997,12 @@ export function Header() {
           <form className="header-search" action="/search" method="get" role="search">
             <IconSearch size={16} stroke={1.75} aria-hidden="true" />
             <input type="search" name="q" placeholder={text.search} aria-label={text.search} />
+            <button type="submit" className="header-search-button">{text.search}</button>
           </form>
         </div>
         <nav>
           <div className={`nav-dropdown${navPath.startsWith("/projects") ? " is-active" : ""}`}>
-            <Link href="/projects"><Building2 className="nav-icon" aria-hidden="true" strokeWidth={2} /><span>{text.homes}</span></Link>
+            <Link href="/projects"><House className="nav-icon" aria-hidden="true" strokeWidth={2} /><span>{text.homes}</span></Link>
             <div className="nav-dropdown-menu">
               <Link href="/projects?type=Condominium">Condominium</Link>
               <Link href="/projects?type=Apartments">Apartments</Link>

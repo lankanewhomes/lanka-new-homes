@@ -20064,11 +20064,16 @@ body:has(.compare-bar) {
 
 /* Header search after the language switcher; nav pushed to the right beside the account buttons (owner, 2026-10-05). */
 .header-search { display: none; align-items: center; gap: 8px; height: 40px; padding: 0 12px; border: 1px solid #d8d8d8; background: #fff; color: #1f1f1f; }
-.header-search input { border: 0; outline: 0; background: transparent; font-size: 14px; width: 150px; color: #1f1f1f; }
+.header-search { padding-right: 0; }
+.header-search input { border: 0; outline: 0; background: transparent; font-size: 14px; width: 110px; color: #1f1f1f; }
+.header-search-button { height: 100%; padding: 0 14px; background: #f47b36; color: #fff; border: 0; font-size: 13px; cursor: pointer; }
+.header-search-button:hover { background: #e06a27; text-decoration: none; }
 @media (min-width: 981px) {
   .header-search { display: flex; }
   .site-brand-group { gap: 14px; }
-  .site-header nav { margin-left: auto; margin-right: 18px; }
 }
 /* Nav icons: bolder stroke when the section is current. */
 .site-header nav .nav-dropdown.is-active .nav-icon { stroke-width: 2.5; }
+
+/* Nav back in the centre (owner, 2026-10-05). */
+@media (min-width: 981px) { .site-header nav { margin: 0 auto; } }
