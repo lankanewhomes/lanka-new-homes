@@ -20191,3 +20191,22 @@ body:has(.compare-bar) {
 .plots-grid-controls .plots-grid-chips { margin-bottom: 10px; }
 .plots-grid-controls .plots-grid-count { margin: 0; }
 .plots-grid-controls + .plots-grid-layout { margin-top: 18px; }
+
+/* Fine line grid behind the Plots section, like the other contained boxes (owner, 2026-10-06). */
+.plots-grid-shell {
+  border: 1px solid #d3dae2;
+  background-color: #eceff3;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 31px, rgba(96, 112, 133, 0.16) 31px 32px),
+    repeating-linear-gradient(90deg, transparent 0 31px, rgba(96, 112, 133, 0.16) 31px 32px);
+}
+/* Same stone box, line grid and white controls as the Plots cards on smaller land listings (.plans-homes-shell). */
+.plots-grid-head p { color: #5d6672; }
+.plots-grid-search, .plots-grid-sort, .plots-grid-range, .plots-grid-view, .plots-grid-chips button, .plots-grid-tile,
+.plots-grid-facts > div, .plots-grid-plan, .plots-grid-table-wrap { border-color: #d3dae2; }
+.plots-grid-range input { border-bottom-color: #d3dae2; }
+.plots-grid-view button + button { border-left-color: #d3dae2; }
+.plots-grid-table th { background: #e4e9ef; border-bottom-color: #d3dae2; color: #5d6672; }
+.plots-grid-table td { border-bottom-color: #e4e9ef; }
+.plots-grid-table tbody tr:hover { background: #f4f6f9; }
+.plots-grid-lot, .plots-grid-tile-lot, .plots-grid-count, .plots-grid-facts dt { color: #5d6672; }
