@@ -4933,8 +4933,9 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   width: min(1160px, 100%);
   margin: 0 auto;
   overflow: hidden;
-  border: 1px solid #e5e5e4;
-  background: #f7f7f6;
+  /* Same sage box and line grid as Ownership & services (owner, 2026-10-06), used by Key Features and Neighborhood. */
+  border: 1px solid #c9d8c6;
+  background: #e9f1e6;
   padding: 32px;
 }
 
@@ -4942,11 +4943,10 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.6;
-  background-image: radial-gradient(rgba(120, 113, 108, 0.35) 1.5px, transparent 0);
-  background-size: 16px 16px;
-  -webkit-mask-image: radial-gradient(ellipse 70% 80% at center, #000 45%, transparent 100%);
-  mask-image: radial-gradient(ellipse 70% 80% at center, #000 45%, transparent 100%);
+  opacity: 0.55;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 31px, rgba(86, 122, 80, 0.18) 31px 32px),
+    repeating-linear-gradient(90deg, transparent 0 31px, rgba(86, 122, 80, 0.18) 31px 32px);
 }
 
 .key-features-shell h2 {
