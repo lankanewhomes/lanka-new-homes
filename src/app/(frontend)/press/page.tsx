@@ -23,6 +23,7 @@ export const metadata: Metadata = {
 const BRAND_ASSETS = [
   { label: "Wordmark — dark", href: "/logo-wordmark.svg", cardClassName: "press-asset-preview-light" },
   { label: "Wordmark — white", href: "/logo-wordmark-white.svg", cardClassName: "press-asset-preview-dark" },
+  { label: "Favicon", href: "/brand/lankanewhomes-favicon.png", cardClassName: "press-asset-preview-light press-asset-preview-icon" },
 ] as const;
 
 export default async function PressPage() {
@@ -104,7 +105,7 @@ export default async function PressPage() {
       <section className="fdv-box fdv-box--cream" id="brand-kit" aria-label="Brand kit">
         <div className="wdx-section-head" data-reveal>
           <h2>Brand kit.</h2>
-          <p>The LankaNewHomes wordmark, for press and media use.</p>
+          <p>The LankaNewHomes wordmark and favicon, for press and media use.</p>
         </div>
         <div className="press-assets-grid" data-reveal>
           {BRAND_ASSETS.map((asset) => (

@@ -6946,9 +6946,9 @@ a.neighborhood-gallery-credit:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 14px 18px;
-  border-radius: 6px;
-  background: #1f1f1f;
+  padding: 0;
+  border-radius: 0;
+  background: none; /* no black box behind developer logos (owner, 2026-10-06) */
   max-width: 100%;
 }
 
@@ -20210,3 +20210,7 @@ body:has(.compare-bar) {
 .plots-grid-table td { border-bottom-color: #e4e9ef; }
 .plots-grid-table tbody tr:hover { background: #f4f6f9; }
 .plots-grid-lot, .plots-grid-tile-lot, .plots-grid-count, .plots-grid-facts dt { color: #5d6672; }
+
+.press-asset-preview-icon img { height: 64px; width: 64px; }
+
+@media (min-width: 900px) { .press-assets-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
