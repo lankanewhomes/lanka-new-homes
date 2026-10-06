@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
-import { Check, LayoutGrid, List, Search, X } from "lucide-react";
+import { Check, LayoutGrid, List, X } from "lucide-react";
 import { RequestInfoDialog, compactLkrLabel } from "@/components/marketplace/components";
 import type { LandPlot, Project } from "@/types";
 
@@ -11,7 +11,6 @@ import type { LandPlot, Project } from "@/types";
 // filter by size, switch between tiles and a list, tick lots and send one enquiry. Plans give lot number and size only,
 // so a price or a sold/reserved label shows only when the developer published one.
 
-type SortKey = "lot" | "sizeAsc" | "sizeDesc";
 type ViewMode = "grid" | "list";
 
 const BANDS: { label: string; min: number; max: number }[] = [
@@ -27,10 +26,8 @@ const lotLabel = (plot: LandPlot) => plot.name.replace(/^\s*lots?\s*/i, "").trim
 const perches = (value: number) => (Number.isInteger(value) ? value.toFixed(1) : String(value));
 
 export function LandPlotsGridSection({ plots, project, blockPlan }: { plots: LandPlot[]; project: Project; blockPlan?: string }) {
-  const [query, setQuery] = useState("");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
-  const [sortBy, setSortBy] = useState<SortKey>("lot");
   const [view, setView] = useState<ViewMode>("grid");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [requestOpen, setRequestOpen] = useState(false);
@@ -52,22 +49,17 @@ export function LandPlotsGridSection({ plots, project, blockPlan }: { plots: Lan
   const lo = from.trim() === "" ? null : Number(from);
   const hi = to.trim() === "" ? null : Number(to);
   const visible = useMemo(() => {
-    const q = query.trim().toLowerCase();
     const list = plots.filter((plot) => {
-      if (q && !lotLabel(plot).toLowerCase().includes(q)) return false;
       if (lo !== null && Number.isFinite(lo) && plot.sizePerches < lo) return false;
       if (hi !== null && Number.isFinite(hi) && plot.sizePerches > hi) return false;
       return true;
     });
-    const byLot = (a: LandPlot, b: LandPlot) => lotLabel(a).localeCompare(lotLabel(b), undefined, { numeric: true });
-    if (sortBy === "sizeAsc") list.sort((a, b) => a.sizePerches - b.sizePerches || byLot(a, b));
-    else if (sortBy === "sizeDesc") list.sort((a, b) => b.sizePerches - a.sizePerches || byLot(a, b));
-    else list.sort(byLot);
+    list.sort((a, b) => lotLabel(a).localeCompare(lotLabel(b), undefined, { numeric: true }));
     return list;
-  }, [plots, query, lo, hi, sortBy]);
+  }, [plots, lo, hi]);
 
-  const filtered = query.trim() !== "" || from !== "" || to !== "";
-  const clearFilters = () => { setQuery(""); setFrom(""); setTo(""); };
+  const filtered = from !== "" || to !== "";
+  const clearFilters = () => { setFrom(""); setTo(""); };
   const setBand = (band: { min: number; max: number }) => { setFrom(band.min > 0 ? String(band.min) : ""); setTo(Number.isFinite(band.max) ? String(Math.round((band.max - 0.1) * 10) / 10) : ""); };
   const activeBand = (band: { min: number; max: number }) => from === (band.min > 0 ? String(band.min) : "") && to === (Number.isFinite(band.max) ? String(Math.round((band.max - 0.1) * 10) / 10) : "");
 
@@ -96,25 +88,6 @@ export function LandPlotsGridSection({ plots, project, blockPlan }: { plots: Lan
 
       <div className="plots-grid-controls">
         <div className="plots-grid-toolbar">
-          <label className="plots-grid-search">
-            <Search className="h-4 w-4" aria-hidden="true" />
-            <input type="search" inputMode="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Find a lot number" aria-label="Find a lot number" />
-          </label>
-          <div className="plots-grid-range" role="group" aria-label="Size in perches">
-            <span>Size</span>
-            <input type="number" inputMode="decimal" min={0} step="0.1" value={from} onChange={(event) => setFrom(event.target.value)} placeholder={perches(minSize)} aria-label="From perches" />
-            <span aria-hidden="true">to</span>
-            <input type="number" inputMode="decimal" min={0} step="0.1" value={to} onChange={(event) => setTo(event.target.value)} placeholder={perches(maxSize)} aria-label="To perches" />
-            <span>P</span>
-          </div>
-          <label className="plots-grid-sort">
-            <span>Sort</span>
-            <select value={sortBy} onChange={(event) => setSortBy(event.target.value as SortKey)}>
-              <option value="lot">Lot number</option>
-              <option value="sizeAsc">Size, small to large</option>
-              <option value="sizeDesc">Size, large to small</option>
-            </select>
-          </label>
           <div className="plots-grid-view" role="group" aria-label="View">
             <button type="button" className={view === "grid" ? "active" : undefined} aria-pressed={view === "grid"} onClick={() => setView("grid")}><LayoutGrid className="h-4 w-4" aria-hidden="true" /> Tiles</button>
             <button type="button" className={view === "list" ? "active" : undefined} aria-pressed={view === "list"} onClick={() => setView("list")}><List className="h-4 w-4" aria-hidden="true" /> List</button>
