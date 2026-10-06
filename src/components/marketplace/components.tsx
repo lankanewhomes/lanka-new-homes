@@ -1157,7 +1157,7 @@ export function ProjectHero({
             <a href={navHref("key-features")} className={activeSection === "key-features" ? "active" : undefined} onClick={() => setActiveSection("key-features")}>{t("Key Features")}</a>
           ) : null}
           {hasOwnershipServices ? (
-            <a href={navHref("ownership-services")} className={activeSection === "ownership-services" ? "active" : undefined} onClick={() => setActiveSection("ownership-services")}>{t(project.isLand ? "Services" : "Ownership & Services")}</a>
+            <a href={navHref("ownership-services")} className={activeSection === "ownership-services" ? "active" : undefined} onClick={() => setActiveSection("ownership-services")}>{t(project.isLand ? "Services" : "Ownership")}</a>
           ) : null}
           <a href={navHref("plans-homes")} className={activeSection === "plans-homes" ? "active" : undefined} onClick={() => setActiveSection("plans-homes")}>{t(plansHomesNavLabel)}</a>
           {showAmenitiesAndNeighborhoodNav ? (
@@ -4070,7 +4070,7 @@ export function Header() {
             </div>
           </div>
           <div className={`nav-dropdown${["/about", "/contact", "/blog", "/press"].some((r) => navPath.startsWith(r)) ? " is-active" : ""}`}>
-            <span className="nav-dropdown-label"><Briefcase className="nav-icon" aria-hidden="true" strokeWidth={1.5} /><span>{text.company}</span></span>
+            <span className="nav-dropdown-label"><MobileBuildingIcon size={24} /><span>{text.company}</span></span>
             <div className="nav-dropdown-menu">
               <Link href="/about">About</Link>
               <Link href="/contact">Contact</Link>
@@ -4154,7 +4154,7 @@ export function Header() {
               onClick={() => setOpenMobileGroup(openMobileGroup === "company" ? null : "company")}
             >
               <span className="mobile-menu-group-toggle-label">
-                {text.company}
+                <MobileBuildingIcon /> {text.company}
               </span>
               <TablerChevronRight size={18} stroke={1} className="mobile-menu-group-chevron" aria-hidden="true" />
             </button>

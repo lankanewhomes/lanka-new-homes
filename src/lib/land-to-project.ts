@@ -21,6 +21,15 @@ function formatPerchPriceRange(min?: number, max?: number): string {
   return "";
 }
 
+// Subdivided lands often have no single land size; their plots do. "6.2 to 9 perches" from the plot rows, never estimated.
+function plotSizeRange(land: Land): string | undefined {
+  const sizes = (land.plots ?? []).map((plot) => plot.sizePerches).filter((n) => n > 0);
+  if (!sizes.length) return undefined;
+  const min = Math.min(...sizes);
+  const max = Math.max(...sizes);
+  return max > min ? `${min} to ${max} perches` : `${min} perches`;
+}
+
 // Design stays identical to the project detail page (ProjectHero, stats
 // chips, overview, details table, pricing, key features, amenities, floor
 // plans, neighborhood, contact card) — only the data source changes. This
@@ -78,7 +87,7 @@ export function landToProjectShape(land: Land): Project {
     priceRange: land.priceLkr > 0 ? land.priceLkr.toLocaleString() : formatPerchPriceRange(land.pricePerPerchLkrMin, land.pricePerPerchLkrMax),
     bedrooms: "-",
     bathrooms: "-",
-    floorAreaRange: formatLandSize(land) ?? "-",
+    floorAreaRange: formatLandSize(land) ?? plotSizeRange(land) ?? "-",
     plotCount: (land.plots ?? []).length || land.plotCount || undefined,
     plotsAvailable: (land.plots ?? []).some((plot) => plot.status) ? (land.plots ?? []).filter((plot) => plot.status === "Available").length : undefined,
     units: floorPlans.length,

@@ -288,12 +288,6 @@ export function ListingGridCard({ project, basePath = "/projects" }: { project: 
             ? (hasLandSize ? tPrice(`From ${project.floorAreaRange}`) : <span className="badge-contact-pricing">{t("Contact for pricing")}</span>)
             : (hasPrice ? tPrice(`From ${formatLkr(project.startingPriceLkr)}`) : <span className="badge-contact-pricing">{t("Contact for pricing")}</span>)}
         </p>
-        {isLand && project.plotCount ? (
-          <p className="listing-grid-card-plots">
-            <Layers className="h-3.5 w-3.5" aria-hidden="true" />
-            {project.plotsAvailable !== undefined ? `${project.plotsAvailable} of ${project.plotCount} plots available` : `${project.plotCount} plots`}
-          </p>
-        ) : null}
         <p className="listing-grid-card-agency">{project.developerName}</p>
         <p className="listing-grid-card-address">{project.location}</p>
 
@@ -301,8 +295,10 @@ export function ListingGridCard({ project, basePath = "/projects" }: { project: 
           {isLand ? (
             <>
               <span className="listing-grid-card-fact">
-                <Ruler className="h-3.5 w-3.5" aria-hidden="true" />
-                {hasLandSize ? project.floorAreaRange.replace(" to ", "–") : "—"}
+                {project.plotCount ? <Layers className="h-3.5 w-3.5" aria-hidden="true" /> : <Ruler className="h-3.5 w-3.5" aria-hidden="true" />}
+                {project.plotCount
+                  ? (project.plotsAvailable !== undefined ? `${project.plotsAvailable} of ${project.plotCount} plots available` : `${project.plotCount} plots`)
+                  : hasLandSize ? project.floorAreaRange.replace(" to ", "–") : "—"}
               </span>
               <span className="listing-grid-card-fact">{project.type || "—"}</span>
             </>
