@@ -17038,9 +17038,10 @@ body:has(.compare-bar) {
 /* Owner, 2026-09-30: "for the cards the transparent for that section" —
    the listing cards in the "What a listing looks like" box let the tinted,
    dotted background show through instead of sitting on solid white. */
+/* Reversed 2026-10-06 (owner: "just like others, with white background"): white cards with a thin border. */
 .fdv-page .fdv-showcase-grid .listing-grid-card,
 .fdv-page .fdv-showcase-grid .home-project-card {
-  background: transparent;
+  background: #fff;
   box-shadow: none;
 }
 
@@ -20214,3 +20215,26 @@ body:has(.compare-bar) {
 .press-asset-preview-icon img { height: 64px; width: 64px; }
 
 @media (min-width: 900px) { .press-assets-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+/* White cards with a thin border and square corners everywhere a listing card sits on a tinted box (owner, 2026-10-06):
+   the /for-developers "This is what a listing looks like" section (4 across) and the neighborhood page. */
+.fdv-showcase-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+@media (max-width: 1100px) { .fdv-showcase-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .fdv-showcase-grid { grid-template-columns: 1fr; } }
+.fdv-live-listings .listing-grid-card,
+.developer-projects-grid .listing-grid-card {
+  background: #fff;
+  border: 1px solid #ececea;
+  border-radius: 0;
+  padding: 10px;
+  box-sizing: border-box;
+}
+.fdv-live-listings .listing-grid-card .listing-grid-card-media,
+.fdv-live-listings .listing-grid-card .listing-grid-card-image,
+.developer-projects-grid .listing-grid-card .listing-grid-card-media,
+.developer-projects-grid .listing-grid-card .listing-grid-card-image { border-radius: 0; }
+.fdv-live-listings .listing-grid-card .listing-grid-card-body,
+.developer-projects-grid .listing-grid-card .listing-grid-card-body { padding: 12px 4px 6px; }
+
+/* Badge preview on /for-developers matches the real Featured pill (solid orange). */
+.fdv-badges-row .badge-featured { background: #f47b36; border: 1px solid #f47b36; color: #fff; }

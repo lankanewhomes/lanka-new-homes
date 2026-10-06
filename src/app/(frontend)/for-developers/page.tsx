@@ -41,7 +41,7 @@ export const metadata: Metadata = {
 // comes from an actual project already on the site, not a mockup.
 const HERO_SLUG = "capitol-twinpeaks";
 const PRODUCT_PREVIEW_SLUG = "viva-la-vida";
-const SHOWCASE_SLUGS = ["capitol-twinpeaks", "viva-la-vida", "imaarat-bambalapitiya"];
+const SHOWCASE_SLUGS = ["capitol-twinpeaks", "viva-la-vida", "imaarat-bambalapitiya", "luxury-apartments-icon-v-talpe"];
 
 // Every real badge a listing can earn (see docs/design.md "Status / badge
 // pills"), one place — owner, 2026-09-29: "if in the future i ever add any
@@ -104,6 +104,7 @@ const BADGES = [
   { key: "verified", label: "Verified Developer", className: "listing-badge-pill badge-verified fdv-badge-pill", icon: Check },
   { key: "responder", label: "Responds within 24 hours", className: "listing-badge-pill badge-responder fdv-badge-pill", icon: Zap },
   { key: "featured", label: "★ Featured", className: "badge-featured fdv-badge-pill", icon: null },
+  { key: "payment", label: "Flexible Payment Plan", className: "listing-badge-pill badge-payment-plan fdv-badge-pill", icon: null },
   { key: "premium", label: "Premium", className: "badge-premium fdv-badge-pill", icon: null },
   { key: "move-in-now", label: "Move-In Now", className: "badge-move-in-now fdv-badge-pill", icon: null },
   { key: "quick-move-in", label: "Quick Move-In", className: "badge-quick-move-in fdv-badge-pill", icon: null },
