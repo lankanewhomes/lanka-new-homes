@@ -2087,6 +2087,9 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
   );
 }
 
+/** Short "Rs. 5.2M" style label for plot prices. */
+export const compactLkrLabel = (amount: number): string => compactLkr(amount);
+
 export function RequestInfoDialog({
   open,
   onClose,

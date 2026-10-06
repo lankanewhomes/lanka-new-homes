@@ -356,6 +356,9 @@ export type Project = SeoFields & {
   bedrooms: string;
   bathrooms: string;
   floorAreaRange: string;
+  /** Land listings: total plots (plot rows, else the developer-published count) and, only when statuses are stated, how many are available. */
+  plotCount?: number;
+  plotsAvailable?: number;
   units: number;
   floors: number;
   /** Number of dedicated carpark floors/levels, when distinct from the residential floor count. */

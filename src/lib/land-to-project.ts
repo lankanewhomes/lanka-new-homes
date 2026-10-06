@@ -79,6 +79,8 @@ export function landToProjectShape(land: Land): Project {
     bedrooms: "-",
     bathrooms: "-",
     floorAreaRange: formatLandSize(land) ?? "-",
+    plotCount: (land.plots ?? []).length || land.plotCount || undefined,
+    plotsAvailable: (land.plots ?? []).some((plot) => plot.status) ? (land.plots ?? []).filter((plot) => plot.status === "Available").length : undefined,
     units: floorPlans.length,
     floors: 0,
     parking: "-",

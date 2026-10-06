@@ -20147,3 +20147,41 @@ body:has(.compare-bar) {
 
 /* Very large plot lists scroll inside the section (all plots stay in the same section, nothing is paged). */
 .plots-grid-tiles.is-scroll { max-height: 640px; overflow-y: auto; padding-right: 6px; }
+
+/* Plots section redesign (owner, 2026-10-06): summary under the plan, size range, tiles/list switch, ticked-lot check. */
+.plots-grid-head h2 { margin-bottom: 0; }
+.plots-grid-side { display: grid; gap: 14px; align-content: start; }
+.plots-grid-layout.has-plan .plots-grid-side { position: sticky; top: 96px; }
+.plots-grid-layout.has-plan .plots-grid-plan { position: static; }
+.plots-grid-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0; }
+.plots-grid-facts > div { padding: 12px 14px; background: #fff; border: 1px solid #e4e2db; }
+.plots-grid-facts dt { font-size: 12px; color: #6b6355; }
+.plots-grid-facts dd { margin: 4px 0 0; font-family: var(--font-ref-sans); font-size: 24px; line-height: 1.1; color: #1f1f1f; }
+.plots-grid-facts dd small { font-size: 12px; color: #6b6355; }
+.plots-grid-range { display: flex; align-items: center; gap: 6px; height: 44px; padding: 0 12px; border: 1px solid #d9d4c7; background: #fff; font-size: 13px; color: #6b6355; }
+.plots-grid-range input { width: 64px; border: 0; border-bottom: 1px solid #d9d4c7; outline: 0; background: transparent; font-size: 14px; color: #1f1f1f; text-align: center; }
+.plots-grid-view { display: flex; border: 1px solid #d9d4c7; background: #fff; }
+.plots-grid-view button { display: inline-flex; align-items: center; gap: 6px; height: 44px; padding: 0 12px; font-size: 13px; color: #1f1f1f; background: #fff; border: 0; cursor: pointer; }
+.plots-grid-view button + button { border-left: 1px solid #d9d4c7; }
+.plots-grid-view button.active { background: #1f1f1f; color: #fff; }
+.plots-grid-count { margin: 0 0 10px; font-size: 13px; color: #6b6355; }
+.plots-grid-count button { background: none; border: 0; text-decoration: underline; color: #1f1f1f; cursor: pointer; font-size: 13px; padding: 0; }
+.plots-grid-tile { position: relative; }
+.plots-grid-tile-price { font-size: 12px; color: #6b6355; }
+.plots-grid-tile.is-selected .plots-grid-tile-price { color: #d9d4c7; }
+.plots-grid-tile-check { position: absolute; top: 8px; right: 8px; display: none; align-items: center; justify-content: center; width: 20px; height: 20px; background: #f47b36; color: #1f1f1f; border-radius: 999px; }
+.plots-grid-tile.is-selected .plots-grid-tile-check { display: inline-flex; }
+.plots-grid-table-wrap { background: #fff; border: 1px solid #e4e2db; }
+.plots-grid-table-wrap.is-scroll { max-height: 640px; overflow-y: auto; }
+.plots-grid-table { width: 100%; border-collapse: collapse; font-size: 14px; color: #1f1f1f; }
+.plots-grid-table th { position: sticky; top: 0; background: #f1f0ec; text-align: left; font-weight: 400; font-size: 12px; color: #6b6355; padding: 10px 14px; border-bottom: 1px solid #e4e2db; }
+.plots-grid-table td { padding: 10px 14px; border-bottom: 1px solid #efece4; }
+.plots-grid-table tbody tr { cursor: pointer; }
+.plots-grid-table tbody tr:hover { background: #faf7f2; }
+.plots-grid-table tbody tr.is-selected { background: #1f1f1f; color: #fff; }
+.plots-grid-table tbody tr.is-selected td { border-bottom-color: #1f1f1f; }
+@media (max-width: 1000px) { .plots-grid-layout.has-plan .plots-grid-side { position: static; } }
+@media (max-width: 760px) { .plots-grid-range { flex: 1 1 100%; } .plots-grid-view { flex: 1 1 100%; } .plots-grid-view button { flex: 1; justify-content: center; } }
+
+/* "N plots" line on land cards (owner, 2026-10-06). */
+.listing-grid-card-plots { display: flex; align-items: center; gap: 6px; margin: 4px 0 0; font-size: 13px; color: #1f1f1f; }

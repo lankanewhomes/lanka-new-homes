@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { BedDouble, Check, ChevronDown, ChevronLeft, ChevronRight, Heart, List, Map as MapIcon, Ruler, Scale, Search, MapPin, SlidersHorizontal, X, ArrowUpDown } from "lucide-react";
+import { BedDouble, Check, Layers, ChevronDown, ChevronLeft, ChevronRight, Heart, List, Map as MapIcon, Ruler, Scale, Search, MapPin, SlidersHorizontal, X, ArrowUpDown } from "lucide-react";
 import { formatLkr, withSqFt } from "@/lib/format";
 import { hasPremiumStyleBadge, planRotationWeight } from "@/lib/packages";
 import { useListingT } from "@/lib/i18n/use-listing-t";
@@ -288,6 +288,12 @@ export function ListingGridCard({ project, basePath = "/projects" }: { project: 
             ? (hasLandSize ? tPrice(`From ${project.floorAreaRange}`) : <span className="badge-contact-pricing">{t("Contact for pricing")}</span>)
             : (hasPrice ? tPrice(`From ${formatLkr(project.startingPriceLkr)}`) : <span className="badge-contact-pricing">{t("Contact for pricing")}</span>)}
         </p>
+        {isLand && project.plotCount ? (
+          <p className="listing-grid-card-plots">
+            <Layers className="h-3.5 w-3.5" aria-hidden="true" />
+            {project.plotsAvailable !== undefined ? `${project.plotsAvailable} of ${project.plotCount} plots available` : `${project.plotCount} plots`}
+          </p>
+        ) : null}
         <p className="listing-grid-card-agency">{project.developerName}</p>
         <p className="listing-grid-card-address">{project.location}</p>
 
