@@ -20238,3 +20238,12 @@ body:has(.compare-bar) {
 
 /* Badge preview on /for-developers matches the real Featured pill (solid orange). */
 .fdv-badges-row .badge-featured { background: #f47b36; border: 1px solid #f47b36; color: #fff; }
+
+/* Listing cards on /for-developers and the neighborhood page copy the home page cards: white, no border, square, 4 per row,
+   34px gap (owner, 2026-10-06). */
+.fdv-showcase-grid { gap: 34px; }
+.developer-projects-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 34px; }
+@media (max-width: 1100px) { .developer-projects-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .developer-projects-grid { grid-template-columns: 1fr; } }
+.fdv-live-listings .listing-grid-card,
+.developer-projects-grid .listing-grid-card { border: 0; }
