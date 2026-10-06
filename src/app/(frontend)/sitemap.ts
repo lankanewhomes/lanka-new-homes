@@ -192,7 +192,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
-  const blogRoutes: MetadataRoute.Sitemap = Object.values(blogPosts).map((post) => ({
+  const blogRoutes: MetadataRoute.Sitemap = Object.values(blogPosts).filter((post) => !post.draft).map((post) => ({
     url: toAbsoluteUrl(post.path),
     lastModified: post.publishDate,
     changeFrequency: "monthly",

@@ -33,6 +33,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
   return (
     <article className="fdv-page blog-article">
+      {post.draft ? (
+        <p className="blog-draft-notice" role="note">
+          Draft preview. This article is not listed on the blog or in search results yet.
+        </p>
+      ) : null}
       <div className="blog-article-hero">
         <div className="blog-article-hero-inner">
           <div className="blog-article-hero-text">
@@ -64,11 +69,25 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       </div>
 
       <div className="blog-article-cta">
-        <h2>Want your project&apos;s website doing this?</h2>
-        <p>We design and build dedicated websites for property developments — a new site, or a rebuild of one that isn&apos;t working.</p>
-        <div className="blog-article-cta-links">
-          <Link href="/web-design" className="fdv-cta-primary">See our web design service</Link>
-        </div>
+        {post.cta ? (
+          <>
+            <h2>{post.cta.heading}</h2>
+            <p>{post.cta.body}</p>
+            <div className="blog-article-cta-links">
+              {post.cta.links.map((link, index) => (
+                <Link key={link.href} href={link.href} className={index === 0 ? "fdv-cta-primary" : "fdv-cta-secondary"}>{link.label}</Link>
+              ))}
+            </div>
+          </>
+        ) : (
+          <>
+            <h2>Want your project&apos;s website doing this?</h2>
+            <p>We design and build dedicated websites for property developments — a new site, or a rebuild of one that isn&apos;t working.</p>
+            <div className="blog-article-cta-links">
+              <Link href="/web-design" className="fdv-cta-primary">See our web design service</Link>
+            </div>
+          </>
+        )}
       </div>
 
       <p className="blog-article-back"><Link href="/blog">← Back to all posts</Link></p>

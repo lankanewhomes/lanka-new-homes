@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 // box with links. Everything shown is real (BlogPost data); no placeholder articles. On-page title stays "News & Insights"
 // (owner, 2026-09-29); the metadata title carries "Blog" to match the /blog URL.
 export default function BlogPage() {
-  const posts = Object.values(blogPosts).sort((a, b) => (a.publishDate < b.publishDate ? 1 : -1));
+  const posts = Object.values(blogPosts).filter((post) => !post.draft).sort((a, b) => (a.publishDate < b.publishDate ? 1 : -1));
   const categoryCount = new Set(posts.map((post) => post.category)).size;
 
   return (
