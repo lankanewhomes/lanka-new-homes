@@ -20185,3 +20185,9 @@ body:has(.compare-bar) {
 
 /* "N plots" line on land cards (owner, 2026-10-06). */
 .listing-grid-card-plots { display: flex; align-items: center; gap: 6px; margin: 4px 0 0; font-size: 13px; color: #1f1f1f; }
+
+/* Filters sit under the description, above the plan and the plots (owner, 2026-10-06). */
+.plots-grid-controls { margin-top: 18px; }
+.plots-grid-controls .plots-grid-chips { margin-bottom: 10px; }
+.plots-grid-controls .plots-grid-count { margin: 0; }
+.plots-grid-controls + .plots-grid-layout { margin-top: 18px; }

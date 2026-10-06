@@ -94,6 +94,47 @@ export function LandPlotsGridSection({ plots, project, blockPlan }: { plots: Lan
         <p>Choose the lots you like, tick them, and send one enquiry.</p>
       </div>
 
+      <div className="plots-grid-controls">
+        <div className="plots-grid-toolbar">
+          <label className="plots-grid-search">
+            <Search className="h-4 w-4" aria-hidden="true" />
+            <input type="search" inputMode="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Find a lot number" aria-label="Find a lot number" />
+          </label>
+          <div className="plots-grid-range" role="group" aria-label="Size in perches">
+            <span>Size</span>
+            <input type="number" inputMode="decimal" min={0} step="0.1" value={from} onChange={(event) => setFrom(event.target.value)} placeholder={perches(minSize)} aria-label="From perches" />
+            <span aria-hidden="true">to</span>
+            <input type="number" inputMode="decimal" min={0} step="0.1" value={to} onChange={(event) => setTo(event.target.value)} placeholder={perches(maxSize)} aria-label="To perches" />
+            <span>P</span>
+          </div>
+          <label className="plots-grid-sort">
+            <span>Sort</span>
+            <select value={sortBy} onChange={(event) => setSortBy(event.target.value as SortKey)}>
+              <option value="lot">Lot number</option>
+              <option value="sizeAsc">Size, small to large</option>
+              <option value="sizeDesc">Size, large to small</option>
+            </select>
+          </label>
+          <div className="plots-grid-view" role="group" aria-label="View">
+            <button type="button" className={view === "grid" ? "active" : undefined} aria-pressed={view === "grid"} onClick={() => setView("grid")}><LayoutGrid className="h-4 w-4" aria-hidden="true" /> Tiles</button>
+            <button type="button" className={view === "list" ? "active" : undefined} aria-pressed={view === "list"} onClick={() => setView("list")}><List className="h-4 w-4" aria-hidden="true" /> List</button>
+          </div>
+        </div>
+
+        <div className="plots-grid-chips" role="group" aria-label="Quick size filters">
+          <button type="button" className={!filtered ? "active" : undefined} aria-pressed={!filtered} onClick={clearFilters}>All ({plots.length})</button>
+          {bands.map((band) => (
+            <button key={band.label} type="button" className={activeBand(band) ? "active" : undefined} aria-pressed={activeBand(band)} onClick={() => setBand(band)}>
+              {band.label} ({band.count})
+            </button>
+          ))}
+        </div>
+
+        <p className="plots-grid-count" aria-live="polite">
+          Showing {visible.length} of {plots.length} plots{filtered ? <> · <button type="button" onClick={clearFilters}>Clear filters</button></> : null}
+        </p>
+      </div>
+
       <div className={`plots-grid-layout${blockPlan ? " has-plan" : ""}`}>
         <aside className="plots-grid-side">
           {blockPlan ? (
@@ -111,45 +152,6 @@ export function LandPlotsGridSection({ plots, project, blockPlan }: { plots: Lan
         </aside>
 
         <div className="plots-grid-main">
-          <div className="plots-grid-toolbar">
-            <label className="plots-grid-search">
-              <Search className="h-4 w-4" aria-hidden="true" />
-              <input type="search" inputMode="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Find a lot number" aria-label="Find a lot number" />
-            </label>
-            <div className="plots-grid-range" role="group" aria-label="Size in perches">
-              <span>Size</span>
-              <input type="number" inputMode="decimal" min={0} step="0.1" value={from} onChange={(event) => setFrom(event.target.value)} placeholder={perches(minSize)} aria-label="From perches" />
-              <span aria-hidden="true">to</span>
-              <input type="number" inputMode="decimal" min={0} step="0.1" value={to} onChange={(event) => setTo(event.target.value)} placeholder={perches(maxSize)} aria-label="To perches" />
-              <span>P</span>
-            </div>
-            <label className="plots-grid-sort">
-              <span>Sort</span>
-              <select value={sortBy} onChange={(event) => setSortBy(event.target.value as SortKey)}>
-                <option value="lot">Lot number</option>
-                <option value="sizeAsc">Size, small to large</option>
-                <option value="sizeDesc">Size, large to small</option>
-              </select>
-            </label>
-            <div className="plots-grid-view" role="group" aria-label="View">
-              <button type="button" className={view === "grid" ? "active" : undefined} aria-pressed={view === "grid"} onClick={() => setView("grid")}><LayoutGrid className="h-4 w-4" aria-hidden="true" /> Tiles</button>
-              <button type="button" className={view === "list" ? "active" : undefined} aria-pressed={view === "list"} onClick={() => setView("list")}><List className="h-4 w-4" aria-hidden="true" /> List</button>
-            </div>
-          </div>
-
-          <div className="plots-grid-chips" role="group" aria-label="Quick size filters">
-            <button type="button" className={!filtered ? "active" : undefined} aria-pressed={!filtered} onClick={clearFilters}>All ({plots.length})</button>
-            {bands.map((band) => (
-              <button key={band.label} type="button" className={activeBand(band) ? "active" : undefined} aria-pressed={activeBand(band)} onClick={() => setBand(band)}>
-                {band.label} ({band.count})
-              </button>
-            ))}
-          </div>
-
-          <p className="plots-grid-count" aria-live="polite">
-            Showing {visible.length} of {plots.length} plots{filtered ? <> · <button type="button" onClick={clearFilters}>Clear filters</button></> : null}
-          </p>
-
           {visible.length === 0 ? (
             <p className="plots-grid-empty">No lots match these filters.</p>
           ) : view === "grid" ? (
