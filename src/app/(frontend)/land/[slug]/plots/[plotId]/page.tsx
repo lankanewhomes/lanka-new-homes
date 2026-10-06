@@ -1,3 +1,4 @@
+import { PLOT_GRID_THRESHOLD } from "@/lib/plot-grid";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getAllLands, getLandBySlug } from "@/lib/land-store";
@@ -25,9 +26,13 @@ type PlotPageProps = {
   params: Promise<{ slug: string; plotId: string }>;
 };
 
+// Only lands that link to individual plot pages are pre-built. Lands over the plot-grid threshold show every plot on the
+// listing page itself (no plot pages), and pre-building thousands of them timed the build out (2026-10-06).
 export async function generateStaticParams() {
   const lands = await getAllLands();
-  return lands.flatMap((land) => (land.plots ?? []).map((plot) => ({ slug: land.slug, plotId: plot.id })));
+  return lands
+    .filter((land) => (land.plots ?? []).length <= PLOT_GRID_THRESHOLD)
+    .flatMap((land) => (land.plots ?? []).map((plot) => ({ slug: land.slug, plotId: plot.id })));
 }
 
 export async function generateMetadata({ params }: PlotPageProps): Promise<Metadata> {
