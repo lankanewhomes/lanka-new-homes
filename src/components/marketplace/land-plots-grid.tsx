@@ -111,7 +111,7 @@ export function LandPlotsGridSection({ plots, project, blockPlan }: { plots: Lan
           {visible.length === 0 ? (
             <p className="plots-grid-empty">No lots match. <button type="button" onClick={() => { setQuery(""); setBucket("all"); }}>Clear filters</button></p>
           ) : (
-            <div className="plots-grid-tiles" role="group" aria-label="Plots">
+            <div className={`plots-grid-tiles${visible.length > 60 ? " is-scroll" : ""}`} role="group" aria-label="Plots" tabIndex={visible.length > 60 ? 0 : undefined}>
               {visible.map((plot) => {
                 const isSelected = selected.has(plot.id);
                 return (

@@ -20144,3 +20144,6 @@ body:has(.compare-bar) {
 
 /* "Flexible Payment Plan" badge: purple, so it no longer looks like the Featured pill (owner, 2026-10-06). */
 .badge-payment-plan { background: #f3e8ff; border: 1px solid #d8b4fe; color: #6b21a8; }
+
+/* Very large plot lists scroll inside the section (all plots stay in the same section, nothing is paged). */
+.plots-grid-tiles.is-scroll { max-height: 640px; overflow-y: auto; padding-right: 6px; }
