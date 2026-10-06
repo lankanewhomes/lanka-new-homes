@@ -2093,6 +2093,7 @@ export function RequestInfoDialog({
   project,
   floorPlan,
   variant = "standard",
+  defaultMessage = "",
 }: {
   open: boolean;
   onClose: () => void;
@@ -2106,13 +2107,15 @@ export function RequestInfoDialog({
    * title/subtitle/submit copy and default lead message for the brochure
    * pill on the hero media bar. Everywhere else keeps the original layout. */
   variant?: "standard" | "inquiry" | "brochure";
+  /** Pre-filled message (e.g. the plots a buyer selected). The parent re-keys the dialog when it changes. */
+  defaultMessage?: string;
 }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   // Buyers can be anywhere in the world: country + local number, stored with
   // the international prefix (see lib/phone.ts) so reply links work abroad.
   const [phoneValue, setPhoneValue] = useState<PhoneValue>({ country: DEFAULT_PHONE_COUNTRY, national: "" });
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState(defaultMessage);
   const [contactMethod, setContactMethod] = useState<"Phone" | "Text" | "Email">("Phone");
   const [agreed, setAgreed] = useState(false);
   const [keepPosted, setKeepPosted] = useState(false);
@@ -2758,7 +2761,7 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
     [floorPlans]
   );
 
-  const availabilityOptions = useMemo(() => Array.from(new Set(floorPlans.map((plan) => plan.availability))), [floorPlans]);
+  const availabilityOptions = useMemo(() => Array.from(new Set(floorPlans.filter((plan) => !plan.availabilityUnknown).map((plan) => plan.availability))), [floorPlans]);
   // 0 means "not provided" (e.g. Vauxhall's penthouses) — never offered as a bedroom filter.
   const bedroomOptions = useMemo(() => Array.from(new Set(floorPlans.map((plan) => plan.bedrooms).filter((count) => count > 0))).sort((a, b) => a - b), [floorPlans]);
 
@@ -2912,7 +2915,7 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
               ) : (
                 <FloorPlanPlaceholder variant="card" />
               )}
-              <span className={planStatusPillClass(plan.availability)}>{plan.availability}</span>
+              {plan.availabilityUnknown ? null : <span className={planStatusPillClass(plan.availability)}>{plan.availability}</span>}
             </figure>
 
             <div className="plans-home-body">

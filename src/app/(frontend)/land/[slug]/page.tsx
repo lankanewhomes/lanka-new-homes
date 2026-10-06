@@ -9,6 +9,8 @@ import { pickSimilarListings } from "@/lib/similar-listings";
 import { SimilarListingsSection } from "@/components/marketplace/similar-listings";
 import { formatLkr } from "@/lib/format";
 import { getDeveloperBySlug } from "@/lib/developer-store";
+import { LandPlotsGridSection } from "@/components/marketplace/land-plots-grid";
+import { PLOT_GRID_THRESHOLD } from "@/lib/plot-grid";
 import { listingWhatsAppHref, toWhatsAppNumber } from "@/lib/whatsapp";
 import { VERIFIED_DEVELOPER_TOOLTIP } from "@/lib/developer-badges";
 import { getAllConstructionCompanies } from "@/lib/construction-company-store";
@@ -108,6 +110,8 @@ export default async function LandDetailPage({ params }: LandPageProps) {
   const totalPlots = plots.length;
   const plotsAvailable = plots.filter((plot) => plot.status === "Available").length;
   const plotsSold = plots.filter((plot) => plot.status === "Sold").length;
+  // Plans give lot numbers and sizes only: show available/sold counts only when the developer stated a status.
+  const plotStatusStated = plots.some((plot) => plot.status);
   // Some developers publish only a total plot count ("Only 12 exclusive
   // plots"), never individual plot numbers/sizes/prices — plotCount covers
   // that case without inventing a fake available/sold breakdown we don't
@@ -120,8 +124,8 @@ export default async function LandDetailPage({ params }: LandPageProps) {
     { icon: CircleDollarSign, label: "Price range", value: land.priceLkr > 0 ? formatLkr(land.priceLkr) : (project.priceRange || "Contact for pricing") },
     { icon: MapPin, label: "Address", value: land.location },
     ...(hasPlotBreakdown ? [{ icon: Layers, label: "Total plots", value: String(totalPlots) }] : []),
-    ...(hasPlotBreakdown ? [{ icon: CheckCircle2, label: "Plots available", value: String(plotsAvailable) }] : []),
-    ...(hasPlotBreakdown ? [{ icon: Tag, label: "Plots sold", value: String(plotsSold) }] : []),
+    ...(hasPlotBreakdown && plotStatusStated ? [{ icon: CheckCircle2, label: "Plots available", value: String(plotsAvailable) }] : []),
+    ...(hasPlotBreakdown && plotStatusStated ? [{ icon: Tag, label: "Plots sold", value: String(plotsSold) }] : []),
     ...(plotCountOnly ? [{ icon: Layers, label: "Total plots", value: String(land.plotCount) }] : []),
     ...(land.landSizePerches > 0 ? [{ icon: Ruler, label: "Land size", value: formatLandSize(land) ?? `${land.landSizePerches} perches` }] : []),
     { icon: Compass, label: "Land use", value: land.landUse.join(" & ") },
@@ -210,7 +214,11 @@ export default async function LandDetailPage({ params }: LandPageProps) {
 
         <LandDetailsTable rows={detailRows} />
 
-        <PlansAndHomesSection project={project} title="Plots" showQuickMoveIns={false} showBedBath={false} planHrefBase={`/land/${land.slug}/plots`} />
+        {plots.length > PLOT_GRID_THRESHOLD ? (
+          <LandPlotsGridSection plots={plots} project={project} blockPlan={land.blockPlanImages?.[0]?.image} />
+        ) : (
+          <PlansAndHomesSection project={project} title="Plots" showQuickMoveIns={false} showBedBath={false} planHrefBase={`/land/${land.slug}/plots`} />
+        )}
 
         <section id="pricing" className="space-y-3">
           <PricingInformationLayout project={project} />

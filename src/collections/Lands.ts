@@ -226,8 +226,8 @@ export const Lands: CollectionConfig = {
               fields: [
                 { name: 'name', type: 'text', required: true },
                 { name: 'sizePerches', type: 'number', required: true },
-                { name: 'priceLkr', type: 'number', required: true },
-                { name: 'status', type: 'select', required: true, defaultValue: 'Available', options: ['Available', 'Reserved', 'Sold'] },
+                { name: 'priceLkr', type: 'number', admin: { description: 'Leave blank when the developer does not publish a price for this plot.' } },
+                { name: 'status', type: 'select', options: ['Available', 'Reserved', 'Sold'], admin: { description: 'Leave blank when the developer does not say. Never guess.' } },
                 { name: 'image', type: 'text', admin: { description: 'Image URL — or upload a file in Media and paste its URL here.' } },
               ],
             },

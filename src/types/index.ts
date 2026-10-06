@@ -147,6 +147,8 @@ export type FloorPlan = {
   /** Developer-published downloads for this plan (ft² / m² PDFs or images). */
   planDocuments?: { label: string; url: string }[];
   availability: "Available" | "Limited" | "Sold Out";
+  /** True when the availability above is only a placeholder (the developer did not state it): hide the pill and tabs. */
+  availabilityUnknown?: boolean;
   quickMoveIn?: boolean;
   /** Developer-published per-floor tracker (Rush Lanka's "View Availability"
    * popup): which floors this plan sits on and which are still available. */
@@ -610,8 +612,10 @@ export type LandPlot = {
   id: string;
   name: string;
   sizePerches: number;
-  priceLkr: number;
-  status: "Available" | "Reserved" | "Sold";
+  /** Missing when the developer publishes no per-plot price. */
+  priceLkr?: number;
+  /** Missing when the developer does not say; never assumed. */
+  status?: "Available" | "Reserved" | "Sold";
   image?: string;
 };
 

@@ -7068,8 +7068,14 @@ export interface Land {
     | {
         name: string;
         sizePerches: number;
-        priceLkr: number;
-        status: 'Available' | 'Reserved' | 'Sold';
+        /**
+         * Leave blank when the developer does not publish a price for this plot.
+         */
+        priceLkr?: number | null;
+        /**
+         * Leave blank when the developer does not say. Never guess.
+         */
+        status?: ('Available' | 'Reserved' | 'Sold') | null;
         /**
          * Image URL — or upload a file in Media and paste its URL here.
          */

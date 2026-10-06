@@ -42,9 +42,10 @@ export function landToProjectShape(land: Land): Project {
       bedrooms: 0,
       bathrooms: 0,
       floorAreaSqFt: plot.sizePerches,
-      startingPriceLkr: plot.priceLkr,
+      startingPriceLkr: plot.priceLkr ?? 0,
       image: land.heroImage,
-      availability: plot.status === "Available" ? "Available" : plot.status === "Sold" ? "Sold Out" : "Limited",
+      availability: plot.status === "Sold" ? "Sold Out" : plot.status === "Reserved" ? "Limited" : "Available",
+      availabilityUnknown: !plot.status,
     };
   });
 
@@ -142,13 +143,14 @@ export function buildLandDetailRows(land: Land): { label: string; value: string;
   const plots = land.plots ?? [];
   const totalPlots = plots.length;
   const plotsAvailable = plots.filter((plot) => plot.status === "Available").length;
+  const statusStated = plots.some((plot) => plot.status);
 
   return [
     { label: "Land use", value: land.landUse.join(", ") },
     { label: "Land type", value: land.landType },
     { label: "Shape of land", value: land.landShape },
     { label: "Status", value: land.status },
-    { label: "Plots", value: totalPlots > 0 ? `${plotsAvailable} available of ${totalPlots} total` : undefined },
+    { label: "Plots", value: totalPlots > 0 ? (statusStated ? `${plotsAvailable} available of ${totalPlots} total` : `${totalPlots} plots`) : undefined },
     { label: "District", value: land.district },
     { label: "City", value: land.city },
     { label: "Province", value: land.province },

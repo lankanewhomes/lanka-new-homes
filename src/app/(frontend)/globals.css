@@ -20098,3 +20098,44 @@ body:has(.compare-bar) {
 .header-search-suggestions button svg { color: #f47b36; }
 .header-search-suggestions button span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .header-search-suggestions button small { color: #6b7280; font-size: 12px; }
+
+/* Land plots grid (more than 18 plots): all plots in one section, block plan beside the list (owner, 2026-10-06). */
+.plots-grid-shell { width: min(1160px, 100%); margin: 0 auto; padding: 32px; border: 1px solid #e4e2db; background: #f7f3ea; }
+.plots-grid-head h2 { margin: 0; font-family: var(--font-ref-sans); font-size: 32px; font-weight: 400; line-height: 1.15; color: #1f1f1f; }
+.plots-grid-head p { margin: 10px 0 0; font-size: 15px; color: #6b6355; }
+.plots-grid-layout { display: grid; gap: 24px; margin-top: 22px; }
+.plots-grid-layout.has-plan { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); align-items: start; }
+.plots-grid-plan { position: sticky; top: 96px; display: block; border: 1px solid #e4e2db; background: #fff; }
+.plots-grid-plan img { display: block; width: 100%; height: auto; }
+.plots-grid-plan span { display: block; padding: 8px 12px; font-size: 13px; color: #6b6355; border-top: 1px solid #e4e2db; }
+.plots-grid-toolbar { display: flex; flex-wrap: wrap; gap: 10px; }
+.plots-grid-search { flex: 1 1 200px; display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 12px; border: 1px solid #d9d4c7; background: #fff; color: #6b6355; }
+.plots-grid-search input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font-size: 14px; color: #1f1f1f; }
+.plots-grid-sort { display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 12px; border: 1px solid #d9d4c7; background: #fff; font-size: 13px; color: #6b6355; }
+.plots-grid-sort select { border: 0; outline: 0; background: transparent; font-size: 14px; color: #1f1f1f; }
+.plots-grid-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 14px; }
+.plots-grid-chips button { height: 34px; padding: 0 12px; border: 1px solid #d9d4c7; background: #fff; font-size: 13px; color: #1f1f1f; cursor: pointer; }
+.plots-grid-chips button.active { background: #1f1f1f; border-color: #1f1f1f; color: #fff; }
+.plots-grid-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+.plots-grid-tile { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 10px 12px; border: 1px solid #d9d4c7; background: #fff; text-align: left; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+.plots-grid-tile:hover { border-color: #1f1f1f; }
+.plots-grid-tile.is-selected { background: #1f1f1f; border-color: #1f1f1f; color: #fff; }
+.plots-grid-tile.is-sold { opacity: 0.55; }
+.plots-grid-tile-lot { font-size: 12px; color: #6b6355; }
+.plots-grid-tile.is-selected .plots-grid-tile-lot { color: #d9d4c7; }
+.plots-grid-tile-size { font-family: var(--font-ref-sans); font-size: 24px; line-height: 1.1; font-weight: 400; }
+.plots-grid-tile-size small { font-size: 13px; margin-left: 2px; }
+.plots-grid-tile-status { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; }
+.plots-grid-empty { margin: 8px 0; font-size: 14px; color: #6b6355; }
+.plots-grid-empty button { text-decoration: underline; background: none; border: 0; color: #1f1f1f; cursor: pointer; }
+.plots-grid-selection { position: sticky; bottom: 12px; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-top: 18px; padding: 12px 16px; background: #fff; border: 1px solid #1f1f1f; box-shadow: 0 10px 30px rgba(31, 31, 31, 0.15); }
+.plots-grid-selection p { margin: 0; font-size: 14px; color: #1f1f1f; }
+.plots-grid-selection > div { display: flex; gap: 8px; }
+.plots-grid-clear, .plots-grid-enquire { display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 16px; font-size: 14px; cursor: pointer; }
+.plots-grid-clear { background: #fff; border: 1px solid #d9d4c7; color: #1f1f1f; }
+.plots-grid-enquire { background: #f47b36; border: 1px solid #f47b36; color: #1f1f1f; border-radius: 999px; }
+@media (max-width: 1000px) {
+  .plots-grid-layout.has-plan { grid-template-columns: 1fr; }
+  .plots-grid-plan { position: static; }
+}
+@media (max-width: 760px) { .plots-grid-shell { padding: 22px 14px; } .plots-grid-tiles { grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); } }
