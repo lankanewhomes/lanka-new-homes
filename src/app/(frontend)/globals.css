@@ -20139,3 +20139,6 @@ body:has(.compare-bar) {
   .plots-grid-plan { position: static; }
 }
 @media (max-width: 760px) { .plots-grid-shell { padding: 22px 14px; } .plots-grid-tiles { grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); } }
+
+/* "Flexible Payment Plan" badge: purple, so it no longer looks like the Featured pill (owner, 2026-10-06). */
+.badge-payment-plan { background: #f3e8ff; border: 1px solid #d8b4fe; color: #6b21a8; }

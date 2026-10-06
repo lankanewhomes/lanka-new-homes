@@ -279,7 +279,7 @@ export function ListingGridCard({ project, basePath = "/projects" }: { project: 
             ) : project.isFeatured ? (
               <span className="badge-featured">{t("Featured")}</span>
             ) : null}
-            {project.paymentPlanBadge ? <span className="badge-featured">{project.paymentPlanBadge}</span> : null}
+            {project.paymentPlanBadge ? <span className="badge-payment-plan">{project.paymentPlanBadge}</span> : null}
           </div>
         ) : null}
         <Link href={href} className="listing-grid-card-name">{project.name}</Link>

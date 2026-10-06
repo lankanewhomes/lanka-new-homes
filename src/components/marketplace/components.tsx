@@ -1664,7 +1664,7 @@ export function ProjectHero({
           ) : project.isFeatured ? (
             <span className="listing-badge-pill badge-featured">{t("Featured")}</span>
           ) : null}
-          {project.paymentPlanBadge ? <span className="listing-badge-pill badge-featured">{project.paymentPlanBadge}</span> : null}
+          {project.paymentPlanBadge ? <span className="listing-badge-pill badge-payment-plan">{project.paymentPlanBadge}</span> : null}
           {extraBadges.map((badge) => {
             const label = typeof badge === "string" ? badge : badge.label;
             const kind = typeof badge === "string" ? undefined : badge.kind;
