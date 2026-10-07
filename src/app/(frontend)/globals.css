@@ -20247,3 +20247,9 @@ body:has(.compare-bar) {
 @media (max-width: 640px) { .developer-projects-grid { grid-template-columns: 1fr; } }
 .fdv-live-listings .listing-grid-card,
 .developer-projects-grid .listing-grid-card { border: 0; }
+
+/* Size filters on the left, Tiles/List switch on the right, in one row (owner, 2026-10-07). */
+.plots-grid-controls-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.plots-grid-controls-row .plots-grid-chips { margin: 0; }
+.plots-grid-controls-row .plots-grid-view { margin-left: auto; }
+.plots-grid-controls .plots-grid-count { margin-top: 10px; }

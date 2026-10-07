@@ -87,20 +87,19 @@ export function LandPlotsGridSection({ plots, project, blockPlan }: { plots: Lan
       </div>
 
       <div className="plots-grid-controls">
-        <div className="plots-grid-toolbar">
+        <div className="plots-grid-controls-row">
+          <div className="plots-grid-chips" role="group" aria-label="Quick size filters">
+            <button type="button" className={!filtered ? "active" : undefined} aria-pressed={!filtered} onClick={clearFilters}>All ({plots.length})</button>
+            {bands.map((band) => (
+              <button key={band.label} type="button" className={activeBand(band) ? "active" : undefined} aria-pressed={activeBand(band)} onClick={() => setBand(band)}>
+                {band.label} ({band.count})
+              </button>
+            ))}
+          </div>
           <div className="plots-grid-view" role="group" aria-label="View">
             <button type="button" className={view === "grid" ? "active" : undefined} aria-pressed={view === "grid"} onClick={() => setView("grid")}><LayoutGrid className="h-4 w-4" aria-hidden="true" /> Tiles</button>
             <button type="button" className={view === "list" ? "active" : undefined} aria-pressed={view === "list"} onClick={() => setView("list")}><List className="h-4 w-4" aria-hidden="true" /> List</button>
           </div>
-        </div>
-
-        <div className="plots-grid-chips" role="group" aria-label="Quick size filters">
-          <button type="button" className={!filtered ? "active" : undefined} aria-pressed={!filtered} onClick={clearFilters}>All ({plots.length})</button>
-          {bands.map((band) => (
-            <button key={band.label} type="button" className={activeBand(band) ? "active" : undefined} aria-pressed={activeBand(band)} onClick={() => setBand(band)}>
-              {band.label} ({band.count})
-            </button>
-          ))}
         </div>
 
         <p className="plots-grid-count" aria-live="polite">
