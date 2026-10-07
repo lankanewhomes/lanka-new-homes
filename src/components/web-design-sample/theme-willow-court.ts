@@ -6,13 +6,11 @@
 // Deliberately a different buyer segment from the rest of the set — friendly
 // and mid-market rather than luxury — with its own design identity (sage
 // green + mustard, Poppins + Source Sans 3).
-import { Poppins, Source_Sans_3 } from "next/font/google";
+import { poppinsWillow as display, sourceSansWillow as body } from "@/lib/local-fonts";
 import type { SampleTheme } from "./theme-types";
 
 const unsplash = (id: string, width: number) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&q=80&w=${width}`;
 
-const display = Poppins({ subsets: ["latin"], weight: ["600", "700"], variable: "--smp-font-display" });
-const body = Source_Sans_3({ subsets: ["latin"], weight: ["400", "500", "700"], variable: "--smp-font-body" });
 
 export const WILLOW_COURT_THEME: SampleTheme = {
   id: "willow-court",

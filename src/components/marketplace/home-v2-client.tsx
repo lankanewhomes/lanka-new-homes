@@ -4,13 +4,11 @@ import { useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Fraunces, Inter } from "next/font/google";
+import { frauncesHome as display, interHome as body } from "@/lib/local-fonts";
 import { ArrowRight, Search } from "lucide-react";
 import type { Developer, Project } from "@/types";
 import { formatLkr } from "@/lib/format";
 
-const display = Fraunces({ subsets: ["latin"], weight: ["400", "500", "600"], style: ["normal", "italic"], variable: "--font-v2-display" });
-const body = Inter({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-v2-body" });
 
 export function HomeV2Client({ projects, developers }: { projects: Project[]; developers: Developer[] }) {
   const [searchTerm, setSearchTerm] = useState("");

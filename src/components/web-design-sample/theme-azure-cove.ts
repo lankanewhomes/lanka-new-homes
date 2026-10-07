@@ -4,15 +4,13 @@
 // identity: warm terracotta + deep ocean navy + sand, Fraunces + Work Sans —
 // an editorial, resort feel, unlike Halcyon's garden-villa warmth or
 // Meridian's cool urban minimalism.
-import { Fraunces, Work_Sans } from "next/font/google";
+import { frauncesAzure as display, workSansAzure as body } from "@/lib/local-fonts";
 import type { SampleTheme } from "./theme-types";
 
 const unsplash = (id: string, width: number) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&q=80&w=${width}`;
 
 // See theme-meridian.ts's comment on why fonts are loaded per-theme here
 // rather than in (sample)/layout.tsx.
-const display = Fraunces({ subsets: ["latin"], weight: ["400", "500", "600"], style: ["normal", "italic"], variable: "--smp-font-display" });
-const body = Work_Sans({ subsets: ["latin"], weight: ["400", "500", "700"], variable: "--smp-font-body" });
 
 export const AZURE_COVE_THEME: SampleTheme = {
   id: "azure-cove",
