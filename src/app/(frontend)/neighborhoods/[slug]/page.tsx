@@ -174,7 +174,7 @@ export default async function NeighborhoodPage({ params }: NeighborhoodPageProps
           single-item detail page reuses this class set rather than a new
           bespoke layout. */}
       <section className="listing-hero">
-        <div className="listing-hero-media neighborhood-hero-media" style={{ height: 560 }}>
+        <div className="listing-hero-media">
           <NeighborhoodHeroGallery
             name={neighborhood.name}
             location={`${neighborhood.city}, ${neighborhood.province}`}
