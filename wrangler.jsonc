@@ -1,7 +1,7 @@
 {
   // Cloudflare Workers deployment (OpenNext). Production is still served by Vercel until the domain is switched.
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "lankanewhomes",
+  "name": "lanka-new-homes",
   "main": "cloudflare/worker.js",
   "compatibility_date": "2026-09-01",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
