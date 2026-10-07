@@ -294,12 +294,13 @@ export function ListingGridCard({ project, basePath = "/projects" }: { project: 
         <div className={`listing-grid-card-facts-row${isLand ? " is-land" : ""}`}>
           {isLand ? (
             <>
-              <span className="listing-grid-card-fact">
-                {project.plotCount ? <Layers className="h-3.5 w-3.5" aria-hidden="true" /> : <Ruler className="h-3.5 w-3.5" aria-hidden="true" />}
-                {project.plotCount
-                  ? (project.plotsAvailable !== undefined ? `${project.plotsAvailable} of ${project.plotCount} plots available` : `${project.plotCount} plots`)
-                  : hasLandSize ? project.floorAreaRange.replace(" to ", "–") : "—"}
-              </span>
+              {/* Land size already shows once, after the title; this row shows the plot count (when known) and the type. */}
+              {project.plotCount ? (
+                <span className="listing-grid-card-fact">
+                  <Layers className="h-3.5 w-3.5" aria-hidden="true" />
+                  {project.plotsAvailable !== undefined ? `${project.plotsAvailable} of ${project.plotCount} plots available` : `${project.plotCount} plots`}
+                </span>
+              ) : null}
               <span className="listing-grid-card-fact">{project.type || "—"}</span>
             </>
           ) : (
