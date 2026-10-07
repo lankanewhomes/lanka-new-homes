@@ -16,6 +16,8 @@ const r2Host = (() => {
 
 const nextConfig: NextConfig = {
   images: {
+    loader: "custom",
+    loaderFile: "./src/lib/image-loader.ts",
     qualities: [60, 75],
     remotePatterns: [
       ...(r2Host ? [{ protocol: "https" as const, hostname: r2Host }] : []),
