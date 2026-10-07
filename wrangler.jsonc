@@ -8,6 +8,8 @@
   "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
   "images": { "binding": "IMAGES" },
   "r2_buckets": [{ "binding": "NEXT_INC_CACHE_R2_BUCKET", "bucket_name": "lnh-next-cache" }],
-  "triggers": { "crons": ["0 8 * * 1", "0 2 * * *"] },
+  // Weekly analytics digest ("0 8 * * 1") is paused here while Vercel still runs it (owner, 2026-10-07: no traffic yet; avoids
+  // duplicate emails). Add it back when the domain moves to Cloudflare and Vercel Cron is removed.
+  "triggers": { "crons": ["0 2 * * *"] },
   "observability": { "enabled": true }
 }
