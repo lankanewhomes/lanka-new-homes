@@ -38,8 +38,10 @@ class CloudflareSocket extends events_1.EventEmitter {
             if (connectListener)
                 this.once('connect', connectListener);
             const options = this.ssl ? { secureTransport: 'starttls' } : {};
-            const mod = await import(/* webpackIgnore: true */ 'cloudflare:sockets');
-            const connect = mod.connect;
+            // `connect` comes from cloudflare:sockets, imported once in cloudflare/worker.js (the only file Wrangler bundles
+            // itself) and shared here; importing it from this file made the OpenNext build turn it into a failing require().
+            const connect = globalThis.__cfSocketsConnect;
+            if (typeof connect !== 'function') throw new Error('cloudflare:sockets connect() is not available');
             this._cfSocket = connect(`${host}:${port}`, options);
             this._cfWriter = this._cfSocket.writable.getWriter();
             this._addClosedHandler();
