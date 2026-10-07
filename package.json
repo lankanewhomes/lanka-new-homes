@@ -13,7 +13,7 @@
     "test": "vitest run",
     "social:setup": "bash scripts/social/setup.sh",
     "social:generate": "NODE_ENV=production tsx --env-file=.env.local scripts/social/generate.ts",
-    "cf:build": "node scripts/check-build-env.mjs && opennextjs-cloudflare build",
+    "cf:build": "node scripts/check-build-env.mjs && CF_BUILD=1 opennextjs-cloudflare build",
     "cf:preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "cf:deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
   },

@@ -17,7 +17,7 @@ const r2Host = (() => {
 
 const nextConfig: NextConfig = {
   // Cloudflare Workers build only (CF_BUILD=1): give node-postgres a real Workers socket. See cloudflare/pg-cloudflare-socket.cjs.
-  ...(process.env.CF_BUILD === "1"
+  ...(process.env.CF_BUILD === "1" || process.env.WORKERS_CI === "1"
     ? {
         webpack: (config: { resolve: { alias?: Record<string, string> } }) => {
           config.resolve.alias = { ...(config.resolve.alias ?? {}), "pg-cloudflare$": path.join(process.cwd(), "cloudflare/pg-cloudflare-socket.cjs") };
