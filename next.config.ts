@@ -15,6 +15,9 @@ const r2Host = (() => {
 })();
 
 const nextConfig: NextConfig = {
+  // Fewer parallel page-builders keep the number of simultaneous database connections down during `next build`
+  // (the Supabase pooler is small). Set NEXT_BUILD_CPUS=3 for Cloudflare builds; unset = Next default.
+  ...(process.env.NEXT_BUILD_CPUS ? { experimental: { cpus: Number(process.env.NEXT_BUILD_CPUS) } } : {}),
   images: {
     qualities: [60, 75],
     remotePatterns: [

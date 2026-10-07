@@ -12,7 +12,10 @@
     "typecheck": "next typegen --webpack && tsc --noEmit",
     "test": "vitest run",
     "social:setup": "bash scripts/social/setup.sh",
-    "social:generate": "NODE_ENV=production tsx --env-file=.env.local scripts/social/generate.ts"
+    "social:generate": "NODE_ENV=production tsx --env-file=.env.local scripts/social/generate.ts",
+    "cf:build": "opennextjs-cloudflare build",
+    "cf:preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "cf:deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
@@ -34,7 +37,7 @@
     "graphql": "^16.14.2",
     "lucide-react": "^1.33.0",
     "maplibre-gl": "^6.6.0",
-    "next": "16.3.2",
+    "next": "^16.3.8",
     "node-html-parser": "^7.0.1",
     "nodemailer": "^9.1.1",
     "payload": "^3.88.0",
@@ -49,6 +52,7 @@
     "tw-animate-css": "^1.4.0"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "^1.20.9",
     "@tailwindcss/postcss": "^4",
     "@types/better-sqlite3": "^9.6.0",
     "@types/node": "^20",
@@ -63,6 +67,7 @@
     "pg": "^8.23.0",
     "tailwindcss": "^4",
     "typescript": "^5",
-    "vitest": "^3.2.7"
+    "vitest": "^3.2.7",
+    "wrangler": "^4.148.0"
   }
 }

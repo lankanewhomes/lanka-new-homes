@@ -45,3 +45,7 @@ next-env.d.ts
 
 # social renderer venv (scripts/social/setup.sh)
 .venv-social/
+
+# Cloudflare (OpenNext)
+.open-next
+.wrangler
