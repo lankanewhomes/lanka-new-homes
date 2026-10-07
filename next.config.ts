@@ -1,3 +1,4 @@
+import path from "node:path";
 import type { NextConfig } from "next";
 import { withPayload } from "@payloadcms/next/withPayload";
 
@@ -15,6 +16,15 @@ const r2Host = (() => {
 })();
 
 const nextConfig: NextConfig = {
+  // Cloudflare Workers build only (CF_BUILD=1): give node-postgres a real Workers socket. See cloudflare/pg-cloudflare-socket.cjs.
+  ...(process.env.CF_BUILD === "1"
+    ? {
+        webpack: (config: { resolve: { alias?: Record<string, string> } }) => {
+          config.resolve.alias = { ...(config.resolve.alias ?? {}), "pg-cloudflare$": path.join(process.cwd(), "cloudflare/pg-cloudflare-socket.cjs") };
+          return config;
+        },
+      }
+    : {}),
   // Fewer parallel page-builders keep the number of simultaneous database connections down during `next build`
   // (the Supabase pooler is small). Set NEXT_BUILD_CPUS=3 for Cloudflare builds; unset = Next default.
   ...(process.env.NEXT_BUILD_CPUS ? { experimental: { cpus: Number(process.env.NEXT_BUILD_CPUS) } } : {}),
