@@ -20260,3 +20260,16 @@ body:has(.compare-bar) {
 .plots-grid-controls-row .plots-grid-chips button:first-child { border-left: 0; }
 .plots-grid-controls-row .plots-grid-chips button.active { background: #1f1f1f; color: #fff; }
 @media (max-width: 760px) { .plots-grid-controls-row .plots-grid-chips { flex: 1 1 100%; } .plots-grid-controls-row .plots-grid-chips button { flex: 1; } }
+
+/* Similar listings: warm cream box with a fine line grid (a different colour from the stone-blue Plots section); white cards
+   sit on it (owner, 2026-10-07). */
+.developer-projects-section.similar-listings-section {
+  background-color: #f7f1e6;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 31px, rgba(150, 125, 80, 0.17) 31px 32px),
+    repeating-linear-gradient(90deg, transparent 0 31px, rgba(150, 125, 80, 0.17) 31px 32px);
+  border: 1px solid #e6dcc6;
+}
+@media (max-width: 760px) {
+  .developer-projects-section.similar-listings-section { background-color: #f7f1e6; padding: 22px 14px; }
+}
