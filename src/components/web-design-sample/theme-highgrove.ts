@@ -6,13 +6,11 @@
 // Deliberately a different property type and setting again (hill-country
 // tea estate, not a garden/city/beach) and its own design identity (forest
 // green + warm wood-brown, Newsreader + Karla).
-import { Newsreader, Karla } from "next/font/google";
+import { newsreaderHighgrove as display, karlaHighgrove as body } from "@/lib/local-fonts";
 import type { SampleTheme } from "./theme-types";
 
 const unsplash = (id: string, width: number) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&q=80&w=${width}`;
 
-const display = Newsreader({ subsets: ["latin"], weight: ["400", "500", "600"], style: ["normal", "italic"], variable: "--smp-font-display" });
-const body = Karla({ subsets: ["latin"], weight: ["400", "500", "700"], variable: "--smp-font-body" });
 
 export const HIGHGROVE_THEME: SampleTheme = {
   id: "highgrove",

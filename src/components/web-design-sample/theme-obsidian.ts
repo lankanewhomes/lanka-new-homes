@@ -13,13 +13,11 @@
 // keeps this sample honest about being illustrative rather than sourcing
 // yet another dozen stock photos for a look that's defined by its absence
 // of colour, not by which building is pictured.
-import { Archivo, Manrope } from "next/font/google";
+import { archivoObsidian as display, manropeObsidian as body } from "@/lib/local-fonts";
 import type { SampleTheme } from "./theme-types";
 
 const unsplash = (id: string, width: number) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&q=80&w=${width}`;
 
-const display = Archivo({ subsets: ["latin"], weight: ["700", "900"], variable: "--smp-font-display" });
-const body = Manrope({ subsets: ["latin"], weight: ["400", "500", "700"], variable: "--smp-font-body" });
 
 export const OBSIDIAN_THEME: SampleTheme = {
   id: "obsidian",

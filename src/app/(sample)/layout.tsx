@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, DM_Sans } from "next/font/google";
+import { cormorantSample as display, dmSansSample as body } from "@/lib/local-fonts";
 import "./sample.css";
 
 // Its own root layout (like (payload)): every sample website must look like
@@ -14,17 +14,6 @@ import "./sample.css";
 // their own fonts and apply them via a wrapper div lower in the tree, which
 // shadows these CSS variables for everything inside it — see
 // web-design/sample/meridian/page.tsx for that pattern.
-const display = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  style: ["normal", "italic"],
-  variable: "--smp-font-display",
-});
-const body = DM_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
-  variable: "--smp-font-body",
-});
 
 export const metadata: Metadata = {
   title: "Sample website | LankaNewHomes Web Design",

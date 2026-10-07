@@ -7,7 +7,7 @@
 // (cool steel-blue + electric teal, Space Grotesk + Inter) so the sample
 // genuinely looks like a different developer's site, not a recolour of
 // Halcyon's.
-import { Space_Grotesk, Inter } from "next/font/google";
+import { spaceGroteskMeridian as display, interMeridian as body } from "@/lib/local-fonts";
 import type { SampleTheme } from "./theme-types";
 
 const unsplash = (id: string, width: number) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&q=80&w=${width}`;
@@ -17,8 +17,6 @@ const unsplash = (id: string, width: number) => `https://images.unsplash.com/pho
 // font <html> gets — the page wraps its content in a div carrying these
 // `.variable` classes, which shadows the outer (Halcyon) font variables for
 // everything inside it. See web-design/sample/meridian/page.tsx.
-const display = Space_Grotesk({ subsets: ["latin"], weight: ["500", "600", "700"], variable: "--smp-font-display" });
-const body = Inter({ subsets: ["latin"], weight: ["400", "500", "700"], variable: "--smp-font-body" });
 
 export const MERIDIAN_THEME: SampleTheme = {
   id: "meridian",

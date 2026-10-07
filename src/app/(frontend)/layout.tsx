@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Archivo } from "next/font/google";
+import { archivoSite as bodyFont } from "@/lib/local-fonts";
 import { DeferredGoogleTags } from "@/components/analytics/deferred-google-tags";
 import { Footer, Header } from "@/components/marketplace/components";
 import { BreadcrumbBar } from "@/components/layout/breadcrumb-bar";
@@ -22,7 +22,6 @@ const siteUrl = getSiteUrl();
 // Helvetica/Neue Haas Grotesk. Revert: remove this block + the `variable`
 // class on <html> below, and set --font-ref-sans back to the system stack
 // in globals.css.
-const bodyFont = Archivo({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-avenir-trial" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
