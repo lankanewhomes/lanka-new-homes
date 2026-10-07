@@ -29,6 +29,8 @@ const nextConfig: NextConfig = {
   // (the Supabase pooler is small). Set NEXT_BUILD_CPUS=3 for Cloudflare builds; unset = Next default.
   ...(process.env.NEXT_BUILD_CPUS ? { experimental: { cpus: Number(process.env.NEXT_BUILD_CPUS) } } : {}),
   images: {
+    loader: "custom",
+    loaderFile: "./src/lib/image-loader.ts",
     qualities: [60, 75],
     remotePatterns: [
       ...(r2Host ? [{ protocol: "https" as const, hostname: r2Host }] : []),
