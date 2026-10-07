@@ -174,7 +174,7 @@ export default async function NeighborhoodPage({ params }: NeighborhoodPageProps
           single-item detail page reuses this class set rather than a new
           bespoke layout. */}
       <section className="listing-hero">
-        <div className="listing-hero-media" style={{ height: 560 }}>
+        <div className="listing-hero-media neighborhood-hero-media" style={{ height: 560 }}>
           <NeighborhoodHeroGallery
             name={neighborhood.name}
             location={`${neighborhood.city}, ${neighborhood.province}`}
@@ -195,7 +195,7 @@ export default async function NeighborhoodPage({ params }: NeighborhoodPageProps
 
       <NeighborhoodQuickjumpBar titlePanelId="neighborhood-hero-title-panel" items={quickjumpItems} />
 
-      <div className="project-page-content">
+      <div className="project-page-content neighborhood-page-content">
         {stats.length > 0 ? (
           <div className="listing-hero-stats-chips neighborhood-stats-chips" role="list" aria-label="Neighborhood summary">
             {stats.map((stat) => {

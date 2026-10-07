@@ -20273,3 +20273,37 @@ body:has(.compare-bar) {
 @media (max-width: 760px) {
   .developer-projects-section.similar-listings-section { background-color: #f7f1e6; padding: 22px 14px; }
 }
+
+/* Neighborhood page (owner, 2026-10-07): the fixed 560px hero height left a big blank gap on phones, and every section box
+   gets its own soft colour with the same fine line grid as the other contained boxes. */
+/* Phones: the gallery grid is one 260px row, so the container must be 260px too, not the inline 560px. */
+@media (max-width: 760px) { .neighborhood-hero-media { height: 260px !important; } }
+
+.neighborhood-page-content #overview.project-description-shell,
+.neighborhood-page-content #faq.project-description-shell,
+.neighborhood-page-content #nearby-areas.project-description-shell,
+.neighborhood-page-content #projects.developer-projects-section,
+.neighborhood-page-content #developers.developer-projects-section {
+  border-width: 1px;
+  border-style: solid;
+}
+.neighborhood-page-content #overview.project-description-shell {
+  background-color: #ecf1ea; border-color: #c9d8c6;
+  background-image: repeating-linear-gradient(0deg, transparent 0 31px, rgba(86, 122, 80, 0.16) 31px 32px), repeating-linear-gradient(90deg, transparent 0 31px, rgba(86, 122, 80, 0.16) 31px 32px);
+}
+.neighborhood-page-content #faq.project-description-shell {
+  background-color: #eceff3; border-color: #d3dae2;
+  background-image: repeating-linear-gradient(0deg, transparent 0 31px, rgba(96, 112, 133, 0.16) 31px 32px), repeating-linear-gradient(90deg, transparent 0 31px, rgba(96, 112, 133, 0.16) 31px 32px);
+}
+.neighborhood-page-content #nearby-areas.project-description-shell {
+  background-color: #f7f1e6; border-color: #e6dcc6;
+  background-image: repeating-linear-gradient(0deg, transparent 0 31px, rgba(150, 125, 80, 0.17) 31px 32px), repeating-linear-gradient(90deg, transparent 0 31px, rgba(150, 125, 80, 0.17) 31px 32px);
+}
+.neighborhood-page-content #projects.developer-projects-section {
+  background-color: #f1ecf3; border-color: #ddd2e3;
+  background-image: repeating-linear-gradient(0deg, transparent 0 31px, rgba(120, 95, 140, 0.15) 31px 32px), repeating-linear-gradient(90deg, transparent 0 31px, rgba(120, 95, 140, 0.15) 31px 32px);
+}
+.neighborhood-page-content #developers.developer-projects-section {
+  background-color: #eceff3; border-color: #d3dae2;
+  background-image: repeating-linear-gradient(0deg, transparent 0 31px, rgba(96, 112, 133, 0.16) 31px 32px), repeating-linear-gradient(90deg, transparent 0 31px, rgba(96, 112, 133, 0.16) 31px 32px);
+}
