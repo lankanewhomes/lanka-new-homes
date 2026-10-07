@@ -186,6 +186,10 @@ export default buildConfig({
       max: Number(process.env.DATABASE_POOL_MAX) || 4,
       idleTimeoutMillis: 5_000,
       connectionTimeoutMillis: 20_000,
+      // Cloudflare Workers: a TCP connection opened during one request cannot be used by another request (the second
+      // request hangs: "Worker's code had hung"). maxUses: 1 closes every connection after a single use so the pool always
+      // opens a fresh one inside the current request. Vercel/Node keeps normal pooling.
+      ...(typeof navigator !== 'undefined' && navigator.userAgent === 'Cloudflare-Workers' ? { maxUses: 1 } : {}),
     },
     // Dedicated schema so Payload's tables never collide with (or touch)
     // the existing public.* Supabase tables/RLS policies/triggers.
