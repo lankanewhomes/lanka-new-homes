@@ -20253,3 +20253,10 @@ body:has(.compare-bar) {
 .plots-grid-controls-row .plots-grid-chips { margin: 0; }
 .plots-grid-controls-row .plots-grid-view { margin-left: auto; }
 .plots-grid-controls .plots-grid-count { margin-top: 10px; }
+
+/* Size filters styled like the Tiles/List switch: one joined control, same 44px height (owner, 2026-10-07). */
+.plots-grid-controls-row .plots-grid-chips { display: inline-flex; flex-wrap: wrap; gap: 0; border: 1px solid #d3dae2; background: #fff; }
+.plots-grid-controls-row .plots-grid-chips button { height: 44px; padding: 0 14px; border: 0; border-left: 1px solid #d3dae2; background: #fff; font-size: 13px; color: #1f1f1f; cursor: pointer; }
+.plots-grid-controls-row .plots-grid-chips button:first-child { border-left: 0; }
+.plots-grid-controls-row .plots-grid-chips button.active { background: #1f1f1f; color: #fff; }
+@media (max-width: 760px) { .plots-grid-controls-row .plots-grid-chips { flex: 1 1 100%; } .plots-grid-controls-row .plots-grid-chips button { flex: 1; } }
