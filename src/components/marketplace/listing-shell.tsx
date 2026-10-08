@@ -1,6 +1,7 @@
 import { ListingPageBody } from "@/components/marketplace/listing-page";
 import { buildBreadcrumbJsonLd, buildItemListJsonLd, jsonLdScriptProps, type BreadcrumbEntry } from "@/lib/seo";
 import { SeoAboutBlock } from "@/components/marketplace/seo-about-block";
+import { slimForHome } from "@/lib/home-slim";
 import type { Project } from "@/types";
 
 export function ProjectListingShell({
@@ -37,7 +38,7 @@ export function ProjectListingShell({
       <script {...jsonLdScriptProps(itemListJsonLd)} />
       <script {...jsonLdScriptProps(breadcrumbJsonLd)} />
 
-      <ListingPageBody projects={projects} h1={h1} eyebrow={eyebrow} singularEyebrow={singularEyebrow} intro={intro} basePath={basePath} filterGroups={filterGroups} emptyStateText={emptyStateText} citySectionHeading={citySectionHeading} />
+      <ListingPageBody projects={projects.map(slimForHome)} h1={h1} eyebrow={eyebrow} singularEyebrow={singularEyebrow} intro={intro} basePath={basePath} filterGroups={filterGroups} emptyStateText={emptyStateText} citySectionHeading={citySectionHeading} />
       {about ? <SeoAboutBlock title={about.title} paragraphs={about.paragraphs} /> : null}
     </div>
   );

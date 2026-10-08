@@ -4,6 +4,7 @@ import { getAllLands } from "@/lib/land-store";
 import { getAllDevelopers } from "@/lib/developer-store";
 import { landToProjectShape } from "@/lib/land-to-project";
 import { newListingsCutoff } from "@/lib/new-listings";
+import { countFloorPlans, slimForHome } from "@/lib/home-slim";
 
 // Regenerate at most once a minute so admin edits show up without waiting for the next deploy.
 export const revalidate = 60;
@@ -16,5 +17,5 @@ export default async function Home() {
   // Every land plot we know of: plots listed one by one, plus the developer-published plot count of lands that have no rows.
   const landPlotTotal = lands.reduce((total, land) => total + ((land.plots ?? []).length || land.plotCount || 0), 0);
 
-  return <HomeClient projects={projects} lands={lands.map(landToProjectShape)} landPlotTotal={landPlotTotal} developers={developers} newListingsSince={newListingsCutoff()} />;
+  return <HomeClient projects={projects.map(slimForHome)} floorPlanCount={countFloorPlans(projects)} lands={lands.map(landToProjectShape).map(slimForHome)} landPlotTotal={landPlotTotal} developers={developers} newListingsSince={newListingsCutoff()} />;
 }

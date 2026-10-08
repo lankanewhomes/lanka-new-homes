@@ -85,6 +85,7 @@ const SEO_LINK_GROUPS: { title: string; links: { label: string; href: string }[]
 
 export function HomeClient({
   projects,
+  floorPlanCount: floorPlanTotal,
   lands = [],
   landPlotTotal = 0,
   developers = [],
@@ -92,6 +93,8 @@ export function HomeClient({
 }: {
   landPlotTotal?: number;
   projects: Project[];
+  /** Counted on the server — the slimmed projects above carry no floor plans. */
+  floorPlanCount?: number;
   lands?: Project[];
   developers?: Developer[];
   /** ISO cutoff for the 30-day "New listings" window, computed on the server (see lib/new-listings.ts). Omitted = no time limit. */
@@ -161,7 +164,7 @@ export function HomeClient({
   const showNextHeroSlide = () => setHeroSlide((current) => (current + 1) % heroSlides.length);
 
   // Real count of floor plans across every listed project (shown in the home stats band).
-  const floorPlanCount = useMemo(() => projects.reduce((total, project) => total + (project.floorPlans?.length ?? 0), 0), [projects]);
+  const floorPlanCount = floorPlanTotal ?? projects.reduce((total, project) => total + (project.floorPlans?.length ?? 0), 0);
 
   const submitSearch = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
