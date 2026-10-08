@@ -44,6 +44,13 @@ import { LeadAlertSettings } from './src/globals/LeadAlertSettings'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 
+// Cloudflare Workers opens a brand-new database connection for every query (see maxUses below), so the 15-slot
+// session-mode pooler (port 5432) runs out as soon as an admin page fires a few queries at once -> "This page couldn't
+// load". Supabase's transaction-mode pooler (port 6543) shares backends between queries and has no such cap. Tested
+// read-only against 14 collections in parallel. Node/Vercel keeps the connection string exactly as configured.
+const onWorkers = typeof navigator !== 'undefined' && navigator.userAgent === 'Cloudflare-Workers'
+const databaseUri = onWorkers ? process.env.DATABASE_URI?.replace(/(\.pooler\.supabase\.com):5432\//, '$1:6543/') : process.env.DATABASE_URI
+
 export default buildConfig({
   serverURL: process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000',
   secret: process.env.PAYLOAD_SECRET || '',
@@ -166,7 +173,7 @@ export default buildConfig({
   editor: lexicalEditor(),
   db: postgresAdapter({
     pool: {
-      connectionString: process.env.DATABASE_URI,
+      connectionString: databaseUri,
       // DATABASE_URI points at Supabase's SESSION-mode pooler (port 5432),
       // which has a small hard client cap (15 backends on this project's
       // compute size — see `select ... from pg_stat_activity` grouped by
