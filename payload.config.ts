@@ -1,7 +1,7 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { postgresAdapter } from '@payloadcms/db-postgres'
-import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
+import { resendEmailAdapter } from './src/lib/mailer'
 import { cloudStoragePlugin } from '@payloadcms/plugin-cloud-storage'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { buildConfig } from 'payload'
@@ -219,15 +219,8 @@ export default buildConfig({
           },
         }),
   ],
-  email: nodemailerAdapter({
-    defaultFromAddress: process.env.EMAIL_FROM || 'no-reply@lankanewhomes.com',
-    defaultFromName: 'LankaNewHomes',
-    transportOptions: {
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT) || 587,
-      auth: process.env.SMTP_USER ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } : undefined,
-    },
-  }),
+  // Resend over HTTPS — SMTP connections hang on Cloudflare Workers (see src/lib/mailer.ts).
+  email: resendEmailAdapter,
   typescript: {
     outputFile: path.resolve(dirname, 'src/payload-types.ts'),
   },

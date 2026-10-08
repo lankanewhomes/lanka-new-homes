@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import nodemailer from "nodemailer";
+import { createMailTransport } from "@/lib/mailer";
 import { DEFAULT_TEST_INBOX, isProductionDeployment } from "@/lib/lead-alerts";
 
 const AUDIENCE_LABELS: Record<string, string> = {
@@ -43,11 +43,7 @@ export async function POST(req: Request) {
     const testInbox = process.env.LEAD_ALERTS_OVERRIDE_TO || process.env.LEAD_ALERTS_TEST_INBOX || DEFAULT_TEST_INBOX;
     const to = isTest ? testInbox : "support@lankanewhomes.com";
 
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT) || 587,
-      auth: process.env.SMTP_USER ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } : undefined,
-    });
+    const transporter = createMailTransport();
 
     const detailLines = [
       `Reaching: ${audienceLabel}`,

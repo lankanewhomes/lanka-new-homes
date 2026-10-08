@@ -12,7 +12,7 @@
 // A project with no prior snapshot is seeded silently on its first run —
 // never notifies "changed" against nothing.
 
-import nodemailer from "nodemailer"
+import { createMailTransport } from "@/lib/mailer"
 import { supabaseAdmin } from "@/lib/supabase"
 import { getAllProjects } from "@/lib/project-store"
 import { sortConstructionUpdates } from "@/lib/construction-updates"
@@ -143,11 +143,7 @@ export async function sendFollowerDigests(): Promise<{ sent: number; skipped: nu
 
     const serverURL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.lankanewhomes.com"
     const accountUrl = `${serverURL}/account/developments`
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT) || 587,
-      auth: process.env.SMTP_USER ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } : undefined,
-    })
+    const transporter = createMailTransport()
 
     for (const userId of uniqueUserIds) {
       const email = emailById.get(userId)

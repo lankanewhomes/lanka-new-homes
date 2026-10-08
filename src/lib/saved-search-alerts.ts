@@ -24,7 +24,7 @@
 // of whether it's "new," and excluded from also appearing in the New
 // matches list so nothing is shown twice in one email.
 
-import nodemailer from "nodemailer"
+import { createMailTransport } from "@/lib/mailer"
 import { supabaseAdmin } from "@/lib/supabase"
 import { getAllProjects } from "@/lib/project-store"
 import { hasPremiumStyleBadge, isPaidPackageTier, planRotationWeight } from "@/lib/packages"
@@ -111,11 +111,7 @@ export async function sendSavedSearchAlerts(): Promise<{ sent: number; skipped: 
 
   const serverURL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.lankanewhomes.com"
   const accountUrl = `${serverURL}/account/alerts`
-  const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT) || 587,
-    auth: process.env.SMTP_USER ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } : undefined,
-  })
+  const transporter = createMailTransport()
 
   const searchesByUser = new Map<string, SavedSearchRow[]>()
   for (const search of searches) {
