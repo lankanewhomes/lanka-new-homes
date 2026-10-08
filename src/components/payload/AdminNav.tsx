@@ -29,6 +29,7 @@ import {
   Users,
 } from "lucide-react";
 import { NavLink } from "./NavLink";
+import { NavSections } from "./NavSections";
 
 type NavProps = { req?: PayloadRequest } & ServerProps;
 type IconType = ComponentType<{ size?: number; className?: string }>;
@@ -156,6 +157,27 @@ export const AdminNav = async (props: NavProps) => {
   ];
   if (unmapped.length > 0) sections.push({ label: "Other", items: unmapped });
 
+  // Count of leads still marked "New" — shown as a badge on the Leads group so nothing is missed.
+  // Counted with the signed-in user's own access, so a developer sees only their own.
+  let newLeads = 0;
+  try {
+    if (visibleCollections.has("leads")) {
+      newLeads = (await payload.count({ collection: "leads", where: { status: { equals: "new" } }, overrideAccess: false, user: user ?? undefined })).totalDocs;
+    }
+  } catch {
+    newLeads = 0;
+  }
+
+  const navSections = sections.map((section) => ({
+    label: section.label,
+    items: section.items.map((item) => ({
+      href: item.href,
+      label: item.label,
+      icon: <item.icon size={17} className="ln-nav-link-icon" />,
+      badge: item.href.includes("where[status][equals]=new") ? newLeads : undefined,
+    })),
+  }));
+
   return (
     <div className="ln-nav">
       <div className="ln-nav-brand">
@@ -164,16 +186,9 @@ export const AdminNav = async (props: NavProps) => {
       </div>
 
       <nav className="ln-nav-scroll">
-        <NavLink href="/cms" label="Dashboard" icon={<LayoutDashboard size={16} className="ln-nav-link-icon" />} />
+        <NavLink href="/cms" label="Dashboard" icon={<LayoutDashboard size={17} className="ln-nav-link-icon" />} />
 
-        {sections.map((section) => (
-          <div className="ln-nav-section" key={section.label}>
-            <p className="ln-nav-section-label">{section.label}</p>
-            {section.items.map((item) => (
-              <NavLink key={item.href} href={item.href} label={item.label} icon={<item.icon size={16} className="ln-nav-link-icon" />} />
-            ))}
-          </div>
-        ))}
+        <NavSections sections={navSections} />
       </nav>
 
       <div className="ln-nav-footer">

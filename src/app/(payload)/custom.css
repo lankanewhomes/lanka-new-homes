@@ -604,3 +604,148 @@ textarea:focus,
 .ln-badge-warning { color: #8a5a00; background: #fff6e0; }
 .ln-badge-success { color: #14602a; background: #eaf6ec; }
 .ln-badge-danger { color: #a3261b; background: #fcecea; }
+
+/* =====================================================================
+   EASIER NAVIGATION (2026-10-08): collapsible sidebar groups, "find a
+   page" search, count badges, task cards on the dashboard.
+   ===================================================================== */
+.ln-nav-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0 6px;
+  padding: 0 10px;
+  height: 38px;
+  border: 1px solid var(--ln-line-strong);
+  background: var(--ln-paper);
+}
+.ln-nav-search input {
+  flex: 1;
+  min-width: 0;
+  border: 0 !important;
+  outline: 0;
+  background: transparent !important;
+  font-size: 13.5px;
+  padding: 0 !important;
+  height: auto !important;
+  box-shadow: none !important;
+}
+.ln-nav-none {
+  padding: 8px 10px;
+  font-size: 13px;
+  color: #6b6b66;
+}
+.ln-nav-section-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #3d3d39;
+  text-align: left;
+}
+.ln-nav-section-toggle > span:first-child {
+  flex: 1;
+}
+.ln-nav-section-toggle:hover {
+  background: var(--ln-wash);
+}
+.ln-nav-chevron {
+  transition: transform 150ms;
+  transform: rotate(-90deg);
+}
+.ln-nav-chevron.is-open {
+  transform: rotate(0deg);
+}
+.ln-nav-section {
+  margin-top: 6px;
+  padding-top: 6px;
+}
+.ln-nav-link {
+  min-height: 38px;
+  font-size: 14px;
+}
+.ln-nav-link > span {
+  flex: 1;
+}
+.ln-nav-group-hint {
+  font-size: 11px;
+  color: #6b6b66;
+}
+.ln-nav-link.is-active .ln-nav-group-hint {
+  color: #d9d9d4;
+}
+.ln-nav-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 20px;
+  padding: 0 6px;
+  background: #a3261b;
+  color: #ffffff;
+  font-size: 11.5px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.ln-task-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 14px;
+}
+.ln-task-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border: 1px solid var(--ln-line-strong);
+  background: var(--ln-paper);
+  color: var(--ln-ink);
+  text-decoration: none;
+}
+.ln-task-card:hover {
+  background: var(--ln-ink);
+  color: #ffffff;
+  text-decoration: none;
+}
+.ln-task-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid currentColor;
+  flex-shrink: 0;
+}
+.ln-task-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+.ln-task-text strong {
+  font-size: 15px;
+  font-weight: 800;
+}
+.ln-task-text span {
+  font-size: 13px;
+  opacity: 0.7;
+}
+.ln-stat-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+.ln-stat-link:hover {
+  background: var(--ln-wash);
+}

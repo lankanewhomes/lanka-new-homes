@@ -1,6 +1,6 @@
 import type { AdminViewServerProps, Where } from "payload";
 import Link from "next/link";
-import { Building2, MapPin, MessageCircle, Plus } from "lucide-react";
+import { BadgeCheck, Building2, CreditCard, MapPin, MessageCircle, Plus } from "lucide-react";
 import { LEAD_STATUS_OPTIONS } from "@/collections/Leads";
 import { LeadAlertModeBanner } from "./LeadAlertModeBanner";
 import { ListingTodoPanel } from "./ListingTodoPanel";
@@ -85,11 +85,31 @@ export async function AdminDashboard(props: AdminViewServerProps) {
     payload.find({ collection: "projects", where: projectWhere, sort: "-updatedAt", limit: 8, depth: 1, overrideAccess: false, user: user ?? undefined }),
   ]);
 
+  // Developers waiting for a verification decision — admin only; a failed count just hides the card.
+  let pendingVerification = 0;
+  if (isAdmin) {
+    try {
+      pendingVerification = (await payload.count({ collection: "developers", where: { verification_status: { equals: "pending" } }, overrideAccess: true })).totalDocs;
+    } catch {
+      pendingVerification = 0;
+    }
+  }
+
+  // Every number links to the list behind it.
   const stats = [
-    { label: isAdmin ? "Total Projects" : "My Projects", value: totalProjects.totalDocs },
-    { label: "Published Projects", value: publishedProjects.totalDocs },
-    { label: isAdmin ? "Developers" : "Active Paid Listings", value: thirdStat.totalDocs },
-    { label: "New Leads", value: newLeadsCount.totalDocs },
+    { label: isAdmin ? "Total Projects" : "My Projects", value: totalProjects.totalDocs, href: "/cms/collections/projects" },
+    { label: "Published Projects", value: publishedProjects.totalDocs, href: "/cms/collections/projects?where[isPublished][equals]=true" },
+    { label: isAdmin ? "Developers" : "Active Paid Listings", value: thirdStat.totalDocs, href: isAdmin ? "/cms/collections/developers" : "/cms/collections/subscriptions" },
+    { label: "New Leads", value: newLeadsCount.totalDocs, href: "/cms/collections/leads?where[status][equals]=new" },
+  ];
+
+  // "What do you want to do?" — plain-language jumps for the jobs people open the CMS for.
+  const tasks = [
+    { href: "/cms/collections/projects/create", icon: Plus, title: "Add a project", hint: "Create a new listing" },
+    ...(isAdmin ? [{ href: "/cms/collections/lands/create", icon: Plus, title: "Add a land listing", hint: "Create a new land plot listing" }] : []),
+    { href: "/cms/collections/leads?where[status][equals]=new", icon: MessageCircle, title: "Reply to new leads", hint: newLeadsCount.totalDocs ? `${newLeadsCount.totalDocs} waiting for a response` : "No new leads right now", count: newLeadsCount.totalDocs },
+    ...(isAdmin ? [{ href: "/cms/collections/developers?where[verification_status][equals]=pending", icon: BadgeCheck, title: "Verify developers", hint: pendingVerification ? `${pendingVerification} waiting for review` : "Nobody is waiting", count: pendingVerification }] : []),
+    { href: isAdmin ? "/cms/billing" : "/cms/my-billing", icon: CreditCard, title: isAdmin ? "Billing & payments" : "My billing", hint: "Plans, payments and renewals" },
   ];
 
   return (
@@ -97,31 +117,33 @@ export async function AdminDashboard(props: AdminViewServerProps) {
       <p className="ln-dash-greeting">{timeOfDayGreeting()}</p>
       <h1 className="ln-dash-title">{isAdmin ? "LankaNewHomes Admin" : "LankaNewHomes Developer Dashboard"}</h1>
 
-      <div className="ln-stat-grid">
-        {stats.map((stat) => (
-          <div className="ln-stat-card" key={stat.label}>
-            <div className="ln-stat-card-value">{stat.value.toLocaleString()}</div>
-            <div className="ln-stat-card-label">{stat.label}</div>
-          </div>
-        ))}
-      </div>
-
       <LeadAlertModeBanner />
 
       <div className="ln-dash-section">
         <div className="ln-dash-section-head">
-          <h2>Quick actions</h2>
+          <h2>What do you want to do?</h2>
         </div>
-        <div className="ln-quick-actions">
-          <Link href="/cms/collections/projects/create" className="ln-quick-action"><Plus size={15} /> Add Project</Link>
-          {isAdmin ? (
-            <>
-              <Link href="/cms/collections/lands/create" className="ln-quick-action"><Plus size={15} /> Add Land</Link>
-              <Link href="/cms/collections/developers/create" className="ln-quick-action"><Plus size={15} /> Add Developer</Link>
-            </>
-          ) : null}
-          <Link href="/cms/collections/leads" className="ln-quick-action"><MessageCircle size={15} /> View Leads</Link>
+        <div className="ln-task-grid">
+          {tasks.map((task) => (
+            <Link href={task.href} className="ln-task-card" key={task.title}>
+              <span className="ln-task-icon"><task.icon size={20} /></span>
+              <span className="ln-task-text">
+                <strong>{task.title}</strong>
+                <span>{task.hint}</span>
+              </span>
+              {"count" in task && task.count ? <span className="ln-nav-badge">{task.count}</span> : null}
+            </Link>
+          ))}
         </div>
+      </div>
+
+      <div className="ln-stat-grid">
+        {stats.map((stat) => (
+          <Link href={stat.href} className="ln-stat-card ln-stat-link" key={stat.label}>
+            <div className="ln-stat-card-value">{stat.value.toLocaleString()}</div>
+            <div className="ln-stat-card-label">{stat.label}</div>
+          </Link>
+        ))}
       </div>
 
       <div className="ln-dash-section">
