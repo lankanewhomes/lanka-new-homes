@@ -339,3 +339,268 @@
   color: #c65a1e;
   text-decoration: none;
 }
+
+/* =====================================================================
+   NEW ADMIN DESIGN (2026-10-08) — same visual language as the public
+   site: black and white, square corners, thin solid borders, Archivo.
+   Appended last so it overrides the earlier orange/rounded styling.
+   Only colours, borders, radii and type are changed — no layout moves.
+   ===================================================================== */
+
+:root,
+html[data-theme="light"] {
+  --ln-ink: #111111;
+  --ln-line: #d9d9d4;
+  --ln-line-strong: #111111;
+  --ln-paper: #ffffff;
+  --ln-wash: #f6f6f3;
+  --style-radius-s: 0px;
+  --style-radius-m: 0px;
+  --style-radius-l: 0px;
+  --theme-bg: #ffffff;
+  --theme-input-bg: #ffffff;
+}
+
+body,
+.template-default,
+.template-default__wrap {
+  font-family: var(--font-body);
+  background: var(--ln-wash);
+  color: var(--ln-ink);
+}
+
+/* ---- Sidebar ---- */
+.nav,
+.nav__wrap {
+  background: var(--ln-paper);
+}
+.nav {
+  border-right: 1px solid var(--ln-line-strong);
+}
+.ln-nav-brand {
+  border-bottom: 1px solid var(--ln-line-strong);
+  padding: 20px 20px 16px;
+}
+.ln-nav-brand-name {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.ln-nav-brand-role {
+  color: var(--ln-ink);
+  letter-spacing: 0.08em;
+  border: 1px solid var(--ln-line-strong);
+  align-self: flex-start;
+  padding: 1px 6px;
+  margin-top: 6px;
+}
+.ln-nav-section {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--ln-line);
+}
+.ln-nav-section:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+.ln-nav-section-label {
+  color: #6b6b66;
+  font-weight: 800;
+}
+.ln-nav-link {
+  border-radius: 0;
+  border: 1px solid transparent;
+  color: #2b2b28;
+  font-weight: 500;
+}
+.ln-nav-link:hover {
+  background: var(--ln-wash);
+  border-color: var(--ln-line);
+  color: var(--ln-ink);
+}
+.ln-nav-link.is-active {
+  background: var(--ln-ink);
+  border-color: var(--ln-ink);
+  color: #ffffff;
+  font-weight: 650;
+}
+.ln-nav-footer {
+  border-top: 1px solid var(--ln-line-strong);
+}
+
+/* ---- Page header + content ---- */
+.app-header {
+  background: var(--ln-paper);
+  border-bottom: 1px solid var(--ln-line-strong);
+}
+.gutter--left,
+.gutter--right {
+  background: transparent;
+}
+h1,
+.doc-header__title,
+.collection-list__header h1 {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ln-ink);
+}
+
+/* ---- Buttons ---- */
+.btn,
+.pill {
+  border-radius: 0;
+}
+.btn--style-primary {
+  background: var(--ln-ink);
+  border: 1px solid var(--ln-ink);
+  color: #ffffff;
+}
+.btn--style-primary:hover {
+  background: #2b2b28;
+  border-color: #2b2b28;
+}
+.btn--style-secondary {
+  background: var(--ln-paper);
+  border: 1px solid var(--ln-ink);
+  color: var(--ln-ink);
+  box-shadow: none;
+}
+.btn--style-secondary:hover {
+  background: var(--ln-wash);
+}
+.pill {
+  border: 1px solid var(--ln-line-strong);
+  background: var(--ln-paper);
+  color: var(--ln-ink);
+}
+
+/* ---- Lists / tables ---- */
+.collection-list .table-wrap,
+.table {
+  border: 1px solid var(--ln-line-strong);
+  border-radius: 0;
+  background: var(--ln-paper);
+}
+.table table {
+  border-collapse: collapse;
+}
+.table thead th {
+  background: var(--ln-wash);
+  color: #3d3d39;
+  font-weight: 800;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--ln-line-strong);
+}
+.table tbody td {
+  border-bottom: 1px solid var(--ln-line);
+}
+.table tbody tr:hover td {
+  background: var(--ln-wash);
+}
+.list-controls,
+.search-filter__input,
+.where-builder {
+  border-radius: 0;
+}
+
+/* ---- Form fields ---- */
+.field-type:not(.row):not(.group-field):not(.array-field):not(.blocks-field):not(.collapsible-field):not(.tabs-field):not(.ui):not(.checkbox):not(.hidden-field),
+.field-type.row > .field-type:not(.checkbox) {
+  background: var(--ln-paper);
+  border: 1px solid var(--ln-line);
+  border-radius: 0;
+  padding: 14px 16px;
+}
+.field-type:focus-within:not(.row):not(.group-field):not(.array-field):not(.blocks-field):not(.collapsible-field):not(.tabs-field):not(.ui):not(.checkbox):not(.hidden-field) {
+  border-color: var(--ln-ink);
+}
+.field-label {
+  font-weight: 700;
+  color: var(--ln-ink);
+}
+input:not([type="checkbox"]):not([type="radio"]),
+textarea,
+.rs__control {
+  border-radius: 0;
+  border: 1px solid #bdbdb6;
+  background: var(--ln-paper);
+}
+input:not([type="checkbox"]):not([type="radio"]):focus,
+textarea:focus,
+.rs__control--is-focused {
+  border-color: var(--ln-ink);
+  box-shadow: none;
+}
+
+/* ---- Tabs: one monochrome style instead of a colour per tab ---- */
+.tabs-field__tab-button {
+  border-radius: 0;
+  font-weight: 600;
+  color: #55554f;
+}
+.tabs-field__tab-button--active,
+.tabs-field__tab-button:nth-child(n).tabs-field__tab-button--active {
+  background: var(--ln-ink) !important;
+  color: #ffffff !important;
+  border-radius: 0 !important;
+  padding: 6px 14px 8px !important;
+}
+.tabs-field__tabs {
+  border-bottom: 1px solid var(--ln-line-strong);
+}
+
+/* ---- Dashboard, tables, cards, badges (custom components) ---- */
+.ln-dash-title {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.ln-stat-card,
+.ln-quick-action,
+.ln-table,
+.ln-empty {
+  border-radius: 0;
+  border: 1px solid var(--ln-line-strong);
+  background: var(--ln-paper);
+}
+.ln-empty {
+  border-style: dashed;
+}
+.ln-stat-card-value {
+  font-weight: 800;
+}
+.ln-table th {
+  background: var(--ln-wash);
+  color: #3d3d39;
+  font-weight: 800;
+  border-bottom: 1px solid var(--ln-line-strong);
+}
+.ln-table td {
+  border-top: 1px solid var(--ln-line);
+}
+.ln-dash-section-head h2 {
+  font-weight: 800;
+}
+.ln-dash-section-head a {
+  color: var(--ln-ink);
+  text-decoration: underline;
+}
+.ln-quick-action {
+  color: var(--ln-ink);
+}
+.ln-quick-action:hover {
+  background: var(--ln-ink);
+  border-color: var(--ln-ink);
+  color: #ffffff;
+}
+.ln-badge {
+  border-radius: 0;
+  border: 1px solid currentColor;
+  background: transparent;
+}
+.ln-badge-neutral { color: #55554f; }
+.ln-badge-info { color: #1d4f8f; background: #eef4fb; }
+.ln-badge-warning { color: #8a5a00; background: #fff6e0; }
+.ln-badge-success { color: #14602a; background: #eaf6ec; }
+.ln-badge-danger { color: #a3261b; background: #fcecea; }
