@@ -59,11 +59,16 @@ export default buildConfig({
   admin: {
     // The admin is designed as black-on-white. Payload's dark theme turned cards/rows dark while text stayed dark (unreadable).
     theme: 'light',
+    // Browser tab: the LankaNewHomes favicon and name instead of Payload's.
+    meta: {
+      titleSuffix: ' – LankaNewHomes',
+      icons: [{ rel: 'icon', type: 'image/png', url: '/brand/lankanewhomes-favicon.png' }, { rel: 'apple-touch-icon', url: '/brand/lankanewhomes-favicon.png' }],
+    },
     user: Users.slug,
     importMap: { baseDir: dirname },
     components: {
       // Real LankaNewHomes wordmark on the login / forgot / reset pages instead of the Payload logo.
-      graphics: { Logo: '@/components/payload/AdminLogo#AdminLogo' },
+      graphics: { Logo: '@/components/payload/AdminLogo#AdminLogo', Icon: '@/components/payload/AdminIcon#AdminIcon' },
       // Full custom sidebar (see docs/design.md "LankaNewHomes admin
       // redesign") — regroups every existing collection/global into the
       // requested IA. Reads Payload's own `visibleEntities` (already

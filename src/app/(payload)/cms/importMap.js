@@ -50,6 +50,7 @@ import { AdminNav as AdminNav_f7859a3d01f9e88347a89cb1fba37791 } from '@/compone
 import { TopRightAccountMenu as TopRightAccountMenu_b2809303c67bf58cfd568d38b4192636 } from '@/components/payload/TopRightAccountMenu'
 import { FloatingSaveBar as FloatingSaveBar_8d219332c77d82c062bca2cb2e74e200 } from '@/components/payload/FloatingSaveBar'
 import { StatusVerificationStyles as StatusVerificationStyles_30e7ab21255f6e336fc700daeb6431c9 } from '@/components/payload/StatusVerificationStyles'
+import { AdminIcon as AdminIcon_7a969c861589af9322f5d573a708d2fb } from '@/components/payload/AdminIcon'
 import { AdminLogo as AdminLogo_313e964a7107ac39e31c5ff2e54b6ba9 } from '@/components/payload/AdminLogo'
 import { NavPlacementLink as NavPlacementLink_4dd4594cbbb08508c8d44f490a29b529 } from '@/components/payload/NavPlacementLink'
 import { NavImportLink as NavImportLink_5a308347dbd45d2c0e34cd2393d9f672 } from '@/components/payload/NavImportLink'
@@ -120,6 +121,7 @@ export const importMap = {
   "@/components/payload/TopRightAccountMenu#TopRightAccountMenu": TopRightAccountMenu_b2809303c67bf58cfd568d38b4192636,
   "@/components/payload/FloatingSaveBar#FloatingSaveBar": FloatingSaveBar_8d219332c77d82c062bca2cb2e74e200,
   "@/components/payload/StatusVerificationStyles#StatusVerificationStyles": StatusVerificationStyles_30e7ab21255f6e336fc700daeb6431c9,
+  "@/components/payload/AdminIcon#AdminIcon": AdminIcon_7a969c861589af9322f5d573a708d2fb,
   "@/components/payload/AdminLogo#AdminLogo": AdminLogo_313e964a7107ac39e31c5ff2e54b6ba9,
   "@/components/payload/NavPlacementLink#NavPlacementLink": NavPlacementLink_4dd4594cbbb08508c8d44f490a29b529,
   "@/components/payload/NavImportLink#NavImportLink": NavImportLink_5a308347dbd45d2c0e34cd2393d9f672,
