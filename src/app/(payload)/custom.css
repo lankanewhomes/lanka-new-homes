@@ -2219,3 +2219,165 @@ h1,
   width: 13px;
   height: 13px;
 }
+
+/* =====================================================================
+   ONE TAB STYLE EVERYWHERE (2026-10-09): Project and Land edit pages use
+   the same underlined horizontal tab bar as the Developer page (replaces the
+   numbered side menu, whose full-width buttons broke in narrower windows).
+   Also: the Edit / API doc tabs, and the list search bar.
+   ===================================================================== */
+@media (min-width: 981px) {
+  .collection-edit--projects .tabs-field:not(.tabs-field--within-collapsible),
+  .collection-edit--lands .tabs-field:not(.tabs-field--within-collapsible) {
+    display: block !important;
+    margin: 10px 0 0 !important;
+    padding: 0 !important;
+  }
+  .collection-edit--projects .tabs-field:not(.tabs-field--within-collapsible) > .tabs-field__tabs-wrap,
+  .collection-edit--lands .tabs-field:not(.tabs-field--within-collapsible) > .tabs-field__tabs-wrap {
+    position: static !important;
+    max-height: none !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    margin: 0 0 16px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-bottom: 1px solid #e4e2db !important;
+    background: transparent !important;
+  }
+  .collection-edit--projects .tabs-field:not(.tabs-field--within-collapsible) > .tabs-field__content-wrap,
+  .collection-edit--lands .tabs-field:not(.tabs-field--within-collapsible) > .tabs-field__content-wrap {
+    padding: 16px 20px 18px !important;
+  }
+}
+.collection-edit--projects .tabs-field__tabs-wrap,
+.collection-edit--lands .tabs-field__tabs-wrap {
+  overflow-x: auto;
+}
+.collection-edit--projects .tabs-field__tabs,
+.collection-edit--lands .tabs-field__tabs {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap;
+  gap: 24px;
+  min-width: max-content;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  counter-reset: none;
+}
+.collection-edit--projects .tabs-field__tabs > .tabs-field__tab-button,
+.collection-edit--lands .tabs-field__tabs > .tabs-field__tab-button {
+  display: inline-flex !important;
+  width: auto !important;
+  flex: 0 0 auto;
+  align-items: center;
+  margin: 0 !important;
+  padding: 12px 2px !important;
+  border: 0 !important;
+  border-bottom: 3px solid transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #55554f;
+  font-size: 14.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  counter-increment: none;
+}
+.collection-edit--projects .tabs-field__tabs > .tabs-field__tab-button::before,
+.collection-edit--lands .tabs-field__tabs > .tabs-field__tab-button::before {
+  display: none !important;
+  content: none !important;
+}
+.collection-edit--projects .tabs-field__tabs > .tabs-field__tab-button:hover,
+.collection-edit--lands .tabs-field__tabs > .tabs-field__tab-button:hover {
+  background: transparent !important;
+  color: #111111;
+}
+.collection-edit--projects .tabs-field__tabs > .tabs-field__tab-button--active,
+.collection-edit--lands .tabs-field__tabs > .tabs-field__tab-button--active,
+.collection-edit--projects .tabs-field__tabs > .tabs-field__tab-button:nth-child(n).tabs-field__tab-button--active,
+.collection-edit--lands .tabs-field__tabs > .tabs-field__tab-button:nth-child(n).tabs-field__tab-button--active {
+  background: transparent !important;
+  color: #111111 !important;
+  border-bottom: 3px solid #f4b73d !important;
+  padding: 12px 2px !important;
+}
+
+/* Edit / API (and Versions) tabs on every edit and Create New page */
+.collection-edit .doc-tabs__tabs,
+.global-edit .doc-tabs__tabs {
+  display: flex;
+  gap: 24px;
+}
+.collection-edit .doc-tab,
+.global-edit .doc-tab {
+  padding: 0;
+  background: transparent !important;
+  color: #55554f !important;
+}
+.collection-edit .doc-tab a,
+.global-edit .doc-tab a,
+.collection-edit .doc-tab__link,
+.global-edit .doc-tab__link {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 2px;
+  border-bottom: 3px solid transparent;
+  color: inherit;
+  font-size: 14.5px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.collection-edit .doc-tab--active,
+.global-edit .doc-tab--active {
+  background: transparent !important;
+  color: #111111 !important;
+}
+.collection-edit .doc-tab--active a,
+.global-edit .doc-tab--active a,
+.collection-edit .doc-tab--active .doc-tab__link,
+.global-edit .doc-tab--active .doc-tab__link {
+  border-bottom-color: #f4b73d;
+}
+
+/* List search bar: one clean bar — Payload's own search-bar (icon + input) with the Columns / Filters buttons on the right */
+.collection-list .list-controls .search-bar {
+  min-height: 42px;
+  border: 1px solid #cfcfc8;
+  background: #ffffff;
+}
+.collection-list .list-controls .search-bar:focus-within {
+  border-color: #111111;
+}
+.collection-list .list-controls .search-bar .search-filter__input,
+.collection-list .list-controls .search-bar .search-filter input {
+  height: 100% !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  font-size: 14px;
+}
+.collection-list .list-controls .search-bar__actions {
+  gap: 8px;
+  padding: 4px 6px;
+}
+.collection-list .list-controls .search-bar__actions .pill,
+.collection-list .list-controls .pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid #cfcfc8;
+  background: #ffffff;
+  color: #111111;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+.collection-list .list-controls .pill:hover {
+  border-color: #111111;
+}
+.collection-list .list-controls {
+  padding: 8px;
+}
