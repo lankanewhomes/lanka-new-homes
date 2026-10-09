@@ -177,7 +177,11 @@ export default buildConfig({
   editor: lexicalEditor(),
   db: postgresAdapter({
     pool: {
-      connectionString: databaseUri,
+      // On Cloudflare the Worker entry stores Hyperdrive's connection string per request (cloudflare/worker.js); read lazily
+      // when the pool is created. Everywhere else (local, Node) this is the normal DATABASE_URI.
+      get connectionString() {
+        return (globalThis as { __cfHyperdriveUrl?: string }).__cfHyperdriveUrl || databaseUri
+      },
       // DATABASE_URI points at Supabase's SESSION-mode pooler (port 5432),
       // which has a small hard client cap (15 backends on this project's
       // compute size — see `select ... from pg_stat_activity` grouped by

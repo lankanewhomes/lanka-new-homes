@@ -12,9 +12,18 @@ const CRON_ROUTES = {
   "0 2 * * *": "/api/cron/subscription-expiry", // daily 02:00 UTC
 };
 
+// Hyperdrive's per-request connection string, read by payload.config.ts when it opens its database pool.
+const useHyperdrive = (env) => {
+  if (env && env.HYPERDRIVE && env.HYPERDRIVE.connectionString) globalThis.__cfHyperdriveUrl = env.HYPERDRIVE.connectionString;
+};
+
 export default {
-  fetch: openNextWorker.fetch,
+  fetch(request, env, ctx) {
+    useHyperdrive(env);
+    return openNextWorker.fetch(request, env, ctx);
+  },
   async scheduled(controller, env, ctx) {
+    useHyperdrive(env);
     const path = CRON_ROUTES[controller.cron];
     if (!path) return;
     const request = new Request(`https://www.lankanewhomes.com${path}`, {
