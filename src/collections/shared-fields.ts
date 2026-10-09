@@ -458,13 +458,16 @@ export function galleryLikeField(name: string, label?: string): Field {
 export const seoFields: Field = {
   name: 'seo',
   type: 'group',
-  label: 'SEO',
+  label: 'Search engine & sharing',
+  admin: { description: 'What Google and social apps show for this page. Everything is optional — blank fields fall back to the page name and text.' },
   fields: [
-    { name: 'seoTitle', type: 'text' },
-    { name: 'seoDescription', type: 'textarea' },
-    { name: 'ogImage', type: 'text', admin: { description: 'Image URL — or upload a file in Media and paste its URL here.' } },
-    { name: 'canonicalUrl', type: 'text' },
-    { name: 'noIndex', type: 'checkbox', defaultValue: false },
+    // Live preview (UI-only, stores nothing) — components/payload/SeoPreview.tsx.
+    { name: 'seoPreview', type: 'ui', admin: { components: { Field: '@/components/payload/SeoPreview#SeoPreview' } } },
+    { name: 'seoTitle', type: 'text', label: 'SEO title', admin: { description: 'The blue headline in Google. Aim for about 60 characters or fewer. Blank = the page name.' } },
+    { name: 'seoDescription', type: 'textarea', label: 'SEO description', admin: { description: 'The grey text under it. Aim for 120–160 characters.' } },
+    { name: 'ogImage', type: 'text', label: 'Share image', admin: { description: 'Picture shown when the page is shared. Image URL — or upload a file in Media and paste its URL here.' } },
+    { name: 'canonicalUrl', type: 'text', label: 'Canonical URL', admin: { description: 'Only if this page should count as a copy of another address. Usually leave blank.' } },
+    { name: 'noIndex', type: 'checkbox', label: 'Hide this page from search engines', defaultValue: false },
   ],
 }
 

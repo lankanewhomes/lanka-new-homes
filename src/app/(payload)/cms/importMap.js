@@ -2,6 +2,7 @@ import { DeveloperHero as DeveloperHero_63e0f9a6fec321b5319fb4e71d8e519d } from 
 import { DeveloperOverviewStats as DeveloperOverviewStats_b1207455ce4facdbd8e0cbb4c2cb1f6e } from '@/components/payload/DeveloperOverviewStats'
 import { DeveloperPlanPanel as DeveloperPlanPanel_098505e37097b4e31e435c2abfcb8db4 } from '@/components/payload/DeveloperPlanPanel'
 import { DeveloperVerifyPanel as DeveloperVerifyPanel_ce4d2c1d15521de372507861fc6fe344 } from '@/components/payload/DeveloperVerifyPanel'
+import { SeoPreview as SeoPreview_55675bcab4b82c96fbbbf5279a6cd2dc } from '@/components/payload/SeoPreview'
 import { CompletenessTodo as CompletenessTodo_e02911b42e48821b16fd5d9e40cf5034 } from '@/components/payload/CompletenessTodo'
 import { ProjectNameCell as ProjectNameCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
 import { PreviewLinkPanel as PreviewLinkPanel_58de2ef0318e59b9fbb2898773569633 } from '@/components/payload/PreviewLinkPanel'
@@ -65,6 +66,7 @@ export const importMap = {
   "@/components/payload/DeveloperOverviewStats#DeveloperOverviewStats": DeveloperOverviewStats_b1207455ce4facdbd8e0cbb4c2cb1f6e,
   "@/components/payload/DeveloperPlanPanel#DeveloperPlanPanel": DeveloperPlanPanel_098505e37097b4e31e435c2abfcb8db4,
   "@/components/payload/DeveloperVerifyPanel#DeveloperVerifyPanel": DeveloperVerifyPanel_ce4d2c1d15521de372507861fc6fe344,
+  "@/components/payload/SeoPreview#SeoPreview": SeoPreview_55675bcab4b82c96fbbbf5279a6cd2dc,
   "@/components/payload/CompletenessTodo#CompletenessTodo": CompletenessTodo_e02911b42e48821b16fd5d9e40cf5034,
   "@/components/payload/ListingCells#ProjectNameCell": ProjectNameCell_76baef6cf7c9eb87fad9c61807ea9c87,
   "@/components/payload/PreviewLinkPanel#PreviewLinkPanel": PreviewLinkPanel_58de2ef0318e59b9fbb2898773569633,

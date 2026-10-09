@@ -316,20 +316,6 @@ export interface Developer {
     computed_at?: string | null;
   };
   /**
-   * The developer-role account that manages this company profile. Leave blank when pre-building a profile before the developer has an account — if they later sign up with this Contact Email, they auto-claim it (and everything created under it, including projects); otherwise set this manually once they exist.
-   */
-  user?: (number | null) | User;
-  projects?: {
-    docs?: (number | Project)[];
-    hasNextPage?: boolean;
-    totalDocs?: number;
-  };
-  team_members?: {
-    docs?: (number | TeamMember)[];
-    hasNextPage?: boolean;
-    totalDocs?: number;
-  };
-  /**
    * This company's current plan — drives which of the projects in Featured Projects (below) actually show as featured. Set automatically from an active Subscription.
    */
   plan?: ('free' | 'featured' | 'featured-plus' | 'developer-pro' | 'campaign') | null;
@@ -376,13 +362,39 @@ export interface Developer {
    * Gates the "Developer approval" workflow — new self-registered developers start pending.
    */
   verification_status?: ('pending' | 'approved' | 'rejected' | 'changes_requested') | null;
+  /**
+   * The developer-role account that manages this company profile. Leave blank when pre-building a profile before the developer has an account — if they later sign up with this Contact Email, they auto-claim it (and everything created under it, including projects); otherwise set this manually once they exist.
+   */
+  user?: (number | null) | User;
+  projects?: {
+    docs?: (number | Project)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  team_members?: {
+    docs?: (number | TeamMember)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  /**
+   * What Google and social apps show for this page. Everything is optional — blank fields fall back to the page name and text.
+   */
   seo?: {
+    /**
+     * The blue headline in Google. Aim for about 60 characters or fewer. Blank = the page name.
+     */
     seoTitle?: string | null;
+    /**
+     * The grey text under it. Aim for 120–160 characters.
+     */
     seoDescription?: string | null;
     /**
-     * Image URL — or upload a file in Media and paste its URL here.
+     * Picture shown when the page is shared. Image URL — or upload a file in Media and paste its URL here.
      */
     ogImage?: string | null;
+    /**
+     * Only if this page should count as a copy of another address. Usually leave blank.
+     */
     canonicalUrl?: string | null;
     noIndex?: boolean | null;
   };
@@ -3483,7 +3495,7 @@ export interface Project {
         balconySizeSqFt?: number | null;
         terraceSqFt?: number | null;
         /**
-         * The developer's own word, plural: Terraces, Balconies, Decks, Verandahs (or e.g. Balconies & terraces). Shown as the label next to the count below; blank = Terraces.
+         * The developer's own word. Shown as the label next to the count below; blank = Terraces. Pick one, or choose Other and type your own.
          */
         outdoorSpace?: string | null;
         /**
@@ -3491,7 +3503,7 @@ export interface Project {
          */
         terraces?: number | null;
         /**
-         * e.g. Open, Covered. Shown next to the terrace count.
+         * Shown next to the terrace count. Pick one, or choose Other and type your own.
          */
         terraceType?: string | null;
         /**
@@ -3809,13 +3821,25 @@ export interface Project {
      */
     autoPost?: boolean | null;
   };
+  /**
+   * What Google and social apps show for this page. Everything is optional — blank fields fall back to the page name and text.
+   */
   seo?: {
+    /**
+     * The blue headline in Google. Aim for about 60 characters or fewer. Blank = the page name.
+     */
     seoTitle?: string | null;
+    /**
+     * The grey text under it. Aim for 120–160 characters.
+     */
     seoDescription?: string | null;
     /**
-     * Image URL — or upload a file in Media and paste its URL here.
+     * Picture shown when the page is shared. Image URL — or upload a file in Media and paste its URL here.
      */
     ogImage?: string | null;
+    /**
+     * Only if this page should count as a copy of another address. Usually leave blank.
+     */
     canonicalUrl?: string | null;
     noIndex?: boolean | null;
   };
@@ -4240,13 +4264,25 @@ export interface Neighborhood {
         id?: string | null;
       }[]
     | null;
+  /**
+   * What Google and social apps show for this page. Everything is optional — blank fields fall back to the page name and text.
+   */
   seo?: {
+    /**
+     * The blue headline in Google. Aim for about 60 characters or fewer. Blank = the page name.
+     */
     seoTitle?: string | null;
+    /**
+     * The grey text under it. Aim for 120–160 characters.
+     */
     seoDescription?: string | null;
     /**
-     * Image URL — or upload a file in Media and paste its URL here.
+     * Picture shown when the page is shared. Image URL — or upload a file in Media and paste its URL here.
      */
     ogImage?: string | null;
+    /**
+     * Only if this page should count as a copy of another address. Usually leave blank.
+     */
     canonicalUrl?: string | null;
     noIndex?: boolean | null;
   };
@@ -4443,7 +4479,7 @@ export interface HeroSlide {
   project: number | Project;
   link?: string | null;
   /**
-   * e.g. homepage, colombo, luxury
+   * Which page this banner shows on. Pick one, or choose Other and type your own.
    */
   page_target?: string | null;
   display_order?: number | null;
@@ -6734,11 +6770,11 @@ export interface Land {
    */
   landUse?: ('Residential' | 'Commercial' | 'Agricultural' | 'Mixed Use')[] | null;
   /**
-   * e.g. Bare Land, Land with House, Paddy Land, Coconut Land
+   * Pick one, or choose Other and type your own.
    */
   landType?: string | null;
   /**
-   * e.g. Rectangular, Square, Irregular, L-Shaped
+   * Pick one, or choose Other and type your own.
    */
   landShape?: string | null;
   roadAccess?: ('Carpet Road' | 'Tar Road' | 'Concrete Road' | 'Gravel Road' | 'Access Road' | 'No Road Access') | null;
@@ -6752,9 +6788,12 @@ export interface Land {
    * Custom value, used when Electricity above doesn't have the right option.
    */
   electricity_other?: string | null;
+  /**
+   * Pick one, or choose Other and type your own.
+   */
   water?: string | null;
   /**
-   * e.g. Freehold - Sinhala Deed, Freehold - Swarnabhoomi, Torrens Title
+   * Pick one, or choose Other and type your own.
    */
   titleType?: string | null;
   surveyPlanStatus?: string | null;
@@ -7120,13 +7159,25 @@ export interface Land {
      */
     hours?: string | null;
   };
+  /**
+   * What Google and social apps show for this page. Everything is optional — blank fields fall back to the page name and text.
+   */
   seo?: {
+    /**
+     * The blue headline in Google. Aim for about 60 characters or fewer. Blank = the page name.
+     */
     seoTitle?: string | null;
+    /**
+     * The grey text under it. Aim for 120–160 characters.
+     */
     seoDescription?: string | null;
     /**
-     * Image URL — or upload a file in Media and paste its URL here.
+     * Picture shown when the page is shared. Image URL — or upload a file in Media and paste its URL here.
      */
     ogImage?: string | null;
+    /**
+     * Only if this page should count as a copy of another address. Usually leave blank.
+     */
     canonicalUrl?: string | null;
     noIndex?: boolean | null;
   };
@@ -7276,7 +7327,7 @@ export interface SeoKeyword {
    */
   sourceUrl?: string | null;
   /**
-   * e.g. Ubersuggest, Ahrefs, manual web research.
+   * Pick one, or choose Other and type your own.
    */
   sourceTool?: string | null;
   /**
@@ -7897,9 +7948,6 @@ export interface DevelopersSelect<T extends boolean = true> {
         sample_size?: T;
         computed_at?: T;
       };
-  user?: T;
-  projects?: T;
-  team_members?: T;
   plan?: T;
   featuredUntil?: T;
   extra_featured_slots?: T;
@@ -7917,6 +7965,9 @@ export interface DevelopersSelect<T extends boolean = true> {
   verify_pending_email?: T;
   verify_last_sent?: T;
   verification_status?: T;
+  user?: T;
+  projects?: T;
+  team_members?: T;
   seo?:
     | T
     | {
