@@ -16,6 +16,7 @@ import { DeveloperStatusCell as DeveloperStatusCell_76baef6cf7c9eb87fad9c61807ea
 import { SeoPreview as SeoPreview_55675bcab4b82c96fbbbf5279a6cd2dc } from '@/components/payload/SeoPreview'
 import { DeveloperListTabs as DeveloperListTabs_2581ee59914b19566144bedd6630e7c8 } from '@/components/payload/DeveloperListTabs'
 import { CompanyListSummary as CompanyListSummary_ceb8f88f102bb57883def3ef1293610f } from '@/components/payload/CompanyListSummary'
+import { ProjectHeader as ProjectHeader_30717febd052cf6c0da3ede9475b59a9 } from '@/components/payload/ProjectHeader'
 import { CompletenessTodo as CompletenessTodo_e02911b42e48821b16fd5d9e40cf5034 } from '@/components/payload/CompletenessTodo'
 import { ProjectNameCell as ProjectNameCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
 import { PreviewLinkPanel as PreviewLinkPanel_58de2ef0318e59b9fbb2898773569633 } from '@/components/payload/PreviewLinkPanel'
@@ -104,6 +105,7 @@ export const importMap = {
   "@/components/payload/SeoPreview#SeoPreview": SeoPreview_55675bcab4b82c96fbbbf5279a6cd2dc,
   "@/components/payload/DeveloperListTabs#DeveloperListTabs": DeveloperListTabs_2581ee59914b19566144bedd6630e7c8,
   "@/components/payload/CompanyListSummary#CompanyListSummary": CompanyListSummary_ceb8f88f102bb57883def3ef1293610f,
+  "@/components/payload/ProjectHeader#ProjectHeader": ProjectHeader_30717febd052cf6c0da3ede9475b59a9,
   "@/components/payload/CompletenessTodo#CompletenessTodo": CompletenessTodo_e02911b42e48821b16fd5d9e40cf5034,
   "@/components/payload/ListingCells#ProjectNameCell": ProjectNameCell_76baef6cf7c9eb87fad9c61807ea9c87,
   "@/components/payload/PreviewLinkPanel#PreviewLinkPanel": PreviewLinkPanel_58de2ef0318e59b9fbb2898773569633,

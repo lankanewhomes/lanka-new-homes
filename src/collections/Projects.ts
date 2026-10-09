@@ -190,6 +190,8 @@ export const Projects: CollectionConfig = {
     afterDelete: [syncProjectDeleteToSupabase],
   },
   fields: [
+    // Cover photo, name, status chips and quick links (server component, UI-only — stores nothing). Above the section menu.
+    { name: 'project_header', type: 'ui', admin: { components: { Field: '@/components/payload/ProjectHeader#ProjectHeader' } } },
     {
       type: 'tabs',
       tabs: [

@@ -2548,3 +2548,142 @@ h1,
   .global-edit .render-fields > .field-type.checkbox,
   .global-edit .render-fields > .rich-text-lexical { grid-column: 1 / -1; }
 }
+
+/* =====================================================================
+   PROJECT / LAND PAGE (2026-10-09), "like before, but standing out":
+   header with the cover photo on top; on wide screens a bold numbered
+   section menu on the left (black active step with an orange edge), the open
+   section in a white card on the right. Narrow windows get a scrolling strip
+   of auto-width buttons — the numbered menu's full-width buttons are limited to
+   wide screens only (they broke the strip before).
+   Overrides the underlined-tab block above for these two pages.
+   ===================================================================== */
+.ln-phead { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; margin: 6px 0 16px; padding: 16px 18px; border: 1px solid #111111; background: #ffffff; }
+.ln-phead-photo { width: 120px; height: 84px; flex-shrink: 0; object-fit: cover; background: #efede7; }
+.ln-phead-photo-empty { display: inline-flex; align-items: center; justify-content: center; background: #111111; color: #ffffff; font-size: 32px; font-weight: 800; }
+.ln-phead-main { flex: 1; min-width: 240px; }
+.ln-phead-main h2 { margin: 0 0 2px; font-size: 24px; font-weight: 800; letter-spacing: -0.02em; color: #111111; }
+.ln-phead-sub { margin: 0 0 8px; font-size: 13.5px; color: #55554f; }
+
+/* narrow windows: horizontal strip of auto-width buttons */
+.collection-edit--projects .tabs-field__tabs > .tabs-field__tab-button,
+.collection-edit--lands .tabs-field__tabs > .tabs-field__tab-button {
+  display: inline-flex !important;
+  flex: 0 0 auto;
+  width: auto !important;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px !important;
+  border: 1px solid transparent !important;
+  border-bottom: 1px solid transparent !important;
+  background: transparent !important;
+  font-size: 14px;
+  font-weight: 700;
+  color: #3d3d39;
+  white-space: nowrap;
+  counter-increment: lnstep;
+}
+.collection-edit--projects .tabs-field__tabs,
+.collection-edit--lands .tabs-field__tabs { counter-reset: lnstep; }
+.collection-edit--projects .tabs-field__tabs > .tabs-field__tab-button::before,
+.collection-edit--lands .tabs-field__tabs > .tabs-field__tab-button::before {
+  content: counter(lnstep) !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  background: #e9e7e0;
+  color: #111111;
+  font-size: 12px;
+  font-weight: 800;
+}
+.collection-edit--projects .tabs-field__tabs > .tabs-field__tab-button--active,
+.collection-edit--lands .tabs-field__tabs > .tabs-field__tab-button--active,
+.collection-edit--projects .tabs-field__tabs > .tabs-field__tab-button:nth-child(n).tabs-field__tab-button--active,
+.collection-edit--lands .tabs-field__tabs > .tabs-field__tab-button:nth-child(n).tabs-field__tab-button--active {
+  background: #111111 !important;
+  color: #ffffff !important;
+  border: 1px solid #111111 !important;
+  padding: 10px 14px !important;
+}
+.collection-edit--projects .tabs-field__tabs > .tabs-field__tab-button--active::before,
+.collection-edit--lands .tabs-field__tabs > .tabs-field__tab-button--active::before {
+  background: #f4b73d;
+  color: #111111;
+}
+
+/* wide screens: side menu + content card */
+@media (min-width: 981px) {
+  .collection-edit--projects .tabs-field:not(.tabs-field--within-collapsible),
+  .collection-edit--lands .tabs-field:not(.tabs-field--within-collapsible) {
+    display: grid !important;
+    grid-template-columns: 250px minmax(0, 1fr) !important;
+    gap: 20px !important;
+    align-items: start;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .collection-edit--projects .tabs-field:not(.tabs-field--within-collapsible) > .tabs-field__tabs-wrap,
+  .collection-edit--lands .tabs-field:not(.tabs-field--within-collapsible) > .tabs-field__tabs-wrap {
+    position: sticky !important;
+    top: 84px;
+    max-height: calc(100vh - 110px) !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    margin: 0 !important;
+    padding: 8px !important;
+    border: 1px solid #111111 !important;
+    background: #ffffff !important;
+  }
+  .collection-edit--projects .tabs-field:not(.tabs-field--within-collapsible) > .tabs-field__tabs-wrap > .tabs-field__tabs,
+  .collection-edit--lands .tabs-field:not(.tabs-field--within-collapsible) > .tabs-field__tabs-wrap > .tabs-field__tabs {
+    display: flex !important;
+    flex-direction: column !important;
+    flex-wrap: nowrap;
+    gap: 2px !important;
+    min-width: 0 !important;
+  }
+  .collection-edit--projects .tabs-field:not(.tabs-field--within-collapsible) .tabs-field__tabs > .tabs-field__tab-button,
+  .collection-edit--lands .tabs-field:not(.tabs-field--within-collapsible) .tabs-field__tabs > .tabs-field__tab-button {
+    width: 100% !important;
+    justify-content: flex-start;
+    text-align: left;
+    white-space: normal;
+  }
+  .collection-edit--projects .tabs-field:not(.tabs-field--within-collapsible) .tabs-field__tabs > .tabs-field__tab-button:hover:not(.tabs-field__tab-button--active),
+  .collection-edit--lands .tabs-field:not(.tabs-field--within-collapsible) .tabs-field__tabs > .tabs-field__tab-button:hover:not(.tabs-field__tab-button--active) {
+    background: #f3f1ec !important;
+    color: #111111;
+  }
+  .collection-edit--projects .tabs-field:not(.tabs-field--within-collapsible) .tabs-field__tabs > .tabs-field__tab-button--active,
+  .collection-edit--lands .tabs-field:not(.tabs-field--within-collapsible) .tabs-field__tabs > .tabs-field__tab-button--active {
+    box-shadow: inset 4px 0 0 #f47b36;
+    padding-left: 18px !important;
+  }
+  .collection-edit--projects .tabs-field:not(.tabs-field--within-collapsible) > .tabs-field__content-wrap,
+  .collection-edit--lands .tabs-field:not(.tabs-field--within-collapsible) > .tabs-field__content-wrap {
+    min-width: 0;
+    padding: 18px 22px 22px !important;
+    border: 1px solid #111111;
+    border-top: 4px solid #f47b36;
+    background: #ffffff;
+  }
+}
+@media (max-width: 980px) {
+  .collection-edit--projects .tabs-field__tabs-wrap,
+  .collection-edit--lands .tabs-field__tabs-wrap {
+    overflow-x: auto;
+    margin: 0 0 14px !important;
+    border: 0 !important;
+    border-bottom: 1px solid #111111 !important;
+  }
+  .collection-edit--projects .tabs-field__tabs,
+  .collection-edit--lands .tabs-field__tabs {
+    display: flex !important;
+    flex-direction: row !important;
+    min-width: max-content !important;
+    gap: 6px !important;
+  }
+}
