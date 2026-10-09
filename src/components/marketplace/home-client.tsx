@@ -192,7 +192,7 @@ export function HomeClient({
     en: {
       shelfLaunching: "New communities launching soon",
       heroTitle: "New homes for sale across Sri Lanka",
-      heroSubtitle: "Discover new condos, apartments, villas, and homes across Sri Lanka, with current pricing, floor plans, and availability directly from developers.",
+      heroSubtitle: "Discover new condos, apartments, villas, homes, and land across Sri Lanka, with current pricing, floor plans, and availability directly from developers.",
       searchPlaceholder: "Search projects & lands",
       searchRegion: "All of Sri Lanka",
       searchButton: "Search",
@@ -206,7 +206,7 @@ export function HomeClient({
     ta: {
       shelfLaunching: "விரைவில் தொடங்கும் புதிய சமூகங்கள்",
       heroTitle: "New homes for sale across Sri Lanka",
-      heroSubtitle: "Discover new condos, apartments, villas, and homes across Sri Lanka, with current pricing, floor plans, and availability directly from developers.",
+      heroSubtitle: "Discover new condos, apartments, villas, homes, and land across Sri Lanka, with current pricing, floor plans, and availability directly from developers.",
       searchPlaceholder: "Search projects & lands",
       searchRegion: "இலங்கை முழுவதும்",
       searchButton: "தேடல்",
@@ -220,7 +220,7 @@ export function HomeClient({
     si: {
       shelfLaunching: "ඉක්මනින් ආරම්භ වන නව ප්‍රජාවන්",
       heroTitle: "New homes for sale across Sri Lanka",
-      heroSubtitle: "Discover new condos, apartments, villas, and homes across Sri Lanka, with current pricing, floor plans, and availability directly from developers.",
+      heroSubtitle: "Discover new condos, apartments, villas, homes, and land across Sri Lanka, with current pricing, floor plans, and availability directly from developers.",
       searchPlaceholder: "Search projects & lands",
       searchRegion: "ශ්‍රී ලංකාව පුරා",
       searchButton: "සොයන්න",

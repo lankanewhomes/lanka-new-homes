@@ -3,7 +3,7 @@ import { Logout } from "@payloadcms/ui";
 import type { ComponentType } from "react";
 import {
   BarChart3,
-  Briefcase,
+  Building,
   Building2,
   CreditCard,
   GalleryHorizontal,
@@ -64,7 +64,7 @@ const SECTIONS: { label: string; items: NavItem[] }[] = [
   {
     label: "Developers",
     items: [
-      { slug: "developers", kind: "collection", label: "Developers", href: "/cms/collections/developers", icon: Briefcase },
+      { slug: "developers", kind: "collection", label: "Developers", href: "/cms/collections/developers", icon: Building },
       // Real filtered view of the same Developers collection/data — not a
       // fake page. verification_status is a real field on Developers.ts.
       { slug: "developers", kind: "collection", label: "Verification", href: "/cms/collections/developers?where[verification_status][equals]=pending", icon: UserCog },
