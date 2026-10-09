@@ -2682,3 +2682,18 @@ action buttons are `.account-btn`. All account pages (dashboard, saved, developm
 compare, alerts, enquiries, profile, settings) now use `AccountShell` +
 `AccountPageHero`; forms use `.account-panel`, `.account-field`, `.account-input`. The login, signup
 and password pages are intentionally left as they were.
+
+## CMS admin look (2026-10-08)
+
+Near-black sidebar (`#131313`) with a round "L" brand mark + role, collapsible groups, a "Find a page" box, rounded
+dark-grey active item and red count badges (new leads); white workspace; list tables drawn as one bordered card per row;
+pill-style tabs; dashboard opens with "What do you want to do?" task cards. The admin is forced to the light theme
+(`admin.theme: 'light'`) because dark mode made cards dark under dark text. All styling lives at the end of
+`src/app/(payload)/custom.css`; sidebar logic in `src/components/payload/NavSections.tsx` and `AdminNav.tsx`.
+
+## Lanka360 (/lanka360, 2026-10-08)
+
+3D map explorer for projects only (lands not yet): react-map-gl + the free OpenFreeMap "liberty" style (3D buildings
+appear when zoomed in), tilted 58°. Nearby projects merge into numbered bubbles that split as you zoom, then become
+price pins; top filter pills (city, type, status, bedrooms, price); selected project card top-left; horizontal listing
+rail along the bottom. Data via `src/lib/lanka360.ts` (small per-project shape, projects without coordinates skipped).

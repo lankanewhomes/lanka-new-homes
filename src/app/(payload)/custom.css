@@ -753,3 +753,262 @@ textarea:focus,
 /* Always light: even if a browser/OS asks for dark, keep the admin's palette readable. */
 html { color-scheme: light; }
 html[data-theme="dark"] { color-scheme: light; }
+
+/* =====================================================================
+   DARK SIDEBAR + CLEAN WHITE WORKSPACE (2026-10-08, from the owner's
+   reference): near-black sidebar with a brand header, rounded active item,
+   thin dividers; white content area; list rows drawn as bordered cards.
+   Appended last — overrides the earlier white-sidebar rules.
+   ===================================================================== */
+:root,
+html[data-theme="light"] {
+  --ln-side: #131313;
+  --ln-side-2: #1d1d1d;
+  --ln-side-line: #2b2b2b;
+  --ln-side-text: #c9c9c4;
+  --ln-content: #ffffff;
+}
+
+body,
+.template-default,
+.template-default__wrap {
+  background: var(--ln-content);
+}
+
+/* ---- Sidebar ---- */
+.nav,
+.nav__wrap {
+  background: var(--ln-side) !important;
+  color: var(--ln-side-text);
+}
+.nav {
+  border-right: 0;
+}
+.ln-nav {
+  background: var(--ln-side);
+  color: var(--ln-side-text);
+}
+.ln-nav-brand {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  padding: 22px 20px 18px;
+  border-bottom: 1px solid var(--ln-side-line);
+}
+.ln-nav-brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #111111;
+  font-size: 19px;
+  font-weight: 800;
+}
+.ln-nav-brand-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.ln-nav-brand-name {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.ln-nav-brand-role {
+  align-self: flex-start;
+  margin: 1px 0 0;
+  padding: 0;
+  border: 0;
+  color: #9a9a95;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.ln-nav-scroll {
+  padding: 8px 12px 16px;
+}
+.ln-nav-search {
+  background: var(--ln-side-2);
+  border: 1px solid var(--ln-side-line);
+  border-radius: 8px;
+  color: var(--ln-side-text);
+}
+.ln-nav-search input {
+  color: #ffffff;
+}
+.ln-nav-search input::placeholder {
+  color: #8a8a85;
+}
+.ln-nav-section {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--ln-side-line);
+}
+.ln-nav-section:first-child {
+  border-top: 0;
+}
+.ln-nav-section-toggle {
+  color: #8f8f8a;
+  border-radius: 8px;
+}
+.ln-nav-section-toggle:hover {
+  background: var(--ln-side-2);
+  color: #ffffff;
+}
+.ln-nav-none {
+  color: #8f8f8a;
+}
+.ln-nav-link {
+  min-height: 40px;
+  border: 0;
+  border-radius: 8px;
+  color: var(--ln-side-text);
+  font-size: 14.5px;
+  font-weight: 500;
+}
+.ln-nav-link:hover {
+  background: var(--ln-side-2);
+  border: 0;
+  color: #ffffff;
+}
+.ln-nav-link.is-active {
+  background: #2c2c2c;
+  border: 0;
+  color: #ffffff;
+  font-weight: 600;
+}
+.ln-nav-link-icon {
+  opacity: 0.9;
+}
+.ln-nav-group-hint {
+  color: #8f8f8a;
+}
+.ln-nav-link.is-active .ln-nav-group-hint {
+  color: #b9b9b4;
+}
+.ln-nav-footer {
+  border-top: 1px solid var(--ln-side-line);
+  background: var(--ln-side);
+}
+.ln-nav-footer a,
+.ln-nav-footer button {
+  color: var(--ln-side-text);
+}
+
+/* ---- Workspace ---- */
+.app-header {
+  background: var(--ln-content);
+  border-bottom: 1px solid #e4e2db;
+}
+h1,
+.doc-header__title,
+.collection-list__header h1 {
+  font-size: 30px;
+  font-weight: 800;
+}
+.collection-list__header,
+.list-header {
+  margin-bottom: 14px;
+}
+
+/* ---- List tables: each row is its own bordered card ---- */
+.collection-list .table-wrap,
+.table {
+  border: 0;
+  background: transparent;
+}
+.table table {
+  border-collapse: separate;
+  border-spacing: 0 8px;
+}
+.table thead th {
+  background: transparent;
+  border: 0;
+  color: #6b6b66;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding-bottom: 2px;
+}
+.table tbody tr {
+  background: #ffffff;
+}
+.table tbody td {
+  background: #ffffff;
+  border-top: 1px solid #e4e2db;
+  border-bottom: 1px solid #e4e2db;
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+.table tbody td + td {
+  border-left: 1px solid #efede7;
+}
+.table tbody td:first-child {
+  border-left: 1px solid #e4e2db;
+  border-radius: 6px 0 0 6px;
+}
+.table tbody td:last-child {
+  border-right: 1px solid #e4e2db;
+  border-radius: 0 6px 6px 0;
+}
+.table tbody tr:hover td {
+  background: #faf9f6;
+}
+.table tbody td a,
+.table tbody td .cell-title {
+  color: #111111;
+  font-weight: 600;
+}
+
+/* ---- Tabs row on lists/edit forms: pill group ---- */
+.tabs-field__tabs {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid #e4e2db;
+  border-radius: 10px;
+  background: #f6f6f3;
+}
+.tabs-field__tab-button {
+  border-radius: 8px;
+}
+.tabs-field__tab-button--active,
+.tabs-field__tab-button:nth-child(n).tabs-field__tab-button--active {
+  border-radius: 8px !important;
+  background: #ffffff !important;
+  color: #111111 !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+
+/* ---- Search + controls ---- */
+.search-filter__input,
+.list-controls {
+  border-radius: 10px;
+}
+.btn {
+  border-radius: 8px;
+}
+.pill {
+  border-radius: 999px;
+}
+
+/* ---- Dashboard cards pick up the rounded look ---- */
+.ln-stat-card,
+.ln-task-card,
+.ln-quick-action,
+.ln-table,
+.ln-empty {
+  border-radius: 8px;
+  border-color: #e4e2db;
+}
+.ln-task-card:hover {
+  background: #131313;
+  border-color: #131313;
+}
