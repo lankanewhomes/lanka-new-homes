@@ -20379,3 +20379,7 @@ body:has(.compare-bar) {
 /* No white halo around the bubbles: just the black square with the icon (and the count badge) */
 .l360-bubble { background: transparent !important; box-shadow: none !important; backdrop-filter: none !important; }
 .l360-bubble-core { width: 100% !important; height: 100% !important; box-shadow: 0 3px 10px rgba(0,0,0,0.28) !important; }
+
+/* markers ease in when a zoom level regroups them (no popping) */
+@keyframes l360-fade { from { opacity: 0; } to { opacity: 1; } }
+.l360-bubble, .l360-pin { animation: l360-fade 220ms ease-out; }

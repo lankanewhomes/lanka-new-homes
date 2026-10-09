@@ -62,6 +62,8 @@ export function ExplorerMap({
   kind?: "homes" | "land";
 }) {
   const mapRef = useRef<MapRef | null>(null);
+  // Bubbles regroup once per WHOLE zoom level (not on every small scroll step), so the markers stay put while you zoom smoothly
+  // instead of jumping and merging continuously.
   const [zoom, setZoom] = useState(7);
   const [tilted, setTilted] = useState(defaultTilt);
   const overviewZoom = useRef<number | null>(null);
@@ -99,7 +101,7 @@ export function ExplorerMap({
 
   // Nearby listings merge into one bubble; the grid cell shrinks as you zoom, so bubbles split and finally become pins.
   const groups = useMemo(() => {
-    const cell = (360 / Math.pow(2, Math.max(zoom, 3))) * 0.28;
+    const cell = (360 / Math.pow(2, Math.max(zoom, 3))) * 0.5;
     const cells = new globalThis.Map<string, ExplorerItem[]>();
     for (const item of items) {
       const key = `${Math.floor(item.lng / cell)}:${Math.floor(item.lat / cell)}`;
@@ -138,7 +140,7 @@ export function ExplorerMap({
     mapRef.current?.easeTo({ pitch: next ? TILT : 0, bearing: next ? -17 : 0, duration: 800 });
   };
 
-  const showPins = zoom >= PIN_ZOOM;
+  const showPins = zoom >= Math.floor(PIN_ZOOM);
   const selected = selectedSlug ? items.find((item) => item.slug === selectedSlug) : undefined;
 
   return (
@@ -152,7 +154,10 @@ export function ExplorerMap({
           fitTo(items, items.length === 1 ? 15 : 12, 0);
           report();
         }}
-        onMove={(event) => setZoom(event.viewState.zoom)}
+        onMove={(event) => {
+          const level = Math.floor(event.viewState.zoom);
+          setZoom((current) => (current === level ? current : level));
+        }}
         onMoveEnd={report}
         onClick={() => onSelect?.(null)}
         style={{ width: "100%", height: "100%" }}
