@@ -532,12 +532,14 @@ export function businessProfileExtraFields(): Field[] {
 export function companyProfileFields(extra: Field[] = []): Field[] {
   return [
     { name: 'slug', type: 'text', required: true, unique: true, index: true },
-    { name: 'name', type: 'text', required: true },
+    { name: 'name', type: 'text', required: true, admin: { components: { Cell: '@/components/payload/ListingCells#CompanyNameCell' } } },
     { name: 'logo', type: 'text', admin: { description: 'Logo image URL — or upload a file in Media and paste its URL here.' } },
     { name: 'description', type: 'textarea' },
     { name: 'contact_email', type: 'email', label: 'Contact Email' },
     { name: 'contact_phone', type: 'text', label: 'Contact Phone' },
     ...extra,
+    // List-only column: profile-completeness bar (nothing is stored or drawn on the edit form).
+    { name: 'profile_completeness', type: 'ui', label: 'Profile', admin: { components: { Field: '@/components/payload/ListingCells#LandCompletenessField', Cell: '@/components/payload/ListingCells#CompanyCompletenessCell' } } },
   ]
 }
 
@@ -566,7 +568,7 @@ export function directoryCollection(
 ): CollectionConfig {
   return {
     slug,
-    admin: { useAsTitle: 'name', group: 'Companies & Professionals', defaultColumns: ['name', 'slug', 'contact_email'], hidden: hiddenUnlessAdmin },
+    admin: { useAsTitle: 'name', group: 'Companies & Professionals', defaultColumns: ['name', 'contact_email', 'contact_phone', 'profile_completeness'], hidden: hiddenUnlessAdmin },
     access: {
       read: publicRead,
       create: adminOnly,

@@ -85,3 +85,36 @@ export function LandCompletenessCell({ rowData }: CellProps) {
 export function LandCompletenessField() {
   return null
 }
+
+// ---- Company directories (Developers, Construction / Marketing / Sales companies, Architects, Interior designers) ----
+// Logo + name, with website and place underneath; and a profile-completeness bar from the basic profile fields.
+
+const hostOf = (value: unknown) => text(value).replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/.*$/, '')
+
+export function CompanyNameCell(props: CellProps) {
+  const row = props.rowData ?? {}
+  const logo = text(row.logo)
+  const name = text(props.cellData) || 'Untitled'
+  const subtitle = [hostOf(row.website), text(row.location)].filter(Boolean).join(' · ')
+  return (
+    <Link href={`/cms/collections/${props.collectionSlug}/${row.id}`} className="ln-cell-name">
+      {logo ? (
+        /* eslint-disable-next-line @next/next/no-img-element */
+        <img src={logo} alt="" className="ln-cell-thumb ln-cell-logo" loading="lazy" />
+      ) : (
+        <span className="ln-cell-thumb ln-cell-logo ln-cell-logo-empty" aria-hidden="true">{name.slice(0, 1).toUpperCase()}</span>
+      )}
+      <span className="ln-cell-name-text">
+        <strong>{name}</strong>
+        {subtitle ? <small>{subtitle}</small> : null}
+      </span>
+    </Link>
+  )
+}
+
+export function CompanyCompletenessCell({ rowData }: CellProps) {
+  const row = rowData ?? {}
+  const filled = (value: unknown) => (typeof value === 'string' ? value.trim().length > 0 : Boolean(value))
+  const checks = [filled(row.logo), filled(row.description), filled(row.contact_email), filled(row.contact_phone), filled(row.website), filled(row.location)]
+  return <Bar score={(checks.filter(Boolean).length / checks.length) * 100} />
+}

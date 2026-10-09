@@ -86,7 +86,7 @@ export const Developers: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     group: 'Companies & Professionals',
-    defaultColumns: ['name', 'slug', 'user'],
+    defaultColumns: ['name', 'contact_email', 'plan', 'profile_completeness', 'user'],
     // Same idea as Projects' baseListFilter — read access is public (real
     // visitors need the whole directory), but a developer's own /cms list
     // view should default to just their own company, not every developer.

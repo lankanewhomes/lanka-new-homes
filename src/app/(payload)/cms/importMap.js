@@ -1,6 +1,9 @@
 import { DeveloperHeader as DeveloperHeader_63e0f9a6fec321b5319fb4e71d8e519d } from '@/components/payload/DeveloperHero'
 import { DeveloperSummary as DeveloperSummary_63e0f9a6fec321b5319fb4e71d8e519d } from '@/components/payload/DeveloperHero'
 import { DeveloperOverviewStats as DeveloperOverviewStats_b1207455ce4facdbd8e0cbb4c2cb1f6e } from '@/components/payload/DeveloperOverviewStats'
+import { LandCompletenessField as LandCompletenessField_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
+import { CompanyCompletenessCell as CompanyCompletenessCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
+import { CompanyNameCell as CompanyNameCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
 import { LeadsSummary as LeadsSummary_ba05a0e30dca264b11cfc6386a9a4afa } from '@/components/payload/DeveloperTabSummaries'
 import { DeveloperPlanPanel as DeveloperPlanPanel_098505e37097b4e31e435c2abfcb8db4 } from '@/components/payload/DeveloperPlanPanel'
 import { VerifySummary as VerifySummary_ba05a0e30dca264b11cfc6386a9a4afa } from '@/components/payload/DeveloperTabSummaries'
@@ -16,7 +19,6 @@ import { ListingAnalyticsPanel as ListingAnalyticsPanel_aef927c4ceb2652d7f7abf8e
 import { AddonRequestPanel as AddonRequestPanel_78c0b05313dbf1762f420ef38d99b378 } from '@/components/payload/AddonRequestPanel'
 import { SocialPanel as SocialPanel_e89e5c6e27d995476e5b50bf9943be69 } from '@/components/payload/SocialPanel'
 import { LandNameCell as LandNameCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
-import { LandCompletenessField as LandCompletenessField_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
 import { LandCompletenessCell as LandCompletenessCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
 import { SubscriptionsList as SubscriptionsList_2dc33570c131e8faf2f1046801145d72 } from '@/components/payload/SubscriptionsList'
 import { AnalyticsDashboard as AnalyticsDashboard_16ddde46401d8b8f0e062ed5c8fb8520 } from '@/components/payload/AnalyticsDashboard'
@@ -68,6 +70,9 @@ export const importMap = {
   "@/components/payload/DeveloperHero#DeveloperHeader": DeveloperHeader_63e0f9a6fec321b5319fb4e71d8e519d,
   "@/components/payload/DeveloperHero#DeveloperSummary": DeveloperSummary_63e0f9a6fec321b5319fb4e71d8e519d,
   "@/components/payload/DeveloperOverviewStats#DeveloperOverviewStats": DeveloperOverviewStats_b1207455ce4facdbd8e0cbb4c2cb1f6e,
+  "@/components/payload/ListingCells#LandCompletenessField": LandCompletenessField_76baef6cf7c9eb87fad9c61807ea9c87,
+  "@/components/payload/ListingCells#CompanyCompletenessCell": CompanyCompletenessCell_76baef6cf7c9eb87fad9c61807ea9c87,
+  "@/components/payload/ListingCells#CompanyNameCell": CompanyNameCell_76baef6cf7c9eb87fad9c61807ea9c87,
   "@/components/payload/DeveloperTabSummaries#LeadsSummary": LeadsSummary_ba05a0e30dca264b11cfc6386a9a4afa,
   "@/components/payload/DeveloperPlanPanel#DeveloperPlanPanel": DeveloperPlanPanel_098505e37097b4e31e435c2abfcb8db4,
   "@/components/payload/DeveloperTabSummaries#VerifySummary": VerifySummary_ba05a0e30dca264b11cfc6386a9a4afa,
@@ -83,7 +88,6 @@ export const importMap = {
   "@/components/payload/AddonRequestPanel#AddonRequestPanel": AddonRequestPanel_78c0b05313dbf1762f420ef38d99b378,
   "@/components/payload/SocialPanel#SocialPanel": SocialPanel_e89e5c6e27d995476e5b50bf9943be69,
   "@/components/payload/ListingCells#LandNameCell": LandNameCell_76baef6cf7c9eb87fad9c61807ea9c87,
-  "@/components/payload/ListingCells#LandCompletenessField": LandCompletenessField_76baef6cf7c9eb87fad9c61807ea9c87,
   "@/components/payload/ListingCells#LandCompletenessCell": LandCompletenessCell_76baef6cf7c9eb87fad9c61807ea9c87,
   "@/components/payload/SubscriptionsList#SubscriptionsList": SubscriptionsList_2dc33570c131e8faf2f1046801145d72,
   "@/components/payload/AnalyticsDashboard#AnalyticsDashboard": AnalyticsDashboard_16ddde46401d8b8f0e062ed5c8fb8520,
