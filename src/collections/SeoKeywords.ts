@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { adminOnly, hiddenUnlessAdmin } from './access'
+import { textDropdown } from './shared-fields'
 
 // Keyword research data (from SEO_KEYWORDS.md and competitor exports like
 // Ubersuggest/Ahrefs pulls of propertyguide.lk) — kept here, not just in the
@@ -36,7 +37,7 @@ export const SeoKeywords: CollectionConfig = {
     { name: 'cpc', type: 'number', admin: { description: 'Cost per click (USD).' } },
     { name: 'trafficValueUsd', type: 'number' },
     { name: 'sourceUrl', type: 'text', admin: { description: 'The competitor/reference URL this data was pulled for.' } },
-    { name: 'sourceTool', type: 'text', admin: { description: 'e.g. Ubersuggest, Ahrefs, manual web research.' } },
+    { name: 'sourceTool', type: 'text', admin: { description: 'Pick one, or choose Other and type your own.', components: { Field: textDropdown(['Ubersuggest', 'Ahrefs', 'Manual web research', 'Ubersuggest + manual web verification']) } } },
     { name: 'targetPage', type: 'text', admin: { description: 'Path on our site this keyword should target, e.g. /projects/colombo — mirrors docs/seo-strategy.md\'s keyword-to-page mapping.' } },
     { name: 'notes', type: 'textarea' },
     { name: 'dateAdded', type: 'date', defaultValue: () => new Date().toISOString(), admin: { date: { pickerAppearance: 'dayOnly' } } },

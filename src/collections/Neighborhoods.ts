@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { adminOnly, hiddenUnlessAdmin, publicRead } from './access'
-import { neighborhoodNearbyField, seoFields } from './shared-fields'
+import { neighborhoodNearbyField, PROVINCE_OPTIONS, seoFields, textDropdown } from './shared-fields'
 import { syncNeighborhoodDeleteToSupabase, syncNeighborhoodToSupabase } from './hooks/sync-to-supabase'
 
 export const Neighborhoods: CollectionConfig = {
@@ -17,7 +17,7 @@ export const Neighborhoods: CollectionConfig = {
     { name: 'slug', type: 'text', required: true, unique: true, index: true },
     { name: 'name', type: 'text', required: true },
     { name: 'city', type: 'text' },
-    { name: 'province', type: 'text' },
+    { name: 'province', type: 'text', admin: { components: { Field: textDropdown(PROVINCE_OPTIONS) } } },
     { name: 'population', type: 'text', admin: { description: 'Population with its scope and year, e.g. "17,588 in the Grandpass South division (2012 census)". Shown as the first line of the Overview list.' } },
     { name: 'district', type: 'text', admin: { description: 'e.g. "Colombo District". Shown as a quick-facts chip.' } },
     { name: 'approxLocation', type: 'text', admin: { description: 'One short line on where the area is, e.g. "About 9 km from Colombo Fort by road". Quick-facts chip.' } },

@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { textDropdown } from './shared-fields'
 import { adminOnly, adminOnlyField, isAdmin, ownDeveloperAccess, publicRead } from './access'
 import { syncHeroSlideDeleteToSupabase, syncHeroSlideToSupabase } from './hooks/sync-to-supabase'
 
@@ -37,7 +38,7 @@ export const HeroSlides: CollectionConfig = {
     { name: 'image', type: 'text', required: true, admin: { description: 'Wide banner image URL (at least 2000px). Upload one in Media and paste its URL here, same as any other image field.' } },
     { name: 'project', type: 'relationship', relationTo: 'projects', label: 'Featured Project', required: true, admin: { description: 'The project opened when a visitor clicks this paid hero placement.' } },
     { name: 'link', type: 'text' },
-    { name: 'page_target', type: 'text', label: 'Page Target', admin: { description: 'e.g. homepage, colombo, luxury' } },
+    { name: 'page_target', type: 'text', label: 'Page Target', admin: { description: 'Which page this banner shows on. Pick one, or choose Other and type your own.', components: { Field: textDropdown(['homepage', 'colombo', 'luxury']) } } },
     { name: 'display_order', type: 'number', label: 'Display Order', defaultValue: 0 },
     { name: 'advertiser', type: 'relationship', relationTo: 'developers' },
     { name: 'start_date', type: 'date', label: 'Start Date' },

@@ -2,6 +2,13 @@ import type { CollectionAfterChangeHook, CollectionAfterDeleteHook, CollectionCo
 import { adminOnly, hiddenUnlessAdmin, publicRead } from './access'
 import cities from '../data/cities.json'
 
+// A dropdown shown on top of a PLAIN TEXT field (the column stays text, so existing values, the Supabase sync and the
+// public site are untouched): pick a preset or choose "Other (type your own)". See components/payload/TextDropdownField.tsx.
+export const textDropdown = (options: string[]) => ({
+  path: '@/components/payload/TextDropdownField#TextDropdownField',
+  clientProps: { options },
+})
+
 // A closed dropdown plus a separate "(Other)" text field for anything not
 // in the preset list — same escape-hatch idea as coDevelopers next to
 // Additional Developers, just for plain-value fields instead of

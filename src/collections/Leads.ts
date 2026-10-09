@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { textDropdown } from './shared-fields'
 import { adminOnlyField, isAdmin, leadOwnerOrDeveloperOrAdmin, ownerOrAdmin } from './access'
 import { logLeadSubmitted } from './hooks/increment-counts'
 import { notifyDeveloperOfLead, stampFirstResponse, syncLeadStatusToSupabase } from './hooks/lead-hooks'
@@ -70,7 +71,7 @@ export const Leads: CollectionConfig = {
     { name: 'name', type: 'text', required: true, access: { update: adminOnlyField } },
     { name: 'email', type: 'email', required: true, access: { update: adminOnlyField } },
     { name: 'phone', type: 'text', access: { update: adminOnlyField } },
-    { name: 'preferred_contact_method', type: 'text', label: 'Preferred contact', access: { update: adminOnlyField } },
+    { name: 'preferred_contact_method', type: 'text', label: 'Preferred contact', access: { update: adminOnlyField }, admin: { components: { Field: textDropdown(['Email', 'Phone', 'Text']) } } },
     { name: 'message', type: 'textarea', access: { update: adminOnlyField } },
     {
       name: 'status',

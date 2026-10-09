@@ -4,6 +4,7 @@ import { CompletenessTodo as CompletenessTodo_e02911b42e48821b16fd5d9e40cf5034 }
 import { ProjectNameCell as ProjectNameCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
 import { PreviewLinkPanel as PreviewLinkPanel_58de2ef0318e59b9fbb2898773569633 } from '@/components/payload/PreviewLinkPanel'
 import { YearPickerField as YearPickerField_4dc9f7e903015cdc77733f6107aaaf6d } from '@/components/payload/YearPickerField'
+import { TextDropdownField as TextDropdownField_d32106f68e33d3659082713d3b3b4b24 } from '@/components/payload/TextDropdownField'
 import { ProjectCompletenessCell as ProjectCompletenessCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
 import { ListingAnalyticsPanel as ListingAnalyticsPanel_aef927c4ceb2652d7f7abf8ef0fcf2e5 } from '@/components/payload/ListingAnalyticsPanel'
 import { AddonRequestPanel as AddonRequestPanel_78c0b05313dbf1762f420ef38d99b378 } from '@/components/payload/AddonRequestPanel'
@@ -64,6 +65,7 @@ export const importMap = {
   "@/components/payload/ListingCells#ProjectNameCell": ProjectNameCell_76baef6cf7c9eb87fad9c61807ea9c87,
   "@/components/payload/PreviewLinkPanel#PreviewLinkPanel": PreviewLinkPanel_58de2ef0318e59b9fbb2898773569633,
   "@/components/payload/YearPickerField#YearPickerField": YearPickerField_4dc9f7e903015cdc77733f6107aaaf6d,
+  "@/components/payload/TextDropdownField#TextDropdownField": TextDropdownField_d32106f68e33d3659082713d3b3b4b24,
   "@/components/payload/ListingCells#ProjectCompletenessCell": ProjectCompletenessCell_76baef6cf7c9eb87fad9c61807ea9c87,
   "@/components/payload/ListingAnalyticsPanel#ListingAnalyticsPanel": ListingAnalyticsPanel_aef927c4ceb2652d7f7abf8ef0fcf2e5,
   "@/components/payload/AddonRequestPanel#AddonRequestPanel": AddonRequestPanel_78c0b05313dbf1762f420ef38d99b378,
