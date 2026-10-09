@@ -15,8 +15,11 @@ import { MapSidebar } from "@/components/marketplace/map-sidebar";
 import { searchablePages } from "@/lib/listing-categories";
 import type { Project } from "@/types";
 import type { MapAreaSelection } from "@/components/marketplace/map-pane";
+import type { MapView } from "@/components/marketplace/explorer-map";
+import { ProjectPopup } from "@/components/map/ProjectPopup";
 
-const LazyMapPane = dynamic(() => import("@/components/marketplace/map-pane").then((mod) => mod.MapPane), {
+// The listing map: city bubbles that zoom in when clicked, price pins, 3D / normal switch (shared with /lanka360).
+const LazyExplorerMap = dynamic(() => import("@/components/marketplace/explorer-map").then((mod) => mod.ExplorerMap), {
   ssr: false,
   loading: () => <div className="listing-map-loading" aria-hidden="true">Loading map…</div>,
 });
@@ -348,7 +351,11 @@ export function ListingPageBody({
 }) {
   const [sortBy, setSortBy] = useState<SortValue>("featured");
   const [viewMode, setViewMode] = useState<ViewMode>("split");
-  const [selectedArea, setSelectedArea] = useState<MapAreaSelection>(null);
+  const [selectedArea] = useState<MapAreaSelection>(null);
+  // What the map is showing, and the pin the visitor picked. Zooming the map (e.g. into Colombo) makes the list show the listings
+  // in that area first, then the rest.
+  const [mapView, setMapView] = useState<MapView | null>(null);
+  const [pickedSlug, setPickedSlug] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [moreFiltersOpen, setMoreFiltersOpen] = useState(false);
   const [filterSelections, setFilterSelections] = useState<Record<string, string>>({});
@@ -489,6 +496,27 @@ export function ListingPageBody({
     else if (sortBy === "newest") list.sort((a, b) => (b.launchDate ?? "").localeCompare(a.launchDate ?? ""));
     return list;
   }, [baseProjects, sortBy]);
+
+  // Listings that sit inside the map's current view come first (once the visitor has zoomed in), the others follow in the same order.
+  const areaSplit = useMemo(() => {
+    if (!mapView?.zoomed) return null;
+    const inside = (project: Project) => {
+      const { lat, lng } = project.coordinates ?? { lat: NaN, lng: NaN };
+      return Number.isFinite(lat) && Number.isFinite(lng) && lng >= mapView.west && lng <= mapView.east && lat >= mapView.south && lat <= mapView.north;
+    };
+    const here = sortedProjects.filter(inside);
+    return { here, rest: sortedProjects.filter((project) => !inside(project)) };
+  }, [mapView, sortedProjects]);
+
+  // Pins: every listing in the current results that has a real map position.
+  const mapItems = useMemo(
+    () =>
+      regionFilteredProjects
+        .filter((project) => Number.isFinite(project.coordinates?.lat) && Number.isFinite(project.coordinates?.lng) && !(project.coordinates.lat === 0 && project.coordinates.lng === 0))
+        .map((project) => ({ slug: project.slug, name: project.name, city: project.city || project.location || "Sri Lanka", lat: project.coordinates.lat, lng: project.coordinates.lng, price: project.startingPriceLkr > 0 ? project.startingPriceLkr : 0 })),
+    [regionFilteredProjects],
+  );
+  const mapFitKey = useMemo(() => mapItems.map((item) => item.slug).join("|"), [mapItems]);
 
   const sortLabel = SORT_OPTIONS.find((option) => option.value === sortBy)?.label ?? SORT_OPTIONS[0].label;
 
@@ -638,32 +666,6 @@ export function ListingPageBody({
               </div>
             </div>
 
-            <div className="listing-header-title">
-              {!activeSelection && !trimmedQuery && regionFilter !== "All of Sri Lanka" ? (
-                <h1 className="listing-header-h1 listing-header-h1-dynamic">New developments in {regionFilter}</h1>
-              ) : !activeSelection && parsedSearch.chips.length > 0 ? (
-                <>
-                  <h1 className="listing-header-h1 listing-header-h1-dynamic">
-                    {sortedProjects.length === 1 ? "There is 1" : `There are ${sortedProjects.length.toLocaleString()}`} {sortedProjects.length === 1 ? (singularEyebrow ?? eyebrow) : eyebrow} matching your search
-                  </h1>
-                  <p className="listing-search-understood" aria-label="What we understood from your search">
-                    Understood as:{" "}
-                    {[...parsedSearch.chips, ...(parsedSearch.text ? [`“${parsedSearch.text}”`] : [])].map((chip) => (
-                      <span key={chip} className="listing-search-understood-chip">{chip}</span>
-                    ))}
-                  </p>
-                </>
-              ) : activeSelection || searchPlaceLabel ? (
-                <h1 className="listing-header-h1 listing-header-h1-dynamic">
-                  There {sortedProjects.length === 1 ? "is" : "are"} {sortedProjects.length.toLocaleString()} {sortedProjects.length === 1 ? (singularEyebrow ?? eyebrow) : eyebrow} for sale in {activeSelection ? activeSelection.label : searchPlaceLabel}
-                </h1>
-              ) : (
-                <h1 className="listing-header-h1">{h1}</h1>
-              )}
-              <p className="listing-header-count">
-                {sortedProjects.length > 0 ? `1-${sortedProjects.length.toLocaleString()} of ${projects.length.toLocaleString()}` : `0 of ${projects.length.toLocaleString()}`} {basePath === "/land" ? "Lands" : "Homes"}
-              </p>
-            </div>
           </div>
 
           {citySectionHeading ? (
@@ -674,12 +676,50 @@ export function ListingPageBody({
 
           <div className="listing-columns" data-view={viewMode}>
             <div className="listing-list-pane">
+              <div className="listing-header-title">
+                {!activeSelection && !trimmedQuery && regionFilter !== "All of Sri Lanka" ? (
+                  <h1 className="listing-header-h1 listing-header-h1-dynamic">New developments in {regionFilter}</h1>
+                ) : !activeSelection && parsedSearch.chips.length > 0 ? (
+                  <>
+                    <h1 className="listing-header-h1 listing-header-h1-dynamic">
+                      {sortedProjects.length === 1 ? "There is 1" : `There are ${sortedProjects.length.toLocaleString()}`} {sortedProjects.length === 1 ? (singularEyebrow ?? eyebrow) : eyebrow} matching your search
+                    </h1>
+                    <p className="listing-search-understood" aria-label="What we understood from your search">
+                      Understood as:{" "}
+                      {[...parsedSearch.chips, ...(parsedSearch.text ? [`“${parsedSearch.text}”`] : [])].map((chip) => (
+                        <span key={chip} className="listing-search-understood-chip">{chip}</span>
+                      ))}
+                    </p>
+                  </>
+                ) : activeSelection || searchPlaceLabel ? (
+                  <h1 className="listing-header-h1 listing-header-h1-dynamic">
+                    There {sortedProjects.length === 1 ? "is" : "are"} {sortedProjects.length.toLocaleString()} {sortedProjects.length === 1 ? (singularEyebrow ?? eyebrow) : eyebrow} for sale in {activeSelection ? activeSelection.label : searchPlaceLabel}
+                  </h1>
+                ) : (
+                  <h1 className="listing-header-h1">{h1}</h1>
+                )}
+                <p className="listing-header-count">
+                  {sortedProjects.length > 0 ? `1-${sortedProjects.length.toLocaleString()} of ${projects.length.toLocaleString()}` : `0 of ${projects.length.toLocaleString()}`} {basePath === "/land" ? "Lands" : "Homes"}
+                </p>
+              </div>
+
 
               {sortedProjects.length > 0 ? (
                 <div className="listing-grid">
-                  {sortedProjects.map((project) => (
-                    <ListingGridCard key={project.slug} project={project} basePath={basePath} />
-                  ))}
+                  {areaSplit && areaSplit.here.length > 0 && areaSplit.rest.length > 0 ? (
+                    <>
+                      <h2 className="listing-area-heading">In this map area<span>{areaSplit.here.length}</span></h2>
+                      {areaSplit.here.map((project) => (
+                        <ListingGridCard key={project.slug} project={project} basePath={basePath} />
+                      ))}
+                      <h2 className="listing-area-heading">More listings<span>{areaSplit.rest.length}</span></h2>
+                      {areaSplit.rest.map((project) => (
+                        <ListingGridCard key={project.slug} project={project} basePath={basePath} />
+                      ))}
+                    </>
+                  ) : (
+                    sortedProjects.map((project) => <ListingGridCard key={project.slug} project={project} basePath={basePath} />)
+                  )}
                 </div>
               ) : (
                 <p className="listing-empty-state">{emptyStateText}</p>
@@ -697,7 +737,17 @@ export function ListingPageBody({
               {/* Always shows every pin (not the area-filtered sortedProjects) —
                   only the card list/heading filter when a cluster is selected,
                   so clicking a pin doesn't reshuffle the map's own pins. */}
-              <LazyMapPane projects={projects} basePath={basePath} onSelectArea={setSelectedArea} />
+              <LazyExplorerMap
+                items={mapItems}
+                fitKey={mapFitKey}
+                selectedSlug={pickedSlug}
+                onSelect={setPickedSlug}
+                onViewChange={setMapView}
+                renderPopup={(slug, close) => {
+                  const project = projects.find((candidate) => candidate.slug === slug);
+                  return project ? <ProjectPopup project={project} basePath={basePath} onClose={close} /> : null;
+                }}
+              />
             </div>
           </div>
         </div>

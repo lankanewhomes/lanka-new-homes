@@ -2697,3 +2697,8 @@ pill-style tabs; dashboard opens with "What do you want to do?" task cards. The 
 appear when zoomed in), tilted 58°. Nearby projects merge into numbered bubbles that split as you zoom, then become
 price pins; top filter pills (city, type, status, bedrooms, price); selected project card top-left; horizontal listing
 rail along the bottom. Data via `src/lib/lanka360.ts` (small per-project shape, projects without coordinates skipped).
+
+
+## Menu icons (2026-10-09)
+
+The "Company" item in the main menu (desktop and mobile) uses an office-building icon, not a briefcase (owner's request). The CMS sidebar's Developers entry is also a building.

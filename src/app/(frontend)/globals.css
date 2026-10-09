@@ -20316,7 +20316,39 @@ body:has(.compare-bar) {
 .l360-filter select { border: 0; background: transparent; font: inherit; font-size: 14px; font-weight: 600; color: inherit; outline: 0; cursor: pointer; padding-right: 4px; }
 .l360-reset { display: inline-flex; align-items: center; gap: 6px; height: 42px; padding: 0 16px; border: 1px solid #111; border-radius: 999px; background: #111; color: #fff; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
 .l360-count { margin-left: auto; font-size: 13px; color: #55554f; }
-.l360-map { position: relative; height: 720px; overflow: hidden; border: 1px solid #111; border-radius: 18px; background: #e8e6df; }
+@media (max-width: 760px) {
+  .l360-head h1 { font-size: 28px; }
+  .l360-count { margin-left: 0; width: 100%; }
+}
+
+/* ===== Shared listing map (explorer-map.tsx) used on /search, /land and /lanka360 ===== */
+.xmap { position: relative; width: 100%; height: 100%; min-height: 420px; overflow: hidden; background: #e8e6df; }
+.xmap .l360-controls { top: 14px; right: 14px; }
+.xmap-popup .maplibregl-popup-content { padding: 0; background: transparent; box-shadow: none; }
+.xmap-popup .maplibregl-popup-tip { display: none; }
+.listing-area-heading { grid-column: 1 / -1; margin: 6px 0 -4px; padding-top: 10px; border-top: 1px solid #d9d9d4; font-size: 15px; font-weight: 700; color: #111111; }
+.listing-area-heading:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+.listing-area-heading span { margin-left: 8px; font-weight: 500; color: #6b6b66; }
+
+/* Lanka360 layout: listing cards (same as /search) on the left, map on the right */
+.l360-split { display: grid; grid-template-columns: minmax(380px, 5fr) 7fr; gap: 14px; align-items: start; margin-top: 12px; }
+.l360-listpane { max-height: 720px; overflow-y: auto; padding-right: 6px; }
+.l360-listgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 14px; }
+.l360-mapwrap { position: sticky; top: 90px; height: 720px; border: 1px solid #111111; border-radius: 18px; overflow: hidden; background: #e8e6df; }
+.l360-linkbtn { margin-left: 8px; border: 0; background: none; font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; }
+.l360-controls { position: absolute; top: 14px; right: 14px; z-index: 5; display: flex; flex-direction: column; gap: 8px; }
+.l360-controls button { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 42px; height: 42px; border: 0; border-radius: 50%; background: rgba(255,255,255,0.95); color: #111; box-shadow: 0 4px 14px rgba(0,0,0,0.25); cursor: pointer; }
+.l360-controls button small { font-size: 9.5px; font-weight: 800; line-height: 1; }
+.l360-controls button.is-on { background: #111; color: #fff; }
+@media (max-width: 980px) {
+  .l360-split { grid-template-columns: 1fr; }
+  .l360-mapwrap { order: -1; position: relative; top: 0; height: 62vh; min-height: 420px; }
+  .l360-listpane { max-height: none; overflow: visible; }
+  .l360-listgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) { .l360-listgrid { grid-template-columns: 1fr; } }
+
+/* map bubbles + price pins (shared map) */
 .l360-bubble { position: relative; display: flex; align-items: center; justify-content: center; border: 0; padding: 0; border-radius: 50%; background: rgba(255,255,255,0.55); box-shadow: 0 6px 22px rgba(0,0,0,0.22); backdrop-filter: blur(3px); cursor: pointer; transition: transform 150ms; }
 .l360-bubble:hover { transform: scale(1.08); }
 .l360-bubble-core { display: flex; align-items: center; justify-content: center; width: 52%; height: 52%; border-radius: 50%; color: #111; box-shadow: 0 2px 6px rgba(0,0,0,0.25); }
@@ -20324,42 +20356,10 @@ body:has(.compare-bar) {
 .l360-bubble-name { position: absolute; top: 100%; margin-top: 4px; padding: 2px 8px; border-radius: 999px; background: rgba(17,17,17,0.85); color: #fff; font-size: 11.5px; font-weight: 600; white-space: nowrap; }
 .l360-pin { display: inline-flex; align-items: center; gap: 5px; padding: 6px 10px; border: 1px solid #111; border-radius: 999px; background: #fff; color: #111; font: inherit; font-size: 12.5px; font-weight: 700; white-space: nowrap; box-shadow: 0 4px 14px rgba(0,0,0,0.28); cursor: pointer; }
 .l360-pin.is-selected { background: #111; color: #fff; transform: scale(1.12); }
-.l360-card { position: absolute; top: 16px; left: 16px; z-index: 5; width: 300px; overflow: hidden; border-radius: 18px; background: rgba(255,255,255,0.96); box-shadow: 0 14px 40px rgba(0,0,0,0.3); }
-.l360-card-media { position: relative; height: 150px; }
-.l360-card-img { width: 100%; height: 100%; object-fit: cover; }
-.l360-card-status { position: absolute; left: 10px; bottom: 10px; padding: 4px 10px; border-radius: 999px; background: rgba(17,17,17,0.82); color: #fff; font-size: 12px; font-weight: 600; }
-.l360-card-close { position: absolute; top: 10px; right: 10px; display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; border: 0; border-radius: 50%; background: rgba(255,255,255,0.92); cursor: pointer; }
-.l360-card-body { padding: 14px 16px 16px; }
-.l360-card-body h2 { margin: 0; font-size: 18px; font-weight: 700; color: #111; }
-.l360-card-meta { margin: 3px 0 0; font-size: 13px; color: #6b6b66; }
-.l360-card-price { margin: 10px 0 0; font-size: 20px; font-weight: 700; color: #111; }
-.l360-card-addr { display: flex; align-items: center; gap: 6px; margin: 8px 0 14px; font-size: 13px; color: #55554f; }
-.l360-card-cta { display: inline-flex; align-items: center; justify-content: center; gap: 6px; width: 100%; height: 42px; border-radius: 999px; background: #111; color: #fff; font-size: 14px; font-weight: 600; text-decoration: none; }
-.l360-controls { position: absolute; top: 16px; right: 16px; z-index: 5; display: flex; flex-direction: column; gap: 8px; }
-.l360-controls button { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 42px; height: 42px; border: 0; border-radius: 50%; background: rgba(255,255,255,0.95); color: #111; box-shadow: 0 4px 14px rgba(0,0,0,0.25); cursor: pointer; }
-.l360-controls button small { font-size: 9.5px; font-weight: 800; line-height: 1; }
-.l360-controls button.is-on { background: #111; color: #fff; }
-.l360-rail { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; display: flex; gap: 12px; padding: 14px 16px 16px; overflow-x: auto; scroll-snap-type: x proximity; background: linear-gradient(to top, rgba(255,255,255,0.55), rgba(255,255,255,0)); }
-.l360-rail-card { position: relative; display: flex; flex: 0 0 auto; width: 340px; scroll-snap-align: center; gap: 12px; padding: 10px; border: 2px solid transparent; border-radius: 16px; background: rgba(255,255,255,0.95); box-shadow: 0 8px 24px rgba(0,0,0,0.22); }
-.l360-rail-card.is-selected { border-color: #111; }
-.l360-rail-media { position: relative; flex: 0 0 104px; height: 104px; padding: 0; overflow: hidden; border: 0; border-radius: 12px; cursor: pointer; }
-.l360-rail-img { width: 100%; height: 100%; object-fit: cover; }
-.l360-rail-media span { position: absolute; left: 6px; top: 6px; padding: 2px 8px; border-radius: 999px; background: rgba(17,17,17,0.78); color: #fff; font-size: 10.5px; font-weight: 600; }
-.l360-rail-info { min-width: 0; flex: 1; }
-.l360-rail-type { margin: 0; font-size: 12px; color: #6b6b66; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.l360-rail-info h3 { margin: 2px 0 0; font-size: 15px; font-weight: 700; color: #111; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.l360-rail-price { margin: 4px 0 0; font-size: 19px; font-weight: 700; color: #111; }
-.l360-rail-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-.l360-rail-chips span { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border: 1px solid #e4e2db; border-radius: 999px; font-size: 11.5px; color: #3a3a38; }
-.l360-rail-go { position: absolute; top: 10px; right: 10px; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: #111; color: #fff; }
-.l360-empty { margin: auto; padding: 14px 20px; border-radius: 12px; background: rgba(255,255,255,0.95); font-size: 14px; }
-.l360-empty button { margin-left: 8px; border: 0; background: none; font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; }
-@media (max-width: 760px) {
-  .l360-head h1 { font-size: 28px; }
-  .l360-map { height: 80vh; min-height: 560px; border-radius: 14px; }
-  .l360-card { top: 10px; left: 10px; right: 10px; width: auto; }
-  .l360-card-media { height: 110px; }
-  .l360-controls { top: auto; bottom: 150px; right: 10px; }
-  .l360-rail-card { width: 290px; }
-  .l360-count { margin-left: 0; width: 100%; }
-}
+
+/* The map fills the right side from the filter bar down (the heading now sits at the top of the list column). */
+.listing-list-pane .listing-header-title { margin: 0 0 16px; }
+.listing-map-pane { height: calc(100vh - 110px); min-height: 480px; }
+.listing-map-pane .xmap { height: 100%; min-height: 0; }
+.listing-map-pane { margin-top: -22px; height: calc(100vh - 88px); }
+.listing-area-heading { margin-bottom: -22px; }
