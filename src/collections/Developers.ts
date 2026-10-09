@@ -86,8 +86,8 @@ export const Developers: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     group: 'Companies & Professionals',
-    defaultColumns: ['name', 'contact_email', 'plan', 'profile_completeness', 'user'],
-    components: { beforeListTable: ['@/components/payload/CompanyListSummary#CompanyListSummary'] },
+    defaultColumns: ['name', 'contact_email', 'plan', 'verification_status', 'profile_completeness'],
+    components: { beforeListTable: ['@/components/payload/DeveloperListTabs#DeveloperListTabs', '@/components/payload/CompanyListSummary#CompanyListSummary'] },
     // Same idea as Projects' baseListFilter — read access is public (real
     // visitors need the whole directory), but a developer's own /cms list
     // view should default to just their own company, not every developer.
@@ -281,6 +281,7 @@ export const Developers: CollectionConfig = {
       options: [...PACKAGE_LIST.map((p) => p.tier)],
       access: { update: adminOnlyField },
       admin: {
+        components: { Cell: '@/components/payload/ListingCells#PlanCell' },
         description: 'Set automatically from an active subscription. Decides how many listings can be featured.',
       },
     },
@@ -460,7 +461,7 @@ export const Developers: CollectionConfig = {
       defaultValue: 'pending',
       options: ['pending', 'approved', 'rejected', 'changes_requested'],
       access: { update: adminOnlyField },
-      admin: { description: 'Gates the "Developer approval" workflow — new self-registered developers start pending.' },
+      admin: { components: { Cell: '@/components/payload/ListingCells#DeveloperStatusCell' }, description: 'Gates the "Developer approval" workflow — new self-registered developers start pending.' },
     },
     seoFields,
   ]),

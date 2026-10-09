@@ -2110,3 +2110,30 @@ h1,
   font-weight: 700;
   color: #ffffff;
 }
+
+/* Developer list: pill tabs with counts, stacked contact cell, status badges (the reference listing layout) */
+.ln-listtabs { display: inline-flex; flex-wrap: wrap; gap: 4px; margin: 4px 0 14px; padding: 4px; border: 1px solid #e4e2db; background: #f6f6f3; }
+.ln-listtab { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; font-size: 14px; font-weight: 600; color: #55554f; text-decoration: none; }
+.ln-listtab span { min-width: 24px; padding: 1px 7px; border: 1px solid #d9d9d4; background: #ffffff; font-size: 12px; font-weight: 700; text-align: center; color: #3d3d39; }
+.ln-listtab:hover { color: #111111; }
+.ln-listtab.is-active { background: #ffffff; color: #111111; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12); }
+.ln-listtab.is-active span { background: #111111; border-color: #111111; color: #ffffff; }
+.ln-cell-stack { display: flex; flex-direction: column; gap: 2px; min-width: 180px; }
+.ln-cell-stack strong { font-size: 13.5px; font-weight: 600; color: #111111; overflow-wrap: anywhere; }
+.ln-cell-stack small { font-size: 12.5px; color: #6b6b66; }
+.ln-cell-muted { color: #8a8a85; }
+.ln-cell-badges { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* Top spacing on list pages: one modest gap (earlier rules stacked up and left too much space above the title row) */
+.collection-list,
+.collection-list__wrap {
+  padding-top: 0 !important;
+}
+.collection-list .list-header {
+  padding-top: 10px !important;
+  padding-bottom: 8px !important;
+}
+.collection-list .list-header__content,
+.collection-list .list-header__title-and-actions {
+  margin-top: 0 !important;
+}

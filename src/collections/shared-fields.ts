@@ -535,7 +535,7 @@ export function companyProfileFields(extra: Field[] = []): Field[] {
     { name: 'name', type: 'text', required: true, admin: { components: { Cell: '@/components/payload/ListingCells#CompanyNameCell' } } },
     { name: 'logo', type: 'text', admin: { description: 'Logo image URL — or upload a file in Media and paste its URL here.' } },
     { name: 'description', type: 'textarea' },
-    { name: 'contact_email', type: 'email', label: 'Contact Email' },
+    { name: 'contact_email', type: 'email', label: 'Contact Email', admin: { components: { Cell: '@/components/payload/ListingCells#ContactCell' } } },
     { name: 'contact_phone', type: 'text', label: 'Contact Phone' },
     ...extra,
     // List-only column: profile-completeness bar (nothing is stored or drawn on the edit form).
@@ -568,7 +568,7 @@ export function directoryCollection(
 ): CollectionConfig {
   return {
     slug,
-    admin: { useAsTitle: 'name', group: 'Companies & Professionals', defaultColumns: ['name', 'contact_email', 'contact_phone', 'profile_completeness'], hidden: hiddenUnlessAdmin, components: { beforeListTable: ['@/components/payload/CompanyListSummary#CompanyListSummary'] } },
+    admin: { useAsTitle: 'name', group: 'Companies & Professionals', defaultColumns: ['name', 'contact_email', 'profile_completeness'], hidden: hiddenUnlessAdmin, components: { beforeListTable: ['@/components/payload/CompanyListSummary#CompanyListSummary'] } },
     access: {
       read: publicRead,
       create: adminOnly,

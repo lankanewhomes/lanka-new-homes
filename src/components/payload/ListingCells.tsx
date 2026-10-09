@@ -118,3 +118,38 @@ export function CompanyCompletenessCell({ rowData }: CellProps) {
   const checks = [filled(row.logo), filled(row.description), filled(row.contact_email), filled(row.contact_phone), filled(row.website), filled(row.location)]
   return <Bar score={(checks.filter(Boolean).length / checks.length) * 100} />
 }
+
+// ---- Developer list cells ----
+const STATUS_BADGE: Record<string, string> = { pending: 'ln-badge-warning', approved: 'ln-badge-success', rejected: 'ln-badge-danger', changes_requested: 'ln-badge-info' }
+const STATUS_LABEL: Record<string, string> = { pending: 'Waiting for review', approved: 'Approved', rejected: 'Rejected', changes_requested: 'Changes requested' }
+
+// Email over phone, in one cell.
+export function ContactCell({ cellData, rowData }: CellProps) {
+  const row = rowData ?? {}
+  const email = text(cellData) || text(row.contact_email)
+  const phone = text(row.contact_phone)
+  if (!email && !phone) return <span className="ln-cell-muted">—</span>
+  return (
+    <span className="ln-cell-stack">
+      <strong>{email || '—'}</strong>
+      <small>{phone || 'No phone'}</small>
+    </span>
+  )
+}
+
+// Review status badge, plus a "Verified Developer" badge when the company has earned it.
+export function DeveloperStatusCell({ cellData, rowData }: CellProps) {
+  const row = rowData ?? {}
+  const status = text(cellData) || 'pending'
+  return (
+    <span className="ln-cell-badges">
+      <span className={`ln-badge ${STATUS_BADGE[status] ?? 'ln-badge-neutral'}`}>{STATUS_LABEL[status] ?? status}</span>
+      {row.domain_verified ? <span className="ln-badge ln-badge-success">Verified Developer</span> : null}
+    </span>
+  )
+}
+
+export function PlanCell({ cellData }: CellProps) {
+  const plan = text(cellData) || 'free'
+  return <span className={`ln-badge ${plan === 'free' ? 'ln-badge-neutral' : 'ln-badge-info'}`}>{plan.replace(/-/g, ' ').replace(/^./, (c) => c.toUpperCase())}</span>
+}

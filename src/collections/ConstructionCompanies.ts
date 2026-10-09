@@ -9,7 +9,7 @@ import { syncConstructionCompanyDeleteToSupabase, syncConstructionCompanyToSupab
 // profile record itself stays admin-only to create/edit.
 export const ConstructionCompanies: CollectionConfig = {
   slug: 'construction-companies',
-  admin: { useAsTitle: 'name', group: 'Companies & Professionals', defaultColumns: ['name', 'contact_email', 'contact_phone', 'profile_completeness'], hidden: hiddenUnlessAdmin, components: { beforeListTable: ['@/components/payload/CompanyListSummary#CompanyListSummary'] } },
+  admin: { useAsTitle: 'name', group: 'Companies & Professionals', defaultColumns: ['name', 'contact_email', 'profile_completeness'], hidden: hiddenUnlessAdmin, components: { beforeListTable: ['@/components/payload/CompanyListSummary#CompanyListSummary'] } },
   access: {
     read: publicRead,
     create: adminOnly,

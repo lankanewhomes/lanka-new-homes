@@ -4,11 +4,15 @@ import { DeveloperOverviewStats as DeveloperOverviewStats_b1207455ce4facdbd8e0cb
 import { LandCompletenessField as LandCompletenessField_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
 import { CompanyCompletenessCell as CompanyCompletenessCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
 import { CompanyNameCell as CompanyNameCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
+import { ContactCell as ContactCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
 import { LeadsSummary as LeadsSummary_ba05a0e30dca264b11cfc6386a9a4afa } from '@/components/payload/DeveloperTabSummaries'
 import { DeveloperPlanPanel as DeveloperPlanPanel_098505e37097b4e31e435c2abfcb8db4 } from '@/components/payload/DeveloperPlanPanel'
+import { PlanCell as PlanCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
 import { VerifySummary as VerifySummary_ba05a0e30dca264b11cfc6386a9a4afa } from '@/components/payload/DeveloperTabSummaries'
 import { DeveloperVerifyPanel as DeveloperVerifyPanel_ce4d2c1d15521de372507861fc6fe344 } from '@/components/payload/DeveloperVerifyPanel'
+import { DeveloperStatusCell as DeveloperStatusCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
 import { SeoPreview as SeoPreview_55675bcab4b82c96fbbbf5279a6cd2dc } from '@/components/payload/SeoPreview'
+import { DeveloperListTabs as DeveloperListTabs_2581ee59914b19566144bedd6630e7c8 } from '@/components/payload/DeveloperListTabs'
 import { CompanyListSummary as CompanyListSummary_ceb8f88f102bb57883def3ef1293610f } from '@/components/payload/CompanyListSummary'
 import { CompletenessTodo as CompletenessTodo_e02911b42e48821b16fd5d9e40cf5034 } from '@/components/payload/CompletenessTodo'
 import { ProjectNameCell as ProjectNameCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
@@ -75,11 +79,15 @@ export const importMap = {
   "@/components/payload/ListingCells#LandCompletenessField": LandCompletenessField_76baef6cf7c9eb87fad9c61807ea9c87,
   "@/components/payload/ListingCells#CompanyCompletenessCell": CompanyCompletenessCell_76baef6cf7c9eb87fad9c61807ea9c87,
   "@/components/payload/ListingCells#CompanyNameCell": CompanyNameCell_76baef6cf7c9eb87fad9c61807ea9c87,
+  "@/components/payload/ListingCells#ContactCell": ContactCell_76baef6cf7c9eb87fad9c61807ea9c87,
   "@/components/payload/DeveloperTabSummaries#LeadsSummary": LeadsSummary_ba05a0e30dca264b11cfc6386a9a4afa,
   "@/components/payload/DeveloperPlanPanel#DeveloperPlanPanel": DeveloperPlanPanel_098505e37097b4e31e435c2abfcb8db4,
+  "@/components/payload/ListingCells#PlanCell": PlanCell_76baef6cf7c9eb87fad9c61807ea9c87,
   "@/components/payload/DeveloperTabSummaries#VerifySummary": VerifySummary_ba05a0e30dca264b11cfc6386a9a4afa,
   "@/components/payload/DeveloperVerifyPanel#DeveloperVerifyPanel": DeveloperVerifyPanel_ce4d2c1d15521de372507861fc6fe344,
+  "@/components/payload/ListingCells#DeveloperStatusCell": DeveloperStatusCell_76baef6cf7c9eb87fad9c61807ea9c87,
   "@/components/payload/SeoPreview#SeoPreview": SeoPreview_55675bcab4b82c96fbbbf5279a6cd2dc,
+  "@/components/payload/DeveloperListTabs#DeveloperListTabs": DeveloperListTabs_2581ee59914b19566144bedd6630e7c8,
   "@/components/payload/CompanyListSummary#CompanyListSummary": CompanyListSummary_ceb8f88f102bb57883def3ef1293610f,
   "@/components/payload/CompletenessTodo#CompletenessTodo": CompletenessTodo_e02911b42e48821b16fd5d9e40cf5034,
   "@/components/payload/ListingCells#ProjectNameCell": ProjectNameCell_76baef6cf7c9eb87fad9c61807ea9c87,
