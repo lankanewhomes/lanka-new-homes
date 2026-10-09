@@ -1012,3 +1012,7 @@ h1,
   background: #131313;
   border-color: #131313;
 }
+
+/* Real wordmark logo in the sidebar header (white SVG from /public). */
+.ln-nav-brand-logo { display: block; width: 112px; height: auto; }
+.ln-nav-brand-mark { display: none; }

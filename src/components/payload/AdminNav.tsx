@@ -181,9 +181,9 @@ export const AdminNav = async (props: NavProps) => {
   return (
     <div className="ln-nav">
       <div className="ln-nav-brand">
-        <span className="ln-nav-brand-mark" aria-hidden="true">L</span>
         <span className="ln-nav-brand-text">
-          <span className="ln-nav-brand-name">LankaNewHomes</span>
+          {/* eslint-disable-next-line @next/next/no-img-element -- admin chrome, static SVG from /public */}
+          <img src="/logo-wordmark-white.svg" alt="LankaNewHomes" className="ln-nav-brand-logo" />
           <span className="ln-nav-brand-role">{role === "admin" ? "Admin" : role === "developer" ? "Developer" : "CMS"}</span>
         </span>
       </div>
