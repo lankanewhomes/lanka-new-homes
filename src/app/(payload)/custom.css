@@ -1273,3 +1273,46 @@ h1,
   font-size: 13px;
   font-weight: 700;
 }
+
+/* =====================================================================
+   REPEATED ROWS (Amenity 01, 02… / floor plans / nearby / any array or
+   block row) get the front-end section background: a cool stone tint with
+   a fine 32px line grid (same as Floor Plans / Plots on the site,
+   .plans-homes-shell). The fields inside stay white cards so they read
+   clearly on top of the lines. Owner, 2026-10-09.
+   ===================================================================== */
+.array-field__row .collapsible,
+.blocks-field__row .collapsible,
+.collection-edit--projects .tabs-field__content-wrap .array-field__row .collapsible,
+.collection-edit--lands .tabs-field__content-wrap .array-field__row .collapsible {
+  background-color: #eceff3 !important;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 31px, rgba(96, 112, 133, 0.16) 31px 32px),
+    repeating-linear-gradient(90deg, transparent 0 31px, rgba(96, 112, 133, 0.16) 31px 32px) !important;
+  border: 1px solid #d3dae2 !important;
+  border-radius: 10px;
+}
+
+/* Row header bar: solid white strip so the title stays easy to read */
+.array-field__row .collapsible__toggle-wrap,
+.blocks-field__row .collapsible__toggle-wrap {
+  background: #ffffff;
+  border-radius: 9px 9px 0 0;
+  border-bottom: 1px solid #d3dae2;
+}
+.array-field__row .collapsible--collapsed .collapsible__toggle-wrap,
+.blocks-field__row .collapsible--collapsed .collapsible__toggle-wrap {
+  border-radius: 9px;
+  border-bottom: 0;
+}
+
+/* Fields inside a row: white cards on the lined background */
+.array-field__row .collapsible__content .field-type:not(.row):not(.group-field):not(.array-field):not(.blocks-field):not(.collapsible-field):not(.tabs-field):not(.ui):not(.checkbox):not(.hidden-field),
+.blocks-field__row .collapsible__content .field-type:not(.row):not(.group-field):not(.array-field):not(.blocks-field):not(.collapsible-field):not(.tabs-field):not(.ui):not(.checkbox):not(.hidden-field),
+.array-field__row .collapsible__content .field-type.row > .field-type:not(.checkbox),
+.blocks-field__row .collapsible__content .field-type.row > .field-type:not(.checkbox) {
+  background: #ffffff !important;
+  border: 1px solid #d3dae2 !important;
+  border-radius: 8px !important;
+  padding: 12px 14px !important;
+}
