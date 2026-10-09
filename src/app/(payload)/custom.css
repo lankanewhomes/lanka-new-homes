@@ -1445,3 +1445,109 @@ h1,
   background: #111111;
   color: #ffffff;
 }
+
+/* =====================================================================
+   COMPACT LAYOUT (2026-10-09): "the page uses lots of space".
+   Short fields sit two per row; long ones (text areas, lists, groups, rich
+   text, custom panels) stay full width. Tighter padding, gaps and input
+   height on every edit page. Phones keep one column.
+   ===================================================================== */
+.collection-edit .render-fields {
+  --spacing-field: 0px;
+}
+@media (min-width: 761px) {
+  .collection-edit .render-fields:not(.render-fields--margins-none) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 20px;
+    row-gap: 6px;
+    align-items: start;
+  }
+  .collection-edit .render-fields > .textarea,
+  .collection-edit .render-fields > .array-field,
+  .collection-edit .render-fields > .group-field,
+  .collection-edit .render-fields > .blocks-field,
+  .collection-edit .render-fields > .collapsible-field,
+  .collection-edit .render-fields > .tabs-field,
+  .collection-edit .render-fields > .row,
+  .collection-edit .render-fields > .ui,
+  .collection-edit .render-fields > .join,
+  .collection-edit .render-fields > .json-field,
+  .collection-edit .render-fields > .code-field,
+  .collection-edit .render-fields > .rich-text-lexical,
+  .collection-edit .render-fields > .field-type.upload,
+  .collection-edit .render-fields > .field-type.point,
+  .collection-edit .render-fields > .field-type.checkbox,
+  .collection-edit .render-fields > [class*="completeness"],
+  .collection-edit .render-fields > [class*="panel"] {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Tighter cards and padding */
+.collection-edit:not(.collection-edit--projects):not(.collection-edit--lands) .document-fields__form,
+.collection-edit:not(.collection-edit--projects):not(.collection-edit--lands) .document-fields__fields {
+  padding: 16px 20px 18px;
+}
+.collection-edit:not(.collection-edit--projects):not(.collection-edit--lands) .group-field--top-level {
+  margin: 14px 0;
+  padding: 12px 16px 6px;
+}
+.collection-edit:not(.collection-edit--projects):not(.collection-edit--lands) .group-field__header {
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+}
+.collection-edit:not(.collection-edit--projects):not(.collection-edit--lands) .group-field__title {
+  font-size: 15px;
+}
+@media (min-width: 981px) {
+  .collection-edit--projects .tabs-field:not(.tabs-field--within-collapsible),
+  .collection-edit--lands .tabs-field:not(.tabs-field--within-collapsible) {
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 18px;
+    margin-top: 10px;
+  }
+  .collection-edit--projects .tabs-field:not(.tabs-field--within-collapsible) > .tabs-field__content-wrap,
+  .collection-edit--lands .tabs-field:not(.tabs-field--within-collapsible) > .tabs-field__content-wrap {
+    padding: 16px 20px 18px;
+  }
+}
+.collection-edit--projects .tabs-field__tabs > .tabs-field__tab-button,
+.collection-edit--lands .tabs-field__tabs > .tabs-field__tab-button {
+  padding: 6px 8px;
+  font-size: 13.5px;
+}
+.collection-edit .tabs-field__content-wrap .field-type:not(.row):not(.group-field):not(.array-field):not(.blocks-field):not(.collapsible-field):not(.tabs-field):not(.ui):not(.checkbox):not(.hidden-field),
+.collection-edit .document-fields__fields .field-type:not(.row):not(.group-field):not(.array-field):not(.blocks-field):not(.collapsible-field):not(.tabs-field):not(.ui):not(.checkbox):not(.hidden-field):not(.join) {
+  padding-top: 2px;
+  padding-bottom: 8px;
+}
+.collection-edit .group-field .field-type:not(.row):not(.group-field):not(.array-field):not(.blocks-field):not(.collapsible-field):not(.tabs-field):not(.ui):not(.checkbox):not(.hidden-field):not(.join),
+.collection-edit .array-field__row .collapsible__content .field-type:not(.row):not(.group-field):not(.array-field):not(.blocks-field):not(.collapsible-field):not(.tabs-field):not(.ui):not(.checkbox):not(.hidden-field) {
+  padding: 8px 12px !important;
+}
+.collection-edit .field-label {
+  margin-bottom: 2px;
+  font-size: 12.5px;
+}
+.collection-edit .field-description {
+  margin-top: 2px;
+  font-size: 12px;
+  line-height: 1.35;
+}
+.collection-edit input:not([type="checkbox"]):not([type="radio"]),
+.collection-edit .rs__control,
+.collection-edit .text-dropdown-select,
+.collection-edit .text-dropdown-other {
+  min-height: 36px;
+  height: 36px;
+}
+.collection-edit textarea {
+  min-height: 72px;
+}
+.collection-edit .doc-header__title {
+  font-size: 26px;
+}
+.collection-edit .array-field__row .collapsible__toggle-wrap {
+  min-height: 40px;
+}
