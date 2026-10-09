@@ -1,3 +1,4 @@
+import { DeveloperOverviewStats as DeveloperOverviewStats_b1207455ce4facdbd8e0cbb4c2cb1f6e } from '@/components/payload/DeveloperOverviewStats'
 import { DeveloperPlanPanel as DeveloperPlanPanel_098505e37097b4e31e435c2abfcb8db4 } from '@/components/payload/DeveloperPlanPanel'
 import { DeveloperVerifyPanel as DeveloperVerifyPanel_ce4d2c1d15521de372507861fc6fe344 } from '@/components/payload/DeveloperVerifyPanel'
 import { CompletenessTodo as CompletenessTodo_e02911b42e48821b16fd5d9e40cf5034 } from '@/components/payload/CompletenessTodo'
@@ -59,6 +60,7 @@ import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } f
 
 /** @type import('payload').ImportMap */
 export const importMap = {
+  "@/components/payload/DeveloperOverviewStats#DeveloperOverviewStats": DeveloperOverviewStats_b1207455ce4facdbd8e0cbb4c2cb1f6e,
   "@/components/payload/DeveloperPlanPanel#DeveloperPlanPanel": DeveloperPlanPanel_098505e37097b4e31e435c2abfcb8db4,
   "@/components/payload/DeveloperVerifyPanel#DeveloperVerifyPanel": DeveloperVerifyPanel_ce4d2c1d15521de372507861fc6fe344,
   "@/components/payload/CompletenessTodo#CompletenessTodo": CompletenessTodo_e02911b42e48821b16fd5d9e40cf5034,

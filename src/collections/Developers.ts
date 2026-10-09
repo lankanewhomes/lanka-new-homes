@@ -1,10 +1,42 @@
-import type { CollectionConfig, Where } from 'payload'
+import type { CollectionConfig, Field, Where } from 'payload'
 import { adminOnly, adminOnlyField, getOwnedDeveloperIds, getRole, isAdmin, publicRead } from './access'
 import { companyProfileFields, seoFields, socialLinksField } from './shared-fields'
 import { syncDeveloperDeleteToSupabase, syncDeveloperToSupabase } from './hooks/sync-to-supabase'
 import { syncFeaturedProjectsFromDeveloper } from './hooks/sync-developer-plan'
 import { maxFeaturedProjects, PACKAGE_LIST } from '@/lib/packages'
 import { checkEmailAgainstWebsite, websiteDomain } from '@/lib/developer-domain-verification'
+
+
+// The developer form is one long list of fields. This groups the SAME fields into tabs (Overview / Company / Leads / Plan /
+// Verification / Listings & team / SEO). The tabs are unnamed, so they are purely visual: every field keeps its name and
+// path, nothing in the database, the Supabase sync or the hooks changes. A field not named below stays on Overview.
+const DEVELOPER_TAB_FIELDS: Record<string, string[]> = {
+  Company: ['establishedYear', 'yearsInBusiness', 'activeProjects', 'completedProjects', 'siteStats', 'coDevelopers', 'officeHours', 'awards', 'social_links', 'socialLinks'],
+  'Leads & response': ['lead_alerts', 'response_stats'],
+  'Plan & billing': ['plan', 'featuredUntil', 'extra_featured_slots', 'featuredProjectIds', 'featuredLandIds', 'first_subscribed_at', 'is_founding_developer', 'planPanel'],
+  Verification: ['domainVerifyPanel', 'domain_verified', 'extra_email_domains', 'verified_domain', 'verified_email', 'verified_at', 'verify_token_hash', 'verify_expires', 'verify_pending_email', 'verify_last_sent', 'verification_status'],
+  'Listings & team': ['projects', 'team_members', 'user'],
+  SEO: ['seo'],
+}
+
+function groupDeveloperFields(fields: Field[]): Field[] {
+  const named = (field: Field) => ('name' in field && typeof field.name === 'string' ? field.name : '')
+  const overview: Field[] = [
+    // Summary header (big numbers) — a UI-only field, stores nothing.
+    { name: 'overview_stats', type: 'ui', admin: { components: { Field: '@/components/payload/DeveloperOverviewStats#DeveloperOverviewStats' } } },
+  ]
+  const buckets: Record<string, Field[]> = Object.fromEntries(Object.keys(DEVELOPER_TAB_FIELDS).map((label) => [label, []]))
+  for (const field of fields) {
+    const label = Object.keys(DEVELOPER_TAB_FIELDS).find((tab) => DEVELOPER_TAB_FIELDS[tab].includes(named(field)))
+    ;(label ? buckets[label] : overview).push(field)
+  }
+  return [
+    {
+      type: 'tabs',
+      tabs: [{ label: 'Overview', fields: overview }, ...Object.keys(buckets).filter((label) => buckets[label].length > 0).map((label) => ({ label, fields: buckets[label] }))],
+    },
+  ]
+}
 
 export const Developers: CollectionConfig = {
   slug: 'developers',
@@ -77,7 +109,7 @@ export const Developers: CollectionConfig = {
     afterChange: [syncFeaturedProjectsFromDeveloper, syncDeveloperToSupabase],
     afterDelete: [syncDeveloperDeleteToSupabase],
   },
-  fields: [
+  fields: groupDeveloperFields([
     ...companyProfileFields([{ name: 'website', type: 'text' }, { name: 'location', type: 'text', label: 'Primary Location', admin: { description: 'e.g. Colombo 03' } }]),
     { name: 'establishedYear', type: 'number', label: 'Established Year' },
     { name: 'yearsInBusiness', type: 'number', label: 'Years in Business' },
@@ -387,5 +419,5 @@ export const Developers: CollectionConfig = {
       admin: { description: 'Gates the "Developer approval" workflow — new self-registered developers start pending.' },
     },
     seoFields,
-  ],
+  ]),
 }

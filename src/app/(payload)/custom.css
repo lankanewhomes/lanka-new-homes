@@ -1551,3 +1551,121 @@ h1,
 .collection-edit .array-field__row .collapsible__toggle-wrap {
   min-height: 40px;
 }
+
+/* =====================================================================
+   DEVELOPER PAGE, "listing analytics" style (2026-10-09): underlined tab
+   bar across the top, a tinted summary box with three big numbers, then a
+   grid of small facts. Applies to the Developers edit page only.
+   ===================================================================== */
+.collection-edit--developers .tabs-field {
+  margin: 8px 0 0;
+  padding: 0;
+}
+.collection-edit--developers .tabs-field__tabs-wrap {
+  overflow-x: auto;
+  margin: 0 0 16px;
+  border-bottom: 1px solid #e4e2db;
+}
+.collection-edit--developers .tabs-field__tabs {
+  display: flex;
+  gap: 26px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.collection-edit--developers .tabs-field__tabs:before,
+.collection-edit--developers .tabs-field__tabs:after {
+  display: none;
+}
+.collection-edit--developers .tabs-field__tabs > .tabs-field__tab-button {
+  padding: 12px 2px 12px !important;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none;
+  color: #55554f;
+  font-size: 14.5px;
+  font-weight: 600;
+}
+.collection-edit--developers .tabs-field__tabs > .tabs-field__tab-button:hover {
+  color: #111111;
+}
+.collection-edit--developers .tabs-field__tabs > .tabs-field__tab-button--active,
+.collection-edit--developers .tabs-field__tabs > .tabs-field__tab-button:nth-child(n).tabs-field__tab-button--active {
+  background: transparent !important;
+  color: #111111 !important;
+  border-bottom: 3px solid #f4b73d;
+}
+.collection-edit--developers .tabs-field__content-wrap {
+  padding: 0;
+}
+
+.ln-devstats {
+  margin-bottom: 18px;
+}
+.ln-devstats-big {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding: 22px 8px;
+  border-radius: 6px;
+  background: #d9ecec;
+}
+.ln-devstats-big > div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 24px;
+  border-left: 1px solid #a9cfcf;
+}
+.ln-devstats-big > div:first-child {
+  border-left: 0;
+}
+.ln-devstats-big strong {
+  font-size: 40px;
+  font-weight: 500;
+  line-height: 1;
+  color: #1d6f6a;
+  letter-spacing: -0.01em;
+}
+.ln-devstats-big span {
+  font-size: 13.5px;
+  color: #3d4f4e;
+}
+.ln-devstats-small {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 40px;
+  margin-top: 6px;
+}
+.ln-devstats-small > div {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 16px 4px;
+  border-bottom: 1px solid #e4e2db;
+}
+.ln-devstats-small strong {
+  min-width: 70px;
+  font-size: 24px;
+  font-weight: 500;
+  color: #1d6f6a;
+}
+.ln-devstats-small span {
+  font-size: 13.5px;
+  color: #3d3d39;
+}
+@media (max-width: 760px) {
+  .ln-devstats-big {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .ln-devstats-big > div {
+    border-left: 0;
+  }
+  .ln-devstats-small {
+    grid-template-columns: 1fr;
+  }
+}
