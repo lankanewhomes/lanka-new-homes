@@ -2054,3 +2054,33 @@ h1,
 .collection-list .list-header__title-and-actions {
   margin-top: 8px;
 }
+
+/* =====================================================================
+   "Create New" on the right + NO RADIUS ANYWHERE (2026-10-09)
+   ===================================================================== */
+.collection-list .list-header__title-and-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.collection-list .list-header__title-actions {
+  margin-left: auto;
+}
+.collection-list .list-header__content {
+  width: 100%;
+}
+
+/* Everything in the admin is square (buttons, pills, badges, cards, thumbnails, bars, menus, pagination).
+   Only the on/off switches stay round so they still read as switches. */
+.template-default *:not(.ln-switch):not(.ln-switch > span),
+.template-minimal *:not(.ln-switch):not(.ln-switch > span),
+.app-header *,
+.nav *,
+.payload__modal-container * {
+  border-radius: 0 !important;
+}
+.ln-switch,
+.ln-switch > span {
+  border-radius: 999px !important;
+}
