@@ -34,7 +34,6 @@ export const TeamMembers: CollectionConfig = {
       type: 'select',
       required: true,
       defaultValue: 'member',
-      options: ['owner', 'sales', 'marketing', 'member'],
-    },
+      options: ['owner', 'sales', 'marketing', 'member'], admin: { components: { Cell: '@/components/payload/ListingCells#StatusCell' } } },
   ],
 }

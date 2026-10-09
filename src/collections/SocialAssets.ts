@@ -23,7 +23,7 @@ export const SocialAssets: CollectionConfig = {
     { name: 'reelPosterUrl', type: 'text', label: 'Reel poster' },
     { name: 'reelDurationSec', type: 'number', label: 'Reel length (s)' },
     { name: 'cards', type: 'array', label: 'Carousel cards (4:5)', fields: [{ name: 'url', type: 'text', required: true }] },
-    { name: 'generatedAt', type: 'date' },
+    { name: 'generatedAt', type: 'date', admin: { components: { Cell: '@/components/payload/ListingCells#DateCell' } } },
     { name: 'notes', type: 'text', admin: { description: 'What the generator used (photo count, depth on/off, plan scenes).' } },
   ],
 }

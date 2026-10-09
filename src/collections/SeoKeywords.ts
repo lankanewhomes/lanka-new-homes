@@ -28,7 +28,7 @@ export const SeoKeywords: CollectionConfig = {
   access: { read: adminOnly, create: adminOnly, update: adminOnly, delete: adminOnly },
   fields: [
     { name: 'keyword', type: 'text', required: true, index: true },
-    { name: 'category', type: 'select', options: [...SEO_KEYWORD_CATEGORIES], defaultValue: 'primary' },
+    { name: 'category', type: 'select', options: [...SEO_KEYWORD_CATEGORIES], defaultValue: 'primary', admin: { components: { Cell: '@/components/payload/ListingCells#StatusCell' } } },
     { name: 'searchIntent', type: 'text', admin: { description: 'e.g. "transactional, commercial" — as reported by the research tool.' } },
     { name: 'volume', type: 'number', admin: { description: 'Estimated monthly search volume.' } },
     { name: 'searchDifficulty', type: 'number', admin: { description: 'SEO difficulty score (0-100) as reported by the tool.' } },

@@ -47,9 +47,9 @@ function describeOrigin(o: { country?: string; region?: string; city?: string; d
 
 function Stat({ label, value, tone }: { label: string; value: string; tone?: string }) {
   return (
-    <div style={{ border: "1px solid var(--theme-elevation-150)", borderRadius: 6, padding: "12px 14px", background: "var(--theme-elevation-0)" }}>
-      <div style={{ fontSize: 11, opacity: 0.65, textTransform: "uppercase", letterSpacing: "0.06em" }}>{label}</div>
-      <div style={{ fontSize: 22, fontWeight: 700, color: tone ?? "inherit" }}>{value}</div>
+    <div>
+      <strong style={tone ? { color: tone } : undefined}>{value}</strong>
+      <span>{label}</span>
     </div>
   );
 }
@@ -143,22 +143,25 @@ export function LeadActivity() {
     return () => controller.abort();
   }, [range.days]);
 
-  const th: React.CSSProperties = { padding: "8px 12px", textAlign: "left", fontSize: 12, opacity: 0.65 };
+  const th: React.CSSProperties = { padding: "9px 12px", textAlign: "left", fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.04em", color: "#3d3d39", borderBottom: "1px solid #111111" };
 
   return (
-    <div style={{ padding: "24px 32px" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8, marginBottom: 6 }}>
-        <h1 style={{ margin: 0 }}>Lead activity</h1>
-        <div style={{ display: "flex", gap: 6 }}>
+    <div className="ln-dash ln-dash-v2">
+      <div className="ln-dash-top">
+        <div>
+          <p className="ln-dash-greeting">Leads</p>
+          <h1 className="ln-dash-title">Lead activity</h1>
+        </div>
+        <div className="ln-seg" role="group" aria-label="Date range">
           {RANGES.map((r, i) => (
-            <button key={r.days} type="button" onClick={() => setRangeIndex(i)} style={{ fontSize: 13, padding: "6px 14px", borderRadius: 999, border: "1px solid var(--theme-elevation-200)", background: i === rangeIndex ? "var(--theme-elevation-800)" : "transparent", color: i === rangeIndex ? "var(--theme-elevation-0)" : "inherit", cursor: "pointer" }}>
+            <button key={r.days} type="button" className={i === rangeIndex ? "is-on" : ""} onClick={() => setRangeIndex(i)}>
               {r.label}
             </button>
           ))}
         </div>
       </div>
-      <p style={{ margin: "0 0 18px", fontSize: 13, opacity: 0.7 }}>
-        Every inquiry: who was alerted, whether they answered, how and how fast. A reply counts when the developer taps a button in the alert email or moves the lead off &ldquo;New&rdquo;. Click a row for the full trail.
+      <p className="ln-an-note" style={{ marginBottom: 14 }}>
+        Every inquiry: who was alerted, whether they answered, how and how fast. A reply counts when the developer taps a button in the alert email or moves the lead off &ldquo;New&rdquo;. Click a row to see the details.
       </p>
 
       {loading && <p style={{ opacity: 0.7 }}>Loading…</p>}
@@ -166,7 +169,7 @@ export function LeadActivity() {
 
       {!loading && !error && data ? (
         <>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12, marginBottom: 20 }}>
+          <div className="ln-listsum ln-dash-sum">
             <Stat label={`Leads (${range.label.toLowerCase()})`} value={data.totals.leads.toLocaleString()} />
             <Stat label="Awaiting reply" value={data.totals.awaiting.toLocaleString()} tone={data.totals.awaiting > 0 ? "var(--theme-warning-500)" : undefined} />
             <Stat label="Answered" value={data.totals.answered.toLocaleString()} />
@@ -175,8 +178,8 @@ export function LeadActivity() {
             <Stat label="Alerts failed" value={data.totals.alertsFailed.toLocaleString()} tone={data.totals.alertsFailed > 0 ? "#c4560a" : undefined} />
           </div>
 
-          <h5 style={{ margin: "0 0 8px" }}>By developer</h5>
-          <div style={{ border: "1px solid var(--theme-elevation-150)", borderRadius: 6, overflow: "hidden", background: "var(--theme-elevation-0)", marginBottom: 24 }}>
+          <section className="ln-an-card" style={{ overflow: "auto", marginBottom: 16 }}>
+            <h3 className="ln-an-h">By developer</h3>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead><tr style={{ background: "var(--theme-elevation-50)" }}><th style={th}>Developer</th><th style={th}>Leads</th><th style={th}>Awaiting</th><th style={th}>Answered</th><th style={th}>Avg response</th><th style={th}>Within 24h</th><th style={th}>Alerts failed</th><th style={th}>Badge</th></tr></thead>
               <tbody>
@@ -194,17 +197,17 @@ export function LeadActivity() {
                 ))}
               </tbody>
             </table>
-          </div>
+          </section>
 
-          <h5 style={{ margin: "0 0 8px" }}>Leads</h5>
-          <div style={{ border: "1px solid var(--theme-elevation-150)", borderRadius: 6, overflow: "auto", background: "var(--theme-elevation-0)" }}>
+          <section className="ln-an-card" style={{ overflow: "auto" }}>
+            <h3 className="ln-an-h">Leads</h3>
             <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 900 }}>
               <thead><tr style={{ background: "var(--theme-elevation-50)" }}><th style={th}>Received</th><th style={th}>Buyer</th><th style={th}>Project</th><th style={th}>Developer</th><th style={th}>Alert</th><th style={th}>Status</th><th style={th}>Reply</th><th style={th} /></tr></thead>
               <tbody>
                 {data.leads.length === 0 ? <tr><td colSpan={8} style={{ padding: 12, fontSize: 13, opacity: 0.65 }}>No leads in this period.</td></tr> : data.leads.map((row) => <LeadRow key={String(row.id)} row={row} />)}
               </tbody>
             </table>
-          </div>
+          </section>
         </>
       ) : null}
     </div>

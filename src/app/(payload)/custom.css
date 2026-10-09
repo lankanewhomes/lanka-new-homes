@@ -2443,3 +2443,108 @@ h1,
 /* the developers' "Finish your listings" panel inside the dashboard's side column */
 .ln-an-side section[aria-label="Finish your listings"] { padding: 0 !important; }
 .ln-an-side section[aria-label="Finish your listings"] h2 { font-size: 16px !important; font-weight: 800; }
+
+/* plan cards on the Billing overview */
+.ln-plan-card-features { margin: 8px 0 0; padding: 0 0 0 16px; font-size: 12.5px; line-height: 1.5; color: #55554f; }
+.ln-listtabs > button { border: 0; background: transparent; font: inherit; cursor: pointer; }
+
+/* Company directory pages (Architects, Construction / Marketing / Sales companies, Interior designers): same underlined
+   tab bar as the Developer page. */
+:is(.collection-edit--architects, .collection-edit--construction-companies, .collection-edit--marketing-companies, .collection-edit--sales-companies, .collection-edit--interior-designers) .tabs-field {
+  margin: 8px 0 0;
+  padding: 0;
+}
+:is(.collection-edit--architects, .collection-edit--construction-companies, .collection-edit--marketing-companies, .collection-edit--sales-companies, .collection-edit--interior-designers) .tabs-field__tabs-wrap {
+  overflow-x: auto;
+  margin: 0 0 16px;
+  border-bottom: 1px solid #e4e2db;
+}
+:is(.collection-edit--architects, .collection-edit--construction-companies, .collection-edit--marketing-companies, .collection-edit--sales-companies, .collection-edit--interior-designers) .tabs-field__tabs {
+  display: flex;
+  gap: 26px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+:is(.collection-edit--architects, .collection-edit--construction-companies, .collection-edit--marketing-companies, .collection-edit--sales-companies, .collection-edit--interior-designers) .tabs-field__tabs:before,
+:is(.collection-edit--architects, .collection-edit--construction-companies, .collection-edit--marketing-companies, .collection-edit--sales-companies, .collection-edit--interior-designers) .tabs-field__tabs:after {
+  display: none;
+}
+:is(.collection-edit--architects, .collection-edit--construction-companies, .collection-edit--marketing-companies, .collection-edit--sales-companies, .collection-edit--interior-designers) .tabs-field__tabs > .tabs-field__tab-button {
+  padding: 12px 2px !important;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent !important;
+  box-shadow: none;
+  color: #55554f;
+  font-size: 14.5px;
+  font-weight: 600;
+}
+:is(.collection-edit--architects, .collection-edit--construction-companies, .collection-edit--marketing-companies, .collection-edit--sales-companies, .collection-edit--interior-designers) .tabs-field__tabs > .tabs-field__tab-button--active,
+:is(.collection-edit--architects, .collection-edit--construction-companies, .collection-edit--marketing-companies, .collection-edit--sales-companies, .collection-edit--interior-designers) .tabs-field__tabs > .tabs-field__tab-button:nth-child(n).tabs-field__tab-button--active {
+  background: transparent !important;
+  color: #111111 !important;
+  border-bottom: 3px solid #f4b73d;
+}
+:is(.collection-edit--architects, .collection-edit--construction-companies, .collection-edit--marketing-companies, .collection-edit--sales-companies, .collection-edit--interior-designers) .tabs-field__content-wrap {
+  padding: 0;
+}
+
+/* =====================================================================
+   SETTINGS PAGES (globals: Site Settings, Lead Alert Settings) — same form
+   card, group boxes and field style as the collection edit pages.
+   ===================================================================== */
+.global-edit .document-fields__main { background: transparent; }
+.global-edit .document-fields__form,
+.global-edit .document-fields__fields {
+  background: #ffffff;
+  border: 1px solid #e4e2db;
+  padding: 16px 20px 18px;
+}
+.global-edit .document-fields__fields .field-type:not(.row):not(.group-field):not(.array-field):not(.blocks-field):not(.collapsible-field):not(.tabs-field):not(.ui):not(.checkbox):not(.hidden-field):not(.join),
+.global-edit .document-fields__fields .field-type.row > .field-type:not(.checkbox) {
+  background: transparent;
+  border: 0;
+  padding: 2px 0 8px;
+}
+.global-edit .field-label { font-size: 12.5px; font-weight: 700; color: #111111; margin-bottom: 2px; }
+.global-edit .field-description { margin-top: 2px; font-size: 12px; line-height: 1.35; color: #6b6b66; }
+.global-edit input:not([type="checkbox"]):not([type="radio"]),
+.global-edit textarea,
+.global-edit .rs__control { border: 1px solid #cfcfc8; background: #ffffff; min-height: 36px; }
+.global-edit .group-field--top-level {
+  margin: 14px 0;
+  padding: 12px 16px 6px;
+  border: 1px solid #e4e2db;
+  background: #f8f7f3;
+}
+.global-edit .group-field__header { margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #e4e2db; }
+.global-edit .group-field__title { font-size: 15px; font-weight: 800; color: #111111; }
+.global-edit .group-field .field-type:not(.row):not(.group-field):not(.array-field):not(.blocks-field):not(.collapsible-field):not(.tabs-field):not(.ui):not(.checkbox):not(.hidden-field):not(.join) {
+  background: #ffffff;
+  border: 1px solid #e4e2db;
+  padding: 8px 12px;
+}
+.global-edit .document-fields__sidebar-fields { padding: 16px; border: 1px solid #e4e2db; background: #ffffff; }
+.global-edit .doc-header { padding-top: 10px; }
+.global-edit .doc-header__title { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; }
+@media (min-width: 761px) {
+  .global-edit .render-fields:not(.render-fields--margins-none) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 20px;
+    row-gap: 6px;
+    align-items: start;
+  }
+  .global-edit .render-fields > .textarea,
+  .global-edit .render-fields > .array-field,
+  .global-edit .render-fields > .group-field,
+  .global-edit .render-fields > .blocks-field,
+  .global-edit .render-fields > .collapsible-field,
+  .global-edit .render-fields > .tabs-field,
+  .global-edit .render-fields > .row,
+  .global-edit .render-fields > .ui,
+  .global-edit .render-fields > .field-type.checkbox,
+  .global-edit .render-fields > .rich-text-lexical { grid-column: 1 / -1; }
+}

@@ -234,3 +234,26 @@ export function HeroSlideCell({ cellData, rowData, collectionSlug }: CellProps) 
   const row = rowData ?? {}
   return <ImageNameCell href={`/cms/collections/${collectionSlug}/${row.id}`} image={text(row.image)} title={text(row.headline) || text(cellData)} subtitle={`Shows on: ${text(cellData) || 'homepage'}`} />
 }
+
+// ---- Media library list ----
+const fileSize = (bytes: unknown) => (typeof bytes === 'number' && bytes > 0 ? (bytes >= 1048576 ? `${(bytes / 1048576).toFixed(1)} MB` : `${Math.max(1, Math.round(bytes / 1024))} KB`) : '')
+
+// Thumbnail (or a file-type tile for videos / PDFs) + the file's alt text, with filename · type · size underneath.
+export function MediaCell({ cellData, rowData, collectionSlug }: CellProps) {
+  const row = rowData ?? {}
+  const mime = text(row.mimeType)
+  const isImage = mime.startsWith('image/')
+  const preview = text(row.thumbnailURL) || text(row.url)
+  const title = text(cellData) || text(row.filename) || 'Untitled'
+  const kind = isImage ? 'Image' : mime.startsWith('video/') ? 'Video' : mime === 'application/pdf' ? 'PDF' : 'File'
+  const sub = [text(row.filename) !== title ? text(row.filename) : '', kind, fileSize(row.filesize)].filter(Boolean).join(' · ')
+  return (
+    <Link href={`/cms/collections/${collectionSlug}/${row.id}`} className="ln-cell-name">
+      {isImage && preview ? <Thumb src={preview} alt="" /> : <span className="ln-cell-thumb ln-cell-logo ln-cell-logo-empty" aria-hidden="true">{kind.slice(0, 3).toUpperCase()}</span>}
+      <span className="ln-cell-name-text">
+        <strong>{title}</strong>
+        <small>{sub}</small>
+      </span>
+    </Link>
+  )
+}

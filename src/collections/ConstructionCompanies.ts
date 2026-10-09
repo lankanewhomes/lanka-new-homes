@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { adminOnly, hiddenUnlessAdmin, publicRead } from './access'
-import { businessProfileExtraFields, companyProfileFields } from './shared-fields'
+import { businessProfileExtraFields, companyProfileFields, groupCompanyFields } from './shared-fields'
 import { syncConstructionCompanyDeleteToSupabase, syncConstructionCompanyToSupabase } from './hooks/sync-to-supabase'
 
 // Unlike Marketing/Sales Companies and Architects, Construction Companies
@@ -17,7 +17,7 @@ export const ConstructionCompanies: CollectionConfig = {
     delete: adminOnly,
   },
   hooks: { afterChange: [syncConstructionCompanyToSupabase], afterDelete: [syncConstructionCompanyDeleteToSupabase] },
-  fields: [
+  fields: groupCompanyFields([
     ...companyProfileFields([
       { name: 'services', type: 'text', hasMany: true },
       { name: 'isDesignBuild', type: 'checkbox', label: 'Design & Build', defaultValue: false, admin: { description: 'This company offers combined design and construction (Design & Build) services.' } },
@@ -32,5 +32,5 @@ export const ConstructionCompanies: CollectionConfig = {
       admin: { description: 'The construction_company-role account that manages this profile.' },
     },
     { name: 'team_members', type: 'join', collection: 'team-members', on: 'company', label: 'Team Members' },
-  ],
+  ]),
 }

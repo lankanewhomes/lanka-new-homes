@@ -557,6 +557,30 @@ export function historyLogField(name: string, label: string): Field {
   }
 }
 
+// The company directories (Architects, Construction / Marketing / Sales companies, Interior designers) have one long flat
+// form. This groups the SAME fields into unnamed (display-only) tabs — Profile / Company / Team & account — under a header.
+// Every field keeps its name and path; nothing in the database, the Supabase sync or the hooks changes.
+const COMPANY_TAB_FIELDS: Record<string, string[]> = {
+  Company: ['establishedYear', 'yearsInBusiness', 'activeProjects', 'completedProjects', 'officeHours', 'socialLinks', 'social_links', 'awards', 'pressMentions'],
+  'Team & account': ['user', 'team_members'],
+}
+
+export function groupCompanyFields(fields: Field[]): Field[] {
+  const named = (field: Field) => ('name' in field && typeof field.name === 'string' ? field.name : '')
+  const profile: Field[] = []
+  const buckets: Record<string, Field[]> = Object.fromEntries(Object.keys(COMPANY_TAB_FIELDS).map((label) => [label, []]))
+  for (const field of fields) {
+    const label = Object.keys(COMPANY_TAB_FIELDS).find((tab) => COMPANY_TAB_FIELDS[tab].includes(named(field)))
+    ;(label ? buckets[label] : profile).push(field)
+  }
+  const tabs = [{ label: 'Profile', fields: profile }, ...Object.keys(buckets).map((label) => ({ label, fields: buckets[label] }))].filter((tab) => tab.fields.length > 0)
+  return [
+    { name: 'company_header', type: 'ui', admin: { components: { Field: '@/components/payload/CompanyHeader#CompanyHeader' } } },
+    { type: 'tabs', tabs },
+  ]
+}
+
+
 // Construction/Marketing/Sales Companies and Architects are all "admin-
 // entered only" directories sharing the CompanyProfile shape, differing
 // only in slug and one trailing field (services vs. portfolio_link).
@@ -576,6 +600,6 @@ export function directoryCollection(
       delete: adminOnly,
     },
     hooks: { afterChange: afterChangeHooks, afterDelete: afterDeleteHooks },
-    fields: companyProfileFields(extraFields),
+    fields: groupCompanyFields(companyProfileFields(extraFields)),
   }
 }

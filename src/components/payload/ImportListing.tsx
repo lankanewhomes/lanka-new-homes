@@ -24,10 +24,10 @@ type ImportResult = {
 
 const MAX_PDF_MB = 4; // request body limit on Vercel functions is ~4.5 MB
 
-const card: React.CSSProperties = { border: "1px solid var(--theme-elevation-150, #e5e5e4)", borderRadius: 8, padding: 20, background: "var(--theme-elevation-0, #fff)", maxWidth: 760 };
-const label: React.CSSProperties = { display: "block", fontSize: 13, fontWeight: 600, marginBottom: 6 };
-const input: React.CSSProperties = { width: "100%", padding: "10px 12px", fontSize: 14, border: "1px solid var(--theme-elevation-250, #ccc)", borderRadius: 6, background: "transparent", color: "inherit" };
-const button: React.CSSProperties = { padding: "10px 18px", fontSize: 14, fontWeight: 600, borderRadius: 6, border: "1px solid #f47b36", background: "#f47b36", color: "#fff", cursor: "pointer" };
+const card: React.CSSProperties = { border: "1px solid #e4e2db", padding: 22, background: "#ffffff", maxWidth: 820 };
+const label: React.CSSProperties = { display: "block", fontSize: 13, fontWeight: 700, color: "#111111", marginBottom: 6 };
+const input: React.CSSProperties = { width: "100%", padding: "10px 12px", fontSize: 14, border: "1px solid #cfcfc8", borderRadius: 0, background: "#ffffff", color: "inherit" };
+const button: React.CSSProperties = { padding: "10px 20px", fontSize: 14, fontWeight: 700, borderRadius: 0, border: "1px solid #111111", background: "#111111", color: "#ffffff", cursor: "pointer" };
 
 export function ImportListing() {
   const [role, setRole] = useState<string | null>(null);
@@ -81,8 +81,9 @@ export function ImportListing() {
   };
 
   return (
-    <div style={{ padding: "24px 32px", maxWidth: 960 }}>
-      <h1 style={{ fontSize: 26, margin: "0 0 6px" }}>Import a project</h1>
+    <div className="ln-dash ln-dash-v2" style={{ maxWidth: 960 }}>
+      <p className="ln-dash-greeting">Listings</p>
+      <h1 className="ln-dash-title" style={{ marginBottom: 8 }}>Import a project</h1>
       <p style={{ margin: "0 0 20px", color: "var(--theme-elevation-600, #555)", maxWidth: 720 }}>
         Paste the project page from your website and/or upload the brochure. We read what&apos;s on it — photos, description, amenities, contact details,
         distances — copy the photos into LankaNewHomes and create a <strong>draft</strong> for you to check. Nothing is published until you do it.

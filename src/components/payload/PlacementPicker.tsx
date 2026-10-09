@@ -240,14 +240,15 @@ export function PlacementPicker() {
   const cardSelectedStyle: React.CSSProperties = { ...cardStyle, border: "2px solid #f47b36" };
 
   return (
-    <div style={{ padding: "24px 32px", maxWidth: 720 }}>
+    <div className="ln-dash ln-dash-v2" style={{ maxWidth: 820 }}>
       <Link
         href="/cms"
         style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 13, color: "inherit", opacity: 0.7, textDecoration: "none", marginBottom: 16 }}
       >
         ← Back to Dashboard
       </Link>
-      <h1 style={{ marginBottom: 4 }}>Get Featured</h1>
+      <p className="ln-dash-greeting">Marketing</p>
+      <h1 className="ln-dash-title" style={{ marginBottom: 8 }}>Get Featured</h1>
       <p style={{ opacity: 0.7, marginTop: 0, marginBottom: 24 }}>
         Choose a placement, pick a listing, and submit a request. We&apos;ll confirm your payment and activate it —
         usually within one business day.
@@ -370,7 +371,7 @@ export function PlacementPicker() {
                     value={heroHeadline}
                     onChange={(e) => setHeroHeadline(e.target.value)}
                     placeholder='e.g. "Now Selling: Colombo Heights"'
-                    style={{ padding: "8px 10px", borderRadius: 4, border: "1px solid var(--theme-elevation-200)", background: "var(--theme-elevation-0)", color: "inherit" }}
+                    style={{ padding: "8px 10px", borderRadius: 0, border: "1px solid #cfcfc8", background: "#ffffff", color: "inherit" }}
                   />
                 </label>
 
@@ -382,7 +383,7 @@ export function PlacementPicker() {
                       value={heroImage}
                       onChange={(e) => setHeroImage(e.target.value)}
                       placeholder="https://... (or upload below)"
-                      style={{ flex: 1, minWidth: 200, padding: "8px 10px", borderRadius: 4, border: "1px solid var(--theme-elevation-200)", background: "var(--theme-elevation-0)", color: "inherit" }}
+                      style={{ flex: 1, minWidth: 200, padding: "8px 10px", borderRadius: 0, border: "1px solid #cfcfc8", background: "#ffffff", color: "inherit" }}
                     />
                     <label style={{ fontSize: 13, padding: "8px 14px", borderRadius: 4, border: "1px solid var(--theme-elevation-200)", background: "var(--theme-elevation-0)", cursor: heroImageUploading ? "not-allowed" : "pointer" }}>
                       {heroImageUploading ? "Uploading…" : "Upload image"}
@@ -403,7 +404,7 @@ export function PlacementPicker() {
                     value={heroLink}
                     onChange={(e) => setHeroLink(e.target.value)}
                     placeholder={`/projects/${selectedProject.slug}`}
-                    style={{ padding: "8px 10px", borderRadius: 4, border: "1px solid var(--theme-elevation-200)", background: "var(--theme-elevation-0)", color: "inherit" }}
+                    style={{ padding: "8px 10px", borderRadius: 0, border: "1px solid #cfcfc8", background: "#ffffff", color: "inherit" }}
                   />
                 </label>
 
@@ -414,7 +415,7 @@ export function PlacementPicker() {
                       type="date"
                       value={heroStartDate}
                       onChange={(e) => setHeroStartDate(e.target.value)}
-                      style={{ padding: "8px 10px", borderRadius: 4, border: "1px solid var(--theme-elevation-200)", background: "var(--theme-elevation-0)", color: "inherit" }}
+                      style={{ padding: "8px 10px", borderRadius: 0, border: "1px solid #cfcfc8", background: "#ffffff", color: "inherit" }}
                     />
                   </label>
                   <label style={{ display: "grid", gap: 4, fontSize: 13, flex: 1 }}>
@@ -423,7 +424,7 @@ export function PlacementPicker() {
                       type="date"
                       value={heroEndDate}
                       onChange={(e) => setHeroEndDate(e.target.value)}
-                      style={{ padding: "8px 10px", borderRadius: 4, border: "1px solid var(--theme-elevation-200)", background: "var(--theme-elevation-0)", color: "inherit" }}
+                      style={{ padding: "8px 10px", borderRadius: 0, border: "1px solid #cfcfc8", background: "#ffffff", color: "inherit" }}
                     />
                   </label>
                 </div>

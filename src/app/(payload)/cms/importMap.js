@@ -30,6 +30,7 @@ import { LandCompletenessCell as LandCompletenessCell_76baef6cf7c9eb87fad9c61807
 import { CollectionStatusTabs as CollectionStatusTabs_00b9a16be2dc79eb89b0780c93256e52 } from '@/components/payload/CollectionStatusTabs'
 import { LandListSummary as LandListSummary_4455f2e7fcb548bace8f51a4f9520c2c } from '@/components/payload/LandListSummary'
 import { MoneyCell as MoneyCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
+import { CompanyHeader as CompanyHeader_611f3115eba58d299c9a9f8d57e487f6 } from '@/components/payload/CompanyHeader'
 import { NeighborhoodCell as NeighborhoodCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
 import { HeroSlideCell as HeroSlideCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
 import { DateCell as DateCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
@@ -60,6 +61,8 @@ import { StrikethroughFeatureClient as StrikethroughFeatureClient_e70f5e05f09f93
 import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { MediaCell as MediaCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
+import { MediaListTabs as MediaListTabs_ae7d63ecba8bad732dac2230921de1c9 } from '@/components/payload/MediaListTabs'
 import { AdminNav as AdminNav_f7859a3d01f9e88347a89cb1fba37791 } from '@/components/payload/AdminNav'
 import { TopRightAccountMenu as TopRightAccountMenu_b2809303c67bf58cfd568d38b4192636 } from '@/components/payload/TopRightAccountMenu'
 import { FloatingSaveBar as FloatingSaveBar_8d219332c77d82c062bca2cb2e74e200 } from '@/components/payload/FloatingSaveBar'
@@ -115,6 +118,7 @@ export const importMap = {
   "@/components/payload/CollectionStatusTabs#CollectionStatusTabs": CollectionStatusTabs_00b9a16be2dc79eb89b0780c93256e52,
   "@/components/payload/LandListSummary#LandListSummary": LandListSummary_4455f2e7fcb548bace8f51a4f9520c2c,
   "@/components/payload/ListingCells#MoneyCell": MoneyCell_76baef6cf7c9eb87fad9c61807ea9c87,
+  "@/components/payload/CompanyHeader#CompanyHeader": CompanyHeader_611f3115eba58d299c9a9f8d57e487f6,
   "@/components/payload/ListingCells#NeighborhoodCell": NeighborhoodCell_76baef6cf7c9eb87fad9c61807ea9c87,
   "@/components/payload/ListingCells#HeroSlideCell": HeroSlideCell_76baef6cf7c9eb87fad9c61807ea9c87,
   "@/components/payload/ListingCells#DateCell": DateCell_76baef6cf7c9eb87fad9c61807ea9c87,
@@ -145,6 +149,8 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#UnderlineFeatureClient": UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "@/components/payload/ListingCells#MediaCell": MediaCell_76baef6cf7c9eb87fad9c61807ea9c87,
+  "@/components/payload/MediaListTabs#MediaListTabs": MediaListTabs_ae7d63ecba8bad732dac2230921de1c9,
   "@/components/payload/AdminNav#AdminNav": AdminNav_f7859a3d01f9e88347a89cb1fba37791,
   "@/components/payload/TopRightAccountMenu#TopRightAccountMenu": TopRightAccountMenu_b2809303c67bf58cfd568d38b4192636,
   "@/components/payload/FloatingSaveBar#FloatingSaveBar": FloatingSaveBar_8d219332c77d82c062bca2cb2e74e200,

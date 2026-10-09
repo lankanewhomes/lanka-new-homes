@@ -12,7 +12,12 @@ import { authenticatedCreate, publicRead } from './access'
 // payload.config.ts.
 export const Media: CollectionConfig = {
   slug: 'media',
-  admin: { useAsTitle: 'filename', group: 'Content' },
+  admin: {
+    useAsTitle: 'filename',
+    group: 'Content',
+    defaultColumns: ['alt', 'mimeType', 'filesize', 'createdAt'],
+    components: { beforeListTable: ['@/components/payload/MediaListTabs#MediaListTabs'] },
+  },
   access: {
     read: publicRead,
     create: authenticatedCreate,
@@ -23,6 +28,6 @@ export const Media: CollectionConfig = {
     mimeTypes: ['image/*', 'video/*', 'application/pdf'],
   },
   fields: [
-    { name: 'alt', type: 'text', label: 'Alt Text', admin: { description: 'Describes the file for accessibility/SEO — required for images.' } },
+    { name: 'alt', type: 'text', label: 'Alt Text', admin: { components: { Cell: '@/components/payload/ListingCells#MediaCell' }, description: 'Describes the file for accessibility/SEO — required for images.' } },
   ],
 }

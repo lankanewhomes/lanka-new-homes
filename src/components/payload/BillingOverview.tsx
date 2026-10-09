@@ -42,22 +42,30 @@ export async function BillingOverview({ payload, user }: AdminViewServerProps) {
   ];
 
   return (
-    <div className="ln-dash">
-      <p className="ln-dash-greeting">Billing</p>
-      <h1 className="ln-dash-title">Subscriptions overview</h1>
+    <div className="ln-dash ln-dash-v2">
+      <div className="ln-dash-top">
+        <div>
+          <p className="ln-dash-greeting">Billing</p>
+          <h1 className="ln-dash-title">Subscriptions overview</h1>
+        </div>
+        <div className="ln-dash-top-actions">
+          <Link href="/cms/collections/subscriptions" className="ln-quick-action">All subscriptions</Link>
+          <Link href="/cms/collections/payments" className="ln-quick-action">Payments</Link>
+        </div>
+      </div>
 
-      <div className="ln-stat-grid">
+      <div className="ln-listsum ln-dash-sum">
         {stats.map((stat) => (
-          <div className="ln-stat-card" key={stat.label}>
-            <div className="ln-stat-card-value">{stat.value}</div>
-            <div className="ln-stat-card-label">{stat.label}</div>
+          <div key={stat.label}>
+            <strong>{stat.value}</strong>
+            <span>{stat.label}</span>
           </div>
         ))}
       </div>
 
-      <div className="ln-dash-section">
+      <section className="ln-an-card">
         <div className="ln-dash-section-head">
-          <h2>Active subscriptions</h2>
+          <h3 className="ln-an-h">Active subscriptions</h3>
           <Link href="/cms/collections/subscriptions">View all</Link>
         </div>
         {activeRes.docs.length === 0 ? (
@@ -76,8 +84,8 @@ export async function BillingOverview({ payload, user }: AdminViewServerProps) {
             <tbody>
               {activeRes.docs.slice(0, 10).map((sub) => (
                 <tr key={sub.id}>
-                  <td>{relatedName(sub.developer)}</td>
-                  <td><span className="ln-badge ln-badge-warning" style={{ textTransform: "capitalize" }}>{String(sub.package).replace("-", " ")}</span></td>
+                  <td><strong>{relatedName(sub.developer)}</strong></td>
+                  <td><span className="ln-badge ln-badge-info" style={{ textTransform: "capitalize" }}>{String(sub.package).replace("-", " ")}</span></td>
                   <td>{sub.extra_featured_slots ?? 0}</td>
                   <td>{sub.current_period_end ? new Date(sub.current_period_end).toLocaleDateString() : "—"}</td>
                   <td>{formatLkr(sub.amount)}</td>
@@ -86,29 +94,26 @@ export async function BillingOverview({ payload, user }: AdminViewServerProps) {
             </tbody>
           </table>
         )}
-      </div>
+      </section>
 
-      <div className="ln-dash-section">
-        <div className="ln-dash-section-head">
-          <h2>Plans</h2>
-        </div>
-        <p style={{ fontSize: 12.5, color: "var(--theme-elevation-450)", margin: "0 0 12px" }}>
-          Configured in src/lib/packages.ts — there is no separate editable Plans
-          table today. Change a price there to update it everywhere (this page,
-          the picker, and /for-developers).
+      <section className="ln-an-card" style={{ marginTop: 16 }}>
+        <h3 className="ln-an-h">Plans</h3>
+        <p className="ln-an-note">
+          Configured in src/lib/packages.ts — there is no separate editable Plans table today. Change a price there to update it
+          everywhere (this page, the picker, and /for-developers).
         </p>
-        <div className="ln-stat-grid">
+        <div className="ln-plan-cards">
           {PACKAGE_LIST.map((pkg) => (
-            <div className="ln-stat-card" key={pkg.tier}>
-              <div className="ln-stat-card-label" style={{ fontWeight: 700, textTransform: "none", fontSize: 14, color: "var(--theme-elevation-1000)" }}>{pkg.name}</div>
-              <div className="ln-stat-card-value" style={{ fontSize: 18 }}>{formatPackagePrice(pkg)}</div>
-              <ul style={{ margin: "10px 0 0", padding: "0 0 0 16px", fontSize: 12, color: "var(--theme-elevation-500)" }}>
+            <div className="ln-plan-card" key={pkg.tier}>
+              <p className="ln-plan-card-name">{pkg.name}</p>
+              <p className="ln-plan-card-price">{formatPackagePrice(pkg)}</p>
+              <ul className="ln-plan-card-features">
                 {pkg.features.slice(0, 4).map((f) => <li key={f}>{f}</li>)}
               </ul>
             </div>
           ))}
         </div>
-      </div>
+      </section>
     </div>
   );
 }

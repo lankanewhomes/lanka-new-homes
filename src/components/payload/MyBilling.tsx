@@ -29,7 +29,7 @@ export async function MyBilling({ payload, user }: AdminViewServerProps) {
   const role = (user as { role?: string } | null)?.role;
   if (role !== "developer" || !user) {
     return (
-      <div className="ln-dash">
+      <div className="ln-dash ln-dash-v2">
         <p>This page is for developer accounts. Admins can see every subscription under Billing → Subscriptions.</p>
       </div>
     );
@@ -48,44 +48,68 @@ export async function MyBilling({ payload, user }: AdminViewServerProps) {
     ? await payload.find({ collection: "subscriptions", where: { developer: { in: developerIds } }, sort: "-createdAt", limit: 100, depth: 1, overrideAccess: true })
     : { docs: [] };
 
-  return (
-    <div className="ln-dash">
-      <p className="ln-dash-greeting">Billing</p>
-      <h1 className="ln-dash-title">My subscriptions</h1>
+  const active = subscriptionsRes.docs.find((sub) => sub.status === "active");
+  const summary = [
+    { value: active ? String(active.package).replace("-", " ").replace(/^./, (c: string) => c.toUpperCase()) : "Free", label: "Current plan" },
+    { value: active?.current_period_end ? new Date(active.current_period_end).toLocaleDateString() : "—", label: "Renews / ends" },
+    { value: String(active?.extra_featured_slots ?? 0), label: "Extra featured spots" },
+    { value: String(subscriptionsRes.docs.length), label: "Subscriptions on record" },
+  ];
 
-      {subscriptionsRes.docs.length === 0 ? (
-        <div className="ln-empty">
-          No paid plan yet — pick a package from your company profile&apos;s Placements tab to get started.
+  return (
+    <div className="ln-dash ln-dash-v2">
+      <div className="ln-dash-top">
+        <div>
+          <p className="ln-dash-greeting">Billing</p>
+          <h1 className="ln-dash-title">My subscriptions</h1>
         </div>
-      ) : (
-        <table className="ln-table">
-          <thead>
-            <tr>
-              <th>Plan</th>
-              <th>Extra slots</th>
-              <th>Status</th>
-              <th>Renewal date</th>
-              <th>Amount</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {subscriptionsRes.docs.map((sub) => {
-              const developerId = relatedId(sub.developer);
-              return (
-                <tr key={sub.id}>
-                  <td style={{ textTransform: "capitalize" }}>{String(sub.package).replace("-", " ")}</td>
-                  <td>{sub.extra_featured_slots ?? 0}</td>
-                  <td><span className={`ln-badge ${STATUS_BADGE[sub.status as string] ?? "ln-badge-neutral"}`}>{String(sub.status).replace("_", " ")}</span></td>
-                  <td>{sub.current_period_end ? new Date(sub.current_period_end).toLocaleDateString() : "—"}</td>
-                  <td>{formatLkr(sub.amount)}</td>
-                  <td>{developerId ? <Link href={`/cms/collections/developers/${developerId}`}>Manage</Link> : null}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      )}
+      </div>
+
+      <div className="ln-listsum ln-dash-sum">
+        {summary.map((item) => (
+          <div key={item.label}>
+            <strong style={{ textTransform: "capitalize" }}>{item.value}</strong>
+            <span>{item.label}</span>
+          </div>
+        ))}
+      </div>
+
+      <section className="ln-an-card">
+        <h3 className="ln-an-h">Plan history</h3>
+        {subscriptionsRes.docs.length === 0 ? (
+          <div className="ln-empty">
+            No paid plan yet. Open your company profile and choose a plan on the Plan &amp; billing tab to get started.
+          </div>
+        ) : (
+          <table className="ln-table">
+            <thead>
+              <tr>
+                <th>Plan</th>
+                <th>Extra slots</th>
+                <th>Status</th>
+                <th>Renewal date</th>
+                <th>Amount</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {subscriptionsRes.docs.map((sub) => {
+                const developerId = relatedId(sub.developer);
+                return (
+                  <tr key={sub.id}>
+                    <td style={{ textTransform: "capitalize" }}><strong>{String(sub.package).replace("-", " ")}</strong></td>
+                    <td>{sub.extra_featured_slots ?? 0}</td>
+                    <td><span className={`ln-badge ${STATUS_BADGE[sub.status as string] ?? "ln-badge-neutral"}`}>{String(sub.status).replace("_", " ")}</span></td>
+                    <td>{sub.current_period_end ? new Date(sub.current_period_end).toLocaleDateString() : "—"}</td>
+                    <td>{formatLkr(sub.amount)}</td>
+                    <td>{developerId ? <Link href={`/cms/collections/developers/${developerId}`}>Manage</Link> : null}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
+      </section>
     </div>
   );
 }
