@@ -2084,3 +2084,29 @@ h1,
 .ln-switch > span {
   border-radius: 999px !important;
 }
+
+/* Big "Create New" button (list pages) */
+.collection-list .list-header .btn,
+.collection-list .list-header__title-actions .btn,
+.collection-list .list-header__title-actions a.btn,
+.collection-list .list-header__title-actions button {
+  min-height: 48px !important;
+  height: 48px !important;
+  padding: 0 30px !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.01em;
+  background: #111111 !important;
+  border: 1px solid #111111 !important;
+  color: #ffffff !important;
+}
+.collection-list .list-header .btn:hover,
+.collection-list .list-header__title-actions .btn:hover {
+  background: #2b2b2b !important;
+}
+.collection-list .list-header .btn .btn__label,
+.collection-list .list-header__title-actions .btn .btn__label {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+}
