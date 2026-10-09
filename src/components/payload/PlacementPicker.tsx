@@ -50,7 +50,7 @@ const STATUS_LABEL: Record<string, string> = { pending: "Pending review", comple
 const STATUS_COLOR: Record<string, string> = {
   pending: "var(--theme-warning-500)",
   completed: "var(--theme-success-500)",
-  failed: "var(--theme-error-500)",
+  failed: "#c4560a",
   refunded: "var(--theme-elevation-500)",
 };
 
@@ -254,7 +254,7 @@ export function PlacementPicker() {
       </p>
 
       {loading && <p style={{ opacity: 0.7 }}>Loading…</p>}
-      {error && <p style={{ color: "var(--theme-error-500)" }}>{error}</p>}
+      {error && <p style={{ color: "#c4560a" }}>{error}</p>}
 
       {!loading && !error && submitted && (
         <div style={{ border: "1px solid var(--theme-success-500)", background: "var(--theme-success-100)", borderRadius: 6, padding: 20, marginBottom: 24 }}>
@@ -389,7 +389,7 @@ export function PlacementPicker() {
                       <input type="file" accept="image/*" onChange={onHeroImageFileSelected} disabled={heroImageUploading} style={{ display: "none" }} />
                     </label>
                   </div>
-                  {heroImageError && <p style={{ color: "var(--theme-error-500)", fontSize: 12, margin: 0 }}>{heroImageError}</p>}
+                  {heroImageError && <p style={{ color: "#c4560a", fontSize: 12, margin: 0 }}>{heroImageError}</p>}
                   {heroImage && (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={heroImage} alt="Hero preview" style={{ width: "100%", maxWidth: 300, height: 120, objectFit: "cover", borderRadius: 4, border: "1px solid var(--theme-elevation-150)" }} />
@@ -467,7 +467,7 @@ export function PlacementPicker() {
                 </>
               )}
               <p style={{ margin: "4px 0", fontSize: 14 }}><strong>Price:</strong> {formatMoney(selectedTier.price, selectedTier.currency)}{selectedTier.duration_days ? ` for ${selectedTier.duration_days} days` : ""}</p>
-              {submitError && <p style={{ color: "var(--theme-error-500)", fontSize: 13 }}>{submitError}</p>}
+              {submitError && <p style={{ color: "#c4560a", fontSize: 13 }}>{submitError}</p>}
               <button
                 type="button"
                 disabled={submitting}

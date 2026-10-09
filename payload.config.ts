@@ -62,7 +62,7 @@ export default buildConfig({
     // Browser tab: the LankaNewHomes favicon and name instead of Payload's.
     meta: {
       titleSuffix: ' – LankaNewHomes',
-      icons: [{ rel: 'icon', type: 'image/png', url: '/brand/lankanewhomes-favicon.png' }, { rel: 'apple-touch-icon', url: '/brand/lankanewhomes-favicon.png' }],
+      icons: [{ rel: 'icon', type: 'image/png', url: '/brand/lankanewhomes-favicon-cms.png' }, { rel: 'apple-touch-icon', url: '/brand/lankanewhomes-favicon-cms.png' }],
     },
     user: Users.slug,
     importMap: { baseDir: dirname },

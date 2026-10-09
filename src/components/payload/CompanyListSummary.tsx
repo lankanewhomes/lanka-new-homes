@@ -4,7 +4,7 @@ import type { Payload, Where } from 'payload'
 // Interior designers): how many there are and what is missing. Read-only counts; shown through
 // admin.components.beforeList.
 
-type Props = { collectionSlug?: string; payload?: Payload }
+type Props = { collectionSlug?: string; payload?: Payload; user?: { role?: string } | null }
 
 const empty = (field: string): Where => ({ or: [{ [field]: { exists: false } }, { [field]: { equals: '' } }] })
 
@@ -27,8 +27,9 @@ async function loadCounts(payload: Payload, collectionSlug: string) {
   }
 }
 
-export async function CompanyListSummary({ collectionSlug, payload }: Props) {
-  if (!collectionSlug || !payload) return null
+export async function CompanyListSummary({ collectionSlug, payload, user }: Props) {
+  // Platform-wide counts: admins only.
+  if (!collectionSlug || !payload || user?.role !== 'admin') return null
   const counts = await loadCounts(payload, collectionSlug)
   if (!counts) return null
   const { total, noLogo, noEmail, noPhone, verified, pending, isDevelopers } = counts

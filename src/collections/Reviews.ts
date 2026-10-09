@@ -28,7 +28,8 @@ const ENTITY_TYPE_OPTIONS = [
 
 export const Reviews: CollectionConfig = {
   slug: 'reviews',
-  admin: { group: 'Leads & Engagement', defaultColumns: ['entity_type', 'developer', 'company', 'rating', 'reviewer_name', 'status', 'createdAt'] },
+  admin: {
+    components: { beforeListTable: [{ path: '@/components/payload/CollectionStatusTabs#CollectionStatusTabs', clientProps: { field: 'status', values: [{ label: 'Pending', value: 'pending' }, { label: 'Approved', value: 'approved' }, { label: 'Rejected', value: 'rejected' }] } }] }, group: 'Leads & Engagement', defaultColumns: ['reviewer_name', 'entity_type', 'rating', 'status', 'createdAt'] },
   access: {
     create: () => true,
     read: ownDeveloperAccess('developer'),
@@ -86,7 +87,7 @@ export const Reviews: CollectionConfig = {
       },
     },
     { name: 'project', type: 'relationship', relationTo: 'projects', access: { update: adminOnlyField } },
-    { name: 'rating', type: 'number', required: true, min: 1, max: 5, access: { update: adminOnlyField } },
+    { name: 'rating', type: 'number', required: true, min: 1, max: 5, access: { update: adminOnlyField }, admin: { components: { Cell: '@/components/payload/ListingCells#RatingCell' } } },
     { name: 'comment', type: 'textarea', required: true, access: { update: adminOnlyField } },
     { name: 'reviewer_name', type: 'text', required: true, label: 'Reviewer Name', access: { update: adminOnlyField } },
     { name: 'reviewer_email', type: 'email', label: 'Reviewer Email', access: { update: adminOnlyField } },
@@ -97,7 +98,7 @@ export const Reviews: CollectionConfig = {
       defaultValue: 'pending',
       index: true,
       options: ['pending', 'approved', 'rejected'],
-      admin: { description: 'Approved reviews show on the developer\'s public profile page.' },
+      admin: { components: { Cell: '@/components/payload/ListingCells#StatusCell' }, description: 'Approved reviews show on the developer\'s public profile page.' },
     },
   ],
 }

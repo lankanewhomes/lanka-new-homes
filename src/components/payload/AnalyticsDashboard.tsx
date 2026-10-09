@@ -207,7 +207,7 @@ export function AnalyticsDashboard() {
       </div>
 
       {loading && <p style={{ opacity: 0.7 }}>Loading…</p>}
-      {error && <p style={{ color: "var(--theme-error-500)" }}>{error}</p>}
+      {error && <p style={{ color: "#c4560a" }}>{error}</p>}
 
       {!loading && !error && data && (
         <>

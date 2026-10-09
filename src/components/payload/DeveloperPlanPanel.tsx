@@ -162,7 +162,7 @@ export function DeveloperPlanPanel() {
 
   if (collectionSlug !== "developers") return null;
   if (loading) return <p style={{ opacity: 0.7, fontSize: 13 }}>Loading…</p>;
-  if (error && !developer) return <p style={{ color: "var(--theme-error-500)", fontSize: 13 }}>{error}</p>;
+  if (error && !developer) return <p style={{ color: "#c4560a", fontSize: 13 }}>{error}</p>;
   if (!developer) return null;
 
   const currentIndex = PACKAGE_LIST.findIndex((p) => p.tier === plan);

@@ -5,7 +5,7 @@ import { syncNeighborhoodDeleteToSupabase, syncNeighborhoodToSupabase } from './
 
 export const Neighborhoods: CollectionConfig = {
   slug: 'neighborhoods',
-  admin: { useAsTitle: 'name', group: 'Properties', defaultColumns: ['name', 'slug', 'city'], hidden: hiddenUnlessAdmin },
+  admin: { useAsTitle: 'name', group: 'Properties', defaultColumns: ['name', 'district', 'province'], hidden: hiddenUnlessAdmin },
   access: {
     read: publicRead,
     create: adminOnly,
@@ -15,7 +15,7 @@ export const Neighborhoods: CollectionConfig = {
   hooks: { afterChange: [syncNeighborhoodToSupabase], afterDelete: [syncNeighborhoodDeleteToSupabase] },
   fields: [
     { name: 'slug', type: 'text', required: true, unique: true, index: true },
-    { name: 'name', type: 'text', required: true },
+    { name: 'name', type: 'text', required: true, admin: { components: { Cell: '@/components/payload/ListingCells#NeighborhoodCell' } } },
     { name: 'city', type: 'text' },
     { name: 'province', type: 'text', admin: { components: { Field: textDropdown(PROVINCE_OPTIONS) } } },
     { name: 'population', type: 'text', admin: { description: 'Population with its scope and year, e.g. "17,588 in the Grandpass South division (2012 census)". Shown as the first line of the Overview list.' } },

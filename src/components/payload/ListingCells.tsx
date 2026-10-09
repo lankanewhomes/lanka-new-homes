@@ -48,7 +48,7 @@ export function LandNameCell(props: CellProps) {
 
 function Bar({ score }: { score: number }) {
   const value = Math.max(0, Math.min(100, Math.round(score)))
-  const color = value >= 90 ? '#14602a' : value >= 60 ? '#1d4f8f' : value >= 35 ? '#c98a00' : '#a3261b'
+  const color = value >= 90 ? '#14602a' : value >= 60 ? '#1d4f8f' : value >= 35 ? '#f4b73d' : '#c4560a'
   return (
     <span className="ln-cell-bar" title={`${value}% complete`}>
       <span className="ln-cell-bar-track"><span style={{ width: `${value}%`, background: color }} /></span>
@@ -152,4 +152,84 @@ export function DeveloperStatusCell({ cellData, rowData }: CellProps) {
 export function PlanCell({ cellData }: CellProps) {
   const plan = text(cellData) || 'free'
   return <span className={`ln-badge ${plan === 'free' ? 'ln-badge-neutral' : 'ln-badge-info'}`}>{plan.replace(/-/g, ' ').replace(/^./, (c) => c.toUpperCase())}</span>
+}
+
+// ---- Shared cells for every other list (Leads, Reviews, Payments, Subscriptions, Articles, …) ----
+// One look everywhere: status = coloured badge, dates short and plain, money as Rs., people = name over email.
+
+const GOOD = ['active', 'approved', 'completed', 'paid', 'confirmed', 'fulfilled', 'converted', 'published', 'posted', 'site_visit', 'admin', 'sent']
+const WARN = ['pending', 'requested', 'incomplete', 'new', 'queued', 'developer', 'past_due', 'contacted']
+const BAD = ['rejected', 'failed', 'canceled', 'cancelled', 'unpaid', 'refunded', 'not_interested', 'error', 'archived']
+const pretty = (value: string) => value.replace(/[_-]/g, ' ').replace(/^./, (c) => c.toUpperCase())
+
+export function StatusCell({ cellData }: CellProps) {
+  const value = text(cellData)
+  if (!value) return <span className="ln-cell-muted">—</span>
+  const tone = GOOD.includes(value) ? 'ln-badge-success' : BAD.includes(value) ? 'ln-badge-danger' : WARN.includes(value) ? 'ln-badge-warning' : 'ln-badge-neutral'
+  return <span className={`ln-badge ${tone}`}>{pretty(value)}</span>
+}
+
+export function DateCell({ cellData }: CellProps) {
+  const value = text(cellData)
+  const d = value ? new Date(value) : null
+  if (!d || Number.isNaN(d.getTime())) return <span className="ln-cell-muted">—</span>
+  return <span className="ln-cell-date">{d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}</span>
+}
+
+export function MoneyCell({ cellData, rowData }: CellProps) {
+  if (typeof cellData !== 'number') return <span className="ln-cell-muted">—</span>
+  const currency = text(rowData?.currency) || 'LKR'
+  return <strong className="ln-cell-money">{currency === 'LKR' ? 'Rs. ' : `${currency} `}{cellData.toLocaleString()}</strong>
+}
+
+export function RatingCell({ cellData }: CellProps) {
+  const n = typeof cellData === 'number' ? Math.max(0, Math.min(5, Math.round(cellData))) : 0
+  return <span className="ln-cell-stars" title={`${n} out of 5`}>{'★'.repeat(n)}<i>{'★'.repeat(5 - n)}</i></span>
+}
+
+function Initial({ name }: { name: string }) {
+  return <span className="ln-cell-thumb ln-cell-logo ln-cell-logo-empty" aria-hidden="true">{(name || '?').slice(0, 1).toUpperCase()}</span>
+}
+
+// Person: initial + name, with email (and phone / company) underneath.
+export function PersonCell({ cellData, rowData, collectionSlug }: CellProps) {
+  const row = rowData ?? {}
+  const name = text(cellData) || text(row.email) || 'Unnamed'
+  const sub = [text(row.email), text(row.phone) || text(row.company)].filter(Boolean).join(' · ')
+  return (
+    <Link href={`/cms/collections/${collectionSlug}/${row.id}`} className="ln-cell-name">
+      <Initial name={name} />
+      <span className="ln-cell-name-text">
+        <strong>{name}</strong>
+        {sub ? <small>{sub}</small> : null}
+      </span>
+    </Link>
+  )
+}
+
+function ImageNameCell({ href, image, title, subtitle }: { href: string; image: string; title: string; subtitle: string }) {
+  return (
+    <Link href={href} className="ln-cell-name">
+      <Thumb src={image} alt="" />
+      <span className="ln-cell-name-text">
+        <strong>{title || 'Untitled'}</strong>
+        {subtitle ? <small>{subtitle}</small> : null}
+      </span>
+    </Link>
+  )
+}
+
+export function ArticleCell({ cellData, rowData, collectionSlug }: CellProps) {
+  const row = rowData ?? {}
+  return <ImageNameCell href={`/cms/collections/${collectionSlug}/${row.id}`} image={text(row.image)} title={text(cellData)} subtitle={[pretty(text(row.category)), text(row.author)].filter((x) => x && x !== '').join(' · ')} />
+}
+
+export function NeighborhoodCell({ cellData, rowData, collectionSlug }: CellProps) {
+  const row = rowData ?? {}
+  return <ImageNameCell href={`/cms/collections/${collectionSlug}/${row.id}`} image={text(row.heroImage)} title={text(cellData)} subtitle={[text(row.city), text(row.province)].filter(Boolean).join(' · ')} />
+}
+
+export function HeroSlideCell({ cellData, rowData, collectionSlug }: CellProps) {
+  const row = rowData ?? {}
+  return <ImageNameCell href={`/cms/collections/${collectionSlug}/${row.id}`} image={text(row.image)} title={text(row.headline) || text(cellData)} subtitle={`Shows on: ${text(cellData) || 'homepage'}`} />
 }

@@ -43,7 +43,7 @@ export const PlacementPricing: CollectionConfig = {
       label: 'Tier Name',
       admin: { description: 'e.g. "Professional", "50 Leads" — lets subscription/lead_package have multiple price points.' },
     },
-    { name: 'price', type: 'number', required: true },
+    { name: 'price', type: 'number', required: true, admin: { components: { Cell: '@/components/payload/ListingCells#MoneyCell' } } },
     { name: 'currency', type: 'select', required: true, defaultValue: 'LKR', options: ['LKR', 'USD'] },
     {
       name: 'duration_days',

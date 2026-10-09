@@ -32,9 +32,10 @@ export const PAYMENT_TYPE_OPTIONS = [
 export const Payments: CollectionConfig = {
   slug: 'payments',
   admin: {
+    components: { beforeListTable: [{ path: '@/components/payload/CollectionStatusTabs#CollectionStatusTabs', clientProps: { field: 'status', values: [{ label: 'Pending', value: 'pending' }, { label: 'Completed', value: 'completed' }, { label: 'Failed', value: 'failed' }, { label: 'Refunded', value: 'refunded' }] } }] },
     useAsTitle: 'id',
     group: 'Business',
-    defaultColumns: ['payer', 'payment_type', 'amount', 'currency', 'status', 'payment_date'],
+    defaultColumns: ['payer', 'payment_type', 'amount', 'status', 'payment_date'],
   },
   access: {
     read: ownPayerAccess('payer'),
@@ -62,7 +63,7 @@ export const Payments: CollectionConfig = {
       index: true,
       admin: { description: 'The developer or construction company (builder) this payment is for.' },
     },
-    { name: 'amount', type: 'number', required: true },
+    { name: 'amount', type: 'number', required: true, admin: { components: { Cell: '@/components/payload/ListingCells#MoneyCell' } } },
     { name: 'currency', type: 'select', required: true, defaultValue: 'LKR', options: ['LKR', 'USD'] },
     {
       name: 'payment_type',
@@ -97,9 +98,8 @@ export const Payments: CollectionConfig = {
       type: 'select',
       required: true,
       defaultValue: 'pending',
-      options: ['pending', 'completed', 'failed', 'refunded'],
-    },
-    { name: 'payment_date', type: 'date', label: 'Payment Date' },
+      options: ['pending', 'completed', 'failed', 'refunded'], admin: { components: { Cell: '@/components/payload/ListingCells#StatusCell' } } },
+    { name: 'payment_date', type: 'date', label: 'Payment Date', admin: { components: { Cell: '@/components/payload/ListingCells#DateCell' } } },
     { name: 'expiry_date', type: 'date', label: 'Expiry Date', admin: { description: 'For time-limited placements, e.g. a featured-listing or hero-slide window.' } },
     { name: 'provider_reference', type: 'text', label: 'Provider Reference', admin: { description: 'Placeholder for a future payment provider (e.g. Stripe) reference id.' } },
   ],

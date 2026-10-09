@@ -129,7 +129,7 @@ export function SocialPanel() {
             {busy ? 'Posting…' : data?.configured ? 'Post now' : 'Post now (dry run)'}
           </button>
         </div>
-        {error ? <div style={{ color: 'var(--theme-error-500)', fontSize: 13, marginTop: 10 }}>{error}</div> : null}
+        {error ? <div style={{ color: '#c4560a', fontSize: 13, marginTop: 10 }}>{error}</div> : null}
       </div>
 
       <div style={box}>
@@ -143,7 +143,7 @@ export function SocialPanel() {
                   <td style={{ padding: '8px 6px', textTransform: 'capitalize' }}>{p.platform} · {p.kind}</td>
                   <td style={{ padding: '8px 6px' }}><span style={pill(p.status)}>{p.status.replace('_', ' ')}</span></td>
                   <td style={{ padding: '8px 6px', maxWidth: 360, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {p.permalink ? <a href={p.permalink} target="_blank" rel="noreferrer">{p.permalink}</a> : p.error ? <span style={{ color: 'var(--theme-error-500)' }}>{p.error}</span> : p.triggeredBy === 'auto-post' ? 'auto-post' : ''}
+                    {p.permalink ? <a href={p.permalink} target="_blank" rel="noreferrer">{p.permalink}</a> : p.error ? <span style={{ color: '#c4560a' }}>{p.error}</span> : p.triggeredBy === 'auto-post' ? 'auto-post' : ''}
                   </td>
                   <td style={{ padding: '8px 0 8px 6px', textAlign: 'right' }}>
                     {p.status === 'processing' ? <button type="button" className="btn btn--size-small" disabled={busy} onClick={() => finish(p.id)}>Check &amp; publish</button> : null}

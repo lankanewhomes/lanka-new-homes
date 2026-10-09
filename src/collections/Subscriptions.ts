@@ -31,7 +31,7 @@ export const Subscriptions: CollectionConfig = {
   admin: {
     useAsTitle: 'id',
     group: 'Business',
-    defaultColumns: ['developer', 'package', 'extra_featured_slots', 'status', 'current_period_start', 'current_period_end'],
+    defaultColumns: ['developer', 'package', 'status', 'amount', 'current_period_end'],
     // Readable table (developer name, status badges, formatted amounts)
     // instead of the raw document grid — same pattern as Analytics ->
     // AnalyticsDashboard. The real create/edit routes this links to are
@@ -202,7 +202,7 @@ export const Subscriptions: CollectionConfig = {
       defaultValue: 'incomplete',
       required: true,
       access: { update: adminOnlyField },
-      admin: { description: 'Set to "active" once payment is confirmed — activates the plan automatically (see hooks/sync-developer-plan.ts). No live gateway yet, so this is a manual step, same as Payments today.' },
+      admin: { components: { Cell: '@/components/payload/ListingCells#StatusCell' }, description: 'Set to "active" once payment is confirmed — activates the plan automatically (see hooks/sync-developer-plan.ts). No live gateway yet, so this is a manual step, same as Payments today.' },
     },
     {
       // Audit trail only — the real decision logic lives in the
@@ -222,14 +222,14 @@ export const Subscriptions: CollectionConfig = {
       type: 'number',
       required: true,
       access: { update: adminOnlyField },
-      admin: {
+      admin: { components: { Cell: '@/components/payload/ListingCells#MoneyCell' },
         description:
           "Snapshot of the price (plan + any extra slots, x the billing interval, minus 40% if founding_discount_applied), from src/lib/packages.ts — for every fixed-price tier this is set automatically and shouldn't be hand-edited. Exception: `campaign` has no fixed price (negotiated per deal) — an admin sets the real agreed amount here after creating the subscription.",
       },
     },
     { name: 'currency', type: 'select', options: ['LKR', 'USD', 'CAD'], defaultValue: 'LKR', required: true, access: { update: adminOnlyField } },
     { name: 'current_period_start', type: 'date', label: 'Start Date', access: { update: adminOnlyField } },
-    { name: 'current_period_end', type: 'date', label: 'Renewal Date', access: { update: adminOnlyField } },
+    { name: 'current_period_end', type: 'date', label: 'Renewal Date', access: { update: adminOnlyField }, admin: { components: { Cell: '@/components/payload/ListingCells#DateCell' } } },
     {
       name: 'cancel_at_period_end',
       type: 'checkbox',

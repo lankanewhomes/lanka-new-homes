@@ -54,7 +54,7 @@ export const Users: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'email',
-    defaultColumns: ['email', 'full_name', 'role'],
+    defaultColumns: ['full_name', 'role', 'phone'],
     hidden: hiddenUnlessAdmin,
     group: 'Users & Team',
   },
@@ -134,7 +134,7 @@ export const Users: CollectionConfig = {
     ],
   },
   fields: [
-    { name: 'full_name', type: 'text', label: 'Full Name', required: true },
+    { name: 'full_name', type: 'text', label: 'Full Name', required: true, admin: { components: { Cell: '@/components/payload/ListingCells#PersonCell' } } },
     { name: 'phone', type: 'text' },
     {
       name: 'company_name',
@@ -176,7 +176,6 @@ export const Users: CollectionConfig = {
         const { totalDocs } = await req.payload.count({ collection: 'users', overrideAccess: true, req })
         if (totalDocs === 0) return true // bootstrap: first user ever created
         return 'Only an existing admin can grant the admin role.'
-      },
-    },
+      }, admin: { components: { Cell: '@/components/payload/ListingCells#StatusCell' } } },
   ],
 }

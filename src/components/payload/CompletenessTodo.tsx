@@ -16,7 +16,7 @@ export function CompletenessTodo() {
   const data = useMemo(() => reduceFieldsToValues(fields, true) as CompletenessData, [fields])
   const { score, items, missing } = useMemo(() => computeCompleteness(data), [data])
   const done = items.filter((item) => item.done)
-  const color = score >= 90 ? 'var(--theme-success-500)' : score >= 60 ? '#f47b36' : 'var(--theme-error-500)'
+  const color = score >= 90 ? 'var(--theme-success-500)' : score >= 60 ? '#f47b36' : '#c4560a'
 
   return (
     <div className="field-type completeness-todo" style={{ border: '1px solid var(--theme-elevation-150)', borderRadius: 6, padding: '14px 16px', marginBottom: 24, background: 'var(--theme-elevation-0)' }}>

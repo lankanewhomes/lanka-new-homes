@@ -10,9 +10,10 @@ import { adminOnly, adminOnlyField } from './access'
 export const PlanWaitlist: CollectionConfig = {
   slug: 'plan-waitlist',
   admin: {
+    components: { beforeListTable: [{ path: '@/components/payload/CollectionStatusTabs#CollectionStatusTabs', clientProps: { field: 'status', values: [{ label: 'New', value: 'new' }, { label: 'Contacted', value: 'contacted' }, { label: 'Converted', value: 'converted' }, { label: 'Not interested', value: 'not_interested' }] } }] },
     useAsTitle: 'email',
     group: 'Business',
-    defaultColumns: ['name', 'email', 'company', 'interested_plan', 'status', 'createdAt'],
+    defaultColumns: ['name', 'interested_plan', 'status', 'createdAt'],
   },
   access: {
     create: () => true,
@@ -21,7 +22,7 @@ export const PlanWaitlist: CollectionConfig = {
     delete: adminOnly,
   },
   fields: [
-    { name: 'name', type: 'text', required: true },
+    { name: 'name', type: 'text', required: true, admin: { components: { Cell: '@/components/payload/ListingCells#PersonCell' } } },
     { name: 'email', type: 'email', required: true },
     { name: 'company', type: 'text' },
     {
@@ -37,7 +38,6 @@ export const PlanWaitlist: CollectionConfig = {
       type: 'select',
       options: ['new', 'contacted', 'converted', 'not_interested'],
       defaultValue: 'new',
-      access: { update: adminOnlyField },
-    },
+      access: { update: adminOnlyField }, admin: { components: { Cell: '@/components/payload/ListingCells#StatusCell' } } },
   ],
 }

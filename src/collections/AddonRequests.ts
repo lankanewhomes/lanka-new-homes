@@ -66,7 +66,7 @@ export const AddonRequests: CollectionConfig = {
       },
     },
     { name: 'addon_type', type: 'select', label: 'Add-on', options: [...ADDON_TYPE_OPTIONS], required: true, access: { update: adminOnlyField } },
-    { name: 'price', type: 'number', access: { update: adminOnlyField }, admin: { readOnly: true, description: 'Snapshot of the add-on price at request time, from src/lib/packages.ts.' } },
+    { name: 'price', type: 'number', access: { update: adminOnlyField }, admin: { components: { Cell: '@/components/payload/ListingCells#MoneyCell' }, readOnly: true, description: 'Snapshot of the add-on price at request time, from src/lib/packages.ts.' } },
     { name: 'currency', type: 'select', options: ['LKR'], defaultValue: 'LKR', access: { update: adminOnlyField } },
     {
       name: 'status',
@@ -75,7 +75,7 @@ export const AddonRequests: CollectionConfig = {
       defaultValue: 'requested',
       required: true,
       access: { update: adminOnlyField },
-      admin: { description: 'Set by an admin as the request is worked — "confirmed" (payment/scope agreed) then "fulfilled" once the newsletter feature or social post actually goes out.' },
+      admin: { components: { Cell: '@/components/payload/ListingCells#StatusCell' }, description: 'Set by an admin as the request is worked — "confirmed" (payment/scope agreed) then "fulfilled" once the newsletter feature or social post actually goes out.' },
     },
     { name: 'notes', type: 'textarea', admin: { description: 'Optional — anything specific to ask for (e.g. a particular angle for the feature, preferred timing).' } },
   ],

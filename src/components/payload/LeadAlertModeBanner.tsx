@@ -24,7 +24,7 @@ export function LeadAlertModeBanner() {
   if (!state || state.mode !== 'test') return null
 
   return (
-    <div role="status" style={{ margin: '0 32px 20px', padding: '10px 14px', borderRadius: 6, background: 'var(--theme-error-500)', color: '#fff', fontSize: 13, display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+    <div role="status" style={{ margin: '0 32px 20px', padding: '10px 14px', borderRadius: 6, background: '#c4560a', color: '#fff', fontSize: 13, display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
       <strong>Lead alerts are in TEST mode.</strong>
       <span>Developers are not being emailed — every alert goes to {state.testInbox || 'the test inbox'}.</span>
       <Link href="/cms/globals/lead-alert-settings" style={{ color: '#fff', fontWeight: 700, textDecoration: 'underline', marginLeft: 'auto' }}>

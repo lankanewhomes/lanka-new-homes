@@ -63,7 +63,7 @@ export function SubscriptionsList() {
         <Link href="/cms/collections/subscriptions/create" className="ln-quick-action">+ Create</Link>
       </div>
 
-      {error && <p style={{ color: "var(--theme-error-500)" }}>{error}</p>}
+      {error && <p style={{ color: "#c4560a" }}>{error}</p>}
       {!error && !rows && <p style={{ opacity: 0.7 }}>Loading…</p>}
       {!error && rows && rows.length === 0 && <div className="ln-empty">No subscriptions yet.</div>}
 

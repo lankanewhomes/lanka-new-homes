@@ -150,7 +150,7 @@ export function AddonRequestPanel() {
       )}
 
       {notice && <p style={{ marginTop: 12, fontSize: 12.5, color: "var(--theme-success-500)" }}>{notice}</p>}
-      {error && <p style={{ marginTop: 12, fontSize: 12.5, color: "var(--theme-error-500)" }}>{error}</p>}
+      {error && <p style={{ marginTop: 12, fontSize: 12.5, color: "#c4560a" }}>{error}</p>}
 
       {requests.length > 0 && (
         <div style={{ marginTop: 20 }}>

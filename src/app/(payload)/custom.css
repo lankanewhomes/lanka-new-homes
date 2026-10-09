@@ -603,7 +603,7 @@ textarea:focus,
 .ln-badge-info { color: #1d4f8f; background: #eef4fb; }
 .ln-badge-warning { color: #8a5a00; background: #fff6e0; }
 .ln-badge-success { color: #14602a; background: #eaf6ec; }
-.ln-badge-danger { color: #a3261b; background: #fcecea; }
+.ln-badge-danger { color: #c4560a; background: #fff0e3; }
 
 /* =====================================================================
    EASIER NAVIGATION (2026-10-08): collapsible sidebar groups, "find a
@@ -690,8 +690,8 @@ textarea:focus,
   min-width: 22px;
   height: 20px;
   padding: 0 6px;
-  background: #a3261b;
-  color: #ffffff;
+  background: #f47b36;
+  color: #111111;
   font-size: 11.5px;
   font-weight: 800;
   line-height: 1;
@@ -1748,7 +1748,7 @@ h1,
 .ln-seo-count.is-empty { color: #8a8a85; }
 .ln-seo-count.is-good { color: #14602a; }
 .ln-seo-count.is-near { color: #8a5a00; }
-.ln-seo-count.is-over { color: #a3261b; }
+.ln-seo-count.is-over { color: #c4560a; }
 .ln-seo-share-box { border: 1px solid #e4e2db; background: #f6f6f3; }
 .ln-seo-share-img { display: block; width: 100%; height: 130px; object-fit: cover; background: #e9e7e0; }
 .ln-seo-share-empty { display: flex; align-items: center; justify-content: center; font-size: 12.5px; color: #8a8a85; }
@@ -1808,7 +1808,7 @@ h1,
 .ln-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .ln-btn-solid { background: #f47b36; border-color: #f47b36; }
 .ln-plan-ok { margin: 0 0 10px; font-size: 13px; color: #14602a; }
-.ln-plan-err { margin: 0 0 10px; font-size: 13px; color: #a3261b; }
+.ln-plan-err { margin: 0 0 10px; font-size: 13px; color: #c4560a; }
 .ln-plan-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 6px 0 18px; }
 .ln-plan-card { display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; border: 1px solid #e4e2db; background: #ffffff; }
 .ln-plan-card.is-current { border: 2px solid #1d6f6a; background: #f0f8f8; }
@@ -2194,4 +2194,28 @@ h1,
 /* keep the title and the button on one line, button flush right and vertically centred with the title */
 .collection-list .list-header__title-and-actions {
   align-items: center !important;
+}
+
+
+/* =====================================================================
+   NO RED — orange for "bad / attention" states; SMALL "Create New" (2026-10-09)
+   ===================================================================== */
+.ln-badge-danger { color: #b4540a; background: #fff0e3; }
+.ln-seo-count.is-over { color: #c4560a; }
+.ln-nav-badge { background: #f47b36; color: #111111; }
+
+/* "Create New": small and neat again */
+.collection-list .list-header__title-actions .btn {
+  min-height: 34px !important;
+  height: 34px !important;
+  padding: 0 16px !important;
+}
+.collection-list .list-header__title-actions .btn .btn__label {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+}
+.collection-list .list-header__title-actions .btn svg,
+.collection-list .list-header__title-actions .btn .icon {
+  width: 13px;
+  height: 13px;
 }

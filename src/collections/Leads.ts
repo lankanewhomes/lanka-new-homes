@@ -24,8 +24,9 @@ export const LEAD_SOURCE_OPTIONS = [
 export const Leads: CollectionConfig = {
   slug: 'leads',
   admin: {
+    components: { beforeListTable: [{ path: '@/components/payload/CollectionStatusTabs#CollectionStatusTabs', clientProps: { field: 'status', values: [{ label: 'New', value: 'new' }, { label: 'Contacted', value: 'contacted' }, { label: 'Site visit', value: 'site_visit' }, { label: 'Closed', value: 'closed' }] } }] },
     group: 'Leads & Engagement',
-    defaultColumns: ['name', 'project', 'status', 'first_reply_via', 'response_minutes', 'alert_summary', 'createdAt'],
+    defaultColumns: ['name', 'project', 'status', 'response_minutes', 'createdAt'],
     listSearchableFields: ['name', 'email', 'phone'],
   },
   access: {
@@ -68,7 +69,7 @@ export const Leads: CollectionConfig = {
       options: LEAD_SOURCE_OPTIONS,
       access: { update: adminOnlyField },
     },
-    { name: 'name', type: 'text', required: true, access: { update: adminOnlyField } },
+    { name: 'name', type: 'text', required: true, access: { update: adminOnlyField }, admin: { components: { Cell: '@/components/payload/ListingCells#PersonCell' } } },
     { name: 'email', type: 'email', required: true, access: { update: adminOnlyField } },
     { name: 'phone', type: 'text', access: { update: adminOnlyField } },
     { name: 'preferred_contact_method', type: 'text', label: 'Preferred contact', access: { update: adminOnlyField }, admin: { components: { Field: textDropdown(['Email', 'Phone', 'Text']) } } },
@@ -80,7 +81,7 @@ export const Leads: CollectionConfig = {
       defaultValue: 'new',
       index: true,
       options: LEAD_STATUS_OPTIONS,
-      admin: { description: 'Move each inquiry along: New → Contacted → Site visit → Closed. Your first move off "New" is timed as your response.' },
+      admin: { components: { Cell: '@/components/payload/ListingCells#StatusCell' }, description: 'Move each inquiry along: New → Contacted → Site visit → Closed. Your first move off "New" is timed as your response.' },
     },
     {
       name: 'first_response_at',

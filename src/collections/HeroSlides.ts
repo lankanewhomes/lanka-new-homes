@@ -11,9 +11,10 @@ import { syncHeroSlideDeleteToSupabase, syncHeroSlideToSupabase } from './hooks/
 export const HeroSlides: CollectionConfig = {
   slug: 'hero-slides',
   admin: {
+    components: { beforeListTable: [{ path: '@/components/payload/CollectionStatusTabs#CollectionStatusTabs', clientProps: { field: 'status', values: [{ label: 'Pending', value: 'pending' }, { label: 'Active', value: 'active' }, { label: 'Rejected', value: 'rejected' }, { label: 'Archived', value: 'archived' }] } }] },
     useAsTitle: 'page_target',
     group: 'Content',
-    defaultColumns: ['page_target', 'display_order', 'status', 'is_paid_placement', 'auto_generated'],
+    defaultColumns: ['page_target', 'status', 'display_order', 'is_paid_placement'],
   },
   access: {
     read: publicRead,
@@ -38,7 +39,7 @@ export const HeroSlides: CollectionConfig = {
     { name: 'image', type: 'text', required: true, admin: { description: 'Wide banner image URL (at least 2000px). Upload one in Media and paste its URL here, same as any other image field.' } },
     { name: 'project', type: 'relationship', relationTo: 'projects', label: 'Featured Project', required: true, admin: { description: 'The project opened when a visitor clicks this paid hero placement.' } },
     { name: 'link', type: 'text' },
-    { name: 'page_target', type: 'text', label: 'Page Target', admin: { description: 'Which page this banner shows on. Pick one, or choose Other and type your own.', components: { Field: textDropdown(['homepage', 'colombo', 'luxury']) } } },
+    { name: 'page_target', type: 'text', label: 'Page Target', admin: { description: 'Which page this banner shows on. Pick one, or choose Other and type your own.', components: { Cell: '@/components/payload/ListingCells#HeroSlideCell', Field: textDropdown(['homepage', 'colombo', 'luxury']) } } },
     { name: 'display_order', type: 'number', label: 'Display Order', defaultValue: 0 },
     { name: 'advertiser', type: 'relationship', relationTo: 'developers' },
     { name: 'start_date', type: 'date', label: 'Start Date' },
@@ -61,8 +62,7 @@ export const HeroSlides: CollectionConfig = {
       type: 'select',
       defaultValue: 'pending',
       options: ['pending', 'active', 'rejected', 'archived'],
-      access: { update: adminOnlyField },
-    },
+      access: { update: adminOnlyField }, admin: { components: { Cell: '@/components/payload/ListingCells#StatusCell' } } },
     {
       name: 'review_note',
       type: 'text',

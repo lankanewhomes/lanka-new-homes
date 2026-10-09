@@ -15,7 +15,7 @@ const MAX_ITEMS_PER_PROJECT = 6
 const COLLAPSED_PROJECTS = 5
 
 function ScoreBar({ score }: { score: number }) {
-  const color = score >= 90 ? '#14602a' : score >= 60 ? '#111111' : '#a3261b'
+  const color = score >= 90 ? '#14602a' : score >= 60 ? '#111111' : '#c4560a'
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 180 }}>
       <div style={{ flex: 1, height: 8, border: '1px solid #111111', background: '#ffffff', overflow: 'hidden' }}>

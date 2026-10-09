@@ -71,7 +71,7 @@ export const Analytics: CollectionConfig = {
       index: true,
       options: ANALYTICS_EVENT_TYPES,
     },
-    { name: 'timestamp', type: 'date', defaultValue: () => new Date().toISOString(), index: true },
+    { name: 'timestamp', type: 'date', defaultValue: () => new Date().toISOString(), index: true, admin: { components: { Cell: '@/components/payload/ListingCells#DateCell' } } },
 
     // Identity / dedup.
     {

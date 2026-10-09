@@ -9,7 +9,7 @@ export const Articles: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     group: 'Content',
-    defaultColumns: ['title', 'category', 'publishedDate'],
+    defaultColumns: ['title', 'publishedDate'],
     hidden: hiddenUnlessAdmin,
   },
   access: {
@@ -20,7 +20,7 @@ export const Articles: CollectionConfig = {
   },
   fields: [
     { name: 'slug', type: 'text', required: true, unique: true, index: true },
-    { name: 'title', type: 'text', required: true },
+    { name: 'title', type: 'text', required: true, admin: { components: { Cell: '@/components/payload/ListingCells#ArticleCell' } } },
     { name: 'excerpt', type: 'textarea', required: true },
     {
       name: 'category',
@@ -31,7 +31,7 @@ export const Articles: CollectionConfig = {
     { name: 'readTime', type: 'text', label: 'Read Time', admin: { description: 'e.g. "5 min read"' } },
     { name: 'image', type: 'text', admin: { description: 'Image URL — or upload a file in Media and paste its URL here.' } },
     { name: 'author', type: 'text' },
-    { name: 'publishedDate', type: 'date', label: 'Published Date' },
+    { name: 'publishedDate', type: 'date', label: 'Published Date', admin: { components: { Cell: '@/components/payload/ListingCells#DateCell' } } },
     { name: 'content', type: 'richText' },
   ],
 }

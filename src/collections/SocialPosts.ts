@@ -34,7 +34,7 @@ export const SocialPosts: CollectionConfig = {
     { name: 'project', type: 'relationship', relationTo: 'projects', required: true, index: true },
     { name: 'platform', type: 'select', options: [...SOCIAL_PLATFORMS], required: true },
     { name: 'kind', type: 'select', options: [...SOCIAL_KINDS], required: true },
-    { name: 'status', type: 'select', options: [...SOCIAL_STATUSES], required: true },
+    { name: 'status', type: 'select', options: [...SOCIAL_STATUSES], required: true, admin: { components: { Cell: '@/components/payload/ListingCells#StatusCell' } } },
     { name: 'externalId', type: 'text', admin: { description: 'Post / video / media id on Meta.' } },
     { name: 'creationId', type: 'text', admin: { description: 'Instagram container id (until published).' } },
     { name: 'permalink', type: 'text' },
@@ -42,6 +42,6 @@ export const SocialPosts: CollectionConfig = {
     { name: 'error', type: 'text' },
     { name: 'triggeredBy', type: 'text', admin: { description: 'User email, or "auto-post".' } },
     { name: 'details', type: 'json', admin: { description: 'Media URLs sent (dry runs keep the whole would-be request here).' } },
-    { name: 'postedAt', type: 'date' },
+    { name: 'postedAt', type: 'date', admin: { components: { Cell: '@/components/payload/ListingCells#DateCell' } } },
   ],
 }

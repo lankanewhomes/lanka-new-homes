@@ -82,7 +82,7 @@ function LeadRow({ row }: { row: LeadActivityRow }) {
         </td>
         <td style={cell}>{row.developer.id ? <Link href={`/cms/collections/developers/${row.developer.id}`}>{row.developer.name}</Link> : "—"}</td>
         <td style={cell}>
-          {alertFailed ? <Pill label="Alert failed" color="var(--theme-error-500)" /> : alertTest ? <Pill label="Test routing" color="var(--theme-warning-500)" /> : row.alertLog.length ? <Pill label="Alerted" color="var(--theme-success-500)" /> : <Pill label="No alert" color="var(--theme-elevation-500)" />}
+          {alertFailed ? <Pill label="Alert failed" color="#c4560a" /> : alertTest ? <Pill label="Test routing" color="var(--theme-warning-500)" /> : row.alertLog.length ? <Pill label="Alerted" color="var(--theme-success-500)" /> : <Pill label="No alert" color="var(--theme-elevation-500)" />}
           <div style={{ opacity: 0.7, fontSize: 12, marginTop: 3 }}>{row.alertSummary}</div>
         </td>
         <td style={cell}><Pill label={STATUS_LABEL[row.status] ?? row.status} color={STATUS_COLOR[row.status] ?? "inherit"} /></td>
@@ -162,7 +162,7 @@ export function LeadActivity() {
       </p>
 
       {loading && <p style={{ opacity: 0.7 }}>Loading…</p>}
-      {error && <p style={{ color: "var(--theme-error-500)" }}>{error}</p>}
+      {error && <p style={{ color: "#c4560a" }}>{error}</p>}
 
       {!loading && !error && data ? (
         <>
@@ -172,7 +172,7 @@ export function LeadActivity() {
             <Stat label="Answered" value={data.totals.answered.toLocaleString()} />
             <Stat label="Avg first response" value={formatMinutes(data.totals.avgMinutes)} />
             <Stat label="Within 24 hours" value={data.totals.withinHourPercent === null ? "—" : `${data.totals.withinHourPercent}%`} />
-            <Stat label="Alerts failed" value={data.totals.alertsFailed.toLocaleString()} tone={data.totals.alertsFailed > 0 ? "var(--theme-error-500)" : undefined} />
+            <Stat label="Alerts failed" value={data.totals.alertsFailed.toLocaleString()} tone={data.totals.alertsFailed > 0 ? "#c4560a" : undefined} />
           </div>
 
           <h5 style={{ margin: "0 0 8px" }}>By developer</h5>
@@ -188,7 +188,7 @@ export function LeadActivity() {
                     <td style={{ padding: "8px 12px" }}>{d.answered}</td>
                     <td style={{ padding: "8px 12px" }}>{formatMinutes(d.avgMinutes)}</td>
                     <td style={{ padding: "8px 12px" }}>{d.withinHourPercent === null ? "—" : `${d.withinHourPercent}%`}</td>
-                    <td style={{ padding: "8px 12px", color: d.alertsFailed ? "var(--theme-error-500)" : "inherit" }}>{d.alertsFailed}</td>
+                    <td style={{ padding: "8px 12px", color: d.alertsFailed ? "#c4560a" : "inherit" }}>{d.alertsFailed}</td>
                     <td style={{ padding: "8px 12px" }}>{d.badge ? <Pill label="Responds within 24 hours" color="#047857" /> : <span style={{ opacity: 0.5 }}>—</span>}</td>
                   </tr>
                 ))}

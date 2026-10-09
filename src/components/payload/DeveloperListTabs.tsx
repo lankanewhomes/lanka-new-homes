@@ -26,8 +26,9 @@ async function loadItems(payload: Payload): Promise<ListTabItem[] | null> {
   }
 }
 
-export async function DeveloperListTabs({ payload }: { payload?: Payload }) {
-  if (!payload) return null
+export async function DeveloperListTabs({ payload, user }: { payload?: Payload; user?: { role?: string } | null }) {
+  // Platform-wide counts: admins only.
+  if (!payload || user?.role !== 'admin') return null
   const items = await loadItems(payload)
   return items ? <ListTabs items={items} /> : null
 }
