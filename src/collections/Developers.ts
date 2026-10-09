@@ -22,6 +22,8 @@ const DEVELOPER_TAB_FIELDS: Record<string, string[]> = {
 function groupDeveloperFields(fields: Field[]): Field[] {
   const named = (field: Field) => ('name' in field && typeof field.name === 'string' ? field.name : '')
   const overview: Field[] = [
+    // Summary, recent leads and side cards (server component, UI-only) — inside Overview so the tab bar stays under the header.
+    { name: 'developer_summary', type: 'ui', admin: { components: { Field: '@/components/payload/DeveloperHero#DeveloperSummary' } } },
     // Summary header (big numbers) — a UI-only field, stores nothing.
     { name: 'overview_stats', type: 'ui', admin: { components: { Field: '@/components/payload/DeveloperOverviewStats#DeveloperOverviewStats' } } },
   ]
@@ -31,8 +33,8 @@ function groupDeveloperFields(fields: Field[]): Field[] {
     ;(label ? buckets[label] : overview).push(field)
   }
   return [
-    // Page header + summary (server component, UI-only — stores nothing).
-    { name: 'developer_hero', type: 'ui', admin: { components: { Field: '@/components/payload/DeveloperHero#DeveloperHero' } } },
+    // Logo, name, status chips, quick actions (server component, UI-only — stores nothing). Sits above the tab bar.
+    { name: 'developer_header', type: 'ui', admin: { components: { Field: '@/components/payload/DeveloperHero#DeveloperHeader' } } },
     {
       type: 'tabs',
       tabs: [{ label: 'Overview', fields: overview }, ...Object.keys(buckets).filter((label) => buckets[label].length > 0).map((label) => ({ label, fields: buckets[label] }))],

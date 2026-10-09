@@ -1,4 +1,5 @@
-import { DeveloperHero as DeveloperHero_63e0f9a6fec321b5319fb4e71d8e519d } from '@/components/payload/DeveloperHero'
+import { DeveloperHeader as DeveloperHeader_63e0f9a6fec321b5319fb4e71d8e519d } from '@/components/payload/DeveloperHero'
+import { DeveloperSummary as DeveloperSummary_63e0f9a6fec321b5319fb4e71d8e519d } from '@/components/payload/DeveloperHero'
 import { DeveloperOverviewStats as DeveloperOverviewStats_b1207455ce4facdbd8e0cbb4c2cb1f6e } from '@/components/payload/DeveloperOverviewStats'
 import { DeveloperPlanPanel as DeveloperPlanPanel_098505e37097b4e31e435c2abfcb8db4 } from '@/components/payload/DeveloperPlanPanel'
 import { DeveloperVerifyPanel as DeveloperVerifyPanel_ce4d2c1d15521de372507861fc6fe344 } from '@/components/payload/DeveloperVerifyPanel'
@@ -62,7 +63,8 @@ import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } f
 
 /** @type import('payload').ImportMap */
 export const importMap = {
-  "@/components/payload/DeveloperHero#DeveloperHero": DeveloperHero_63e0f9a6fec321b5319fb4e71d8e519d,
+  "@/components/payload/DeveloperHero#DeveloperHeader": DeveloperHeader_63e0f9a6fec321b5319fb4e71d8e519d,
+  "@/components/payload/DeveloperHero#DeveloperSummary": DeveloperSummary_63e0f9a6fec321b5319fb4e71d8e519d,
   "@/components/payload/DeveloperOverviewStats#DeveloperOverviewStats": DeveloperOverviewStats_b1207455ce4facdbd8e0cbb4c2cb1f6e,
   "@/components/payload/DeveloperPlanPanel#DeveloperPlanPanel": DeveloperPlanPanel_098505e37097b4e31e435c2abfcb8db4,
   "@/components/payload/DeveloperVerifyPanel#DeveloperVerifyPanel": DeveloperVerifyPanel_ce4d2c1d15521de372507861fc6fe344,
