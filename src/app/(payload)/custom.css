@@ -1338,3 +1338,110 @@ h1,
   outline: 0;
   border-color: #111111;
 }
+
+/* =====================================================================
+   OTHER EDIT PAGES (Developers, Neighborhoods, companies, articles…):
+   the long flat form becomes one white card, with every group (e.g.
+   "Company stats", "Lead alerts", "Response time") as its own titled
+   box, calm divider-separated fields, tidy "add row" buttons.
+   Projects and Land keep their own tabbed layout above. (2026-10-09)
+   ===================================================================== */
+.collection-edit:not(.collection-edit--projects):not(.collection-edit--lands) .document-fields__main {
+  background: transparent;
+}
+.collection-edit:not(.collection-edit--projects):not(.collection-edit--lands) .document-fields__form,
+.collection-edit:not(.collection-edit--projects):not(.collection-edit--lands) .document-fields__fields {
+  background: #ffffff;
+  border: 1px solid #e4e2db;
+  border-radius: 12px;
+  padding: 24px 28px 28px;
+}
+
+/* Plain fields: no box each, thin dividers */
+.collection-edit:not(.collection-edit--projects):not(.collection-edit--lands) .document-fields__fields .field-type:not(.row):not(.group-field):not(.array-field):not(.blocks-field):not(.collapsible-field):not(.tabs-field):not(.ui):not(.checkbox):not(.hidden-field):not(.join),
+.collection-edit:not(.collection-edit--projects):not(.collection-edit--lands) .document-fields__fields .field-type.row > .field-type:not(.checkbox) {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 4px 0 14px;
+}
+.collection-edit:not(.collection-edit--projects):not(.collection-edit--lands) .field-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #111111;
+}
+.collection-edit:not(.collection-edit--projects):not(.collection-edit--lands) .field-description {
+  font-size: 12.5px;
+  color: #6b6b66;
+}
+.collection-edit:not(.collection-edit--projects):not(.collection-edit--lands) input:not([type="checkbox"]):not([type="radio"]),
+.collection-edit:not(.collection-edit--projects):not(.collection-edit--lands) textarea,
+.collection-edit:not(.collection-edit--projects):not(.collection-edit--lands) .rs__control {
+  border-radius: 8px;
+  border: 1px solid #cfcfc8;
+  background: #ffffff;
+}
+
+/* Groups = titled boxes */
+.collection-edit:not(.collection-edit--projects):not(.collection-edit--lands) .group-field--top-level {
+  margin: 26px 0;
+  padding: 18px 22px 8px;
+  border: 1px solid #e4e2db;
+  border-radius: 12px;
+  background: #f8f7f3;
+}
+.collection-edit:not(.collection-edit--projects):not(.collection-edit--lands) .group-field__header {
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e4e2db;
+}
+.collection-edit:not(.collection-edit--projects):not(.collection-edit--lands) .group-field__title {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #111111;
+}
+.collection-edit:not(.collection-edit--projects):not(.collection-edit--lands) .group-field .field-type:not(.row):not(.group-field):not(.array-field):not(.blocks-field):not(.collapsible-field):not(.tabs-field):not(.ui):not(.checkbox):not(.hidden-field):not(.join),
+.collection-edit:not(.collection-edit--projects):not(.collection-edit--lands) .group-field .field-type.row > .field-type:not(.checkbox) {
+  background: #ffffff;
+  border: 1px solid #e4e2db;
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+/* Repeated lists: bold title, pill "add row" */
+.collection-edit .array-field__title,
+.collection-edit .array-field__header .field-label {
+  font-size: 16px;
+  font-weight: 800;
+  color: #111111;
+}
+.collection-edit .array-field__add-row {
+  margin-top: 6px;
+}
+.collection-edit .array-field__add-row .btn {
+  border-radius: 999px;
+}
+
+/* Right-hand status column as a white card on every edit page */
+.collection-edit:not(.collection-edit--projects):not(.collection-edit--lands) .document-fields__sidebar-fields {
+  padding: 16px;
+  border: 1px solid #e4e2db;
+  border-radius: 12px;
+  background: #ffffff;
+}
+.collection-edit .doc-header__title {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.collection-edit .doc-tabs__tabs {
+  gap: 4px;
+}
+.collection-edit .doc-tab {
+  border-radius: 999px;
+}
+.collection-edit .doc-tab--active {
+  background: #111111;
+  color: #ffffff;
+}
