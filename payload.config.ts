@@ -57,6 +57,8 @@ export default buildConfig({
   // Mounted away from the existing app's own /admin and /api — see
   // docs/supabase-workflow.md and the "Payload CMS backend" plan notes.
   admin: {
+    // The admin is designed as black-on-white. Payload's dark theme turned cards/rows dark while text stayed dark (unreadable).
+    theme: 'light',
     user: Users.slug,
     importMap: { baseDir: dirname },
     components: {

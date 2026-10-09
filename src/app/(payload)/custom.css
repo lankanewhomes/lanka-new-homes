@@ -749,3 +749,7 @@ textarea:focus,
 .ln-stat-link:hover {
   background: var(--ln-wash);
 }
+
+/* Always light: even if a browser/OS asks for dark, keep the admin's palette readable. */
+html { color-scheme: light; }
+html[data-theme="dark"] { color-scheme: light; }
