@@ -316,17 +316,25 @@ export interface Developer {
     computed_at?: string | null;
   };
   /**
-   * This company's current plan — drives which of the projects in Featured Projects (below) actually show as featured. Set automatically from an active Subscription.
+   * Set automatically from an active subscription. Decides how many listings can be featured.
    */
   plan?: ('free' | 'featured' | 'featured-plus' | 'developer-pro' | 'campaign') | null;
   /**
-   * When the current plan (and every featured placement below) expires — the active Subscription's renewal date. Past this date every project reverts to Free until the plan renews.
+   * When the plan ends (the subscription renewal date). After this, listings go back to Free until renewed.
    */
   featuredUntil?: string | null;
   /**
-   * Mirrors the active Subscription's extra_featured_slots — additional featured-project slots bought beyond the plan's included amount, at that plan's per-extra-slot price (see src/lib/packages.ts).
+   * Extra featured spots bought on top of the plan.
    */
   extra_featured_slots?: number | null;
+  /**
+   * Date of the first subscription ever. Never changes.
+   */
+  first_subscribed_at?: string | null;
+  /**
+   * Given automatically to the first 10 developers to subscribe. Permanent once earned.
+   */
+  is_founding_developer?: boolean | null;
   /**
    * Which of your own projects use your plan's featured slots. Projects left unpicked stay on Free even while you have an active paid plan — pick up to your plan's limit (base slots + any extra slots purchased), shared with your land listings below.
    */
@@ -336,14 +344,6 @@ export interface Developer {
    */
   featuredLandIds?: (number | Land)[] | null;
   /**
-   * When this developer first activated any subscription, ever. Never changes after being set — used to decide founding-developer eligibility, not just a timestamp.
-   */
-  first_subscribed_at?: string | null;
-  /**
-   * Auto-granted the first time this developer activates a subscription, if fewer than 10 developers hold this already. Permanent once earned — applies to every future subscription payment, not just the first.
-   */
-  is_founding_developer?: boolean | null;
-  /**
    * Shows the "Verified Developer" badge. Set automatically when the company confirms an email on its own website domain; an admin can also switch it on or off by hand.
    */
   domain_verified?: boolean | null;
@@ -351,6 +351,10 @@ export interface Developer {
    * Admin only. Email domains (besides the website domain) accepted for Verified Developer, e.g. jkproperties.lk when the website is johnkeellsproperties.com.
    */
   extra_email_domains?: string[] | null;
+  /**
+   * Gates the "Developer approval" workflow — new self-registered developers start pending.
+   */
+  verification_status?: ('pending' | 'approved' | 'rejected' | 'changes_requested') | null;
   verified_domain?: string | null;
   verified_email?: string | null;
   verified_at?: string | null;
@@ -358,10 +362,6 @@ export interface Developer {
   verify_expires?: string | null;
   verify_pending_email?: string | null;
   verify_last_sent?: string | null;
-  /**
-   * Gates the "Developer approval" workflow — new self-registered developers start pending.
-   */
-  verification_status?: ('pending' | 'approved' | 'rejected' | 'changes_requested') | null;
   /**
    * The developer-role account that manages this company profile. Leave blank when pre-building a profile before the developer has an account — if they later sign up with this Contact Email, they auto-claim it (and everything created under it, including projects); otherwise set this manually once they exist.
    */
@@ -7951,12 +7951,13 @@ export interface DevelopersSelect<T extends boolean = true> {
   plan?: T;
   featuredUntil?: T;
   extra_featured_slots?: T;
-  featuredProjectIds?: T;
-  featuredLandIds?: T;
   first_subscribed_at?: T;
   is_founding_developer?: T;
+  featuredProjectIds?: T;
+  featuredLandIds?: T;
   domain_verified?: T;
   extra_email_domains?: T;
+  verification_status?: T;
   verified_domain?: T;
   verified_email?: T;
   verified_at?: T;
@@ -7964,7 +7965,6 @@ export interface DevelopersSelect<T extends boolean = true> {
   verify_expires?: T;
   verify_pending_email?: T;
   verify_last_sent?: T;
-  verification_status?: T;
   user?: T;
   projects?: T;
   team_members?: T;
