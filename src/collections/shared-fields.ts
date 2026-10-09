@@ -568,7 +568,7 @@ export function directoryCollection(
 ): CollectionConfig {
   return {
     slug,
-    admin: { useAsTitle: 'name', group: 'Companies & Professionals', defaultColumns: ['name', 'contact_email', 'contact_phone', 'profile_completeness'], hidden: hiddenUnlessAdmin },
+    admin: { useAsTitle: 'name', group: 'Companies & Professionals', defaultColumns: ['name', 'contact_email', 'contact_phone', 'profile_completeness'], hidden: hiddenUnlessAdmin, components: { beforeList: ['@/components/payload/CompanyListSummary#CompanyListSummary'] } },
     access: {
       read: publicRead,
       create: adminOnly,

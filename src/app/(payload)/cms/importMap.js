@@ -9,6 +9,7 @@ import { DeveloperPlanPanel as DeveloperPlanPanel_098505e37097b4e31e435c2abfcb8d
 import { VerifySummary as VerifySummary_ba05a0e30dca264b11cfc6386a9a4afa } from '@/components/payload/DeveloperTabSummaries'
 import { DeveloperVerifyPanel as DeveloperVerifyPanel_ce4d2c1d15521de372507861fc6fe344 } from '@/components/payload/DeveloperVerifyPanel'
 import { SeoPreview as SeoPreview_55675bcab4b82c96fbbbf5279a6cd2dc } from '@/components/payload/SeoPreview'
+import { CompanyListSummary as CompanyListSummary_ceb8f88f102bb57883def3ef1293610f } from '@/components/payload/CompanyListSummary'
 import { CompletenessTodo as CompletenessTodo_e02911b42e48821b16fd5d9e40cf5034 } from '@/components/payload/CompletenessTodo'
 import { ProjectNameCell as ProjectNameCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
 import { PreviewLinkPanel as PreviewLinkPanel_58de2ef0318e59b9fbb2898773569633 } from '@/components/payload/PreviewLinkPanel'
@@ -78,6 +79,7 @@ export const importMap = {
   "@/components/payload/DeveloperTabSummaries#VerifySummary": VerifySummary_ba05a0e30dca264b11cfc6386a9a4afa,
   "@/components/payload/DeveloperVerifyPanel#DeveloperVerifyPanel": DeveloperVerifyPanel_ce4d2c1d15521de372507861fc6fe344,
   "@/components/payload/SeoPreview#SeoPreview": SeoPreview_55675bcab4b82c96fbbbf5279a6cd2dc,
+  "@/components/payload/CompanyListSummary#CompanyListSummary": CompanyListSummary_ceb8f88f102bb57883def3ef1293610f,
   "@/components/payload/CompletenessTodo#CompletenessTodo": CompletenessTodo_e02911b42e48821b16fd5d9e40cf5034,
   "@/components/payload/ListingCells#ProjectNameCell": ProjectNameCell_76baef6cf7c9eb87fad9c61807ea9c87,
   "@/components/payload/PreviewLinkPanel#PreviewLinkPanel": PreviewLinkPanel_58de2ef0318e59b9fbb2898773569633,
