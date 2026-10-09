@@ -45,7 +45,7 @@ export const Lands: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     group: 'Properties',
-    defaultColumns: ['title', 'sellerName', 'status', 'priceLkr', 'district'],
+    defaultColumns: ['title', 'sellerName', 'status', 'priceLkr', 'completeness', 'district'],
     hidden: hiddenUnlessAdmin,
   },
   access: {
@@ -66,7 +66,9 @@ export const Lands: CollectionConfig = {
           label: 'Overview',
           fields: [
             { name: 'slug', type: 'text', required: true, unique: true, index: true },
-            { name: 'title', type: 'text', required: true },
+            { name: 'title', type: 'text', required: true, admin: { components: { Cell: '@/components/payload/ListingCells#LandNameCell' } } },
+            // List-only column: a completeness bar worked out from the row (src/components/payload/ListingCells.tsx).
+            { name: 'completeness', type: 'ui', label: 'Completeness', admin: { components: { Field: '@/components/payload/ListingCells#LandCompletenessField', Cell: '@/components/payload/ListingCells#LandCompletenessCell' } } },
             {
               name: 'sellerType',
               type: 'select',

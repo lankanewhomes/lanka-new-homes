@@ -145,7 +145,7 @@ export const Projects: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     group: 'Properties',
-    defaultColumns: ['name', 'developer', 'status', 'startingPriceLkr', 'package', 'final_score'],
+    defaultColumns: ['name', 'developer', 'status', 'startingPriceLkr', 'completeness_score', 'package'],
     // `read` access below is deliberately public (the live site needs
     // anonymous access to project data) — that alone would let a developer
     // browsing /cms see every other developer's projects in the list, not
@@ -199,7 +199,7 @@ export const Projects: CollectionConfig = {
             // checks the scoring hook stores as completeness_score on save.
             { name: 'completeness_todo', type: 'ui', admin: { components: { Field: '@/components/payload/CompletenessTodo#CompletenessTodo' } } },
             { name: 'slug', type: 'text', required: true, unique: true, index: true },
-            { name: 'name', type: 'text', required: true },
+            { name: 'name', type: 'text', required: true, admin: { components: { Cell: '@/components/payload/ListingCells#ProjectNameCell' } } },
             { name: 'developer', type: 'relationship', relationTo: 'developers', required: true, index: true },
             { name: 'architect', type: 'relationship', relationTo: 'architects' },
             { name: 'structuralEngineer', type: 'text', label: 'Structural engineer', admin: { description: 'Shown in the details table. Only what the developer publishes.' } },
@@ -654,7 +654,7 @@ export const Projects: CollectionConfig = {
               type: 'number',
               label: 'Completeness Score',
               defaultValue: 0,
-              admin: { readOnly: true, description: 'Auto-calculated from how many key fields are filled in.' },
+              admin: { readOnly: true, description: 'Auto-calculated from how many key fields are filled in.', components: { Cell: '@/components/payload/ListingCells#ProjectCompletenessCell' } },
             },
             { name: 'view_count', type: 'number', label: 'View Count', defaultValue: 0, admin: { description: 'Auto-incremented from Analytics "view" events for this project.' } },
             { name: 'save_count', type: 'number', label: 'Save Count', defaultValue: 0, admin: { description: 'Auto-incremented from Analytics "save" events (logged automatically when a Saved Listing is created).' } },

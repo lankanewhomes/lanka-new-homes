@@ -62,6 +62,8 @@ export default buildConfig({
     user: Users.slug,
     importMap: { baseDir: dirname },
     components: {
+      // Real LankaNewHomes wordmark on the login / forgot / reset pages instead of the Payload logo.
+      graphics: { Logo: '@/components/payload/AdminLogo#AdminLogo' },
       // Full custom sidebar (see docs/design.md "LankaNewHomes admin
       // redesign") — regroups every existing collection/global into the
       // requested IA. Reads Payload's own `visibleEntities` (already

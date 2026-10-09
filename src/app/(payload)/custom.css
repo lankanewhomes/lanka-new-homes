@@ -1209,3 +1209,67 @@ h1,
   border-radius: 12px;
   background: #ffffff;
 }
+
+/* ===== Projects / Land list cells: photo thumbnail + name, completeness bar ===== */
+.ln-cell-name {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 260px;
+  color: inherit;
+  text-decoration: none;
+}
+.ln-cell-thumb {
+  flex: 0 0 76px;
+  width: 76px;
+  height: 56px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: #efede7;
+}
+.ln-cell-thumb-empty {
+  display: inline-block;
+  border: 1px dashed #cfcfc8;
+}
+.ln-cell-name-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.ln-cell-name-text strong {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #111111;
+}
+.ln-cell-name-text small {
+  font-size: 12.5px;
+  color: #6b6b66;
+}
+.ln-cell-name:hover strong {
+  text-decoration: underline;
+}
+.ln-cell-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 150px;
+}
+.ln-cell-bar-track {
+  flex: 1;
+  height: 8px;
+  border-radius: 999px;
+  background: #e9e7e0;
+  overflow: hidden;
+}
+.ln-cell-bar-track > span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+}
+.ln-cell-bar strong {
+  min-width: 38px;
+  text-align: right;
+  font-size: 13px;
+  font-weight: 700;
+}

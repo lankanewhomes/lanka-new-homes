@@ -1,11 +1,16 @@
 import { DeveloperPlanPanel as DeveloperPlanPanel_098505e37097b4e31e435c2abfcb8db4 } from '@/components/payload/DeveloperPlanPanel'
 import { DeveloperVerifyPanel as DeveloperVerifyPanel_ce4d2c1d15521de372507861fc6fe344 } from '@/components/payload/DeveloperVerifyPanel'
 import { CompletenessTodo as CompletenessTodo_e02911b42e48821b16fd5d9e40cf5034 } from '@/components/payload/CompletenessTodo'
+import { ProjectNameCell as ProjectNameCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
 import { PreviewLinkPanel as PreviewLinkPanel_58de2ef0318e59b9fbb2898773569633 } from '@/components/payload/PreviewLinkPanel'
 import { YearPickerField as YearPickerField_4dc9f7e903015cdc77733f6107aaaf6d } from '@/components/payload/YearPickerField'
+import { ProjectCompletenessCell as ProjectCompletenessCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
 import { ListingAnalyticsPanel as ListingAnalyticsPanel_aef927c4ceb2652d7f7abf8ef0fcf2e5 } from '@/components/payload/ListingAnalyticsPanel'
 import { AddonRequestPanel as AddonRequestPanel_78c0b05313dbf1762f420ef38d99b378 } from '@/components/payload/AddonRequestPanel'
 import { SocialPanel as SocialPanel_e89e5c6e27d995476e5b50bf9943be69 } from '@/components/payload/SocialPanel'
+import { LandNameCell as LandNameCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
+import { LandCompletenessField as LandCompletenessField_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
+import { LandCompletenessCell as LandCompletenessCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
 import { SubscriptionsList as SubscriptionsList_2dc33570c131e8faf2f1046801145d72 } from '@/components/payload/SubscriptionsList'
 import { AnalyticsDashboard as AnalyticsDashboard_16ddde46401d8b8f0e062ed5c8fb8520 } from '@/components/payload/AnalyticsDashboard'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -35,6 +40,7 @@ import { AdminNav as AdminNav_f7859a3d01f9e88347a89cb1fba37791 } from '@/compone
 import { TopRightAccountMenu as TopRightAccountMenu_b2809303c67bf58cfd568d38b4192636 } from '@/components/payload/TopRightAccountMenu'
 import { FloatingSaveBar as FloatingSaveBar_8d219332c77d82c062bca2cb2e74e200 } from '@/components/payload/FloatingSaveBar'
 import { StatusVerificationStyles as StatusVerificationStyles_30e7ab21255f6e336fc700daeb6431c9 } from '@/components/payload/StatusVerificationStyles'
+import { AdminLogo as AdminLogo_313e964a7107ac39e31c5ff2e54b6ba9 } from '@/components/payload/AdminLogo'
 import { NavPlacementLink as NavPlacementLink_4dd4594cbbb08508c8d44f490a29b529 } from '@/components/payload/NavPlacementLink'
 import { NavImportLink as NavImportLink_5a308347dbd45d2c0e34cd2393d9f672 } from '@/components/payload/NavImportLink'
 import { NavLeadActivityLink as NavLeadActivityLink_6ff6d1b469ac83a0810868896e9d2423 } from '@/components/payload/NavLeadActivityLink'
@@ -55,11 +61,16 @@ export const importMap = {
   "@/components/payload/DeveloperPlanPanel#DeveloperPlanPanel": DeveloperPlanPanel_098505e37097b4e31e435c2abfcb8db4,
   "@/components/payload/DeveloperVerifyPanel#DeveloperVerifyPanel": DeveloperVerifyPanel_ce4d2c1d15521de372507861fc6fe344,
   "@/components/payload/CompletenessTodo#CompletenessTodo": CompletenessTodo_e02911b42e48821b16fd5d9e40cf5034,
+  "@/components/payload/ListingCells#ProjectNameCell": ProjectNameCell_76baef6cf7c9eb87fad9c61807ea9c87,
   "@/components/payload/PreviewLinkPanel#PreviewLinkPanel": PreviewLinkPanel_58de2ef0318e59b9fbb2898773569633,
   "@/components/payload/YearPickerField#YearPickerField": YearPickerField_4dc9f7e903015cdc77733f6107aaaf6d,
+  "@/components/payload/ListingCells#ProjectCompletenessCell": ProjectCompletenessCell_76baef6cf7c9eb87fad9c61807ea9c87,
   "@/components/payload/ListingAnalyticsPanel#ListingAnalyticsPanel": ListingAnalyticsPanel_aef927c4ceb2652d7f7abf8ef0fcf2e5,
   "@/components/payload/AddonRequestPanel#AddonRequestPanel": AddonRequestPanel_78c0b05313dbf1762f420ef38d99b378,
   "@/components/payload/SocialPanel#SocialPanel": SocialPanel_e89e5c6e27d995476e5b50bf9943be69,
+  "@/components/payload/ListingCells#LandNameCell": LandNameCell_76baef6cf7c9eb87fad9c61807ea9c87,
+  "@/components/payload/ListingCells#LandCompletenessField": LandCompletenessField_76baef6cf7c9eb87fad9c61807ea9c87,
+  "@/components/payload/ListingCells#LandCompletenessCell": LandCompletenessCell_76baef6cf7c9eb87fad9c61807ea9c87,
   "@/components/payload/SubscriptionsList#SubscriptionsList": SubscriptionsList_2dc33570c131e8faf2f1046801145d72,
   "@/components/payload/AnalyticsDashboard#AnalyticsDashboard": AnalyticsDashboard_16ddde46401d8b8f0e062ed5c8fb8520,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
@@ -89,6 +100,7 @@ export const importMap = {
   "@/components/payload/TopRightAccountMenu#TopRightAccountMenu": TopRightAccountMenu_b2809303c67bf58cfd568d38b4192636,
   "@/components/payload/FloatingSaveBar#FloatingSaveBar": FloatingSaveBar_8d219332c77d82c062bca2cb2e74e200,
   "@/components/payload/StatusVerificationStyles#StatusVerificationStyles": StatusVerificationStyles_30e7ab21255f6e336fc700daeb6431c9,
+  "@/components/payload/AdminLogo#AdminLogo": AdminLogo_313e964a7107ac39e31c5ff2e54b6ba9,
   "@/components/payload/NavPlacementLink#NavPlacementLink": NavPlacementLink_4dd4594cbbb08508c8d44f490a29b529,
   "@/components/payload/NavImportLink#NavImportLink": NavImportLink_5a308347dbd45d2c0e34cd2393d9f672,
   "@/components/payload/NavLeadActivityLink#NavLeadActivityLink": NavLeadActivityLink_6ff6d1b469ac83a0810868896e9d2423,
