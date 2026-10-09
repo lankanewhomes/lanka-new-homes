@@ -22,10 +22,10 @@ type DeveloperDoc = {
   is_founding_developer?: boolean | null;
 };
 
-const BILLING_INTERVAL_OPTIONS: { value: BillingInterval; label: string }[] = [
-  { value: "monthly", label: "Monthly" },
-  { value: "quarterly", label: "Quarterly (3x)" },
-  { value: "annual", label: "Annual (2 months free)" },
+const BILLING_INTERVAL_OPTIONS: { value: BillingInterval; label: string; hint: string }[] = [
+  { value: "monthly", label: "Every month", hint: "" },
+  { value: "quarterly", label: "Every 3 months", hint: "" },
+  { value: "annual", label: "Once a year", hint: "2 months free" },
 ];
 
 function entryId(entry: string | number | { id: string | number }): string | number {
@@ -152,7 +152,7 @@ export function DeveloperPlanPanel() {
       });
       const body = await res.json();
       if (!res.ok) throw new Error(body?.errors?.[0]?.message ?? "Couldn't submit this request.");
-      setNotice(`Request sent — we'll confirm your ${label.toLowerCase()} shortly.`);
+      setNotice(`Thanks! We received your request (${label.toLowerCase()}). We will confirm it with you shortly.`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Couldn't submit this request.");
     } finally {
@@ -165,130 +165,125 @@ export function DeveloperPlanPanel() {
   if (error && !developer) return <p style={{ color: "var(--theme-error-500)", fontSize: 13 }}>{error}</p>;
   if (!developer) return null;
 
+  const currentIndex = PACKAGE_LIST.findIndex((p) => p.tier === plan);
+  const usagePercent = maxSlots === "custom" ? 100 : maxSlots === 0 ? 0 : Math.min(100, Math.round((spotsUsed / maxSlots) * 100));
+  const firstSubscribed = (developer as DeveloperDoc & { first_subscribed_at?: string | null }).first_subscribed_at;
+
+  const Switch = ({ on, disabled, onChange, label }: { on: boolean; disabled: boolean; onChange: (next: boolean) => void; label: string }) => (
+    <button type="button" role="switch" aria-checked={on} aria-label={label} disabled={disabled} className={`ln-switch${on ? " is-on" : ""}`} onClick={() => onChange(!on)}>
+      <span />
+    </button>
+  );
+
+  const listingRows = (kind: "project" | "land", rows: { id: string | number; name: string }[], featured: Set<string>) => (
+    <ul className="ln-plan-list">
+      {rows.map((row) => {
+        const isOn = featured.has(String(row.id));
+        const disabled = saving || plan === "free" || (!isOn && atCap);
+        return (
+          <li key={row.id}>
+            <span className="ln-plan-list-name">{row.name}</span>
+            <span className={`ln-plan-list-state${isOn ? " is-on" : ""}`}>{isOn ? "Featured" : plan === "free" ? "Needs a plan" : "Not featured"}</span>
+            <Switch on={isOn} disabled={disabled} label={`Feature ${row.name}`} onChange={(next) => toggleEntry(kind, row.id, next)} />
+          </li>
+        );
+      })}
+    </ul>
+  );
+
   return (
-    <div style={{ maxWidth: 760 }}>
-      <div style={{ border: "1px solid var(--theme-elevation-150)", borderRadius: 6, padding: 18, marginBottom: 20, background: "var(--theme-elevation-0)" }}>
-        <p style={{ margin: 0, fontWeight: 600, fontSize: 15 }}>
-          Current plan: {pkg.name}
-          {maxSlots !== "custom" && `, ${spotsUsed} of ${maxSlots} spot${maxSlots === 1 ? "" : "s"} used`}
-        </p>
-        {developer.is_founding_developer && (
-          <p style={{ margin: "6px 0 0", fontSize: 12.5, fontWeight: 600, color: "#c65a1e" }}>🎉 Founding developer — 40% off every payment, for as long as you stay subscribed.</p>
-        )}
-        {isActive && developer.featuredUntil && (
-          <p style={{ margin: "6px 0 0", fontSize: 13, opacity: 0.75 }}>
-            Ends {new Date(developer.featuredUntil).toLocaleDateString()} — {daysRemaining(developer.featuredUntil)} days remaining
+    <div className="ln-plan">
+      <div className="ln-plan-summary">
+        <div className="ln-plan-summary-main">
+          <p className="ln-plan-kicker">You are on</p>
+          <p className="ln-plan-name">
+            {pkg.name} plan
+            <span className={`ln-badge ${isActive ? "ln-badge-success" : "ln-badge-neutral"}`}>{isActive ? "Active" : "No paid plan"}</span>
+            {developer.is_founding_developer ? <span className="ln-badge ln-badge-warning">Founding developer · 40% off</span> : null}
           </p>
-        )}
-        {isActive && developer.featuredUntil && (
-          <p style={{ margin: "4px 0 0", fontSize: 12, opacity: 0.65 }}>Swaps allowed until {new Date(developer.featuredUntil).toLocaleDateString()}</p>
-        )}
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 14 }}>
-          <label style={{ fontSize: 12.5, opacity: 0.75 }}>
-            Billing:{" "}
-            <select value={billingInterval} onChange={(e) => setBillingInterval(e.target.value as BillingInterval)} disabled={requesting !== null} style={{ fontSize: 12.5, padding: "4px 6px" }}>
-              {BILLING_INTERVAL_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-            </select>
-          </label>
+          {maxSlots !== "custom" ? (
+            <div className="ln-plan-usage">
+              <div className="ln-plan-usage-bar"><span style={{ width: `${usagePercent}%` }} /></div>
+              <span>
+                {maxSlots === 0
+                  ? "Free plans cannot feature listings. Pick a plan below to put your listings first."
+                  : `${spotsUsed} of ${maxSlots} featured listing${maxSlots === 1 ? "" : "s"} in use`}
+              </span>
+            </div>
+          ) : (
+            <p className="ln-plan-note">Custom plan — the number of featured listings is agreed with you directly.</p>
+          )}
         </div>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 10 }}>
+        <dl className="ln-plan-facts">
+          <div><dt>Plan ends</dt><dd>{isActive && developer.featuredUntil ? new Date(developer.featuredUntil).toLocaleDateString() : "—"}</dd></div>
+          <div><dt>Days left</dt><dd>{isActive && developer.featuredUntil ? daysRemaining(developer.featuredUntil) : "—"}</dd></div>
+          <div><dt>Extra featured spots</dt><dd>{developer.extra_featured_slots ?? 0}</dd></div>
+          <div><dt>Customer since</dt><dd>{firstSubscribed ? new Date(firstSubscribed).toLocaleDateString() : "—"}</dd></div>
+        </dl>
+      </div>
+
+      <div className="ln-plan-actions">
+        <div className="ln-plan-pay">
+          <span>How would you like to pay?</span>
+        <div className="ln-seg" role="group" aria-label="How often to pay">
+          {BILLING_INTERVAL_OPTIONS.map((option) => (
+            <button key={option.value} type="button" className={billingInterval === option.value ? "is-on" : ""} disabled={requesting !== null} onClick={() => setBillingInterval(option.value)}>
+              {option.label}{option.hint ? <small> · {option.hint}</small> : null}
+            </button>
+          ))}
+        </div>
+        </div>
+        <div className="ln-plan-buttons">
           {plan !== "free" && pkg.extraFeaturedSlotPrice != null && (
-            <button
-              type="button"
-              disabled={requesting !== null}
-              onClick={() => requestSubscription(plan, (developer.extra_featured_slots ?? 0) + 1, "Add extra spot")}
-              style={actionButtonStyle}
-            >
-              {requesting === "Add extra spot" ? "Submitting…" : `Add extra spot (${formatPackagePrice({ ...pkg, price: pkg.extraFeaturedSlotPrice })})`}
+            <button type="button" className="ln-btn" disabled={requesting !== null} onClick={() => requestSubscription(plan, (developer.extra_featured_slots ?? 0) + 1, "Add extra spot")}>
+              {requesting === "Add extra spot" ? "Submitting…" : `Add extra spot · ${formatPackagePrice({ ...pkg, price: pkg.extraFeaturedSlotPrice })}`}
             </button>
           )}
-          <button
-            type="button"
-            disabled={requesting !== null}
-            onClick={() => requestSubscription(plan === "campaign" ? plan : (PACKAGE_LIST[PACKAGE_LIST.findIndex((p) => p.tier === plan) + 1]?.tier ?? "campaign"), 0, "Upgrade plan")}
-            style={actionButtonStyle}
-          >
-            {requesting === "Upgrade plan" ? "Submitting…" : "Upgrade plan"}
-          </button>
           {nearingEnd && (
-            <button
-              type="button"
-              disabled={requesting !== null}
-              onClick={() => requestSubscription(plan, developer.extra_featured_slots ?? 0, "Renew package")}
-              style={{ ...actionButtonStyle, border: "1px solid #f47b36", background: "#f47b36", color: "#1f1f1f" }}
-            >
+            <button type="button" className="ln-btn ln-btn-solid" disabled={requesting !== null} onClick={() => requestSubscription(plan, developer.extra_featured_slots ?? 0, "Renew package")}>
               {requesting === "Renew package" ? "Submitting…" : "Renew package"}
             </button>
           )}
         </div>
-        {notice && <p style={{ margin: "10px 0 0", fontSize: 12.5, color: "var(--theme-success-500)" }}>{notice}</p>}
-        {error && <p style={{ margin: "10px 0 0", fontSize: 12.5, color: "var(--theme-error-500)" }}>{error}</p>}
+      </div>
+      {notice && <p className="ln-plan-ok">{notice}</p>}
+      {error && <p className="ln-plan-err">{error}</p>}
+
+      <h3 className="ln-plan-h">1. Choose a plan</h3>
+      <div className="ln-plan-cards">
+        {PACKAGE_LIST.map((candidate, index) => {
+          const isCurrent = candidate.tier === plan;
+          const isUpgrade = index > currentIndex;
+          return (
+            <div key={candidate.tier} className={`ln-plan-card${isCurrent ? " is-current" : ""}`}>
+              <p className="ln-plan-card-name">{candidate.name}</p>
+              <p className="ln-plan-card-price">{formatPackagePrice(candidate)}</p>
+              <p className="ln-plan-card-spots">{candidate.featuredProjectLimit === "custom" ? "Custom number of featured spots" : candidate.featuredProjectLimit === 0 ? "No featured spots" : `${candidate.featuredProjectLimit} featured spot${candidate.featuredProjectLimit === 1 ? "" : "s"}`}</p>
+              {isCurrent ? (
+                <span className="ln-plan-card-current">Your plan</span>
+              ) : isUpgrade ? (
+                <button type="button" className="ln-btn" disabled={requesting !== null} onClick={() => requestSubscription(candidate.tier, 0, `Upgrade to ${candidate.name}`)}>
+                  {requesting === `Upgrade to ${candidate.name}` ? "Submitting…" : "Upgrade"}
+                </button>
+              ) : null}
+            </div>
+          );
+        })}
       </div>
 
-      <p style={{ fontSize: 13, fontWeight: 600, margin: "0 0 8px" }}>Your projects</p>
-      {projects.length === 0 ? (
-        <p style={{ fontSize: 13, opacity: 0.7 }}>No projects yet.</p>
-      ) : (
-        <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 6 }}>
-          {projects.map((project) => {
-            const isOn = featuredProjectIds.has(String(project.id));
-            const disabled = saving || plan === "free" || (!isOn && atCap);
-            return (
-              <li
-                key={project.id}
-                style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "10px 14px", border: "1px solid var(--theme-elevation-150)", borderRadius: 4 }}
-              >
-                <span style={{ fontSize: 13.5 }}>{project.name}</span>
-                <label style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 12, opacity: disabled && !isOn ? 0.5 : 1, cursor: disabled ? "not-allowed" : "pointer" }}>
-                  {isOn ? "On" : "Off"}
-                  <input type="checkbox" checked={isOn} disabled={disabled} onChange={(e) => toggleEntry("project", project.id, e.target.checked)} />
-                </label>
-              </li>
-            );
-          })}
-        </ul>
-      )}
+      <h3 className="ln-plan-h">2. Choose which listings to feature</h3>
+      <p className="ln-plan-note">Featured listings show higher in search and on the homepage. Switch a listing on or off any time before the plan ends.</p>
+      <h4 className="ln-plan-h2">Projects</h4>
+      {projects.length === 0 ? <p className="ln-plan-note">No projects yet.</p> : listingRows("project", projects.map((project) => ({ id: project.id, name: project.name })), featuredProjectIds)}
 
-      {/* Land packages (2026-09-25) — only shown when this developer
-          actually has land listings of their own, so a developer with none
-          doesn't see an empty section. Same shared slot pool as projects
-          above (spotsUsed/atCap already combine both). */}
       {lands.length > 0 && (
         <>
-          <p style={{ fontSize: 13, fontWeight: 600, margin: "18px 0 8px" }}>Your land listings</p>
-          <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 6 }}>
-            {lands.map((land) => {
-              const isOn = featuredLandIds.has(String(land.id));
-              const disabled = saving || plan === "free" || (!isOn && atCap);
-              return (
-                <li
-                  key={land.id}
-                  style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "10px 14px", border: "1px solid var(--theme-elevation-150)", borderRadius: 4 }}
-                >
-                  <span style={{ fontSize: 13.5 }}>{land.title}</span>
-                  <label style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 12, opacity: disabled && !isOn ? 0.5 : 1, cursor: disabled ? "not-allowed" : "pointer" }}>
-                    {isOn ? "On" : "Off"}
-                    <input type="checkbox" checked={isOn} disabled={disabled} onChange={(e) => toggleEntry("land", land.id, e.target.checked)} />
-                  </label>
-                </li>
-              );
-            })}
-          </ul>
+          <h4 className="ln-plan-h2">Land listings</h4>
+          {listingRows("land", lands.map((land) => ({ id: land.id, name: land.title })), featuredLandIds)}
         </>
       )}
 
-      {plan === "free" && <p style={{ fontSize: 12.5, opacity: 0.65, marginTop: 10 }}>Pick a plan above to start featuring projects{lands.length > 0 ? " or land listings" : ""}.</p>}
+      {plan === "free" && <p className="ln-plan-note">Step 1 first: once you have a plan, the switches above turn on.</p>}
     </div>
   );
 }
-
-const actionButtonStyle: React.CSSProperties = {
-  fontSize: 12.5,
-  fontWeight: 600,
-  padding: "8px 16px",
-  borderRadius: 999,
-  border: "1px solid var(--theme-elevation-200)",
-  background: "transparent",
-  color: "inherit",
-  cursor: "pointer",
-};

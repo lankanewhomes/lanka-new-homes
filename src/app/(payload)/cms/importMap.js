@@ -1,7 +1,9 @@
 import { DeveloperHeader as DeveloperHeader_63e0f9a6fec321b5319fb4e71d8e519d } from '@/components/payload/DeveloperHero'
 import { DeveloperSummary as DeveloperSummary_63e0f9a6fec321b5319fb4e71d8e519d } from '@/components/payload/DeveloperHero'
 import { DeveloperOverviewStats as DeveloperOverviewStats_b1207455ce4facdbd8e0cbb4c2cb1f6e } from '@/components/payload/DeveloperOverviewStats'
+import { LeadsSummary as LeadsSummary_ba05a0e30dca264b11cfc6386a9a4afa } from '@/components/payload/DeveloperTabSummaries'
 import { DeveloperPlanPanel as DeveloperPlanPanel_098505e37097b4e31e435c2abfcb8db4 } from '@/components/payload/DeveloperPlanPanel'
+import { VerifySummary as VerifySummary_ba05a0e30dca264b11cfc6386a9a4afa } from '@/components/payload/DeveloperTabSummaries'
 import { DeveloperVerifyPanel as DeveloperVerifyPanel_ce4d2c1d15521de372507861fc6fe344 } from '@/components/payload/DeveloperVerifyPanel'
 import { SeoPreview as SeoPreview_55675bcab4b82c96fbbbf5279a6cd2dc } from '@/components/payload/SeoPreview'
 import { CompletenessTodo as CompletenessTodo_e02911b42e48821b16fd5d9e40cf5034 } from '@/components/payload/CompletenessTodo'
@@ -66,7 +68,9 @@ export const importMap = {
   "@/components/payload/DeveloperHero#DeveloperHeader": DeveloperHeader_63e0f9a6fec321b5319fb4e71d8e519d,
   "@/components/payload/DeveloperHero#DeveloperSummary": DeveloperSummary_63e0f9a6fec321b5319fb4e71d8e519d,
   "@/components/payload/DeveloperOverviewStats#DeveloperOverviewStats": DeveloperOverviewStats_b1207455ce4facdbd8e0cbb4c2cb1f6e,
+  "@/components/payload/DeveloperTabSummaries#LeadsSummary": LeadsSummary_ba05a0e30dca264b11cfc6386a9a4afa,
   "@/components/payload/DeveloperPlanPanel#DeveloperPlanPanel": DeveloperPlanPanel_098505e37097b4e31e435c2abfcb8db4,
+  "@/components/payload/DeveloperTabSummaries#VerifySummary": VerifySummary_ba05a0e30dca264b11cfc6386a9a4afa,
   "@/components/payload/DeveloperVerifyPanel#DeveloperVerifyPanel": DeveloperVerifyPanel_ce4d2c1d15521de372507861fc6fe344,
   "@/components/payload/SeoPreview#SeoPreview": SeoPreview_55675bcab4b82c96fbbbf5279a6cd2dc,
   "@/components/payload/CompletenessTodo#CompletenessTodo": CompletenessTodo_e02911b42e48821b16fd5d9e40cf5034,

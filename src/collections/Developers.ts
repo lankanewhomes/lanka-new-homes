@@ -11,6 +11,7 @@ import { checkEmailAgainstWebsite, websiteDomain } from '@/lib/developer-domain-
 // Verification / Listings & team / SEO). The tabs are unnamed, so they are purely visual: every field keeps its name and
 // path, nothing in the database, the Supabase sync or the hooks changes. A field not named below stays on Overview.
 const DEVELOPER_TAB_FIELDS: Record<string, string[]> = {
+  Profile: ['slug', 'name', 'logo', 'description', 'contact_email', 'contact_phone', 'website', 'location'],
   Company: ['establishedYear', 'yearsInBusiness', 'activeProjects', 'completedProjects', 'siteStats', 'coDevelopers', 'officeHours', 'awards', 'social_links', 'socialLinks'],
   'Leads & response': ['lead_alerts', 'response_stats'],
   'Plan & billing': ['plan', 'featuredUntil', 'extra_featured_slots', 'featuredProjectIds', 'featuredLandIds', 'first_subscribed_at', 'is_founding_developer', 'planPanel'],
@@ -32,13 +33,51 @@ function groupDeveloperFields(fields: Field[]): Field[] {
     const label = Object.keys(DEVELOPER_TAB_FIELDS).find((tab) => DEVELOPER_TAB_FIELDS[tab].includes(named(field)))
     ;(label ? buckets[label] : overview).push(field)
   }
+  const pick = (list: Field[], names: string[]) => list.filter((field) => names.includes(named(field)))
+  const rest = (list: Field[], names: string[]) => list.filter((field) => !names.includes(named(field)))
+
+  // Leads tab: a status summary on top, the alert settings, and the auto-computed response numbers folded away
+  // (collapsibles are unnamed, so the response_stats path/data is unchanged).
+  const leads = [
+    { name: 'leads_summary', type: 'ui', admin: { components: { Field: '@/components/payload/DeveloperTabSummaries#LeadsSummary' } } } as Field,
+    ...pick(buckets['Leads & response'], ['lead_alerts']),
+    { type: 'collapsible', label: 'Response time details (auto-calculated)', admin: { initCollapsed: true }, fields: pick(buckets['Leads & response'], ['response_stats']) } as Field,
+  ]
+
+  // Verification tab: status summary, the verify panel and switches, the proof details folded away.
+  const detailNames = ['verified_domain', 'verified_email', 'verified_at']
+  const verifyAll = buckets.Verification
+  const verification = [
+    { name: 'verify_summary', type: 'ui', admin: { components: { Field: '@/components/payload/DeveloperTabSummaries#VerifySummary' } } } as Field,
+    ...pick(verifyAll, ['domainVerifyPanel', 'domain_verified', 'extra_email_domains', 'verification_status']),
+    { type: 'collapsible', label: 'Verification proof (domain, email, date)', admin: { initCollapsed: true }, fields: pick(verifyAll, detailNames) } as Field,
+    ...rest(verifyAll, ['domainVerifyPanel', 'domain_verified', 'extra_email_domains', 'verification_status', ...detailNames]),
+  ]
+
+  // Plan tab: the plan panel (choose a plan, pick featured listings) first; the technical admin settings fold away.
+  const planAll = buckets['Plan & billing']
+  const planAdminNames = ['plan', 'featuredUntil', 'extra_featured_slots', 'first_subscribed_at', 'is_founding_developer']
+  const planTab = [
+    ...pick(planAll, ['planPanel']),
+    { type: 'collapsible', label: 'Admin settings (set automatically from the subscription)', admin: { initCollapsed: true }, fields: pick(planAll, planAdminNames) } as Field,
+    ...rest(planAll, ['planPanel', ...planAdminNames]),
+  ]
+
+  const tabs = [
+    { label: 'Overview', fields: overview },
+    { label: 'Profile', fields: buckets.Profile },
+    { label: 'Company', fields: buckets.Company },
+    { label: 'Leads & response', fields: leads },
+    { label: 'Plan & billing', fields: planTab },
+    { label: 'Verification', fields: verification },
+    { label: 'Listings & team', fields: buckets['Listings & team'] },
+    { label: 'SEO', fields: buckets.SEO },
+  ].filter((tab) => tab.fields.length > 0)
+
   return [
     // Logo, name, status chips, quick actions (server component, UI-only — stores nothing). Sits above the tab bar.
     { name: 'developer_header', type: 'ui', admin: { components: { Field: '@/components/payload/DeveloperHero#DeveloperHeader' } } },
-    {
-      type: 'tabs',
-      tabs: [{ label: 'Overview', fields: overview }, ...Object.keys(buckets).filter((label) => buckets[label].length > 0).map((label) => ({ label, fields: buckets[label] }))],
-    },
+    { type: 'tabs', tabs },
   ]
 }
 
@@ -241,7 +280,7 @@ export const Developers: CollectionConfig = {
       options: [...PACKAGE_LIST.map((p) => p.tier)],
       access: { update: adminOnlyField },
       admin: {
-        description: "This company's current plan — drives which of the projects in Featured Projects (below) actually show as featured. Set automatically from an active Subscription.",
+        description: 'Set automatically from an active subscription. Decides how many listings can be featured.',
       },
     },
     {
@@ -250,7 +289,7 @@ export const Developers: CollectionConfig = {
       label: 'Featured Until',
       access: { update: adminOnlyField },
       admin: {
-        description: "When the current plan (and every featured placement below) expires — the active Subscription's renewal date. Past this date every project reverts to Free until the plan renews.",
+        description: 'When the plan ends (the subscription renewal date). After this, listings go back to Free until renewed.',
         date: { pickerAppearance: 'dayAndTime' },
       },
     },
@@ -261,7 +300,7 @@ export const Developers: CollectionConfig = {
       defaultValue: 0,
       access: { update: adminOnlyField },
       admin: {
-        description: "Mirrors the active Subscription's extra_featured_slots — additional featured-project slots bought beyond the plan's included amount, at that plan's per-extra-slot price (see src/lib/packages.ts).",
+        description: 'Extra featured spots bought on top of the plan.',
       },
     },
     {
@@ -347,7 +386,7 @@ export const Developers: CollectionConfig = {
       type: 'date',
       label: 'First Subscribed At',
       access: { update: adminOnlyField },
-      admin: { readOnly: true, description: 'When this developer first activated any subscription, ever. Never changes after being set — used to decide founding-developer eligibility, not just a timestamp.' },
+      admin: { readOnly: true, description: 'Date of the first subscription ever. Never changes.' },
     },
     {
       // "Founding developer" launch discount (owner, 2026-09-25: first 10
@@ -364,7 +403,7 @@ export const Developers: CollectionConfig = {
       access: { update: adminOnlyField },
       admin: {
         readOnly: true,
-        description: 'Auto-granted the first time this developer activates a subscription, if fewer than 10 developers hold this already. Permanent once earned — applies to every future subscription payment, not just the first.',
+        description: 'Given automatically to the first 10 developers to subscribe. Permanent once earned.',
       },
     },
     {
