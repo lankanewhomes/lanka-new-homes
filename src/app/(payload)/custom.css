@@ -1016,3 +1016,196 @@ h1,
 /* Real wordmark logo in the sidebar header (white SVG from /public). */
 .ln-nav-brand-logo { display: block; width: 112px; height: auto; }
 .ln-nav-brand-mark { display: none; }
+
+/* =====================================================================
+   PROJECT / LAND EDIT PAGE REDESIGN (2026-10-09)
+   The long tab bar becomes a sticky left-hand section menu with numbered
+   steps; the active section opens in one roomy white card with calm,
+   divider-separated fields (instead of a box around every field).
+   Scoped to the Projects and Lands edit screens only. Phones keep the
+   horizontal tab strip.
+   ===================================================================== */
+@media (min-width: 981px) {
+  .collection-edit--projects .tabs-field:not(.tabs-field--within-collapsible),
+  .collection-edit--lands .tabs-field:not(.tabs-field--within-collapsible) {
+    display: grid;
+    grid-template-columns: 236px minmax(0, 1fr);
+    gap: 28px;
+    align-items: start;
+    margin: 20px 0 0;
+    padding: 0 var(--gutter-h);
+  }
+
+  .collection-edit--projects .tabs-field:not(.tabs-field--within-collapsible) > .tabs-field__tabs-wrap,
+  .collection-edit--lands .tabs-field:not(.tabs-field--within-collapsible) > .tabs-field__tabs-wrap {
+    position: sticky;
+    top: 84px;
+    overflow: visible;
+    margin: 0;
+    padding: 8px;
+    border: 1px solid #e4e2db;
+    border-radius: 12px;
+    background: #ffffff;
+    max-height: calc(100vh - 110px);
+    overflow-y: auto;
+  }
+
+  .collection-edit--projects .tabs-field:not(.tabs-field--within-collapsible) > .tabs-field__tabs-wrap > .tabs-field__tabs,
+  .collection-edit--lands .tabs-field:not(.tabs-field--within-collapsible) > .tabs-field__tabs-wrap > .tabs-field__tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    counter-reset: lnstep;
+  }
+
+  .collection-edit--projects .tabs-field__tabs:before,
+  .collection-edit--projects .tabs-field__tabs:after,
+  .collection-edit--lands .tabs-field__tabs:before,
+  .collection-edit--lands .tabs-field__tabs:after {
+    display: none;
+  }
+
+  .collection-edit--projects .tabs-field:not(.tabs-field--within-collapsible) > .tabs-field__content-wrap,
+  .collection-edit--lands .tabs-field:not(.tabs-field--within-collapsible) > .tabs-field__content-wrap {
+    padding: 28px 32px 32px;
+    border: 1px solid #e4e2db;
+    border-radius: 12px;
+    background: #ffffff;
+    min-width: 0;
+  }
+}
+
+/* Step buttons (all widths) */
+.collection-edit--projects .tabs-field__tabs > .tabs-field__tab-button,
+.collection-edit--lands .tabs-field__tabs > .tabs-field__tab-button {
+  counter-increment: lnstep;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin: 0;
+  padding: 9px 10px;
+  border-radius: 8px;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  color: #3d3d39;
+}
+.collection-edit--projects .tabs-field__tabs > .tabs-field__tab-button::before,
+.collection-edit--lands .tabs-field__tabs > .tabs-field__tab-button::before {
+  content: counter(lnstep);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #efede7;
+  color: #3d3d39;
+  font-size: 11.5px;
+  font-weight: 800;
+}
+.collection-edit--projects .tabs-field__tabs > .tabs-field__tab-button:hover,
+.collection-edit--lands .tabs-field__tabs > .tabs-field__tab-button:hover {
+  background: #f6f6f3;
+  color: #111111;
+}
+.collection-edit--projects .tabs-field__tabs > .tabs-field__tab-button--active,
+.collection-edit--lands .tabs-field__tabs > .tabs-field__tab-button--active,
+.collection-edit--projects .tabs-field__tabs > .tabs-field__tab-button:nth-child(n).tabs-field__tab-button--active,
+.collection-edit--lands .tabs-field__tabs > .tabs-field__tab-button:nth-child(n).tabs-field__tab-button--active {
+  background: #111111 !important;
+  color: #ffffff !important;
+  box-shadow: none;
+  padding: 9px 10px !important;
+  border-radius: 8px !important;
+}
+.collection-edit--projects .tabs-field__tabs > .tabs-field__tab-button--active::before,
+.collection-edit--lands .tabs-field__tabs > .tabs-field__tab-button--active::before {
+  background: #ffffff;
+  color: #111111;
+}
+
+/* Fields inside the white card: no box per field, thin dividers instead */
+.collection-edit--projects .tabs-field__content-wrap .field-type:not(.row):not(.group-field):not(.array-field):not(.blocks-field):not(.collapsible-field):not(.tabs-field):not(.ui):not(.checkbox):not(.hidden-field),
+.collection-edit--lands .tabs-field__content-wrap .field-type:not(.row):not(.group-field):not(.array-field):not(.blocks-field):not(.collapsible-field):not(.tabs-field):not(.ui):not(.checkbox):not(.hidden-field),
+.collection-edit--projects .tabs-field__content-wrap .field-type.row > .field-type:not(.checkbox),
+.collection-edit--lands .tabs-field__content-wrap .field-type.row > .field-type:not(.checkbox) {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 4px 0 14px;
+}
+.collection-edit--projects .tabs-field__content-wrap .field-label,
+.collection-edit--lands .tabs-field__content-wrap .field-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #111111;
+}
+.collection-edit--projects .tabs-field__content-wrap .field-description,
+.collection-edit--lands .tabs-field__content-wrap .field-description {
+  font-size: 12.5px;
+  color: #6b6b66;
+}
+.collection-edit--projects .tabs-field__content-wrap input:not([type="checkbox"]):not([type="radio"]),
+.collection-edit--projects .tabs-field__content-wrap textarea,
+.collection-edit--projects .tabs-field__content-wrap .rs__control,
+.collection-edit--lands .tabs-field__content-wrap input:not([type="checkbox"]):not([type="radio"]),
+.collection-edit--lands .tabs-field__content-wrap textarea,
+.collection-edit--lands .tabs-field__content-wrap .rs__control {
+  border-radius: 8px;
+  border: 1px solid #cfcfc8;
+  background: #ffffff;
+}
+.collection-edit--projects .tabs-field__content-wrap .collapsible,
+.collection-edit--projects .tabs-field__content-wrap .array-field__row,
+.collection-edit--lands .tabs-field__content-wrap .collapsible,
+.collection-edit--lands .tabs-field__content-wrap .array-field__row {
+  border: 1px solid #e4e2db;
+  border-radius: 10px;
+  background: #fbfaf7;
+}
+
+/* Page header on the edit screen: bigger title, pill doc tabs (Edit / Versions / API) */
+.collection-edit--projects .doc-header,
+.collection-edit--lands .doc-header {
+  padding-bottom: 6px;
+}
+.collection-edit--projects .doc-header__title,
+.collection-edit--lands .doc-header__title {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.collection-edit--projects .doc-tabs__tabs,
+.collection-edit--lands .doc-tabs__tabs {
+  gap: 4px;
+}
+.collection-edit--projects .doc-tab,
+.collection-edit--lands .doc-tab {
+  border-radius: 999px;
+}
+.collection-edit--projects .doc-tab--active,
+.collection-edit--lands .doc-tab--active {
+  background: #111111;
+  color: #ffffff;
+}
+
+/* Right-hand "document controls" column (publish status, timestamps) as a quiet card */
+.collection-edit--projects .document-fields__sidebar-wrap,
+.collection-edit--lands .document-fields__sidebar-wrap {
+  border-left: 0;
+}
+.collection-edit--projects .document-fields__sidebar-fields,
+.collection-edit--lands .document-fields__sidebar-fields {
+  padding: 16px;
+  border: 1px solid #e4e2db;
+  border-radius: 12px;
+  background: #ffffff;
+}
