@@ -738,6 +738,7 @@ export function ListingPageBody({
                   only the card list/heading filter when a cluster is selected,
                   so clicking a pin doesn't reshuffle the map's own pins. */}
               <LazyExplorerMap
+                kind={basePath === "/land" ? "land" : "homes"}
                 items={mapItems}
                 fitKey={mapFitKey}
                 selectedSlug={pickedSlug}

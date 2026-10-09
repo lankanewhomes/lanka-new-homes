@@ -20367,3 +20367,15 @@ body:has(.compare-bar) {
 /* All map bubbles look the same: black circle, white house; the count sits in a white badge. */
 .l360-bubble-core { background: #111111; color: #ffffff; }
 .l360-bubble-count { background: #ffffff; color: #111111; border: 1px solid #111111; }
+
+/* Map markers: square (no radius), one colour, smaller */
+.l360-bubble, .l360-bubble-core, .l360-bubble-count, .l360-bubble-name, .l360-pin, .l360-controls button { border-radius: 0 !important; }
+.l360-bubble { background: rgba(255,255,255,0.6); box-shadow: 0 4px 14px rgba(0,0,0,0.22); }
+.l360-bubble-core { width: 62%; height: 62%; box-shadow: none; }
+.l360-bubble-count { top: -6px; right: -6px; min-width: 20px; height: 20px; line-height: 18px; font-size: 11.5px; }
+.l360-bubble-name { margin-top: 6px; font-size: 11px; padding: 2px 7px; }
+.l360-pin { padding: 5px 9px; font-size: 12px; gap: 5px; }
+.xmap .maplibregl-popup-content { border-radius: 0; }
+/* No white halo around the bubbles: just the black square with the icon (and the count badge) */
+.l360-bubble { background: transparent !important; box-shadow: none !important; backdrop-filter: none !important; }
+.l360-bubble-core { width: 100% !important; height: 100% !important; box-shadow: 0 3px 10px rgba(0,0,0,0.28) !important; }

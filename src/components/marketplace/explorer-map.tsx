@@ -3,7 +3,7 @@
 import "maplibre-gl/dist/maplibre-gl.css";
 import { LngLatBounds, setWorkerUrl } from "maplibre-gl";
 import Map, { Marker, Popup, type MapRef } from "react-map-gl/maplibre";
-import { Compass, House, Layers, Minus, Plus } from "lucide-react";
+import { Compass, Layers, Minus, Plus } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { formatLkr } from "@/lib/format";
 
@@ -21,6 +21,19 @@ export type ExplorerItem = { slug: string; name: string; city: string; lat: numb
 /** What the map is showing right now. `zoomed` is false while it is still the whole-country overview. */
 export type MapView = { west: number; south: number; east: number; north: number; zoom: number; zoomed: boolean };
 
+// Same icons as the site header: "New Homes for Sale" (building) and "Land" (plot grid).
+function MarkerIcon({ kind, size }: { kind: "homes" | "land"; size: number }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.6} stroke="currentColor" width={size} height={size} aria-hidden="true">
+      {kind === "land" ? (
+        <path strokeLinecap="butt" strokeLinejoin="miter" d="M9 4.5v15m6-15v15M3 4.5h18v15H3z" />
+      ) : (
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21m0 0h4.5V3.545M12.75 21h7.5V10.75M2.25 21h1.5m18 0h-18M2.25 9l4.5-1.636M18.75 3l-1.5.545m0 6.205 3 1m1.5.5-1.5-.5M6.75 7.364V3h-3v18m3-13.636 10.5-3.819" />
+      )}
+    </svg>
+  );
+}
+
 function shortPrice(amount: number): string {
   if (amount >= 1_000_000) return `Rs. ${Math.round((amount / 1_000_000) * 10) / 10}M`;
   return formatLkr(amount);
@@ -34,6 +47,7 @@ export function ExplorerMap({
   renderPopup,
   defaultTilt = false,
   fitKey,
+  kind = "homes",
 }: {
   items: ExplorerItem[];
   selectedSlug?: string | null;
@@ -44,6 +58,8 @@ export function ExplorerMap({
   defaultTilt?: boolean;
   /** Changing this value re-frames the map around `items` (e.g. after the filters change). */
   fitKey?: string;
+  /** Which header icon the markers use: homes (New Homes for Sale) or land (Land). */
+  kind?: "homes" | "land";
 }) {
   const mapRef = useRef<MapRef | null>(null);
   const [zoom, setZoom] = useState(7);
@@ -144,7 +160,7 @@ export function ExplorerMap({
       >
         {!showPins
           ? groups.map((group) => {
-              const size = Math.min(88, 52 + group.group.length * 5);
+              const size = Math.min(58, 40 + Math.round(Math.sqrt(group.group.length) * 3));
               return (
                 <Marker key={group.key} longitude={group.lng} latitude={group.lat} anchor="center">
                   <button
@@ -155,7 +171,7 @@ export function ExplorerMap({
                     // eslint-disable-next-line react-hooks/refs -- false positive: the map ref is only read when the click happens
                     onClick={(event) => openGroup(event, group.group)}
                   >
-                    <span className="l360-bubble-core"><House size={18} aria-hidden="true" /></span>
+                    <span className="l360-bubble-core"><MarkerIcon kind={kind} size={17} /></span>
                     <span className="l360-bubble-count">{group.group.length}</span>
                     <span className="l360-bubble-name">{group.name}</span>
                   </button>
@@ -172,7 +188,7 @@ export function ExplorerMap({
                     onSelect?.(item.slug);
                   }}
                 >
-                  <House size={13} aria-hidden="true" />
+                  <MarkerIcon kind={kind} size={14} />
                   <span>{item.price > 0 ? shortPrice(item.price) : item.name}</span>
                 </button>
               </Marker>
