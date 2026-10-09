@@ -3,7 +3,7 @@
 import "maplibre-gl/dist/maplibre-gl.css";
 import { LngLatBounds, setWorkerUrl } from "maplibre-gl";
 import Map, { Marker, Popup, type MapRef } from "react-map-gl/maplibre";
-import { Building2, Compass, Layers, Minus, Plus } from "lucide-react";
+import { Compass, House, Layers, Minus, Plus } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { formatLkr } from "@/lib/format";
 
@@ -16,7 +16,6 @@ const MAP_STYLE = "https://tiles.openfreemap.org/styles/liberty";
 
 const PIN_ZOOM = 13.2;
 const TILT = 58;
-const BUBBLE_COLORS = ["#f4a6a0", "#8fd6cf", "#9cc7f5", "#f6d36b", "#a6e3a1", "#c9b3f2"];
 
 export type ExplorerItem = { slug: string; name: string; city: string; lat: number; lng: number; price: number };
 /** What the map is showing right now. `zoomed` is false while it is still the whole-country overview. */
@@ -90,7 +89,7 @@ export function ExplorerMap({
       const key = `${Math.floor(item.lng / cell)}:${Math.floor(item.lat / cell)}`;
       cells.set(key, [...(cells.get(key) ?? []), item]);
     }
-    return Array.from(cells.entries()).map(([key, group], index) => {
+    return Array.from(cells.entries()).map(([key, group]) => {
       const counts = new globalThis.Map<string, number>();
       group.forEach((p) => counts.set(p.city, (counts.get(p.city) ?? 0) + 1));
       const name = Array.from(counts.entries()).sort((x, y) => y[1] - x[1])[0][0];
@@ -100,7 +99,6 @@ export function ExplorerMap({
         group,
         lat: group.reduce((sum, p) => sum + p.lat, 0) / group.length,
         lng: group.reduce((sum, p) => sum + p.lng, 0) / group.length,
-        color: BUBBLE_COLORS[(index + group.length) % BUBBLE_COLORS.length],
       };
     });
   }, [items, zoom]);
@@ -157,7 +155,7 @@ export function ExplorerMap({
                     // eslint-disable-next-line react-hooks/refs -- false positive: the map ref is only read when the click happens
                     onClick={(event) => openGroup(event, group.group)}
                   >
-                    <span className="l360-bubble-core" style={{ background: group.color }}><Building2 size={18} aria-hidden="true" /></span>
+                    <span className="l360-bubble-core"><House size={18} aria-hidden="true" /></span>
                     <span className="l360-bubble-count">{group.group.length}</span>
                     <span className="l360-bubble-name">{group.name}</span>
                   </button>
@@ -174,7 +172,7 @@ export function ExplorerMap({
                     onSelect?.(item.slug);
                   }}
                 >
-                  <Building2 size={13} aria-hidden="true" />
+                  <House size={13} aria-hidden="true" />
                   <span>{item.price > 0 ? shortPrice(item.price) : item.name}</span>
                 </button>
               </Marker>

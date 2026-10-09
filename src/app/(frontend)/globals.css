@@ -20363,3 +20363,7 @@ body:has(.compare-bar) {
 .listing-map-pane .xmap { height: 100%; min-height: 0; }
 .listing-map-pane { margin-top: -22px; height: calc(100vh - 88px); }
 .listing-area-heading { margin-bottom: -22px; }
+
+/* All map bubbles look the same: black circle, white house; the count sits in a white badge. */
+.l360-bubble-core { background: #111111; color: #ffffff; }
+.l360-bubble-count { background: #ffffff; color: #111111; border: 1px solid #111111; }
