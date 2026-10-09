@@ -185,7 +185,8 @@ export async function AdminDashboard(props: AdminViewServerProps) {
         )}
       </div>
 
-      <ListingTodoPanel />
+      {/* "Finish your listings" is a to-do list for developers about their own listings; admins don't need it. */}
+      {!isAdmin ? <ListingTodoPanel /> : null}
 
       <div className="ln-dash-section">
         <div className="ln-dash-section-head">
