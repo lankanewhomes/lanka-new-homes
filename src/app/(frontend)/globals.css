@@ -20383,3 +20383,34 @@ body:has(.compare-bar) {
 /* markers ease in when a zoom level regroups them (no popping) */
 @keyframes l360-fade { from { opacity: 0; } to { opacity: 1; } }
 .l360-bubble, .l360-pin { animation: l360-fade 220ms ease-out; }
+
+/* =====================================================================
+   MAP ON PHONES (2026-10-09): "the icons are too big". Markers, buttons and
+   the popup are scaled down; the Lanka360 map is shorter so the listings
+   are reachable with one scroll; the filter row scrolls sideways.
+   ===================================================================== */
+@media (max-width: 760px) {
+  .xmap .l360-bubble { transform: scale(0.68); transform-origin: center; }
+  .xmap .l360-bubble:hover { transform: scale(0.72); }
+  .xmap .l360-bubble-name { font-size: 10px; padding: 1px 5px; margin-top: 2px; }
+  .xmap .l360-bubble-count { top: -5px; right: -5px; min-width: 18px; height: 18px; line-height: 16px; font-size: 10.5px; }
+  .xmap .l360-pin { padding: 3px 6px; font-size: 10.5px; gap: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.25); }
+  .xmap .l360-pin svg { width: 12px; height: 12px; }
+  .xmap .l360-controls { top: 10px; right: 10px; gap: 6px; }
+  .xmap .l360-controls button { width: 34px; height: 34px; }
+  .xmap .l360-controls button svg { width: 16px; height: 16px; }
+  .xmap .l360-controls button small { font-size: 8.5px; }
+  .xmap .maplibregl-ctrl-attrib { font-size: 9px; }
+  .xmap .xmap-popup .maplibregl-popup-content { max-width: 200px; }
+  .xmap .xmap-popup .project-popup { transform: scale(0.9); transform-origin: bottom center; }
+
+  /* Lanka360 on a phone */
+  .l360 { padding: 14px 12px 32px; }
+  .l360-head p { font-size: 13.5px; margin-bottom: 12px; }
+  .l360-filters { flex-wrap: nowrap; overflow-x: auto; gap: 8px; padding-bottom: 6px; scrollbar-width: none; }
+  .l360-filters::-webkit-scrollbar { display: none; }
+  .l360-filter, .l360-reset { flex: 0 0 auto; height: 38px; padding: 0 12px; }
+  .l360-filter select { font-size: 13px; }
+  .l360-count { flex: 0 0 auto; width: auto; white-space: nowrap; align-self: center; }
+  .l360-mapwrap { height: 52vh; min-height: 340px; border-radius: 0; }
+}
