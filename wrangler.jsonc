@@ -7,9 +7,10 @@
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
   "images": { "binding": "IMAGES" },
-  // Hyperdrive keeps database connections warm near Supabase, so each CMS/login query no longer pays ~0.5s to open a connection.
-  // Created 2026-10-09 (lnh-db). Falls back to the plain DATABASE_URI connection if the binding is ever absent.
-  "hyperdrive": [{ "binding": "HYPERDRIVE", "id": "0df85addf9a74f6e80d5ccea8bcd621b" }],
+  // Hyperdrive (config "lnh-db", id 0df85addf9a74f6e80d5ccea8bcd621b) is created in the Cloudflare account but NOT attached here:
+  // every Workers Build failed from the moment this binding was added (2026-10-09), so it is parked. Re-add as
+  //   "hyperdrive": [{ "binding": "HYPERDRIVE", "id": "0df85addf9a74f6e80d5ccea8bcd621b" }],
+  // once the build token is allowed to use Hyperdrive. payload.config.ts / cloudflare/worker.js already fall back to DATABASE_URI.
   "r2_buckets": [{ "binding": "NEXT_INC_CACHE_R2_BUCKET", "bucket_name": "lnh-next-cache" }],
   // Weekly analytics digest ("0 8 * * 1") is paused here while Vercel still runs it (owner, 2026-10-07: no traffic yet; avoids
   // duplicate emails). Add it back when the domain moves to Cloudflare and Vercel Cron is removed.
