@@ -97,6 +97,7 @@ async function logEvent(
   userId: string | number | null | undefined,
 ) {
   if (!projectId) return
+  if (req.context?.skipAnalytics) return // inquiry sent from the owner's own browser — keep the lead, skip the analytics event
   const enrichment = (req.context?.analyticsEnrichment as AnalyticsEnrichment | undefined) ?? {}
   await req.payload.create({
     collection: 'analytics',

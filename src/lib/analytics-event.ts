@@ -1,4 +1,5 @@
 import type { Payload } from "payload";
+import { isInternalRequest } from "@/lib/internal-traffic";
 
 // Server-side helpers for enriching an Analytics event with request-derived
 // metadata (geo, device, bot detection) — used by every route that logs an
@@ -90,6 +91,7 @@ export async function logRawAnalyticsEvent(
   request: Request,
   args: { projectSlug: string; eventType: "view" | "brochure_download" | "phone_click" | "whatsapp_click"; sourcePage?: string; sessionId?: unknown; trafficSource?: unknown },
 ): Promise<void> {
+  if (isInternalRequest(request)) return; // the owner's own traffic is never counted
   const payload = await getPayloadInstance();
   const projectRes = await payload.find({
     collection: "projects",

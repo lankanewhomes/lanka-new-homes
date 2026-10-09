@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 import { trackProjectView } from "@/lib/tracking-db";
 import { logRawAnalyticsEvent } from "@/lib/analytics-event";
+import { isInternalRequest } from "@/lib/internal-traffic";
 
 export async function POST(req: Request) {
   try {
+    if (isInternalRequest(req)) return NextResponse.json({ ok: true, inserted: false }); // the owner's own visits are never counted
     const body = await req.json();
 
     if (!body?.projectSlug || !body?.developerSlug || !body?.sessionId) {

@@ -2,6 +2,7 @@ import { after, NextResponse } from "next/server";
 import { insertLead } from "@/lib/tracking-db";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { buildEventEnrichment } from "@/lib/analytics-event";
+import { isInternalRequest } from "@/lib/internal-traffic";
 import { renderBrochureEmailHTML } from "@/lib/brochure-email";
 import { requestOrigin } from "@/lib/request-origin";
 
@@ -104,7 +105,7 @@ export async function POST(req: Request) {
                 referrer: analyticsEnrichment.referrer,
               },
             } as never,
-            context: { skipSupabaseSync: true, analyticsEnrichment },
+            context: { skipSupabaseSync: true, analyticsEnrichment, skipAnalytics: isInternalRequest(req) },
             overrideAccess: true,
           });
 

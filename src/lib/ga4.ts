@@ -1,4 +1,5 @@
 "use client";
+import { isInternalBrowser } from "@/lib/internal-traffic";
 
 import { sendGAEvent } from "@next/third-parties/google";
 
@@ -83,6 +84,7 @@ export function getTrafficSource(): string {
 // throwing and breaking the calling feature (e.g. a lead submission).
 export function trackEvent(name: string, params: Record<string, string | number | boolean> = {}): void {
   if (typeof window === "undefined") return;
+  if (isInternalBrowser()) return; // the owner's own browser is never counted
   try {
     sendGAEvent("event", name, params);
   } catch {

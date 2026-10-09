@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { isInternalBrowser } from "@/lib/internal-traffic";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
@@ -327,6 +328,7 @@ function describeFloorPlanForLead(plan: FloorPlan): string {
 }
 
 function logListingEvent(endpoint: string, ga4EventName: string, projectSlug: string, listingName: string) {
+  if (isInternalBrowser()) return; // the owner's own clicks are never counted
   const sessionId = getSessionId();
   const trafficSource = getTrafficSource();
   fetch(endpoint, {

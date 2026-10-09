@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { trackEvent } from "@/lib/ga4";
+import { isInternalBrowser } from "@/lib/internal-traffic";
 
 export const SESSION_KEY = "newhomessrilanka-session-id";
 
@@ -23,6 +24,7 @@ export function ProjectViewTracker({
   developerSlug: string;
 }) {
   useEffect(() => {
+    if (isInternalBrowser()) return; // the owner's own visits are never counted
     const sessionId = getSessionId();
 
     fetch("/api/events/view", {
