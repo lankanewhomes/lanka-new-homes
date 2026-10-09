@@ -1669,3 +1669,69 @@ h1,
     grid-template-columns: 1fr;
   }
 }
+
+/* Developer page header block (DeveloperHero.tsx) */
+.ln-devhero { margin: 4px 0 6px; }
+.ln-devhero-head { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
+.ln-devhero-logo { width: 64px; height: 64px; flex-shrink: 0; border: 1px solid #e4e2db; border-radius: 12px; background: #ffffff; object-fit: contain; padding: 6px; }
+.ln-devhero-logo-empty { display: inline-flex; align-items: center; justify-content: center; background: #111111; color: #ffffff; font-size: 26px; font-weight: 800; border: 0; }
+.ln-devhero-title { flex: 1; min-width: 220px; }
+.ln-devhero-title h2 { margin: 0 0 6px; font-size: 24px; font-weight: 800; letter-spacing: -0.02em; color: #111111; }
+.ln-devhero-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.ln-devhero-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.ln-devhero-grid { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 22px; align-items: start; }
+.ln-devhero-side { display: flex; flex-direction: column; gap: 14px; }
+.ln-side-card { padding: 16px 18px; border: 1px solid #e4e2db; border-radius: 12px; background: #ffffff; }
+.ln-side-card-title { margin: 0 0 8px; font-size: 13px; font-weight: 800; letter-spacing: 0.02em; color: #111111; }
+.ln-side-card-big { margin: 0 0 6px; font-size: 26px; font-weight: 500; color: #1d6f6a; }
+.ln-side-card-text { margin: 0 0 12px; font-size: 13px; line-height: 1.5; color: #55554f; }
+.ln-side-card-btn { display: inline-flex; align-items: center; justify-content: center; width: 100%; height: 38px; border: 1px solid #111111; border-radius: 8px; background: #ffffff; color: #111111; font-size: 14px; font-weight: 600; text-decoration: none; }
+.ln-side-card-btn:hover { background: #111111; color: #ffffff; }
+.ln-side-list { margin: 0; padding: 0; list-style: none; }
+.ln-side-list li { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 7px 0; border-bottom: 1px solid #efede7; font-size: 13.5px; }
+.ln-side-list li:last-child { border-bottom: 0; }
+.ln-side-list a { color: #111111; font-weight: 600; text-decoration: none; }
+.ln-side-list small { color: #6b6b66; font-size: 12px; }
+.ln-side-more { display: inline-block; margin-top: 8px; font-size: 13px; font-weight: 600; color: #111111; }
+@media (max-width: 1100px) { .ln-devhero-grid { grid-template-columns: 1fr; } }
+
+/* =====================================================================
+   SQUARE FIELDS + TITLE BLOCK SPACING (2026-10-09)
+   Owner: "fields — no radius" and "padding on top of the developer name".
+   Every form control and the boxes that hold fields are square.
+   ===================================================================== */
+.collection-edit input:not([type="checkbox"]):not([type="radio"]),
+.collection-edit textarea,
+.collection-edit select,
+.collection-edit .rs__control,
+.collection-edit .rs__menu,
+.collection-edit .text-dropdown-select,
+.collection-edit .text-dropdown-other,
+.collection-edit .field-type,
+.collection-edit .field-type.row > .field-type,
+.collection-edit .group-field--top-level,
+.collection-edit .array-field__row .collapsible,
+.collection-edit .blocks-field__row .collapsible,
+.collection-edit .collapsible,
+.collection-edit .upload__dropzone,
+.collection-edit .file-field,
+.collection-edit .date-time-picker input,
+.collection-edit .react-datepicker-wrapper input,
+.global-edit input:not([type="checkbox"]):not([type="radio"]),
+.global-edit textarea,
+.search-filter__input,
+.list-controls,
+.where-builder,
+.condition-value-text input {
+  border-radius: 0 !important;
+}
+
+/* Space above the title block (name, Edit / API / Versions links, Last Modified) */
+.collection-edit .doc-header,
+.global-edit .doc-header {
+  padding-top: 28px;
+}
+.collection-edit .doc-controls,
+.collection-edit .doc-header + .doc-controls {
+  margin-top: 6px;
+}

@@ -31,6 +31,8 @@ function groupDeveloperFields(fields: Field[]): Field[] {
     ;(label ? buckets[label] : overview).push(field)
   }
   return [
+    // Page header + summary (server component, UI-only — stores nothing).
+    { name: 'developer_hero', type: 'ui', admin: { components: { Field: '@/components/payload/DeveloperHero#DeveloperHero' } } },
     {
       type: 'tabs',
       tabs: [{ label: 'Overview', fields: overview }, ...Object.keys(buckets).filter((label) => buckets[label].length > 0).map((label) => ({ label, fields: buckets[label] }))],
