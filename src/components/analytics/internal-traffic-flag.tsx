@@ -7,7 +7,8 @@ import { isInternalBrowser, setInternalBrowser } from "@/lib/internal-traffic";
 // analytics); ?no-track=0 undoes it. Also tells Google Analytics to stand down for an internal browser.
 export function InternalTrafficFlag({ gaId }: { gaId?: string }) {
   useEffect(() => {
-    const param = new URLSearchParams(window.location.search).get("no-track");
+    const query = new URLSearchParams(window.location.search);
+    const param = query.get("no-track") ?? query.get("internal"); // ?no-track=1 or ?internal=1 — same thing
     if (param === "1") setInternalBrowser(true);
     if (param === "0") setInternalBrowser(false);
     if (gaId && isInternalBrowser()) {

@@ -3,7 +3,8 @@
 //
 // A browser counts as internal when ANY of these is true:
 //   • it carries the opt-out cookie `lnh_internal=1` — set by opening the site once with ?no-track=1 on that computer
-//     (undo with ?no-track=0). The cookie lasts about 10 years.
+//     (or ?internal=1; undo with =0). It is per browser, so it works on mobile data where the IP address keeps changing.
+//     The cookie lasts about 10 years.
 //   • it is logged in to the CMS (Payload's `payload-token` cookie is sent to every path on this domain).
 //   • its IP address is listed in the INTERNAL_IPS environment variable (comma separated) — optional.
 // The actual enquiry (the lead itself) is still saved and still alerts the developer; only the analytics event is skipped.

@@ -42,7 +42,7 @@ export function renderDeveloperInviteHTML(input: DeveloperInviteInput): string {
 <body style="margin:0; padding:0; background-color:#f5f5f0; font-family:Helvetica, Arial, sans-serif;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f5f5f0; padding:32px 16px;"><tr><td align="center">
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px; width:100%; background:#ffffff; border:1px solid #e4e2db;">
-<tr><td style="padding:28px 32px 8px; font-size:20px; color:#1f1f1f; letter-spacing:0.02em;">LankaNewHomes</td></tr>
+<tr><td style="padding:24px 32px 18px; border-bottom:1px solid #e4e2db;"><a href="${site}" style="text-decoration:none;"><img src="https://www.lankanewhomes.com/brand/logo-email.png" width="130" alt="LankaNewHomes" style="display:block; border:0; width:130px; height:auto; font-size:18px; font-weight:700; color:#1f1f1f;"></a></td></tr>
 <tr><td style="padding:8px 32px 0;">
 <p style="margin:0 0 12px; font-size:22px; color:#1f1f1f; font-weight:400;">Your ${esc(input.name)} page is live. Register and get Verified.</p>
 <p style="margin:0 0 16px;"><span style="display:inline-block; background:#ecfeff; border:1px solid #67e8f9; color:#0e7490; border-radius:3px; padding:4px 9px; font-size:11px; letter-spacing:0.06em; text-transform:uppercase;">&#10003; Verified Developer</span></p>
