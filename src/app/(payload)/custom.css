@@ -2416,3 +2416,30 @@ h1,
 .ln-an-note { margin: 0 0 6px; font-size: 12px; line-height: 1.45; color: #6b6b66; }
 .ln-an .ln-devstats-small { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 @media (max-width: 1100px) { .ln-an-grid { grid-template-columns: 1fr; } }
+
+/* =====================================================================
+   ADMIN DASHBOARD (/cms) v2 (2026-10-09): same pieces as the other pages —
+   teal summary strip (clickable), main column of cards + side column of tasks.
+   ===================================================================== */
+.ln-dash-v2 { padding: 28px 32px 40px; max-width: 1400px; }
+.ln-dash-top { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+.ln-dash-v2 .ln-dash-title { margin: 0; font-size: 30px; font-weight: 800; letter-spacing: -0.02em; }
+.ln-dash-v2 .ln-dash-greeting { margin: 0 0 2px; }
+.ln-dash-top-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.ln-listsum > a { display: flex; flex-direction: column; gap: 4px; padding: 0 20px; border-left: 1px solid #a9cfcf; color: inherit; text-decoration: none; }
+.ln-listsum > a:first-child { border-left: 0; }
+.ln-listsum > a:hover strong { text-decoration: underline; }
+.ln-dash-sum { margin: 0 0 18px; }
+.ln-dash-v2 .ln-an-card .ln-dash-section-head { margin-bottom: 10px; }
+.ln-dash-v2 .ln-an-card .ln-dash-section-head .ln-an-h { margin: 0; }
+.ln-dash-v2 .ln-table { border: 0; }
+.ln-task-list { display: flex; flex-direction: column; }
+.ln-task-row { display: flex; align-items: center; gap: 12px; padding: 11px 4px; border-bottom: 1px solid #efede7; color: #111111; text-decoration: none; }
+.ln-task-row:last-child { border-bottom: 0; }
+.ln-task-row:hover { background: #f8f7f3; }
+.ln-task-row .ln-task-icon { width: 34px; height: 34px; }
+.ln-task-row .ln-task-text strong { font-size: 14px; }
+.ln-task-row .ln-task-text span { font-size: 12.5px; }
+/* the developers' "Finish your listings" panel inside the dashboard's side column */
+.ln-an-side section[aria-label="Finish your listings"] { padding: 0 !important; }
+.ln-an-side section[aria-label="Finish your listings"] h2 { font-size: 16px !important; font-weight: 800; }

@@ -113,112 +113,138 @@ export async function AdminDashboard(props: AdminViewServerProps) {
   ];
 
   return (
-    <div className="ln-dash">
-      <p className="ln-dash-greeting">{timeOfDayGreeting()}</p>
-      <h1 className="ln-dash-title">{isAdmin ? "LankaNewHomes Admin" : "LankaNewHomes Developer Dashboard"}</h1>
-
-      <LeadAlertModeBanner />
-
-      <div className="ln-dash-section">
-        <div className="ln-dash-section-head">
-          <h2>What do you want to do?</h2>
+    <div className="ln-dash ln-dash-v2">
+      <div className="ln-dash-top">
+        <div>
+          <p className="ln-dash-greeting">{timeOfDayGreeting()}</p>
+          <h1 className="ln-dash-title">{isAdmin ? "LankaNewHomes Admin" : "LankaNewHomes Developer Dashboard"}</h1>
         </div>
-        <div className="ln-task-grid">
-          {tasks.map((task) => (
-            <Link href={task.href} className="ln-task-card" key={task.title}>
-              <span className="ln-task-icon"><task.icon size={20} /></span>
-              <span className="ln-task-text">
-                <strong>{task.title}</strong>
-                <span>{task.hint}</span>
-              </span>
-              {"count" in task && task.count ? <span className="ln-nav-badge">{task.count}</span> : null}
-            </Link>
-          ))}
+        <div className="ln-dash-top-actions">
+          <Link href="/cms/collections/projects/create" className="ln-quick-action"><Plus size={15} /> Add project</Link>
+          {isAdmin ? <Link href="/cms/collections/lands/create" className="ln-quick-action"><Plus size={15} /> Add land</Link> : null}
         </div>
       </div>
 
-      <div className="ln-stat-grid">
+      <LeadAlertModeBanner />
+
+      <div className="ln-listsum ln-dash-sum">
         {stats.map((stat) => (
-          <Link href={stat.href} className="ln-stat-card ln-stat-link" key={stat.label}>
-            <div className="ln-stat-card-value">{stat.value.toLocaleString()}</div>
-            <div className="ln-stat-card-label">{stat.label}</div>
+          <Link href={stat.href} key={stat.label}>
+            <strong>{stat.value.toLocaleString()}</strong>
+            <span>{stat.label}</span>
           </Link>
         ))}
       </div>
 
-      <div className="ln-dash-section">
-        <div className="ln-dash-section-head">
-          <h2>Recent leads</h2>
-          <Link href="/cms/collections/leads">View all</Link>
-        </div>
-        {recentLeadsRes.docs.length === 0 ? (
-          <div className="ln-empty">No leads yet.</div>
-        ) : (
-          <table className="ln-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Project</th>
-                <th>Developer</th>
-                <th>Status</th>
-                <th>Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recentLeadsRes.docs.map((lead) => {
-                const project = lead.project as unknown;
-                const developer = project && typeof project === "object" && "developer" in project ? (project as { developer?: unknown }).developer : null;
-                const leadHref = `/cms/collections/leads/${lead.id}`;
-                const projectHref = relatedHref("projects", project);
-                return (
-                  <tr key={lead.id}>
-                    <td><Link href={leadHref}>{lead.name}</Link></td>
-                    <td>{projectHref ? <Link href={projectHref}>{relatedName(project)}</Link> : relatedName(project)}</td>
-                    <td>{relatedName(developer)}</td>
-                    <td><span className={`ln-badge ${LEAD_STATUS_BADGE[lead.status as string] ?? "ln-badge-neutral"}`}>{leadStatusLabel(lead.status as string)}</span></td>
-                    <td>{new Date(lead.createdAt).toLocaleDateString()}</td>
+      <div className="ln-an-grid">
+        <div className="ln-an-main">
+          <section className="ln-an-card">
+            <div className="ln-dash-section-head">
+              <h3 className="ln-an-h">Recent leads</h3>
+              <Link href="/cms/collections/leads">View all</Link>
+            </div>
+            {recentLeadsRes.docs.length === 0 ? (
+              <div className="ln-empty">No leads yet.</div>
+            ) : (
+              <table className="ln-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Project</th>
+                    <th>Developer</th>
+                    <th>Status</th>
+                    <th>Date</th>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        )}
-      </div>
+                </thead>
+                <tbody>
+                  {recentLeadsRes.docs.map((lead) => {
+                    const project = lead.project as unknown;
+                    const developer = project && typeof project === "object" && "developer" in project ? (project as { developer?: unknown }).developer : null;
+                    const leadHref = `/cms/collections/leads/${lead.id}`;
+                    const projectHref = relatedHref("projects", project);
+                    return (
+                      <tr key={lead.id}>
+                        <td><Link href={leadHref}>{lead.name}</Link></td>
+                        <td>{projectHref ? <Link href={projectHref}>{relatedName(project)}</Link> : relatedName(project)}</td>
+                        <td>{relatedName(developer)}</td>
+                        <td><span className={`ln-badge ${LEAD_STATUS_BADGE[lead.status as string] ?? "ln-badge-neutral"}`}>{leadStatusLabel(lead.status as string)}</span></td>
+                        <td>{new Date(lead.createdAt).toLocaleDateString()}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+          </section>
 
-      {/* "Finish your listings" is a to-do list for developers about their own listings; admins don't need it. */}
-      {!isAdmin ? <ListingTodoPanel /> : null}
-
-      <div className="ln-dash-section">
-        <div className="ln-dash-section-head">
-          <h2>Recent projects</h2>
-          <Link href="/cms/collections/projects">View all</Link>
+          <section className="ln-an-card">
+            <div className="ln-dash-section-head">
+              <h3 className="ln-an-h">Recently updated projects</h3>
+              <Link href="/cms/collections/projects">View all</Link>
+            </div>
+            {recentProjectsRes.docs.length === 0 ? (
+              <div className="ln-empty">No projects yet.</div>
+            ) : (
+              <table className="ln-table">
+                <thead>
+                  <tr>
+                    <th><Building2 size={12} style={{ verticalAlign: "-2px", marginRight: 4 }} />Project</th>
+                    <th>Status</th>
+                    <th><MapPin size={12} style={{ verticalAlign: "-2px", marginRight: 4 }} />Location</th>
+                    <th>Updated</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recentProjectsRes.docs.map((project) => {
+                    const photo = typeof project.heroImage === "string" ? project.heroImage : "";
+                    return (
+                      <tr key={project.id}>
+                        <td>
+                          <Link href={`/cms/collections/projects/${project.id}`} className="ln-cell-name">
+                            {photo ? (
+                              // eslint-disable-next-line @next/next/no-img-element -- admin table thumbnail
+                              <img src={photo} alt="" className="ln-cell-thumb" loading="lazy" />
+                            ) : (
+                              <span className="ln-cell-thumb ln-cell-thumb-empty" aria-hidden="true" />
+                            )}
+                            <span className="ln-cell-name-text">
+                              <strong>{project.name || "Untitled"}</strong>
+                              <small>{relatedName(project.developer, "")}</small>
+                            </span>
+                          </Link>
+                        </td>
+                        <td><span className="ln-badge ln-badge-neutral">{String(project.status ?? "—")}</span></td>
+                        <td>{project.location || "—"}</td>
+                        <td>{new Date(project.updatedAt).toLocaleDateString()}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+          </section>
         </div>
-        {recentProjectsRes.docs.length === 0 ? (
-          <div className="ln-empty">No projects yet.</div>
-        ) : (
-          <table className="ln-table">
-            <thead>
-              <tr>
-                <th><Building2 size={12} style={{ verticalAlign: "-2px", marginRight: 4 }} />Project</th>
-                <th>Developer</th>
-                <th>Status</th>
-                <th><MapPin size={12} style={{ verticalAlign: "-2px", marginRight: 4 }} />Location</th>
-                <th>Updated</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recentProjectsRes.docs.map((project) => (
-                <tr key={project.id}>
-                  <td><Link href={`/cms/collections/projects/${project.id}`}>{project.name || "Untitled"}</Link></td>
-                  <td>{relatedName(project.developer)}</td>
-                  <td><span className="ln-badge ln-badge-neutral">{String(project.status ?? "—")}</span></td>
-                  <td>{project.location || "—"}</td>
-                  <td>{new Date(project.updatedAt).toLocaleDateString()}</td>
-                </tr>
+
+        <aside className="ln-an-side">
+          <section className="ln-an-card">
+            <h3 className="ln-an-h">What do you want to do?</h3>
+            <div className="ln-task-list">
+              {tasks.map((task) => (
+                <Link href={task.href} className="ln-task-row" key={task.title}>
+                  <span className="ln-task-icon"><task.icon size={18} /></span>
+                  <span className="ln-task-text">
+                    <strong>{task.title}</strong>
+                    <span>{task.hint}</span>
+                  </span>
+                  {"count" in task && task.count ? <span className="ln-nav-badge">{task.count}</span> : null}
+                </Link>
               ))}
-            </tbody>
-          </table>
-        )}
+            </div>
+          </section>
+
+          {/* "Finish your listings" is a to-do list for developers about their own listings; admins don't need it. */}
+          {!isAdmin ? <ListingTodoPanel /> : null}
+        </aside>
       </div>
     </div>
   );
