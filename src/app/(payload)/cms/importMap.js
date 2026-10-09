@@ -27,10 +27,11 @@ import { AddonRequestPanel as AddonRequestPanel_78c0b05313dbf1762f420ef38d99b378
 import { SocialPanel as SocialPanel_e89e5c6e27d995476e5b50bf9943be69 } from '@/components/payload/SocialPanel'
 import { LandNameCell as LandNameCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
 import { LandCompletenessCell as LandCompletenessCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
+import { CollectionStatusTabs as CollectionStatusTabs_00b9a16be2dc79eb89b0780c93256e52 } from '@/components/payload/CollectionStatusTabs'
+import { LandListSummary as LandListSummary_4455f2e7fcb548bace8f51a4f9520c2c } from '@/components/payload/LandListSummary'
 import { MoneyCell as MoneyCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
 import { NeighborhoodCell as NeighborhoodCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
 import { HeroSlideCell as HeroSlideCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
-import { CollectionStatusTabs as CollectionStatusTabs_00b9a16be2dc79eb89b0780c93256e52 } from '@/components/payload/CollectionStatusTabs'
 import { DateCell as DateCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
 import { SubscriptionsList as SubscriptionsList_2dc33570c131e8faf2f1046801145d72 } from '@/components/payload/SubscriptionsList'
 import { RatingCell as RatingCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
@@ -111,10 +112,11 @@ export const importMap = {
   "@/components/payload/SocialPanel#SocialPanel": SocialPanel_e89e5c6e27d995476e5b50bf9943be69,
   "@/components/payload/ListingCells#LandNameCell": LandNameCell_76baef6cf7c9eb87fad9c61807ea9c87,
   "@/components/payload/ListingCells#LandCompletenessCell": LandCompletenessCell_76baef6cf7c9eb87fad9c61807ea9c87,
+  "@/components/payload/CollectionStatusTabs#CollectionStatusTabs": CollectionStatusTabs_00b9a16be2dc79eb89b0780c93256e52,
+  "@/components/payload/LandListSummary#LandListSummary": LandListSummary_4455f2e7fcb548bace8f51a4f9520c2c,
   "@/components/payload/ListingCells#MoneyCell": MoneyCell_76baef6cf7c9eb87fad9c61807ea9c87,
   "@/components/payload/ListingCells#NeighborhoodCell": NeighborhoodCell_76baef6cf7c9eb87fad9c61807ea9c87,
   "@/components/payload/ListingCells#HeroSlideCell": HeroSlideCell_76baef6cf7c9eb87fad9c61807ea9c87,
-  "@/components/payload/CollectionStatusTabs#CollectionStatusTabs": CollectionStatusTabs_00b9a16be2dc79eb89b0780c93256e52,
   "@/components/payload/ListingCells#DateCell": DateCell_76baef6cf7c9eb87fad9c61807ea9c87,
   "@/components/payload/SubscriptionsList#SubscriptionsList": SubscriptionsList_2dc33570c131e8faf2f1046801145d72,
   "@/components/payload/ListingCells#RatingCell": RatingCell_76baef6cf7c9eb87fad9c61807ea9c87,

@@ -84,37 +84,26 @@ function downloadAnalyticsCsv(data: AnalyticsSummaryResponse) {
   URL.revokeObjectURL(url);
 }
 
-function StatCard({ label, value }: { label: string; value: string }) {
-  return (
-    <div style={{ border: "1px solid var(--theme-elevation-150)", borderRadius: 6, padding: "16px 18px", background: "var(--theme-elevation-0)" }}>
-      <div style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: 0.4, opacity: 0.65 }}>{label}</div>
-      <div style={{ fontSize: 26, fontWeight: 700, marginTop: 6 }}>{value}</div>
-    </div>
-  );
-}
-
 function BreakdownList({ title, rows, emptyLabel }: { title: string; rows: { key: string; label: string; count: number; percent: number }[]; emptyLabel?: string }) {
   return (
-    <div style={{ border: "1px solid var(--theme-elevation-150)", borderRadius: 6, padding: 16, background: "var(--theme-elevation-0)" }}>
-      <h5 style={{ margin: "0 0 12px" }}>{title}</h5>
+    <section className="ln-an-card">
+      <h3 className="ln-an-h">{title}</h3>
       {rows.length === 0 ? (
-        <p style={{ fontSize: 13, opacity: 0.65, margin: 0 }}>{emptyLabel ?? "No events yet for this period."}</p>
+        <p className="ln-an-empty">{emptyLabel ?? "No events yet for this period."}</p>
       ) : (
-        <div style={{ display: "grid", gap: 8 }}>
+        <div className="ln-an-bars">
           {rows.map((row) => (
             <div key={row.key}>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 4 }}>
-                <span style={{ textTransform: "capitalize" }}>{row.label.replace(/_/g, " ")}</span>
-                <span style={{ opacity: 0.7 }}>{row.count.toLocaleString()} · {row.percent}%</span>
+              <div className="ln-an-bar-head">
+                <span>{row.label.replace(/_/g, " ")}</span>
+                <span>{row.count.toLocaleString()} · {row.percent}%</span>
               </div>
-              <div style={{ height: 6, borderRadius: 999, background: "var(--theme-elevation-100)", overflow: "hidden" }}>
-                <div style={{ height: "100%", width: `${row.percent}%`, background: "#f47b36", borderRadius: 999 }} />
-              </div>
+              <div className="ln-an-bar"><span style={{ width: `${row.percent}%` }} /></div>
             </div>
           ))}
         </div>
       )}
-    </div>
+    </section>
   );
 }
 
@@ -162,202 +151,155 @@ export function AnalyticsDashboard() {
     for (const row of data?.byType ?? []) map.set(row.key, row.count);
     return map;
   }, [data]);
+  const n = (key: string) => (byTypeMap.get(key) ?? 0).toLocaleString();
 
   return (
-    <div style={{ padding: "24px 32px" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8, marginBottom: 20 }}>
-        <h1 style={{ margin: 0 }}>Analytics</h1>
-        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-          {RANGE_PRESETS.map((p, i) => (
-            <button
-              key={p.label}
-              type="button"
-              onClick={() => setPresetIndex(i)}
-              style={{
-                fontSize: 13,
-                padding: "6px 14px",
-                borderRadius: 999,
-                border: "1px solid var(--theme-elevation-200)",
-                background: i === presetIndex ? "var(--theme-elevation-800)" : "transparent",
-                color: i === presetIndex ? "var(--theme-elevation-0)" : "inherit",
-                cursor: "pointer",
-              }}
-            >
-              {p.label}
-            </button>
-          ))}
-          <button
-            type="button"
-            disabled={!data}
-            onClick={() => data && downloadAnalyticsCsv(data)}
-            style={{
-              fontSize: 13,
-              padding: "6px 14px",
-              borderRadius: 999,
-              border: "1px solid var(--theme-elevation-200)",
-              background: "transparent",
-              cursor: data ? "pointer" : "not-allowed",
-              opacity: data ? 1 : 0.5,
-              marginLeft: 6,
-            }}
-          >
+    <div className="ln-an">
+      <div className="ln-an-head">
+        <div>
+          <h1>Analytics</h1>
+          {data ? <p className="ln-an-sub">{data.range.startDate} to {data.range.endDate}</p> : null}
+        </div>
+        <div className="ln-an-tools">
+          <div className="ln-seg" role="group" aria-label="Date range">
+            {RANGE_PRESETS.map((p, i) => (
+              <button key={p.label} type="button" className={i === presetIndex ? "is-on" : ""} onClick={() => setPresetIndex(i)}>
+                {p.label}
+              </button>
+            ))}
+          </div>
+          <button type="button" className="ln-btn" disabled={!data} onClick={() => data && downloadAnalyticsCsv(data)}>
             Download CSV
           </button>
         </div>
       </div>
 
-      {loading && <p style={{ opacity: 0.7 }}>Loading…</p>}
-      {error && <p style={{ color: "#c4560a" }}>{error}</p>}
+      {loading && <p className="ln-an-empty">Loading…</p>}
+      {error && <p className="ln-plan-err">{error}</p>}
 
       {!loading && !error && data && (
-        <>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12, marginBottom: 24 }}>
-            <StatCard label="Total events" value={data.totalEvents.toLocaleString()} />
-            <StatCard label="Page views" value={(byTypeMap.get("view") ?? 0).toLocaleString()} />
-            <StatCard label="Inquiries" value={(byTypeMap.get("lead_submitted") ?? 0).toLocaleString()} />
-            <StatCard label="Saves" value={(byTypeMap.get("save") ?? 0).toLocaleString()} />
-            <StatCard label="Brochure downloads" value={(byTypeMap.get("brochure_download") ?? 0).toLocaleString()} />
-            <StatCard label="Phone clicks" value={(byTypeMap.get("phone_click") ?? 0).toLocaleString()} />
-            <StatCard label="WhatsApp clicks" value={(byTypeMap.get("whatsapp_click") ?? 0).toLocaleString()} />
-          </div>
-
-          {data.leads ? (
-            <div style={{ marginBottom: 24 }}>
-              <h5 style={{ marginBottom: 8 }}>Lead pipeline &amp; response time</h5>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12, marginBottom: 12 }}>
-                <StatCard label="Awaiting your reply" value={data.leads.awaitingReply.toLocaleString()} />
-                <StatCard label="Avg first response" value={formatMinutes(data.leads.avgResponseMinutes)} />
-                <StatCard label="Median first response" value={formatMinutes(data.leads.medianResponseMinutes)} />
-                <StatCard label="Answered within 24 hours" value={data.leads.respondedWithinHourPercent === null ? "—" : `${data.leads.respondedWithinHourPercent}%`} />
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: `repeat(${data.leads.stages.length}, 1fr)`, gap: 8 }}>
-                {data.leads.stages.map((stage, index) => (
-                  <div key={stage.status} style={{ border: "1px solid var(--theme-elevation-150)", borderRadius: 6, padding: "10px 12px", background: "var(--theme-elevation-0)" }}>
-                    <div style={{ fontSize: 11, opacity: 0.65, textTransform: "uppercase", letterSpacing: "0.06em" }}>{index + 1}. {stage.label}</div>
-                    <div style={{ fontSize: 22, fontWeight: 700 }}>{stage.count.toLocaleString()}</div>
-                  </div>
-                ))}
-              </div>
-              <div style={{ marginTop: 10, padding: "10px 12px", borderRadius: 6, border: "1px solid var(--theme-elevation-150)", background: "var(--theme-elevation-0)", fontSize: 13, display: "flex", gap: 10, alignItems: "baseline", flexWrap: "wrap" }}>
-                <strong style={{ color: data.leads.badge.earned ? "var(--theme-success-500)" : "inherit" }}>
-                  {data.leads.badge.earned ? "✓ “Responds within 24 hours” badge earned" : "“Responds within 24 hours” badge: not yet"}
-                </strong>
-                <span style={{ opacity: 0.7 }}>
-                  {data.leads.badge.sampleSize} of {data.leads.badge.minSample} leads judged in the last {data.leads.badge.windowDays} days
-                  {data.leads.badge.withinHourRatePercent !== null ? ` · ${data.leads.badge.withinHourRatePercent}% answered within the hour (need ${data.leads.badge.minRatePercent}%)` : ""}
-                  . Shows on your profile and every listing while it holds.
-                </span>
-              </div>
-              <p style={{ margin: "8px 0 0", fontSize: 12, opacity: 0.65 }}>
-                Response time is measured from when a lead arrives to the first time you move it off &ldquo;New&rdquo; in <Link href="/cms/collections/leads">Leads</Link>. A lead left unanswered for over an hour counts against the badge.
-              </p>
+        <div className="ln-an-grid">
+          <div className="ln-an-main">
+            <div className="ln-devstats-big">
+              <div><strong>{n("view")}</strong><span>Page views</span></div>
+              <div><strong>{n("lead_submitted")}</strong><span>Inquiries</span></div>
+              <div><strong>{data.totalEvents.toLocaleString()}</strong><span>Total events</span></div>
             </div>
-          ) : null}
 
-          <div style={{ marginBottom: 24 }}>
-            <h5 style={{ marginBottom: 8 }}>Activity over time</h5>
-            {chartData.length === 0 ? (
-              <p style={{ fontSize: 13, opacity: 0.65 }}>Not enough data yet for a chart.</p>
-            ) : (
-              <div style={{ width: "100%", height: 220, border: "1px solid var(--theme-elevation-150)", borderRadius: 6, padding: 12, background: "var(--theme-elevation-0)" }}>
-                <ResponsiveContainer>
-                  <BarChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" tick={{ fontSize: 11 }} />
-                    <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
-                    <Tooltip />
-                    <Bar dataKey="count" name="Events" fill="#f47b36" radius={[3, 3, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            )}
-          </div>
+            <div className="ln-devstats-small">
+              <div><strong>{n("save")}</strong><span>Saves</span></div>
+              <div><strong>{n("brochure_download")}</strong><span>Brochure downloads</span></div>
+              <div><strong>{n("phone_click")}</strong><span>Phone clicks</span></div>
+              <div><strong>{n("whatsapp_click")}</strong><span>WhatsApp clicks</span></div>
+            </div>
 
-          <div style={{ marginBottom: 24 }}>
-            <BreakdownList
-              title="Ad Traffic (Google, Facebook & Instagram)"
-              rows={data.adSources}
-              emptyLabel="No ad-attributed traffic in this period — this only counts visits that arrived through a properly tagged ad link (utm_source/utm_medium)."
-            />
-          </div>
+            <section className="ln-an-card">
+              <h3 className="ln-an-h">Activity over time</h3>
+              {chartData.length === 0 ? (
+                <p className="ln-an-empty">Not enough data yet for a chart.</p>
+              ) : (
+                <div className="ln-an-chart">
+                  <ResponsiveContainer>
+                    <BarChart data={chartData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e4e2db" vertical={false} />
+                      <XAxis dataKey="date" tick={{ fontSize: 11 }} tickLine={false} />
+                      <YAxis tick={{ fontSize: 11 }} allowDecimals={false} tickLine={false} axisLine={false} />
+                      <Tooltip />
+                      <Bar dataKey="count" name="Events" fill="#f47b36" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+            </section>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 16, marginBottom: 24 }}>
-            <BreakdownList title="Traffic Source" rows={data.trafficSources} />
-            <BreakdownList title="Device Type" rows={data.deviceTypes} />
-          </div>
-
-          <div style={{ marginBottom: data.byDeveloper ? 24 : 0 }}>
-            <h5 style={{ marginBottom: 8 }}>By Listing</h5>
-            {data.byListing.length === 0 ? (
-              <p style={{ fontSize: 13, opacity: 0.65 }}>No listings with activity in this period yet.</p>
-            ) : (
-              <div style={{ border: "1px solid var(--theme-elevation-150)", borderRadius: 6, overflow: "hidden", background: "var(--theme-elevation-0)" }}>
-                <table style={{ width: "100%", fontSize: 13, borderCollapse: "collapse" }}>
+            <section className="ln-an-card">
+              <h3 className="ln-an-h">By listing</h3>
+              {data.byListing.length === 0 ? (
+                <p className="ln-an-empty">No listings with activity in this period yet.</p>
+              ) : (
+                <table className="ln-table">
                   <thead>
-                    <tr style={{ textAlign: "left", opacity: 0.65, background: "var(--theme-elevation-50)" }}>
-                      <th style={{ padding: "8px 14px" }}>Listing</th>
-                      <th style={{ padding: "8px 14px" }}>Views</th>
-                      <th style={{ padding: "8px 14px" }}>Inquiries</th>
-                      <th style={{ padding: "8px 14px" }}>Saves</th>
-                      <th style={{ padding: "8px 14px" }}>Total events</th>
-                    </tr>
+                    <tr><th>Listing</th><th>Views</th><th>Inquiries</th><th>Saves</th><th>Total events</th></tr>
                   </thead>
                   <tbody>
                     {data.byListing.map((row) => (
-                      <tr key={row.projectId} style={{ borderTop: "1px solid var(--theme-elevation-150)" }}>
-                        <td style={{ padding: "8px 14px" }}>
-                          {row.projectSlug ? (
-                            <Link href={`/cms/collections/projects/${row.projectId}`}>{row.projectName}</Link>
-                          ) : (
-                            row.projectName
-                          )}
-                        </td>
-                        <td style={{ padding: "8px 14px" }}>{(row.byType.view ?? 0).toLocaleString()}</td>
-                        <td style={{ padding: "8px 14px" }}>{(row.byType.lead_submitted ?? 0).toLocaleString()}</td>
-                        <td style={{ padding: "8px 14px" }}>{(row.byType.save ?? 0).toLocaleString()}</td>
-                        <td style={{ padding: "8px 14px" }}><strong>{row.total.toLocaleString()}</strong></td>
+                      <tr key={row.projectId}>
+                        <td>{row.projectSlug ? <Link href={`/cms/collections/projects/${row.projectId}`}>{row.projectName}</Link> : row.projectName}</td>
+                        <td>{(row.byType.view ?? 0).toLocaleString()}</td>
+                        <td>{(row.byType.lead_submitted ?? 0).toLocaleString()}</td>
+                        <td>{(row.byType.save ?? 0).toLocaleString()}</td>
+                        <td><strong>{row.total.toLocaleString()}</strong></td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
-              </div>
-            )}
-          </div>
+              )}
+            </section>
 
-          {data.byDeveloper && (
-            <div>
-              <h5 style={{ marginBottom: 8 }}>By Developer (platform-wide)</h5>
-              {data.byDeveloper.length === 0 ? (
-                <p style={{ fontSize: 13, opacity: 0.65 }}>No developer activity in this period yet.</p>
-              ) : (
-                <div style={{ border: "1px solid var(--theme-elevation-150)", borderRadius: 6, overflow: "hidden", background: "var(--theme-elevation-0)" }}>
-                  <table style={{ width: "100%", fontSize: 13, borderCollapse: "collapse" }}>
+            {data.byDeveloper && (
+              <section className="ln-an-card">
+                <h3 className="ln-an-h">By developer (platform-wide)</h3>
+                {data.byDeveloper.length === 0 ? (
+                  <p className="ln-an-empty">No developer activity in this period yet.</p>
+                ) : (
+                  <table className="ln-table">
                     <thead>
-                      <tr style={{ textAlign: "left", opacity: 0.65, background: "var(--theme-elevation-50)" }}>
-                        <th style={{ padding: "8px 14px" }}>Developer</th>
-                        <th style={{ padding: "8px 14px" }}>Views</th>
-                        <th style={{ padding: "8px 14px" }}>Inquiries</th>
-                        <th style={{ padding: "8px 14px" }}>Total events</th>
-                      </tr>
+                      <tr><th>Developer</th><th>Views</th><th>Inquiries</th><th>Total events</th></tr>
                     </thead>
                     <tbody>
                       {data.byDeveloper.map((row) => (
-                        <tr key={row.developerId} style={{ borderTop: "1px solid var(--theme-elevation-150)" }}>
-                          <td style={{ padding: "8px 14px" }}>
-                            <Link href={`/cms/collections/developers/${row.developerId}`}>{row.developerName}</Link>
-                          </td>
-                          <td style={{ padding: "8px 14px" }}>{(row.byType.view ?? 0).toLocaleString()}</td>
-                          <td style={{ padding: "8px 14px" }}>{(row.byType.lead_submitted ?? 0).toLocaleString()}</td>
-                          <td style={{ padding: "8px 14px" }}><strong>{row.total.toLocaleString()}</strong></td>
+                        <tr key={row.developerId}>
+                          <td><Link href={`/cms/collections/developers/${row.developerId}`}>{row.developerName}</Link></td>
+                          <td>{(row.byType.view ?? 0).toLocaleString()}</td>
+                          <td>{(row.byType.lead_submitted ?? 0).toLocaleString()}</td>
+                          <td><strong>{row.total.toLocaleString()}</strong></td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
+                )}
+              </section>
+            )}
+          </div>
+
+          <aside className="ln-an-side">
+            {data.leads ? (
+              <section className="ln-an-card">
+                <h3 className="ln-an-h">Lead response</h3>
+                <dl className="ln-an-facts">
+                  <div><dt>Awaiting your reply</dt><dd>{data.leads.awaitingReply.toLocaleString()}</dd></div>
+                  <div><dt>Average first response</dt><dd>{formatMinutes(data.leads.avgResponseMinutes)}</dd></div>
+                  <div><dt>Median first response</dt><dd>{formatMinutes(data.leads.medianResponseMinutes)}</dd></div>
+                  <div><dt>Answered within 24 hours</dt><dd>{data.leads.respondedWithinHourPercent === null ? "—" : `${data.leads.respondedWithinHourPercent}%`}</dd></div>
+                </dl>
+                <div className="ln-an-stages">
+                  {data.leads.stages.map((stage, index) => (
+                    <div key={stage.status}>
+                      <strong>{stage.count.toLocaleString()}</strong>
+                      <span>{index + 1}. {stage.label}</span>
+                    </div>
+                  ))}
                 </div>
-              )}
-            </div>
-          )}
-        </>
+                <p className={`ln-an-badge ${data.leads.badge.earned ? "is-earned" : ""}`}>
+                  {data.leads.badge.earned ? "✓ “Responds within 24 hours” badge earned" : "“Responds within 24 hours” badge: not yet"}
+                </p>
+                <p className="ln-an-note">
+                  {data.leads.badge.sampleSize} of {data.leads.badge.minSample} leads judged in the last {data.leads.badge.windowDays} days
+                  {data.leads.badge.withinHourRatePercent !== null ? ` · ${data.leads.badge.withinHourRatePercent}% answered within 24 hours (need ${data.leads.badge.minRatePercent}%)` : ""}.
+                </p>
+                <p className="ln-an-note">Measured from when a lead arrives to the first time you move it off &ldquo;New&rdquo; in <Link href="/cms/collections/leads">Leads</Link>.</p>
+              </section>
+            ) : null}
+
+            <BreakdownList title="Traffic source" rows={data.trafficSources} />
+            <BreakdownList title="Device type" rows={data.deviceTypes} />
+            <BreakdownList
+              title="Ad traffic (Google, Facebook & Instagram)"
+              rows={data.adSources}
+              emptyLabel="No ad-attributed traffic in this period. This only counts visits that arrived through a properly tagged ad link."
+            />
+          </aside>
+        </div>
       )}
     </div>
   );

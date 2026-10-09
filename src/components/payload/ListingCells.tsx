@@ -157,15 +157,16 @@ export function PlanCell({ cellData }: CellProps) {
 // ---- Shared cells for every other list (Leads, Reviews, Payments, Subscriptions, Articles, …) ----
 // One look everywhere: status = coloured badge, dates short and plain, money as Rs., people = name over email.
 
-const GOOD = ['active', 'approved', 'completed', 'paid', 'confirmed', 'fulfilled', 'converted', 'published', 'posted', 'site_visit', 'admin', 'sent']
-const WARN = ['pending', 'requested', 'incomplete', 'new', 'queued', 'developer', 'past_due', 'contacted']
+const GOOD = ['available', 'active', 'approved', 'completed', 'paid', 'confirmed', 'fulfilled', 'converted', 'published', 'posted', 'site_visit', 'admin', 'sent']
+const WARN = ['reserved', 'pending', 'requested', 'incomplete', 'new', 'queued', 'developer', 'past_due', 'contacted']
 const BAD = ['rejected', 'failed', 'canceled', 'cancelled', 'unpaid', 'refunded', 'not_interested', 'error', 'archived']
 const pretty = (value: string) => value.replace(/[_-]/g, ' ').replace(/^./, (c) => c.toUpperCase())
 
 export function StatusCell({ cellData }: CellProps) {
   const value = text(cellData)
   if (!value) return <span className="ln-cell-muted">—</span>
-  const tone = GOOD.includes(value) ? 'ln-badge-success' : BAD.includes(value) ? 'ln-badge-danger' : WARN.includes(value) ? 'ln-badge-warning' : 'ln-badge-neutral'
+  const key = value.toLowerCase()
+  const tone = GOOD.includes(key) ? 'ln-badge-success' : BAD.includes(key) ? 'ln-badge-danger' : WARN.includes(key) ? 'ln-badge-warning' : 'ln-badge-neutral'
   return <span className={`ln-badge ${tone}`}>{pretty(value)}</span>
 }
 

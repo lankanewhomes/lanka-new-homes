@@ -47,6 +47,12 @@ export const Lands: CollectionConfig = {
     useAsTitle: 'title',
     group: 'Properties',
     defaultColumns: ['title', 'sellerName', 'status', 'priceLkr', 'completeness', 'district'],
+    components: {
+      beforeListTable: [
+        { path: '@/components/payload/CollectionStatusTabs#CollectionStatusTabs', clientProps: { field: 'status', values: [{ label: 'Available', value: 'Available' }, { label: 'Reserved', value: 'Reserved' }, { label: 'Sold', value: 'Sold' }] } },
+        '@/components/payload/LandListSummary#LandListSummary',
+      ],
+    },
     hidden: hiddenUnlessAdmin,
   },
   access: {
@@ -87,7 +93,7 @@ export const Lands: CollectionConfig = {
             ...selectWithOther('district', 'District', DISTRICT_OPTIONS),
             ...selectWithOther('city', 'City', CITY_OPTIONS),
             ...selectWithOther('province', 'Province', PROVINCE_OPTIONS),
-            { name: 'status', type: 'select', required: true, defaultValue: 'Available', options: ['Available', 'Reserved', 'Sold'], index: true },
+            { name: 'status', type: 'select', required: true, defaultValue: 'Available', options: ['Available', 'Reserved', 'Sold'], index: true, admin: { components: { Cell: '@/components/payload/ListingCells#StatusCell' } } },
             { name: 'isFeatured', type: 'checkbox', defaultValue: false },
             { name: 'isTrending', type: 'checkbox', label: 'Trending', defaultValue: false },
             {
