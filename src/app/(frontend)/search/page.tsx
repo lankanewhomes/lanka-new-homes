@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { getAllProjects } from "@/lib/project-store";
 import { ProjectListingShell } from "@/components/marketplace/listing-shell";
+import { withSocial } from "@/lib/seo";
 
 // Regenerate at most once a minute so admin edits show up without waiting for the next deploy.
 export const revalidate = 60;
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "Search New Developments in Sri Lanka",
   description: "Search new apartment and housing developments across Sri Lanka by location, price, and availability.",
   alternates: {
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
     title: "Search New Developments in Sri Lanka",
     description: "Search new apartment and housing developments across Sri Lanka by location, price, and availability.",
   },
-};
+}, { path: "/search" });
 
 export default async function SearchPage() {
   const projects = await getAllProjects();

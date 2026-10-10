@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import type { ConstructionCompanyCategory } from "@/types";
-import type { BreadcrumbEntry } from "@/lib/seo";
+import { withSocial, type BreadcrumbEntry } from "@/lib/seo";
 
 export type ConstructionCompanyPageConfig = {
   path: string;
@@ -57,22 +57,11 @@ export const constructionCompanyPages: Record<string, ConstructionCompanyPageCon
 };
 
 export function buildConstructionCompanyMetadata(config: ConstructionCompanyPageConfig): Metadata {
-  return {
+  return withSocial({
     title: config.metaTitle,
     description: config.metaDescription,
     alternates: {
       canonical: config.path,
     },
-    openGraph: {
-      title: config.metaTitle,
-      description: config.metaDescription,
-      url: config.path,
-      type: "website",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: config.metaTitle,
-      description: config.metaDescription,
-    },
-  };
+  });
 }

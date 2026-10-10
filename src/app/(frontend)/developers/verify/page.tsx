@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { VerifyDomainConfirm } from "./confirm-client";
+import { withSocial } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "Confirm your company email",
   robots: { index: false, follow: false },
-};
+}, { path: "/developers/verify" });
 
 export default async function VerifyDomainPage({ searchParams }: { searchParams: Promise<{ token?: string }> }) {
   const { token } = await searchParams;

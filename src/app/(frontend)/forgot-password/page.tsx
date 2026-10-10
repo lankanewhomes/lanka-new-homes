@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { ForgotPasswordForm } from "@/components/auth/forgot-password-form";
+import { withSocial } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "Forgot Password",
   alternates: { canonical: "/forgot-password" },
   robots: { index: false, follow: true },
-};
+}, { path: "/forgot-password" });
 
 export default function ForgotPasswordPage() {
   return (

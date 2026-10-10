@@ -9,6 +9,7 @@ import { FEATURED_TOOLTIP, VERIFIED_DEVELOPER_TOOLTIP } from "@/lib/developer-ba
 import { pickSimilarListings } from "@/lib/similar-listings";
 import { SimilarListingsSection } from "@/components/marketplace/similar-listings";
 import { PlansAndHomesSection, ProjectHero, ProjectStatsChips, StatsContactCard } from "@/components/marketplace/components";
+import { withSocial } from "@/lib/seo";
 
 // Regenerate at most once a minute so admin edits (e.g. status changes)
 // show up without waiting for the next deploy.
@@ -25,11 +26,11 @@ export async function generateMetadata({ params }: FloorPlansPageProps): Promise
   const project = await getProjectBySlug(slug);
   if (!project) return { title: "Floor Plans Not Found", robots: { index: false, follow: false } };
 
-  return {
+  return withSocial({
     title: `${project.name} Floor Plans`,
     description: `Explore all floor plans and homes available at ${project.name}.`,
     alternates: { canonical: `/projects/${project.slug}/floor-plans` },
-  };
+  }, { image: project.heroImage, imageAlt: project.name });
 }
 
 export default async function FloorPlansPage({ params }: FloorPlansPageProps) {

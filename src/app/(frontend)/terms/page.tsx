@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { withSocial } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "Terms of Service",
   alternates: { canonical: "/terms" },
   robots: { index: false, follow: true },
-};
+}, { path: "/terms" });
 
 export default function TermsPage() {
   return (

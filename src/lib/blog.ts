@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSocial } from "@/lib/seo";
 
 export type BlogSection = { heading: string; body: string };
 
@@ -225,25 +226,15 @@ export const blogPosts: Record<string, BlogPost> = {
 };
 
 export function buildBlogMetadata(post: BlogPost): Metadata {
-  return {
-    title: post.metaTitle,
-    description: post.metaDescription,
-    alternates: { canonical: post.path },
-    ...(post.draft ? { robots: { index: false, follow: false } } : {}),
-    openGraph: {
+  return withSocial(
+    {
       title: post.metaTitle,
       description: post.metaDescription,
-      url: post.path,
-      type: "article",
-      images: [{ url: post.heroImage }],
+      alternates: { canonical: post.path },
+      ...(post.draft ? { robots: { index: false, follow: false } } : {}),
     },
-    twitter: {
-      card: "summary_large_image",
-      title: post.metaTitle,
-      description: post.metaDescription,
-      images: [post.heroImage],
-    },
-  };
+    { type: "article", image: post.heroImage, imageAlt: post.metaTitle },
+  );
 }
 
 export function formatBlogDate(iso: string): string {

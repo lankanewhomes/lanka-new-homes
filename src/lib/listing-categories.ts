@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSocial } from "@/lib/seo";
 import type { Project } from "@/types";
 import type { BreadcrumbEntry } from "@/lib/seo";
 
@@ -211,22 +212,11 @@ export const searchablePages: SearchablePage[] = [
 ];
 
 export function buildCategoryMetadata(category: ProjectCategory): Metadata {
-  return {
+  return withSocial({
     title: category.metaTitle,
     description: category.metaDescription,
     alternates: {
       canonical: category.path,
     },
-    openGraph: {
-      title: category.metaTitle,
-      description: category.metaDescription,
-      url: category.path,
-      type: "website",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: category.metaTitle,
-      description: category.metaDescription,
-    },
-  };
+  });
 }

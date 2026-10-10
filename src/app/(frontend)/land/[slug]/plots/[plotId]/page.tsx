@@ -16,6 +16,7 @@ import {
   ProjectStatsChips,
   StatsContactCard,
 } from "@/components/marketplace/components";
+import { withSocial } from "@/lib/seo";
 
 // Regenerate at most once a minute so admin edits (e.g. status changes)
 // show up without waiting for the next deploy.
@@ -41,7 +42,7 @@ export async function generateMetadata({ params }: PlotPageProps): Promise<Metad
     return { title: "Plot Not Found", robots: { index: false, follow: false } };
   }
 
-  return {
+  return withSocial({
     title: `${plot.planName} - ${land.title}`,
     description: `${plot.planName} at ${land.title}: ${plot.floorAreaSqFt} perches.`,
     alternates: { canonical: `/land/${land.slug}/plots/${plot.slug ?? plot.id}` },
@@ -51,7 +52,7 @@ export async function generateMetadata({ params }: PlotPageProps): Promise<Metad
       url: `/land/${land.slug}/plots/${plot.slug ?? plot.id}`,
       images: [{ url: land.heroImage, alt: plot.planName }],
     },
-  };
+  });
 }
 
 export default async function LandPlotDetailPage({ params }: PlotPageProps) {

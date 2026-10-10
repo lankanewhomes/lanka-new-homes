@@ -347,3 +347,6 @@ gets real per-locale routes, hreflang tags become necessary at that point.
   status) on `/projects/*` pages are currently cosmetic + client-side sort
   only, per the "don't touch underlying data fetching" constraint. Wiring
   them to actually filter the list is a follow-up, not done here.
+
+## Open Graph / Twitter metadata
+All share-preview tags are built in one place, `socialMetadata` / `withSocial` in `src/lib/seo.ts`. Every page wraps its metadata with `withSocial(...)` (static pages) or returns it from `generateMetadata`. A page's own `openGraph` replaces the root one entirely in Next, so never hand-write a partial `openGraph`. Default image: `public/og-default.jpg` (1200x630); SVG logos fall back to it because share crawlers can't render SVG.

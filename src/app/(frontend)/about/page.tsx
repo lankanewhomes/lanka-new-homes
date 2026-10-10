@@ -6,14 +6,15 @@ import { getAllProjects } from "@/lib/project-store";
 import { getAllLands } from "@/lib/land-store";
 import { getAllDevelopers } from "@/lib/developer-store";
 import { getAllNeighborhoods } from "@/lib/neighborhood-store";
+import { withSocial } from "@/lib/seo";
 
 export const revalidate = 3600;
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "About Us – Sri Lanka's New Homes Marketplace",
   description: "LankaNewHomes is Sri Lanka's marketplace for new homes, developments, and developer-led land projects — connecting buyers directly with developers and builders across the island.",
   alternates: { canonical: "/about" },
-};
+}, { path: "/about" });
 
 // Owner, 2026-09-29: "redesifn the about us page. https://www.amini.ai/about"
 // — that page's structure is hero → stats → mission → values → team →

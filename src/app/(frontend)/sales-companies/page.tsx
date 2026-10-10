@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
 import { getAllSalesCompanies } from "@/lib/sales-company-store";
 import { CompanyProfileListView } from "@/components/marketplace/company-profile-views";
+import { withSocial } from "@/lib/seo";
 
 // Regenerate at most once a minute so admin edits show up without waiting for the next deploy.
 export const revalidate = 60;
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "Sales Companies in Sri Lanka | Directory",
   description: "Browse sales companies representing new home developments in Sri Lanka.",
   alternates: { canonical: "/sales-companies" },
-};
+}, { path: "/sales-companies" });
 
 export default async function SalesCompaniesPage() {
   const companies = await getAllSalesCompanies();

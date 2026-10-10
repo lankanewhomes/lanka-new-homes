@@ -5,12 +5,13 @@ import { getAllProjects } from "@/lib/project-store";
 import { getAllLands } from "@/lib/land-store";
 import { getAllDevelopers } from "@/lib/developer-store";
 import { getAllNeighborhoods } from "@/lib/neighborhood-store";
+import { withSocial } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "Press & Media – Brand Assets and Enquiries",
   description: "Media inquiries and brand assets for LankaNewHomes, Sri Lanka's marketplace for new homes and developer-led land projects.",
   alternates: { canonical: "/press" },
-};
+}, { path: "/press" });
 
 // Owner, 2026-09-29: "also create a press pae" / "create it like this"
 // (a Planned.com-style press page: hero, Media inquiries, Brand kit, "As

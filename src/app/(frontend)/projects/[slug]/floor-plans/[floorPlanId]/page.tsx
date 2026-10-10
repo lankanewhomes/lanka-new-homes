@@ -22,6 +22,7 @@ import {
   ProjectHero,
   StatsContactCard,
 } from "@/components/marketplace/components";
+import { withSocial } from "@/lib/seo";
 
 // Regenerate at most once a minute so admin edits (e.g. status changes)
 // show up without waiting for the next deploy.
@@ -57,7 +58,7 @@ export async function generateMetadata({ params }: FloorPlanPageProps): Promise<
   const planFactsText =
     planFacts.length > 2 ? `${planFacts.slice(0, -1).join(", ")}, and ${planFacts[planFacts.length - 1]}` : planFacts.join(" and ");
 
-  return {
+  return withSocial({
     title: `${floorPlan.planName} Floor Plan - ${project.name}`,
     description: `${floorPlan.planName} floor plan at ${project.name}${planFactsText ? `: ${planFactsText}` : ""}.`,
     alternates: { canonical: `/projects/${project.slug}/floor-plans/${floorPlan.slug ?? floorPlan.id}` },
@@ -67,7 +68,7 @@ export async function generateMetadata({ params }: FloorPlanPageProps): Promise<
       url: `/projects/${project.slug}/floor-plans/${floorPlan.slug ?? floorPlan.id}`,
       images: floorPlan.image ? [{ url: floorPlan.image, alt: floorPlan.planName }] : undefined,
     },
-  };
+  }, { image: floorPlan.image && !/\.svg(\?.*)?$/i.test(floorPlan.image) ? floorPlan.image : project.heroImage, imageAlt: `${floorPlan.planName} at ${project.name}` });
 }
 
 export default async function FloorPlanDetailPage({ params }: FloorPlanPageProps) {

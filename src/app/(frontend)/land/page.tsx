@@ -3,11 +3,12 @@ import { getAllLands } from "@/lib/land-store";
 import { landToProjectShape } from "@/lib/land-to-project";
 import { ProjectListingShell } from "@/components/marketplace/listing-shell";
 import type { Land } from "@/types";
+import { withSocial } from "@/lib/seo";
 
 // Regenerate at most once a minute so admin edits show up without waiting for the next deploy.
 export const revalidate = 60;
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "Land for Sale in Sri Lanka",
   description: "Browse land parcels for sale across Sri Lanka, listed by developers, construction companies, and builders — pricing, size, and location for every plot.",
   alternates: {
@@ -19,7 +20,7 @@ export const metadata: Metadata = {
     url: "/land",
     type: "website",
   },
-};
+}, { path: "/land" });
 
 const LAND_FILTER_GROUPS = [
   { label: "For sale", options: ["For sale", "Any"] },

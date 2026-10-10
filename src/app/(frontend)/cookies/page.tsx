@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { withSocial } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "Cookie Policy",
   alternates: { canonical: "/cookies" },
   robots: { index: false, follow: true },
-};
+}, { path: "/cookies" });
 
 export default function CookiePolicyPage() {
   return (

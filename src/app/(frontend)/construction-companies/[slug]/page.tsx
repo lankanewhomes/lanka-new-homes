@@ -6,6 +6,7 @@ import { getAllLands } from "@/lib/land-store";
 import { getAllProjects } from "@/lib/project-store";
 import { getApprovedReviewsByEntity } from "@/lib/review-store";
 import { CompanyProfileDetailView } from "@/components/marketplace/company-profile-views";
+import { withSocial } from "@/lib/seo";
 
 // Regenerate at most once a minute so admin edits (e.g. status changes)
 // show up without waiting for the next deploy.
@@ -24,12 +25,12 @@ export async function generateMetadata({ params }: ConstructionCompanyPageProps)
   if (!company) return { title: "Construction Company Not Found", robots: { index: false, follow: false } };
 
   const title = `${company.name} Construction Company Profile`;
-  return {
+  return withSocial({
     title,
     description: company.description,
     alternates: { canonical: `/construction-companies/${company.slug}` },
     openGraph: { title, description: company.description, url: `/construction-companies/${company.slug}`, type: "profile", images: [{ url: company.logo, alt: company.name }] },
-  };
+  });
 }
 
 export default async function ConstructionCompanyPage({ params }: ConstructionCompanyPageProps) {

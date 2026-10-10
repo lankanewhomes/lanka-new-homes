@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageAuthShell } from "@/components/auth/page-auth-shell";
+import { withSocial } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "Sign Up",
   alternates: { canonical: "/signup" },
   robots: { index: false, follow: true },
-};
+}, { path: "/signup" });
 
 export default function SignupPage() {
   return (

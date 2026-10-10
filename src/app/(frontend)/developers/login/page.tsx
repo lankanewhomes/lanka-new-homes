@@ -3,12 +3,13 @@ import Link from "next/link";
 import { BarChart3, FolderKanban, Inbox } from "lucide-react";
 import { PayloadLoginForm } from "@/components/auth/payload-login-form";
 import { ScrollReveal } from "@/components/marketplace/scroll-reveal";
+import { withSocial } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "Developer Login",
   alternates: { canonical: "/developers/login" },
   robots: { index: false, follow: true },
-};
+}, { path: "/developers/login" });
 
 // Redesigned 2026-10-03 like /login and /web-design (owner request). Authenticates against Payload (see
 // PayloadLoginForm) and lands in /cms, scoped to this developer's own projects/leads/analytics.

@@ -24,7 +24,7 @@ import {
   StatsContactCard,
 } from "@/components/marketplace/components";
 import { ProjectViewTracker } from "@/components/marketplace/view-tracker";
-import { toAbsoluteUrl } from "@/lib/seo";
+import { toAbsoluteUrl, withSocial } from "@/lib/seo";
 
 // Regenerate at most once a minute so admin edits (e.g. status changes)
 // show up without waiting for the next deploy.
@@ -53,10 +53,10 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
   const titleBudget = 60 - " | LankaNewHomes".length;
   const shortTitle = `${project.name} - New ${homeLabel}`;
   const title = fullTitle.length <= titleBudget ? fullTitle : shortTitle.length <= titleBudget ? shortTitle : `${project.name.slice(0, titleBudget - 1).trimEnd()}…`;
-  const description = `${project.summary} Starting from ${project.priceRange}. Explore floor plans, amenities, and availability.`;
+  const description = `${project.summary} Starting from ${project.priceRange.replace(/^\s*from\s+/i, "")}. Explore floor plans, amenities, and availability.`;
   const canonicalPath = `/projects/${project.slug}`;
 
-  return {
+  return withSocial({
     title,
     description,
     alternates: {
@@ -80,7 +80,7 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
       description,
       images: [project.heroImage],
     },
-  };
+  }, { socialTitle: fullTitle });
 }
 
 export default async function ProjectDetailPage({ params }: ProjectPageProps) {

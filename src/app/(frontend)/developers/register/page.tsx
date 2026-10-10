@@ -3,12 +3,13 @@ import Link from "next/link";
 import { PayloadLoginForm } from "@/components/auth/payload-login-form";
 import { FacebookFinishSignupForm } from "@/components/auth/facebook-finish-signup-form";
 import { ScrollReveal } from "@/components/marketplace/scroll-reveal";
+import { withSocial } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "Developer Registration",
   description: "Register your development company on LankaNewHomes and publish your project listings.",
   alternates: { canonical: "/developers/register" },
-};
+}, { path: "/developers/register" });
 
 const STEPS = [
   { title: "Create your account", body: "Your account and company profile are created in one step." },

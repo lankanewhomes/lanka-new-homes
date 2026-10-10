@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import type { BreadcrumbEntry } from "@/lib/seo";
+import { withSocial, type BreadcrumbEntry } from "@/lib/seo";
 
 export type GuideSection = { heading: string; body: string };
 export type GuideFaq = { question: string; answer: string };
@@ -102,22 +102,11 @@ export const guides: Record<string, Guide> = {
 };
 
 export function buildGuideMetadata(guide: Guide): Metadata {
-  return {
+  return withSocial({
     title: guide.metaTitle,
     description: guide.metaDescription,
     alternates: {
       canonical: guide.path,
     },
-    openGraph: {
-      title: guide.metaTitle,
-      description: guide.metaDescription,
-      url: guide.path,
-      type: "article",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: guide.metaTitle,
-      description: guide.metaDescription,
-    },
-  };
+  }, { type: "article" });
 }

@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { withSocial } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "Privacy Policy",
   alternates: { canonical: "/privacy" },
   robots: { index: false, follow: true },
-};
+}, { path: "/privacy" });
 
 export default function PrivacyPage() {
   return (

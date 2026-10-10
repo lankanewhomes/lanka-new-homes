@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { HIGHGROVE_THEME } from "@/components/web-design-sample/theme-highgrove";
 import { SampleSite } from "@/components/web-design-sample/sample-site";
+import { withSocial } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: HIGHGROVE_THEME.metaTitle,
   description: HIGHGROVE_THEME.metaDescription,
-};
+}, { path: "/web-design/sample/highgrove" });
 
 // Fifth sample — Highgrove Estate, hillside tea-estate villas. The
 // `fontVariables` wrapper shadows the Cormorant/DM Sans variables the parent

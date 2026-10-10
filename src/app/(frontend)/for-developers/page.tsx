@@ -7,6 +7,7 @@ import { ListingGridCard } from "@/components/marketplace/listing-page";
 import { ScrollReveal } from "@/components/marketplace/scroll-reveal";
 import { ScaledPreview, PRODUCT_PREVIEW } from "@/components/marketplace/web-design-frames";
 import { ForDevelopersQuickjump } from "@/components/marketplace/for-developers-quickjump";
+import { withSocial } from "@/lib/seo";
 
 export const revalidate = 300;
 
@@ -23,7 +24,7 @@ export const revalidate = 300;
 // /web-design (hero, cards, CTA band, etc.), and this redesign only
 // touches /for-developers, so it gets a fully separate set of styles.
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "List Your Project | For Developers",
   description:
     "A premium platform for discovering new property in Sri Lanka. Publish your development, present it beautifully, and reach buyers actively searching — free to list.",
@@ -35,7 +36,7 @@ export const metadata: Metadata = {
     url: "/for-developers",
     type: "website",
   },
-};
+}, { path: "/for-developers" });
 
 // Real, currently-published listings — every image and figure on this page
 // comes from an actual project already on the site, not a mockup.

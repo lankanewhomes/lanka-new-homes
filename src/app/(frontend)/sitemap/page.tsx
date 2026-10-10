@@ -4,11 +4,12 @@ import { getAllDevelopers } from "@/lib/developer-store";
 import { getAllProjects } from "@/lib/project-store";
 import { getAllLands } from "@/lib/land-store";
 import { getAllNeighborhoods } from "@/lib/neighborhood-store";
+import { withSocial } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "Sitemap",
   alternates: { canonical: "/sitemap" },
-};
+}, { path: "/sitemap" });
 
 export default async function SitemapPage() {
   const [developers, projects, lands, neighborhoods] = await Promise.all([

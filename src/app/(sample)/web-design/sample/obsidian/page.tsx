@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { OBSIDIAN_THEME } from "@/components/web-design-sample/theme-obsidian";
 import { SampleSite } from "@/components/web-design-sample/sample-site";
+import { withSocial } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: OBSIDIAN_THEME.metaTitle,
   description: OBSIDIAN_THEME.metaDescription,
-};
+}, { path: "/web-design/sample/obsidian" });
 
 // Fourth sample — Obsidian Villas, the black-and-white theme. The
 // `fontVariables` wrapper shadows the Cormorant/DM Sans variables the parent

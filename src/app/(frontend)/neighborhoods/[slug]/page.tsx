@@ -6,7 +6,7 @@ import { Building2, Compass, Home, Map as MapIcon, MapPin, Route } from "lucide-
 import { getAllNeighborhoods, getNeighborhoodBySlug } from "@/lib/neighborhood-store";
 import { getAllProjects } from "@/lib/project-store";
 import { getDeveloperBySlug } from "@/lib/developer-store";
-import { buildFaqJsonLd, jsonLdScriptProps, toAbsoluteUrl } from "@/lib/seo";
+import { buildFaqJsonLd, jsonLdScriptProps, toAbsoluteUrl, withSocial } from "@/lib/seo";
 import { ListingGridCard } from "@/components/marketplace/listing-page";
 import { KnownLandmarksSection, NearbyPlacesAccordion, TruncatedDescription } from "@/components/marketplace/components";
 import { NeighborhoodQuickjumpBar, type NeighborhoodQuickjumpItem } from "@/components/marketplace/neighborhood-quickjump";
@@ -60,7 +60,7 @@ export async function generateMetadata({ params }: NeighborhoodPageProps): Promi
   const canonicalPath = `/neighborhoods/${neighborhood.slug}`;
   const description = excerpt(neighborhood.description);
 
-  return {
+  return withSocial({
     title,
     description,
     alternates: { canonical: canonicalPath },
@@ -70,7 +70,7 @@ export async function generateMetadata({ params }: NeighborhoodPageProps): Promi
       url: canonicalPath,
       images: [{ url: neighborhood.heroImage, alt: neighborhood.name }],
     },
-  };
+  });
 }
 
 export default async function NeighborhoodPage({ params }: NeighborhoodPageProps) {

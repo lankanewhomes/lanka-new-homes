@@ -3,12 +3,13 @@ import Link from "next/link";
 import { Bell, GitCompareArrows, Heart } from "lucide-react";
 import { PageAuthShell } from "@/components/auth/page-auth-shell";
 import { ScrollReveal } from "@/components/marketplace/scroll-reveal";
+import { withSocial } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "Log In",
   alternates: { canonical: "/login" },
   robots: { index: false, follow: true },
-};
+}, { path: "/login" });
 
 // Owner, 2026-10-03: "redesign this [login] like the web-design page" — same hero + contained boxes system as
 // /web-design (docs/design.md "Page section style: contained boxes"). The form itself (AuthForm) is unchanged.

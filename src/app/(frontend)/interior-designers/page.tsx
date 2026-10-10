@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
 import { getAllInteriorDesigners } from "@/lib/interior-designer-store";
 import { CompanyProfileListView } from "@/components/marketplace/company-profile-views";
+import { withSocial } from "@/lib/seo";
 
 // Regenerate at most once a minute so admin edits show up without waiting for the next deploy.
 export const revalidate = 60;
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "Interior Designers in Sri Lanka | Directory",
   description: "Browse interior designers behind new home developments in Sri Lanka.",
   alternates: { canonical: "/interior-designers" },
-};
+}, { path: "/interior-designers" });
 
 export default async function InteriorDesignersPage() {
   const designers = await getAllInteriorDesigners();

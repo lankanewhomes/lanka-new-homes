@@ -3,11 +3,12 @@ import Link from "next/link";
 import { getAllDevelopers } from "@/lib/developer-store";
 import { getPackage, planRotationWeight } from "@/lib/packages";
 import type { Developer } from "@/types";
+import { withSocial } from "@/lib/seo";
 
 // Regenerate at most once a minute so admin edits show up without waiting for the next deploy.
 export const revalidate = 60;
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "Developers Directory in Sri Lanka",
   description: "Browse real estate developers building new apartment projects in Sri Lanka, listed alphabetically.",
   alternates: {
@@ -24,7 +25,7 @@ export const metadata: Metadata = {
     title: "Developers Directory in Sri Lanka",
     description: "Browse real estate developers building new apartment projects in Sri Lanka, listed alphabetically.",
   },
-};
+}, { path: "/developers" });
 
 // Classic A-Z directory groups — fixed ranges rather than sized to today's
 // developer count, so the layout stays stable as more developers are added.

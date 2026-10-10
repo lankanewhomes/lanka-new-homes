@@ -4,6 +4,7 @@ import { getAllArchitects, getArchitectBySlug } from "@/lib/architect-store";
 import { getAllProjects } from "@/lib/project-store";
 import { getApprovedReviewsByEntity } from "@/lib/review-store";
 import { CompanyProfileDetailView } from "@/components/marketplace/company-profile-views";
+import { withSocial } from "@/lib/seo";
 
 // Regenerate at most once a minute so admin edits (e.g. status changes)
 // show up without waiting for the next deploy.
@@ -22,12 +23,12 @@ export async function generateMetadata({ params }: ArchitectPageProps): Promise<
   if (!architect) return { title: "Architect Not Found", robots: { index: false, follow: false } };
 
   const title = `${architect.name} Architect Profile`;
-  return {
+  return withSocial({
     title,
     description: architect.description,
     alternates: { canonical: `/architects/${architect.slug}` },
     openGraph: { title, description: architect.description, url: `/architects/${architect.slug}`, type: "profile", images: [{ url: architect.logo, alt: architect.name }] },
-  };
+  });
 }
 
 export default async function ArchitectPage({ params }: ArchitectPageProps) {

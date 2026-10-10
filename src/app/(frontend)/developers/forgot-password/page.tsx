@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PayloadForgotPasswordForm } from "@/components/auth/payload-forgot-password-form";
+import { withSocial } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "Reset Password",
   alternates: { canonical: "/developers/forgot-password" },
   robots: { index: false, follow: true },
-};
+}, { path: "/developers/forgot-password" });
 
 // One shared page for both developer and admin — same Payload Users
 // collection either way, so there's nothing role-specific to say here.

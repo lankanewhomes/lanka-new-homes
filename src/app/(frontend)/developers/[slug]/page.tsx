@@ -7,7 +7,7 @@ import { landToProjectShape } from "@/lib/land-to-project";
 import { getAllLands } from "@/lib/land-store";
 import { getAllProjects } from "@/lib/project-store";
 import { getApprovedReviewsByDeveloperSlug } from "@/lib/review-store";
-import { toAbsoluteUrl } from "@/lib/seo";
+import { toAbsoluteUrl, withSocial } from "@/lib/seo";
 
 // Regenerate at most once a minute so admin edits (e.g. status changes)
 // show up without waiting for the next deploy.
@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: DeveloperProfilePageProps): P
   const description = developer.seoDescription?.trim() || `${developer.description} View current and upcoming projects in Sri Lanka.`;
   const canonicalPath = `/developers/${developer.slug}`;
 
-  return {
+  return withSocial({
     title,
     description,
     alternates: {
@@ -60,7 +60,7 @@ export async function generateMetadata({ params }: DeveloperProfilePageProps): P
       description,
       images: [developer.logo],
     },
-  };
+  });
 }
 
 export default async function DeveloperProfilePage({ params }: DeveloperProfilePageProps) {

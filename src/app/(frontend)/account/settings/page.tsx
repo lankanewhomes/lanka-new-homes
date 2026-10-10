@@ -3,11 +3,12 @@ import { redirect } from "next/navigation";
 import { getCurrentProfile } from "@/lib/auth";
 import { AccountShell, AccountPageHero } from "@/components/account/account-shell";
 import { SettingsForm } from "@/components/account/settings-form";
+import { withSocial } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "Settings",
   robots: { index: false, follow: false },
-};
+}, { path: "/account/settings" });
 
 export default async function SettingsPage() {
   const profile = await getCurrentProfile();

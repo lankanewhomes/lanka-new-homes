@@ -4,6 +4,7 @@ import { getAllSalesCompanies, getSalesCompanyBySlug } from "@/lib/sales-company
 import { getAllProjects } from "@/lib/project-store";
 import { getApprovedReviewsByEntity } from "@/lib/review-store";
 import { CompanyProfileDetailView } from "@/components/marketplace/company-profile-views";
+import { withSocial } from "@/lib/seo";
 
 // Regenerate at most once a minute so admin edits (e.g. status changes)
 // show up without waiting for the next deploy.
@@ -22,12 +23,12 @@ export async function generateMetadata({ params }: SalesCompanyPageProps): Promi
   if (!company) return { title: "Sales Company Not Found", robots: { index: false, follow: false } };
 
   const title = `${company.name} Sales Company Profile`;
-  return {
+  return withSocial({
     title,
     description: company.description,
     alternates: { canonical: `/sales-companies/${company.slug}` },
     openGraph: { title, description: company.description, url: `/sales-companies/${company.slug}`, type: "profile", images: [{ url: company.logo, alt: company.name }] },
-  };
+  });
 }
 
 export default async function SalesCompanyPage({ params }: SalesCompanyPageProps) {

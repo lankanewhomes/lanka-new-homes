@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { PayloadLoginForm } from "@/components/auth/payload-login-form";
+import { withSocial } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "Admin Login",
   robots: { index: false, follow: false },
-};
+}, { path: "/admin-login" });
 
 // Same PayloadLoginForm as /developers/login — same look, same backend
 // (Payload). An admin account just sees the full, unscoped /cms after

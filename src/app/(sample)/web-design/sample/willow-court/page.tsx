@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { WILLOW_COURT_THEME } from "@/components/web-design-sample/theme-willow-court";
 import { SampleSite } from "@/components/web-design-sample/sample-site";
+import { withSocial } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: WILLOW_COURT_THEME.metaTitle,
   description: WILLOW_COURT_THEME.metaDescription,
-};
+}, { path: "/web-design/sample/willow-court" });
 
 // Sixth sample — Willow Court, mid-market family townhouses. The
 // `fontVariables` wrapper shadows the Cormorant/DM Sans variables the parent

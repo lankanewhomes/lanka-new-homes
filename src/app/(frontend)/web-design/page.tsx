@@ -5,6 +5,7 @@ import { ScrollReveal } from "@/components/marketplace/scroll-reveal";
 import { HeroMarquee } from "@/components/marketplace/web-design-frames";
 import { SampleSiteSwitcher } from "@/components/marketplace/web-design-sample-switcher";
 import { WebDesignQuickjump } from "@/components/marketplace/web-design-quickjump";
+import { withSocial } from "@/lib/seo";
 
 // Dropped the editorial Fraunces serif this page used to share with
 // /for-developers (owner, 2026-09-27: "all the content thats realted to
@@ -15,7 +16,7 @@ import { WebDesignQuickjump } from "@/components/marketplace/web-design-quickjum
 // fade-in, neither of which depend on the font variable that used to be
 // loaded here.
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "Website Design for Property Developers",
   description:
     "Beyond your LankaNewHomes listing — we design and build dedicated project websites for developers, or redesign an existing one, from scratch. See a sample homepage.",
@@ -27,7 +28,7 @@ export const metadata: Metadata = {
     url: "/web-design",
     type: "website",
   },
-};
+}, { path: "/web-design" });
 
 const HOMEPAGE_SECTIONS = [
   "Hero and key facts",

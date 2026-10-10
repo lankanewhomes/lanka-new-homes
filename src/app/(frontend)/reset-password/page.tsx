@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { ResetPasswordForm } from "@/components/auth/reset-password-form";
+import { withSocial } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "Reset Password",
   alternates: { canonical: "/reset-password" },
   robots: { index: false, follow: true },
-};
+}, { path: "/reset-password" });
 
 export default function ResetPasswordPage() {
   return (

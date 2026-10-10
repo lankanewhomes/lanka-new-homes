@@ -5,11 +5,12 @@ import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { AccountDashboard } from "@/components/account/account-dashboard";
 import { getSavedProfiles } from "@/lib/saved-profiles";
 import type { Project } from "@/types";
+import { withSocial } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "My Account",
   robots: { index: false, follow: false },
-};
+}, { path: "/account" });
 
 export default async function AccountPage() {
   const profile = await getCurrentProfile();

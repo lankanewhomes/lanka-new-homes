@@ -6,11 +6,12 @@ import { getLandBySlug } from "@/lib/land-store";
 import { formatLkr } from "@/lib/format";
 import { MAX_COMPARE } from "@/lib/compare-constants";
 import type { Project, Land } from "@/types";
+import { withSocial } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "Compare projects",
   robots: { index: false, follow: true },
-};
+}, { path: "/compare" });
 
 type ComparePageProps = {
   searchParams: Promise<{ type?: string; slugs?: string }>;

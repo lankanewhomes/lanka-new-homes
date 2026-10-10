@@ -4,6 +4,7 @@ import { getAllInteriorDesigners, getInteriorDesignerBySlug } from "@/lib/interi
 import { getAllProjects } from "@/lib/project-store";
 import { getApprovedReviewsByEntity } from "@/lib/review-store";
 import { CompanyProfileDetailView } from "@/components/marketplace/company-profile-views";
+import { withSocial } from "@/lib/seo";
 
 // Regenerate at most once a minute so admin edits (e.g. status changes)
 // show up without waiting for the next deploy.
@@ -22,12 +23,12 @@ export async function generateMetadata({ params }: InteriorDesignerPageProps): P
   if (!designer) return { title: "Interior Designer Not Found", robots: { index: false, follow: false } };
 
   const title = `${designer.name} Interior Designer Profile`;
-  return {
+  return withSocial({
     title,
     description: designer.description,
     alternates: { canonical: `/interior-designers/${designer.slug}` },
     openGraph: { title, description: designer.description, url: `/interior-designers/${designer.slug}`, type: "profile", images: [{ url: designer.logo, alt: designer.name }] },
-  };
+  });
 }
 
 export default async function InteriorDesignerPage({ params }: InteriorDesignerPageProps) {

@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ContactForm } from "@/components/marketplace/contact-form";
+import { withSocial } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "Contact Us – New Home & Developer Enquiries",
   description: "Get in touch with the LankaNewHomes team.",
   alternates: { canonical: "/contact" },
-};
+}, { path: "/contact" });
 
 // Owner, 2026-09-28: shared a second reference screenshot (a centred
 // eyebrow/heading/subhead, a white rounded form card, a dark "Book a Demo"

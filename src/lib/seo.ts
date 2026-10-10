@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 const FALLBACK_SITE_URL = "https://www.lankanewhomes.com";
 
 function normalizeBaseUrl(url: string): string {
@@ -95,4 +97,106 @@ export function jsonLdScriptProps(data: object) {
     type: "application/ld+json",
     dangerouslySetInnerHTML: { __html: JSON.stringify(data) },
   } as const;
+}
+
+
+// ---- Open Graph / Twitter ----------------------------------------------------------------------------
+// One place builds the share-preview metadata for every page, so each page has the full set (title, description, canonical
+// url, type, site name, 1200x630 image with alt, twitter card). A page's own `openGraph` replaces the root layout's
+// entirely in Next, so pages must always spread this in rather than set a partial openGraph.
+export const SITE_NAME = "LankaNewHomes";
+export const DEFAULT_OG_IMAGE = "/og-default.jpg";
+export const DEFAULT_OG_IMAGE_ALT = "LankaNewHomes: new homes in Sri Lanka";
+
+type SocialInput = {
+  /** Full page/entity name for the share card, never shortened with an ellipsis. */
+  title: string;
+  description?: string;
+  /** Canonical path (or absolute URL). Query strings and fragments are dropped. */
+  path: string;
+  image?: string | null;
+  imageAlt?: string;
+  type?: "website" | "article" | "profile";
+};
+
+function canonicalNoQuery(path: string): string {
+  const raw = path.trim() || "/";
+  const withoutQuery = raw.split(/[?#]/)[0] || "/";
+  return /^https?:\/\//i.test(withoutQuery) ? withoutQuery : toAbsoluteUrl(withoutQuery);
+}
+
+function absoluteImage(image: string): string {
+  return /^https?:\/\//i.test(image) ? image : toAbsoluteUrl(image);
+}
+
+export function socialMetadata({ title, description, path, image, imageAlt, type = "website" }: SocialInput): Pick<Metadata, "openGraph" | "twitter"> {
+  // Share crawlers (Facebook, WhatsApp, X) can't render SVG, so an SVG logo falls back to the default card.
+  const own = image?.trim() && !/\.svg(\?.*)?$/i.test(image.trim()) ? image.trim() : "";
+  const imageUrl = absoluteImage(own || DEFAULT_OG_IMAGE);
+  const alt = own ? imageAlt || title : DEFAULT_OG_IMAGE_ALT;
+  const url = canonicalNoQuery(path);
+  return {
+    openGraph: {
+      title,
+      ...(description ? { description } : {}),
+      url,
+      type,
+      siteName: SITE_NAME,
+      images: [{ url: imageUrl, width: 1200, height: 630, alt }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      ...(description ? { description } : {}),
+      images: [{ url: imageUrl, alt }],
+    },
+  };
+}
+
+const DEFAULT_DESCRIPTION = "Discover new homes and apartment communities across Sri Lanka.";
+
+type ImageEntry = string | URL | { url: string | URL; alt?: string };
+
+function firstImage(images: unknown): { url: string; alt?: string } | null {
+  const list = (Array.isArray(images) ? images : images ? [images] : []) as ImageEntry[];
+  const first = list[0];
+  if (!first) return null;
+  if (typeof first === "string") return { url: first };
+  if (first instanceof URL) return { url: first.toString() };
+  const url = typeof first.url === "string" ? first.url : first.url?.toString();
+  return url ? { url, alt: first.alt } : null;
+}
+
+function plainTitle(title: Metadata["title"]): string {
+  if (!title) return SITE_NAME;
+  if (typeof title === "string") return title;
+  if ("absolute" in title && title.absolute) return title.absolute;
+  if ("default" in title && title.default) return title.default;
+  return SITE_NAME;
+}
+
+/**
+ * Adds the full Open Graph + Twitter set to a page's metadata, built from what the page already declares (title,
+ * description, canonical, any openGraph image/type), so nothing is repeated per page. `path` is only needed when the page
+ * has no canonical. `socialTitle` is for pages whose <title> is shortened to fit a length budget: the share card gets the
+ * full name instead.
+ */
+export function withSocial(meta: Metadata, options: { path?: string; socialTitle?: string; image?: string | null; imageAlt?: string; type?: "website" | "article" | "profile" } = {}): Metadata {
+  const canonical = meta.alternates?.canonical;
+  const canonicalPath = typeof canonical === "string" ? canonical : canonical instanceof URL ? canonical.toString() : undefined;
+  const existingOg = meta.openGraph as { url?: string | URL; type?: string; images?: unknown } | null | undefined;
+  const ogUrl = existingOg?.url ? String(existingOg.url) : undefined;
+  const existing = firstImage(existingOg?.images);
+  const type = options.type ?? (existingOg?.type === "article" || existingOg?.type === "profile" ? existingOg.type : "website");
+  return {
+    ...meta,
+    ...socialMetadata({
+      title: options.socialTitle ?? plainTitle(meta.title),
+      description: (typeof meta.description === "string" && meta.description.trim()) || DEFAULT_DESCRIPTION,
+      path: canonicalPath ?? options.path ?? ogUrl ?? "/",
+      image: options.image !== undefined ? options.image : existing?.url,
+      imageAlt: options.imageAlt ?? existing?.alt,
+      type,
+    }),
+  };
 }

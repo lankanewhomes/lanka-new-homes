@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import { PartnerDirectoryPage } from "@/components/marketplace/partner-directory-page";
 import { getAllConstructionCompanies } from "@/lib/construction-company-store";
 import type { ConstructionCompany } from "@/types";
+import { withSocial } from "@/lib/seo";
 
 export const revalidate = 60;
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "Construction Company Directory in Sri Lanka",
   description: "Browse construction companies building new homes in Sri Lanka, listed alphabetically.",
   alternates: {
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
     title: "Construction Company Directory in Sri Lanka",
     description: "Browse construction companies building new homes in Sri Lanka, listed alphabetically.",
   },
-};
+}, { path: "/construction-companies" });
 
 export default async function ConstructionCompaniesPage() {
   const allCompanies = await getAllConstructionCompanies();

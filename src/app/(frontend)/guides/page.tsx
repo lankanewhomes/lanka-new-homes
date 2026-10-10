@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { guides } from "@/lib/guides";
+import { withSocial } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "Buying Guides for Sri Lanka Real Estate",
   description: "Guides for buying new property in Sri Lanka, including foreign ownership rules, investment property advice, and the golden visa residency route.",
   alternates: {
     canonical: "/guides",
   },
-};
+}, { path: "/guides" });
 
 // Owner, 2026-10-02: "re design this page" (/guides) — same contained-box
 // system as /about, /press and /for-developers (docs/design.md "Page section

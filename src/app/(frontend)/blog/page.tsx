@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { blogPosts } from "@/lib/blog";
 import { BlogListing } from "@/components/marketplace/blog-listing";
+import { withSocial } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "Blog – News & Insights on Sri Lanka Property",
   description: "Buying guides, market insights, and web design advice for property developers, from LankaNewHomes.",
   alternates: { canonical: "/blog" },
-};
+}, { path: "/blog" });
 
 // Owner, 2026-10-02: "redesign the blog page also" — same contained-box system as /about, /guides and the directories:
 // dark split hero with live counts, a tinted box holding the filters, featured article and article cards, and a closing

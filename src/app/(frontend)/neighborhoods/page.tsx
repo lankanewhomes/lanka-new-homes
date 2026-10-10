@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllNeighborhoods } from "@/lib/neighborhood-store";
 import { getAllProjects } from "@/lib/project-store";
+import { withSocial } from "@/lib/seo";
 
 // Regenerate at most once a minute so new neighborhoods and project links show up without waiting for the next deploy.
 export const revalidate = 60;
@@ -10,7 +11,7 @@ const TITLE = "Neighborhood Guides in Sri Lanka";
 const DESCRIPTION =
   "Explore neighborhood guides for the areas where new homes are being built across Sri Lanka — transport, schools, hospitals, typical prices and the new projects in each area.";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: TITLE,
   description: DESCRIPTION,
   alternates: {
@@ -27,7 +28,7 @@ export const metadata: Metadata = {
     title: TITLE,
     description: DESCRIPTION,
   },
-};
+}, { path: "/neighborhoods" });
 
 // Same classic A-Z groups as the developer directory (/developers) — fixed
 // ranges rather than sized to today's count, so the layout stays stable as

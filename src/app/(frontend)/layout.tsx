@@ -8,7 +8,7 @@ import { AuthModalProvider } from "@/components/auth/auth-modal-provider";
 import { UtmCapture } from "@/components/analytics/utm-capture";
 import { InternalTrafficFlag } from "@/components/analytics/internal-traffic-flag";
 import { CompareBar } from "@/components/marketplace/compare-bar";
-import { buildOrganizationJsonLd, buildWebsiteJsonLd, getSiteUrl, jsonLdScriptProps } from "@/lib/seo";
+import { buildOrganizationJsonLd, buildWebsiteJsonLd, getSiteUrl, jsonLdScriptProps, withSocial } from "@/lib/seo";
 import "./globals.css";
 
 const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
@@ -24,25 +24,13 @@ const siteUrl = getSiteUrl();
 // class on <html> below, and set --font-ref-sans back to the system stack
 // in globals.css.
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   metadataBase: new URL(siteUrl),
   title: {
     default: "LankaNewHomes | New Homes in Sri Lanka",
     template: "%s | LankaNewHomes",
   },
   description: "Discover new homes and apartment communities across Sri Lanka.",
-  openGraph: {
-    type: "website",
-    url: "/",
-    siteName: "LankaNewHomes",
-    title: "LankaNewHomes | New Homes in Sri Lanka",
-    description: "Discover new homes and apartment communities across Sri Lanka.",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "LankaNewHomes | New Homes in Sri Lanka",
-    description: "Discover new homes and apartment communities across Sri Lanka.",
-  },
   robots: {
     index: true,
     follow: true,
@@ -51,7 +39,7 @@ export const metadata: Metadata = {
   // renders <meta name="google-site-verification"> automatically when
   // present, omitted entirely otherwise (no fabricated placeholder value).
   verification: process.env.GOOGLE_SITE_VERIFICATION ? { google: process.env.GOOGLE_SITE_VERIFICATION } : undefined,
-};
+}, { path: "/", socialTitle: "LankaNewHomes | New Homes in Sri Lanka" });
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (

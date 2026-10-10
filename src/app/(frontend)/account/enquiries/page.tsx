@@ -6,11 +6,12 @@ import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { AccountShell, AccountPageHero } from "@/components/account/account-shell";
 import { getAllProjects } from "@/lib/project-store";
 import { getAllDevelopers } from "@/lib/developer-store";
+import { withSocial } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "My Enquiries",
   robots: { index: false, follow: false },
-};
+}, { path: "/account/enquiries" });
 
 export default async function EnquiriesPage() {
   const profile = await getCurrentProfile();

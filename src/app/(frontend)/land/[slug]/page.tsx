@@ -1,4 +1,4 @@
-import { toAbsoluteUrl } from "@/lib/seo";
+import { toAbsoluteUrl, withSocial } from "@/lib/seo";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CheckCircle2, CircleDollarSign, Compass, HousePlus, Layers, MapPin, Ruler, Tag } from "lucide-react";
@@ -56,12 +56,12 @@ export async function generateMetadata({ params }: LandPageProps): Promise<Metad
     return { title: "Land Listing Not Found", robots: { index: false, follow: false } };
   }
 
-  return {
+  return withSocial({
     title: fitTitle(`${land.title} - Land for Sale in ${land.location}`, `${land.title} - Land for Sale`),
     description: land.summary?.trim() || fallbackLandDescription(land),
     alternates: { canonical: `/land/${land.slug}` },
     robots: land.status === "Sold" ? { index: false, follow: true } : undefined,
-  };
+  }, { socialTitle: `${land.title} - Land for Sale in ${land.location}`, image: land.heroImage, imageAlt: land.title });
 }
 
 export default async function LandDetailPage({ params }: LandPageProps) {

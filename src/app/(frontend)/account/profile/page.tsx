@@ -3,11 +3,12 @@ import { redirect } from "next/navigation";
 import { getCurrentProfile } from "@/lib/auth";
 import { AccountShell, AccountPageHero } from "@/components/account/account-shell";
 import { ProfileForm } from "@/components/account/profile-form";
+import { withSocial } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "Profile",
   robots: { index: false, follow: false },
-};
+}, { path: "/account/profile" });
 
 export default async function ProfilePage() {
   const profile = await getCurrentProfile();

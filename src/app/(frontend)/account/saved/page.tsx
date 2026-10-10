@@ -5,11 +5,12 @@ import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { AccountShell, AccountPageHero } from "@/components/account/account-shell";
 import { SavedPropertiesList } from "@/components/account/saved-properties-list";
 import type { Project } from "@/types";
+import { withSocial } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "Saved Properties",
   robots: { index: false, follow: false },
-};
+}, { path: "/account/saved" });
 
 export default async function SavedListingsPage() {
   const profile = await getCurrentProfile();
