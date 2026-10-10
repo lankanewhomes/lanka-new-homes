@@ -47,6 +47,23 @@ export const projectCategories: Record<string, ProjectCategory> = {
     extraKeywords: "keells keels john keells john keels jkp keells properties keells apartments",
     filter: (project) => (project.developerName ?? "").toLowerCase().includes("john keells"),
   },
+  "brand-new-houses-for-sale": {
+    path: "/projects/brand-new-houses-for-sale",
+    breadcrumbLabel: "Brand New Houses",
+    breadcrumbs: [{ label: "Home", href: "/" }, { label: "New Projects", href: "/projects" }, { label: "Brand New Houses" }],
+    metaTitle: "Brand New Houses for Sale in Sri Lanka",
+    metaDescription: "Brand new houses for sale in Sri Lanka: new villas, townhouses and gated-community homes from developers, with prices, floor plans and photos.",
+    h1: "Brand New Houses for Sale in Sri Lanka",
+    intro: "Looking for a brand new house for sale in Sri Lanka? These are new-build houses, villas and townhouses from developers, in gated communities and standalone projects from Colombo's suburbs to the coast and the hill country, each with prices, floor plans and photos.",
+    about: { title: "Buying a brand new house in Sri Lanka", paragraphs: [
+      "A brand new house is a home that has just been built, or is still being built, by a developer and has never been lived in. On LankaNewHomes this page gathers the new houses, villas and townhouses that are on sale now or under construction, so you can compare them in one place instead of searching developer by developer.",
+      "Every listing shows the developer, location, status, floor plans and sizes, and the payment plan where the developer has published one. Many new houses are sold in gated communities with shared amenities; others are single villas or townhouses. Open a listing to see its photos, nearby places and what the developer includes.",
+      "Before you reserve, ask the developer for the title and approvals, the sales agreement, how each payment is linked to construction progress, and the handover date. You can send an enquiry from any listing and it goes straight to the developer. If you are buying from overseas, see our guide for foreign buyers.",
+    ] },
+    relatedPaths: ["/projects/villas", "/land", "/guides/foreigners-buying-property"],
+    extraKeywords: "brand new house new house for sale new houses houses for sale new villas new homes townhouse",
+    filter: (project) => ["house", "villas", "luxury villas", "townhouse"].includes((project.type ?? "").toLowerCase()) && (project.status as string) !== "Completed",
+  },
   "pre-construction": {
     path: "/projects/pre-construction",
     breadcrumbLabel: "Pre-Construction",
