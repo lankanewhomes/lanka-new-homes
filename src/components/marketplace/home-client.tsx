@@ -32,6 +32,15 @@ const neighborhoods = [
   { name: "Matara", image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5a/StarfortMatara.jpg/960px-StarfortMatara.jpg" },
   { name: "Anuradhapura", image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ad/Ruwanwelisaya_Stupa_Anuradhapura.jpg/960px-Ruwanwelisaya_Stupa_Anuradhapura.jpg" },
   { name: "Kurunegala", image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bb/Kurunegala_Sri_Lanka.JPG/960px-Kurunegala_Sri_Lanka.JPG" },
+  { name: "Mount Lavinia", image: "https://upload.wikimedia.org/wikipedia/commons/3/31/Dehiwala-Mount_Lavania.jpg" },
+  { name: "Mirissa", image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a5/Mirissa-Plage_%283%29.jpg/960px-Mirissa-Plage_%283%29.jpg" },
+  { name: "Hikkaduwa", image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/27/Hikkaduwa3.JPG/960px-Hikkaduwa3.JPG" },
+  { name: "Unawatuna", image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/83/Unawatuna.jpg/960px-Unawatuna.jpg" },
+  { name: "Weligama", image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/da/Weligama_Beach_in_Sri_Lanka.jpg/960px-Weligama_Beach_in_Sri_Lanka.jpg" },
+  { name: "Kalutara", image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/31/Aerial_view_of_Kalutara_City%2C_Sri_Lanka.jpg/960px-Aerial_view_of_Kalutara_City%2C_Sri_Lanka.jpg" },
+  { name: "Batticaloa", image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/41/Sea_Fishing%2C_Batticaloa.jpg/960px-Sea_Fishing%2C_Batticaloa.jpg" },
+  { name: "Dambulla", image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/14/Dambulla-outside.jpg/960px-Dambulla-outside.jpg" },
+  { name: "Sigiriya", image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e6/Sigiriya_%28141688197%29.jpeg/960px-Sigiriya_%28141688197%29.jpeg" },
 ];
 
 // Popular-searches SEO footer block — realcommercial.com.au-style columns of
@@ -297,24 +306,22 @@ export function HomeClient({
     () => [...lands].sort((a, b) => (b.createdAt ?? "").localeCompare(a.createdAt ?? "")).slice(0, 8),
     [lands]
   );
-  const searchSuggestions = useMemo(() => {
-    const query = searchTerm.trim().toLowerCase();
-    if (!query) return [];
-
-    const suggestions = new Map<string, { label: string; detail: string; href: string }>();
-    projects.forEach((project) => {
-      [
-        { label: project.name, detail: "Project", href: `/projects/${project.slug}` },
-        { label: project.city, detail: "City", href: `/search?q=${encodeURIComponent(project.city)}` },
-      ].forEach((suggestion) => {
-        if (suggestion.label?.toLowerCase().includes(query) && !suggestions.has(suggestion.label)) {
-          suggestions.set(suggestion.label, suggestion);
-        }
-      });
-    });
-
-    return Array.from(suggestions.values()).slice(0, 8);
-  }, [projects, searchTerm]);
+  // Same suggestions as the header search: projects, land, developers, cities and collection pages (Luxury, Beachfront...).
+  const [searchSuggestions, setSearchSuggestions] = useState<{ label: string; detail: string; href: string }[]>([]);
+  useEffect(() => {
+    const q = searchTerm.trim();
+    if (q.length < 2) {
+      const clear = setTimeout(() => setSearchSuggestions([]), 0);
+      return () => clearTimeout(clear);
+    }
+    const timer = setTimeout(() => {
+      fetch(`/api/search/suggest?q=${encodeURIComponent(q)}`)
+        .then((response) => response.json())
+        .then((data) => setSearchSuggestions(Array.isArray(data?.suggestions) ? data.suggestions : []))
+        .catch(() => setSearchSuggestions([]));
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
   const selectSearchSuggestion = (suggestion: { label: string; href: string }) => {
     setSearchTerm(suggestion.label);
     setDesktopSearchOpen(false);

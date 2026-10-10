@@ -189,12 +189,23 @@ export type SearchablePage = { label: string; path: string; keywords: string };
 // marketplace/listing-page.tsx) — typing e.g. "pre" or "luxury" jumps
 // straight to the matching category page instead of only filtering the
 // projects already loaded on the current page.
+// Extra words people type for each collection page (header and home search suggestions).
+const searchSynonyms: Record<string, string> = {
+  "/projects/luxury": "luxury premium high end upscale",
+  "/projects/beachfront": "beachfront beach sea ocean seafront coastal",
+  "/projects/villas": "villa villas",
+  "/projects/pre-construction": "pre construction precon pre con off plan offplan upcoming",
+  "/projects/serviced-apartments": "serviced apartment hotel managed",
+  "/projects/branded-residences": "branded residence residences hotel",
+  "/projects/colombo": "colombo apartments city",
+};
+
 export const searchablePages: SearchablePage[] = [
   { label: "New Projects", path: "/projects", keywords: "new projects all projects new homes" },
   ...allProjectCategories.map((category) => ({
     label: category.h1,
     path: category.path,
-    keywords: `${category.breadcrumbLabel} ${category.h1} ${category.extraKeywords ?? ""}`.toLowerCase().trim(),
+    keywords: `${category.breadcrumbLabel} ${category.h1} ${category.extraKeywords ?? ""} ${searchSynonyms[category.path] ?? ""}`.toLowerCase().trim(),
   })),
   { label: "Land for Sale in Sri Lanka", path: "/land", keywords: "land lands plot plots" },
 ];
