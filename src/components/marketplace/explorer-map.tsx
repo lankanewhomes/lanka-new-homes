@@ -18,7 +18,7 @@ const PIN_ZOOM = 13.2;
 const TILT = 58;
 
 export type ExplorerItem = { slug: string; name: string; city: string; lat: number; lng: number; price: number };
-/** What the map is showing right now. `zoomed` is false while it is still the whole-country overview. */
+/** What the map is showing right now. `zoomed` is false while it is still the whole-country overview (zoom below 8). */
 export type MapView = { west: number; south: number; east: number; north: number; zoom: number; zoomed: boolean };
 
 // Same icons as the site header: "New Homes for Sale" (building) and "Land" (plot grid).
@@ -32,6 +32,24 @@ function MarkerIcon({ kind, size }: { kind: "homes" | "land"; size: number }) {
       )}
     </svg>
   );
+}
+
+// The area with the most listings (e.g. Colombo and its suburbs). The map opens on this instead of the whole island, so the first
+// thing you see is a spread of listings, not one giant bubble. "Show all" still frames everything.
+function densestArea<T extends { lat: number; lng: number }>(list: T[]): T[] {
+  if (list.length <= 4) return list;
+  let best = list[0];
+  let bestCount = 0;
+  for (const a of list) {
+    let count = 0;
+    for (const b of list) if (Math.abs(a.lat - b.lat) < 0.2 && Math.abs(a.lng - b.lng) < 0.2) count++;
+    if (count > bestCount) {
+      bestCount = count;
+      best = a;
+    }
+  }
+  const near = list.filter((b) => Math.abs(best.lat - b.lat) < 0.2 && Math.abs(best.lng - b.lng) < 0.2);
+  return near.length >= Math.max(4, list.length * 0.25) ? near : list;
 }
 
 function shortPrice(amount: number): string {
@@ -66,15 +84,13 @@ export function ExplorerMap({
   // instead of jumping and merging continuously.
   const [zoom, setZoom] = useState(7);
   const [tilted, setTilted] = useState(defaultTilt);
-  const overviewZoom = useRef<number | null>(null);
 
   const report = useCallback(() => {
     const map = mapRef.current?.getMap();
     if (!map || !onViewChange) return;
     const b = map.getBounds();
     const z = map.getZoom();
-    if (overviewZoom.current === null) overviewZoom.current = z;
-    onViewChange({ west: b.getWest(), south: b.getSouth(), east: b.getEast(), north: b.getNorth(), zoom: z, zoomed: z > overviewZoom.current + 0.9 });
+    onViewChange({ west: b.getWest(), south: b.getSouth(), east: b.getEast(), north: b.getNorth(), zoom: z, zoomed: z >= 8 });
   }, [onViewChange]);
 
   const fitTo = useCallback(
@@ -94,29 +110,68 @@ export function ExplorerMap({
     if (!mapRef.current || items.length === 0) return;
     const instant = firstFit.current;
     firstFit.current = false;
-    fitTo(items, items.length === 1 ? 15 : 12, instant ? 0 : 900);
-    if (instant) overviewZoom.current = null;
+    fitTo(densestArea(items), items.length === 1 ? 15 : 12, instant ? 0 : 900);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fitKey]);
 
-  // Nearby listings merge into one bubble; the grid cell shrinks as you zoom, so bubbles split and finally become pins.
+  // Listings whose bubbles would touch on screen merge into one (measured in pixels at the current zoom level), so a zoomed-out map
+  // shows a spread of separate bubbles instead of a pile. Zooming in splits them; at street level they become price pins.
   const groups = useMemo(() => {
-    const cell = (360 / Math.pow(2, Math.max(zoom, 3))) * 0.5;
-    const cells = new globalThis.Map<string, ExplorerItem[]>();
+    const radius = typeof window !== "undefined" && window.innerWidth < 760 ? 40 : 56;
+    const scale = 256 * Math.pow(2, Math.max(zoom, 3));
+    const toX = (lng: number) => ((lng + 180) / 360) * scale;
+    const toY = (lat: number) => {
+      const rad = (lat * Math.PI) / 180;
+      return ((1 - Math.log(Math.tan(rad) + 1 / Math.cos(rad)) / Math.PI) / 2) * scale;
+    };
+    type Cluster = { items: ExplorerItem[]; x: number; y: number };
+    const clusters: Cluster[] = [];
+    const add = (cluster: Cluster, item: ExplorerItem) => {
+      const n = cluster.items.length;
+      cluster.x = (cluster.x * n + toX(item.lng)) / (n + 1);
+      cluster.y = (cluster.y * n + toY(item.lat)) / (n + 1);
+      cluster.items.push(item);
+    };
     for (const item of items) {
-      const key = `${Math.floor(item.lng / cell)}:${Math.floor(item.lat / cell)}`;
-      cells.set(key, [...(cells.get(key) ?? []), item]);
+      const x = toX(item.lng);
+      const y = toY(item.lat);
+      let nearest: Cluster | null = null;
+      let best = radius;
+      for (const c of clusters) {
+        const d = Math.hypot(c.x - x, c.y - y);
+        if (d < best) {
+          best = d;
+          nearest = c;
+        }
+      }
+      if (nearest) add(nearest, item);
+      else clusters.push({ items: [item], x, y });
     }
-    return Array.from(cells.entries()).map(([key, group]) => {
+    // Averaging can pull two bubbles together — merge any pair that now touches.
+    let merged = true;
+    while (merged) {
+      merged = false;
+      outer: for (let i = 0; i < clusters.length; i++) {
+        for (let j = i + 1; j < clusters.length; j++) {
+          if (Math.hypot(clusters[i].x - clusters[j].x, clusters[i].y - clusters[j].y) < radius) {
+            for (const item of clusters[j].items) add(clusters[i], item);
+            clusters.splice(j, 1);
+            merged = true;
+            break outer;
+          }
+        }
+      }
+    }
+    return clusters.map((cluster) => {
       const counts = new globalThis.Map<string, number>();
-      group.forEach((p) => counts.set(p.city, (counts.get(p.city) ?? 0) + 1));
+      cluster.items.forEach((p) => counts.set(p.city, (counts.get(p.city) ?? 0) + 1));
       const name = Array.from(counts.entries()).sort((x, y) => y[1] - x[1])[0][0];
       return {
-        key,
+        key: `${cluster.items[0].slug}:${cluster.items.length}`,
         name,
-        group,
-        lat: group.reduce((sum, p) => sum + p.lat, 0) / group.length,
-        lng: group.reduce((sum, p) => sum + p.lng, 0) / group.length,
+        group: cluster.items,
+        lat: cluster.items.reduce((sum, p) => sum + p.lat, 0) / cluster.items.length,
+        lng: cluster.items.reduce((sum, p) => sum + p.lng, 0) / cluster.items.length,
       };
     });
   }, [items, zoom]);
@@ -140,7 +195,7 @@ export function ExplorerMap({
     mapRef.current?.easeTo({ pitch: next ? TILT : 0, bearing: next ? -17 : 0, duration: 800 });
   };
 
-  const showPins = zoom >= Math.floor(PIN_ZOOM);
+  const showPins = zoom >= 13;
   const selected = selectedSlug ? items.find((item) => item.slug === selectedSlug) : undefined;
 
   return (
@@ -151,11 +206,11 @@ export function ExplorerMap({
         mapStyle={MAP_STYLE}
         maxPitch={70}
         onLoad={() => {
-          fitTo(items, items.length === 1 ? 15 : 12, 0);
+          fitTo(densestArea(items), items.length === 1 ? 15 : 12, 0);
           report();
         }}
         onMove={(event) => {
-          const level = Math.floor(event.viewState.zoom);
+          const level = Math.floor(event.viewState.zoom * 2) / 2;
           setZoom((current) => (current === level ? current : level));
         }}
         onMoveEnd={report}
