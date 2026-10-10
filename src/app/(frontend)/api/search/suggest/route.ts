@@ -16,8 +16,8 @@ const extraCollections: { label: string; href: string; keywords: string }[] = [
 const wordsOf = (text: string) => text.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
 function matchCollections(q: string): Suggestion[] {
   const all = [
-    ...searchablePages.map((page) => ({ label: page.label, href: page.path, keywords: page.keywords })),
     ...extraCollections,
+    ...searchablePages.map((page) => ({ label: page.label, href: page.path, keywords: page.keywords })),
   ];
   const typed = wordsOf(q);
   if (!typed.length) return [];
@@ -61,7 +61,7 @@ export async function GET(request: Request) {
   const items = await loadIndex();
   const starts = items.filter((item) => item.label?.toLowerCase().startsWith(q));
   const contains = items.filter((item) => item.label?.toLowerCase().includes(q) && !item.label.toLowerCase().startsWith(q));
-  const collections = matchCollections(q).slice(0, 3);
+  const collections = matchCollections(q).slice(0, 4);
   const seen = new Set(collections.map((c) => c.href));
   const rest = [...starts, ...contains].filter((item) => !seen.has(item.href));
   return NextResponse.json({ suggestions: [...collections, ...rest].slice(0, 8) });
