@@ -20418,3 +20418,28 @@ body:has(.compare-bar) {
 /* "In this map area 36" / "More listings": small and regular weight (not bold) */
 .listing-area-heading { font-size: 13px !important; font-weight: 400 !important; color: #3d3d39; margin-bottom: -26px; }
 .listing-area-heading span { font-weight: 400 !important; font-size: 13px; color: #6b6b66; }
+
+/* =====================================================================
+   PHONE: map view gets the room (2026-10-10). When "Map" is chosen the search
+   bar (search box, "All of Sri Lanka", search button) and the page heading
+   are hidden and the map is tall. Choose "List" (or tap the button again) to
+   bring them back.
+   ===================================================================== */
+@media (max-width: 760px) {
+  .listing-content-shade[data-view="map"] .listing-search-bar { display: none; }
+  .listing-columns[data-view="map"] .listing-map-pane {
+    position: relative;
+    top: 0;
+    margin-top: 0;
+    margin-right: 0;
+    height: calc(100dvh - 190px);
+    min-height: 460px;
+  }
+  .listing-columns[data-view="map"] .listing-map-pane .xmap { height: 100%; }
+  /* the little ‹ › collapse tab is for desktop */
+  .listing-columns[data-view="map"] .listing-map-collapse { display: none; }
+}
+@media (max-width: 760px) {
+  /* edge to edge in map view */
+  .listing-columns[data-view="map"] .listing-map-pane { margin-left: -24px; margin-right: -24px; width: calc(100% + 48px); }
+}
