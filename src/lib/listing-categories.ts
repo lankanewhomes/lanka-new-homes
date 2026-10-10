@@ -13,6 +13,8 @@ export type ProjectCategory = {
   /** Optional written explainer shown under the results (adds crawlable context to a card-heavy page). */
   about?: { title: string; paragraphs: string[] };
   relatedPaths: string[];
+  /** Extra words that should find this page in the site search (alternate spellings, brand names). */
+  extraKeywords?: string;
   filter: (project: Project) => boolean;
 };
 
@@ -28,6 +30,23 @@ function isInColombo(project: Project) {
 }
 
 export const projectCategories: Record<string, ProjectCategory> = {
+  "keells-homes-for-sale": {
+    path: "/projects/keells-homes-for-sale",
+    breadcrumbLabel: "Keells Homes",
+    breadcrumbs: [{ label: "Home", href: "/" }, { label: "New Projects", href: "/projects" }, { label: "Keells Homes" }],
+    metaTitle: "Keells Homes for Sale in Sri Lanka",
+    metaDescription: "Browse John Keells Properties homes for sale in Sri Lanka: Vauxhall DSTRCT, VIMAN Ja-Ela, Cinnamon Life and TRI-ZEN apartments, with prices, floor plans and photos.",
+    h1: "Keells Homes for Sale in Sri Lanka",
+    intro: "Looking for Keells homes for sale? These are the apartments developed by John Keells Properties, the real estate arm of the John Keells Group, from landmark Colombo 02 towers to the VIMAN community in Ja-Ela, each with current prices, floor plans and photos.",
+    about: { title: "About Keells homes and John Keells Properties", paragraphs: [
+      "John Keells Properties is the real estate arm of the John Keells Group, Sri Lanka's largest conglomerate. Established in 2003, it develops luxury city apartments and suburban communities across Sri Lanka. Its landmark projects include The Monarch, The Emperor, OnThree20, Cinnamon Life, TRI-ZEN and VIMAN. People search for it as Keells, Keels or John Keells homes; this page gathers all of its homes for sale in Sri Lanka that are listed on LankaNewHomes.",
+      "The collection currently covers Vauxhall DSTRCT on Vauxhall Street in Colombo 02, VIMAN Ja-Ela Apartments close to the Colombo–Katunayake Expressway, The Residences at Cinnamon Life in Colombo 02 and TRI-ZEN Apartments at Union Place, Colombo 02. Each listing shows the developer's own details: location, status, floor plans, sizes and the payment plan where one has been published.",
+      "To compare Keells apartments, open each project to see its floor plans and amenities, then use the enquiry form on the listing: it goes straight to the developer. For the company profile and everything John Keells Properties has listed, see the developer page linked below.",
+    ] },
+    relatedPaths: ["/developers/john-keells-properties", "/projects/colombo", "/projects/luxury"],
+    extraKeywords: "keells keels john keells john keels jkp keells properties keells apartments",
+    filter: (project) => (project.developerName ?? "").toLowerCase().includes("john keells"),
+  },
   "pre-construction": {
     path: "/projects/pre-construction",
     breadcrumbLabel: "Pre-Construction",
@@ -158,7 +177,7 @@ export const searchablePages: SearchablePage[] = [
   ...allProjectCategories.map((category) => ({
     label: category.h1,
     path: category.path,
-    keywords: `${category.breadcrumbLabel} ${category.h1}`.toLowerCase(),
+    keywords: `${category.breadcrumbLabel} ${category.h1} ${category.extraKeywords ?? ""}`.toLowerCase().trim(),
   })),
   { label: "Land for Sale in Sri Lanka", path: "/land", keywords: "land lands plot plots" },
 ];

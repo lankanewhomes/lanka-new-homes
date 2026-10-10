@@ -17,6 +17,7 @@ Update this file whenever a new keyword group or page is added.
 | `/projects/beachfront` | Beachfront/resort residences | new |
 | `/projects/serviced-apartments` | Serviced apartments | new |
 | `/projects/port-city-colombo` | Port City Colombo specific | new |
+| `/projects/keells-homes-for-sale` | "Keells homes for sale" / "John Keells apartments" / "Keels" spelling variant (all John Keells Properties listings; added 2026-10-10, owner request) | new |
 | `/guides` | Guides index (hub page, links the 3 guides below) | new |
 | `/guides/foreigners-buying-property` | Foreign ownership guide | new |
 | `/guides/investment-property` | Investment-focused guide | new |

@@ -31,8 +31,9 @@ export async function generateMetadata({ params }: DeveloperProfilePageProps): P
     };
   }
 
-  const title = `${developer.name} Developer Profile`;
-  const description = `${developer.description} View current and upcoming projects in Sri Lanka.`;
+  // SEO title / description set in the CMS (SEO tab) win; otherwise the generic profile wording.
+  const title = developer.seoTitle?.trim() || `${developer.name} Developer Profile`;
+  const description = developer.seoDescription?.trim() || `${developer.description} View current and upcoming projects in Sri Lanka.`;
   const canonicalPath = `/developers/${developer.slug}`;
 
   return {
