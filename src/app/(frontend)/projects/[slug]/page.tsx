@@ -53,7 +53,7 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
   const titleBudget = 60 - " | LankaNewHomes".length;
   const shortTitle = `${project.name} - New ${homeLabel}`;
   const title = fullTitle.length <= titleBudget ? fullTitle : shortTitle.length <= titleBudget ? shortTitle : `${project.name.slice(0, titleBudget - 1).trimEnd()}…`;
-  const description = `${project.summary} Starting from ${project.priceRange.replace(/^\s*from\s+/i, "")}. Explore floor plans, amenities, and availability.`;
+  const description = `${project.summary} Starting from ${typeof project.priceRange === "string" ? project.priceRange.replace(/^\s*from\s+/i, "") : project.priceRange}. Explore floor plans, amenities, and availability.`;
   const canonicalPath = `/projects/${project.slug}`;
 
   return withSocial({
