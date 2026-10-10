@@ -20414,3 +20414,7 @@ body:has(.compare-bar) {
   .l360-count { flex: 0 0 auto; width: auto; white-space: nowrap; align-self: center; }
   .l360-mapwrap { height: 52vh; min-height: 340px; border-radius: 0; }
 }
+
+/* "In this map area 36" / "More listings": small and regular weight (not bold) */
+.listing-area-heading { font-size: 13px !important; font-weight: 400 !important; color: #3d3d39; margin-bottom: -26px; }
+.listing-area-heading span { font-weight: 400 !important; font-size: 13px; color: #6b6b66; }
