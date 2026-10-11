@@ -2976,6 +2976,14 @@ export interface Project {
    * Short notes shown at the foot of the Pricing card, e.g. the currency the developer publishes in and the exchange rate used, or how foreign buyers purchase.
    */
   pricingNotes?: string[] | null;
+  /**
+   * Currency this listing's own pages show prices in. Prices are stored in LKR either way; pick USD only when the developer prices in USD (the exact USD figure is the stored LKR divided by the rate below).
+   */
+  priceCurrency?: ('LKR' | 'USD') | null;
+  /**
+   * Only used when "Show prices in" is USD. The rate the stored LKR figures were converted at, e.g. 330.716.
+   */
+  lkrPerUsd?: number | null;
   includedUtilities?: string[] | null;
   paidUtilities?:
     | {
@@ -3304,6 +3312,10 @@ export interface Project {
           | 'Cafe'
           | 'Outdoor Multipurpose Court'
           | 'Ambalama Gathering Space';
+        /**
+         * The developer's own one- or two-sentence description of this amenity, as published. Blank = the standard line is shown.
+         */
+        description?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -6966,6 +6978,10 @@ export interface Land {
           | 'Cafe'
           | 'Outdoor Multipurpose Court'
           | 'Ambalama Gathering Space';
+        /**
+         * The developer's own one- or two-sentence description of this amenity, as published. Blank = the standard line is shown.
+         */
+        description?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -8177,6 +8193,8 @@ export interface ProjectsSelect<T extends boolean = true> {
         id?: T;
       };
   pricingNotes?: T;
+  priceCurrency?: T;
+  lkrPerUsd?: T;
   includedUtilities?: T;
   paidUtilities?:
     | T
@@ -8274,6 +8292,7 @@ export interface ProjectsSelect<T extends boolean = true> {
     | T
     | {
         name?: T;
+        description?: T;
         id?: T;
       };
   unitFeatures?:
@@ -8560,6 +8579,7 @@ export interface LandsSelect<T extends boolean = true> {
     | T
     | {
         name?: T;
+        description?: T;
         id?: T;
       };
   unitFeatures?:

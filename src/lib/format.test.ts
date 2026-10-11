@@ -53,3 +53,12 @@ describe("withSqFt / stripSqFt", () => {
     expect(stripSqFt("500")).toBe("500");
   });
 });
+
+import { formatMoney } from "./format";
+describe("formatMoney", () => {
+  it("shows LKR by default and recovers exact USD for USD-priced listings", () => {
+    expect(formatMoney(128000000)).toBe("Rs. 128,000,000");
+    expect(formatMoney(Math.round(387000 * 330.716), { priceCurrency: "USD", lkrPerUsd: 330.716 })).toBe("USD 387,000");
+    expect(formatMoney(Math.round(974750 * 330.716), { priceCurrency: "USD" })).toBe("USD 974,750");
+  });
+});

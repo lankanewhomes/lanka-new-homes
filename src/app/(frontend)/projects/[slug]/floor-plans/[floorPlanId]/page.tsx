@@ -111,7 +111,7 @@ export default async function FloorPlanDetailPage({ params }: FloorPlanPageProps
         <FloorPlanFactSheet
           floorPlan={withProjectParking(floorPlan, project)}
           balcony={balcony}
-          building={{ visitorParking: project.visitorParking, evCharging: project.amenities.some((amenity) => amenity.name === "EV Charging"), carparkLevels: project.carparkLevels }}
+          building={{ visitorParking: project.visitorParking, evCharging: project.amenities.some((amenity) => amenity.name === "EV Charging"), carparkLevels: project.carparkLevels, display: project }}
         />
 
         <section id="pricing" className="space-y-3">

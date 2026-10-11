@@ -112,8 +112,8 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
           },
           offers: {
             "@type": "Offer",
-            priceCurrency: "LKR",
-            price: project.startingPriceLkr,
+            priceCurrency: project.priceCurrency === "USD" ? "USD" : "LKR",
+            price: project.priceCurrency === "USD" ? Math.round(project.startingPriceLkr / (project.lkrPerUsd || 330.716)) : project.startingPriceLkr,
             availability:
               project.status === "Coming Soon"
                 ? "https://schema.org/PreOrder"

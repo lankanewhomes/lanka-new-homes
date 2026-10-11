@@ -88,6 +88,8 @@ export type Amenity = {
     | "Outdoor Multipurpose Court"
     | "Ambalama Gathering Space";
   icon: string;
+  /** The developer's own description of this amenity; blank = the standard line. */
+  description?: string | null;
 };
 
 export type KeyFeatureItem = {
@@ -488,6 +490,10 @@ export type Project = SeoFields & {
   /** Short notes printed at the foot of the "Pricing and fees" card — e.g.
    * "Prices published in USD by the developer; converted at …". */
   pricingNotes?: string[];
+  /** Currency the listing's own pages show prices in (default LKR). Stored prices stay LKR. */
+  priceCurrency?: "LKR" | "USD" | null;
+  /** LKR per 1 USD used to convert stored LKR prices back to USD for display. */
+  lkrPerUsd?: number | null;
 
   // --- Fields added on the Payload side (src/collections/Projects.ts),
   // synced here via src/collections/hooks/sync-to-supabase.ts. No frontend

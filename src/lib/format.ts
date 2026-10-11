@@ -3,6 +3,15 @@ import type { OfficeHoursEntry } from "@/types";
 export const formatLkr = (amount: number) =>
   `Rs. ${new Intl.NumberFormat("en-LK").format(amount)}`;
 
+/** Per-project display currency. Most listings show Rs.; a listing the developer prices in USD (MIRA) shows
+ * "USD 387,000" everywhere on its own pages. Stored prices stay LKR (exact: USD x lkrPerUsd), so the USD figure is
+ * recovered by dividing by the same rate. */
+export type PriceDisplay = { priceCurrency?: "LKR" | "USD" | null; lkrPerUsd?: number | null };
+export const formatMoney = (amountLkr: number, display?: PriceDisplay) =>
+  display?.priceCurrency === "USD"
+    ? `USD ${new Intl.NumberFormat("en-US").format(Math.round(amountLkr / (display.lkrPerUsd || 330.716)))}`
+    : formatLkr(amountLkr);
+
 export const compactLkr = (amount: number) => {
   if (amount >= 1000000) {
     const value = amount / 1000000;

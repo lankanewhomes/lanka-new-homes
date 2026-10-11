@@ -421,6 +421,8 @@ export const Projects: CollectionConfig = {
               label: 'Pricing Notes',
               admin: { description: 'Short notes shown at the foot of the Pricing card, e.g. the currency the developer publishes in and the exchange rate used, or how foreign buyers purchase.' },
             },
+            { name: 'priceCurrency', type: 'select', options: ['LKR', 'USD'], defaultValue: 'LKR', label: 'Show prices in', admin: { description: "Currency this listing's own pages show prices in. Prices are stored in LKR either way; pick USD only when the developer prices in USD (the exact USD figure is the stored LKR divided by the rate below)." } },
+            { name: 'lkrPerUsd', type: 'number', label: 'LKR per 1 USD', admin: { description: 'Only used when "Show prices in" is USD. The rate the stored LKR figures were converted at, e.g. 330.716.' } },
             { name: 'includedUtilities', type: 'text', hasMany: true, label: 'Included Utilities' },
             {
               name: 'paidUtilities',

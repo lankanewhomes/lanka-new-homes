@@ -109,7 +109,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteLanguage, useLanguage } from "@/components/layout/language-provider";
-import { compactLkr, formatLkr, formatOfficeHours, splitSentences, stripSqFt, withSqFt } from "@/lib/format";
+import { compactLkr, formatLkr, formatMoney, formatOfficeHours, splitSentences, stripSqFt, withSqFt } from "@/lib/format";
 
 /** Payment packages shown before the "View more" toggle on a pricing card. */
 const PACKAGES_SHOWN = 3;
@@ -1926,7 +1926,7 @@ export function ProjectStatsChips({ project, floorPlan, areaUnit = "SqFt" }: { p
   const candidates: StatChip[] = floorPlan
     ? [
         // Defaults, in display order
-        ...(floorPlan.startingPriceLkr > 0 ? [{ key: "Price", value: `From ${formatLkr(floorPlan.startingPriceLkr)}` }] : []),
+        ...(floorPlan.startingPriceLkr > 0 ? [{ key: "Price", value: `From ${formatMoney(floorPlan.startingPriceLkr, project)}` }] : []),
         { key: "Project type", value: project.type },
         ...(hasDisplayValue(floorPlan.planType) ? [{ key: "Plan type", value: floorPlan.planType ?? "" }] : []),
         // A land plot maps onto this shape with 0 beds/baths — that means
@@ -1952,7 +1952,7 @@ export function ProjectStatsChips({ project, floorPlan, areaUnit = "SqFt" }: { p
       ]
     : [
         // Defaults, in display order
-        ...(project.startingPriceLkr > 0 ? [{ key: "Price range", value: `From ${formatLkr(project.startingPriceLkr)}` }] : []),
+        ...(project.startingPriceLkr > 0 ? [{ key: "Price range", value: `From ${formatMoney(project.startingPriceLkr, project)}` }] : []),
         { key: "Property type", value: project.type },
         { key: "Beds", value: project.bedrooms },
         { key: "Baths", value: project.bathrooms },
@@ -1975,7 +1975,7 @@ export function ProjectStatsChips({ project, floorPlan, areaUnit = "SqFt" }: { p
         ...(project.incentives?.length ? [{ key: "Incentives", value: String(project.incentives.length) }] : []),
         ...(hasDisplayValue(project.parking) ? [{ key: "Parking", value: project.parking }] : []),
         ...(project.carparkLevels ? [{ key: "Carpark levels", value: String(project.carparkLevels) }] : []),
-        ...(project.averageUnitPriceLkr ? [{ key: "Avg unit price", value: formatLkr(project.averageUnitPriceLkr) }] : []),
+        ...(project.averageUnitPriceLkr ? [{ key: "Avg unit price", value: formatMoney(project.averageUnitPriceLkr, project) }] : []),
         ...(project.averageFloorAreaSqFt ? [{ key: "Avg floor area", value: `${formatArea(project.averageFloorAreaSqFt)} SqFt` }] : []),
         ...(hasDisplayValue(project.ownership) ? [{ key: "Ownership", value: project.ownership }] : []),
         ...(hasDisplayValue(project.ceilingInfo) ? [{ key: "Ceilings", value: project.ceilingInfo ?? "" }] : []),
@@ -2389,7 +2389,7 @@ export function RequestInfoDialog({
 
 export function ProjectSummary({ project }: { project: Project }) {
   const rows = [
-    ["Starting Price", formatLkr(project.startingPriceLkr)],
+    ["Starting Price", formatMoney(project.startingPriceLkr, project)],
     ["Bedrooms", project.bedrooms],
     ["Bathrooms", project.bathrooms],
     ["Floor Area", project.floorAreaRange],
@@ -2415,13 +2415,13 @@ export function ProjectStats({ project }: { project: Project }) {
   return <ProjectSummary project={project} />;
 }
 
-export function FloorPlanCard({ floorPlan }: { floorPlan: FloorPlan }) {
+export function FloorPlanCard({ floorPlan, project }: { floorPlan: FloorPlan; project?: Project }) {
   return (
     <article className="grid gap-3 border border-stone-200 bg-white p-3">
       <Image src={floorPlan.image} alt={floorPlan.planName} width={1000} height={600} className="h-44 w-full object-cover" />
       <h4 className="text-base font-semibold">{floorPlan.planName}</h4>
       <p className="text-sm text-stone-700">{[floorPlan.bedrooms > 0 ? `${floorPlan.bedrooms} Bed` : "", floorPlan.bathrooms > 0 ? `${floorPlan.bathrooms} Bath` : "", floorPlan.floorAreaSqFt > 0 ? `${floorPlan.floorAreaSqFt.toLocaleString("en-US")} sq.ft` : ""].filter(Boolean).join(" • ")}</p>
-      <p className="text-sm font-medium">From {formatLkr(floorPlan.startingPriceLkr)}</p>
+      <p className="text-sm font-medium">From {formatMoney(floorPlan.startingPriceLkr, project)}</p>
       <StatusBadge status={floorPlan.availability} />
     </article>
   );
@@ -2533,12 +2533,12 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
   // project's pricing info (average, deposit structure, fees, add-ons…) follows
   // as the fallback for whatever the plan doesn't publish (owner, 2026-09-21).
   const digits = (value: string | undefined) => (value ?? "").replace(/\D/g, "");
-  const planPerSqft = floorPlan && (floorPlan.pricePerSqFtLkr ?? 0) > 0 ? `${formatLkr(floorPlan.pricePerSqFtLkr as number)} / SqFt` : "";
+  const planPerSqft = floorPlan && (floorPlan.pricePerSqFtLkr ?? 0) > 0 ? `${formatMoney(floorPlan.pricePerSqFtLkr as number, project)} / SqFt` : "";
   const planFields = floorPlan
     ? [
         // Skip when it just repeats the project's "Average price per sqft".
         { label: "Price per sq ft (this plan)", value: digits(planPerSqft) && digits(planPerSqft) === digits(project.averagePricePerSqft) ? "" : planPerSqft },
-        { label: "Maintenance (this plan)", value: (floorPlan.maintenancePerMonthLkr ?? 0) > 0 ? `${formatLkr(floorPlan.maintenancePerMonthLkr as number)} / month` : "" },
+        { label: "Maintenance (this plan)", value: (floorPlan.maintenancePerMonthLkr ?? 0) > 0 ? `${formatMoney(floorPlan.maintenancePerMonthLkr as number, project)} / month` : "" },
         { label: "Deposit (this plan)", value: floorPlan.deposit ?? "" },
       ].filter((field) => hasDisplayValue(field.value))
     : [];
@@ -2578,10 +2578,10 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
   const startingPriceLkr = floorPlan && floorPlan.startingPriceLkr > 0 ? floorPlan.startingPriceLkr : project.startingPriceLkr;
   // A land priced per perch (Gangani, Prime Lands…) says so — "From Rs. 300,000
   // per perch", with the full range as its own row.
-  const startingPrice = startingPriceLkr > 0 ? `From ${formatLkr(startingPriceLkr)}${perPerch ? " per perch" : ""}` : "";
+  const startingPrice = startingPriceLkr > 0 ? `From ${formatMoney(startingPriceLkr, project)}${perPerch ? " per perch" : ""}` : "";
   const planPrices = (floorPlan ? project.floorPlans.filter((plan) => plan.id === floorPlan.id) : project.floorPlans)
     .filter((plan) => plan.startingPriceLkr > 0)
-    .map((plan) => `${plan.planName} — ${formatLkr(plan.startingPriceLkr)}`);
+    .map((plan) => `${plan.planName} — ${formatMoney(plan.startingPriceLkr, project)}`);
   const hasAnyPricingDetail = Boolean(startingPrice) || planPrices.length > 0 || addOns.length > 0 || pricingFields.length > 0 || pricingHistory.length > 0 || includedUtilities.length > 0 || paidUtilities.length > 0;
 
   const hasPricingCard = true;
@@ -2982,7 +2982,7 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
                 </div>
               ) : null}
               <h4>{planTitleWithFloor(plan.planName, plan.floorRange)}</h4>
-              <p className="plans-home-price">{plan.startingPriceLkr > 0 ? tPrice(`From ${formatLkr(plan.startingPriceLkr)}`) : <span className="badge-contact-pricing">{t("Contact for pricing")}</span>}</p>
+              <p className="plans-home-price">{plan.startingPriceLkr > 0 ? tPrice(`From ${formatMoney(plan.startingPriceLkr, project)}`) : <span className="badge-contact-pricing">{t("Contact for pricing")}</span>}</p>
               <p className="plans-home-type">{plan.planType || project.type}</p>
               <div className="plans-home-facts">
                 {showBedBath ? (
@@ -3210,7 +3210,7 @@ export function AmenitiesShowcaseSection({ amenities, gallery, heroImage, title 
 
       return {
         name: amenity.name,
-        description: fallbackDescriptions[amenity.name] ?? "Thoughtfully planned amenity spaces enhance comfort and support modern urban living.",
+        description: amenity.description?.trim() || (fallbackDescriptions[amenity.name] ?? "Thoughtfully planned amenity spaces enhance comfort and support modern urban living."),
         // No heroImage fallback on purpose — showing the building's exterior
         // shot for an amenity that has no real photo (e.g. "Security") would
         // misrepresent what that amenity actually looks like.
@@ -3589,7 +3589,7 @@ export function ProjectDescriptionSection({ project, floorPlan, headingOverride,
 
     const sentences = [
       facts ? `The ${floorPlan.planName} is a ${facts} home at ${project.name}.` : `The ${floorPlan.planName} is a home at ${project.name}.`,
-      floorPlan.startingPriceLkr > 0 ? `Priced from ${formatLkr(floorPlan.startingPriceLkr)}.` : "",
+      floorPlan.startingPriceLkr > 0 ? `Priced from ${formatMoney(floorPlan.startingPriceLkr, project)}.` : "",
       hasDisplayValue(floorPlan.availability) ? `Currently ${floorPlan.availability.toLowerCase()}.` : "",
       floorPlan.quickMoveIn ? "Available for quick move-in." : "",
       // "The project is completed, completed in 2022" read badly — a finished
@@ -3735,8 +3735,8 @@ export function ProjectNarrativeDetails({ project }: { project: Project }) {
     // A year still ahead is a move-in date; a past one is simply when the
     // building was finished (rule of 2026-09-07 — no "Move in 2022").
     { label: isUpcomingMoveIn(project) ? "Move-in year" : "Completed in", show: isFact(completionMonth), value: completionMonth },
-    { label: "Price range", show: project.startingPriceLkr > 0, value: `From ${formatLkr(project.startingPriceLkr)}` },
-    { label: "Avg unit price", show: Boolean(project.averageUnitPriceLkr), value: project.averageUnitPriceLkr ? formatLkr(project.averageUnitPriceLkr) : "" },
+    { label: "Price range", show: project.startingPriceLkr > 0, value: `From ${formatMoney(project.startingPriceLkr, project)}` },
+    { label: "Avg unit price", show: Boolean(project.averageUnitPriceLkr), value: project.averageUnitPriceLkr ? formatMoney(project.averageUnitPriceLkr, project) : "" },
     { label: "Per SqFt (Avg)", show: isFact(project.averagePricePerSqft), value: project.averagePricePerSqft ?? "" },
     { label: "Incentives", show: incentives.length > 0, value: incentives.join("; ") },
     { label: "Total units", show: project.units > 0, value: String(project.units) },

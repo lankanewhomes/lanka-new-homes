@@ -3,7 +3,7 @@
 import type { ComponentType } from "react";
 import { Bath, BedDouble, Building2, Car, Clock3, Compass, DoorOpen, Eye, HousePlus, KeyRound, LayoutGrid, Ruler, Sofa, Square } from "lucide-react";
 import type { FloorPlan, Project } from "@/types";
-import { formatLkr } from "@/lib/format";
+import { formatMoney, type PriceDisplay } from "@/lib/format";
 import { floorRangeLabel } from "@/lib/floor-plan-title";
 import { FactSheetTable } from "@/components/marketplace/components";
 import { useListingT } from "@/lib/i18n/use-listing-t";
@@ -50,7 +50,7 @@ function availableFloorsValue(plan: FloorPlan): string | undefined {
   return open.length ? `${open.join(", ")} (of ${floors.length} floors)` : `None — all ${floors.length} floors sold`;
 }
 
-export type ProjectBuildingFacts = { visitorParking?: string; evCharging?: boolean; carparkLevels?: number };
+export type ProjectBuildingFacts = { visitorParking?: string; evCharging?: boolean; carparkLevels?: number; display?: PriceDisplay };
 
 function floorPlanFactRows(plan: FloorPlan, balcony?: string, building?: ProjectBuildingFacts): Map<string, FactRow> {
   const rows = new Map<string, FactRow>();
@@ -78,9 +78,13 @@ function floorPlanFactRows(plan: FloorPlan, balcony?: string, building?: Project
   add("Floor range", hasText(plan.floorRange) ? plan.floorRange : undefined);
   add("Aspect", hasText(plan.aspect) ? plan.aspect : undefined);
   add("View", hasText(plan.view) ? plan.view : undefined);
-  add("Price LKR", hasNumber(plan.startingPriceLkr) ? `From ${formatLkr(plan.startingPriceLkr)}` : undefined);
-  add("Per SqFt", hasNumber(plan.pricePerSqFtLkr) ? `${formatLkr(plan.pricePerSqFtLkr)} / SqFt` : undefined);
-  add("Maintenance / mo", hasNumber(plan.maintenancePerMonthLkr) ? `${formatLkr(plan.maintenancePerMonthLkr)} / month` : undefined);
+  add("Price LKR", hasNumber(plan.startingPriceLkr) ? `From ${formatMoney(plan.startingPriceLkr, building?.display)}` : undefined);
+  if (building?.display?.priceCurrency === "USD") {
+    const priceRow = rows.get("Price LKR");
+    if (priceRow) priceRow.label = "Price (USD)";
+  }
+  add("Per SqFt", hasNumber(plan.pricePerSqFtLkr) ? `${formatMoney(plan.pricePerSqFtLkr, building?.display)} / SqFt` : undefined);
+  add("Maintenance / mo", hasNumber(plan.maintenancePerMonthLkr) ? `${formatMoney(plan.maintenancePerMonthLkr, building?.display)} / month` : undefined);
   // No count but the listing has parking (type or note) -> "Available" (owner, 2026-10-01).
   add("Parking", hasNumber(plan.parkingSpaces) ? plan.parkingSpaces : hasText(plan.parkingType) ? "Available" : undefined);
   add("Parking type", hasText(plan.parkingType) ? plan.parkingType : undefined);

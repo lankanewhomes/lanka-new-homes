@@ -248,7 +248,10 @@ export const AMENITY_NAME_OPTIONS = [
 export const amenitiesField: Field = {
   name: 'amenities',
   type: 'array',
-  fields: [{ name: 'name', type: 'select', options: AMENITY_NAME_OPTIONS, required: true }],
+  fields: [
+    { name: 'name', type: 'select', options: AMENITY_NAME_OPTIONS, required: true },
+    { name: 'description', type: 'textarea', admin: { description: "The developer's own one- or two-sentence description of this amenity, as published. Blank = the standard line is shown." } },
+  ],
 }
 
 // Common feature names for Key Feature items (Kitchen -> "Pantry cabinets",
