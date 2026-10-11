@@ -88,7 +88,7 @@ export function ApartmentExplorer({ projectName, url, onClose, embedded = false 
           <strong>Apartment Explorer</strong>
           <span>{projectName}</span>
         </div>
-        {url ? (
+        {url && !embedded ? (
           <a className="axp-open" href={url} target="_blank" rel="noopener noreferrer">Developer&apos;s explorer</a>
         ) : null}
         <div className="axp-legend" aria-label="Legend">
