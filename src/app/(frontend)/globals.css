@@ -20514,3 +20514,9 @@ body:has(.compare-bar) {
 
 /* Legend swatch for the project pin matches the new square black pin */
 .neighborhood-map-legend-project { border-radius: 0; background: #111111; }
+
+/* Room above the results heading ("Keells Homes for Sale in Sri Lanka"): on phones it sat right under the sticky filter bar */
+.listing-list-pane .listing-header-title { padding-top: 14px; }
+@media (max-width: 760px) {
+  .listing-list-pane .listing-header-title { padding-top: 26px; }
+}
