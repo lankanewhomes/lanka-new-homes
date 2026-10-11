@@ -2368,7 +2368,7 @@ export function FloorPlanCard({ floorPlan }: { floorPlan: FloorPlan }) {
     <article className="grid gap-3 border border-stone-200 bg-white p-3">
       <Image src={floorPlan.image} alt={floorPlan.planName} width={1000} height={600} className="h-44 w-full object-cover" />
       <h4 className="text-base font-semibold">{floorPlan.planName}</h4>
-      <p className="text-sm text-stone-700">{[floorPlan.bedrooms > 0 ? `${floorPlan.bedrooms} Bed` : "", floorPlan.bathrooms > 0 ? `${floorPlan.bathrooms} Bath` : "", `${floorPlan.floorAreaSqFt} sq.ft`].filter(Boolean).join(" • ")}</p>
+      <p className="text-sm text-stone-700">{[floorPlan.bedrooms > 0 ? `${floorPlan.bedrooms} Bed` : "", floorPlan.bathrooms > 0 ? `${floorPlan.bathrooms} Bath` : "", floorPlan.floorAreaSqFt > 0 ? `${floorPlan.floorAreaSqFt} sq.ft` : ""].filter(Boolean).join(" • ")}</p>
       <p className="text-sm font-medium">From {formatLkr(floorPlan.startingPriceLkr)}</p>
       <StatusBadge status={floorPlan.availability} />
     </article>
@@ -2939,7 +2939,7 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
                     {plan.bathrooms > 0 ? <span><Bath className="h-3.5 w-3.5" aria-hidden="true" /> {plan.bathrooms}</span> : null}
                   </>
                 ) : null}
-                <span><Square className="h-3.5 w-3.5" aria-hidden="true" /> From {plan.floorAreaSqFt} SqFt</span>
+                {plan.floorAreaSqFt > 0 ? <span><Square className="h-3.5 w-3.5" aria-hidden="true" /> From {plan.floorAreaSqFt} SqFt</span> : null}
               </div>
             </div>
           </Link>
