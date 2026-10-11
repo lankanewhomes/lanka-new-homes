@@ -1,6 +1,8 @@
 'use client'
 
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 // List-view cells for Projects and Lands: a photo thumbnail with the name, and a completeness bar.
 // Rendered by Payload in the collection tables (admin.components.Cell on the name/title and score fields).
@@ -256,4 +258,48 @@ export function MediaCell({ cellData, rowData, collectionSlug }: CellProps) {
       </span>
     </Link>
   )
+}
+
+// ---- To-do list (collection listing-todos) ----
+// A tick box in the table: clicking it saves straight away (PATCH) so a task can be checked off without opening it.
+export function TodoDoneCell({ cellData, rowData }: CellProps) {
+  const router = useRouter()
+  const [done, setDone] = useState(Boolean(cellData))
+  const [busy, setBusy] = useState(false)
+  const id = rowData?.id
+  return (
+    <label className={`ln-todo-check${done ? ' is-done' : ''}`} title={done ? 'Done. Click to re-open' : 'Click to check off'}>
+      <input
+        type="checkbox"
+        checked={done}
+        disabled={busy || id === undefined}
+        onChange={async (event) => {
+          const next = event.target.checked
+          setDone(next)
+          setBusy(true)
+          try {
+            const response = await fetch(`/payload-api/listing-todos/${id}`, { method: 'PATCH', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ done: next }) })
+            if (!response.ok) setDone(!next)
+            else router.refresh()
+          } catch {
+            setDone(!next)
+          } finally {
+            setBusy(false)
+          }
+        }}
+      />
+      <span>{done ? 'Done' : 'To do'}</span>
+    </label>
+  )
+}
+
+export function TodoListingCell({ cellData, rowData }: CellProps) {
+  const name = text(cellData) || 'General'
+  const type = text(rowData?.listingType)
+  const project = rowData?.project
+  const land = rowData?.land
+  const id = typeof project === 'object' && project ? (project as { id?: unknown }).id : project
+  const landId = typeof land === 'object' && land ? (land as { id?: unknown }).id : land
+  const href = type === 'project' && id ? `/cms/collections/projects/${id}` : type === 'land' && landId ? `/cms/collections/lands/${landId}` : null
+  return href ? <Link href={href} className="ln-todo-listing">{name}</Link> : <span className="ln-todo-listing">{name}</span>
 }

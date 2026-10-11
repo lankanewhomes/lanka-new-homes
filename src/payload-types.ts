@@ -83,6 +83,7 @@ export interface Config {
     'social-assets': SocialAsset;
     'social-posts': SocialPost;
     'seo-keywords': SeoKeyword;
+    'listing-todos': ListingTodo;
     subscriptions: Subscription;
     leads: Lead;
     reviews: Review;
@@ -124,6 +125,7 @@ export interface Config {
     'social-assets': SocialAssetsSelect<false> | SocialAssetsSelect<true>;
     'social-posts': SocialPostsSelect<false> | SocialPostsSelect<true>;
     'seo-keywords': SeoKeywordsSelect<false> | SeoKeywordsSelect<true>;
+    'listing-todos': ListingTodosSelect<false> | ListingTodosSelect<true>;
     subscriptions: SubscriptionsSelect<false> | SubscriptionsSelect<true>;
     leads: LeadsSelect<false> | LeadsSelect<true>;
     reviews: ReviewsSelect<false> | ReviewsSelect<true>;
@@ -7354,6 +7356,28 @@ export interface SeoKeyword {
   createdAt: string;
 }
 /**
+ * What is left to do on each listing. Tick the box to check a task off. Open tasks are listed first.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "listing-todos".
+ */
+export interface ListingTodo {
+  id: number;
+  /**
+   * Filled in automatically from the listing you pick.
+   */
+  listingName?: string | null;
+  title: string;
+  done?: boolean | null;
+  listingType: 'project' | 'land' | 'other';
+  project?: (number | null) | Project;
+  land?: (number | null) | Land;
+  notes?: string | null;
+  doneAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "subscriptions".
  */
@@ -7772,6 +7796,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'seo-keywords';
         value: number | SeoKeyword;
+      } | null)
+    | ({
+        relationTo: 'listing-todos';
+        value: number | ListingTodo;
       } | null)
     | ({
         relationTo: 'subscriptions';
@@ -9081,6 +9109,22 @@ export interface SeoKeywordsSelect<T extends boolean = true> {
   targetPage?: T;
   notes?: T;
   dateAdded?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "listing-todos_select".
+ */
+export interface ListingTodosSelect<T extends boolean = true> {
+  listingName?: T;
+  title?: T;
+  done?: T;
+  listingType?: T;
+  project?: T;
+  land?: T;
+  notes?: T;
+  doneAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }

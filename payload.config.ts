@@ -32,6 +32,7 @@ import { Reviews } from './src/collections/Reviews'
 import { SalesCompanies } from './src/collections/SalesCompanies'
 import { SavedListings } from './src/collections/SavedListings'
 import { SeoKeywords } from './src/collections/SeoKeywords'
+import { ListingTodos } from './src/collections/ListingTodos'
 import { SocialAssets } from './src/collections/SocialAssets'
 import { SocialPosts } from './src/collections/SocialPosts'
 import { Subscriptions } from './src/collections/Subscriptions'
@@ -166,6 +167,7 @@ export default buildConfig({
     SocialAssets,
     SocialPosts,
     SeoKeywords,
+    ListingTodos,
     Subscriptions,
     Leads,
     Reviews,

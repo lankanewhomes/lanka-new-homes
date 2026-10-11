@@ -2687,3 +2687,9 @@ h1,
     gap: 6px !important;
   }
 }
+
+/* To-do list table: tick box cell */
+.ln-todo-check { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; }
+.ln-todo-check input { width: 18px; height: 18px; accent-color: #111; cursor: pointer; }
+.ln-todo-check.is-done { color: #6b6355; }
+.ln-todo-listing { font-weight: 600; }
