@@ -1,5 +1,5 @@
 import { supabaseAdmin } from "@/lib/supabase";
-import { retryQuery } from "@/lib/retry";
+import { memoizeAsync, retryQuery } from "@/lib/retry";
 import type { FloorPlan, Project } from "@/types";
 
 function toSlug(value: string) {
@@ -90,10 +90,17 @@ function isPublished(project: Project): boolean {
   return project.isPublished !== false;
 }
 
-export async function getAllProjects(): Promise<Project[]> {
+async function loadAllProjects(): Promise<Project[]> {
   const { data, error } = await retryQuery(() => supabaseAdmin.from("projects").select("slug, data, created_at"));
   if (error) throw new Error(`Failed to load projects: ${error.message}`);
   return (data ?? []).map((row) => rowToProject(row as ProjectRow)).filter(isPublished);
+}
+
+const sharedAllProjects = memoizeAsync(loadAllProjects);
+
+// Callers may sort or filter the list, so each gets its own copy of the array.
+export async function getAllProjects(): Promise<Project[]> {
+  return [...(await sharedAllProjects())];
 }
 
 // Unfiltered — includes drafts. Only for internal use (the developer preview

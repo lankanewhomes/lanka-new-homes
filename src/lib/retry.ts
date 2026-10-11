@@ -9,3 +9,19 @@ export async function retryQuery<T extends { error: { message: string } | null }
   }
   return result;
 }
+
+// One shared read for a short time. During a build or a traffic spike many pages ask for "all lands" / "all projects" at the same
+// moment; each used to be its own database query, and enough of them at once hit the 8 second statement timeout. Concurrent and
+// near-in-time callers now share one query. A failed read is never kept, so the next caller tries again.
+export function memoizeAsync<T>(load: () => Promise<T>, ttlMs = 20_000): () => Promise<T> {
+  let cached: { at: number; promise: Promise<T> } | null = null;
+  return () => {
+    if (cached && Date.now() - cached.at < ttlMs) return cached.promise;
+    const promise = load();
+    cached = { at: Date.now(), promise };
+    promise.catch(() => {
+      if (cached?.promise === promise) cached = null;
+    });
+    return promise;
+  };
+}

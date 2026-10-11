@@ -1,5 +1,5 @@
 import { supabaseAdmin } from "@/lib/supabase";
-import { retryQuery } from "@/lib/retry";
+import { memoizeAsync, retryQuery } from "@/lib/retry";
 import type { Land } from "@/types";
 
 function toSlug(value: string) {
@@ -38,10 +38,17 @@ function landToRow(land: Land) {
   };
 }
 
-export async function getAllLands(): Promise<Land[]> {
+async function loadAllLands(): Promise<Land[]> {
   const { data, error } = await retryQuery(() => supabaseAdmin.from("lands").select("slug, data, created_at"));
   if (error) throw new Error(`Failed to load lands: ${error.message}`);
   return (data ?? []).map((row) => rowToLand(row as LandRow));
+}
+
+const sharedAllLands = memoizeAsync(loadAllLands);
+
+// Callers may sort or filter the list, so each gets its own copy of the array.
+export async function getAllLands(): Promise<Land[]> {
+  return [...(await sharedAllLands())];
 }
 
 export async function getLandBySlug(slug: string): Promise<Land | undefined> {
