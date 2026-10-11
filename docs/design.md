@@ -2702,3 +2702,6 @@ rail along the bottom. Data via `src/lib/lanka360.ts` (small per-project shape, 
 ## Menu icons (2026-10-09)
 
 The "Company" item in the main menu (desktop and mobile) uses an office-building icon, not a briefcase (owner's request). The CMS sidebar's Developers entry is also a building.
+
+## Listing order ("Recommended")
+Paid tiers still outrank Free (hard partition by plan tier). Inside a tier the order is reshuffled on every visit, weighted by final_score, so the same project is not always first (owner, 2026-10-10). The server render keeps a stable order; the shuffle applies once the page has mounted (`rotationSalt` in `listing-page.tsx`). Applies to /projects, /search, /land and the collection pages (beachfront, luxury, villas...).

@@ -50,6 +50,16 @@ const FILTER_GROUPS = [
   { label: MOVE_IN_FILTER_LABEL, options: ["Any", MOVE_IN_NOW_OPTION] },
 ];
 
+// Deterministic pseudo-random number in (0, 1] from a string (FNV-1a hash), so a shuffle is a pure function of its salt.
+function rotationUnit(text: string): number {
+  let hash = 2166136261;
+  for (let index = 0; index < text.length; index += 1) {
+    hash ^= text.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return ((hash >>> 0) + 1) / 4294967297;
+}
+
 function upcomingMoveInYears(projects: Project[]): string[] {
   const currentYear = new Date().getFullYear();
   const years = new Set<number>();
@@ -350,6 +360,11 @@ export function ListingPageBody({
   citySectionHeading?: string;
 }) {
   const [sortBy, setSortBy] = useState<SortValue>("featured");
+  const [rotationSalt, setRotationSalt] = useState(0);
+  useEffect(() => {
+    const timer = window.setTimeout(() => setRotationSalt(1 + Math.floor(Math.random() * 1_000_000)), 0);
+    return () => window.clearTimeout(timer);
+  }, []);
   const [viewMode, setViewMode] = useState<ViewMode>("split");
   const [selectedArea] = useState<MapAreaSelection>(null);
   // What the map is showing, and the pin the visitor picked. Zooming the map (e.g. into Colombo) makes the list show the listings
@@ -485,17 +500,24 @@ export function ListingPageBody({
     // planRotationWeight is shared with the homepage's rotation logic
     // (hero-ad-store.ts, home-client.tsx) — same 4/3/2/1 scale, reused here
     // as a ranking tier rather than a random-sampling weight.
+    // Within a tier the order is shuffled on every visit (owner, 2026-10-10: "don't show the same project first, change it up"),
+    // weighted by final_score so stronger listings still tend to come earlier but no single project always leads. The tier
+    // partition above is untouched. rotationSalt is 0 on the server render (stable order for the first paint and for crawlers)
+    // and a fresh random number once the page has mounted, so the visitor sees a different order each time.
     if (sortBy === "featured") {
+      const rotationKey = (project: Project) => rotationUnit(`${project.slug}:${rotationSalt}`) ** (1 / (1 + Math.max(0, project.finalScore ?? 0) / 25));
       list.sort((a, b) => {
         const tierDiff = planRotationWeight(b.package) - planRotationWeight(a.package);
-        return tierDiff !== 0 ? tierDiff : (b.finalScore ?? 0) - (a.finalScore ?? 0);
+        if (tierDiff !== 0) return tierDiff;
+        if (rotationSalt === 0) return (b.finalScore ?? 0) - (a.finalScore ?? 0);
+        return rotationKey(b) - rotationKey(a);
       });
     }
     else if (sortBy === "priceAsc") list.sort((a, b) => a.startingPriceLkr - b.startingPriceLkr);
     else if (sortBy === "priceDesc") list.sort((a, b) => b.startingPriceLkr - a.startingPriceLkr);
     else if (sortBy === "newest") list.sort((a, b) => (b.launchDate ?? "").localeCompare(a.launchDate ?? ""));
     return list;
-  }, [baseProjects, sortBy]);
+  }, [baseProjects, sortBy, rotationSalt]);
 
   // Listings that sit inside the map's current view come first (once the visitor has zoomed in), the others follow in the same order.
   const areaSplit = useMemo(() => {
