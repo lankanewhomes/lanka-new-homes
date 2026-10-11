@@ -143,3 +143,6 @@ the cron run still completes normally.
   server-side record of every real submission. GA4 is used only for
   traffic-source *attribution* of those visits, which Payload has no way to
   know.
+
+## Internal traffic (own visits)
+Open any page with `?internal=1` (or `?no-track=1`) once per browser; `?internal=0` undoes it. This sets the `lnh_internal` cookie (stops our own events being counted) and `localStorage.ga_internal = "1"`. For a flagged browser, `src/components/analytics/internal-traffic-flag.tsx` puts `gtag('set', { traffic_type: 'internal' })` on `dataLayer` before the deferred GA tag loads, so GA's active "Internal Traffic" filter (traffic_type = internal) drops those hits. GA itself still loads exactly once, from `deferred-google-tags.tsx` (`@next/third-parties`).
