@@ -55,6 +55,7 @@ const SEO_LINK_GROUPS: { title: string; links: { label: string; href: string }[]
   {
     title: "Land",
     links: [
+      { label: "Best land for sale in Colombo", href: "/land/best-land-for-sale-in-colombo" },
       { label: "Land for sale in Nuwara Eliya", href: "/land?location=Nuwara+Eliya" },
       { label: "Residential land for sale", href: "/land?landUse=Residential" },
       { label: "Agricultural land for sale", href: "/land?landUse=Agricultural" },

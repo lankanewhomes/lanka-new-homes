@@ -48,6 +48,23 @@ export const projectCategories: Record<string, ProjectCategory> = {
     extraKeywords: "keells keels john keells john keels jkp keells properties keells apartments",
     filter: (project) => (project.developerName ?? "").toLowerCase().includes("john keells"),
   },
+  "prime-lands-apartments": {
+    path: "/projects/prime-lands-apartments",
+    breadcrumbLabel: "Prime Lands Apartments",
+    breadcrumbs: [{ label: "Home", href: "/" }, { label: "New Projects", href: "/projects" }, { label: "Prime Lands Apartments" }],
+    metaTitle: "Prime Lands Apartments for Sale in Sri Lanka",
+    metaDescription: "Browse Prime Lands apartments and new homes for sale in Sri Lanka: current projects from Prime Lands with prices, floor plans, photos and locations.",
+    h1: "Prime Lands Apartments for Sale in Sri Lanka",
+    intro: "Looking for Prime Lands apartments? These are the apartment and housing projects developed by Prime Lands, one of Sri Lanka's best-known property developers, each with current prices, floor plans and photos. More Prime Lands apartments are being added as they are confirmed.",
+    about: { title: "About Prime Lands apartments", paragraphs: [
+      "Prime Lands (Prime Lands (Pvt) Ltd) is a Sri Lankan property developer known for its land plots, residential communities and, more recently, apartment projects in and around Colombo and in towns such as Negombo and Kadawatha. People search for it as Prime Lands apartments, Prime Residencies or Prime Lands homes.",
+      "This page gathers every Prime Lands project listed on LankaNewHomes. Open a project to see its floor plans, sizes, amenities and payment plan where the developer has published one, and to check which units are still available.",
+      "Use the enquiry form on any listing to ask Prime Lands about prices, a site visit or availability: it goes straight to the developer. For the company profile and its land plots, see the Prime Lands developer page and the land listings.",
+    ] },
+    relatedPaths: ["/developers/prime-lands", "/land", "/projects/colombo"],
+    extraKeywords: "prime lands apartments prime lands apartment prime lands homes prime residencies prime lands condominium prime lands colombo",
+    filter: (project) => (project.developerName ?? "").toLowerCase().includes("prime lands"),
+  },
   "brand-new-houses-for-sale": {
     path: "/projects/brand-new-houses-for-sale",
     breadcrumbLabel: "Brand New Houses",
@@ -209,6 +226,7 @@ export const searchablePages: SearchablePage[] = [
     keywords: `${category.breadcrumbLabel} ${category.h1} ${category.extraKeywords ?? ""} ${searchSynonyms[category.path] ?? ""}`.toLowerCase().trim(),
   })),
   { label: "Land for Sale in Sri Lanka", path: "/land", keywords: "land lands plot plots" },
+  { label: "Best Land for Sale in Colombo", path: "/land/best-land-for-sale-in-colombo", keywords: "best land for sale in colombo land colombo plots plot colombo land for sale colombo district" },
 ];
 
 export function buildCategoryMetadata(category: ProjectCategory): Metadata {
