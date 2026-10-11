@@ -20444,12 +20444,58 @@ body:has(.compare-bar) {
   .listing-columns[data-view="map"] .listing-map-pane { margin-left: -24px; margin-right: -24px; width: calc(100% + 48px); }
 }
 
-/* Apartment Explorer (hero pill on a listing page): the developer's live explorer embedded full screen under a slim bar. */
+/* Apartment Explorer (hero pill on a listing page): full-screen building view with clickable apartments + a details panel.
+   Square corners, bordered boxes, cream ground like the rest of the site. Sold = green wash, available = grey wash (as on the developer's own explorer). */
 .axp-modal { position: fixed; inset: 0; z-index: 210; display: flex; flex-direction: column; background: #f4f1ed; color: #1f1f1f; }
-.axp-bar { display: flex; align-items: center; gap: 14px; padding: 10px 16px; background: #fff; border-bottom: 1px solid #e4e2db; }
-.axp-title { display: flex; flex-direction: column; line-height: 1.25; margin-right: auto; min-width: 0; }
+.axp-bar { display: flex; align-items: center; gap: 18px; padding: 10px 16px; background: #fff; border-bottom: 1px solid #e4e2db; flex-wrap: wrap; }
+.axp-title { display: flex; flex-direction: column; line-height: 1.25; margin-right: auto; }
 .axp-title strong { font-size: 16px; font-weight: 600; }
-.axp-title span { font-size: 13px; color: #6b6355; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.axp-open { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border: 1px solid #d8d4c9; background: #fff; font-size: 13px; color: #1f1f1f; text-decoration: none; white-space: nowrap; }
-.axp-close { width: 38px; height: 38px; flex: none; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #d8d4c9; background: #fff; cursor: pointer; }
-.axp-frame { flex: 1; width: 100%; min-height: 0; border: 0; background: #f4f1ed; }
+.axp-title span { font-size: 13px; color: #6b6355; }
+.axp-legend { display: flex; gap: 14px; font-size: 13px; color: #3a3a38; }
+.axp-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.axp-dot { width: 12px; height: 12px; border: 1px solid rgba(0,0,0,0.25); display: inline-block; }
+.axp-dot-available { background: rgba(140, 150, 155, 0.55); }
+.axp-dot-sold { background: rgba(39, 174, 96, 0.6); }
+.axp-tabs { display: inline-flex; border: 1px solid #d8d4c9; }
+.axp-tabs button { padding: 8px 16px; font-size: 13px; background: #fff; color: #3a3a38; border: 0; cursor: pointer; }
+.axp-tabs button + button { border-left: 1px solid #d8d4c9; }
+.axp-tabs button.active { background: #1f1f1f; color: #fff; }
+.axp-close { width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #d8d4c9; background: #fff; cursor: pointer; }
+.axp-body { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) 340px; }
+.axp-stage { position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f4f1ed; touch-action: pan-y; }
+.axp-stage.is-zoomed { cursor: grab; touch-action: none; }
+.axp-canvas { position: relative; width: 100%; max-height: 100%; transform-origin: center center; }
+.axp-canvas img { display: block; width: 100%; height: 100%; object-fit: contain; user-select: none; pointer-events: none; }
+.axp-hot { position: absolute; padding: 0; border: 1px solid rgba(255,255,255,0.35); cursor: pointer; box-sizing: border-box; transition: background 0.15s, border-color 0.15s; }
+.axp-hot-available { background: rgba(140, 150, 155, 0.3); }
+.axp-hot-sold { background: rgba(39, 174, 96, 0.42); }
+.axp-hot-none { background: rgba(100, 100, 100, 0.12); }
+.axp-hot:hover { background: rgba(244, 123, 54, 0.55); border-color: #fff; }
+.axp-hot.is-selected { background: rgba(244, 123, 54, 0.6); border: 2px solid #1f1f1f; z-index: 2; }
+.axp-zoom { position: absolute; right: 14px; bottom: 14px; display: flex; flex-direction: column; gap: 6px; }
+.axp-zoom button { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; background: #1f1f1f; color: #fff; border: 0; cursor: pointer; }
+.axp-panel { background: #fff; border-left: 1px solid #e4e2db; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
+.axp-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.axp-code { font-size: 13px; padding: 5px 10px; border: 1px solid #d8d4c9; background: #faf7f2; }
+.axp-status { font-size: 12px; padding: 5px 10px; border: 1px solid; }
+.axp-status-available { background: #eef0f1; border-color: #c5cbce; color: #4a5256; }
+.axp-status-sold { background: #e6f5ec; border-color: #9bd3b2; color: #1d7a47; }
+.axp-panel h3 { margin: 0; font-size: 22px; font-weight: 400; }
+.axp-facts { margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.axp-facts div { border: 1px solid #e4e2db; background: #faf7f2; padding: 10px 12px; }
+.axp-facts dt { font-size: 12px; color: #6b6355; margin-bottom: 4px; }
+.axp-facts dd { margin: 0; font-size: 15px; color: #1f1f1f; }
+.axp-facts dd small { color: #6b6355; font-size: 12px; }
+.axp-empty { border: 1px solid #e4e2db; background: #faf7f2; padding: 28px 16px; text-align: center; }
+.axp-empty strong { display: block; font-size: 18px; font-weight: 500; margin-bottom: 6px; }
+.axp-empty p { margin: 0; font-size: 14px; color: #6b6355; }
+.axp-note { margin: auto 0 0; font-size: 12px; line-height: 1.55; color: #6b6355; }
+@media (max-width: 900px) {
+  .axp-body { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; }
+  .axp-panel { border-left: 0; border-top: 1px solid #e4e2db; max-height: 46vh; padding: 14px 16px; }
+  .axp-bar { gap: 10px; padding: 8px 12px; }
+  .axp-legend { order: 3; }
+  .axp-stage { align-items: flex-start; }
+}
+
+.axp-open { padding: 8px 14px; border: 1px solid #d8d4c9; background: #fff; font-size: 13px; color: #1f1f1f; text-decoration: none; white-space: nowrap; }
