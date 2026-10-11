@@ -178,6 +178,7 @@ export const AMENITY_NAME_OPTIONS = [
   'Padel Court',
   'Basketball Court',
   'Badminton Court',
+  'Squash Courts',
   'Indoor Cricket',
   'Jogging Track',
   'Cycling Paths',

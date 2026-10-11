@@ -126,6 +126,10 @@ import type { MapArea, MapPlace } from "@/components/marketplace/map-pane";
 
 // Every project/land page's Map tab (owner, 2026-09-23) — same free MapLibre/OpenFreeMap map
 // already used on the neighbourhood and search pages, in place of the locked Google Maps embed.
+const LazyApartmentExplorer = dynamic(() => import("@/components/marketplace/apartment-explorer").then((mod) => mod.ApartmentExplorer), { ssr: false });
+// Listings that have an Apartment Explorer (the developer's clickable building view): keyed by project slug.
+const APARTMENT_EXPLORER_SLUGS = new Set(["bay-one-residences-colombo"]);
+
 const LazyMapPane = dynamic(() => import("@/components/marketplace/map-pane").then((mod) => mod.MapPane), {
   ssr: false,
   loading: () => <div className="listing-map-loading" aria-hidden="true">Loading map…</div>,
@@ -159,6 +163,7 @@ const amenityIcons: Record<string, React.ComponentType<{ className?: string }>> 
   Hotel: HousePlus,
   "Padel Court": Activity,
   "Basketball Court": Activity,
+  "Squash Courts": Activity,
   "Badminton Court": Activity,
   "Indoor Cricket": Activity,
   "Jogging Track": Footprints,
@@ -754,6 +759,8 @@ export function ProjectHero({
 
   const [activeMedia, setActiveMedia] = useState<"interactiveMap" | "virtualTours" | null>(null);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const hasApartmentExplorer = APARTMENT_EXPLORER_SLUGS.has(project.slug) && !heroImageOverride && !floorPlan;
+  const [explorerOpen, setExplorerOpen] = useState(false);
   useEffect(() => {
     if (!isLightboxOpen) return;
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -882,6 +889,15 @@ export function ProjectHero({
           }}
         >
           <LayoutGrid className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">{t("Photos")} <span className="listing-hero-quickjump-count">{photoItems.length}</span></span>
+        </button>
+      ),
+    },
+    {
+      key: "explorer",
+      show: hasApartmentExplorer,
+      render: (className) => (
+        <button type="button" className={className} onClick={() => setExplorerOpen(true)}>
+          <Building2 className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">Apartment Explorer</span>
         </button>
       ),
     },
@@ -1057,7 +1073,7 @@ export function ProjectHero({
   // the floating bar drops Map / Street View before anything a buyer is
   // more likely to reach for. Anything not listed sorts after, in
   // definition order.
-  const HERO_PILL_ORDER = ["photos", "floor-plans", "videos", "brochure", "road-map", "block-plan", "map", "street-view"];
+  const HERO_PILL_ORDER = ["photos", "explorer", "floor-plans", "videos", "brochure", "road-map", "block-plan", "map", "street-view"];
   const pillRank = (key: string) => {
     const index = HERO_PILL_ORDER.indexOf(key);
     return index === -1 ? HERO_PILL_ORDER.length : index;
@@ -1281,6 +1297,8 @@ export function ProjectHero({
           </button>
         )}
       </div>
+
+      {explorerOpen && <LazyApartmentExplorer projectName={project.name} onClose={() => setExplorerOpen(false)} />}
 
       {isLightboxOpen && (
         <div className="listing-photo-lightbox" role="dialog" aria-modal="true" aria-label="Photo gallery">
