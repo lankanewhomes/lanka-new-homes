@@ -11,7 +11,7 @@ export const ListingTodos: CollectionConfig = {
   admin: {
     group: 'Properties',
     useAsTitle: 'title',
-    defaultColumns: ['listingName', 'title', 'done', 'updatedAt'],
+    defaultColumns: ['listingName', 'title', 'done', 'sourceLinks', 'updatedAt'],
     hidden: hiddenUnlessAdmin,
     description: 'What is left to do on each listing. Tick the box to check a task off. Open tasks are listed first.',
   },
@@ -60,6 +60,7 @@ export const ListingTodos: CollectionConfig = {
     },
     { name: 'project', type: 'relationship', relationTo: 'projects', admin: { condition: (data) => data?.listingType === 'project' } },
     { name: 'land', type: 'relationship', relationTo: 'lands', admin: { condition: (data) => data?.listingType === 'land' } },
+    { name: 'sourceLinks', type: 'textarea', label: 'Links', admin: { description: 'Where the information came from and where to look: one link per line.', components: { Cell: '@/components/payload/ListingCells#TodoLinksCell' } } },
     { name: 'notes', type: 'textarea' },
     { name: 'doneAt', type: 'date', label: 'Checked off on', admin: { readOnly: true, position: 'sidebar', date: { pickerAppearance: 'dayAndTime' } } },
   ],

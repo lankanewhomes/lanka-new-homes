@@ -2693,3 +2693,5 @@ h1,
 .ln-todo-check input { width: 18px; height: 18px; accent-color: #111; cursor: pointer; }
 .ln-todo-check.is-done { color: #6b6355; }
 .ln-todo-listing { font-weight: 600; }
+.ln-todo-links { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+.ln-todo-links a { font-size: 12px; padding: 2px 8px; border: 1px solid #d8d4c9; background: #faf7f2; text-decoration: none; color: #1f1f1f; }

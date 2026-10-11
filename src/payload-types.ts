@@ -7372,6 +7372,10 @@ export interface ListingTodo {
   listingType: 'project' | 'land' | 'other';
   project?: (number | null) | Project;
   land?: (number | null) | Land;
+  /**
+   * Where the information came from and where to look: one link per line.
+   */
+  sourceLinks?: string | null;
   notes?: string | null;
   doneAt?: string | null;
   updatedAt: string;
@@ -9123,6 +9127,7 @@ export interface ListingTodosSelect<T extends boolean = true> {
   listingType?: T;
   project?: T;
   land?: T;
+  sourceLinks?: T;
   notes?: T;
   doneAt?: T;
   updatedAt?: T;

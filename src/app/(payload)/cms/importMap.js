@@ -37,6 +37,7 @@ import { HeroSlideCell as HeroSlideCell_76baef6cf7c9eb87fad9c61807ea9c87 } from 
 import { DateCell as DateCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
 import { TodoListingCell as TodoListingCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
 import { TodoDoneCell as TodoDoneCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
+import { TodoLinksCell as TodoLinksCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
 import { SubscriptionsList as SubscriptionsList_2dc33570c131e8faf2f1046801145d72 } from '@/components/payload/SubscriptionsList'
 import { RatingCell as RatingCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
 import { AnalyticsDashboard as AnalyticsDashboard_16ddde46401d8b8f0e062ed5c8fb8520 } from '@/components/payload/AnalyticsDashboard'
@@ -128,6 +129,7 @@ export const importMap = {
   "@/components/payload/ListingCells#DateCell": DateCell_76baef6cf7c9eb87fad9c61807ea9c87,
   "@/components/payload/ListingCells#TodoListingCell": TodoListingCell_76baef6cf7c9eb87fad9c61807ea9c87,
   "@/components/payload/ListingCells#TodoDoneCell": TodoDoneCell_76baef6cf7c9eb87fad9c61807ea9c87,
+  "@/components/payload/ListingCells#TodoLinksCell": TodoLinksCell_76baef6cf7c9eb87fad9c61807ea9c87,
   "@/components/payload/SubscriptionsList#SubscriptionsList": SubscriptionsList_2dc33570c131e8faf2f1046801145d72,
   "@/components/payload/ListingCells#RatingCell": RatingCell_76baef6cf7c9eb87fad9c61807ea9c87,
   "@/components/payload/AnalyticsDashboard#AnalyticsDashboard": AnalyticsDashboard_16ddde46401d8b8f0e062ed5c8fb8520,

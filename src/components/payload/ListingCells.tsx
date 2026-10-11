@@ -303,3 +303,22 @@ export function TodoListingCell({ cellData, rowData }: CellProps) {
   const href = type === 'project' && id ? `/cms/collections/projects/${id}` : type === 'land' && landId ? `/cms/collections/lands/${landId}` : null
   return href ? <Link href={href} className="ln-todo-listing">{name}</Link> : <span className="ln-todo-listing">{name}</span>
 }
+
+// The links on a to-do row, as short clickable chips (the full URL is the tooltip).
+export function TodoLinksCell({ cellData }: CellProps) {
+  const urls = text(cellData).split(/\s+/).filter((part) => /^https?:\/\//i.test(part))
+  if (urls.length === 0) return <span className="ln-cell-muted">—</span>
+  return (
+    <span className="ln-todo-links">
+      {urls.slice(0, 6).map((url) => {
+        let label = url
+        try {
+          label = new URL(url).hostname.replace(/^www\./, '')
+        } catch {
+          /* keep the raw url */
+        }
+        return <a key={url} href={url} target="_blank" rel="noopener noreferrer" title={url}>{label}</a>
+      })}
+    </span>
+  )
+}
