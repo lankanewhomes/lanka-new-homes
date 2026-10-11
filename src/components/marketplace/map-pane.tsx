@@ -6,6 +6,7 @@ import Map, { Layer, Marker, NavigationControl, Popup, Source, type MapRef } fro
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Layers } from "lucide-react";
 import { ProjectPopup } from "@/components/map/ProjectPopup";
+import { MarkerIcon } from "@/components/map/marker-icon";
 import { hasPremiumStyleBadge, isPaidPackageTier } from "@/lib/packages";
 import type { Project } from "@/types";
 
@@ -204,7 +205,7 @@ export function MapPane({ projects, basePath = "/projects", onSelectArea, area, 
               selectProject(project);
             }}
           >
-            <span className={["listing-map-marker", mapMarkerTierClass(project), activeSlug === project.slug ? "active" : ""].filter(Boolean).join(" ")}>1</span>
+            <span className={["listing-map-marker", mapMarkerTierClass(project), activeSlug === project.slug ? "active" : ""].filter(Boolean).join(" ")}><MarkerIcon kind={project.isLand ? "land" : "homes"} size={18} /></span>
           </Marker>
         ))}
 

@@ -20505,3 +20505,12 @@ body:has(.compare-bar) {
 .axp-embedded { position: absolute; inset: 0; z-index: auto; }
 .axp-embedded .axp-title, .axp-embedded .axp-close { display: none; }
 .axp-embedded .axp-bar { justify-content: flex-end; }
+
+/* Single-listing map pin: square with the header's building / land icon (same look as the /search map), tier colours kept */
+.listing-map-marker { border-radius: 0; background: #111111; color: #ffffff; }
+.listing-map-marker.active { background: #000000; }
+.listing-map-marker.marker-free { background: #111111; }
+.listing-map-marker.marker-premium { background: #c65a1e; box-shadow: 0 0 0 3px rgba(198, 90, 30, 0.25), 0 3px 8px rgba(0, 0, 0, 0.3); }
+
+/* Legend swatch for the project pin matches the new square black pin */
+.neighborhood-map-legend-project { border-radius: 0; background: #111111; }
