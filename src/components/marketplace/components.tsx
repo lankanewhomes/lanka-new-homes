@@ -127,8 +127,10 @@ import type { MapArea, MapPlace } from "@/components/marketplace/map-pane";
 // Every project/land page's Map tab (owner, 2026-09-23) — same free MapLibre/OpenFreeMap map
 // already used on the neighbourhood and search pages, in place of the locked Google Maps embed.
 const LazyApartmentExplorer = dynamic(() => import("@/components/marketplace/apartment-explorer").then((mod) => mod.ApartmentExplorer), { ssr: false });
-// Listings that have an Apartment Explorer (the developer's clickable building view): keyed by project slug.
-const APARTMENT_EXPLORER_SLUGS = new Set(["bay-one-residences-colombo"]);
+// Listings that have an Apartment Explorer (the developer's own live clickable building view, embedded): project slug -> its URL.
+const APARTMENT_EXPLORERS: Record<string, string> = {
+  "bay-one-residences-colombo": "https://icclk.com/bayone/public/bay-one",
+};
 
 const LazyMapPane = dynamic(() => import("@/components/marketplace/map-pane").then((mod) => mod.MapPane), {
   ssr: false,
@@ -759,7 +761,8 @@ export function ProjectHero({
 
   const [activeMedia, setActiveMedia] = useState<"interactiveMap" | "virtualTours" | null>(null);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-  const hasApartmentExplorer = APARTMENT_EXPLORER_SLUGS.has(project.slug) && !heroImageOverride && !floorPlan;
+  const apartmentExplorerUrl = !heroImageOverride && !floorPlan ? APARTMENT_EXPLORERS[project.slug] : undefined;
+  const hasApartmentExplorer = Boolean(apartmentExplorerUrl);
   const [explorerOpen, setExplorerOpen] = useState(false);
   useEffect(() => {
     if (!isLightboxOpen) return;
@@ -1298,7 +1301,7 @@ export function ProjectHero({
         )}
       </div>
 
-      {explorerOpen && <LazyApartmentExplorer projectName={project.name} onClose={() => setExplorerOpen(false)} />}
+      {explorerOpen && apartmentExplorerUrl && <LazyApartmentExplorer projectName={project.name} url={apartmentExplorerUrl} onClose={() => setExplorerOpen(false)} />}
 
       {isLightboxOpen && (
         <div className="listing-photo-lightbox" role="dialog" aria-modal="true" aria-label="Photo gallery">
