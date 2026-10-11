@@ -462,6 +462,7 @@ export const Projects: CollectionConfig = {
           fields: [
             { name: 'summary', type: 'textarea' },
             { name: 'description', type: 'textarea' },
+            { name: 'sourceUrl', type: 'text', label: 'Source link', admin: { description: 'Link shown under the Overview text as "Source: <company>" (for example the project\'s own website). Leave empty to use the developer\'s website.' } },
             { name: 'highlights', type: 'text', hasMany: true, label: 'Key Highlights', admin: { description: '3-5 short standout points shown above the Overview text (e.g. "South Asia\'s highest sky bridge").' } },
             { name: 'heroImage', type: 'text', admin: { description: 'Image URL — or upload a file in Media and paste its URL here.' } },
             galleryField,

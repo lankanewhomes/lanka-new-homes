@@ -4,6 +4,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { LngLatBounds, setWorkerUrl } from "maplibre-gl";
 import Map, { Layer, Marker, NavigationControl, Popup, Source, type MapRef } from "react-map-gl/maplibre";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Layers } from "lucide-react";
 import { ProjectPopup } from "@/components/map/ProjectPopup";
 import { hasPremiumStyleBadge, isPaidPackageTier } from "@/lib/packages";
 import type { Project } from "@/types";
@@ -51,6 +52,10 @@ export type MapPlace = { name: string; category: string; lat: number; lng: numbe
 
 const KM_PER_DEGREE = 111.32;
 
+// Same tilt as the /search map: a 3D / normal switch pitches the city and turns it a little (owner, 2026-10-11).
+const TILT = 58;
+const TILT_BEARING = -17;
+
 function areaBounds(area: MapArea): [[number, number], [number, number]] {
   const dLat = area.radiusKm / KM_PER_DEGREE;
   const dLng = area.radiusKm / (KM_PER_DEGREE * Math.cos((area.lat * Math.PI) / 180));
@@ -67,8 +72,14 @@ function areaCircle(area: MapArea) {
   return { type: "Feature" as const, properties: {}, geometry: { type: "Polygon" as const, coordinates: [ring] } };
 }
 
-export function MapPane({ projects, basePath = "/projects", onSelectArea, area, places = [] }: { projects: Project[]; basePath?: string; onSelectArea?: (selection: MapAreaSelection) => void; area?: MapArea; places?: MapPlace[] }) {
+export function MapPane({ projects, basePath = "/projects", onSelectArea, area, places = [], defaultTilt = false }: { projects: Project[]; basePath?: string; onSelectArea?: (selection: MapAreaSelection) => void; area?: MapArea; places?: MapPlace[]; defaultTilt?: boolean }) {
   const mapRef = useRef<MapRef | null>(null);
+  const [tilted, setTilted] = useState(defaultTilt);
+  const toggleTilt = () => {
+    const next = !tilted;
+    setTilted(next);
+    mapRef.current?.easeTo({ pitch: next ? TILT : 0, bearing: next ? TILT_BEARING : 0, duration: 800 });
+  };
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [activePlace, setActivePlace] = useState<MapPlace | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
@@ -95,9 +106,9 @@ export function MapPane({ projects, basePath = "/projects", onSelectArea, area, 
   // actual marker area). Only the multi-marker fitBounds case still needs
   // to run after load, via the mapLoaded gate below.
   const initialViewState = useMemo(() => {
-    if (area) return { longitude: area.lng, latitude: area.lat, zoom: 13 };
+    if (area) return { longitude: area.lng, latitude: area.lat, zoom: 13, pitch: defaultTilt ? TILT : 0, bearing: defaultTilt ? TILT_BEARING : 0 };
     if (pinnedProjects.length === 1) {
-      return { longitude: pinnedProjects[0].coordinates!.lng, latitude: pinnedProjects[0].coordinates!.lat, zoom: 12 };
+      return { longitude: pinnedProjects[0].coordinates!.lng, latitude: pinnedProjects[0].coordinates!.lat, zoom: 12, pitch: defaultTilt ? TILT : 0, bearing: defaultTilt ? TILT_BEARING : 0 };
     }
     return { ...SRI_LANKA_CENTER, zoom: SRI_LANKA_ZOOM };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -111,7 +122,7 @@ export function MapPane({ projects, basePath = "/projects", onSelectArea, area, 
     const bounds = new LngLatBounds(sw, ne);
     pinnedProjects.forEach((project) => bounds.extend([project.coordinates!.lng, project.coordinates!.lat]));
     places.forEach((place) => bounds.extend([place.lng, place.lat]));
-    map.fitBounds(bounds, { padding: 56, duration: 0, maxZoom: 15 });
+    map.fitBounds(bounds, { padding: 56, duration: 0, maxZoom: 15, pitch: tilted ? TILT : 0, bearing: tilted ? TILT_BEARING : 0 });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapLoaded]);
 
@@ -123,7 +134,7 @@ export function MapPane({ projects, basePath = "/projects", onSelectArea, area, 
       (acc, project) => acc.extend([project.coordinates!.lng, project.coordinates!.lat]),
       new LngLatBounds()
     );
-    map.fitBounds(bounds, { padding: 48, duration: 0, maxZoom: 13 });
+    map.fitBounds(bounds, { padding: 48, duration: 0, maxZoom: 13, pitch: tilted ? TILT : 0, bearing: tilted ? TILT_BEARING : 0 });
   }, [pinnedProjects, mapLoaded]);
 
   const selectProject = (project: Project) => {
@@ -141,6 +152,7 @@ export function MapPane({ projects, basePath = "/projects", onSelectArea, area, 
         ref={mapRef}
         initialViewState={initialViewState}
         mapStyle={MAP_STYLE}
+        maxPitch={70}
         style={{ width: "100%", height: "100%" }}
         onLoad={() => setMapLoaded(true)}
         onIdle={() => setMapIdle(true)}
@@ -230,6 +242,10 @@ export function MapPane({ projects, basePath = "/projects", onSelectArea, area, 
           </Popup>
         ) : null}
       </Map>
+
+      <div className="l360-controls">
+        <button type="button" className={tilted ? "is-on" : ""} onClick={toggleTilt} aria-label="Toggle 3D view" aria-pressed={tilted}><Layers size={18} /><small>3D</small></button>
+      </div>
 
       {pinnedProjects.length === 0 && !area ? <p className="listing-map-empty">No pins to show yet for this area.</p> : null}
       <div className={`listing-map-tile-overlay${mapIdle ? " is-hidden" : ""}`} aria-hidden="true" />

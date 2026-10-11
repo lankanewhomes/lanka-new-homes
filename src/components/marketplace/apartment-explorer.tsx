@@ -20,7 +20,7 @@ function describe(unit: ExplorerUnit) {
   };
 }
 
-export function ApartmentExplorer({ projectName, url, onClose }: { projectName: string; url?: string; onClose: () => void }) {
+export function ApartmentExplorer({ projectName, url, onClose, embedded = false }: { projectName: string; url?: string; onClose: () => void; embedded?: boolean }) {
   // Live Sold / Available status from the developer's explorer (see /api/explorer/bay-one); the built-in snapshot is the fallback.
   const [live, setLive] = useState<{ statuses: Record<string, "sold" | "available">; updatedAt: string } | null>(null);
   useEffect(() => {
@@ -45,6 +45,8 @@ export function ApartmentExplorer({ projectName, url, onClose }: { projectName: 
   const closeRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
+    // Embedded in the gallery viewer (a tab): the viewer already handles Escape, close and page scroll.
+    if (embedded) return;
     closeRef.current?.focus();
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();
@@ -56,7 +58,7 @@ export function ApartmentExplorer({ projectName, url, onClose }: { projectName: 
       window.removeEventListener("keydown", onKey);
       document.body.style.overflow = previousOverflow;
     };
-  }, [onClose]);
+  }, [onClose, embedded]);
 
   const hotspots = view === "front" ? FRONT_HOTSPOTS : SIDE_HOTSPOTS;
   const image = view === "front" ? BAY_ONE_EXPLORER.frontImage : BAY_ONE_EXPLORER.sideImage;
@@ -80,7 +82,7 @@ export function ApartmentExplorer({ projectName, url, onClose }: { projectName: 
   };
 
   return (
-    <div className="axp-modal" role="dialog" aria-modal="true" aria-label={`Apartment Explorer, ${projectName}`}>
+    <div className={`axp-modal${embedded ? " axp-embedded" : ""}`} role="dialog" aria-modal="true" aria-label={`Apartment Explorer, ${projectName}`}>
       <div className="axp-bar">
         <div className="axp-title">
           <strong>Apartment Explorer</strong>

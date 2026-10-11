@@ -346,6 +346,8 @@ export type Project = SeoFields & {
   commercialAreas?: { label: string; image: string }[];
   streetViewUrl?: string;
   highlights?: string[];
+  /** Link for the "Source:" line under the Overview text; falls back to the developer's website. */
+  sourceUrl?: string;
   paymentPlanBadge?: string;
   availabilityBadge?: string;
   marketingBadges?: string[];

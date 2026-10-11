@@ -767,7 +767,6 @@ export function ProjectHero({
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const apartmentExplorerUrl = !heroImageOverride && !floorPlan ? APARTMENT_EXPLORERS[project.slug] : undefined;
   const hasApartmentExplorer = Boolean(apartmentExplorerUrl);
-  const [explorerOpen, setExplorerOpen] = useState(false);
   useEffect(() => {
     if (!isLightboxOpen) return;
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -776,7 +775,7 @@ export function ProjectHero({
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isLightboxOpen]);
-  const [lightboxView, setLightboxView] = useState<"photos" | "videos" | "map" | "roadMap" | "blockPlan" | "streetView" | "view360" | "interactiveMap" | "virtualTours">("photos");
+  const [lightboxView, setLightboxView] = useState<"photos" | "videos" | "explorer" | "map" | "roadMap" | "blockPlan" | "streetView" | "view360" | "interactiveMap" | "virtualTours">("photos");
   const [tourIndex, setTourIndex] = useState(0);
   const [activeSection, setActiveSection] = useState("overview");
   const [requestInfoOpen, setRequestInfoOpen] = useState(false);
@@ -903,7 +902,14 @@ export function ProjectHero({
       key: "explorer",
       show: hasApartmentExplorer,
       render: (className) => (
-        <button type="button" className={className} onClick={() => setExplorerOpen(true)}>
+        <button
+          type="button"
+          className={className}
+          onClick={() => {
+            setLightboxView("explorer");
+            setIsLightboxOpen(true);
+          }}
+        >
           <Building2 className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> <span className="listing-hero-quickjump-label">Apartment Explorer</span>
         </button>
       ),
@@ -1305,8 +1311,6 @@ export function ProjectHero({
         )}
       </div>
 
-      {explorerOpen && apartmentExplorerUrl && <LazyApartmentExplorer projectName={project.name} url={apartmentExplorerUrl} onClose={() => setExplorerOpen(false)} />}
-
       {isLightboxOpen && (
         <div className="listing-photo-lightbox" role="dialog" aria-modal="true" aria-label="Photo gallery">
           <div className="listing-photo-lightbox-topbar">
@@ -1350,6 +1354,17 @@ export function ProjectHero({
               >
                 {t("Photos")} <span className="listing-photo-lightbox-tab-count">{photoItems.length}</span>
               </button>
+              {hasApartmentExplorer && (
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={lightboxView === "explorer"}
+                  className={lightboxView === "explorer" ? "active" : undefined}
+                  onClick={() => setLightboxView("explorer")}
+                >
+                  Apartment Explorer
+                </button>
+              )}
               {videoCount > 0 && (
                 <button
                   type="button"
@@ -1515,11 +1530,17 @@ export function ProjectHero({
                 coordinates, not the locked Google Maps embed (owner, 2026-09-23; trialled on
                 C'est la Vie first). "Nearby place" pins only show once that listing's `nearby`
                 entries have real, verified coordinates — most don't yet. */}
+            {lightboxView === "explorer" && apartmentExplorerUrl && (
+              <div className="listing-photo-lightbox-explorer">
+                <LazyApartmentExplorer embedded projectName={project.name} url={apartmentExplorerUrl} onClose={() => setIsLightboxOpen(false)} />
+              </div>
+            )}
+
             {lightboxView === "map" && (
               useCustomMap ? (
                 <div className="listing-photo-lightbox-map-wrap">
                   <div className="listing-photo-lightbox-map">
-                    <LazyMapPane projects={[project]} basePath="/projects" places={mapNearbyPlaces} area={mapArea} />
+                    <LazyMapPane projects={[project]} basePath="/projects" places={mapNearbyPlaces} area={mapArea} defaultTilt />
                   </div>
                   <p className="listing-photo-lightbox-map-legend">
                     <span><i className="neighborhood-map-legend-project" aria-hidden="true" />Project</span>
@@ -3617,9 +3638,9 @@ export function ProjectDescriptionSection({ project, floorPlan, headingOverride,
           summary built from our own structured data, not sourced prose) —
           and only when the developer actually has a real website to link
           to, never a fabricated one. */}
-      {developer?.website ? (
+      {project.sourceUrl || developer?.website ? (
         <p className="project-description-source">
-          {t("Source")}: <a href={developer.website} target="_blank" rel="noopener noreferrer">{project.developerName}</a>
+          {t("Source")}: <a href={project.sourceUrl || developer?.website} target="_blank" rel="noopener noreferrer">{project.developerName}</a>
         </p>
       ) : null}
     </section>

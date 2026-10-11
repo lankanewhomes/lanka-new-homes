@@ -3050,6 +3050,10 @@ export interface Project {
   summary?: string | null;
   description?: string | null;
   /**
+   * Link shown under the Overview text as "Source: <company>" (for example the project's own website). Leave empty to use the developer's website.
+   */
+  sourceUrl?: string | null;
+  /**
    * 3-5 short standout points shown above the Overview text (e.g. "South Asia's highest sky bridge").
    */
   highlights?: string[] | null;
@@ -8166,6 +8170,7 @@ export interface ProjectsSelect<T extends boolean = true> {
   monthlyMaintenancePerSqft?: T;
   summary?: T;
   description?: T;
+  sourceUrl?: T;
   highlights?: T;
   heroImage?: T;
   gallery?:
