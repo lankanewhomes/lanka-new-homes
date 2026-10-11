@@ -1,4 +1,5 @@
 import { supabaseAdmin } from "@/lib/supabase";
+import { retryQuery } from "@/lib/retry";
 import type { Land } from "@/types";
 
 function toSlug(value: string) {
@@ -38,7 +39,7 @@ function landToRow(land: Land) {
 }
 
 export async function getAllLands(): Promise<Land[]> {
-  const { data, error } = await supabaseAdmin.from("lands").select("slug, data, created_at");
+  const { data, error } = await retryQuery(() => supabaseAdmin.from("lands").select("slug, data, created_at"));
   if (error) throw new Error(`Failed to load lands: ${error.message}`);
   return (data ?? []).map((row) => rowToLand(row as LandRow));
 }

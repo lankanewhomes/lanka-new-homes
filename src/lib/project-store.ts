@@ -1,4 +1,5 @@
 import { supabaseAdmin } from "@/lib/supabase";
+import { retryQuery } from "@/lib/retry";
 import type { FloorPlan, Project } from "@/types";
 
 function toSlug(value: string) {
@@ -90,7 +91,7 @@ function isPublished(project: Project): boolean {
 }
 
 export async function getAllProjects(): Promise<Project[]> {
-  const { data, error } = await supabaseAdmin.from("projects").select("slug, data, created_at");
+  const { data, error } = await retryQuery(() => supabaseAdmin.from("projects").select("slug, data, created_at"));
   if (error) throw new Error(`Failed to load projects: ${error.message}`);
   return (data ?? []).map((row) => rowToProject(row as ProjectRow)).filter(isPublished);
 }

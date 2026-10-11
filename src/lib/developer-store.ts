@@ -1,4 +1,5 @@
 import { supabaseAdmin } from "@/lib/supabase";
+import { retryQuery } from "@/lib/retry";
 import type { CoDeveloperEntry, Developer, OfficeHoursEntry } from "@/types";
 
 type CreateDeveloperInput = {
@@ -46,7 +47,7 @@ function developerToRow(developer: Developer) {
 }
 
 export async function getAllDevelopers(): Promise<Developer[]> {
-  const { data, error } = await supabaseAdmin.from("developers").select("slug, data");
+  const { data, error } = await retryQuery(() => supabaseAdmin.from("developers").select("slug, data"));
   if (error) throw new Error(`Failed to load developers: ${error.message}`);
   return (data ?? []).map((row) => rowToDeveloper(row as DeveloperRow));
 }
