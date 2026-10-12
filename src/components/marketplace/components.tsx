@@ -1642,7 +1642,7 @@ export function ProjectHero({
                   key={(project.virtualTours ?? [])[tourIndex]?.url}
                   className="listing-photo-lightbox-map"
                   title={(project.virtualTours ?? [])[tourIndex]?.label ?? "Virtual tour"}
-                  src={(project.virtualTours ?? [])[tourIndex]?.url}
+                  src={toEmbeddableVideoUrl((project.virtualTours ?? [])[tourIndex]?.url ?? "")}
                   allow="fullscreen; xr-spatial-tracking; accelerometer; gyroscope"
                   allowFullScreen
                   loading="lazy"
