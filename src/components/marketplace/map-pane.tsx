@@ -1,7 +1,6 @@
 "use client";
 
 import "maplibre-gl/dist/maplibre-gl.css";
-import { IndiaMask } from "@/components/map/india-mask";
 import { LngLatBounds, setWorkerUrl } from "maplibre-gl";
 import Map, { Layer, Marker, NavigationControl, Popup, Source, type MapRef } from "react-map-gl/maplibre";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -159,7 +158,6 @@ export function MapPane({ projects, basePath = "/projects", onSelectArea, area, 
         onLoad={() => setMapLoaded(true)}
         onIdle={() => setMapIdle(true)}
       >
-        <IndiaMask />
         <NavigationControl position="top-left" showCompass={false} />
 
         {area ? (
