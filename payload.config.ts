@@ -33,6 +33,7 @@ import { SalesCompanies } from './src/collections/SalesCompanies'
 import { SavedListings } from './src/collections/SavedListings'
 import { SeoKeywords } from './src/collections/SeoKeywords'
 import { ListingTodos } from './src/collections/ListingTodos'
+import { Outreach } from './src/collections/Outreach'
 import { SocialAssets } from './src/collections/SocialAssets'
 import { SocialPosts } from './src/collections/SocialPosts'
 import { Subscriptions } from './src/collections/Subscriptions'
@@ -168,6 +169,7 @@ export default buildConfig({
     SocialPosts,
     SeoKeywords,
     ListingTodos,
+    Outreach,
     Subscriptions,
     Leads,
     Reviews,
@@ -183,6 +185,10 @@ export default buildConfig({
   endpoints: [analyticsEndpoint, analyticsSummaryEndpoint, importListingEndpoint, listingTodoEndpoint, leadActivityEndpoint, socialStatusEndpoint, socialPostEndpoint],
   editor: lexicalEditor(),
   db: postgresAdapter({
+    // Dev-mode schema push is opt-in. It re-reads the whole remote schema on every boot ("Pulling schema from database...",
+    // minutes over the Supabase pooler) and can hang on a prompt, which stalled every page that touches Payload locally.
+    // To push new fields, run any getPayload script with PAYLOAD_DB_PUSH=true NODE_ENV=development.
+    push: process.env.PAYLOAD_DB_PUSH === 'true',
     pool: {
       // On Cloudflare the Worker entry stores Hyperdrive's connection string per request (cloudflare/worker.js); read lazily
       // when the pool is created. Everywhere else (local, Node) this is the normal DATABASE_URI.

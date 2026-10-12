@@ -84,6 +84,7 @@ export interface Config {
     'social-posts': SocialPost;
     'seo-keywords': SeoKeyword;
     'listing-todos': ListingTodo;
+    outreach: Outreach;
     subscriptions: Subscription;
     leads: Lead;
     reviews: Review;
@@ -126,6 +127,7 @@ export interface Config {
     'social-posts': SocialPostsSelect<false> | SocialPostsSelect<true>;
     'seo-keywords': SeoKeywordsSelect<false> | SeoKeywordsSelect<true>;
     'listing-todos': ListingTodosSelect<false> | ListingTodosSelect<true>;
+    outreach: OutreachSelect<false> | OutreachSelect<true>;
     subscriptions: SubscriptionsSelect<false> | SubscriptionsSelect<true>;
     leads: LeadsSelect<false> | LeadsSelect<true>;
     reviews: ReviewsSelect<false> | ReviewsSelect<true>;
@@ -303,6 +305,10 @@ export interface Developer {
      */
     email?: string | null;
     /**
+     * Extra addresses that get a copy of every lead alert email (for example a sister brand's inbox). Never used in test mode.
+     */
+    cc?: string[] | null;
+    /**
      * International format, e.g. +94 77 123 4567. Leave blank to use the WhatsApp number under Social Links.
      */
     whatsapp?: string | null;
@@ -353,14 +359,6 @@ export interface Developer {
    * Admin only. Email domains (besides the website domain) accepted for Verified Developer, e.g. jkproperties.lk when the website is johnkeellsproperties.com.
    */
   extra_email_domains?: string[] | null;
-  /**
-   * We emailed this developer the "register and get Verified" invite on this date.
-   */
-  invite_sent_at?: string | null;
-  /**
-   * The address the invite went to.
-   */
-  invite_sent_to?: string | null;
   /**
    * Gates the "Developer approval" workflow — new self-registered developers start pending.
    */
@@ -7418,6 +7416,54 @@ export interface ListingTodo {
   createdAt: string;
 }
 /**
+ * Emails you send to developers. Add a row for each email, copy its tracked links into the email, and clicks are counted here.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "outreach".
+ */
+export interface Outreach {
+  id: number;
+  developer?: (number | null) | Developer;
+  /**
+   * Filled in from the developer you pick.
+   */
+  developerName?: string | null;
+  /**
+   * Name and/or email address, e.g. "Erwan (contact@maisonceylon.com)".
+   */
+  recipient?: string | null;
+  subject: string;
+  sentAt?: string | null;
+  channel?: ('zoho' | 'resend') | null;
+  status?: ('draft' | 'sent' | 'clicked' | 'replied' | 'no_reply') | null;
+  /**
+   * Optional: each project you pick gets its own tracked link below.
+   */
+  projects?: (number | Project)[] | null;
+  /**
+   * Identifies this email in the tracked links.
+   */
+  code?: string | null;
+  /**
+   * Save the row first. Use these instead of plain links so clicks are counted.
+   */
+  trackedLinks?: string | null;
+  clickCount?: number | null;
+  firstClickedAt?: string | null;
+  lastClickedAt?: string | null;
+  clickLog?:
+    | {
+        to?: string | null;
+        at?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  developerVerified?: boolean | null;
+  notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "subscriptions".
  */
@@ -7842,6 +7888,10 @@ export interface PayloadLockedDocument {
         value: number | ListingTodo;
       } | null)
     | ({
+        relationTo: 'outreach';
+        value: number | Outreach;
+      } | null)
+    | ({
         relationTo: 'subscriptions';
         value: number | Subscription;
       } | null)
@@ -8019,6 +8069,7 @@ export interface DevelopersSelect<T extends boolean = true> {
     | {
         enabled?: T;
         email?: T;
+        cc?: T;
         whatsapp?: T;
       };
   response_stats?:
@@ -8039,8 +8090,6 @@ export interface DevelopersSelect<T extends boolean = true> {
   featuredLandIds?: T;
   domain_verified?: T;
   extra_email_domains?: T;
-  invite_sent_at?: T;
-  invite_sent_to?: T;
   verification_status?: T;
   verified_domain?: T;
   verified_email?: T;
@@ -9172,6 +9221,36 @@ export interface ListingTodosSelect<T extends boolean = true> {
   sourceLinks?: T;
   notes?: T;
   doneAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "outreach_select".
+ */
+export interface OutreachSelect<T extends boolean = true> {
+  developer?: T;
+  developerName?: T;
+  recipient?: T;
+  subject?: T;
+  sentAt?: T;
+  channel?: T;
+  status?: T;
+  projects?: T;
+  code?: T;
+  trackedLinks?: T;
+  clickCount?: T;
+  firstClickedAt?: T;
+  lastClickedAt?: T;
+  clickLog?:
+    | T
+    | {
+        to?: T;
+        at?: T;
+        id?: T;
+      };
+  developerVerified?: T;
+  notes?: T;
   updatedAt?: T;
   createdAt?: T;
 }
