@@ -20507,13 +20507,15 @@ body:has(.compare-bar) {
 .axp-embedded .axp-bar { justify-content: flex-end; }
 
 /* Single-listing map pin: square with the header's building / land icon (same look as the /search map), tier colours kept */
-.listing-map-marker { border-radius: 0; background: #111111; color: #ffffff; }
-.listing-map-marker.active { background: #000000; }
-.listing-map-marker.marker-free { background: #111111; }
-.listing-map-marker.marker-premium { background: #c65a1e; box-shadow: 0 0 0 3px rgba(198, 90, 30, 0.25), 0 3px 8px rgba(0, 0, 0, 0.3); }
+/* Owner, 2026-10-12: the project pin must stand out on the hero map. The nearby-place dots are black, so the project pin is the brand
+   orange, a little larger, with a white border and a soft orange halo. Paid tiers keep their darker, bigger orange. */
+.listing-map-marker { border-radius: 0; width: 38px; height: 38px; border: 3px solid #ffffff; background: #f47b36; color: #ffffff; box-shadow: 0 0 0 3px rgba(244, 123, 54, 0.35), 0 4px 10px rgba(0, 0, 0, 0.35); }
+.listing-map-marker.active { background: #c85f24; }
+.listing-map-marker.marker-free { background: #f47b36; }
+.listing-map-marker.marker-premium { width: 44px; height: 44px; background: #c65a1e; box-shadow: 0 0 0 4px rgba(198, 90, 30, 0.3), 0 4px 12px rgba(0, 0, 0, 0.35); }
 
-/* Legend swatch for the project pin matches the new square black pin */
-.neighborhood-map-legend-project { border-radius: 0; background: #111111; }
+/* Legend swatch for the project pin matches the orange square pin */
+.neighborhood-map-legend-project { border-radius: 0; background: #f47b36; }
 
 /* Room above the results heading ("Keells Homes for Sale in Sri Lanka"): on phones it sat right under the sticky filter bar */
 .listing-list-pane .listing-header-title { padding-top: 14px; }
