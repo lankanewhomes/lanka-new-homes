@@ -2818,6 +2818,9 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
     [floorPlans]
   );
 
+  // Add-on units (e.g. Maison Ceylon's Bungalow Ithiri, bought together with a villa) get their own tab.
+  const addOns = useMemo(() => floorPlans.filter((plan) => plan.planType === "Add On"), [floorPlans]);
+
   const availabilityOptions = useMemo(() => Array.from(new Set(floorPlans.filter((plan) => !plan.availabilityUnknown).map((plan) => plan.availability))), [floorPlans]);
   // 0 means "not provided" (e.g. Vauxhall's penthouses) — never offered as a bedroom filter.
   const bedroomOptions = useMemo(() => Array.from(new Set(floorPlans.map((plan) => plan.bedrooms).filter((count) => count > 0))).sort((a, b) => a - b), [floorPlans]);
@@ -2840,7 +2843,9 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
   const visiblePlans = useMemo(() => {
     const base = activeTab === "quickMoveIns"
       ? quickMoveIns
-      : activeTab === "all"
+      : activeTab === "addOns"
+        ? addOns
+        : activeTab === "all"
         ? floorPlans
         : floorPlans.filter((plan) => plan.availability === activeTab);
 
@@ -2857,7 +2862,7 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
     else if (sortBy === "bedsDesc") sorted.sort((a, b) => b.bedrooms - a.bedrooms);
 
     return sorted;
-  }, [activeTab, floorPlans, quickMoveIns, availabilityFilter, bedroomFilter, sortBy]);
+  }, [activeTab, floorPlans, quickMoveIns, addOns, availabilityFilter, bedroomFilter, sortBy]);
 
   return (
     <section id="plans-homes" className="plans-homes-shell" aria-label="Plans and homes">
@@ -2897,6 +2902,17 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
               onClick={() => { setActiveTab("quickMoveIns"); setShowAllPlans(false); }}
             >
               Quick move ins ({quickMoveIns.length})
+            </button>
+          ) : null}
+          {addOns.length > 0 ? (
+            <button
+              type="button"
+              role="tab"
+              className={activeTab === "addOns" ? "active" : undefined}
+              aria-selected={activeTab === "addOns"}
+              onClick={() => { setActiveTab("addOns"); setShowAllPlans(false); }}
+            >
+              Add On ({addOns.length})
             </button>
           ) : null}
         </div>
