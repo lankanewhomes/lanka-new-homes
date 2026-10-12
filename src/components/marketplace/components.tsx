@@ -3779,7 +3779,7 @@ export function ProjectNarrativeDetails({ project }: { project: Project }) {
     {
       label: "Website",
       show: isFact(project.sourceUrl),
-      value: <a href={project.sourceUrl} target="_blank" rel="noopener noreferrer" className="overview-link">{project.name}</a>,
+      value: <a href={project.sourceUrl} target="_blank" rel="noopener noreferrer" className="overview-link">{project.name} - {project.developerName}</a>,
     },
     { label: "Road", show: isFact(project.road), value: project.road ?? "" },
     { label: "Area", show: isFact(project.area), value: project.area ?? "" },
