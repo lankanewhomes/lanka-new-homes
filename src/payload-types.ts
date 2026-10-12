@@ -354,6 +354,14 @@ export interface Developer {
    */
   extra_email_domains?: string[] | null;
   /**
+   * We emailed this developer the "register and get Verified" invite on this date.
+   */
+  invite_sent_at?: string | null;
+  /**
+   * The address the invite went to.
+   */
+  invite_sent_to?: string | null;
+  /**
    * Gates the "Developer approval" workflow — new self-registered developers start pending.
    */
   verification_status?: ('pending' | 'approved' | 'rejected' | 'changes_requested') | null;
@@ -8031,6 +8039,8 @@ export interface DevelopersSelect<T extends boolean = true> {
   featuredLandIds?: T;
   domain_verified?: T;
   extra_email_domains?: T;
+  invite_sent_at?: T;
+  invite_sent_to?: T;
   verification_status?: T;
   verified_domain?: T;
   verified_email?: T;

@@ -11,8 +11,12 @@ export type DeveloperInviteInput = {
   website?: string | null
   /** true when the email on file is on the company's own domain (or an approved extra one): registering with it links and verifies automatically. */
   autoVerify?: boolean
+  /** The company-domain address to register with, when it differs from the contact email we show (e.g. a developer's head-office mailbox). */
+  verifyEmail?: string | null
   /** The address buyer enquiries from the site go to, when it is the developer's own (not routed to an agency). */
   leadsEmail?: string | null
+  /** Details we still need per listing (from the CMS to-do list), shown as "We are missing some details". */
+  missing?: { listing: string; items: string[] }[]
   siteUrl?: string
 }
 
@@ -36,7 +40,10 @@ export function renderDeveloperInviteHTML(input: DeveloperInviteInput): string {
   const box = (title: string, lines: string[], footer = '') => lines.length || footer
     ? `<tr><td style="padding:12px 32px 8px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#faf7f2; border:1px solid #e4e2db;"><tr><td style="padding:16px 20px;"><p style="margin:0 0 8px; font-size:16px; color:#1f1f1f;">${title}</p>${lines.map((l) => `<p style="${P}">• ${l}</p>`).join('')}${footer}</td></tr></table></td></tr>`
     : ''
-  const verifyEmail = input.email ? esc(input.email) : 'an email on your company website domain'
+  const missingLines = (input.missing ?? []).filter((m) => m.items.length).map((m) => `<strong>${esc(m.listing)}</strong>: ${m.items.map(esc).join('; ')}`)
+  const verifyEmail = input.verifyEmail ? esc(input.verifyEmail) : input.email ? esc(input.email) : 'an email on your company website domain'
+  // Tagged so a click shows up in Google Analytics as source "developer-invite" (content = the developer's slug).
+  const utm = `utm_source=developer-invite&utm_medium=email&utm_campaign=verify-developer&utm_content=${encodeURIComponent(input.slug)}`
   return `<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${esc(developerInviteSubject(input.name))}</title></head>
 <body style="margin:0; padding:0; background-color:#f5f5f0; font-family:Helvetica, Arial, sans-serif;">
@@ -48,22 +55,23 @@ export function renderDeveloperInviteHTML(input: DeveloperInviteInput): string {
 <p style="margin:0 0 16px;"><span style="display:inline-block; background:#ecfeff; border:1px solid #67e8f9; color:#0e7490; border-radius:3px; padding:4px 9px; font-size:11px; letter-spacing:0.06em; text-transform:uppercase;">&#10003; Verified Developer</span></p>
 <p style="margin:0 0 16px; font-size:15px; line-height:1.6; color:#3a3a38;">Hello ${esc(input.name)} team, we created a free developer page for your company so buyers can find your projects.</p>
 <p style="margin:0 0 16px; font-size:14px; line-height:1.6; color:#6b6355;">LankaNewHomes is a free website where buyers in Sri Lanka and abroad browse new homes, apartments and land, with real prices, floor plans and photos, and send enquiries straight to developers.</p>
-<p style="margin:0 0 22px;"><a href="${site}/developers/${esc(input.slug)}" style="display:inline-block; border:1px solid #1f1f1f; color:#1f1f1f; text-decoration:none; padding:10px 20px; font-size:14px;">View your page</a></p>
+<p style="margin:0 0 22px;"><a href="${site}/developers/${esc(input.slug)}?${utm}" style="display:inline-block; border:1px solid #1f1f1f; color:#1f1f1f; text-decoration:none; padding:10px 20px; font-size:14px;">View your page</a></p>
 </td></tr>
 ${box('What we have listed for you', listed)}
 ${input.leadsEmail ? box('Enquiries', [`Buyer enquiries from the LankaNewHomes website go directly to ${esc(input.leadsEmail)}.`]) : ''}
 ${box('Contact details we show', contact, `<p style="margin:10px 0 0; font-size:14px; line-height:1.6; color:#6b6355;">Something wrong? Reply to this email or write to <a href="mailto:developers@lankanewhomes.com" style="color:#1f1f1f;">developers@lankanewhomes.com</a> and we will fix it.</p>`)}
+${box('We are missing some details', missingLines, `<p style="margin:10px 0 0; font-size:14px; line-height:1.6; color:#6b6355;">Reply to this email with whatever you can and we will update your listings straight away.</p>`)}
 <tr><td style="padding:12px 32px 8px;">
 <p style="margin:12px 0 10px; font-size:16px; color:#1f1f1f;">Take control of your page (free)</p>
 ${input.autoVerify
-  ? `<p style="${P} margin-bottom:6px;">1. Register your developer account with ${verifyEmail}, the email we have for you.</p>
+  ? `<p style="${P} margin-bottom:6px;">1. Register your developer account with ${verifyEmail}.</p>
 <p style="${P} margin-bottom:6px;">2. Open the confirmation email we send to that address and confirm it.</p>
 <p style="${P} margin-bottom:18px;">3. Log in once. Your account links to this page and the Verified Developer badge turns on automatically.</p>`
   : `<p style="${P} margin-bottom:6px;">1. Register your developer account.</p>
 <p style="${P} margin-bottom:6px;">2. Reply to this email so we link it to your ${esc(input.name)} page.</p>
 <p style="${P} margin-bottom:6px;">3. In your company profile, open "Verified Developer" and enter an email on your company website domain.</p>
 <p style="${P} margin-bottom:18px;">4. Open the link we send you and press Confirm. Your page then shows the Verified Developer badge.</p>`}
-<p style="margin:0 0 20px;"><a href="${site}/developers/register" style="display:inline-block; background:#f47b36; color:#1f1f1f; text-decoration:none; padding:12px 24px; border-radius:999px; font-size:15px;">Register my developer account</a></p>
+<p style="margin:0 0 20px;"><a href="${site}/developers/register?${utm}" style="display:inline-block; background:#f47b36; color:#1f1f1f; text-decoration:none; padding:12px 24px; border-radius:999px; font-size:15px;">Register my developer account</a></p>
 </td></tr>
 <tr><td style="padding:0 32px 28px;">
 <p style="margin:0; font-size:13px; line-height:1.6; color:#6b6355;">Buyers see that your company identity is confirmed, and you can edit your listings and see enquiries and views.</p>

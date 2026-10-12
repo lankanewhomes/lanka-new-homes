@@ -10,7 +10,7 @@ loadEnv({ path: path.join(process.cwd(), '.env.local') })
 const out = process.argv[2] ?? path.join(os.homedir(), 'Desktop', 'LankaNewHomes Developer Emails')
 fs.mkdirSync(out, { recursive: true })
 const { renderDeveloperInviteHTML, developerInviteSubject } = await import('../src/lib/developer-invite-email')
-const { checkEmailAgainstWebsite } = await import('../src/lib/developer-domain-verification')
+const { buildInviteInput } = await import('../src/lib/developer-invite-data')
 const cfg = ((await import('../payload.config')) as any).default
 const { getPayload } = await import('payload')
 const payload = await getPayload({ config: cfg })
@@ -18,16 +18,10 @@ const devs = await payload.find({ collection: 'developers', limit: 500, depth: 0
 const index: string[] = []
 for (const d of devs.docs as any[]) {
   if (String(d.slug).startsWith('test-badge-')) continue
-  const projects = (await payload.find({ collection: 'projects', where: { developer: { equals: d.id } }, limit: 200, depth: 0, pagination: false, overrideAccess: true })).docs as any[]
-  const lands = (await payload.find({ collection: 'lands', where: { sellerName: { equals: d.name } } as any, limit: 500, depth: 0, pagination: false, overrideAccess: true })).docs as any[]
-  // Only what is live on the site (drafts have isPublished === false).
-  const live = (x: any) => x.isPublished !== false
-  const html = renderDeveloperInviteHTML({ name: d.name, slug: d.slug, projects: projects.filter(live).map((p) => p.name), lands: lands.filter(live).map((l) => l.title ?? l.name), phone: d.contact_phone, email: d.contact_email, address: d.location, website: d.website,
-    autoVerify: Boolean(d.contact_email) && checkEmailAgainstWebsite(String(d.contact_email), d.website, d.extra_email_domains).ok,
-    // Enquiries reach the developer's own address unless a listing routes them to an agency (leadsTo).
-    leadsEmail: d.contact_email && !projects.filter(live).some((p) => p.leadsTo) ? String(d.contact_email) : null })
+  const input = await buildInviteInput(payload, d)
+  const html = renderDeveloperInviteHTML(input)
   fs.writeFileSync(path.join(out, `${d.slug}.html`), html)
-  index.push(`${d.slug} | to: ${d.contact_email ?? '(no email on file)'} | subject: ${developerInviteSubject(d.name)} | ${projects.filter(live).length} projects, ${lands.filter(live).length} lands`)
+  index.push(`${d.slug} | to: ${d.contact_email ?? '(no email on file)'} | subject: ${developerInviteSubject(d.name)} | ${input.projects.length} projects, ${input.lands.length} lands, ${input.missing?.length ?? 0} listings with missing details`)
 }
 fs.writeFileSync(path.join(out, 'INDEX.txt'), index.join('\n') + '\n')
 console.log(index.join('\n'))
