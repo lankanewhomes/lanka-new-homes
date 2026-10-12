@@ -7,6 +7,6 @@ const id = process.argv[2]
 if (!id) throw new Error('Usage: check-invite-status.ts <resend-email-id>')
 const key = process.env.RESEND_API_KEY || process.env.SMTP_PASS
 const r = await fetch(`https://api.resend.com/emails/${id}`, { headers: { Authorization: `Bearer ${key}` } })
-const d = (await r.json()) as any
+const d = (await r.json()) as { to?: string[]; subject?: string; created_at?: string; last_event?: string }
 console.log({ to: d.to, subject: d.subject, created_at: d.created_at, last_event: d.last_event })
 process.exit(0)
