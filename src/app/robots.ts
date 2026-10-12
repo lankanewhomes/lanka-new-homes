@@ -15,6 +15,7 @@ export default function robots(): MetadataRoute.Robots {
     "/account/",
     "/admin-login",
     "/listing-preview/",
+    "/pricing-preview",
     "/*?*view=map*",
     "/*?*&*",
   ];

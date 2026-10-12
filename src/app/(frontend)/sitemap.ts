@@ -150,12 +150,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
     },
     {
-      url: toAbsoluteUrl("/pricing"),
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.5,
-    },
-    {
       url: toAbsoluteUrl("/web-design"),
       lastModified: now,
       changeFrequency: "monthly",

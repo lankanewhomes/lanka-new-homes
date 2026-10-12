@@ -5,18 +5,16 @@ import { PricingPlanCards } from "@/components/marketplace/pricing-comparison-ta
 import { PricingQuickjump } from "@/components/marketplace/pricing-quickjump";
 import { ScrollReveal } from "@/components/marketplace/scroll-reveal";
 import { FOUNDING_DEVELOPER_CAP, FOUNDING_DEVELOPER_DISCOUNT, PACKAGE_LIST, formatPackagePriceAmount } from "@/lib/packages";
-import { withSocial } from "@/lib/seo";
 
-export const metadata: Metadata = withSocial({
-  title: "Developer Pricing & Packages",
-  description: "Listing your projects on LankaNewHomes is always free. Choose a package, then pick which of your projects to feature.",
-  alternates: { canonical: "/pricing" },
-  // Not linked from anywhere on the site yet (owner, 2026-09-24: still
-  // reviewing the plan) — the page itself stays live at this URL, just
-  // unreachable by clicking around the site. Keep this off until the
-  // owner says otherwise.
-  robots: { index: false, follow: true },
-}, { path: "/pricing" });
+export const metadata: Metadata = {
+  title: "Developer Pricing & Packages (preview)",
+  description: "Preview of the developer pricing page. Not published yet.",
+  // Owner, 2026-10-12: "dont publish the pricing page. make it preview". The page lives only at this unlinked preview URL (like
+  // /listing-preview/*): hidden from search engines and robots.txt, not in the sitemap, and /pricing itself is a 404.
+  // To publish it later: move this folder back to src/app/(frontend)/pricing, restore the canonical + sitemap entry and the
+  // robots.ts rule, and remove noindex here.
+  robots: { index: false, follow: false },
+};
 
 const FAQS = [
   { q: "Is it really free to list?", a: "Yes. Every project stays free to list, permanently, with unlimited projects. A paid package adds reach (better search placement, homepage rotation, analytics), not a base listing fee." },

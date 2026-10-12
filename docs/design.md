@@ -2245,6 +2245,7 @@ items 1–4 above).
   copy already promises unconditional placement ("rank above Free," not
   "usually" or "boosted"). **Owner asked to revisit this decision the next
   day** — see the daily-reminder memory, don't assume it's final.
+- **Pricing page is preview-only (owner, 2026-10-12)**: it lives at `/pricing-preview` (unlinked, noindex, in robots.txt, not in the sitemap); `/pricing` is a 404. To publish it, move the folder back to `src/app/(frontend)/pricing` and restore its canonical, sitemap entry and robots rule.
 - **Project pin colour (owner, 2026-10-12)**: on the single-listing and neighbourhood maps the project pin is the brand orange (`#f47b36`, 38px square, white border, orange halo) so it stands out from the black nearby-place dots; Developer Pro/Campaign stay darker and bigger. Free is no longer grey/black there.
 - **Highlighted map pins**: `map-pane.tsx`'s markers — Free is now a plain
   muted grey (`.listing-map-marker.marker-free`, matching the "plain"
