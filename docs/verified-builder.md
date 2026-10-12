@@ -25,7 +25,7 @@ grants, or is granted by a paid package.
 - Where: the "Verified Developer" panel on the developer's /cms profile (`DeveloperVerifyPanel`). Admins can also tick `domain_verified` by hand.
 - Rule: the email domain must equal, or be a subdomain of, the developer's `website` domain (sales.company.lk works for company.lk). Free mailbox providers are rejected (`src/lib/developer-domain-verification.ts`).
 - Flow: POST `/api/developers/verify-domain/request` emails a single-use link (sha-256 hashed token, 24 h expiry, 60 s resend cooldown) → `/developers/verify?token=…` shows a button → POST `/api/developers/verify-domain/confirm` sets `domain_verified`, `verified_email`, `verified_domain`, `verified_at`.
-- Email: sent from `EMAIL_FROM` (no-reply@), reply-to developers@lankanewhomes.com. Outside production it goes to the test inbox only.
+- Email: sent from developers@lankanewhomes.com (owner, 2026-10-11: not no-reply), reply-to the same address. Outside production it goes to the test inbox only.
 - `domainVerified` / `verifiedDomain` are synced to Supabase.
 
 ## Revocation

@@ -69,7 +69,8 @@ export async function POST(request: Request) {
   const live = isProductionDeployment();
   await payload.sendEmail({
     to: live ? email : DEFAULT_TEST_INBOX,
-    from: process.env.EMAIL_FROM,
+    // Owner (2026-10-11): developer emails come from a real, monitored address, never no-reply.
+    from: "LankaNewHomes <developers@lankanewhomes.com>",
     replyTo: "developers@lankanewhomes.com",
     subject: `${live ? "" : `[TEST — not sent to ${email}] `}Confirm your company email on LankaNewHomes`,
     html: renderDomainVerificationEmailHTML({ companyName: String(developer.name ?? "your company"), domain: check.domain, confirmUrl }),
