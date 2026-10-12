@@ -3779,14 +3779,15 @@ export function ProjectNarrativeDetails({ project }: { project: Project }) {
     {
       label: "Website",
       show: isFact(project.sourceUrl),
-      value: <a href={project.sourceUrl} target="_blank" rel="noopener noreferrer" className="overview-link">{(project.sourceUrl ?? "").replace(/^https?:\/\/(www\.)?/, "")}</a>,
+      value: <a href={project.sourceUrl} target="_blank" rel="noopener noreferrer" className="overview-link">{project.name}</a>,
     },
     { label: "Road", show: isFact(project.road), value: project.road ?? "" },
     { label: "Area", show: isFact(project.area), value: project.area ?? "" },
     {
       label: "Neighborhood",
       show: isFact(project.neighborhood),
-      value: project.neighborhoodSlug
+      // Several towns ("Ahangama, Weligama, Mirissa") are shown as plain text, not as a link to one neighbourhood page.
+      value: project.neighborhoodSlug && !project.neighborhood.includes(",")
         ? renderEntityLink(project.neighborhood, project.neighborhoodSlug, "/neighborhoods", "overview-link")
         : <span className="overview-link">{project.neighborhood}</span>,
     },

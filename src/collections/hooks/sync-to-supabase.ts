@@ -182,7 +182,8 @@ export const syncProjectToSupabase: CollectionAfterChangeHook = async ({ doc, re
       salesCompanyName: sales.name,
       interiorDesignerSlug: interiorDesigner.slug,
       interiorDesignerName: interiorDesigner.name,
-      neighborhood: neighborhoodRel.name ?? d.neighborhood_other ?? '',
+      // A listing spread over several towns lists them all ("Ahangama, Weligama, Mirissa"); the linked page stays the relation's.
+      neighborhood: typeof d.neighborhood_other === 'string' && d.neighborhood_other.includes(',') ? d.neighborhood_other : (neighborhoodRel.name ?? d.neighborhood_other ?? ''),
       neighborhoodSlug: neighborhoodRel.slug,
       district: resolveOther(d.district, d.district_other) ?? '',
       city: resolveOther(d.city, d.city_other) ?? '',
