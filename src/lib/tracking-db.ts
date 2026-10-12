@@ -1,4 +1,5 @@
 import { supabaseAdmin } from "@/lib/supabase";
+import { ANALYTICS_START } from "@/lib/analytics-start";
 
 type LeadInput = {
   name: string;
@@ -102,7 +103,7 @@ export async function getDeveloperDashboardStats(developerSlug: string) {
 
   const [totalLeads, totalViews, newLeadsToday] = await Promise.all([
     supabaseAdmin.from("leads").select("id", { count: "exact", head: true }).eq("developer_slug", developerSlug),
-    supabaseAdmin.from("project_views").select("id", { count: "exact", head: true }).eq("developer_slug", developerSlug),
+    supabaseAdmin.from("project_views").select("id", { count: "exact", head: true }).eq("developer_slug", developerSlug).gte("viewed_at", ANALYTICS_START),
     supabaseAdmin
       .from("leads")
       .select("id", { count: "exact", head: true })
@@ -124,7 +125,7 @@ export async function getDeveloperDashboardStats(developerSlug: string) {
 
 export async function getProjectPerformance(developerSlug: string) {
   const [viewsResult, leadsResult] = await Promise.all([
-    supabaseAdmin.from("project_views").select("project_slug").eq("developer_slug", developerSlug),
+    supabaseAdmin.from("project_views").select("project_slug").eq("developer_slug", developerSlug).gte("viewed_at", ANALYTICS_START),
     supabaseAdmin.from("leads").select("project_slug").eq("developer_slug", developerSlug),
   ]);
 

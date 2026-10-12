@@ -1,6 +1,7 @@
 import type { Payload, Where } from 'payload'
 import { ANALYTICS_EVENT_TYPES } from '@/collections/Analytics'
 import type { LeadPipelineSummary } from '@/lib/lead-pipeline'
+import { fromAnalyticsStart } from '@/lib/analytics-start'
 
 export type AnalyticsBreakdownRow = { key: string; label: string; count: number; percent: number }
 export type ListingBreakdownRow = { projectId: string | number; projectName: string; projectSlug: string; total: number; byType: Record<string, number> }
@@ -68,7 +69,7 @@ export async function buildAnalyticsSummary(
   const where: Where = {
     is_duplicate: { equals: false },
     is_bot: { equals: false },
-    timestamp: { greater_than_equal: `${startDate}T00:00:00.000Z`, less_than_equal: `${endDate}T23:59:59.999Z` },
+    timestamp: { greater_than_equal: fromAnalyticsStart(`${startDate}T00:00:00.000Z`), less_than_equal: `${endDate}T23:59:59.999Z` },
   }
   if (projectIds) where.project = { in: projectIds }
 

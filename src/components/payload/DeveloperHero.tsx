@@ -1,3 +1,4 @@
+import { fromAnalyticsStart } from '@/lib/analytics-start'
 import type { UIFieldServerProps } from 'payload'
 import Link from 'next/link'
 import { ExternalLink, MessageCircle, Plus } from 'lucide-react'
@@ -17,7 +18,7 @@ type Props = UIFieldServerProps & { id?: number | string; data?: Record<string, 
 
 async function loadSummaryData(payload: UIFieldServerProps['payload'], id: number | string) {
   try {
-    const since = new Date(Date.now() - 28 * 24 * 60 * 60 * 1000).toISOString()
+    const since = fromAnalyticsStart(new Date(Date.now() - 28 * 24 * 60 * 60 * 1000).toISOString())
     const projectsRes = await payload.find({ collection: 'projects', where: { developer: { equals: id } }, limit: 200, depth: 0, sort: '-updatedAt', select: { name: true, slug: true, isPublished: true, updatedAt: true }, overrideAccess: true })
     const projectIds = projectsRes.docs.map((p) => p.id)
     const none = [-1]

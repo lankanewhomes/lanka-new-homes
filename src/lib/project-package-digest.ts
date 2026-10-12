@@ -1,3 +1,4 @@
+import { fromAnalyticsStart } from "@/lib/analytics-start";
 import type { Payload } from "payload";
 import type { DigestPeriod } from "@/lib/analytics-digest";
 import { getPackage } from "@/lib/packages";
@@ -29,7 +30,7 @@ async function countEvents(payload: Payload, projectId: string | number, eventTy
       event_type: { equals: eventType },
       is_duplicate: { equals: false },
       is_bot: { equals: false },
-      timestamp: { greater_than_equal: start, less_than: end },
+      timestamp: { greater_than_equal: fromAnalyticsStart(start), less_than: end },
     },
     overrideAccess: true,
   });
@@ -44,7 +45,7 @@ async function topLocationsForProject(payload: Payload, projectId: string | numb
       event_type: { equals: "view" },
       is_duplicate: { equals: false },
       is_bot: { equals: false },
-      timestamp: { greater_than_equal: start, less_than: end },
+      timestamp: { greater_than_equal: fromAnalyticsStart(start), less_than: end },
       region: { exists: true },
     },
     limit: 500,
