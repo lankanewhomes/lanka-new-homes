@@ -31,7 +31,7 @@ export default function TermsPage() {
       <p>You must provide accurate information when creating an account, whether as a buyer or a developer, and keep your login credentials secure. You&apos;re responsible for activity that happens under your account. We may suspend or remove an account that violates these terms.</p>
 
       <h2>Developer accounts and listings</h2>
-      <p>Developers, builders, and their representatives are solely responsible for the accuracy of the project information, pricing, floor plans, imagery, and any other content they submit. Listings must represent real, genuine properties available for sale — fabricated, misleading, or duplicate listings are not permitted and may be removed without notice. Paid placements affect how a listing is displayed and ranked; they do not guarantee a sale or any particular outcome.</p>
+      <p>Developers, builders, and their representatives are solely responsible for the accuracy of the project information, floor plans, imagery, and any other content they submit. Listings must represent real, genuine properties available for sale — fabricated, misleading, or duplicate listings are not permitted and may be removed without notice.</p>
 
       <h2>Buyer use of the platform</h2>
       <p>Buyers may browse listings, save projects, and submit inquiries free of charge. Inquiry details are shared with the relevant developer or sales team so they can respond directly — see our <Link href="/privacy">Privacy Policy</Link> for how we handle that information. Using the platform to send spam, scrape data, or misrepresent yourself to a developer is not permitted.</p>
@@ -49,7 +49,7 @@ export default function TermsPage() {
       <p>The LankaNewHomes name, logo, and site design are our property. Project content (photos, floor plans, descriptions) remains the property of the submitting developer or its licensors; by submitting it, developers grant us a license to display it on the platform and in related marketing.</p>
 
       <h2>Disclaimers</h2>
-      <p>Listing information is provided by developers and, while we make reasonable efforts to review it, we do not independently verify every detail (pricing, availability, completion dates, or specifications) and cannot guarantee its accuracy. Buyers should independently confirm all details directly with the developer before making any purchase decision. The platform is provided &quot;as is&quot; without warranties of any kind.</p>
+      <p>Listing information is provided by developers and, while we make reasonable efforts to review it, we do not independently verify every detail (availability, completion dates, or specifications) and cannot guarantee its accuracy. Buyers should independently confirm all details directly with the developer before making any purchase decision. The platform is provided &quot;as is&quot; without warranties of any kind.</p>
 
       <h2>Limitation of liability</h2>
       <p>To the fullest extent permitted by law, LankaNewHomes is not liable for any loss or damage arising from a transaction between a buyer and a developer, from reliance on listing information, or from the platform being unavailable or containing errors.</p>
