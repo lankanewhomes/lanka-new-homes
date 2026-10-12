@@ -147,6 +147,11 @@ export async function sendLeadAlerts(payload: Payload, lead: LeadLike, opts: { r
     alertEmail = routing.testInbox
     alertWhatsApp = process.env.LEAD_ALERTS_OVERRIDE_WHATSAPP ? toWhatsAppNumber(process.env.LEAD_ALERTS_OVERRIDE_WHATSAPP) : null
   }
+  // Developer's "CC on lead alerts" (Lead alerts group): copies of the alert email. Never in test mode.
+  const ccEmails =
+    routing.mode === 'test'
+      ? []
+      : (Array.isArray(alerts.cc) ? (alerts.cc as unknown[]) : []).map(text).filter((address) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(address) && address.toLowerCase() !== alertEmail.toLowerCase())
   outcome.to = { email: alertEmail || null, whatsapp: alertWhatsApp }
   const subjectPrefix = routing.mode === 'test' ? `[TEST — not sent to ${text(developer.name) || 'the developer'}] ` : ''
 
@@ -176,6 +181,7 @@ export async function sendLeadAlerts(payload: Payload, lead: LeadLike, opts: { r
     try {
       await payload.sendEmail({
         to: alertEmail,
+        ...(ccEmails.length ? { cc: ccEmails } : {}),
         from: process.env.EMAIL_FROM,
         subject: `${subjectPrefix}${sourceLabel}: ${planName ? `${planName} · ` : ''}${projectName} — ${buyerName}${buyerPhone ? ` (${buyerPhone})` : ''}`,
         html: renderLeadAlertEmailHTML({ projectName, planName, sourceLabel, buyerName, buyerPhone, buyerEmail, preferredContact: preferred, message, receivedAt, replyLinks, dashboardUrl }),
@@ -270,7 +276,7 @@ export async function sendLeadAlerts(payload: Payload, lead: LeadLike, opts: { r
   // Leave a trail on the lead for the admin "Lead activity" page.
   const at = new Date().toISOString()
   const alertLog = [
-    { channel: 'email', to: alertEmail || '-', status: alertEmail ? outcome.email : 'skipped (no address)', routing: routing.reason, at },
+    { channel: 'email', to: alertEmail ? `${alertEmail}${ccEmails.length ? ` (cc ${ccEmails.join(', ')})` : ''}` : '-', status: alertEmail ? outcome.email : 'skipped (no address)', routing: routing.reason, at },
     ...(alertWhatsApp ? [{ channel: 'whatsapp', to: alertWhatsApp, status: isWhatsAppCloudConfigured() ? outcome.whatsapp : 'skipped (API not configured)', routing: routing.reason, at }] : []),
     ...(buyerEmail ? [{ channel: 'buyer confirmation', to: buyerEmail, status: brochureHandledByRoute ? 'skipped (brochure email sent instead)' : outcome.buyer, routing: 'buyer', at }] : []),
   ]

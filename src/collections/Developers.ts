@@ -228,6 +228,13 @@ export const Developers: CollectionConfig = {
           admin: { description: 'Leave blank to use the Contact Email above (or the linked account’s login email).' },
         },
         {
+          name: 'cc',
+          type: 'text',
+          hasMany: true,
+          label: 'CC on lead alerts',
+          admin: { description: 'Extra addresses that get a copy of every lead alert email (for example a sister brand\'s inbox). Never used in test mode.' },
+        },
+        {
           name: 'whatsapp',
           type: 'text',
           label: 'Alert WhatsApp number',
