@@ -10,6 +10,7 @@ export const ListingTodos: CollectionConfig = {
   defaultSort: 'done',
   admin: {
     group: 'Properties',
+    groupBy: true, // list view can be grouped by listing (the nav link opens it grouped)
     useAsTitle: 'title',
     defaultColumns: ['listingName', 'title', 'done', 'sourceLinks', 'updatedAt'],
     hidden: hiddenUnlessAdmin,

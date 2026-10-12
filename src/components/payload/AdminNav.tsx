@@ -60,7 +60,7 @@ const SECTIONS: { label: string; items: NavItem[] }[] = [
     items: [
       { slug: "projects", kind: "collection", label: "Projects", href: "/cms/collections/projects", icon: Building2 },
       { slug: "lands", kind: "collection", label: "Land", href: "/cms/collections/lands", icon: MapPin },
-      { slug: "listing-todos", kind: "collection", label: "To-do list", href: "/cms/collections/listing-todos", icon: ListChecks },
+      { slug: "listing-todos", kind: "collection", label: "To-do list", href: "/cms/collections/listing-todos?groupBy=listingName", icon: ListChecks },
     ],
   },
   {
