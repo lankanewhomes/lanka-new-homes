@@ -100,6 +100,7 @@ export default async function FloorPlanDetailPage({ params }: FloorPlanPageProps
           ...(developer?.domainVerified ? [{ label: "✓ Verified Developer", kind: "verified" as const, title: VERIFIED_DEVELOPER_TOOLTIP }] : []),
           // Paid pill: only when the hero isn't already showing its own Featured/Premium pill for this project.
           ...(isPaidPackageTier(project.package) && !project.isFeatured && !hasPremiumStyleBadge(project.package) ? [{ label: "★ Featured", kind: "featured" as const, title: FEATURED_TOOLTIP }] : []),
+          ...(floorPlan.planType === "ADD ON" ? [{ label: "ADD ON", kind: "availability" as const }] : []),
           ...(floorPlan.startingPriceLkr === 0 ? [{ label: "Contact for pricing", kind: "contact-pricing" as const }] : []),
         ]}
       />

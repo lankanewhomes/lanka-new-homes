@@ -2819,7 +2819,7 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
   );
 
   // Add-on units (e.g. Maison Ceylon's Bungalow Ithiri, bought together with a villa) get their own tab.
-  const addOns = useMemo(() => floorPlans.filter((plan) => plan.planType === "Add On"), [floorPlans]);
+  const addOns = useMemo(() => floorPlans.filter((plan) => plan.planType === "ADD ON"), [floorPlans]);
 
   const availabilityOptions = useMemo(() => Array.from(new Set(floorPlans.filter((plan) => !plan.availabilityUnknown).map((plan) => plan.availability))), [floorPlans]);
   // 0 means "not provided" (e.g. Vauxhall's penthouses) — never offered as a bedroom filter.
@@ -2912,7 +2912,7 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
               aria-selected={activeTab === "addOns"}
               onClick={() => { setActiveTab("addOns"); setShowAllPlans(false); }}
             >
-              Add On ({addOns.length})
+              ADD ON ({addOns.length})
             </button>
           ) : null}
         </div>

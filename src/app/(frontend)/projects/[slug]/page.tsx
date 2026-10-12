@@ -157,8 +157,10 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
           // record-keeping, but the front-end no longer shows them.
           // "Now Selling" is the one availability badge shown (owner, 2026-10-11, for the Crystal Property Group projects): the status pill
           // says Under Construction and this pill says the units are on sale. The other availability badges stay hidden.
-          // "Add On" too (owner, 2026-10-12): the Maison Ceylon Bungalow Ithiri is sold as an add-on to a villa, not on its own.
-          ...(project.availabilityBadge === "Now Selling" || project.availabilityBadge === "Add On" ? [{ label: project.availabilityBadge, kind: "availability" as const }] : []),
+          // "ADD ON" too (owner, 2026-10-12): the Maison Ceylon Bungalow Ithiri is sold as an add-on to a villa, not on its own.
+          // Shown on the listing itself and on every villa that offers an ADD ON floor plan.
+          ...(project.availabilityBadge === "Now Selling" ? [{ label: "Now Selling", kind: "availability" as const }] : []),
+          ...(project.availabilityBadge === "ADD ON" || project.floorPlans.some((plan) => plan.planType === "ADD ON") ? [{ label: "ADD ON", kind: "availability" as const }] : []),
           ...(project.locationBadges ?? []).map((label) => ({ label, kind: "location" as const })),
           // The one marketing badge shown on the page (owner, 2026-10-04): the ICON net profit-sharing model.
           ...(project.marketingBadges ?? []).filter((label) => label === "Profit-Share Model").map((label) => ({ label, kind: "marketing" as const })),
