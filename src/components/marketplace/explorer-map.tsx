@@ -2,6 +2,7 @@
 
 import { MarkerIcon } from "@/components/map/marker-icon";
 import "maplibre-gl/dist/maplibre-gl.css";
+import { IndiaMask } from "@/components/map/india-mask";
 import { LngLatBounds, setWorkerUrl } from "maplibre-gl";
 import Map, { Marker, Popup, type MapRef } from "react-map-gl/maplibre";
 import { Compass, Layers, Minus, Plus } from "lucide-react";
@@ -206,6 +207,7 @@ export function ExplorerMap({
         style={{ width: "100%", height: "100%" }}
         attributionControl={{ compact: true }}
       >
+        <IndiaMask />
         {!showPins
           ? groups.map((group) => {
               const size = Math.min(58, 40 + Math.round(Math.sqrt(group.group.length) * 3));
