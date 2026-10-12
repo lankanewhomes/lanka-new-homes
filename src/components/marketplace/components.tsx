@@ -2912,7 +2912,7 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
               aria-selected={activeTab === "addOns"}
               onClick={() => { setActiveTab("addOns"); setShowAllPlans(false); }}
             >
-              ADD ON ({addOns.length})
+              Add on ({addOns.length})
             </button>
           ) : null}
         </div>
