@@ -227,6 +227,10 @@ export const searchablePages: SearchablePage[] = [
   })),
   { label: "Land for Sale in Sri Lanka", path: "/land", keywords: "land lands plot plots" },
   { label: "Best Land for Sale in Colombo", path: "/land/best-land-for-sale-in-colombo", keywords: "best land for sale in colombo land colombo plots plot colombo land for sale colombo district" },
+  { label: "Cheap Land for Sale in Sri Lanka", path: "/land/cheap-land-for-sale-in-sri-lanka", keywords: "cheap land for sale sri lanka low price land affordable plots lowest price per perch" },
+  { label: "1 Acre Land for Sale in Sri Lanka", path: "/land/1-acre-land-for-sale-in-sri-lanka", keywords: "1 acre land for sale in sri lanka one acre land price acre 160 perches" },
+  { label: "Rural Land for Sale in Sri Lanka", path: "/land/rural-land-for-sale-in-sri-lanka", keywords: "rural land for sale in sri lanka village land countryside land outside colombo" },
+  { label: "Farm Land for Sale in Sri Lanka", path: "/land/farm-land-for-sale-in-sri-lanka", keywords: "farm land for sale in sri lanka agricultural land coconut land paddy land plantation" },
 ];
 
 export function buildCategoryMetadata(category: ProjectCategory): Metadata {

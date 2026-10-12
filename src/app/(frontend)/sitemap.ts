@@ -10,6 +10,7 @@ import { getAllSalesCompanies } from "@/lib/sales-company-store";
 import { getAllConstructionCompanies } from "@/lib/construction-company-store";
 import { toAbsoluteUrl } from "@/lib/seo";
 import { allProjectCategories } from "@/lib/listing-categories";
+import { LAND_SEO_PAGES } from "@/lib/land-seo-pages";
 import { guides } from "@/lib/guides";
 import { blogPosts } from "@/lib/blog";
 import { constructionCompanyPages } from "@/lib/construction-company-categories";
@@ -237,5 +238,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     images: imagesOrEmpty(land.heroImage),
   }));
 
-  return [...staticRoutes, ...projectCategoryRoutes, ...guideRoutes, ...blogRoutes, ...constructionCompanyRoutes, ...projectRoutes, ...developerRoutes, ...landRoutes, ...neighborhoodRoutes, ...partnerDirectoryRoutes];
+  // Land keyword pages (cheap / 1 acre / rural / farm): listed only once they have plots; an empty one is noindex.
+  const allLands = await getAllLands();
+  const landSeoRoutes: MetadataRoute.Sitemap = Object.values(LAND_SEO_PAGES)
+    .filter((page) => page.select(allLands).length > 0)
+    .map((page) => ({ url: toAbsoluteUrl(page.path), lastModified: now, changeFrequency: "daily" as const, priority: 0.7 }));
+
+  return [...staticRoutes, ...landSeoRoutes, ...projectCategoryRoutes, ...guideRoutes, ...blogRoutes, ...constructionCompanyRoutes, ...projectRoutes, ...developerRoutes, ...landRoutes, ...neighborhoodRoutes, ...partnerDirectoryRoutes];
 }
