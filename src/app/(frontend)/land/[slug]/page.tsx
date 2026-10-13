@@ -179,7 +179,7 @@ export default async function LandDetailPage({ params }: LandPageProps) {
         blockPlanImages={land.blockPlanImages ?? []}
         videoLinks={land.videos ?? []}
         requestInfoVariant="inquiry"
-        whatsappHref={listingWhatsAppHref(developer?.socialLinks?.whatsapp ?? (toWhatsAppNumber(land.contact?.phone)?.startsWith("947") ? land.contact?.phone : null), project.name)}
+        whatsappHref={listingWhatsAppHref((toWhatsAppNumber(land.contact?.phone)?.startsWith("947") ? land.contact?.phone : null) ?? developer?.socialLinks?.whatsapp, project.name)}
       />
 
       <div className="project-page-content">

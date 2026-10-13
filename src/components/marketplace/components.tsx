@@ -3778,13 +3778,6 @@ export function ProjectNarrativeDetails({ project }: { project: Project }) {
     { label: "Electricity", show: isFact(project.electricity), value: project.electricity ?? "" },
     { label: "Tap water", show: isFact(project.tapWater), value: project.tapWater ?? "" },
     { label: "Address", show: isFact(project.location), value: project.location },
-    // The project's own page on the developer's site (owner, 2026-10-12: Maison Ceylon villas).
-    {
-      label: "Website",
-      // Owner, 2026-10-12: only for the Maison Ceylon properties ("dont add website for any more listings").
-      show: isFact(project.sourceUrl) && project.developerSlug === "maison-ceylon",
-      value: <a href={project.sourceUrl} target="_blank" rel="sponsored noopener" className="overview-link">{project.name} - {project.developerName}</a>,
-    },
     { label: "Road", show: isFact(project.road), value: project.road ?? "" },
     { label: "Area", show: isFact(project.area), value: project.area ?? "" },
     {
@@ -3859,7 +3852,6 @@ const MOBILE_FACT_SHEET_ORDER = [
   "Parking",
   "Visitor parking",
   "Address",
-  "Website",
   "Neighborhood",
   "District",
 ];
