@@ -5,17 +5,30 @@ import type { MailProvider } from './types'
 // client. Both implement MailProvider, so the rest of the app never knows which one it is talking to.
 
 export const MAILBOX_ENV = [
-  { env: 'MAIL_ACCOUNT_NOREPLY', fallback: 'no-reply@lankanewhomes.com' },
-  { env: 'MAIL_ACCOUNT_SUPPORT', fallback: 'support@lankanewhomes.com' },
-  { env: 'MAIL_ACCOUNT_DEVELOPERS', fallback: 'developers@lankanewhomes.com' },
+  { env: 'MAIL_ACCOUNT_NOREPLY', fallback: 'no-reply@lankanewhomes.com', suffix: 'NOREPLY' },
+  { env: 'MAIL_ACCOUNT_SUPPORT', fallback: 'support@lankanewhomes.com', suffix: 'SUPPORT' },
+  { env: 'MAIL_ACCOUNT_DEVELOPERS', fallback: 'developers@lankanewhomes.com', suffix: 'DEVELOPERS' },
 ] as const
+
+export type ZohoCreds = { clientId: string; clientSecret: string; refreshToken: string }
+
+/**
+ * Zoho keys for one mailbox. Each mailbox may have its own Self Client (ZOHO_CLIENT_ID_SUPPORT, ZOHO_CLIENT_SECRET_SUPPORT,
+ * ZOHO_REFRESH_TOKEN_SUPPORT, …) because a Zoho login only sees its own mailbox; any key left out falls back to the shared ZOHO_* one.
+ */
+export function zohoCredsFor(email: string): ZohoCreds | null {
+  const box = MAILBOX_ENV.find((m) => (process.env[m.env] || m.fallback).trim().toLowerCase() === email.toLowerCase())
+  const pick = (name: string) => (box ? process.env[`${name}_${box.suffix}`] : '') || process.env[name] || ''
+  const creds = { clientId: pick('ZOHO_CLIENT_ID'), clientSecret: pick('ZOHO_CLIENT_SECRET'), refreshToken: pick('ZOHO_REFRESH_TOKEN') }
+  return creds.clientId && creds.clientSecret && creds.refreshToken ? creds : null
+}
 
 export function configuredMailboxes(): string[] {
   return MAILBOX_ENV.map((m) => (process.env[m.env] || m.fallback).trim().toLowerCase())
 }
 
 export function zohoCredentialsPresent(): boolean {
-  return Boolean(process.env.ZOHO_CLIENT_ID && process.env.ZOHO_CLIENT_SECRET && process.env.ZOHO_REFRESH_TOKEN)
+  return configuredMailboxes().some((email) => zohoCredsFor(email) !== null)
 }
 
 export function isMockMode(): boolean {

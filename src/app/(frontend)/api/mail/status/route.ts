@@ -4,7 +4,11 @@ import { getSyncStatus } from "@/lib/mail/sync";
 
 export const dynamic = "force-dynamic";
 
-const ENV_KEYS = ["MAIL_MOCK_MODE", "ZOHO_CLIENT_ID", "ZOHO_CLIENT_SECRET", "ZOHO_REFRESH_TOKEN", "ZOHO_ACCOUNTS_URL", "ZOHO_MAIL_API_URL", ...MAILBOX_ENV.map((m) => m.env), "MAIL_SYNC_SECRET"];
+const ENV_KEYS = [
+  "MAIL_MOCK_MODE", "ZOHO_CLIENT_ID", "ZOHO_CLIENT_SECRET", "ZOHO_REFRESH_TOKEN", "ZOHO_ACCOUNTS_URL", "ZOHO_MAIL_API_URL", ...MAILBOX_ENV.map((m) => m.env), "MAIL_SYNC_SECRET",
+  // Optional: separate keys per mailbox when each mailbox is its own Zoho login.
+  ...MAILBOX_ENV.flatMap((m) => [`ZOHO_CLIENT_ID_${m.suffix}`, `ZOHO_CLIENT_SECRET_${m.suffix}`, `ZOHO_REFRESH_TOKEN_${m.suffix}`]),
+];
 
 // GET: connection status for /cms/mail/settings. Never returns env values, only whether each key is set. ?test=1 also calls the provider.
 export async function GET(request: Request) {

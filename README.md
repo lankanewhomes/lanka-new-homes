@@ -78,8 +78,10 @@ Scheduled syncs do nothing in mock mode.
 5. Set `ZOHO_ACCOUNTS_URL` and `ZOHO_MAIL_API_URL` for your data centre (examples are in `.env.example`; Canada is `https://accounts.zohocloud.ca` and
    `https://mail.zohocloud.ca/api`).
 
-The three addresses must belong to the Zoho login that authorised the Self Client (separate users need their own authorisation, or can be
-added as aliases). The status page lists which of them were found.
+**One set of keys per mailbox.** A Zoho login only sees its own mailbox. If `no-reply@`, `support@` and `developers@` are separate Zoho users, repeat steps 1 to 4
+while signed in to each of them, and set the keys with a suffix: `ZOHO_CLIENT_ID_SUPPORT`, `ZOHO_CLIENT_SECRET_SUPPORT`, `ZOHO_REFRESH_TOKEN_SUPPORT`, and the same
+for `_DEVELOPERS` and `_NOREPLY`. A mailbox without its own keys uses the shared `ZOHO_*` ones (right when the addresses are aliases of one Zoho account). The
+status page lists which mailboxes were found.
 
 ### 2. Switch to live
 

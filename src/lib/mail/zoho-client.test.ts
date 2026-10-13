@@ -105,6 +105,45 @@ describe('ZohoMailProvider (fetch stubbed)', () => {
     expect(hits).toBe(3)
   })
 
+  it('uses each mailbox\'s own keys when they are set', async () => {
+    vi.stubEnv('ZOHO_CLIENT_ID_SUPPORT', 'cid-s'); vi.stubEnv('ZOHO_CLIENT_SECRET_SUPPORT', 'sec-s'); vi.stubEnv('ZOHO_REFRESH_TOKEN_SUPPORT', 'ref-s')
+    const calls = setupFetch((c) => {
+      if (c.url.includes('/oauth/v2/token')) return { json: { access_token: c.body!.includes('refresh_token=ref-s') ? 'tok-support' : 'tok-shared', expires_in: 3600 } }
+      return ok([{ accountId: c.headers.Authorization.endsWith('tok-support') ? 22 : 11, primaryEmailAddress: c.headers.Authorization.endsWith('tok-support') ? 'support@lankanewhomes.com' : 'developers@lankanewhomes.com' }])
+    })
+    const z = new ZohoMailProvider()
+    const accounts = await z.listAccounts()
+    expect(accounts.map((a) => [a.email, a.zohoAccountId])).toEqual([['support@lankanewhomes.com', '22'], ['developers@lankanewhomes.com', '11']])
+    await z.listFolders('22')
+    await z.listFolders('11')
+    const folderCalls = calls.filter((c) => c.url.includes('/folders'))
+    expect(folderCalls[0].headers.Authorization).toBe('Zoho-oauthtoken tok-support')
+    expect(folderCalls[1].headers.Authorization).toBe('Zoho-oauthtoken tok-shared')
+  })
+
+  it('maps real Zoho folder shapes: Notification/Newsletter and nested folders are custom', async () => {
+    setupFetch((c) => token(c) ?? ok([
+      { folderId: '1', folderName: 'Inbox', folderType: 'Inbox', path: '/Inbox' },
+      { folderId: '2', folderName: 'Notification', folderType: 'Inbox', path: '/Notification' },
+      { folderId: '3', folderName: 'Archive', folderType: 'Archive', path: '/Archive' },
+      { folderId: '4', folderName: 'Zoho Mail', folderType: 'Archive', path: '/Archive/Zoho Mail' },
+    ]))
+    const folders = await new ZohoMailProvider().listFolders('1')
+    expect(folders.map((f) => f.type)).toEqual(['inbox', 'custom', 'archive', 'custom'])
+  })
+
+  it('groups mail into threads by subject and the outside person', async () => {
+    setupFetch((c) => token(c) ?? ok([
+      { messageId: '1', folderId: '1', subject: 'Question about Oceanista', fromAddress: 'buyer@x.com', toAddress: 'support@lankanewhomes.com', receivedTime: '1' },
+      { messageId: '2', folderId: '2', subject: 'Re: Question about Oceanista', fromAddress: 'support@lankanewhomes.com', toAddress: 'buyer@x.com', receivedTime: '2' },
+      { messageId: '3', folderId: '1', subject: 'Question about Oceanista', fromAddress: 'other@y.com', toAddress: 'support@lankanewhomes.com', receivedTime: '3' },
+    ]))
+    const page = await new ZohoMailProvider().listMessages('1', '1', { offset: 0, limit: 200 })
+    const t = page.messages.map((m) => m.threadId)
+    expect(t[0]).toBe(t[1])
+    expect(t[2]).not.toBe(t[0])
+  })
+
   it('reports a clear message when the credentials are rejected', async () => {
     setupFetch((c) => (c.url.includes('/oauth/v2/token') ? { status: 400, json: { error: 'invalid_client' } } : ok([])))
     const r = await new ZohoMailProvider().testConnection()

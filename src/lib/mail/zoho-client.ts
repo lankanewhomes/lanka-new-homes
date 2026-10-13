@@ -1,4 +1,4 @@
-import { configuredMailboxes } from './index'
+import { configuredMailboxes, zohoCredsFor, type ZohoCreds } from './index'
 import {
   plainSnippet,
   type ListMessagesPage,
@@ -71,16 +71,21 @@ export function parseZohoAddresses(raw: unknown): MailAddress[] {
     .filter((a) => a.email.includes('@'))
 }
 
-function folderType(name: string, zohoType: string): MailFolderType {
-  const t = (zohoType || name).toLowerCase()
-  if (t.includes('inbox')) return 'inbox'
-  if (t.includes('sent')) return 'sent'
-  if (t.includes('draft')) return 'drafts'
-  if (t.includes('spam') || t.includes('junk')) return 'spam'
-  if (t.includes('trash') || t.includes('deleted')) return 'trash'
-  if (t.includes('archive')) return 'archive'
+/** Zoho marks Notification and Newsletter with folderType "Inbox" and nests folders under their parent in `path`: only the real top-level folders get a standard type. */
+function folderType(name: string, zohoType: string, path = ''): MailFolderType {
+  if ((path.match(/\//g) ?? []).length > 1) return 'custom'
+  const type = zohoType.toLowerCase()
+  const lower = name.toLowerCase()
+  if (type === 'inbox') return lower === 'inbox' ? 'inbox' : 'custom'
+  if (type === 'sent') return 'sent'
+  if (type === 'drafts') return 'drafts'
+  if (type === 'spam') return 'spam'
+  if (type === 'trash') return 'trash'
+  if (type === 'archive') return 'archive'
   return 'custom'
 }
+
+const norm = (subject: string) => subject.toLowerCase().replace(/^(\s*(re|fw|fwd|aw|sv)\s*:\s*)+/i, '').replace(/\s+/g, ' ').trim()
 
 export class ZohoMailProvider implements MailProvider {
   readonly mode = 'zoho' as const
@@ -88,17 +93,19 @@ export class ZohoMailProvider implements MailProvider {
   private get mailApi() { return env('ZOHO_MAIL_API_URL', 'https://mail.zoho.com/api') }
   private get accountsUrl() { return env('ZOHO_ACCOUNTS_URL', 'https://accounts.zoho.com') }
 
-  // ---- auth: the access token is cached in memory and refreshed shortly before it expires (Zoho limits how often tokens may be minted)
-  private async accessToken(force = false): Promise<string> {
-    const g = globalThis as unknown as Record<symbol, TokenCache | undefined>
-    const cache = (g[KEY] ??= { token: '', expiresAt: 0 })
+  // ---- auth: access tokens are cached in memory per refresh token and renewed shortly before they expire (Zoho limits how often tokens may be minted)
+  private async accessToken(creds: ZohoCreds, force = false): Promise<string> {
+    const g = globalThis as unknown as Record<symbol, Map<string, TokenCache> | undefined>
+    const caches = (g[KEY] ??= new Map<string, TokenCache>())
+    const cache = caches.get(creds.refreshToken) ?? { token: '', expiresAt: 0 }
+    caches.set(creds.refreshToken, cache)
     if (!force && cache.token && Date.now() < cache.expiresAt - 60_000) return cache.token
     if (cache.pending) return cache.pending
     cache.pending = (async () => {
-      const body = new URLSearchParams({ refresh_token: env('ZOHO_REFRESH_TOKEN'), client_id: env('ZOHO_CLIENT_ID'), client_secret: env('ZOHO_CLIENT_SECRET'), grant_type: 'refresh_token' })
+      const body = new URLSearchParams({ refresh_token: creds.refreshToken, client_id: creds.clientId, client_secret: creds.clientSecret, grant_type: 'refresh_token' })
       const res = await fetch(`${this.accountsUrl}/oauth/v2/token`, { method: 'POST', body })
       const json = (await res.json().catch(() => ({}))) as Json
-      if (!res.ok || !json.access_token) throw new Error(`Zoho login failed: ${json.error ?? res.status}. Check ZOHO_CLIENT_ID, ZOHO_CLIENT_SECRET, ZOHO_REFRESH_TOKEN and ZOHO_ACCOUNTS_URL (data centre).`)
+      if (!res.ok || !json.access_token) throw new Error(`Zoho login failed: ${json.error ?? res.status}. Check the Zoho client id, secret and refresh token and ZOHO_ACCOUNTS_URL (data centre).`)
       cache.token = json.access_token as string
       cache.expiresAt = Date.now() + (Number(json.expires_in) || 3600) * 1000
       return cache.token
@@ -106,14 +113,38 @@ export class ZohoMailProvider implements MailProvider {
     return cache.pending
   }
 
+  /** accountId -> the keys that can read it (filled by listAccounts, or looked up on demand after a restart). */
+  private accountCreds = new Map<string, ZohoCreds>()
+
+  private async credsOf(accountId: string): Promise<ZohoCreds> {
+    const known = this.accountCreds.get(accountId)
+    if (known) return known
+    // One shared set of keys (the usual case): no lookup needed.
+    const distinct = new Map<string, ZohoCreds>()
+    for (const email of configuredMailboxes()) {
+      const c = zohoCredsFor(email)
+      if (c) distinct.set(c.refreshToken, c)
+    }
+    if (distinct.size === 1) return [...distinct.values()][0]
+    // Several Zoho logins: find out which keys belong to this account.
+    await this.listAccounts()
+    const creds = this.accountCreds.get(accountId)
+    if (!creds) throw new Error(`No Zoho credentials are configured for account ${accountId}.`)
+    return creds
+  }
+
+  private async call(accountId: string, method: string, path: string, opts: Parameters<ZohoMailProvider['request']>[3] = {}) {
+    return this.request(await this.credsOf(accountId), method, path, opts)
+  }
+
   /** One HTTP call with token refresh on 401 and backoff + retry on rate limits (429) and server errors. */
-  private async request(method: string, path: string, opts: { query?: Record<string, string | number | undefined>; json?: unknown; form?: FormData; binary?: boolean } = {}): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
+  private async request(creds: ZohoCreds, method: string, path: string, opts: { query?: Record<string, string | number | undefined>; json?: unknown; form?: FormData; binary?: boolean } = {}): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
     const url = new URL(`${this.mailApi}${path}`)
     for (const [k, v] of Object.entries(opts.query ?? {})) if (v !== undefined && v !== '') url.searchParams.set(k, String(v))
     let refreshed = false
     let forceToken = false
     for (let attempt = 0; attempt < 5; attempt += 1) {
-      const token = await this.accessToken(forceToken)
+      const token = await this.accessToken(creds, forceToken)
       forceToken = false
       const res = await fetch(url, {
         method,
@@ -143,29 +174,35 @@ export class ZohoMailProvider implements MailProvider {
 
   // ---- accounts
   async listAccounts(): Promise<ProviderAccount[]> {
-    const wanted = configuredMailboxes()
-    const data = (await this.request('GET', '/accounts')) as Json[]
     const found: ProviderAccount[] = []
-    for (const email of wanted) {
-      const hit = data.find((a) => {
-        const addrs = [a.primaryEmailAddress, a.incomingUserName, a.mailboxAddress, ...(Array.isArray(a.emailAddress) ? a.emailAddress.map((e: Json) => e.mailId) : [])]
+    const cache = new Map<string, Json[]>() // mailboxes that share keys are looked up with one call
+    for (const email of configuredMailboxes()) {
+      const creds = zohoCredsFor(email)
+      if (!creds) continue
+      if (!cache.has(creds.refreshToken)) cache.set(creds.refreshToken, (await this.request(creds, 'GET', '/accounts')) as Json[])
+      const hit = cache.get(creds.refreshToken)!.find((a) => {
+        const addrs = [a.primaryEmailAddress, a.incomingUserName, a.mailboxAddress, ...(Array.isArray(a.emailAddress) ? a.emailAddress.map((e: Json) => (typeof e === 'string' ? e : e.mailId)) : [])]
         return addrs.some((x) => typeof x === 'string' && x.toLowerCase() === email)
       })
-      if (hit) found.push({ zohoAccountId: String(hit.accountId), email, displayName: String(hit.displayName || hit.accountDisplayName || hit.accountName || email) })
+      if (hit) {
+        found.push({ zohoAccountId: String(hit.accountId), email, displayName: String(hit.displayName || hit.accountDisplayName || hit.accountName || email) })
+        this.accountCreds.set(String(hit.accountId), creds)
+      }
     }
     return found
   }
 
   async testConnection() {
     try {
-      const accounts = await this.listAccounts()
       const wanted = configuredMailboxes()
+      const accounts = await this.listAccounts()
       const missing = wanted.filter((w) => !accounts.some((a) => a.email === w))
+      const noKeys = missing.filter((m) => !zohoCredsFor(m))
       return {
         ok: accounts.length > 0,
         message: accounts.length
-          ? `Connected to Zoho. Found ${accounts.length} of ${wanted.length} mailboxes${missing.length ? ` (not found for this login: ${missing.join(', ')})` : ''}.`
-          : 'Connected to Zoho, but none of the configured mailboxes belong to this login. Authorise the Self Client with a user that owns them, or check MAIL_ACCOUNT_* values.',
+          ? `Connected to Zoho. Found ${accounts.length} of ${wanted.length} mailboxes${missing.length ? `. Not found: ${missing.join(', ')}${noKeys.length ? ` (no keys set for ${noKeys.join(', ')})` : ' (the keys used belong to a different Zoho login; add keys for that mailbox)'}` : ''}.`
+          : 'Connected to Zoho, but none of the configured mailboxes belong to the login these keys were made with. Each mailbox needs keys made while signed in to that mailbox (see the README, "one set of keys per mailbox").',
         accounts,
       }
     } catch (error) {
@@ -175,11 +212,12 @@ export class ZohoMailProvider implements MailProvider {
 
   // ---- folders and messages
   async listFolders(accountId: string): Promise<ProviderFolder[]> {
-    const data = (await this.request('GET', `/accounts/${accountId}/folders`)) as Json[]
+    const data = (await this.call(accountId, 'GET', `/accounts/${accountId}/folders`)) as Json[]
     return data.map((f) => ({
       zohoFolderId: String(f.folderId),
       name: String(f.folderName),
-      type: folderType(String(f.folderName), String(f.folderType ?? '')),
+      type: folderType(String(f.folderName), String(f.folderType ?? ''), String(f.path ?? '')),
+      // The folder list carries no counts; the CMS counts from its own cache, and the import learns the real total as it goes.
       unreadCount: Number(f.unreadCount ?? 0),
       totalCount: Number(f.messageCount ?? 0),
     }))
@@ -187,15 +225,23 @@ export class ZohoMailProvider implements MailProvider {
 
   private toSummary(accountId: string, folderId: string, m: Json): ProviderMessageSummary {
     const from = parseZohoAddresses(m.fromAddress ? (m.sender && !String(m.sender).includes('@') ? `"${m.sender}" <${m.fromAddress}>` : m.fromAddress) : m.sender)[0] ?? { email: String(m.fromAddress ?? '') }
+    const to = parseZohoAddresses(m.toAddress)
+    const subject = decodeEntities(String(m.subject ?? ''))
+    // Zoho's list does not return a conversation id, so mail is grouped like Gmail's fallback: same subject (without Re:/Fwd:) with the same
+    // outside person, in either direction. Mail with no subject stays on its own.
+    const own = new Set(configuredMailboxes())
+    const outsider = [from, ...to].find((a) => a.email && !own.has(a.email.toLowerCase()))?.email.toLowerCase() ?? ''
+    const key = norm(subject)
+    const threadId = m.threadId ? String(m.threadId) : key.length > 2 && outsider ? `${key}|${outsider}` : String(m.messageId)
     return {
       zohoMessageId: String(m.messageId),
       zohoFolderId: String(m.folderId ?? folderId),
-      threadId: String(m.threadId ?? m.messageId),
+      threadId,
       from,
-      to: parseZohoAddresses(m.toAddress),
+      to,
       cc: parseZohoAddresses(m.ccAddress),
       bcc: parseZohoAddresses(m.bccAddress),
-      subject: decodeEntities(String(m.subject ?? '')),
+      subject,
       snippet: decodeEntities(String(m.summary ?? '')).replace(/\s+/g, ' ').trim().slice(0, 200),
       hasAttachments: String(m.hasAttachment ?? '0') === '1',
       isRead: String(m.status ?? '0') === '1',
@@ -206,7 +252,7 @@ export class ZohoMailProvider implements MailProvider {
 
   async listMessages(accountId: string, folderId: string, { offset, limit }: ListMessagesParams): Promise<ListMessagesPage> {
     // Zoho's `start` is 1-based and `limit` is capped at 200.
-    const data = (await this.request('GET', `/accounts/${accountId}/messages/view`, { query: { folderId, start: offset + 1, limit: Math.min(limit, 200), sortBy: 'date', sortorder: 'false' } })) as Json[]
+    const data = (await this.call(accountId, 'GET', `/accounts/${accountId}/messages/view`, { query: { folderId, start: offset + 1, limit: Math.min(limit, 200), sortBy: 'date', sortorder: 'false' } })) as Json[]
     const messages = (Array.isArray(data) ? data : []).map((m) => this.toSummary(accountId, folderId, m))
     return { messages, hasMore: messages.length >= Math.min(limit, 200) }
   }
@@ -215,9 +261,9 @@ export class ZohoMailProvider implements MailProvider {
     const base = `/accounts/${accountId}/folders/${folderId}/messages/${messageId}`
     try {
       const [content, details, attInfo] = await Promise.all([
-        this.request('GET', `${base}/content`, { query: { includeBlockContent: 'true' } }),
-        this.request('GET', `${base}/details`).catch(() => ({})),
-        this.request('GET', `${base}/attachmentinfo`).catch(() => ({})),
+        this.call(accountId, 'GET', `${base}/content`, { query: { includeBlockContent: 'true' } }),
+        this.call(accountId, 'GET', `${base}/details`).catch(() => ({})),
+        this.call(accountId, 'GET', `${base}/attachmentinfo`).catch(() => ({})),
       ])
       const html = String((content as Json).content ?? '')
       const att = ((attInfo as Json).attachments ?? []) as Json[]
@@ -238,7 +284,7 @@ export class ZohoMailProvider implements MailProvider {
   async getAttachment(accountId: string, folderId: string, messageId: string, attachmentId: string): Promise<ProviderAttachmentFile> {
     const info = await this.getMessage(accountId, folderId, messageId)
     const meta = info?.attachments.find((a) => a.id === attachmentId)
-    const file = (await this.request('GET', `/accounts/${accountId}/folders/${folderId}/messages/${messageId}/attachments/${attachmentId}`, { query: { fileName: meta?.filename }, binary: true })) as { bytes: Uint8Array; contentType: string }
+    const file = (await this.call(accountId, 'GET', `/accounts/${accountId}/folders/${folderId}/messages/${messageId}/attachments/${attachmentId}`, { query: { fileName: meta?.filename }, binary: true })) as { bytes: Uint8Array; contentType: string }
     return { filename: meta?.filename ?? 'attachment', contentType: meta?.contentType || file.contentType, bytes: file.bytes }
   }
 
@@ -248,7 +294,7 @@ export class ZohoMailProvider implements MailProvider {
     for (const a of message.attachments ?? []) {
       const form = new FormData()
       form.append('attach', new Blob([Uint8Array.from(atob(a.contentBase64), (c) => c.charCodeAt(0))], { type: a.contentType }), a.filename)
-      const up = (await this.request('POST', `/accounts/${accountId}/messages/attachments`, { query: { uploadType: 'multipart' }, form })) as Json | Json[]
+      const up = (await this.call(accountId, 'POST', `/accounts/${accountId}/messages/attachments`, { query: { uploadType: 'multipart' }, form })) as Json | Json[]
       const first = Array.isArray(up) ? up[0] : up
       out.push({ storeName: first.storeName, attachmentName: first.attachmentName ?? a.filename, attachmentPath: first.attachmentPath })
     }
@@ -275,14 +321,14 @@ export class ZohoMailProvider implements MailProvider {
     const body = this.payload(message, attachments)
     const reply = message.inReplyTo
     const data = reply
-      ? await this.request('POST', `/accounts/${accountId}/messages/${reply.zohoMessageId}`, { json: { ...body, action: reply.mode === 'replyAll' ? 'replyall' : reply.mode } })
-      : await this.request('POST', `/accounts/${accountId}/messages`, { json: body })
+      ? await this.call(accountId, 'POST', `/accounts/${accountId}/messages/${reply.zohoMessageId}`, { json: { ...body, action: reply.mode === 'replyAll' ? 'replyall' : reply.mode } })
+      : await this.call(accountId, 'POST', `/accounts/${accountId}/messages`, { json: body })
     return { zohoMessageId: (data as Json)?.messageId ? String((data as Json).messageId) : undefined }
   }
 
   async saveDraft(accountId: string, message: OutgoingMessage, existingDraftId?: string) {
     const attachments = await this.uploadAttachments(accountId, message)
-    const data = (await this.request('POST', `/accounts/${accountId}/messages`, { json: { ...this.payload(message, attachments), mode: 'draft' } })) as Json
+    const data = (await this.call(accountId, 'POST', `/accounts/${accountId}/messages`, { json: { ...this.payload(message, attachments), mode: 'draft' } })) as Json
     // Zoho creates a new draft each time; the previous version of the same draft is removed so there is only ever one.
     if (existingDraftId) {
       const folders = await this.listFolders(accountId)
@@ -302,10 +348,10 @@ export class ZohoMailProvider implements MailProvider {
             : action.type === 'star' ? { ...base, mode: MODES.star, flagid: STAR_FLAG }
               : action.type === 'unstar' ? { ...base, mode: MODES.unstar }
                 : { ...base, mode: action.type === 'markRead' ? MODES.markRead : MODES.markUnread }
-    await this.request('PUT', `/accounts/${accountId}/updatemessage`, { json: body })
+    await this.call(accountId, 'PUT', `/accounts/${accountId}/updatemessage`, { json: body })
   }
 
   async deleteMessages(accountId: string, folderId: string, ids: string[]) {
-    for (const id of ids) await this.request('DELETE', `/accounts/${accountId}/folders/${folderId}/messages/${id}`)
+    for (const id of ids) await this.call(accountId, 'DELETE', `/accounts/${accountId}/folders/${folderId}/messages/${id}`)
   }
 }
