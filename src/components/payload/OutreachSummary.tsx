@@ -19,9 +19,12 @@ export function OutreachSummary() {
     ["Clicks", clicks ? String(clicks) : "none yet"],
     ["Company verified", verified ? "Yes ✓" : "Not yet"],
   ];
+  const pill: Record<string, [string, string]> = { draft: ["#eceae4", "#55534e"], sent: ["#dbeafe", "#1d4ed8"], clicked: ["#dcfce7", "#15803d"], replied: ["#ede9fe", "#6d28d9"], no_reply: ["#fee2e2", "#b91c1c"] };
+  const [pillBg, pillFg] = pill[status] ?? pill.draft;
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", gap: 8, margin: "0 0 20px" }}>
-      {chips.map(([k, v]) => (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 8, margin: "0 0 20px", alignItems: "center" }}>
+      <span style={{ background: pillBg, color: pillFg, padding: "6px 14px", borderRadius: 999, fontWeight: 700, fontSize: 13 }}>{LABEL[status] ?? status}</span>
+      {chips.filter(([k]) => k !== "Status").map(([k, v]) => (
         <span key={k} style={{ border: "1px solid var(--theme-elevation-150)", padding: "6px 12px", fontSize: 13 }}>
           <span style={{ opacity: 0.65 }}>{k}: </span><strong>{v}</strong>
         </span>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useDocumentInfo, useField } from "@payloadcms/ui";
+import { useDocumentInfo, useField, useForm } from "@payloadcms/ui";
 import { OUTREACH_SENDERS, OUTREACH_TEMPLATES } from "@/lib/outreach-templates";
 
 // Outreach log: one friendly screen to write, preview and send an email to a developer (owner, 2026-10-12: "redesign this better").
@@ -38,6 +38,15 @@ export function OutreachComposer() {
   const fromAddress = useField<string | null>({ path: "fromAddress" });
   const customNote = useField<string | null>({ path: "customNote" });
   const lead = useField<number | string | null>({ path: "lead" });
+  const status = useField<string | null>({ path: "status" });
+  const subject = useField<string | null>({ path: "subject" });
+  const sentHtml = useField<string | null>({ path: "sentHtml" });
+  const sentAt = useField<string | null>({ path: "sentAt" });
+  const clickCount = useField<number | null>({ path: "clickCount" });
+  const lastClickedAt = useField<string | null>({ path: "lastClickedAt" });
+  const { submit } = useForm();
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const [developers, setDevelopers] = useState<Option[]>([]);
   const [listings, setListings] = useState<Option[]>([]);
@@ -111,6 +120,35 @@ export function OutreachComposer() {
         setTimeout(() => window.location.reload(), 1800);
       }
     } finally { setBusy(false); }
+  }
+
+  const wasSent = Boolean(id) && status.value !== null && status.value !== undefined && status.value !== "draft" && Boolean(sentHtml.value);
+  const when = (iso?: string | null) => (iso ? new Date(iso).toLocaleString("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "");
+  if (wasSent && !editing) {
+    const clicks = clickCount.value ?? 0;
+    return (
+      <div style={{ marginBottom: 24 }}>
+        <div style={{ ...card, borderLeft: "4px solid #16a34a" }}>
+          <h3 style={{ margin: "0 0 6px", fontSize: 18 }}>✓ Sent to {toEmail.value || "the developer"}</h3>
+          <p style={{ margin: 0, opacity: 0.75 }}>{when(sentAt.value)} · from {from}</p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 12, margin: "16px 0" }}>
+            {[["Clicks", clicks ? String(clicks) : "none yet"], ["Last click", clicks ? when(lastClickedAt.value) || "—" : "—"], ["Status", (status.value ?? "").replace("_", " ")]].map(([k, v]) => (
+              <div key={k} style={{ border: line, padding: "8px 14px", minWidth: 120 }}>
+                <div style={{ fontSize: 12, opacity: 0.65 }}>{k}</div>
+                <div style={{ fontSize: 16, fontWeight: 700 }}>{v}</div>
+              </div>
+            ))}
+          </div>
+          <p style={help}>Change the status to Replied or No reply on the “Results &amp; details” tab, then press Save.</p>
+          <button type="button" className="btn btn--style-secondary" onClick={() => setEditing(true)}>Edit and send again</button>
+        </div>
+        <section style={card}>
+          <h3 style={{ margin: "0 0 10px", fontSize: 16 }}>The email as it was sent</h3>
+          <p style={{ margin: "0 0 10px", fontSize: 14 }}><span style={{ opacity: 0.6 }}>Subject </span><strong>{subject.value}</strong></p>
+          <iframe title="Sent email" srcDoc={sentHtml.value ?? ""} sandbox="" style={{ width: "100%", height: 520, border: line, background: "#fff" }} />
+        </section>
+      </div>
+    );
   }
 
   const ready = Boolean(id && devId && template.value && toEmail.value && (!needsLead || leadId));
@@ -218,6 +256,11 @@ export function OutreachComposer() {
               <button type="button" className="btn btn--style-primary" disabled={busy || !ready} onClick={send} style={{ width: "100%" }}>
                 {busy ? "Sending…" : "Send this email"}
               </button>
+              {!id ? (
+                <button type="button" className="btn btn--style-secondary" disabled={saving} onClick={async () => { setSaving(true); try { await submit(); } finally { setSaving(false); } }} style={{ width: "100%", marginTop: 8 }}>
+                  {saving ? "Saving…" : "Save draft (creates the tracked links)"}
+                </button>
+              ) : null}
               {missing ? <p style={help}>{missing}</p> : null}
               {preview && preview.live === false ? <p style={help}>Test mode: sending from this session goes to the test inbox only.</p> : null}
               {message ? <p style={{ margin: "10px 0 0" }}>{message}</p> : null}
