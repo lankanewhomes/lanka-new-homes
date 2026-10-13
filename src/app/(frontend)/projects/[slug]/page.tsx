@@ -52,8 +52,10 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
   // The root layout appends " | LankaNewHomes"; keep the whole title within ~60 characters.
   const titleBudget = 60 - " | LankaNewHomes".length;
   const shortTitle = `${project.name} - New ${homeLabel}`;
-  const title = fullTitle.length <= titleBudget ? fullTitle : shortTitle.length <= titleBudget ? shortTitle : `${project.name.slice(0, titleBudget - 1).trimEnd()}…`;
-  const description = `${project.summary} Starting from ${typeof project.priceRange === "string" ? project.priceRange.replace(/^\s*from\s+/i, "") : project.priceRange}. Explore floor plans, amenities, and availability.`;
+  // An SEO title / description typed in the CMS (SEO tab) wins over the generated ones.
+  const title = project.seoTitle?.trim() || (fullTitle.length <= titleBudget ? fullTitle : shortTitle.length <= titleBudget ? shortTitle : `${project.name.slice(0, titleBudget - 1).trimEnd()}…`);
+  const generatedDescription = `${project.summary} Starting from ${typeof project.priceRange === "string" ? project.priceRange.replace(/^\s*from\s+/i, "") : project.priceRange}. Explore floor plans, amenities, and availability.`;
+  const description = project.seoDescription?.trim() || generatedDescription;
   const canonicalPath = `/projects/${project.slug}`;
 
   return withSocial({
