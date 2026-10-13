@@ -1,6 +1,7 @@
 import crypto from 'node:crypto'
 import type { CollectionConfig } from 'payload'
 import { adminOnly, hiddenUnlessAdmin } from './access'
+import { OUTREACH_SENDERS, OUTREACH_TEMPLATES } from '../lib/outreach-templates'
 
 // Always the public domain: these links are pasted into real emails, even when the row is created from a local session.
 const SITE = 'https://www.lankanewhomes.com'
@@ -63,8 +64,16 @@ export const Outreach: CollectionConfig = {
   fields: [
     { name: 'developer', type: 'relationship', relationTo: 'developers', index: true },
     { name: 'developerName', type: 'text', label: 'Company', index: true, admin: { readOnly: true, description: 'Filled in from the developer you pick.' } },
-    { name: 'recipient', type: 'text', label: 'Sent to', admin: { description: 'Name and/or email address, e.g. "Erwan (contact@maisonceylon.com)".' } },
-    { name: 'subject', type: 'text', required: true },
+    { name: 'recipient', type: 'text', label: 'Sent to', admin: { description: 'Name and/or email address, e.g. "Erwan (contact@maisonceylon.com)". Filled in automatically when you send from here.' } },
+    // Send from the CMS (owner, 2026-10-12): pick a template, see it, press Send. Save the row first so its tracked links exist.
+    { name: 'template', type: 'select', options: OUTREACH_TEMPLATES.map((t) => ({ label: t.label, value: t.id })), admin: { description: 'Pick an email template, then check the preview below.' } },
+    { name: 'contactName', type: 'text', label: 'Contact first name', admin: { description: 'Used in "Hi ___,".' } },
+    { name: 'toEmail', type: 'email', label: 'Send to (email address)' },
+    { name: 'fromAddress', type: 'select', label: 'Send from', defaultValue: 'developers@lankanewhomes.com', options: OUTREACH_SENDERS.map((s) => ({ label: s.label, value: s.value })) },
+    { name: 'customNote', type: 'textarea', label: 'Extra note (optional)', admin: { description: 'Added right after the greeting. Leave empty to send the template as is. Do not mention pricing.' } },
+    { name: 'sendPanel', type: 'ui', admin: { components: { Field: '@/components/payload/OutreachSendPanel#OutreachSendPanel' } } },
+    { name: 'resendId', type: 'text', label: 'Resend ID', admin: { readOnly: true, position: 'sidebar' } },
+    { name: 'subject', type: 'text', admin: { description: 'Filled in from the template when you send. Type one yourself for emails you send from Zoho.' } },
     { name: 'sentAt', type: 'date', label: 'Sent on', defaultValue: () => new Date().toISOString(), index: true, admin: { date: { pickerAppearance: 'dayAndTime' } } },
     {
       name: 'channel',

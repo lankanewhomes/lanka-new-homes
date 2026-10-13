@@ -7429,10 +7429,28 @@ export interface Outreach {
    */
   developerName?: string | null;
   /**
-   * Name and/or email address, e.g. "Erwan (contact@maisonceylon.com)".
+   * Name and/or email address, e.g. "Erwan (contact@maisonceylon.com)". Filled in automatically when you send from here.
    */
   recipient?: string | null;
-  subject: string;
+  /**
+   * Pick an email template, then check the preview below.
+   */
+  template?: ('listing-update' | 'verify-company' | 'complete-profile') | null;
+  /**
+   * Used in "Hi ___,".
+   */
+  contactName?: string | null;
+  toEmail?: string | null;
+  fromAddress?: ('developers@lankanewhomes.com' | 'support@lankanewhomes.com' | 'sales@lankanewhomes.com') | null;
+  /**
+   * Added right after the greeting. Leave empty to send the template as is. Do not mention pricing.
+   */
+  customNote?: string | null;
+  resendId?: string | null;
+  /**
+   * Filled in from the template when you send. Type one yourself for emails you send from Zoho.
+   */
+  subject?: string | null;
   sentAt?: string | null;
   channel?: ('zoho' | 'resend') | null;
   status?: ('draft' | 'sent' | 'clicked' | 'replied' | 'no_reply') | null;
@@ -9232,6 +9250,12 @@ export interface OutreachSelect<T extends boolean = true> {
   developer?: T;
   developerName?: T;
   recipient?: T;
+  template?: T;
+  contactName?: T;
+  toEmail?: T;
+  fromAddress?: T;
+  customNote?: T;
+  resendId?: T;
   subject?: T;
   sentAt?: T;
   channel?: T;
