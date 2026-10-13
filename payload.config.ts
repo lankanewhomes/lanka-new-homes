@@ -34,6 +34,10 @@ import { SavedListings } from './src/collections/SavedListings'
 import { SeoKeywords } from './src/collections/SeoKeywords'
 import { ListingTodos } from './src/collections/ListingTodos'
 import { Outreach } from './src/collections/Outreach'
+import { MailAccounts } from './src/collections/MailAccounts'
+import { MailFolders } from './src/collections/MailFolders'
+import { MailMessages } from './src/collections/MailMessages'
+import { MailSyncState } from './src/collections/MailSyncState'
 import { SocialAssets } from './src/collections/SocialAssets'
 import { SocialPosts } from './src/collections/SocialPosts'
 import { Subscriptions } from './src/collections/Subscriptions'
@@ -137,6 +141,15 @@ export default buildConfig({
           Component: '@/components/payload/BillingOverview#BillingOverview',
           path: '/billing',
         },
+        // Gmail-style inbox for the Zoho mailboxes (admin only) — see src/components/mail/MailApp.tsx and src/lib/mail/.
+        mail: {
+          Component: '@/components/payload/MailView#MailView',
+          path: '/mail',
+        },
+        mailSettings: {
+          Component: '@/components/payload/MailSettingsView#MailSettingsView',
+          path: '/mail/settings',
+        },
         // A developer's own subscriptions across all their projects — see
         // MyBilling.tsx.
         myBilling: {
@@ -170,6 +183,10 @@ export default buildConfig({
     SeoKeywords,
     ListingTodos,
     Outreach,
+    MailAccounts,
+    MailFolders,
+    MailMessages,
+    MailSyncState,
     Subscriptions,
     Leads,
     Reviews,

@@ -91,6 +91,8 @@ import { ImportListing as ImportListing_ce25d0c3f088e28836c6e36f3beaffcc } from 
 import { LeadActivity as LeadActivity_260e16162a752a0a1f35c87c01736fa5 } from '@/components/payload/LeadActivity'
 import { PlacementPicker as PlacementPicker_6da902505ef4c3d4a54d1cfe2cf4f5b4 } from '@/components/payload/PlacementPicker'
 import { BillingOverview as BillingOverview_8d12fda3ab5b8d03d5543a2aad9c7cc7 } from '@/components/payload/BillingOverview'
+import { MailView as MailView_accfabfcb995c16a2ca3342b4eacc7af } from '@/components/payload/MailView'
+import { MailSettingsView as MailSettingsView_9a4975bac344e0f45553335396d41cf4 } from '@/components/payload/MailSettingsView'
 import { MyBilling as MyBilling_6c137d812229ce58ebadbf9b45fcfca5 } from '@/components/payload/MyBilling'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
@@ -189,6 +191,8 @@ export const importMap = {
   "@/components/payload/LeadActivity#LeadActivity": LeadActivity_260e16162a752a0a1f35c87c01736fa5,
   "@/components/payload/PlacementPicker#PlacementPicker": PlacementPicker_6da902505ef4c3d4a54d1cfe2cf4f5b4,
   "@/components/payload/BillingOverview#BillingOverview": BillingOverview_8d12fda3ab5b8d03d5543a2aad9c7cc7,
+  "@/components/payload/MailView#MailView": MailView_accfabfcb995c16a2ca3342b4eacc7af,
+  "@/components/payload/MailSettingsView#MailSettingsView": MailSettingsView_9a4975bac344e0f45553335396d41cf4,
   "@/components/payload/MyBilling#MyBilling": MyBilling_6c137d812229ce58ebadbf9b45fcfca5,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

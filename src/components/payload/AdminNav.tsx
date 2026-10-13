@@ -14,6 +14,7 @@ import {
   LayoutDashboard,
   ListChecks,
   MapPin,
+  Mail,
   MapPinned,
   Megaphone,
   MessageCircle,
@@ -103,6 +104,14 @@ const SECTIONS: { label: string; items: NavItem[] }[] = [
       { slug: "social-assets", kind: "collection", label: "Social Assets", href: "/cms/collections/social-assets", icon: GalleryHorizontal },
       { slug: "seo-keywords", kind: "collection", label: "SEO Keywords", href: "/cms/collections/seo-keywords", icon: Search },
       { slug: "placement-pricing", kind: "collection", label: "Placement Pricing", href: "/cms/collections/placement-pricing", icon: Tag },
+    ],
+  },
+  {
+    label: "Mail",
+    items: [
+      { slug: "mail", kind: "view", roles: ["admin"], label: "Inbox", href: "/cms/mail", icon: Mail },
+      { slug: "mail-settings", kind: "view", roles: ["admin"], label: "Connection status", href: "/cms/mail/settings", icon: Settings },
+      { slug: "mail-accounts", kind: "collection", label: "Mailboxes", href: "/cms/collections/mail-accounts", icon: Users },
     ],
   },
   {

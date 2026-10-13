@@ -85,6 +85,10 @@ export interface Config {
     'seo-keywords': SeoKeyword;
     'listing-todos': ListingTodo;
     outreach: Outreach;
+    'mail-accounts': MailAccount;
+    'mail-folders': MailFolder;
+    'mail-messages': MailMessage;
+    'mail-sync-state': MailSyncState;
     subscriptions: Subscription;
     leads: Lead;
     reviews: Review;
@@ -128,6 +132,10 @@ export interface Config {
     'seo-keywords': SeoKeywordsSelect<false> | SeoKeywordsSelect<true>;
     'listing-todos': ListingTodosSelect<false> | ListingTodosSelect<true>;
     outreach: OutreachSelect<false> | OutreachSelect<true>;
+    'mail-accounts': MailAccountsSelect<false> | MailAccountsSelect<true>;
+    'mail-folders': MailFoldersSelect<false> | MailFoldersSelect<true>;
+    'mail-messages': MailMessagesSelect<false> | MailMessagesSelect<true>;
+    'mail-sync-state': MailSyncStateSelect<false> | MailSyncStateSelect<true>;
     subscriptions: SubscriptionsSelect<false> | SubscriptionsSelect<true>;
     leads: LeadsSelect<false> | LeadsSelect<true>;
     reviews: ReviewsSelect<false> | ReviewsSelect<true>;
@@ -3334,7 +3342,10 @@ export interface Project {
           | 'Laundry Service'
           | 'Cafe'
           | 'Outdoor Multipurpose Court'
-          | 'Ambalama Gathering Space';
+          | 'Ambalama Gathering Space'
+          | 'Shared Office'
+          | 'Reception & Lobby'
+          | 'Boutique Shops';
         /**
          * The developer's own one- or two-sentence description of this amenity, as published. Blank = the standard line is shown.
          */
@@ -7017,7 +7028,10 @@ export interface Land {
           | 'Laundry Service'
           | 'Cafe'
           | 'Outdoor Multipurpose Court'
-          | 'Ambalama Gathering Space';
+          | 'Ambalama Gathering Space'
+          | 'Shared Office'
+          | 'Reception & Lobby'
+          | 'Boutique Shops';
         /**
          * The developer's own one- or two-sentence description of this amenity, as published. Blank = the standard line is shown.
          */
@@ -7600,6 +7614,162 @@ export interface Lead {
   createdAt: string;
 }
 /**
+ * The Zoho mailboxes shown in the CMS mail client. Open the client at /cms/mail.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "mail-accounts".
+ */
+export interface MailAccount {
+  id: number;
+  email: string;
+  displayName?: string | null;
+  /**
+   * Filled in automatically from Zoho.
+   */
+  zohoAccountId?: string | null;
+  /**
+   * mock or zoho: which provider filled the cached mail.
+   */
+  source?: string | null;
+  /**
+   * HTML signature added to new messages sent from this mailbox.
+   */
+  signature?: string | null;
+  /**
+   * Tag colour in the message list, e.g. #2563eb.
+   */
+  color?: string | null;
+  active?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "mail-folders".
+ */
+export interface MailFolder {
+  id: number;
+  account: number | MailAccount;
+  zohoFolderId: string;
+  name: string;
+  type: 'inbox' | 'sent' | 'drafts' | 'spam' | 'trash' | 'archive' | 'custom';
+  unreadCount?: number | null;
+  totalCount?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "mail-messages".
+ */
+export interface MailMessage {
+  id: number;
+  /**
+   * <zohoAccountId>:<zohoMessageId>, so one Zoho message is one row.
+   */
+  messageKey: string;
+  account: number | MailAccount;
+  folder: number | MailFolder;
+  zohoMessageId: string;
+  threadId?: string | null;
+  fromName?: string | null;
+  fromEmail?: string | null;
+  toAddresses?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  ccAddresses?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  bccAddresses?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  subject?: string | null;
+  snippet?: string | null;
+  /**
+   * Fetched when the message is first opened, then cached.
+   */
+  htmlBody?: string | null;
+  bodyFetchedAt?: string | null;
+  hasAttachments?: boolean | null;
+  attachments?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  isRead?: boolean | null;
+  isStarred?: boolean | null;
+  receivedAt?: string | null;
+  labels?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "mail-sync-state".
+ */
+export interface MailSyncState {
+  id: number;
+  account: number | MailAccount;
+  folder?: (number | null) | MailFolder;
+  /**
+   * Empty on the account-level row.
+   */
+  zohoFolderId?: string | null;
+  importStatus?: ('pending' | 'running' | 'complete' | 'error') | null;
+  /**
+   * Where the full import resumes (messages already imported, newest first).
+   */
+  importOffset?: number | null;
+  importedCount?: number | null;
+  totalCount?: number | null;
+  /**
+   * Rotating window used to spot older changes and deletions.
+   */
+  reconcileOffset?: number | null;
+  /**
+   * Newest message seen in this folder.
+   */
+  lastMessageAt?: string | null;
+  lastSyncedAt?: string | null;
+  /**
+   * Account-level row: another sync is running until this time.
+   */
+  lockedUntil?: string | null;
+  lastError?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "subscriptions".
  */
@@ -7955,6 +8125,22 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'outreach';
         value: number | Outreach;
+      } | null)
+    | ({
+        relationTo: 'mail-accounts';
+        value: number | MailAccount;
+      } | null)
+    | ({
+        relationTo: 'mail-folders';
+        value: number | MailFolder;
+      } | null)
+    | ({
+        relationTo: 'mail-messages';
+        value: number | MailMessage;
+      } | null)
+    | ({
+        relationTo: 'mail-sync-state';
+        value: number | MailSyncState;
       } | null)
     | ({
         relationTo: 'subscriptions';
@@ -9348,6 +9534,83 @@ export interface OutreachSelect<T extends boolean = true> {
   notes?: T;
   code?: T;
   resendId?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "mail-accounts_select".
+ */
+export interface MailAccountsSelect<T extends boolean = true> {
+  email?: T;
+  displayName?: T;
+  zohoAccountId?: T;
+  source?: T;
+  signature?: T;
+  color?: T;
+  active?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "mail-folders_select".
+ */
+export interface MailFoldersSelect<T extends boolean = true> {
+  account?: T;
+  zohoFolderId?: T;
+  name?: T;
+  type?: T;
+  unreadCount?: T;
+  totalCount?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "mail-messages_select".
+ */
+export interface MailMessagesSelect<T extends boolean = true> {
+  messageKey?: T;
+  account?: T;
+  folder?: T;
+  zohoMessageId?: T;
+  threadId?: T;
+  fromName?: T;
+  fromEmail?: T;
+  toAddresses?: T;
+  ccAddresses?: T;
+  bccAddresses?: T;
+  subject?: T;
+  snippet?: T;
+  htmlBody?: T;
+  bodyFetchedAt?: T;
+  hasAttachments?: T;
+  attachments?: T;
+  isRead?: T;
+  isStarred?: T;
+  receivedAt?: T;
+  labels?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "mail-sync-state_select".
+ */
+export interface MailSyncStateSelect<T extends boolean = true> {
+  account?: T;
+  folder?: T;
+  zohoFolderId?: T;
+  importStatus?: T;
+  importOffset?: T;
+  importedCount?: T;
+  totalCount?: T;
+  reconcileOffset?: T;
+  lastMessageAt?: T;
+  lastSyncedAt?: T;
+  lockedUntil?: T;
+  lastError?: T;
   updatedAt?: T;
   createdAt?: T;
 }
