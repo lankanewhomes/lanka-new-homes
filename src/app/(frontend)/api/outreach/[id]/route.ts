@@ -12,13 +12,17 @@ export const dynamic = "force-dynamic";
 const SITE = "https://www.lankanewhomes.com";
 const isTemplate = (v: unknown): v is OutreachTemplateId => OUTREACH_TEMPLATES.some((t) => t.id === v);
 
-async function load(request: Request, id: string) {
+async function load(request: Request, id: string, override?: { developerId?: string | null; projectIds?: string[] | null }) {
   const payload = await getPayload({ config });
   const { user } = await payload.auth({ headers: request.headers });
   if ((user as any)?.role !== "admin") return { error: NextResponse.json({ error: "Admins only." }, { status: 403 }) };
   const row = (await payload.findByID({ collection: "outreach", id, depth: 0, overrideAccess: true }).catch(() => null)) as any;
   if (!row) return { error: NextResponse.json({ error: "Save this row first." }, { status: 404 }) };
-  const projectIds: number[] = (row.projects ?? []).map((p: any) => (typeof p === "object" ? p.id : p));
+  if (override?.developerId) {
+    const dev = (await payload.findByID({ collection: "developers", id: override.developerId, depth: 0, select: { name: true }, overrideAccess: true }).catch(() => null)) as any;
+    if (dev) row.developerName = dev.name;
+  }
+  const projectIds: (number | string)[] = override?.projectIds ?? (row.projects ?? []).map((p: any) => (typeof p === "object" ? p.id : p));
   const projects = projectIds.length
     ? ((await payload.find({ collection: "projects", where: { id: { in: projectIds } }, depth: 0, limit: 20, select: { name: true, slug: true }, overrideAccess: true })).docs as any[])
     : [];
@@ -39,9 +43,9 @@ function render(row: any, projects: any[], input: { template: unknown; contactNa
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const loaded = await load(request, id);
-  if ("error" in loaded) return loaded.error;
   const url = new URL(request.url);
+  const loaded = await load(request, id, { developerId: url.searchParams.get("developerId"), projectIds: url.searchParams.has("projectIds") ? url.searchParams.get("projectIds")!.split(",").filter(Boolean) : null });
+  if ("error" in loaded) return loaded.error;
   const email = render(loaded.row, loaded.projects, { template: url.searchParams.get("template"), contactName: url.searchParams.get("contactName") ?? "", note: url.searchParams.get("note") ?? "" });
   if (!email) return NextResponse.json({ error: "Pick a template." }, { status: 400 });
   return NextResponse.json({ subject: email.subject, html: email.html, live: isProductionDeployment() });
@@ -49,10 +53,10 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const loaded = await load(request, id);
+  const body = await request.json().catch(() => ({}));
+  const loaded = await load(request, id, { developerId: body.developerId ? String(body.developerId) : null, projectIds: Array.isArray(body.projectIds) ? body.projectIds.map(String) : null });
   if ("error" in loaded) return loaded.error;
   const { payload, row, projects } = loaded;
-  const body = await request.json().catch(() => ({}));
   const to = typeof body.toEmail === "string" ? body.toEmail.trim() : "";
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(to)) return NextResponse.json({ error: "Enter a valid email address to send to." }, { status: 400 });
   const from = OUTREACH_SENDERS.find((s) => s.value === body.fromAddress)?.value ?? OUTREACH_SENDERS[0].value;
@@ -76,6 +80,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     id: row.id,
     overrideAccess: true,
     data: {
+      ...(body.developerId ? { developer: Number(body.developerId) } : {}),
+      ...(Array.isArray(body.projectIds) ? { projects: body.projectIds.map(Number) } : {}),
       template: body.template,
       contactName: body.contactName ?? null,
       toEmail: to,

@@ -7423,27 +7423,12 @@ export interface ListingTodo {
  */
 export interface Outreach {
   id: number;
-  /**
-   * Who is this email for?
-   */
   developer?: (number | null) | Developer;
-  /**
-   * Each listing you pick gets its own tracked link in the email.
-   */
   projects?: (number | Project)[] | null;
-  /**
-   * The preview below shows the exact email.
-   */
   template?: ('listing-update' | 'verify-company' | 'complete-profile') | null;
-  /**
-   * Used in "Hi ___,".
-   */
   contactName?: string | null;
   toEmail?: string | null;
   fromAddress?: ('developers@lankanewhomes.com' | 'support@lankanewhomes.com') | null;
-  /**
-   * Added right after the greeting. Leave empty to send the template as is. Do not mention pricing.
-   */
   customNote?: string | null;
   /**
    * Updates itself on send and on click. Change it by hand for Replied / No reply.

@@ -70,19 +70,16 @@ export const Outreach: CollectionConfig = {
           label: 'Write & send',
           fields: [
             { name: 'summary', type: 'ui', admin: { components: { Field: '@/components/payload/OutreachSummary#OutreachSummary' } } },
-            { name: 'developer', type: 'relationship', relationTo: 'developers', index: true, label: '1. Company', admin: { description: 'Who is this email for?' } },
-            { name: 'projects', type: 'relationship', relationTo: 'projects', hasMany: true, label: 'Listings to mention (optional)', admin: { description: 'Each listing you pick gets its own tracked link in the email.' } },
-            { name: 'template', type: 'select', label: '2. Template', options: OUTREACH_TEMPLATES.map((t) => ({ label: t.label, value: t.id })), admin: { description: 'The preview below shows the exact email.' } },
-            {
-              type: 'row',
-              fields: [
-                { name: 'contactName', type: 'text', label: '3. Contact first name', admin: { description: 'Used in "Hi ___,".', width: '50%' } },
-                { name: 'toEmail', type: 'email', label: 'Their email address', admin: { width: '50%' } },
-              ],
-            },
-            { name: 'fromAddress', type: 'select', label: 'Send from', defaultValue: 'developers@lankanewhomes.com', options: OUTREACH_SENDERS.map((s) => ({ label: s.label, value: s.value })) },
-            { name: 'customNote', type: 'textarea', label: 'Extra note (optional)', admin: { description: 'Added right after the greeting. Leave empty to send the template as is. Do not mention pricing.' } },
-            { name: 'sendPanel', type: 'ui', admin: { components: { Field: '@/components/payload/OutreachSendPanel#OutreachSendPanel' } } },
+            // The composer (OutreachComposer) draws one friendly screen for these seven fields and writes to them with useField;
+            // the plain Payload inputs are hidden so nothing shows twice.
+            { name: 'developer', type: 'relationship', relationTo: 'developers', index: true, admin: { hidden: true } },
+            { name: 'projects', type: 'relationship', relationTo: 'projects', hasMany: true, admin: { hidden: true } },
+            { name: 'template', type: 'select', options: OUTREACH_TEMPLATES.map((t) => ({ label: t.label, value: t.id })), admin: { hidden: true } },
+            { name: 'contactName', type: 'text', admin: { hidden: true } },
+            { name: 'toEmail', type: 'email', admin: { hidden: true } },
+            { name: 'fromAddress', type: 'select', defaultValue: 'developers@lankanewhomes.com', options: OUTREACH_SENDERS.map((s) => ({ label: s.label, value: s.value })), admin: { hidden: true } },
+            { name: 'customNote', type: 'textarea', admin: { hidden: true } },
+            { name: 'composer', type: 'ui', admin: { components: { Field: '@/components/payload/OutreachComposer#OutreachComposer' } } },
           ],
         },
         {
