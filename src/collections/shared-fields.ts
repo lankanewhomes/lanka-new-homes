@@ -1,4 +1,4 @@
-import type { CollectionAfterChangeHook, CollectionAfterDeleteHook, CollectionConfig, Field } from 'payload'
+import type { CollectionAfterChangeHook, CollectionAfterDeleteHook, CollectionConfig, Field, Tab } from 'payload'
 import { adminOnly, hiddenUnlessAdmin, publicRead } from './access'
 import cities from '../data/cities.json'
 
@@ -616,4 +616,26 @@ export function directoryCollection(
     hooks: { afterChange: afterChangeHooks, afterDelete: afterDeleteHooks },
     fields: groupCompanyFields(companyProfileFields(extraFields)),
   }
+}
+
+// Backend-only list of the source links the owner has shared for a listing / company (developer site, brochure PDFs, videos,
+// map pins, third-party pages). Admin-only tab; never read by the public site and not mirrored to Supabase (owner, 2026-10-12:
+// "save all the links in the CMS for each project ... in the backend, not the front end").
+export const referenceLinksTab: Tab = {
+  label: 'Reference links',
+  admin: { condition: (_data, _siblingData, { user }) => (user as { role?: string } | null)?.role === 'admin' },
+  fields: [
+    {
+      name: 'referenceLinks',
+      type: 'array',
+      label: 'Links the owner shared',
+      access: { read: ({ req }) => (req.user as { role?: string } | null)?.role === 'admin', update: ({ req }) => (req.user as { role?: string } | null)?.role === 'admin' },
+      admin: { description: "Internal only. Where this listing's information came from: developer site, brochure PDF, video, map pin, third-party page." },
+      fields: [
+        { name: 'label', type: 'text', required: true, admin: { description: 'What it is, e.g. "Brochure PDF", "Developer site", "Google Maps pin".' } },
+        { name: 'url', type: 'text', required: true },
+        { name: 'note', type: 'text', admin: { description: 'Optional: date shared, what to check there.' } },
+      ],
+    },
+  ],
 }

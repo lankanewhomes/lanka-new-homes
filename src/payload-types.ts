@@ -385,6 +385,23 @@ export interface Developer {
     totalDocs?: number;
   };
   /**
+   * Internal only. Where this listing's information came from: developer site, brochure PDF, video, map pin, third-party page.
+   */
+  referenceLinks?:
+    | {
+        /**
+         * What it is, e.g. "Brochure PDF", "Developer site", "Google Maps pin".
+         */
+        label: string;
+        url: string;
+        /**
+         * Optional: date shared, what to check there.
+         */
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
    * What Google and social apps show for this page. Everything is optional — blank fields fall back to the page name and text.
    */
   seo?: {
@@ -3857,6 +3874,23 @@ export interface Project {
     autoPost?: boolean | null;
   };
   /**
+   * Internal only. Where this listing's information came from: developer site, brochure PDF, video, map pin, third-party page.
+   */
+  referenceLinks?:
+    | {
+        /**
+         * What it is, e.g. "Brochure PDF", "Developer site", "Google Maps pin".
+         */
+        label: string;
+        url: string;
+        /**
+         * Optional: date shared, what to check there.
+         */
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
    * What Google and social apps show for this page. Everything is optional — blank fields fall back to the page name and text.
    */
   seo?: {
@@ -7210,6 +7244,23 @@ export interface Land {
     hours?: string | null;
   };
   /**
+   * Internal only. Where this listing's information came from: developer site, brochure PDF, video, map pin, third-party page.
+   */
+  referenceLinks?:
+    | {
+        /**
+         * What it is, e.g. "Brochure PDF", "Developer site", "Google Maps pin".
+         */
+        label: string;
+        url: string;
+        /**
+         * Optional: date shared, what to check there.
+         */
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
    * What Google and social apps show for this page. Everything is optional — blank fields fall back to the page name and text.
    */
   seo?: {
@@ -8115,6 +8166,14 @@ export interface DevelopersSelect<T extends boolean = true> {
   user?: T;
   projects?: T;
   team_members?: T;
+  referenceLinks?:
+    | T
+    | {
+        label?: T;
+        url?: T;
+        note?: T;
+        id?: T;
+      };
   seo?:
     | T
     | {
@@ -8554,6 +8613,14 @@ export interface ProjectsSelect<T extends boolean = true> {
         caption?: T;
         autoPost?: T;
       };
+  referenceLinks?:
+    | T
+    | {
+        label?: T;
+        url?: T;
+        note?: T;
+        id?: T;
+      };
   seo?:
     | T
     | {
@@ -8724,6 +8791,14 @@ export interface LandsSelect<T extends boolean = true> {
         phone?: T;
         address?: T;
         hours?: T;
+      };
+  referenceLinks?:
+    | T
+    | {
+        label?: T;
+        url?: T;
+        note?: T;
+        id?: T;
       };
   seo?:
     | T

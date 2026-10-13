@@ -27,6 +27,7 @@ import {
   PROJECT_TYPE_OPTIONS,
   PROVINCE_OPTIONS,
   SECURITY_OPTIONS,
+  referenceLinksTab,
   seoFields,
   selectWithOther,
   socialLinksField,
@@ -753,6 +754,7 @@ export const Projects: CollectionConfig = {
             },
           ],
         },
+        referenceLinksTab,
         {
           label: 'SEO',
           fields: [seoFields],

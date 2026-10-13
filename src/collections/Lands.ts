@@ -13,6 +13,7 @@ import {
   nearbyField,
   PROVINCE_OPTIONS,
   ROAD_ACCESS_OPTIONS,
+  referenceLinksTab,
   seoFields,
   selectWithOther,
   textDropdown,
@@ -249,6 +250,7 @@ export const Lands: CollectionConfig = {
           label: 'Location & Contact',
           fields: [coordinatesField, contactField],
         },
+        referenceLinksTab,
         {
           label: 'SEO',
           fields: [seoFields],
