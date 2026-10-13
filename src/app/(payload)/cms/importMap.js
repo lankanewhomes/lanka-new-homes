@@ -43,6 +43,7 @@ import { OutreachComposer as OutreachComposer_87523fca1ce5e2f1376c49c3508d4905 }
 import { OutreachStatusCell as OutreachStatusCell_5fb5ee345f195408a5a449f0da592961 } from '@/components/payload/OutreachCells'
 import { OutreachClicksCell as OutreachClicksCell_5fb5ee345f195408a5a449f0da592961 } from '@/components/payload/OutreachCells'
 import { OutreachCompanyCell as OutreachCompanyCell_5fb5ee345f195408a5a449f0da592961 } from '@/components/payload/OutreachCells'
+import { OutreachStats as OutreachStats_ec7b5fd066b792deb337389f245a1a55 } from '@/components/payload/OutreachStats'
 import { SubscriptionsList as SubscriptionsList_2dc33570c131e8faf2f1046801145d72 } from '@/components/payload/SubscriptionsList'
 import { RatingCell as RatingCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
 import { AnalyticsDashboard as AnalyticsDashboard_16ddde46401d8b8f0e062ed5c8fb8520 } from '@/components/payload/AnalyticsDashboard'
@@ -140,6 +141,7 @@ export const importMap = {
   "@/components/payload/OutreachCells#OutreachStatusCell": OutreachStatusCell_5fb5ee345f195408a5a449f0da592961,
   "@/components/payload/OutreachCells#OutreachClicksCell": OutreachClicksCell_5fb5ee345f195408a5a449f0da592961,
   "@/components/payload/OutreachCells#OutreachCompanyCell": OutreachCompanyCell_5fb5ee345f195408a5a449f0da592961,
+  "@/components/payload/OutreachStats#OutreachStats": OutreachStats_ec7b5fd066b792deb337389f245a1a55,
   "@/components/payload/SubscriptionsList#SubscriptionsList": SubscriptionsList_2dc33570c131e8faf2f1046801145d72,
   "@/components/payload/ListingCells#RatingCell": RatingCell_76baef6cf7c9eb87fad9c61807ea9c87,
   "@/components/payload/AnalyticsDashboard#AnalyticsDashboard": AnalyticsDashboard_16ddde46401d8b8f0e062ed5c8fb8520,

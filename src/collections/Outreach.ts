@@ -25,6 +25,7 @@ export const Outreach: CollectionConfig = {
     useAsTitle: 'subject',
     defaultColumns: ['developerName', 'subject', 'sentAt', 'status', 'clickCount'],
     hidden: hiddenUnlessAdmin,
+    components: { beforeListTable: ['@/components/payload/OutreachStats#OutreachStats'] },
     description: 'Emails you send to developers. Add a row for each email, copy its tracked links into the email, and clicks are counted here.',
   },
   access: { read: adminOnly, create: adminOnly, update: adminOnly, delete: adminOnly },

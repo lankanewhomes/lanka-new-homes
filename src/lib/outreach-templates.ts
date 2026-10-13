@@ -29,33 +29,45 @@ export const OUTREACH_SENDERS = [
 ] as const
 
 const esc = (v: string) => v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
-const P = 'margin:0 0 14px; font-size:15px; line-height:1.6; color:#2b2b29;'
-const A = 'color:#c2410c; text-decoration:underline;'
-const H = 'margin:20px 0 6px; font-size:15px; line-height:1.4; color:#2b2b29;'
+const INK = '#2b2b29'
+const MUTED = '#6b6a66'
+const LINE = '#e4e2db'
+const PAPER = '#faf7f2'
+const ACCENT = '#c2410c'
+const P = `margin:0 0 16px; font-size:15px; line-height:1.65; color:${INK};`
 
-const a = (href: string, text: string) => `<a href="${href}" style="${A}">${esc(text)}</a>`
-const ul = (items: string[]) => `<ul style="margin:0 0 14px; padding-left:22px; font-size:15px; line-height:1.6; color:#2b2b29;">${items.map((i) => `<li style="margin:0 0 4px;">${i}</li>`).join('')}</ul>`
+const a = (href: string, text: string) => `<a href="${href}" style="color:${ACCENT}; text-decoration:underline;">${esc(text)}</a>`
+const button = (href: string, text: string) =>
+  `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:14px 0 4px;"><tr><td style="background:${ACCENT}; border-radius:4px;"><a href="${href}" style="display:inline-block; padding:11px 22px; font-size:14px; font-weight:700; color:#ffffff; text-decoration:none;">${esc(text)}</a></td></tr></table>`
 
-function verifyBlock(ctx: OutreachContext) {
-  return [
-    `<p style="${H}"><strong>Get the free Verified Developer badge (about a minute)</strong></p>`,
-    ul([
-      `${a(ctx.link('/developers/login'), 'Sign in to your LankaNewHomes account')} (or ${a(ctx.link('/developers/register'), 'create one')} if you do not have it yet).`,
-      `Open your company profile in the ${a(ctx.link('/cms'), 'dashboard')} and use the "Verified Developer" panel to confirm an email address on your company domain.`,
-      'We email you a one-time link. Click it and the "✓ Verified Developer" badge appears on your profile and on every listing.',
-    ]),
-  ].join('')
+// A numbered card: a step the developer can act on, with an optional button.
+function stepCard(n: number, title: string, lines: string[], cta?: { href: string; text: string }) {
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 14px; background:${PAPER}; border:1px solid ${LINE};"><tr>
+<td width="52" valign="top" style="padding:18px 0 18px 18px;"><div style="width:30px; height:30px; line-height:30px; border-radius:15px; background:${INK}; color:#ffffff; text-align:center; font-size:14px; font-weight:700;">${n}</div></td>
+<td valign="top" style="padding:16px 18px 16px 10px;"><div style="font-size:16px; font-weight:700; color:${INK}; margin:0 0 6px;">${esc(title)}</div>${lines.map((l) => `<div style="font-size:14px; line-height:1.6; color:${INK}; margin:0 0 6px;">${l}</div>`).join('')}${cta ? button(cta.href, cta.text) : ''}</td>
+</tr></table>`
 }
 
-function completeBlock(ctx: OutreachContext) {
-  return [
-    `<p style="${H}"><strong>Fill in the missing fields</strong></p>`,
-    ul([
-      'Complete listings rank higher in search and get more buyer enquiries.',
-      `Open each project in the ${a(ctx.link('/cms'), 'dashboard')} and fill in any empty fields, for example: construction progress, payment plan, nearby places, extra photos, amenities and unit availability.`,
-      'We can also send you a short list of what is still missing on each listing.',
-    ]),
-  ].join('')
+function verifyStep(ctx: OutreachContext, n: number) {
+  return stepCard(n, 'Get the free Verified Developer badge', [
+    `Takes about a minute. ${a(ctx.link('/developers/login'), 'Sign in')} (or ${a(ctx.link('/developers/register'), 'create an account')}), open your company profile and confirm an email address on your company domain.`,
+    'We email you a one-time link. Click it and the "✓ Verified Developer" badge appears on your profile and on every listing.',
+  ], { href: ctx.link('/cms'), text: 'Open my dashboard' })
+}
+
+function completeStep(ctx: OutreachContext, n: number) {
+  return stepCard(n, 'Fill in the missing fields', [
+    'Complete listings rank higher in search and get more buyer enquiries.',
+    'Open each project and fill in any empty fields, for example: construction progress, payment plan, nearby places, extra photos, amenities and unit availability.',
+    'We can also send you a short list of what is still missing on each listing.',
+  ])
+}
+
+function projectList(ctx: OutreachContext) {
+  if (!ctx.projects.length) return ''
+  return `<p style="${P} margin-bottom:8px;"><strong>Your listings</strong></p><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 20px; border-top:1px solid ${LINE};">${ctx.projects
+    .map((p) => `<tr><td style="padding:10px 0; border-bottom:1px solid ${LINE}; font-size:15px; color:${INK};">${esc(p.name)}</td><td align="right" style="padding:10px 0; border-bottom:1px solid ${LINE}; font-size:14px;">${a(ctx.link(`/projects/${p.slug}`), 'View listing →')}</td></tr>`)
+    .join('')}</table>`
 }
 
 function leadBlock(ctx: OutreachContext) {
@@ -63,20 +75,18 @@ function leadBlock(ctx: OutreachContext) {
   if (!l) return ''
   const when = l.receivedAt ? new Date(l.receivedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Colombo' }) : ''
   const rows: [string, string][] = [
-    ['Name', esc(l.name)],
+    ['Name', `<strong>${esc(l.name)}</strong>`],
     ...(l.phone ? [['Phone', esc(l.phone)] as [string, string]] : []),
-    ...(l.email ? [['Email', `<a href="mailto:${esc(l.email)}" style="${A}">${esc(l.email)}</a>`] as [string, string]] : []),
+    ...(l.email ? [['Email', `<a href="mailto:${esc(l.email)}" style="color:${ACCENT};">${esc(l.email)}</a>`] as [string, string]] : []),
     ...(l.preferred ? [['Prefers', esc(l.preferred)] as [string, string]] : []),
-    ...(l.message ? [['Message', esc(l.message)] as [string, string]] : []),
+    ...(l.message ? [['Message', `“${esc(l.message)}”`] as [string, string]] : []),
     ...(l.place ? [['From', esc(l.place)] as [string, string]] : []),
     ...(when ? [['Received', esc(when)] as [string, string]] : []),
   ]
-  return `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 16px; border:1px solid #e4e2db; background:#faf7f2; width:100%;"><tr><td style="padding:14px 16px; font-size:15px; line-height:1.7; color:#2b2b29;">${rows.map(([k, v]) => `<strong>${k}:</strong> ${v}`).join('<br>')}</td></tr></table>`
-}
-
-function projectList(ctx: OutreachContext) {
-  if (!ctx.projects.length) return ''
-  return `<p style="${P}">Your listings:</p>${ul(ctx.projects.map((p) => a(ctx.link(`/projects/${p.slug}`), p.name)))}`
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 20px; background:${PAPER}; border:1px solid ${LINE}; border-left:4px solid ${ACCENT};"><tr><td style="padding:16px 18px;">
+<div style="font-size:12px; letter-spacing:0.04em; color:${MUTED}; margin:0 0 8px;">BUYER ENQUIRY${l.projectName ? ` · ${esc(l.projectName.toUpperCase())}` : ''}${l.planName ? ` · ${esc(l.planName.toUpperCase())}` : ''}</div>
+<table role="presentation" cellpadding="0" cellspacing="0" style="font-size:14px; line-height:1.6; color:${INK};">${rows.map(([k, v]) => `<tr><td valign="top" style="padding:2px 14px 2px 0; color:${MUTED}; white-space:nowrap;">${k}</td><td style="padding:2px 0;">${v}</td></tr>`).join('')}</table>
+</td></tr></table>`
 }
 
 export function outreachSubject(id: OutreachTemplateId, ctx: Pick<OutreachContext, 'companyName' | 'lead'>): string {
@@ -88,29 +98,40 @@ export function outreachSubject(id: OutreachTemplateId, ctx: Pick<OutreachContex
 }
 
 export function renderOutreachEmail(id: OutreachTemplateId, ctx: OutreachContext): { subject: string; html: string; text: string } {
+  const company = esc(ctx.companyName || 'Your company')
   const greeting = `<p style="${P}">Hi ${esc(ctx.contactName?.trim() || 'there')},</p>`
   const note = ctx.customNote?.trim() ? ctx.customNote.trim().split(/\n{2,}/).map((para) => `<p style="${P}">${esc(para).replace(/\n/g, '<br>')}</p>`).join('') : ''
-  const closing = `<p style="${P}">Let me know if you would like any changes.</p><p style="${P}">Best regards,<br>Rupan<br>LankaNewHomes<br>${a('mailto:developers@lankanewhomes.com', 'developers@lankanewhomes.com')}</p>`
+  const l = ctx.lead
 
+  let heading = ''
   let body = ''
   if (id === 'listing-update') {
-    body = `${note}<p style="${P}">Your listings on LankaNewHomes have been updated.</p>${projectList(ctx)}<p style="${P}">Two quick next steps:</p>${verifyBlock(ctx)}${completeBlock(ctx)}`
+    heading = 'Your listings are updated'
+    body = `${note}<p style="${P}">Your listings on LankaNewHomes have been updated. Two quick things will help buyers trust and find them.</p>${projectList(ctx)}${verifyStep(ctx, 1)}${completeStep(ctx, 2)}`
   } else if (id === 'lead-followup') {
-    const l = ctx.lead
-    body = `${note}<p style="${P}">A buyer asked about <strong>${esc(l?.projectName ?? 'your listing')}</strong>${l?.planName ? ` (${esc(l.planName)})` : ''} on LankaNewHomes, and we do not see a reply yet. We emailed you this enquiry when it came in. Here it is again:</p>${leadBlock(ctx)}<p style="${P}">Buyers usually contact several developers, so a quick reply helps. You can answer straight from the lead email, or open it in your ${a(ctx.link('/cms'), 'dashboard')} and change its status once you have been in touch.</p><p style="${P}">While you are there, two quick things that help you win more enquiries:</p>${verifyBlock(ctx)}${completeBlock(ctx)}`
+    heading = 'A buyer is waiting for your reply'
+    body = `${note}<p style="${P}">A buyer asked about <strong>${esc(l?.projectName ?? 'your listing')}</strong>${l?.planName ? ` (${esc(l.planName)})` : ''} on LankaNewHomes, and we do not see a reply yet. We emailed you this enquiry when it came in. Here it is again:</p>${leadBlock(ctx)}<p style="${P}">Buyers usually contact several developers, so a quick reply helps. You can answer straight from the lead email, or open it in your ${a(ctx.link('/cms'), 'dashboard')} and change its status once you have been in touch.</p><p style="${P} margin-bottom:12px;">While you are there, two quick things help you win more enquiries:</p>${verifyStep(ctx, 1)}${completeStep(ctx, 2)}`
   } else if (id === 'verify-company') {
-    body = `${note}<p style="${P}">${esc(ctx.companyName || 'Your company')} is listed on LankaNewHomes. Confirming your company takes about a minute and is free.</p>${projectList(ctx)}${verifyBlock(ctx)}`
+    heading = 'Get the Verified Developer badge'
+    body = `${note}<p style="${P}">${company} is listed on LankaNewHomes. Confirming your company is free and shows buyers they are dealing with the real developer.</p>${projectList(ctx)}${verifyStep(ctx, 1)}`
   } else {
-    body = `${note}<p style="${P}">${esc(ctx.companyName || 'Your company')} is listed on LankaNewHomes. A few details are still missing, and filling them in helps your listings show up higher in search.</p>${projectList(ctx)}${completeBlock(ctx)}`
+    heading = 'Complete your listings'
+    body = `${note}<p style="${P}">${company} is listed on LankaNewHomes. A few details are still missing, and filling them in helps your listings show up higher in search.</p>${projectList(ctx)}${completeStep(ctx, 1)}`
   }
 
-  const html = `<!doctype html><html><body style="margin:0; padding:24px; background:#ffffff; font-family:Arial,Helvetica,sans-serif;"><div style="max-width:620px;"><div style="padding:0 0 16px; margin:0 0 22px; border-bottom:1px solid #e4e2db;"><a href="https://www.lankanewhomes.com" style="text-decoration:none;"><img src="https://www.lankanewhomes.com/brand/logo-email.png" width="130" alt="LankaNewHomes" style="display:block; border:0; width:130px; height:auto; font-size:18px; font-weight:700; color:#1f1f1f;"></a></div>${greeting}${body}${closing}</div></body></html>`
+  const header = `<tr><td style="padding:22px 32px 18px; border-bottom:3px solid ${ACCENT};"><a href="https://www.lankanewhomes.com" style="text-decoration:none;"><img src="https://www.lankanewhomes.com/brand/logo-email.png" width="130" alt="LankaNewHomes" style="display:block; border:0; width:130px; height:auto; font-size:18px; font-weight:700; color:#1f1f1f;"></a></td></tr>`
+  const title = `<tr><td style="padding:26px 32px 4px;"><div style="font-size:22px; line-height:1.3; font-weight:700; color:${INK};">${esc(heading)}</div></td></tr>`
+  const main = `<tr><td style="padding:14px 32px 8px;">${greeting}${body}<p style="${P}">Let me know if you would like any changes.</p><p style="${P} margin-bottom:4px;">Best regards,<br><strong>Rupan</strong><br><span style="color:${MUTED};">LankaNewHomes</span></p></td></tr>`
+  const footer = `<tr><td style="padding:18px 32px 26px; border-top:1px solid ${LINE}; font-size:12px; line-height:1.6; color:${MUTED};">LankaNewHomes · New homes and land for sale in Sri Lanka<br>Questions? Just reply to this email or write to ${a('mailto:developers@lankanewhomes.com', 'developers@lankanewhomes.com')}.</td></tr>`
+  const html = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head><body style="margin:0; padding:24px 12px; background:#f3f1ec; font-family:Arial,Helvetica,sans-serif;"><table role="presentation" align="center" width="100%" cellpadding="0" cellspacing="0" style="max-width:620px; margin:0 auto; background:#ffffff; border:1px solid ${LINE};">${header}${title}${main}${footer}</table></body></html>`
   const text = html
     .replace(/<a [^>]*href="([^"]+)"[^>]*>([^<]*)<\/a>/g, '$2 ($1)')
-    .replace(/<\/(p|li|ul)>/g, '\n')
+    .replace(/<\/(p|li|ul|tr|div|table)>/g, '\n')
     .replace(/<br>/g, '\n')
+    .replace(/<\/td>/g, '  ')
     .replace(/<[^>]+>/g, '')
     .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"')
+    .replace(/[ \t]+\n/g, '\n')
     .replace(/\n{3,}/g, '\n\n')
     .trim()
   return { subject: outreachSubject(id, ctx), html, text }
