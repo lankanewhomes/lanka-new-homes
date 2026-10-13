@@ -243,6 +243,9 @@ export const AMENITY_NAME_OPTIONS = [
   'Cafe',
   'Outdoor Multipurpose Court',
   'Ambalama Gathering Space',
+  'Shared Office',
+  'Reception & Lobby',
+  'Boutique Shops',
 ]
 
 export const amenitiesField: Field = {
