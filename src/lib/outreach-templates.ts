@@ -104,7 +104,7 @@ export function renderOutreachEmail(id: OutreachTemplateId, ctx: OutreachContext
     body = `${note}<p style="${P}">${esc(ctx.companyName || 'Your company')} is listed on LankaNewHomes. A few details are still missing, and filling them in helps your listings show up higher in search.</p>${projectList(ctx)}${completeBlock(ctx)}`
   }
 
-  const html = `<!doctype html><html><body style="margin:0; padding:24px; background:#ffffff; font-family:Arial,Helvetica,sans-serif;"><div style="max-width:620px;">${greeting}${body}${closing}</div></body></html>`
+  const html = `<!doctype html><html><body style="margin:0; padding:24px; background:#ffffff; font-family:Arial,Helvetica,sans-serif;"><div style="max-width:620px;"><div style="padding:0 0 16px; margin:0 0 22px; border-bottom:1px solid #e4e2db;"><a href="https://www.lankanewhomes.com" style="text-decoration:none;"><img src="https://www.lankanewhomes.com/brand/logo-email.png" width="130" alt="LankaNewHomes" style="display:block; border:0; width:130px; height:auto; font-size:18px; font-weight:700; color:#1f1f1f;"></a></div>${greeting}${body}${closing}</div></body></html>`
   const text = html
     .replace(/<a [^>]*href="([^"]+)"[^>]*>([^<]*)<\/a>/g, '$2 ($1)')
     .replace(/<\/(p|li|ul)>/g, '\n')
