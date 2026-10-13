@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import { getPayload } from "payload";
 import config from "../../../../../../payload.config";
-import { sendMail } from "@/lib/mailer";
+import { sendHumanEmail } from "@/lib/mail/send";
 import { DEFAULT_TEST_INBOX, isProductionDeployment } from "@/lib/lead-alerts";
 import { OUTREACH_SENDERS, OUTREACH_TEMPLATES, renderOutreachEmail, type OutreachTemplateId } from "@/lib/outreach-templates";
 
@@ -76,15 +76,10 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
   // Same guard as every other outbound channel: a local/preview session never reaches a real inbox.
   const live = isProductionDeployment();
-  const sent = await sendMail({
-    to: live ? to : DEFAULT_TEST_INBOX,
-    from: `LankaNewHomes <${from}>`,
-    replyTo: from,
-    bcc: live ? from : undefined,
-    subject: `${live ? "" : `[TEST — not sent to ${to}] `}${email.subject}`,
-    html: email.html,
-    text: email.text,
-  });
+  // Live sends go through the Zoho mailbox (so they show in Zoho's Sent folder and /cms/mail); tests and local sessions use Resend and the test inbox.
+  const sent = live
+    ? await sendHumanEmail({ from, fromName: "LankaNewHomes", to, copyToSender: true, subject: email.subject, html: email.html, text: email.text })
+    : await sendHumanEmail({ from, fromName: "LankaNewHomes", to: DEFAULT_TEST_INBOX, forceResend: true, subject: `[TEST — not sent to ${to}] ${email.subject}`, html: email.html, text: email.text });
 
   await payload.update({
     collection: "outreach",
@@ -102,8 +97,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       subject: email.subject,
       sentHtml: email.html,
       recipient: `${body.contactName ? `${body.contactName} ` : ""}(${to})`,
-      channel: "resend",
-      resendId: sent.id ?? null,
+      channel: sent.via === "zoho" ? "zoho" : "resend",
+      resendId: sent.via === "resend" ? (sent.id ?? null) : null,
       ...(live ? { status: "sent", sentAt: new Date().toISOString() } : {}),
     } as never,
   });
