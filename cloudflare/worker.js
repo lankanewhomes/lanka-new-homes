@@ -11,6 +11,7 @@ const CRON_ROUTES = {
   "0 8 * * 1": "/api/cron/analytics-digest", // Mondays 08:00 UTC
   "0 2 * * *": "/api/cron/subscription-expiry", // daily 02:00 UTC
   "0 */6 * * *": "/api/cron/bay-one-availability", // every 6 hours: Bay One units sold / available
+  "*/10 * * * *": "/api/cron/lead-alert-sweep", // every 10 minutes: email any recent lead whose instant alert never went out
 };
 
 // Hyperdrive's per-request connection string, read by payload.config.ts when it opens its database pool.

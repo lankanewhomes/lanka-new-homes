@@ -66,8 +66,14 @@ export const DEFAULT_TEST_INBOX = 'delivered@resend.dev'
 // to this codebase routes through this same non-production guard, not just
 // lead alerts, so a local/preview test run can never reach a real inbox.
 export function isProductionDeployment(): boolean {
+  // LEAD_ALERTS_LIVE=false is a kill switch that forces test routing everywhere; =true forces live (used by one-off scripts).
+  if (process.env.LEAD_ALERTS_LIVE === 'false') return false
   if (process.env.LEAD_ALERTS_LIVE === 'true') return true
-  return process.env.VERCEL_ENV === 'production'
+  // The site now runs on Cloudflare Workers (2026-10-07), where VERCEL_ENV does not exist, so every live email (lead alerts,
+  // developer verification, contact form, outreach) was being treated as a test and sent to the test inbox. The Workers
+  // runtime only ever serves the live site; local dev and CI are plain Node.
+  const onWorkers = typeof navigator !== 'undefined' && navigator.userAgent === 'Cloudflare-Workers'
+  return process.env.VERCEL_ENV === 'production' || onWorkers
 }
 
 /** Decide whether this lead's alert may reach the real developer. */
@@ -147,11 +153,20 @@ export async function sendLeadAlerts(payload: Payload, lead: LeadLike, opts: { r
     alertEmail = routing.testInbox
     alertWhatsApp = process.env.LEAD_ALERTS_OVERRIDE_WHATSAPP ? toWhatsAppNumber(process.env.LEAD_ALERTS_OVERRIDE_WHATSAPP) : null
   }
-  // Developer's "CC on lead alerts" (Lead alerts group): copies of the alert email. Never in test mode.
+  // Copies of the alert email. Never in test mode. Owner rule (2026-10-13): every enquiry also reaches the developer, plus the
+  // listing's own contact email when it differs ("for any listing always send developers, and if there is any other email for the
+  // listing also send"), plus the developer's own "CC on lead alerts" addresses.
+  const developerEmail = text((developerDoc.lead_alerts as AnyDoc | undefined)?.email) || text(developerDoc.contact_email)
+  const listingEmail = text((project.contact as AnyDoc | undefined)?.email)
   const ccEmails =
     routing.mode === 'test'
       ? []
-      : (Array.isArray(alerts.cc) ? (alerts.cc as unknown[]) : []).map(text).filter((address) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(address) && address.toLowerCase() !== alertEmail.toLowerCase())
+      : Array.from(new Map(
+          [developerEmail, listingEmail, ...(Array.isArray(alerts.cc) ? (alerts.cc as unknown[]) : []).map(text)]
+            .map((address) => address.trim())
+            .filter((address) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(address) && address.toLowerCase() !== alertEmail.toLowerCase())
+            .map((address) => [address.toLowerCase(), address] as const),
+        ).values())
   outcome.to = { email: alertEmail || null, whatsapp: alertWhatsApp }
   const subjectPrefix = routing.mode === 'test' ? `[TEST — not sent to ${text(developer.name) || 'the developer'}] ` : ''
 
