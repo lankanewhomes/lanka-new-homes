@@ -23,7 +23,6 @@ export const OUTREACH_TEMPLATES: { id: OutreachTemplateId; label: string; descri
 export const OUTREACH_SENDERS = [
   { value: 'developers@lankanewhomes.com', label: 'developers@ (developer outreach, verification)' },
   { value: 'support@lankanewhomes.com', label: 'support@ (help and questions)' },
-  { value: 'sales@lankanewhomes.com', label: 'sales@ (advertising and upgrades)' },
 ] as const
 
 const esc = (v: string) => v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
