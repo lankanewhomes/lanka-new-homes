@@ -38,7 +38,10 @@ export function OutreachSendPanel() {
       const res = await fetch(`/api/outreach/${id}`, { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ template, contactName, toEmail, fromAddress, customNote: note }) });
       const body = await res.json().catch(() => ({}));
       if (!res.ok) setError(body.error ?? "Could not send.");
-      else setMessage(body.live ? `Sent to ${body.sentTo}. Reload this page to see the updated status.` : `Test mode: sent to ${body.sentTo} instead of the developer. Reload to see it.`);
+      else {
+        setMessage(body.live ? `✓ Sent to ${body.sentTo}. Refreshing…` : `✓ Test mode: sent to ${body.sentTo} instead of the developer. Refreshing…`);
+        setTimeout(() => window.location.reload(), 1800);
+      }
     } finally { setBusy(false); }
   }
 
@@ -46,15 +49,19 @@ export function OutreachSendPanel() {
   if (!id) return <div style={box}><p style={{ margin: 0 }}>Save this row first. Then the email preview and the Send button appear here.</p></div>;
   return (
     <div style={box}>
-      <p style={{ margin: "0 0 8px", fontWeight: 600 }}>Email preview</p>
+      <p style={{ margin: "0 0 8px", fontWeight: 600 }}>4. Check the email, then send</p>
       {!template ? <p style={{ margin: 0 }}>Pick a template above to see the email.</p> : null}
       {template && error ? <p style={{ margin: "0 0 8px", color: "var(--theme-error-500)" }}>{error}</p> : null}
       {template && preview ? (
         <>
-          <p style={{ margin: "0 0 8px" }}><strong>Subject:</strong> {preview.subject}</p>
+          <div style={{ margin: "0 0 8px", fontSize: 14, lineHeight: 1.6 }}>
+            <div><span style={{ opacity: 0.65 }}>From: </span>LankaNewHomes &lt;{fromAddress}&gt;</div>
+            <div><span style={{ opacity: 0.65 }}>To: </span>{toEmail || <em>add their email address above</em>}</div>
+            <div><span style={{ opacity: 0.65 }}>Subject: </span><strong>{preview.subject}</strong></div>
+          </div>
           <iframe title="Email preview" srcDoc={preview.html} sandbox="" style={{ width: "100%", height: 480, border: "1px solid var(--theme-elevation-150)", background: "#fff" }} />
           <p style={{ margin: "8px 0", fontSize: 13 }}>
-            Unsaved changes to the name or note show here as you type. Press <em>Save</em> to keep them. A copy goes to {fromAddress}.
+            Unsaved changes to the name or note show here as you type. Press <em>Save</em> to keep them. A copy also goes to {fromAddress}.
           </p>
           <button type="button" className="btn btn--style-primary" disabled={busy || !toEmail} onClick={send}>{busy ? "Sending…" : "Send this email"}</button>
           {!toEmail ? <span style={{ marginLeft: 8, fontSize: 13 }}>Enter the email address to send to first.</span> : null}

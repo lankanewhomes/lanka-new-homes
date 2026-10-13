@@ -82,6 +82,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       fromAddress: from,
       customNote: body.customNote ?? null,
       subject: email.subject,
+      sentHtml: email.html,
       recipient: `${body.contactName ? `${body.contactName} ` : ""}(${to})`,
       channel: "resend",
       resendId: sent.id ?? null,

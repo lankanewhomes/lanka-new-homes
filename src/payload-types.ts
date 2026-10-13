@@ -7423,17 +7423,16 @@ export interface ListingTodo {
  */
 export interface Outreach {
   id: number;
+  /**
+   * Who is this email for?
+   */
   developer?: (number | null) | Developer;
   /**
-   * Filled in from the developer you pick.
+   * Each listing you pick gets its own tracked link in the email.
    */
-  developerName?: string | null;
+  projects?: (number | Project)[] | null;
   /**
-   * Name and/or email address, e.g. "Erwan (contact@maisonceylon.com)". Filled in automatically when you send from here.
-   */
-  recipient?: string | null;
-  /**
-   * Pick an email template, then check the preview below.
+   * The preview below shows the exact email.
    */
   template?: ('listing-update' | 'verify-company' | 'complete-profile') | null;
   /**
@@ -7441,27 +7440,28 @@ export interface Outreach {
    */
   contactName?: string | null;
   toEmail?: string | null;
-  fromAddress?: ('developers@lankanewhomes.com' | 'support@lankanewhomes.com' | 'sales@lankanewhomes.com') | null;
+  fromAddress?: ('developers@lankanewhomes.com' | 'support@lankanewhomes.com') | null;
   /**
    * Added right after the greeting. Leave empty to send the template as is. Do not mention pricing.
    */
   customNote?: string | null;
-  resendId?: string | null;
+  /**
+   * Updates itself on send and on click. Change it by hand for Replied / No reply.
+   */
+  status?: ('draft' | 'sent' | 'clicked' | 'replied' | 'no_reply') | null;
+  sentAt?: string | null;
+  /**
+   * Emails sent from this screen are marked Resend. Pick Zoho for emails you typed in Zoho Mail and logged here by hand.
+   */
+  channel?: ('zoho' | 'resend') | null;
   /**
    * Filled in from the template when you send. Type one yourself for emails you send from Zoho.
    */
   subject?: string | null;
-  sentAt?: string | null;
-  channel?: ('zoho' | 'resend') | null;
-  status?: ('draft' | 'sent' | 'clicked' | 'replied' | 'no_reply') | null;
   /**
-   * Optional: each project you pick gets its own tracked link below.
+   * Filled in automatically when you send from here. For Zoho emails type e.g. "Erwan (contact@maisonceylon.com)".
    */
-  projects?: (number | Project)[] | null;
-  /**
-   * Identifies this email in the tracked links.
-   */
-  code?: string | null;
+  recipient?: string | null;
   /**
    * Save the row first. Use these instead of plain links so clicks are counted.
    */
@@ -7477,7 +7477,17 @@ export interface Outreach {
       }[]
     | null;
   developerVerified?: boolean | null;
+  /**
+   * Filled in from the company you pick.
+   */
+  developerName?: string | null;
+  sentHtml?: string | null;
   notes?: string | null;
+  /**
+   * Identifies this email in the tracked links.
+   */
+  code?: string | null;
+  resendId?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -9248,20 +9258,17 @@ export interface ListingTodosSelect<T extends boolean = true> {
  */
 export interface OutreachSelect<T extends boolean = true> {
   developer?: T;
-  developerName?: T;
-  recipient?: T;
+  projects?: T;
   template?: T;
   contactName?: T;
   toEmail?: T;
   fromAddress?: T;
   customNote?: T;
-  resendId?: T;
-  subject?: T;
+  status?: T;
   sentAt?: T;
   channel?: T;
-  status?: T;
-  projects?: T;
-  code?: T;
+  subject?: T;
+  recipient?: T;
   trackedLinks?: T;
   clickCount?: T;
   firstClickedAt?: T;
@@ -9274,7 +9281,11 @@ export interface OutreachSelect<T extends boolean = true> {
         id?: T;
       };
   developerVerified?: T;
+  developerName?: T;
+  sentHtml?: T;
   notes?: T;
+  code?: T;
+  resendId?: T;
   updatedAt?: T;
   createdAt?: T;
 }

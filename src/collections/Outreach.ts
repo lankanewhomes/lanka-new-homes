@@ -23,7 +23,7 @@ export const Outreach: CollectionConfig = {
   admin: {
     group: 'Leads & Engagement',
     useAsTitle: 'subject',
-    defaultColumns: ['developerName', 'recipient', 'subject', 'sentAt', 'status', 'clickCount', 'developerVerified'],
+    defaultColumns: ['developerName', 'subject', 'sentAt', 'status', 'clickCount'],
     hidden: hiddenUnlessAdmin,
     description: 'Emails you send to developers. Add a row for each email, copy its tracked links into the email, and clicks are counted here.',
   },
@@ -62,79 +62,118 @@ export const Outreach: CollectionConfig = {
     ],
   },
   fields: [
-    { name: 'developer', type: 'relationship', relationTo: 'developers', index: true },
-    { name: 'developerName', type: 'text', label: 'Company', index: true, admin: { readOnly: true, description: 'Filled in from the developer you pick.' } },
-    { name: 'recipient', type: 'text', label: 'Sent to', admin: { description: 'Name and/or email address, e.g. "Erwan (contact@maisonceylon.com)". Filled in automatically when you send from here.' } },
-    // Send from the CMS (owner, 2026-10-12): pick a template, see it, press Send. Save the row first so its tracked links exist.
-    { name: 'template', type: 'select', options: OUTREACH_TEMPLATES.map((t) => ({ label: t.label, value: t.id })), admin: { description: 'Pick an email template, then check the preview below.' } },
-    { name: 'contactName', type: 'text', label: 'Contact first name', admin: { description: 'Used in "Hi ___,".' } },
-    { name: 'toEmail', type: 'email', label: 'Send to (email address)' },
-    { name: 'fromAddress', type: 'select', label: 'Send from', defaultValue: 'developers@lankanewhomes.com', options: OUTREACH_SENDERS.map((s) => ({ label: s.label, value: s.value })) },
-    { name: 'customNote', type: 'textarea', label: 'Extra note (optional)', admin: { description: 'Added right after the greeting. Leave empty to send the template as is. Do not mention pricing.' } },
-    { name: 'sendPanel', type: 'ui', admin: { components: { Field: '@/components/payload/OutreachSendPanel#OutreachSendPanel' } } },
-    { name: 'resendId', type: 'text', label: 'Resend ID', admin: { readOnly: true, position: 'sidebar' } },
-    { name: 'subject', type: 'text', admin: { description: 'Filled in from the template when you send. Type one yourself for emails you send from Zoho.' } },
-    { name: 'sentAt', type: 'date', label: 'Sent on', defaultValue: () => new Date().toISOString(), index: true, admin: { date: { pickerAppearance: 'dayAndTime' } } },
+    // Two tabs (owner, 2026-10-12: "redesign the outreach better and user friendly"): write and send on one, see what happened on the other.
     {
-      name: 'channel',
-      type: 'select',
-      defaultValue: 'zoho',
-      options: [
-        { label: 'Zoho Mail (typed by hand)', value: 'zoho' },
-        { label: 'Resend (sent by the site)', value: 'resend' },
+      type: 'tabs',
+      tabs: [
+        {
+          label: 'Write & send',
+          fields: [
+            { name: 'summary', type: 'ui', admin: { components: { Field: '@/components/payload/OutreachSummary#OutreachSummary' } } },
+            { name: 'developer', type: 'relationship', relationTo: 'developers', index: true, label: '1. Company', admin: { description: 'Who is this email for?' } },
+            { name: 'projects', type: 'relationship', relationTo: 'projects', hasMany: true, label: 'Listings to mention (optional)', admin: { description: 'Each listing you pick gets its own tracked link in the email.' } },
+            { name: 'template', type: 'select', label: '2. Template', options: OUTREACH_TEMPLATES.map((t) => ({ label: t.label, value: t.id })), admin: { description: 'The preview below shows the exact email.' } },
+            {
+              type: 'row',
+              fields: [
+                { name: 'contactName', type: 'text', label: '3. Contact first name', admin: { description: 'Used in "Hi ___,".', width: '50%' } },
+                { name: 'toEmail', type: 'email', label: 'Their email address', admin: { width: '50%' } },
+              ],
+            },
+            { name: 'fromAddress', type: 'select', label: 'Send from', defaultValue: 'developers@lankanewhomes.com', options: OUTREACH_SENDERS.map((s) => ({ label: s.label, value: s.value })) },
+            { name: 'customNote', type: 'textarea', label: 'Extra note (optional)', admin: { description: 'Added right after the greeting. Leave empty to send the template as is. Do not mention pricing.' } },
+            { name: 'sendPanel', type: 'ui', admin: { components: { Field: '@/components/payload/OutreachSendPanel#OutreachSendPanel' } } },
+          ],
+        },
+        {
+          label: 'Results & details',
+          fields: [
+            {
+              type: 'row',
+              fields: [
+                {
+                  name: 'status',
+                  type: 'select',
+                  defaultValue: 'draft',
+                  index: true,
+                  options: [
+                    { label: 'Draft (not sent yet)', value: 'draft' },
+                    { label: 'Sent', value: 'sent' },
+                    { label: 'Clicked a link', value: 'clicked' },
+                    { label: 'Replied', value: 'replied' },
+                    { label: 'No reply', value: 'no_reply' },
+                  ],
+                  admin: { description: 'Updates itself on send and on click. Change it by hand for Replied / No reply.', width: '50%', components: { Cell: '@/components/payload/OutreachCells#OutreachStatusCell' } },
+                },
+                { name: 'sentAt', type: 'date', label: 'Sent on', defaultValue: () => new Date().toISOString(), index: true, admin: { date: { pickerAppearance: 'dayAndTime' }, width: '50%' } },
+              ],
+            },
+            {
+              name: 'channel',
+              type: 'select',
+              defaultValue: 'zoho',
+              options: [
+                { label: 'Zoho Mail (typed by hand)', value: 'zoho' },
+                { label: 'Resend (sent from here)', value: 'resend' },
+              ],
+              admin: { description: 'Emails sent from this screen are marked Resend. Pick Zoho for emails you typed in Zoho Mail and logged here by hand.' },
+            },
+            { name: 'subject', type: 'text', admin: { description: 'Filled in from the template when you send. Type one yourself for emails you send from Zoho.' } },
+            { name: 'recipient', type: 'text', label: 'Sent to', admin: { description: 'Filled in automatically when you send from here. For Zoho emails type e.g. "Erwan (contact@maisonceylon.com)".' } },
+            { name: 'trackedLinks', type: 'textarea', label: 'Tracked links (use these in emails you type in Zoho)', admin: { readOnly: true, rows: 8, description: 'Save the row first. Use these instead of plain links so clicks are counted.' } },
+            {
+              type: 'row',
+              fields: [
+                { name: 'clickCount', type: 'number', defaultValue: 0, admin: { readOnly: true, width: '33%', components: { Cell: '@/components/payload/OutreachCells#OutreachClicksCell' } } },
+                { name: 'firstClickedAt', type: 'date', admin: { readOnly: true, width: '33%', date: { pickerAppearance: 'dayAndTime' } } },
+                { name: 'lastClickedAt', type: 'date', admin: { readOnly: true, width: '33%', date: { pickerAppearance: 'dayAndTime' } } },
+              ],
+            },
+            {
+              name: 'clickLog',
+              type: 'array',
+              label: 'Clicks',
+              admin: { readOnly: true },
+              fields: [
+                { name: 'to', type: 'text' },
+                { name: 'at', type: 'date', admin: { date: { pickerAppearance: 'dayAndTime' } } },
+              ],
+            },
+            {
+              // Live from the developer's record, so the log shows whether the email led to a verified company.
+              name: 'developerVerified',
+              type: 'checkbox',
+              label: 'Company verified',
+              virtual: true,
+              admin: { readOnly: true },
+              hooks: {
+                afterRead: [
+                  async ({ data, req }) => {
+                    const devId = data?.developer
+                    if (!devId) return false
+                    try {
+                      const dev = await req.payload.findByID({ collection: 'developers', id: typeof devId === 'object' ? devId.id : devId, depth: 0, select: { domain_verified: true }, req })
+                      return Boolean((dev as { domain_verified?: boolean }).domain_verified)
+                    } catch {
+                      return false
+                    }
+                  },
+                ],
+              },
+            },
+            { name: 'developerName', type: 'text', label: 'Company name', index: true, admin: { readOnly: true, description: 'Filled in from the company you pick.', components: { Cell: '@/components/payload/OutreachCells#OutreachCompanyCell' } } },
+            { name: 'sentHtml', type: 'textarea', label: 'Exact email as sent (HTML)', admin: { readOnly: true, rows: 6 } },
+            { name: 'notes', type: 'textarea', label: 'Your notes' },
+            {
+              type: 'row',
+              fields: [
+                { name: 'code', type: 'text', unique: true, index: true, admin: { readOnly: true, width: '50%', description: 'Identifies this email in the tracked links.' } },
+                { name: 'resendId', type: 'text', label: 'Resend ID', admin: { readOnly: true, width: '50%' } },
+              ],
+            },
+          ],
+        },
       ],
     },
-    {
-      name: 'status',
-      type: 'select',
-      defaultValue: 'draft',
-      index: true,
-      options: [
-        { label: 'Draft (not sent yet)', value: 'draft' },
-        { label: 'Sent', value: 'sent' },
-        { label: 'Clicked a link', value: 'clicked' },
-        { label: 'Replied', value: 'replied' },
-        { label: 'No reply', value: 'no_reply' },
-      ],
-    },
-    { name: 'projects', type: 'relationship', relationTo: 'projects', hasMany: true, admin: { description: 'Optional: each project you pick gets its own tracked link below.' } },
-    { name: 'code', type: 'text', unique: true, index: true, admin: { readOnly: true, position: 'sidebar', description: 'Identifies this email in the tracked links.' } },
-    { name: 'trackedLinks', type: 'textarea', label: 'Tracked links (paste these into the email)', admin: { readOnly: true, rows: 8, description: 'Save the row first. Use these instead of plain links so clicks are counted.' } },
-    { name: 'clickCount', type: 'number', defaultValue: 0, admin: { readOnly: true, position: 'sidebar' } },
-    { name: 'firstClickedAt', type: 'date', admin: { readOnly: true, position: 'sidebar', date: { pickerAppearance: 'dayAndTime' } } },
-    { name: 'lastClickedAt', type: 'date', admin: { readOnly: true, position: 'sidebar', date: { pickerAppearance: 'dayAndTime' } } },
-    {
-      name: 'clickLog',
-      type: 'array',
-      label: 'Clicks',
-      admin: { readOnly: true },
-      fields: [
-        { name: 'to', type: 'text' },
-        { name: 'at', type: 'date', admin: { date: { pickerAppearance: 'dayAndTime' } } },
-      ],
-    },
-    {
-      // Live from the developer's record, so the log shows whether the email led to a verified company.
-      name: 'developerVerified',
-      type: 'checkbox',
-      label: 'Verified',
-      virtual: true,
-      admin: { readOnly: true, position: 'sidebar' },
-      hooks: {
-        afterRead: [
-          async ({ data, req }) => {
-            const devId = data?.developer
-            if (!devId) return false
-            try {
-              const dev = await req.payload.findByID({ collection: 'developers', id: typeof devId === 'object' ? devId.id : devId, depth: 0, select: { domain_verified: true }, req })
-              return Boolean((dev as { domain_verified?: boolean }).domain_verified)
-            } catch {
-              return false
-            }
-          },
-        ],
-      },
-    },
-    { name: 'notes', type: 'textarea' },
   ],
 }
