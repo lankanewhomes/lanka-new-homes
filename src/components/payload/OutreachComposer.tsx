@@ -37,9 +37,11 @@ export function OutreachComposer() {
   const toEmail = useField<string | null>({ path: "toEmail" });
   const fromAddress = useField<string | null>({ path: "fromAddress" });
   const customNote = useField<string | null>({ path: "customNote" });
+  const lead = useField<number | string | null>({ path: "lead" });
 
   const [developers, setDevelopers] = useState<Option[]>([]);
   const [listings, setListings] = useState<Option[]>([]);
+  const [leads, setLeads] = useState<{ id: number; name: string; project?: { name?: string } | number; createdAt?: string }[]>([]);
   const [preview, setPreview] = useState<Preview | null>(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -65,19 +67,29 @@ export function OutreachComposer() {
   }, [devId]);
 
   const shownListings = devId ? listings : [];
+  const needsLead = template.value === "lead-followup";
+  const leadId = needsLead && lead.value ? String(lead.value) : "";
+
+  useEffect(() => {
+    if (!devId || !needsLead) return;
+    fetch(`/payload-api/leads?where[project.developer][equals]=${devId}&sort=-createdAt&limit=30&depth=1&select[name]=true&select[project]=true&select[createdAt]=true`, { credentials: "include" })
+      .then((r) => (r.ok ? r.json() : { docs: [] }))
+      .then((b) => setLeads((b.docs ?? []) as typeof leads))
+      .catch(() => setLeads([]));
+  }, [devId, needsLead]);
 
   useEffect(() => {
     if (!id || !template.value || !devId) return;
     const timer = setTimeout(() => {
       setError("");
-      const query = new URLSearchParams({ template: template.value ?? "", contactName: contactName.value ?? "", note: customNote.value ?? "", developerId: devId, projectIds: selected.join(",") });
+      const query = new URLSearchParams({ template: template.value ?? "", contactName: contactName.value ?? "", note: customNote.value ?? "", developerId: devId, projectIds: selected.join(","), leadId });
       fetch(`/api/outreach/${id}?${query}`, { credentials: "include" })
         .then(async (r) => { const body = await r.json().catch(() => ({})); if (!r.ok) throw new Error(body.error ?? "Could not load the preview."); return body as Preview; })
         .then(setPreview)
         .catch((e: Error) => { setPreview(null); setError(e.message); });
     }, 450);
     return () => clearTimeout(timer);
-  }, [id, template.value, contactName.value, customNote.value, devId, selected]);
+  }, [id, template.value, contactName.value, customNote.value, devId, selected, leadId]);
 
   function toggleListing(listingId: number) {
     const key = String(listingId);
@@ -90,7 +102,7 @@ export function OutreachComposer() {
     try {
       const res = await fetch(`/api/outreach/${id}`, {
         method: "POST", credentials: "include", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ template: template.value, contactName: contactName.value, toEmail: toEmail.value, fromAddress: from, customNote: customNote.value, developerId: devId, projectIds: selected }),
+        body: JSON.stringify({ template: template.value, contactName: contactName.value, toEmail: toEmail.value, fromAddress: from, customNote: customNote.value, developerId: devId, projectIds: selected, leadId }),
       });
       const body = await res.json().catch(() => ({}));
       if (!res.ok) setError(body.error ?? "Could not send.");
@@ -101,8 +113,8 @@ export function OutreachComposer() {
     } finally { setBusy(false); }
   }
 
-  const ready = Boolean(id && devId && template.value && toEmail.value);
-  const missing = !id ? "Press Save once so this email gets its tracked links." : !devId ? "Pick a company." : !template.value ? "Pick a template." : !toEmail.value ? "Enter their email address." : "";
+  const ready = Boolean(id && devId && template.value && toEmail.value && (!needsLead || leadId));
+  const missing = !id ? "Press Save once so this email gets its tracked links." : !devId ? "Pick a company." : !template.value ? "Pick a template." : !toEmail.value ? "Enter their email address." : needsLead && !leadId ? "Choose which lead this is about." : "";
 
   return (
     <div className="ln-composer" style={{ marginBottom: 24 }}>
@@ -161,7 +173,22 @@ export function OutreachComposer() {
             </div>
           </Step>
 
-          <Step n={3} title="Make it yours (optional)">
+          {needsLead ? (
+            <Step n={3} title="Which lead is waiting?">
+              <label style={label} htmlFor="oc-lead">Lead</label>
+              <select id="oc-lead" style={input} value={lead.value ? String(lead.value) : ""} onChange={(e) => lead.setValue(e.target.value ? Number(e.target.value) : null)}>
+                <option value="">{devId ? "Choose a lead…" : "Pick a company first"}</option>
+                {leads.map((l) => (
+                  <option key={l.id} value={l.id}>
+                    {l.name} · {typeof l.project === "object" ? l.project?.name : ""} · {l.createdAt ? new Date(l.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short" }) : ""}
+                  </option>
+                ))}
+              </select>
+              <p style={help}>The buyer&apos;s details are put in the email.</p>
+            </Step>
+          ) : null}
+
+          <Step n={needsLead ? 4 : 3} title="Make it yours (optional)">
             <label style={label} htmlFor="oc-note">Extra note</label>
             <textarea id="oc-note" rows={4} style={{ ...input, resize: "vertical" }} value={customNote.value ?? ""} onChange={(e) => customNote.setValue(e.target.value)} placeholder="Added right after the greeting. Leave empty to send the template as is." />
             <p style={help}>Do not mention pricing.</p>
@@ -174,7 +201,7 @@ export function OutreachComposer() {
         </div>
 
         <div style={{ position: "sticky", top: 16 }}>
-          <Step n={4} title="Check it, then send">
+          <Step n={needsLead ? 5 : 4} title="Check it, then send">
             {!template.value || !devId ? <p style={{ margin: 0, opacity: 0.7 }}>Pick a company and a template to see the email here.</p> : null}
             {error ? <p style={{ margin: "0 0 10px", color: "var(--theme-error-500)" }}>{error}</p> : null}
             {template.value && devId && preview ? (

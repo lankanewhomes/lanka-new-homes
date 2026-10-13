@@ -74,6 +74,7 @@ export const Outreach: CollectionConfig = {
             // the plain Payload inputs are hidden so nothing shows twice.
             { name: 'developer', type: 'relationship', relationTo: 'developers', index: true, admin: { hidden: true } },
             { name: 'projects', type: 'relationship', relationTo: 'projects', hasMany: true, admin: { hidden: true } },
+            { name: 'lead', type: 'relationship', relationTo: 'leads', admin: { hidden: true } },
             { name: 'template', type: 'select', options: OUTREACH_TEMPLATES.map((t) => ({ label: t.label, value: t.id })), admin: { hidden: true } },
             { name: 'contactName', type: 'text', admin: { hidden: true } },
             { name: 'toEmail', type: 'email', admin: { hidden: true } },

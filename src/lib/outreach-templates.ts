@@ -2,7 +2,7 @@
 // Every link goes through the tracked redirect (/o/<code>?to=/path) so clicks are counted on the Outreach row.
 // Wording rule: no pricing or package talk in these emails.
 
-export type OutreachTemplateId = 'listing-update' | 'verify-company' | 'complete-profile'
+export type OutreachTemplateId = 'listing-update' | 'verify-company' | 'complete-profile' | 'lead-followup'
 
 export type OutreachContext = {
   contactName?: string | null
@@ -10,6 +10,8 @@ export type OutreachContext = {
   /** Optional paragraph typed in the CMS, shown right after the greeting. */
   customNote?: string | null
   projects: { name: string; slug: string }[]
+  /** For the lead-followup template: the enquiry that is still waiting for a reply. */
+  lead?: { name: string; email?: string | null; phone?: string | null; preferred?: string | null; message?: string | null; receivedAt?: string | null; projectName: string; planName?: string | null; place?: string | null } | null
   /** Builds the tracked link for a site path such as /developers/login. */
   link: (path: string) => string
 }
@@ -17,6 +19,7 @@ export type OutreachContext = {
 export const OUTREACH_TEMPLATES: { id: OutreachTemplateId; label: string; description: string }[] = [
   { id: 'listing-update', label: 'Listings updated + verify + complete', description: 'Tells them their listings are updated, then asks them to verify and fill the missing fields.' },
   { id: 'verify-company', label: 'Verify your company', description: 'Short email asking them to get the free Verified Developer badge.' },
+  { id: 'lead-followup', label: 'A buyer is waiting (lead follow-up)', description: 'Reminds them of an enquiry that still has no reply, with the buyer\'s details, then asks them to verify and complete their listings.' },
   { id: 'complete-profile', label: 'Complete your listings', description: 'Short email asking them to fill the missing fields for better search placement.' },
 ]
 
@@ -55,13 +58,30 @@ function completeBlock(ctx: OutreachContext) {
   ].join('')
 }
 
+function leadBlock(ctx: OutreachContext) {
+  const l = ctx.lead
+  if (!l) return ''
+  const when = l.receivedAt ? new Date(l.receivedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Colombo' }) : ''
+  const rows: [string, string][] = [
+    ['Name', esc(l.name)],
+    ...(l.phone ? [['Phone', esc(l.phone)] as [string, string]] : []),
+    ...(l.email ? [['Email', `<a href="mailto:${esc(l.email)}" style="${A}">${esc(l.email)}</a>`] as [string, string]] : []),
+    ...(l.preferred ? [['Prefers', esc(l.preferred)] as [string, string]] : []),
+    ...(l.message ? [['Message', esc(l.message)] as [string, string]] : []),
+    ...(l.place ? [['From', esc(l.place)] as [string, string]] : []),
+    ...(when ? [['Received', esc(when)] as [string, string]] : []),
+  ]
+  return `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 16px; border:1px solid #e4e2db; background:#faf7f2; width:100%;"><tr><td style="padding:14px 16px; font-size:15px; line-height:1.7; color:#2b2b29;">${rows.map(([k, v]) => `<strong>${k}:</strong> ${v}`).join('<br>')}</td></tr></table>`
+}
+
 function projectList(ctx: OutreachContext) {
   if (!ctx.projects.length) return ''
   return `<p style="${P}">Your listings:</p>${ul(ctx.projects.map((p) => a(ctx.link(`/projects/${p.slug}`), p.name)))}`
 }
 
-export function outreachSubject(id: OutreachTemplateId, ctx: Pick<OutreachContext, 'companyName'>): string {
+export function outreachSubject(id: OutreachTemplateId, ctx: Pick<OutreachContext, 'companyName' | 'lead'>): string {
   const company = ctx.companyName || 'your company'
+  if (id === 'lead-followup') return `A buyer is waiting for a reply about ${ctx.lead?.projectName ?? 'your listing'} on LankaNewHomes`
   if (id === 'verify-company') return `Get the free Verified Developer badge for ${company} on LankaNewHomes`
   if (id === 'complete-profile') return `Complete your ${company} listings on LankaNewHomes to rank higher`
   return `Your ${company} listings are updated on LankaNewHomes, two quick next steps`
@@ -75,6 +95,9 @@ export function renderOutreachEmail(id: OutreachTemplateId, ctx: OutreachContext
   let body = ''
   if (id === 'listing-update') {
     body = `${note}<p style="${P}">Your listings on LankaNewHomes have been updated.</p>${projectList(ctx)}<p style="${P}">Two quick next steps:</p>${verifyBlock(ctx)}${completeBlock(ctx)}`
+  } else if (id === 'lead-followup') {
+    const l = ctx.lead
+    body = `${note}<p style="${P}">A buyer asked about <strong>${esc(l?.projectName ?? 'your listing')}</strong>${l?.planName ? ` (${esc(l.planName)})` : ''} on LankaNewHomes, and we do not see a reply yet. We emailed you this enquiry when it came in. Here it is again:</p>${leadBlock(ctx)}<p style="${P}">Buyers usually contact several developers, so a quick reply helps. You can answer straight from the lead email, or open it in your ${a(ctx.link('/cms'), 'dashboard')} and change its status once you have been in touch.</p><p style="${P}">While you are there, two quick things that help you win more enquiries:</p>${verifyBlock(ctx)}${completeBlock(ctx)}`
   } else if (id === 'verify-company') {
     body = `${note}<p style="${P}">${esc(ctx.companyName || 'Your company')} is listed on LankaNewHomes. Confirming your company takes about a minute and is free.</p>${projectList(ctx)}${verifyBlock(ctx)}`
   } else {

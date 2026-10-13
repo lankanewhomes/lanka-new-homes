@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 const SITE = "https://www.lankanewhomes.com";
 const isTemplate = (v: unknown): v is OutreachTemplateId => OUTREACH_TEMPLATES.some((t) => t.id === v);
 
-async function load(request: Request, id: string, override?: { developerId?: string | null; projectIds?: string[] | null }) {
+async function load(request: Request, id: string, override?: { developerId?: string | null; projectIds?: string[] | null; leadId?: string | null }) {
   const payload = await getPayload({ config });
   const { user } = await payload.auth({ headers: request.headers });
   if ((user as any)?.role !== "admin") return { error: NextResponse.json({ error: "Admins only." }, { status: 403 }) };
@@ -26,10 +26,20 @@ async function load(request: Request, id: string, override?: { developerId?: str
   const projects = projectIds.length
     ? ((await payload.find({ collection: "projects", where: { id: { in: projectIds } }, depth: 0, limit: 20, select: { name: true, slug: true }, overrideAccess: true })).docs as any[])
     : [];
-  return { payload, row, projects };
+  const leadId = override?.leadId ?? (row.lead ? String(typeof row.lead === "object" ? row.lead.id : row.lead) : null);
+  let lead: any = null;
+  if (leadId) {
+    const l = (await payload.findByID({ collection: "leads", id: leadId, depth: 0, overrideAccess: true }).catch(() => null)) as any;
+    if (l) {
+      const p = (await payload.findByID({ collection: "projects", id: l.project, depth: 0, select: { name: true }, overrideAccess: true }).catch(() => null)) as any;
+      const o = l.origin ?? {};
+      lead = { name: l.name, email: l.email, phone: l.phone, preferred: l.preferred_contact_method, message: l.message, receivedAt: l.createdAt, projectName: p?.name ?? "your listing", planName: l.floor_plan, place: [o.city, o.country].filter(Boolean).join(", ") };
+    }
+  }
+  return { payload, row, projects, lead };
 }
 
-function render(row: any, projects: any[], input: { template: unknown; contactName?: string; note?: string }) {
+function render(row: any, projects: any[], lead: any, input: { template: unknown; contactName?: string; note?: string }) {
   const template = isTemplate(input.template) ? input.template : null;
   if (!template) return null;
   return renderOutreachEmail(template, {
@@ -37,6 +47,7 @@ function render(row: any, projects: any[], input: { template: unknown; contactNa
     companyName: row.developerName,
     customNote: input.note,
     projects: projects.map((p) => ({ name: p.name, slug: p.slug })),
+    lead,
     link: (path) => `${SITE}/o/${row.code}?to=${path}`,
   });
 }
@@ -44,9 +55,9 @@ function render(row: any, projects: any[], input: { template: unknown; contactNa
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const url = new URL(request.url);
-  const loaded = await load(request, id, { developerId: url.searchParams.get("developerId"), projectIds: url.searchParams.has("projectIds") ? url.searchParams.get("projectIds")!.split(",").filter(Boolean) : null });
+  const loaded = await load(request, id, { leadId: url.searchParams.get("leadId") || null, developerId: url.searchParams.get("developerId"), projectIds: url.searchParams.has("projectIds") ? url.searchParams.get("projectIds")!.split(",").filter(Boolean) : null });
   if ("error" in loaded) return loaded.error;
-  const email = render(loaded.row, loaded.projects, { template: url.searchParams.get("template"), contactName: url.searchParams.get("contactName") ?? "", note: url.searchParams.get("note") ?? "" });
+  const email = render(loaded.row, loaded.projects, loaded.lead, { template: url.searchParams.get("template"), contactName: url.searchParams.get("contactName") ?? "", note: url.searchParams.get("note") ?? "" });
   if (!email) return NextResponse.json({ error: "Pick a template." }, { status: 400 });
   return NextResponse.json({ subject: email.subject, html: email.html, live: isProductionDeployment() });
 }
@@ -54,13 +65,13 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const body = await request.json().catch(() => ({}));
-  const loaded = await load(request, id, { developerId: body.developerId ? String(body.developerId) : null, projectIds: Array.isArray(body.projectIds) ? body.projectIds.map(String) : null });
+  const loaded = await load(request, id, { leadId: body.leadId ? String(body.leadId) : null, developerId: body.developerId ? String(body.developerId) : null, projectIds: Array.isArray(body.projectIds) ? body.projectIds.map(String) : null });
   if ("error" in loaded) return loaded.error;
-  const { payload, row, projects } = loaded;
+  const { payload, row, projects, lead } = loaded;
   const to = typeof body.toEmail === "string" ? body.toEmail.trim() : "";
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(to)) return NextResponse.json({ error: "Enter a valid email address to send to." }, { status: 400 });
   const from = OUTREACH_SENDERS.find((s) => s.value === body.fromAddress)?.value ?? OUTREACH_SENDERS[0].value;
-  const email = render(row, projects, { template: body.template, contactName: body.contactName, note: body.customNote });
+  const email = render(row, projects, lead, { template: body.template, contactName: body.contactName, note: body.customNote });
   if (!email) return NextResponse.json({ error: "Pick a template." }, { status: 400 });
 
   // Same guard as every other outbound channel: a local/preview session never reaches a real inbox.
@@ -81,6 +92,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     overrideAccess: true,
     data: {
       ...(body.developerId ? { developer: Number(body.developerId) } : {}),
+      ...(body.leadId ? { lead: Number(body.leadId) } : {}),
       ...(Array.isArray(body.projectIds) ? { projects: body.projectIds.map(Number) } : {}),
       template: body.template,
       contactName: body.contactName ?? null,

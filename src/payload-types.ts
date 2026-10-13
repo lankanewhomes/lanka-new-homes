@@ -7425,7 +7425,8 @@ export interface Outreach {
   id: number;
   developer?: (number | null) | Developer;
   projects?: (number | Project)[] | null;
-  template?: ('listing-update' | 'verify-company' | 'complete-profile') | null;
+  lead?: (number | null) | Lead;
+  template?: ('listing-update' | 'verify-company' | 'lead-followup' | 'complete-profile') | null;
   contactName?: string | null;
   toEmail?: string | null;
   fromAddress?: ('developers@lankanewhomes.com' | 'support@lankanewhomes.com') | null;
@@ -7473,50 +7474,6 @@ export interface Outreach {
    */
   code?: string | null;
   resendId?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "subscriptions".
- */
-export interface Subscription {
-  id: number;
-  developer: number | Developer;
-  package: 'featured' | 'featured-plus' | 'developer-pro' | 'campaign';
-  /**
-   * How often this plan bills. Quarterly = 3x the monthly price; Annual = 10x (2 months free). Set from the developer's own request (Placements tab) or by an admin.
-   */
-  billing_interval?: ('monthly' | 'quarterly' | 'annual') | null;
-  /**
-   * Additional featured-project slots beyond the plan's included amount, at that plan's per-extra-slot price (see src/lib/packages.ts) — clamped server-side to whatever the plan actually allows.
-   */
-  extra_featured_slots?: number | null;
-  /**
-   * Set to "active" once payment is confirmed — activates the plan automatically (see hooks/sync-developer-plan.ts). No live gateway yet, so this is a manual step, same as Payments today.
-   */
-  status: 'active' | 'past_due' | 'canceled' | 'incomplete' | 'unpaid';
-  /**
-   * Whether this subscription's amount includes the 40% founding-developer discount (packages.ts). Decided once, at activation — never recalculated afterward.
-   */
-  founding_discount_applied?: boolean | null;
-  /**
-   * Snapshot of the price (plan + any extra slots, x the billing interval, minus 40% if founding_discount_applied), from src/lib/packages.ts — for every fixed-price tier this is set automatically and shouldn't be hand-edited. Exception: `campaign` has no fixed price (negotiated per deal) — an admin sets the real agreed amount here after creating the subscription.
-   */
-  amount: number;
-  currency: 'LKR' | 'USD' | 'CAD';
-  current_period_start?: string | null;
-  current_period_end?: string | null;
-  /**
-   * A developer can check this to cancel — the plan (and every featured project it grants) stays active until the renewal date, then everything reverts to Free.
-   */
-  cancel_at_period_end?: boolean | null;
-  provider?: ('manual' | 'payhere' | 'stripe') | null;
-  /**
-   * Placeholder for a future payment gateway (e.g. PayHere) subscription reference.
-   */
-  provider_subscription_id?: string | null;
-  provider_customer_id?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -7588,6 +7545,50 @@ export interface Lead {
     referrer?: string | null;
   };
   supabase_lead_id?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subscriptions".
+ */
+export interface Subscription {
+  id: number;
+  developer: number | Developer;
+  package: 'featured' | 'featured-plus' | 'developer-pro' | 'campaign';
+  /**
+   * How often this plan bills. Quarterly = 3x the monthly price; Annual = 10x (2 months free). Set from the developer's own request (Placements tab) or by an admin.
+   */
+  billing_interval?: ('monthly' | 'quarterly' | 'annual') | null;
+  /**
+   * Additional featured-project slots beyond the plan's included amount, at that plan's per-extra-slot price (see src/lib/packages.ts) — clamped server-side to whatever the plan actually allows.
+   */
+  extra_featured_slots?: number | null;
+  /**
+   * Set to "active" once payment is confirmed — activates the plan automatically (see hooks/sync-developer-plan.ts). No live gateway yet, so this is a manual step, same as Payments today.
+   */
+  status: 'active' | 'past_due' | 'canceled' | 'incomplete' | 'unpaid';
+  /**
+   * Whether this subscription's amount includes the 40% founding-developer discount (packages.ts). Decided once, at activation — never recalculated afterward.
+   */
+  founding_discount_applied?: boolean | null;
+  /**
+   * Snapshot of the price (plan + any extra slots, x the billing interval, minus 40% if founding_discount_applied), from src/lib/packages.ts — for every fixed-price tier this is set automatically and shouldn't be hand-edited. Exception: `campaign` has no fixed price (negotiated per deal) — an admin sets the real agreed amount here after creating the subscription.
+   */
+  amount: number;
+  currency: 'LKR' | 'USD' | 'CAD';
+  current_period_start?: string | null;
+  current_period_end?: string | null;
+  /**
+   * A developer can check this to cancel — the plan (and every featured project it grants) stays active until the renewal date, then everything reverts to Free.
+   */
+  cancel_at_period_end?: boolean | null;
+  provider?: ('manual' | 'payhere' | 'stripe') | null;
+  /**
+   * Placeholder for a future payment gateway (e.g. PayHere) subscription reference.
+   */
+  provider_subscription_id?: string | null;
+  provider_customer_id?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -9244,6 +9245,7 @@ export interface ListingTodosSelect<T extends boolean = true> {
 export interface OutreachSelect<T extends boolean = true> {
   developer?: T;
   projects?: T;
+  lead?: T;
   template?: T;
   contactName?: T;
   toEmail?: T;
