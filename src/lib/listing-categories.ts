@@ -155,6 +155,10 @@ export const projectCategories: Record<string, ProjectCategory> = {
     metaDescription: "Explore beachfront condo developments and new resort residences in Sri Lanka, from Galle to the east coast, with ocean views and resort-style amenities.",
     h1: "Beachfront Condo Developments in Sri Lanka",
     intro: "From the south coast to the east, these beachfront condo developments and new resort residences in Sri Lanka offer ocean views, resort-style amenities, and strong rental potential for investors.",
+    about: { title: "Beachfront apartments in Sri Lanka", paragraphs: [
+      "Beachfront apartments in Sri Lanka are found along the south, west and east coasts. On the west coast, [Oceanista Panadura](/projects/oceanista-panadura) is a nine-storey building of beachfront apartments in Panadura, Sri Lanka, near Wadduwa, with one-, two- and three-bedroom units.",
+      "Each listing on this page shows the developer, location, status and floor plans where available. You can send an enquiry from any listing and it goes straight to the developer.",
+    ] },
     relatedPaths: ["/projects/villas", "/guides/investment-property", "/guides/foreigners-buying-property"],
     filter: (project) => BEACH_LOCATIONS.some((town) => (project.city ?? "").toLowerCase().includes(town) || (project.location ?? "").toLowerCase().includes(town)) || textIncludes(project, "beach") || textIncludes(project, "resort"),
   },
