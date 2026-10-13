@@ -143,6 +143,8 @@ New villa developments sri lanka, New build homes sri lanka
 ### /projects/beachfront
 Beachfront condo development sri lanka, New resort residences sri lanka
 
+Also: **Beachfront Apartments Panadura Sri Lanka** (owner, 2026-10-12). Primary target page: `/projects/oceanista-panadura` (the only beachfront apartment listing in Panadura); supporting pages: `/neighborhoods/panadura` and `/projects/beachfront`. Tracked in the CMS SEO keywords list; the on-page work is a row in the CMS to-do list.
+
 ### /projects/serviced-apartments
 New serviced apartments sri lanka
 
