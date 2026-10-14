@@ -7,6 +7,7 @@ import { ArrowLeft, Copy, ExternalLink, Loader2, Lock, Save, Trash2, Undo2 } fro
 import { FieldsRenderer } from "./FieldsRenderer";
 import { useCollection, useDash, useGlobal } from "./DashProvider";
 import { StatusChip } from "./StatusChip";
+import { PageHero, heroBtn } from "./PageHero";
 import { collectErrors } from "./schema-utils";
 import type { FieldCtx } from "./fields/shared";
 import type { Row, SchemaField } from "../_mock/types";
@@ -65,23 +66,24 @@ function Form({ title, kind, backHref, fields, initial, isNew, canDelete, onSave
   return (
     <div className="pb-24">
       <Link href={backHref} className="mb-3 inline-flex items-center gap-1 text-sm text-muted hover:text-fg"><ArrowLeft size={14} /> Back to the list</Link>
-      <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h1 className="truncate text-xl font-semibold tracking-tight">{isNew ? `New ${kind.toLowerCase()}` : title || `${kind} #${rec.id}`}</h1>
-          <div className="mt-1.5 flex flex-wrap items-center gap-1.5">{chips.map((c) => <StatusChip key={c.value + (c.label ?? "")} value={c.value} label={c.label} />)}{!isNew && rec.updatedAt ? <span className="text-xs text-muted">Updated {new Date(String(rec.updatedAt)).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</span> : null}</div>
-        </div>
-        <div className="flex items-center gap-2">
-          {liveUrl ? <a href={liveUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-md border border-line px-3 py-1.5 text-sm hover:bg-subtle"><ExternalLink size={14} /> View live</a> : null}
-          {onDuplicate && !isNew ? <button type="button" onClick={onDuplicate} className="inline-flex items-center gap-1.5 rounded-md border border-line px-3 py-1.5 text-sm hover:bg-subtle"><Copy size={14} /> Duplicate</button> : null}
-          {canDelete && !isNew ? <button type="button" onClick={() => setConfirm(true)} className="inline-flex items-center gap-1.5 rounded-md border border-line px-3 py-1.5 text-sm text-bad hover:bg-bad/10"><Trash2 size={14} /> Delete</button> : null}
-        </div>
-      </div>
+      <PageHero
+        title={`${isNew ? `New ${kind.toLowerCase()}` : title || `${kind} #${rec.id}`}.`}
+        description={!isNew && rec.updatedAt ? `Last updated ${new Date(String(rec.updatedAt)).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}` : "Fill in the form and save."}
+        chips={chips.map((c) => <StatusChip key={c.value + (c.label ?? "")} value={c.value} label={c.label} />)}
+        actions={<>
+          {liveUrl ? <a href={liveUrl} target="_blank" rel="noopener noreferrer" className={heroBtn}><ExternalLink size={14} /> View live</a> : null}
+          {onDuplicate && !isNew ? <button type="button" onClick={onDuplicate} className={heroBtn}><Copy size={14} /> Duplicate</button> : null}
+          {canDelete && !isNew ? <button type="button" onClick={() => setConfirm(true)} className={heroBtn}><Trash2 size={14} /> Delete</button> : null}
+        </>}
+      />
 
+      <div className="d-box">
       <div className="rounded-xl border border-line bg-panel p-4 shadow-card sm:p-6">
         <FieldsRenderer fields={fields} data={rec} onChange={(next) => setRec(next as Row)} path={[]} ctx={ctx} />
       </div>
+      </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-panel/95 backdrop-blur lg:left-64">
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-panel lg:left-72">
         <div className="mx-auto flex max-w-[1400px] items-center gap-3 px-4 py-3 sm:px-6">
           <span className={`flex items-center gap-2 text-sm ${dirty ? "text-warn" : "text-muted"}`}>
             <span className={`h-2 w-2 rounded-full ${dirty ? "bg-warn" : "bg-ok"}`} />{dirty ? "Unsaved changes" : isNew ? "Fill in the form to create it" : "All changes saved"}

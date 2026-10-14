@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { ArrowDown, ArrowUp, Check, ChevronLeft, ChevronRight, Columns3, Copy, Filter, Inbox, Pencil, Plus, Search, Trash2, X } from "lucide-react";
 import { useCollection, useDash } from "./DashProvider";
 import { StatusChip } from "./StatusChip";
+import { PageHero, heroBtnSolid } from "./PageHero";
 import { flatFields, getPath } from "./schema-utils";
 import type { CollectionSchema, Row, SchemaField } from "../_mock/types";
 
@@ -112,15 +113,15 @@ function ListInner({ slug, initialFilter }: ListProps) {
 
   return (
     <div>
-      <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-semibold tracking-tight">{schema.label}</h1>
-          <p className="mt-0.5 text-sm text-muted">{schema.description ?? (ready ? `${processed.length} of ${(rows ?? []).length} ${schema.label.toLowerCase()}` : "")}</p>
-        </div>
-        <Link href={`/dashboard/${slug}/new`} className="inline-flex items-center gap-1.5 rounded-md bg-accent px-3.5 py-2 text-sm font-medium text-white hover:opacity-90"><Plus size={15} /> New {schema.singular.toLowerCase()}</Link>
-      </div>
+      <PageHero
+        title={`${schema.label}.`}
+        description={schema.description ?? (ready ? `${processed.length} of ${(rows ?? []).length} ${schema.label.toLowerCase()} match what you are looking at.` : "")}
+        stat={{ label: `Total ${schema.label.toLowerCase()}`, value: ready ? String((rows ?? []).length) : "…" }}
+        actions={<Link href={`/dashboard/${slug}/new`} className={heroBtnSolid}><Plus size={15} /> New {schema.singular.toLowerCase()}</Link>}
+      />
       {dev ? <p className="mb-4 rounded-md border border-line bg-accent-soft px-3 py-2 text-sm text-accent">You are previewing the Developer view: only {`Prime Lands`}&apos; own records are listed here, as Payload&apos;s access rules require.</p> : null}
 
+      <div className="d-box">
       <div className="rounded-xl border border-line bg-panel shadow-card">
         <div className="flex flex-wrap items-center gap-2 border-b border-line p-3">
           <div className="relative min-w-52 flex-1">
@@ -177,7 +178,7 @@ function ListInner({ slug, initialFilter }: ListProps) {
               {loading || !ready ? Array.from({ length: 6 }, (_, i) => <tr key={i} className="border-b border-line last:border-0"><td className="px-3 py-3"><div className="d-skeleton h-4 w-4" /></td>{shown.map((f) => <td key={f.name} className="px-3 py-3"><div className="d-skeleton h-4 w-full max-w-40" /></td>)}<td /></tr>) : slice.map((r) => (
                 <tr key={String(r.id)} onClick={() => router.push(`/dashboard/${slug}/${r.id}`)} className="group cursor-pointer border-b border-line last:border-0 hover:bg-subtle/60">
                   <td className="px-3 py-2.5" onClick={(e) => e.stopPropagation()}><input type="checkbox" aria-label={`Select row ${r.id}`} checked={picked.has(r.id)} onChange={() => setPicked((p) => { const n = new Set(p); if (n.has(r.id)) n.delete(r.id); else n.add(r.id); return n; })} /></td>
-                  {shown.map((f) => <td key={f.name} className={`px-3 py-2.5 ${f.name === titleField ? "font-medium" : ""}`}><Cell field={f} row={r} titleOf={titleOf} /></td>)}
+                  {shown.map((f) => <td key={f.name} className={`px-3 py-2.5 ${f.name === titleField ? "min-w-[16rem] font-medium" : ""}`}><Cell field={f} row={r} titleOf={titleOf} /></td>)}
                   <td className="px-3 py-2.5" onClick={(e) => e.stopPropagation()}>
                     <span className="flex justify-end gap-0.5 opacity-0 transition group-hover:opacity-100 focus-within:opacity-100">
                       <Link href={`/dashboard/${slug}/${r.id}`} aria-label="Edit" className="rounded p-1.5 text-muted hover:bg-panel hover:text-fg"><Pencil size={14} /></Link>
@@ -210,6 +211,7 @@ function ListInner({ slug, initialFilter }: ListProps) {
             </div>
           </div>
         </div>
+      </div>
       </div>
 
       {confirm ? (

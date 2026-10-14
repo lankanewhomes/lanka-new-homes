@@ -6,6 +6,7 @@ import { ArrowUpRight, CalendarClock, Eye, MessageCircle, Star, Building2 } from
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useDash } from "./DashProvider";
 import { StatusChip } from "./StatusChip";
+import { PageHero, heroBtn } from "./PageHero";
 import { NOW, daysAgo, makeRng } from "../_mock/seeds";
 import { MOCK_DEVELOPER } from "../_mock/types";
 
@@ -51,11 +52,14 @@ export function Overview() {
 
   return (
     <div>
-      <div className="mb-5">
-        <h1 className="text-xl font-semibold tracking-tight">{admin ? "Overview" : `Welcome back, ${MOCK_DEVELOPER.name}`}</h1>
-        <p className="mt-0.5 text-sm text-muted">{admin ? "Across all developers on LankaNewHomes." : "How your listings are performing."} Sample numbers for the design preview.</p>
-      </div>
+      <PageHero
+        title={admin ? "Overview." : "Welcome back."}
+        description={admin ? "How LankaNewHomes is doing across every developer. Sample numbers for the design preview." : `How ${MOCK_DEVELOPER.name}'s listings are performing. Sample numbers for the design preview.`}
+        stat={{ label: "Leads this month", value: String(month.length) }}
+        actions={<><Link href="/dashboard/leads" className={heroBtn}>View leads</Link><Link href="/dashboard/projects" className={heroBtn}>Your projects</Link></>}
+      />
 
+      <div className="d-box">
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Stat icon={Eye} label="Views, last 30 days" value={total.toLocaleString("en-LK")} sub="+12% on the 30 days before" tone="accent" />
         <Stat icon={MessageCircle} label="Leads this month" value={String(month.length)} sub={`${month.filter((l) => l.status === "new").length} still new`} />
@@ -69,12 +73,12 @@ export function Overview() {
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={series} margin={{ top: 4, right: 8, left: -12, bottom: 0 }}>
-                <defs><linearGradient id="viewsFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--d-accent)" stopOpacity={0.3} /><stop offset="100%" stopColor="var(--d-accent)" stopOpacity={0} /></linearGradient></defs>
+                <defs><linearGradient id="viewsFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--d-brand)" stopOpacity={0.28} /><stop offset="100%" stopColor="var(--d-brand)" stopOpacity={0} /></linearGradient></defs>
                 <CartesianGrid stroke="var(--d-line)" strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="day" tick={{ fill: "var(--d-muted)", fontSize: 11 }} tickLine={false} axisLine={false} interval={4} />
                 <YAxis tick={{ fill: "var(--d-muted)", fontSize: 11 }} tickLine={false} axisLine={false} />
                 <Tooltip contentStyle={{ background: "var(--d-panel)", border: "1px solid var(--d-line)", borderRadius: 8, fontSize: 12 }} labelStyle={{ color: "var(--d-fg)" }} />
-                <Area type="monotone" dataKey="views" stroke="var(--d-accent)" strokeWidth={2} fill="url(#viewsFill)" />
+                <Area type="monotone" dataKey="views" stroke="var(--d-brand)" strokeWidth={2} fill="url(#viewsFill)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -116,6 +120,7 @@ export function Overview() {
           </table>
         </div>
       </section>
+      </div>
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, Check, CalendarClock, Crown, Info, RefreshCw, Sparkles, Star } from "lucide-react";
 import { useDash } from "./DashProvider";
 import { NOW } from "../_mock/seeds";
+import { PageHero, heroBtn } from "./PageHero";
 
 // "My package": the current plan, which of the developer's projects fill the featured spots (swappable any time),
 // the end date, and the upgrade options. The tiers mirror Payload's `package` options (free, featured, featured-plus,
@@ -36,12 +37,15 @@ export function PackagePage() {
 
   return (
     <div>
-      <div className="mb-5">
-        <h1 className="text-xl font-semibold tracking-tight">{d.role === "admin" ? "Packages" : "My package"}</h1>
-        <p className="mt-0.5 text-sm text-muted">Your plan, your featured spots and your upgrade options.</p>
-      </div>
+      <PageHero
+        title={d.role === "admin" ? "Packages." : "My package."}
+        description="Your plan, your featured spots and your upgrade options."
+        stat={{ label: "Days left", value: String(daysLeft) }}
+        actions={<button type="button" onClick={() => d.toast("Renewal is a preview: no payment taken", "info")} className={heroBtn}><RefreshCw size={14} /> Renew early</button>}
+      />
       {d.role === "admin" ? <p className="mb-4 flex items-start gap-2 rounded-md border border-line bg-accent-soft px-3 py-2 text-sm text-accent"><Info size={15} className="mt-0.5 shrink-0" />This is what a developer sees (Prime Lands). Admins manage subscriptions and pricing under Billing.</p> : null}
 
+      <div className="d-box">
       <div className="grid gap-5 xl:grid-cols-3">
         <section className="rounded-xl border border-line bg-panel p-5 shadow-card xl:col-span-1">
           <div className="flex items-center gap-2 text-sm text-muted"><Crown size={15} className="text-accent" /> Current package</div>
@@ -109,6 +113,7 @@ export function PackagePage() {
         </table>
       </div>
       <p className="mt-3 text-sm text-muted">Need a custom plan? <Link href="/dashboard/inbox" className="text-accent hover:underline">Contact us</Link>.</p>
+      </div>
     </div>
   );
 }

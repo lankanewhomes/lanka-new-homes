@@ -3,6 +3,7 @@
 import { CheckCircle2, RefreshCw } from "lucide-react";
 import { useDash } from "./DashProvider";
 import { StatusChip } from "./StatusChip";
+import { PageHero } from "./PageHero";
 import { MAILBOXES } from "../_mock/mail";
 
 const IMPORTED: Record<string, number> = {
@@ -16,11 +17,9 @@ const CHECKS = ["Zoho login OK", "Mailboxes found: 3 of 3", "Cron running", "Sen
 export function ConnectionStatus() {
   const { toast } = useDash();
   return (
-    <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-2xl font-semibold">Mail connection</h1>
-        <p className="mt-1 text-sm text-muted">Status of the Zoho mailboxes synced into the dashboard inbox (preview data).</p>
-      </div>
+    <div>
+      <PageHero title="Mail connection." description="Status of the Zoho mailboxes synced into the dashboard inbox (preview data)." stat={{ label: "Mailboxes connected", value: `${MAILBOXES.length} of ${MAILBOXES.length}` }} />
+      <div className="d-box flex flex-col gap-6">
       <div className="grid gap-4 md:grid-cols-3">
         {MAILBOXES.map((b) => (
           <div key={b.address} className="flex flex-col gap-3 rounded-xl border border-line bg-panel p-4 shadow-card">
@@ -42,6 +41,7 @@ export function ConnectionStatus() {
         <ul className="flex flex-col gap-2 text-sm">
           {CHECKS.map((c) => <li key={c} className="flex items-center gap-2"><CheckCircle2 size={16} className="text-ok" />{c}</li>)}
         </ul>
+      </div>
       </div>
     </div>
   );

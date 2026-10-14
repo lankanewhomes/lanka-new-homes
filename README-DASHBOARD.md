@@ -8,6 +8,10 @@ A UI-only preview of a new admin dashboard. **Mock data, no database, no auth, n
 
 > **Why `/dashboard/overview` and not `/dashboard`?** The public site already has a page at `/dashboard` (the buyer "Your dashboard" placeholder in `src/app/(frontend)/dashboard/page.tsx`). Two pages cannot own one URL, so the overview sits at `/dashboard/overview` and the public page is untouched. When this replaces the placeholder, move `overview/page.tsx` to `dashboard/(app)/page.tsx` and delete the old one.
 
+## Look and feel
+
+Matches the site's own account area (`/account/compare`): white page, square corners, flat 1px bordered boxes, a dark split hero with a faint grid and one white stat card (`_components/PageHero.tsx`), lilac grid-textured sections (`.d-box`), a side menu of bordered rows where the open page is a solid dark row with a tick, an orange search button, Archivo type, and outline pill buttons on the dark hero. All colours are tokens in `_components/dashboard.css`; the brand orange is `--d-brand`, the dark ink `--d-ink`.
+
 ## How it works
 
 | Piece | Where | What it does |

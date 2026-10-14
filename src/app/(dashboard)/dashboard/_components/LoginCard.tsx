@@ -20,14 +20,13 @@ export function LoginCard() {
     setTimeout(() => router.push("/dashboard/overview"), 500);
   };
   return (
-    <div className="grid min-h-screen place-items-center bg-bg px-4 py-10">
+    <div className="d-box grid min-h-screen place-items-center !p-4">
       <div className="w-full max-w-sm">
-        <div className="mb-6 flex items-center justify-center gap-2">
-          <span className="grid h-9 w-9 place-items-center rounded-lg bg-accent text-base font-bold text-white">L</span>
-          <span className="text-lg font-semibold tracking-tight">LankaNewHomes</span>
+        <div className="mb-6 text-center">
+          <span className="text-[22px] font-bold leading-[1.05] tracking-tight">Lanka<br />NewHomes</span>
         </div>
-        <form onSubmit={submit} className="rounded-xl border border-line bg-panel p-6 shadow-card">
-          <h1 className="text-lg font-semibold">Sign in</h1>
+        <form onSubmit={submit} className="border border-line bg-panel p-7">
+          <h1 className="text-[28px] font-normal leading-tight">Sign in.</h1>
           <p className="mt-0.5 text-sm text-muted">Design preview: any details work.</p>
           <div className="mt-5 grid grid-cols-2 gap-1 rounded-lg bg-subtle p-1" role="radiogroup" aria-label="Preview as">
             {([["admin", "Admin", ShieldCheck], ["developer", "Developer", User]] as const).map(([v, label, Icon]) => (

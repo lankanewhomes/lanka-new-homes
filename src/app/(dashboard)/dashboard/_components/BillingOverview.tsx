@@ -5,6 +5,7 @@ import { Banknote, CreditCard, Repeat, TrendingUp } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useDash } from "./DashProvider";
 import { StatusChip } from "./StatusChip";
+import { PageHero } from "./PageHero";
 
 /** Admin billing overview (Payload: the /cms/billing view over Subscriptions and Payments). */
 export function BillingOverview() {
@@ -21,7 +22,8 @@ export function BillingOverview() {
   );
   return (
     <div>
-      <div className="mb-5"><h1 className="text-xl font-semibold tracking-tight">Billing overview</h1><p className="mt-0.5 text-sm text-muted">Subscriptions and payments across all developers. Sample figures.</p></div>
+      <PageHero title="Billing overview." description="Subscriptions and payments across all developers. Sample figures." stat={{ label: "Monthly recurring", value: `Rs. ${mrr.toLocaleString("en-LK")}` }} />
+      <div className="d-box">
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {stat(Repeat, "Monthly recurring", `Rs. ${mrr.toLocaleString("en-LK")}`)}
         {stat(Banknote, "Collected (6 months)", `Rs. ${collected.toLocaleString("en-LK")}`)}
@@ -30,7 +32,7 @@ export function BillingOverview() {
       </div>
       <section className="mt-5 rounded-xl border border-line bg-panel p-4 shadow-card">
         <h2 className="mb-3 font-semibold">Revenue by month</h2>
-        <div className="h-56"><ResponsiveContainer width="100%" height="100%"><BarChart data={months} margin={{ top: 4, right: 8, left: 8, bottom: 0 }}><CartesianGrid stroke="var(--d-line)" strokeDasharray="3 3" vertical={false} /><XAxis dataKey="month" tick={{ fill: "var(--d-muted)", fontSize: 11 }} tickLine={false} axisLine={false} /><YAxis tick={{ fill: "var(--d-muted)", fontSize: 11 }} tickLine={false} axisLine={false} tickFormatter={(v: number) => `${Math.round(v / 1000)}k`} /><Tooltip contentStyle={{ background: "var(--d-panel)", border: "1px solid var(--d-line)", borderRadius: 8, fontSize: 12 }} /><Bar dataKey="revenue" fill="var(--d-accent)" radius={[4, 4, 0, 0]} /></BarChart></ResponsiveContainer></div>
+        <div className="h-56"><ResponsiveContainer width="100%" height="100%"><BarChart data={months} margin={{ top: 4, right: 8, left: 8, bottom: 0 }}><CartesianGrid stroke="var(--d-line)" strokeDasharray="3 3" vertical={false} /><XAxis dataKey="month" tick={{ fill: "var(--d-muted)", fontSize: 11 }} tickLine={false} axisLine={false} /><YAxis tick={{ fill: "var(--d-muted)", fontSize: 11 }} tickLine={false} axisLine={false} tickFormatter={(v: number) => `${Math.round(v / 1000)}k`} /><Tooltip contentStyle={{ background: "var(--d-panel)", border: "1px solid var(--d-line)", borderRadius: 8, fontSize: 12 }} /><Bar dataKey="revenue" fill="var(--d-brand)" radius={[4, 4, 0, 0]} /></BarChart></ResponsiveContainer></div>
       </section>
       <section className="mt-5 overflow-x-auto rounded-xl border border-line bg-panel shadow-card">
         <div className="border-b border-line px-4 py-3 font-semibold">Subscriptions</div>
@@ -39,6 +41,7 @@ export function BillingOverview() {
           <tbody>{subs.map((s) => <tr key={String(s.id)} className="border-b border-line last:border-0"><td className="px-4 py-2.5 font-medium">{name(s.developer)}</td><td className="px-4 py-2.5">{String(s.package).replace(/-/g, " ")}</td><td className="px-4 py-2.5"><StatusChip value={String(s.status)} /></td><td className="px-4 py-2.5 text-right tabular-nums">Rs. {Number(s.amount ?? 0).toLocaleString("en-LK")}</td></tr>)}</tbody>
         </table>
       </section>
+      </div>
     </div>
   );
 }
