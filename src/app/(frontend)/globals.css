@@ -9631,6 +9631,15 @@ a.developer-profile-press-title {
   line-height: 26px;
 }
 
+/* On desktop the search sentence ("There are 12 communities matching your search") is the same size as the page title on /projects
+   ("New projects in Sri Lanka"), owner 2026-10-14. Phones keep the smaller 19px, where the long sentence needs it. */
+@media (min-width: 761px) {
+  .listing-header-h1-dynamic {
+    font-size: 22px;
+    line-height: 30px;
+  }
+}
+
 .listing-header-count {
   margin: 6px 0 0;
   font-size: 13px;
