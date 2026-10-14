@@ -24,12 +24,13 @@ const MODES = {
   markRead: 'markAsRead',
   markUnread: 'markAsUnread',
   move: 'moveMessage',
-  archive: 'archiveMessage',
-  spam: 'markSpam',
+  archive: 'archiveMails',
+  spam: 'moveToSpam',
   star: 'setFlag',
-  unstar: 'removeFlag',
+  unstar: 'setFlag',
 } as const
-const STAR_FLAG = 'flag_important'
+const STAR_FLAG = 'important'
+const UNSTAR_FLAG = 'flag_not_set'
 
 type Json = Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any -- Zoho responses are loosely typed
 
@@ -138,7 +139,7 @@ export class ZohoMailProvider implements MailProvider {
   }
 
   /** One HTTP call with token refresh on 401 and backoff + retry on rate limits (429) and server errors. */
-  private async request(creds: ZohoCreds, method: string, path: string, opts: { query?: Record<string, string | number | undefined>; json?: unknown; form?: FormData; binary?: boolean } = {}): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
+  private async request(creds: ZohoCreds, method: string, path: string, opts: { query?: Record<string, string | number | undefined>; json?: unknown; rawJson?: string; form?: FormData; binary?: boolean } = {}): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
     const url = new URL(`${this.mailApi}${path}`)
     for (const [k, v] of Object.entries(opts.query ?? {})) if (v !== undefined && v !== '') url.searchParams.set(k, String(v))
     let refreshed = false
@@ -148,8 +149,8 @@ export class ZohoMailProvider implements MailProvider {
       forceToken = false
       const res = await fetch(url, {
         method,
-        headers: { Authorization: `Zoho-oauthtoken ${token}`, Accept: 'application/json', ...(opts.json ? { 'Content-Type': 'application/json' } : {}) },
-        body: opts.form ?? (opts.json ? JSON.stringify(opts.json) : undefined),
+        headers: { Authorization: `Zoho-oauthtoken ${token}`, Accept: 'application/json', ...(opts.json || opts.rawJson ? { 'Content-Type': 'application/json' } : {}) },
+        body: opts.form ?? opts.rawJson ?? (opts.json ? JSON.stringify(opts.json) : undefined),
       })
       if (res.status === 401 && !refreshed) { refreshed = true; forceToken = true; continue }
       if (res.status === 429 || res.status >= 500) {
@@ -340,15 +341,17 @@ export class ZohoMailProvider implements MailProvider {
 
   // ---- changing and deleting
   async updateMessages(accountId: string, folderId: string, ids: string[], action: MessageAction) {
-    const base: Json = { messageId: ids.map(Number), folderId }
+    // Zoho ids are 19 digits (beyond Number.MAX_SAFE_INTEGER) and the API wants JSON numbers, so they go in as strings
+    // and are turned into bare digits after stringifying, otherwise they get rounded and the update silently misses.
+    const base: Json = { messageId: ids.map((id) => `@@${id}@@`), folderId: `@@${folderId}@@` }
     const body: Json =
-      action.type === 'move' ? { ...base, mode: MODES.move, destfolderId: action.destFolderId }
+      action.type === 'move' ? { ...base, mode: MODES.move, destfolderId: `@@${action.destFolderId}@@` }
         : action.type === 'archive' ? { ...base, mode: MODES.archive }
           : action.type === 'spam' ? { ...base, mode: MODES.spam }
             : action.type === 'star' ? { ...base, mode: MODES.star, flagid: STAR_FLAG }
-              : action.type === 'unstar' ? { ...base, mode: MODES.unstar }
+              : action.type === 'unstar' ? { ...base, mode: MODES.unstar, flagid: UNSTAR_FLAG }
                 : { ...base, mode: action.type === 'markRead' ? MODES.markRead : MODES.markUnread }
-    await this.call(accountId, 'PUT', `/accounts/${accountId}/updatemessage`, { json: body })
+    await this.call(accountId, 'PUT', `/accounts/${accountId}/updatemessage`, { rawJson: JSON.stringify(body).replace(/"@@(\d+)@@"/g, '$1') })
   }
 
   async deleteMessages(accountId: string, folderId: string, ids: string[]) {

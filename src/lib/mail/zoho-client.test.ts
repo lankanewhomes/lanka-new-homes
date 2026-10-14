@@ -82,8 +82,8 @@ describe('ZohoMailProvider (fetch stubbed)', () => {
     const reply = calls.find((c) => c.url.endsWith('/accounts/1/messages/9'))!
     expect(JSON.parse(reply.body!).action).toBe('replyall')
     const puts = calls.filter((c) => c.method === 'PUT').map((c) => JSON.parse(c.body!))
-    expect(puts[0]).toMatchObject({ mode: 'setFlag', messageId: [9, 10], folderId: '11' })
-    expect(puts[1]).toMatchObject({ mode: 'moveMessage', destfolderId: '12' })
+    expect(puts[0]).toMatchObject({ mode: 'setFlag', messageId: [9, 10], folderId: 11, flagid: 'important' })
+    expect(puts[1]).toMatchObject({ mode: 'moveMessage', destfolderId: 12 })
   })
 
   it('retries after a rate limit and refreshes an expired token', async () => {
