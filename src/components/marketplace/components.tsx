@@ -3665,7 +3665,7 @@ export function ProjectDescriptionSection({ project, floorPlan, headingOverride,
           to, never a fabricated one. */}
       {project.sourceUrl || developer?.website ? (
         <p className="project-description-source">
-          {t("Source")}: <a href={project.sourceUrl || developer?.website} target="_blank" rel={project.sourceUrl ? "sponsored noopener" : "noopener noreferrer"}>{project.developerName}</a>
+          {t("Source")}: <a href={project.sourceUrl || developer?.website} target="_blank" rel="noopener noreferrer">{project.developerName}</a>
         </p>
       ) : null}
     </section>
