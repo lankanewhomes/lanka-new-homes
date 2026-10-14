@@ -158,11 +158,20 @@ export async function sendLeadAlerts(payload: Payload, lead: LeadLike, opts: { r
   // listing also send"), plus the developer's own "CC on lead alerts" addresses.
   const developerEmail = text((developerDoc.lead_alerts as AnyDoc | undefined)?.email) || text(developerDoc.contact_email)
   const listingEmail = text((project.contact as AnyDoc | undefined)?.email)
+  // Team members who handle this listing (confirmed accounts only, so an unconfirmed address never receives buyer details).
+  const teamEmails: string[] =
+    routing.mode === 'test'
+      ? []
+      : (
+          await payload
+            .find({ collection: 'team-members' as never, where: { and: [{ listings: { contains: projectId } }, { status: { equals: 'active' } }] } as never, limit: 50, depth: 0, overrideAccess: true })
+            .catch(() => ({ docs: [] as AnyDoc[] }))
+        ).docs.map((row) => text((row as AnyDoc).email))
   const ccEmails =
     routing.mode === 'test'
       ? []
       : Array.from(new Map(
-          [developerEmail, listingEmail, ...(Array.isArray(alerts.cc) ? (alerts.cc as unknown[]) : []).map(text)]
+          [developerEmail, listingEmail, ...teamEmails, ...(Array.isArray(alerts.cc) ? (alerts.cc as unknown[]) : []).map(text)]
             .map((address) => address.trim())
             .filter((address) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(address) && address.toLowerCase() !== alertEmail.toLowerCase())
             .map((address) => [address.toLowerCase(), address] as const),

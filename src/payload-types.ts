@@ -4473,11 +4473,24 @@ export interface ConstructionCompany {
   createdAt: string;
 }
 /**
+ * People who help manage some of your listings. Add their email and tick the listings they handle. They get an email invite, confirm their email address, and can then edit those listings and see only the enquiries about them. You keep full control of everything.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "team-members".
  */
 export interface TeamMember {
   id: number;
+  /**
+   * They sign in with this exact address. They must confirm it before anything is shared.
+   */
+  email: string;
+  /**
+   * They can edit and delete only these, and see only the enquiries about them. Their email is also copied on every enquiry for these listings.
+   */
+  listings?: (number | Project)[] | null;
+  /**
+   * Filled in automatically with your company.
+   */
   company:
     | {
         relationTo: 'developers';
@@ -4487,7 +4500,14 @@ export interface TeamMember {
         relationTo: 'construction-companies';
         value: number | ConstructionCompany;
       };
-  user: number | User;
+  /**
+   * Set automatically once they have an account with the email confirmed.
+   */
+  user?: (number | null) | User;
+  status?: ('invited' | 'active') | null;
+  /**
+   * A label only. What they can do is set by the listings you tick.
+   */
   role: 'owner' | 'sales' | 'marketing' | 'member';
   updatedAt: string;
   createdAt: string;
@@ -9810,8 +9830,11 @@ export interface PlanWaitlistSelect<T extends boolean = true> {
  * via the `definition` "team-members_select".
  */
 export interface TeamMembersSelect<T extends boolean = true> {
+  email?: T;
+  listings?: T;
   company?: T;
   user?: T;
+  status?: T;
   role?: T;
   updatedAt?: T;
   createdAt?: T;

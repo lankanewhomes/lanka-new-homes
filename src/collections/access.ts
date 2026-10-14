@@ -59,16 +59,42 @@ export const ownerOrAdmin: Access = ({ req }) => {
 export async function getOwnedProjectIds(req: PayloadRequest): Promise<(string | number)[]> {
   if (getRole(req) !== 'developer') return []
   const ownedDeveloperIds = await getOwnedDeveloperIds(req)
-  if (ownedDeveloperIds.length === 0) return []
-  const ownedProjects = await req.payload.find({
-    collection: 'projects',
-    where: { developer: { in: ownedDeveloperIds } },
-    limit: 1000,
+  const own = ownedDeveloperIds.length === 0
+    ? []
+    : (
+        await req.payload.find({
+          collection: 'projects',
+          where: { developer: { in: ownedDeveloperIds } },
+          limit: 1000,
+          depth: 0,
+          overrideAccess: true,
+          req,
+        })
+      ).docs.map((doc) => doc.id)
+  // Listings a company's owner has handed to this login as a team member (Team members collection).
+  const team = await getTeamProjectIds(req)
+  return Array.from(new Set([...own, ...team]))
+}
+
+// Project ids the current developer-role user may manage as a TEAM MEMBER of someone else's company: the listings the owner
+// ticked on their Team members row (owner decision 2026-10-14: the developer's main login has full control; a team member
+// can edit and delete only the listings assigned to them, and sees those listings' enquiries).
+export async function getTeamProjectIds(req: PayloadRequest): Promise<(string | number)[]> {
+  const user = authedUser(req)
+  if (!user || getRole(req) !== 'developer') return []
+  const rows = await req.payload.find({
+    collection: 'team-members',
+    where: { user: { equals: user.id } },
+    limit: 200,
     depth: 0,
     overrideAccess: true,
     req,
   })
-  return ownedProjects.docs.map((doc) => doc.id)
+  const ids: (string | number)[] = []
+  for (const row of rows.docs as { listings?: unknown[] | null }[]) {
+    for (const l of row.listings ?? []) ids.push(relatedId(l) as string | number)
+  }
+  return Array.from(new Set(ids.filter((id) => id !== undefined && id !== null)))
 }
 
 // Leads read/update: the submitting buyer (if they had an account), an
@@ -189,5 +215,18 @@ export function ownPayerAccess(relationField: string): Access {
     return {
       and: [{ [`${relationField}.relationTo`]: { equals: collection } }, { [`${relationField}.value`]: { in: ownedIds } }],
     }
+  }
+}
+
+// update/delete on a project: whoever `base` already allows (admin, or the owner of the developer profile), plus a team member
+// for the listings assigned to them. Team members cannot create listings (the base rule still applies to create).
+export function withTeamListings(base: Access): Access {
+  return async (args) => {
+    const result = await base(args)
+    if (result === true) return true
+    const ids = await getTeamProjectIds(args.req)
+    if (ids.length === 0) return result
+    const teamWhere: Where = { id: { in: ids } }
+    return result && typeof result === 'object' ? { or: [result, teamWhere] } : teamWhere
   }
 }

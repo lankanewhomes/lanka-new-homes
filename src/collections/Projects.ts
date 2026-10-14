@@ -1,5 +1,5 @@
-import type { CollectionConfig } from 'payload'
-import { adminOnlyField, getOwnedDeveloperIds, getRole, isAdmin, ownDeveloperAccess, publicRead } from './access'
+import type { CollectionConfig, Where } from 'payload'
+import { adminOnlyField, getOwnedDeveloperIds, getRole, getTeamProjectIds, isAdmin, ownDeveloperAccess, publicRead, withTeamListings } from './access'
 import {
   amenitiesField,
   BASEMENT_OPTIONS,
@@ -166,14 +166,16 @@ export const Projects: CollectionConfig = {
       // established "matches no real row" sentinel for an integer id column
       // (same convention as AdminDashboard.tsx/Subscriptions.ts) — the safe
       // default is to show nothing, not everything.
-      return { developer: { in: ownedIds.length > 0 ? ownedIds : [-1] } }
+      const teamIds = await getTeamProjectIds(req)
+      const own: Where = { developer: { in: ownedIds.length > 0 ? ownedIds : [-1] } }
+      return teamIds.length > 0 ? { or: [own, { id: { in: teamIds } }] } : own
     },
   },
   access: {
     read: publicRead,
     create: ownDeveloperAccess('developer'),
-    update: ownDeveloperAccess('developer'),
-    delete: ownDeveloperAccess('developer'),
+    update: withTeamListings(ownDeveloperAccess('developer')),
+    delete: withTeamListings(ownDeveloperAccess('developer')),
   },
   hooks: {
     beforeValidate: [
@@ -205,7 +207,15 @@ export const Projects: CollectionConfig = {
             { name: 'completeness_todo', type: 'ui', admin: { components: { Field: '@/components/payload/CompletenessTodo#CompletenessTodo' } } },
             { name: 'slug', type: 'text', required: true, unique: true, index: true },
             { name: 'name', type: 'text', required: true, admin: { components: { Cell: '@/components/payload/ListingCells#ProjectNameCell' } } },
-            { name: 'developer', type: 'relationship', relationTo: 'developers', required: true, index: true },
+            {
+              name: 'developer',
+              type: 'relationship',
+              relationTo: 'developers',
+              required: true,
+              index: true,
+              // A team member can edit a listing but never move it to another company: only an admin or the owner of a developer profile can.
+              access: { update: async ({ req }) => isAdmin(req) || (await getOwnedDeveloperIds(req)).length > 0 },
+            },
             { name: 'architect', type: 'relationship', relationTo: 'architects' },
             { name: 'structuralEngineer', type: 'text', label: 'Structural engineer', admin: { description: 'Shown in the details table. Only what the developer publishes.' } },
             { name: 'mepConsultant', type: 'text', label: 'MEP consultant', admin: { description: 'Mechanical, electrical and plumbing consultant/partner, as published.' } },

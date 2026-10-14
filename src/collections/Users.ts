@@ -3,6 +3,7 @@ import { adminOnly, adminOnlyField, adminOrSelfById, hiddenUnlessAdmin, isAdmin 
 import { magicLinkEndpoints } from './auth/magic-link'
 import { renderPasswordResetEmailHTML, renderVerificationEmailHTML } from './auth/verification-email'
 import { autoVerifyDeveloperOnLogin } from './hooks/auto-verify-developer'
+import { linkTeamInvites, normEmail } from '@/lib/team-invites'
 
 function slugify(value: string): string {
   return value
@@ -68,7 +69,18 @@ export const Users: CollectionConfig = {
   },
   endpoints: magicLinkEndpoints,
   hooks: {
-    afterLogin: [autoVerifyDeveloperOnLogin],
+    afterLogin: [
+      autoVerifyDeveloperOnLogin,
+      // Team member invites (src/lib/team-invites.ts): signing in proves the email is confirmed, so open invites for it are linked now.
+      async ({ user, req }) => {
+        try {
+          await linkTeamInvites(req.payload, user as never, req)
+        } catch (error) {
+          req.payload.logger.error(`Team invite link failed: ${error instanceof Error ? error.message : error}`)
+        }
+        return user
+      },
+    ],
     afterChange: [
       // A developer's linked company profile used to be created by a second
       // client-side request (PayloadLoginForm signup, POST /developers)
@@ -82,6 +94,13 @@ export const Users: CollectionConfig = {
         if (operation === 'create' && doc.role === 'developer' && doc.company_name) {
           const companyName = doc.company_name as string
           const email = (doc.email as string)?.toLowerCase()
+
+          // Invited as a team member of a company? Then this account is a team login, not a new company: skip creating one.
+          const invited = await req.payload.count({ collection: 'team-members', where: { email: { equals: normEmail(email) } }, overrideAccess: true, req })
+          if (invited.totalDocs > 0) {
+            await req.payload.update({ collection: 'users', id: doc.id, data: { company_name: null }, overrideAccess: true, req })
+            return doc
+          }
 
           // An admin may have pre-built this developer's whole profile
           // (and projects) before they ever signed up, using the same
