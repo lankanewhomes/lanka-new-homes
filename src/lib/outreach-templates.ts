@@ -136,3 +136,14 @@ export function renderOutreachEmail(id: OutreachTemplateId, ctx: OutreachContext
     .trim()
   return { subject: outreachSubject(id, ctx), html, text }
 }
+
+/** A short personal reply in the same branded shell (logo, rule, signature, footer) with no steps or buttons. Paragraphs are separated by blank lines. */
+export function renderPlainReplyEmail(opts: { body: string; signoff?: string }): { html: string; text: string } {
+  const paras = opts.body.trim().split(/\n{2,}/).map((para) => `<p style="${P}">${esc(para).replace(/\n/g, '<br>')}</p>`).join('')
+  const header = `<tr><td style="padding:22px 32px 18px; border-bottom:3px solid ${ACCENT};"><a href="https://www.lankanewhomes.com" style="text-decoration:none;"><img src="https://www.lankanewhomes.com/brand/logo-email.png" width="130" alt="LankaNewHomes" style="display:block; border:0; width:130px; height:auto; font-size:18px; font-weight:700; color:#1f1f1f;"></a></td></tr>`
+  const main = `<tr><td style="padding:26px 32px 8px;">${paras}<p style="${P} margin-bottom:4px;">${esc(opts.signoff ?? 'Best regards,')}<br><strong>Rupan</strong><br><span style="color:${MUTED};">LankaNewHomes</span></p></td></tr>`
+  const footer = `<tr><td style="padding:18px 32px 26px; border-top:1px solid ${LINE}; font-size:12px; line-height:1.6; color:${MUTED};">LankaNewHomes · New homes and land for sale in Sri Lanka<br>Questions? Just reply to this email or write to ${a('mailto:developers@lankanewhomes.com', 'developers@lankanewhomes.com')}.</td></tr>`
+  const html = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head><body style="margin:0; padding:24px 12px; background:#f3f1ec; font-family:Arial,Helvetica,sans-serif;"><table role="presentation" align="center" width="100%" cellpadding="0" cellspacing="0" style="max-width:620px; margin:0 auto; background:#ffffff; border:1px solid ${LINE};">${header}${main}${footer}</table></body></html>`
+  const text = `${opts.body.trim()}\n\n${opts.signoff ?? 'Best regards,'}\nRupan\nLankaNewHomes`
+  return { html, text }
+}
