@@ -34,7 +34,7 @@ export default function PrivacyPage() {
       </ul>
       <p>We also collect some information automatically:</p>
       <ul>
-        <li>Usage data such as pages viewed, listings saved, and search activity, via Google Analytics and Google Tag Manager — see our <Link href="/cookies">Cookie Policy</Link> for details.</li>
+        <li>Usage data such as pages viewed, listings saved, and search activity, via Google Analytics, Google Tag Manager and Microsoft Clarity (heatmaps and anonymised session replays, with what you type masked) — see our <Link href="/cookies">Cookie Policy</Link> for details.</li>
         <li>Standard technical information (IP address, browser type, device type) recorded by our hosting provider for security and performance.</li>
       </ul>
 
@@ -43,7 +43,7 @@ export default function PrivacyPage() {
         <li>To connect buyer inquiries with the relevant developer or sales team, and route lead alerts to them by email and (where enabled) WhatsApp.</li>
         <li>To create and manage your account, including signing you in via Google, Facebook, or LinkedIn.</li>
         <li>To send transactional emails — account confirmation, password resets, and lead notifications — through our email provider, Resend.</li>
-        <li>To understand how the site is used so we can improve it, using aggregated analytics from Google Analytics.</li>
+        <li>To understand how the site is used so we can improve it, using aggregated analytics from Google Analytics and Microsoft Clarity.</li>
         <li>To detect and prevent fraud, spam, and misuse of the platform.</li>
       </ul>
 
@@ -51,6 +51,7 @@ export default function PrivacyPage() {
       <p>We share buyer inquiry details (name, contact information, and message) with the specific developer or sales team a buyer contacts — that is the core purpose of the platform. We do not sell your personal information to third parties. We use the following service providers to operate the site, each of which processes data on our behalf:</p>
       <ul>
         <li><strong>Google</strong> — sign-in (OAuth), Analytics, and Tag Manager.</li>
+        <li><strong>Microsoft</strong> — Clarity, for heatmaps and session replays.</li>
         <li><strong>Meta (Facebook)</strong> and <strong>LinkedIn</strong> — sign-in (OAuth), where enabled.</li>
         <li><strong>Resend</strong> — delivery of transactional email.</li>
         <li><strong>Supabase</strong> and <strong>Cloudflare</strong> — database hosting and media storage.</li>

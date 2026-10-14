@@ -30,7 +30,7 @@ export default function CookiePolicyPage() {
       <h2>Cookies we use</h2>
       <ul>
         <li><strong>Essential.</strong> Required to sign in and keep you signed in (including Google/Facebook/LinkedIn sign-in), and to keep the site secure. The site won&apos;t function properly without these.</li>
-        <li><strong>Analytics.</strong> Google Analytics and Google Tag Manager cookies help us understand how visitors use the site — which pages are viewed, which listings get the most interest, and where visitors come from. This data is aggregated and doesn&apos;t identify you personally.</li>
+        <li><strong>Analytics.</strong> Google Analytics and Google Tag Manager cookies help us understand how visitors use the site — which pages are viewed, which listings get the most interest, and where visitors come from. This data is aggregated and doesn&apos;t identify you personally. Microsoft Clarity cookies do the same with heatmaps and anonymised session replays (text you type into forms is masked).</li>
         <li><strong>Preferences.</strong> We use your browser&apos;s local storage (not a cookie, but similar in purpose) to remember things like your saved listings and language choice, so they&apos;re there next time you visit from the same browser.</li>
       </ul>
 
@@ -38,6 +38,7 @@ export default function CookiePolicyPage() {
       <p>Some cookies are set by services we use, not by us directly:</p>
       <ul>
         <li><strong>Google</strong> — Analytics, Tag Manager, and sign-in.</li>
+        <li><strong>Microsoft</strong> — Clarity (heatmaps and session replays).</li>
         <li><strong>Meta (Facebook)</strong> and <strong>LinkedIn</strong> — sign-in, where you choose to use it.</li>
       </ul>
       <p>These providers have their own privacy and cookie policies governing how they use this data.</p>
