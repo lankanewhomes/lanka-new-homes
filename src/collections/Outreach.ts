@@ -27,7 +27,6 @@ export const Outreach: CollectionConfig = {
     // Retired from the CMS menu (owner, 2026-10-14): emails to developers are written in /cms/mail and shown on each developer's Emails tab.
     // The collection, its rows and the /o/<code> tracked links stay, so old emails keep counting clicks.
     hidden: true,
-    components: { beforeListTable: ['@/components/payload/OutreachStats#OutreachStats'] },
     description: 'Emails you send to developers. Add a row for each email, copy its tracked links into the email, and clicks are counted here.',
   },
   access: { read: adminOnly, create: adminOnly, update: adminOnly, delete: adminOnly },
@@ -72,9 +71,7 @@ export const Outreach: CollectionConfig = {
         {
           label: 'Write & send',
           fields: [
-            { name: 'summary', type: 'ui', admin: { components: { Field: '@/components/payload/OutreachSummary#OutreachSummary' } } },
-            // The composer (OutreachComposer) draws one friendly screen for these seven fields and writes to them with useField;
-            // the plain Payload inputs are hidden so nothing shows twice.
+            // Stored fields of the retired composer screen (hidden; the data is kept).
             { name: 'developer', type: 'relationship', relationTo: 'developers', index: true, admin: { hidden: true } },
             { name: 'projects', type: 'relationship', relationTo: 'projects', hasMany: true, admin: { hidden: true } },
             { name: 'lead', type: 'relationship', relationTo: 'leads', admin: { hidden: true } },
@@ -83,7 +80,6 @@ export const Outreach: CollectionConfig = {
             { name: 'toEmail', type: 'email', admin: { hidden: true } },
             { name: 'fromAddress', type: 'select', defaultValue: 'developers@lankanewhomes.com', options: OUTREACH_SENDERS.map((s) => ({ label: s.label, value: s.value })), admin: { hidden: true } },
             { name: 'customNote', type: 'textarea', admin: { hidden: true } },
-            { name: 'composer', type: 'ui', admin: { components: { Field: '@/components/payload/OutreachComposer#OutreachComposer' } } },
           ],
         },
         {
@@ -104,7 +100,7 @@ export const Outreach: CollectionConfig = {
                     { label: 'Replied', value: 'replied' },
                     { label: 'No reply', value: 'no_reply' },
                   ],
-                  admin: { description: 'Updates itself on send and on click. Change it by hand for Replied / No reply.', width: '50%', components: { Cell: '@/components/payload/OutreachCells#OutreachStatusCell' } },
+                  admin: { description: 'Updates itself on send and on click. Change it by hand for Replied / No reply.', width: '50%' },
                 },
                 { name: 'sentAt', type: 'date', label: 'Sent on', defaultValue: () => new Date().toISOString(), index: true, admin: { date: { pickerAppearance: 'dayAndTime' }, width: '50%' } },
               ],
@@ -125,7 +121,7 @@ export const Outreach: CollectionConfig = {
             {
               type: 'row',
               fields: [
-                { name: 'clickCount', type: 'number', defaultValue: 0, admin: { readOnly: true, width: '33%', components: { Cell: '@/components/payload/OutreachCells#OutreachClicksCell' } } },
+                { name: 'clickCount', type: 'number', defaultValue: 0, admin: { readOnly: true, width: '33%' } },
                 { name: 'firstClickedAt', type: 'date', admin: { readOnly: true, width: '33%', date: { pickerAppearance: 'dayAndTime' } } },
                 { name: 'lastClickedAt', type: 'date', admin: { readOnly: true, width: '33%', date: { pickerAppearance: 'dayAndTime' } } },
               ],
@@ -162,7 +158,7 @@ export const Outreach: CollectionConfig = {
                 ],
               },
             },
-            { name: 'developerName', type: 'text', label: 'Company name', index: true, admin: { readOnly: true, description: 'Filled in from the company you pick.', components: { Cell: '@/components/payload/OutreachCells#OutreachCompanyCell' } } },
+            { name: 'developerName', type: 'text', label: 'Company name', index: true, admin: { readOnly: true, description: 'Filled in from the company you pick.' } },
             { name: 'sentHtml', type: 'textarea', label: 'Exact email as sent (HTML)', admin: { readOnly: true, rows: 6 } },
             { name: 'notes', type: 'textarea', label: 'Your notes' },
             {
