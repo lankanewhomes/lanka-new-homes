@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { useDocumentInfo } from '@payloadcms/ui'
 import { HtmlBody } from '@/components/mail/HtmlBody'
 
@@ -58,7 +59,7 @@ export function DeveloperEmails() {
       <div className="ln-dev-mail-top">
         <div><strong>{sent}</strong><span>we sent</span></div>
         <div><strong>{rows.length - sent}</strong><span>they sent back</span></div>
-        <p>Matched on {[...info.addresses, ...info.domains.map((d) => `@${d}`)].join(', ') || 'no addresses yet (add a contact email on the Profile tab)'}. Open <a href="/cms/mail">Mail</a> to reply.</p>
+        <p>Matched on {[...info.addresses, ...info.domains.map((d) => `@${d}`)].join(', ') || 'no addresses yet (add a contact email on the Profile tab)'}. Open <Link href="/cms/mail">Mail</Link> to reply.</p>
       </div>
       {rows.length === 0 ? <p className="ln-mail-empty">No emails with this developer yet.</p> : null}
       {rows.map((r) => {
