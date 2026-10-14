@@ -1,6 +1,7 @@
 "use client";
 
 import { parseNaturalSearch } from "@/lib/natural-search";
+import { tileCityMatches } from "@/lib/city-match";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -12,6 +13,7 @@ import { allProjectCategories } from "@/lib/listing-categories";
 import { getPackage, planRotationWeight } from "@/lib/packages";
 import { weightedTake } from "@/lib/weighted-random";
 import { isInNewListingsWindow } from "@/lib/new-listings";
+import type { PopularGroup } from "@/lib/popular-searches";
 import type { Developer, HeroAd, Project } from "@/types";
 
 // Real photos of each city (Wikimedia Commons), replacing generic Unsplash
@@ -43,57 +45,14 @@ const neighborhoods = [
   { name: "Sigiriya", image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e6/Sigiriya_%28141688197%29.jpeg/960px-Sigiriya_%28141688197%29.jpeg" },
 ];
 
-// Popular-searches SEO footer block — realcommercial.com.au-style columns of
-// "{type} for sale in {place}" links. Every href is a real, server-filtered
-// page (either an existing /projects/* category page, or /projects and
-// /land's `type`/`location`/`landUse` query filters) — never a page with
-// invented results. Some target cities (Kandy, Wattala) have no listings
-// yet; those links still land on a real filtered page with an honest empty
-// state, the same way the homepage's own "Explore by city" tiles already
-// treat those cities as legitimate destinations via /search.
-const SEO_LINK_GROUPS: { title: string; links: { label: string; href: string }[] }[] = [
-  {
-    title: "Land",
-    links: [
-      { label: "Best land for sale in Colombo", href: "/land/best-land-for-sale-in-colombo" },
-      { label: "Cheap land for sale in Sri Lanka", href: "/land/cheap-land-for-sale-in-sri-lanka" },
-      { label: "1 acre land for sale in Sri Lanka", href: "/land/1-acre-land-for-sale-in-sri-lanka" },
-      { label: "Rural land for sale in Sri Lanka", href: "/land/rural-land-for-sale-in-sri-lanka" },
-      { label: "Land for sale in Nuwara Eliya", href: "/land?location=Nuwara+Eliya" },
-      { label: "Residential land for sale", href: "/land?landUse=Residential" },
-      { label: "Agricultural land for sale", href: "/land?landUse=Agricultural" },
-      { label: "Beachfront land for sale in Sri Lanka", href: "/land" },
-    ],
-  },
-  {
-    title: "Houses",
-    links: [
-      { label: "House for sale in Kandy", href: "/projects?type=House&location=Kandy" },
-      { label: "Houses for sale in Wattala", href: "/projects?type=House&location=Wattala" },
-      { label: "Houses for sale in Kottawa", href: "/projects?type=House&location=Kottawa" },
-      { label: "Houses for sale in Thalawathugoda", href: "/projects?type=House&location=Thalawathugoda" },
-    ],
-  },
-  {
-    title: "Apartments & condominiums",
-    links: [
-      { label: "Apartments for sale in Colombo", href: "/projects/colombo" },
-      { label: "New luxury apartments in Sri Lanka", href: "/projects/luxury" },
-      { label: "Port City Colombo apartments", href: "/projects/port-city-colombo" },
-      { label: "Apartments for sale in Dehiwala", href: "/projects?type=Apartments&location=Dehiwala" },
-      { label: "Serviced apartments in Sri Lanka", href: "/projects/serviced-apartments" },
-    ],
-  },
-  {
-    title: "New developments",
-    links: [
-      { label: "New projects in Sri Lanka", href: "/projects" },
-      { label: "New villa developments in Sri Lanka", href: "/projects/villas" },
-      { label: "Beachfront condo developments", href: "/projects/beachfront" },
-      { label: "Branded residences in Sri Lanka", href: "/projects/branded-residences" },
-      { label: "Pre-construction & off-plan projects", href: "/projects/pre-construction" },
-    ],
-  },
+// Price bands for "Search by price". The wording is what the natural-language search understands ("under 30M",
+// "between 30M and 50M", "above 150M"), so each band links to /search?q=… and lands on real filtered results.
+const PRICE_BANDS: { label: string; q: string; min?: number; max?: number }[] = [
+  { label: "Under Rs. 30M", q: "under 30M", max: 30_000_000 },
+  { label: "Rs. 30M – 50M", q: "between 30M and 50M", min: 30_000_000, max: 50_000_000 },
+  { label: "Rs. 50M – 80M", q: "between 50M and 80M", min: 50_000_000, max: 80_000_000 },
+  { label: "Rs. 80M – 150M", q: "between 80M and 150M", min: 80_000_000, max: 150_000_000 },
+  { label: "Rs. 150M and above", q: "above 150M", min: 150_000_000 },
 ];
 
 export function HomeClient({
@@ -103,6 +62,7 @@ export function HomeClient({
   landPlotTotal = 0,
   developers = [],
   newListingsSince,
+  popularSearches = [],
 }: {
   landPlotTotal?: number;
   projects: Project[];
@@ -112,6 +72,8 @@ export function HomeClient({
   developers?: Developer[];
   /** ISO cutoff for the 30-day "New listings" window, computed on the server (see lib/new-listings.ts). Omitted = no time limit. */
   newListingsSince?: string;
+  /** Popular-searches links that have at least one listing (see lib/popular-searches.ts). */
+  popularSearches?: PopularGroup[];
 }) {
   const { language } = useLanguage();
   const router = useRouter();
@@ -129,6 +91,24 @@ export function HomeClient({
   const [maxHeroSlideReached, setMaxHeroSlideReached] = useState(0);
   const [heroPaused, setHeroPaused] = useState(false);
   const [heroAds, setHeroAds] = useState<HeroAd[]>([]);
+
+  // "Explore by city": cities with the most projects first (owner, 2026-10-14). The count uses the same rule as the search the tile
+  // opens (src/lib/city-match.ts: "Colombo" includes Colombo 05, Colombo 08…); cities with no projects keep their old order at the end.
+  const cityTiles = useMemo(
+    () => neighborhoods
+      .map((tile, order) => ({ ...tile, order, count: projects.filter((project) => tileCityMatches(project, tile.name)).length }))
+      .sort((a, b) => b.count - a.count || a.order - b.order),
+    [projects],
+  );
+
+  // "Search by price": how many projects fall in each band (same rule the search applies), bands with none are not shown.
+  const priceBands = useMemo(() => {
+    const priced = projects.filter((project) => project.startingPriceLkr > 0 && !project.priceRange?.includes("per perch"));
+    return PRICE_BANDS.map((band) => ({
+      ...band,
+      count: priced.filter((project) => (band.min === undefined || project.startingPriceLkr >= band.min) && (band.max === undefined || project.startingPriceLkr <= band.max)).length,
+    })).filter((band) => band.count > 0);
+  }, [projects]);
 
   useEffect(() => {
     fetch("/api/hero-ads?active=1")
@@ -509,7 +489,7 @@ export function HomeClient({
           <p className="featured-listings-subhead">Browse new homes and developments in Sri Lanka&apos;s most popular cities and towns.</p>
         </div>
         <div className="neighborhoods-grid">
-          {neighborhoods.map((neighborhood) => (
+          {cityTiles.map((neighborhood) => (
             <Link href={`/search?city=${encodeURIComponent(neighborhood.name)}`} className="neighborhood-card" key={neighborhood.name}>
               <Image src={neighborhood.image} alt={neighborhood.name} fill quality={60} sizes="(max-width: 760px) 100vw, 33vw" />
               <span className="neighborhood-card-overlay" />
@@ -522,6 +502,24 @@ export function HomeClient({
           <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
         </Link>
       </section>
+
+      {priceBands.length > 0 ? (
+        <section className="price-search-section" aria-label="Search by price">
+          <div className="featured-listings-head">
+            <h2>Search by price</h2>
+            <p className="featured-listings-subhead">Start from your budget and see the new homes that fit it.</p>
+          </div>
+          <div className="price-bands">
+            {priceBands.map((band) => (
+              <Link href={`/search?q=${encodeURIComponent(band.q)}`} className="price-band" key={band.label}>
+                <span className="price-band-range">{band.label}</span>
+                <span className="price-band-count">{band.count} {band.count === 1 ? "project" : "projects"}</span>
+                <span className="price-band-go">View homes <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /></span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       {/* Free-listing pitch to developers, right after "Explore by city" (owner, 2026-10-05; first placed after New listings
           on 2026-09-24). Not in the hero. */}
@@ -550,13 +548,14 @@ export function HomeClient({
         </div>
       </section>
 
+      {popularSearches.length > 0 ? (
       <section className="seo-links-section" aria-label="Popular searches">
         <div className="featured-listings-head">
           <h2>Popular searches</h2>
           <p className="featured-listings-subhead">Browse new homes, apartments, and land for sale across Sri Lanka by type and location.</p>
         </div>
         <div className="seo-links-grid">
-          {SEO_LINK_GROUPS.map((group) => (
+          {popularSearches.map((group) => (
             <div className="seo-links-column" key={group.title}>
               <h3>{group.title}</h3>
               <ul>
@@ -570,6 +569,7 @@ export function HomeClient({
           ))}
         </div>
       </section>
+      ) : null}
 
     </main>
   </div>;

@@ -20522,3 +20522,58 @@ body:has(.compare-bar) {
 @media (max-width: 760px) {
   .listing-list-pane .listing-header-title { padding-top: 26px; }
 }
+
+/* Search by price (owner, 2026-10-14). Contained box like the other home sections, its own flat background (lilac, no blue),
+   box-line texture, 34px below. Bands are real links with real project counts. */
+.price-search-section {
+  position: relative;
+  overflow: hidden;
+  padding: 56px 30px 52px;
+  margin: 0 auto 34px;
+  max-width: 1280px;
+  background: #f1ecf3;
+}
+.price-search-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 55px, rgba(112, 86, 130, 0.16) 55px 56px),
+    repeating-linear-gradient(90deg, transparent 0 55px, rgba(112, 86, 130, 0.16) 55px 56px);
+}
+.price-search-section > * { position: relative; z-index: 1; }
+.price-search-section .featured-listings-head h2 { color: #1f1f1f; }
+.price-search-section .featured-listings-subhead { color: #6b5b7a; }
+.price-bands {
+  margin-top: 28px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+}
+.price-band {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 148px;
+  padding: 20px 18px;
+  background: #fff;
+  border: 1px solid #d9d1de;
+  color: #1f1f1f;
+  text-decoration: none;
+  transition: border-color 0.15s ease;
+}
+.price-band:hover { border-color: #1f1f1f; }
+.price-band-range { font-family: var(--font-ref-sans); font-size: 22px; line-height: 1.2; font-weight: 400; }
+.price-band-count { font-size: 14px; color: #6b5b7a; }
+.price-band-go { margin-top: auto; padding-top: 18px; display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 600; }
+@media (max-width: 1100px) {
+  .price-bands { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
+  .price-search-section { margin: 0 -8px 34px; padding: 28px 14px 30px; }
+  .lnh-home .price-search-section { padding-left: calc(50vw - 50% + 0px); padding-right: calc(50vw - 50% + 0px); margin-top: 0; margin-bottom: 34px; }
+  .price-bands { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .price-band { min-height: 120px; padding: 16px 14px; }
+  .price-band-range { font-size: 18px; }
+}

@@ -17,6 +17,7 @@ import type { Project } from "@/types";
 import type { MapAreaSelection } from "@/components/marketplace/map-pane";
 import type { MapView } from "@/components/marketplace/explorer-map";
 import { ProjectPopup } from "@/components/map/ProjectPopup";
+import { tileCityMatches } from "@/lib/city-match";
 
 // The listing map: city bubbles that zoom in when clicked, price pins, 3D / normal switch (shared with /lanka360).
 const LazyExplorerMap = dynamic(() => import("@/components/marketplace/explorer-map").then((mod) => mod.ExplorerMap), {
@@ -371,6 +372,7 @@ export function ListingPageBody({
   // in that area first, then the rest.
   const [mapView, setMapView] = useState<MapView | null>(null);
   const [pickedSlug, setPickedSlug] = useState<string | null>(null);
+  const [areaCity, setAreaCity] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [moreFiltersOpen, setMoreFiltersOpen] = useState(false);
   const [filterSelections, setFilterSelections] = useState<Record<string, string>>({});
@@ -419,8 +421,9 @@ export function ListingPageBody({
     setSearchQuery(query);
     const city = params.get("city")?.trim();
     if (city) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setRegionFilter(city);
+      // The homepage "Explore by city" tiles open this page with ?city=. They filter by the homepage's own rule
+      // (src/lib/city-match.ts), so the results are exactly the count shown on the tile.
+      setAreaCity(city);
     }
   }, []);
 
@@ -455,6 +458,7 @@ export function ListingPageBody({
     const understood = parsedSearch.chips.length > 0;
     const textQuery = (understood ? parsedSearch.text : trimmedQuery).toLowerCase();
     let list = regionFilter === "All of Sri Lanka" ? projects : projects.filter((project) => project.city === regionFilter);
+    if (areaCity) list = list.filter((project) => tileCityMatches(project, areaCity));
     if (understood) {
       list = list.filter((project) => {
         if (parsedSearch.city && !cityMatches(project, parsedSearch.city)) return false;
@@ -477,9 +481,9 @@ export function ListingPageBody({
     }
     list = list.filter((project) => matchesFilters(project, filterSelections));
     return list;
-  }, [projects, regionFilter, trimmedQuery, filterSelections, parsedSearch]);
+  }, [projects, regionFilter, areaCity, trimmedQuery, filterSelections, parsedSearch]);
   const baseProjects = activeSelection ? activeSelection.projects : regionFilteredProjects;
-  const searchPlaceLabel = trimmedQuery ? searchQuery.trim() : regionFilter !== "All of Sri Lanka" ? regionFilter : null;
+  const searchPlaceLabel = trimmedQuery ? searchQuery.trim() : regionFilter !== "All of Sri Lanka" ? regionFilter : areaCity || null;
 
   const sortedProjects = useMemo(() => {
     const list = [...baseProjects];
