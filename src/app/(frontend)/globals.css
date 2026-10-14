@@ -20586,3 +20586,49 @@ body:has(.compare-bar) {
   .price-band { min-height: 120px; padding: 16px 14px; }
   .price-band-range { font-size: 18px; }
 }
+
+/* Header search (owner, 2026-10-14: "design the search bar like this"): a soft grey rounded field with the magnifier on the left and a
+   hint to try, no border and no orange button. It lifts to white with a light shadow when focused. Enter still submits (the button is
+   kept for keyboards and screen readers but is not drawn). */
+.header-search {
+  gap: 12px;
+  height: 44px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 8px;
+  background: #f1f3f4;
+  color: #5f6368;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+.header-search:focus-within {
+  background: #fff;
+  box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
+}
+.header-search input {
+  width: 270px;
+  font-size: 15px;
+  color: #1f1f1f;
+}
+.header-search input::placeholder { color: #5f6368; opacity: 1; }
+.header-search input::-webkit-search-cancel-button { display: none; }
+.header-search-button {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.header-search-suggestions {
+  top: calc(100% + 6px);
+  border: 0;
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+  box-shadow: 0 4px 18px rgba(32, 33, 36, 0.22);
+}
+.header-search-suggestions button { border-top: 0; background: #fff; }
+.header-search-suggestions button:hover { background: #f1f3f4; }

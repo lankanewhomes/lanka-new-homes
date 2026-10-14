@@ -2707,3 +2707,10 @@ The "Company" item in the main menu (desktop and mobile) uses an office-building
 
 ## Listing order ("Recommended")
 Paid tiers still outrank Free (hard partition by plan tier). Inside a tier the order is reshuffled on every visit, weighted by final_score, so the same project is not always first (owner, 2026-10-10). The server render keeps a stable order; the shuffle applies once the page has mounted (`rotationSalt` in `listing-page.tsx`). Applies to /projects, /search, /land and the collection pages (beachfront, luxury, villas...).
+
+
+## Header search bar (2026-10-14)
+
+The search field in the main nav (`.header-search`, `components.tsx`) is a soft grey (#f1f3f4) rounded (8px) field with the magnifier on the
+left and the hint `Try searching "apartments in Colombo"`: no border, no orange button (the submit button is kept but visually hidden so
+Enter and screen readers still work). Focused, it turns white with a light shadow. Suggestions drop down in a white rounded card.
