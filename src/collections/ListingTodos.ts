@@ -14,7 +14,9 @@ export const ListingTodos: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['listingName', 'title', 'done', 'sourceLinks', 'updatedAt'],
     hidden: hiddenUnlessAdmin,
-    description: 'What is left to do on each listing. Tick the box to check a task off. Open tasks are listed first.',
+    // Done tasks are not shown in the list (owner, 2026-10-14: "dont show it in to do list"). They stay in the database.
+    baseListFilter: () => ({ done: { not_equals: true } }),
+    description: 'What is left to do on each listing. Tick the box to check a task off and it leaves this list.',
   },
   access: { read: adminOnly, create: adminOnly, update: adminOnly, delete: adminOnly },
   hooks: {

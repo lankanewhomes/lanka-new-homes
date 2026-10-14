@@ -7455,7 +7455,7 @@ export interface SeoKeyword {
   createdAt: string;
 }
 /**
- * What is left to do on each listing. Tick the box to check a task off. Open tasks are listed first.
+ * What is left to do on each listing. Tick the box to check a task off and it leaves this list.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "listing-todos".
