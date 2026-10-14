@@ -1,0 +1,1096 @@
+{
+ "generatedAt": "2026-10-14T19:45:49.262Z",
+ "sections": [
+  {
+   "label": "Listings",
+   "items": [
+    {
+     "slug": "projects",
+     "kind": "collection",
+     "roles": null,
+     "label": "Projects",
+     "filter": null
+    },
+    {
+     "slug": "lands",
+     "kind": "collection",
+     "roles": null,
+     "label": "Land",
+     "filter": null
+    },
+    {
+     "slug": "listing-todos",
+     "kind": "collection",
+     "roles": null,
+     "label": "To-do list",
+     "filter": "groupBy=listingName"
+    }
+   ]
+  },
+  {
+   "label": "Developers",
+   "items": [
+    {
+     "slug": "developers",
+     "kind": "collection",
+     "roles": null,
+     "label": "Developers",
+     "filter": null
+    },
+    {
+     "slug": "developers",
+     "kind": "collection",
+     "roles": null,
+     "label": "Verification",
+     "filter": "where[verification_status][equals]=pending"
+    },
+    {
+     "slug": "construction-companies",
+     "kind": "collection",
+     "roles": null,
+     "label": "Construction Companies",
+     "filter": null
+    },
+    {
+     "slug": "marketing-companies",
+     "kind": "collection",
+     "roles": null,
+     "label": "Marketing Companies",
+     "filter": null
+    },
+    {
+     "slug": "sales-companies",
+     "kind": "collection",
+     "roles": null,
+     "label": "Sales Companies",
+     "filter": null
+    },
+    {
+     "slug": "architects",
+     "kind": "collection",
+     "roles": null,
+     "label": "Architects",
+     "filter": null
+    },
+    {
+     "slug": "interior-designers",
+     "kind": "collection",
+     "roles": null,
+     "label": "Interior Designers",
+     "filter": null
+    }
+   ]
+  },
+  {
+   "label": "Leads",
+   "items": [
+    {
+     "slug": "leads",
+     "kind": "collection",
+     "roles": null,
+     "label": "All Leads",
+     "filter": null
+    },
+    {
+     "slug": "leads",
+     "kind": "collection",
+     "roles": null,
+     "label": "New Leads",
+     "filter": "where[status][equals]=new"
+    },
+    {
+     "slug": "saved-listings",
+     "kind": "collection",
+     "roles": null,
+     "label": "Saved Listings",
+     "filter": null
+    },
+    {
+     "slug": "reviews",
+     "kind": "collection",
+     "roles": null,
+     "label": "Reviews",
+     "filter": null
+    }
+   ]
+  },
+  {
+   "label": "Content",
+   "items": [
+    {
+     "slug": "articles",
+     "kind": "collection",
+     "roles": null,
+     "label": "Articles",
+     "filter": null
+    },
+    {
+     "slug": "hero-slides",
+     "kind": "collection",
+     "roles": null,
+     "label": "Hero Slides",
+     "filter": null
+    },
+    {
+     "slug": "neighborhoods",
+     "kind": "collection",
+     "roles": null,
+     "label": "Neighborhoods",
+     "filter": null
+    },
+    {
+     "slug": "media",
+     "kind": "collection",
+     "roles": null,
+     "label": "Media",
+     "filter": null
+    }
+   ]
+  },
+  {
+   "label": "Marketing",
+   "items": [
+    {
+     "slug": "social-posts",
+     "kind": "collection",
+     "roles": null,
+     "label": "Social Posts",
+     "filter": null
+    },
+    {
+     "slug": "social-assets",
+     "kind": "collection",
+     "roles": null,
+     "label": "Social Assets",
+     "filter": null
+    },
+    {
+     "slug": "seo-keywords",
+     "kind": "collection",
+     "roles": null,
+     "label": "SEO Keywords",
+     "filter": null
+    },
+    {
+     "slug": "placement-pricing",
+     "kind": "collection",
+     "roles": null,
+     "label": "Placement Pricing",
+     "filter": null
+    }
+   ]
+  },
+  {
+   "label": "Mail",
+   "items": [
+    {
+     "slug": "mail",
+     "kind": "view",
+     "roles": [
+      "admin"
+     ],
+     "label": "Inbox",
+     "filter": null
+    },
+    {
+     "slug": "mail-settings",
+     "kind": "view",
+     "roles": [
+      "admin"
+     ],
+     "label": "Connection status",
+     "filter": null
+    },
+    {
+     "slug": "mail-accounts",
+     "kind": "collection",
+     "roles": null,
+     "label": "Mailboxes",
+     "filter": null
+    }
+   ]
+  },
+  {
+   "label": "Billing",
+   "items": [
+    {
+     "slug": "billing-overview",
+     "kind": "view",
+     "roles": [
+      "admin"
+     ],
+     "label": "Overview",
+     "filter": null
+    },
+    {
+     "slug": "my-billing",
+     "kind": "view",
+     "roles": [
+      "developer"
+     ],
+     "label": "My Billing",
+     "filter": null
+    },
+    {
+     "slug": "subscriptions",
+     "kind": "collection",
+     "roles": null,
+     "label": "Subscriptions",
+     "filter": null
+    },
+    {
+     "slug": "payments",
+     "kind": "collection",
+     "roles": null,
+     "label": "Payments",
+     "filter": null
+    }
+   ]
+  },
+  {
+   "label": "Analytics",
+   "items": [
+    {
+     "slug": "analytics",
+     "kind": "collection",
+     "roles": null,
+     "label": "Analytics",
+     "filter": null
+    }
+   ]
+  },
+  {
+   "label": "Users",
+   "items": [
+    {
+     "slug": "users",
+     "kind": "collection",
+     "roles": null,
+     "label": "Users",
+     "filter": null
+    },
+    {
+     "slug": "team-members",
+     "kind": "collection",
+     "roles": null,
+     "label": "Team Members",
+     "filter": null
+    }
+   ]
+  },
+  {
+   "label": "Settings",
+   "items": [
+    {
+     "slug": "site-settings",
+     "kind": "global",
+     "roles": null,
+     "label": "Site Settings",
+     "filter": null
+    },
+    {
+     "slug": "lead-alert-settings",
+     "kind": "global",
+     "roles": null,
+     "label": "Lead Alert Settings",
+     "filter": null
+    }
+   ]
+  }
+ ],
+ "collections": [
+  {
+   "slug": "users",
+   "label": "Users",
+   "singular": "User",
+   "group": "Users & Team",
+   "visible": {
+    "admin": true,
+    "developer": false
+   },
+   "scopedForDeveloper": false,
+   "access": {
+    "read": "Admin or the user themself",
+    "create": "Everyone",
+    "update": "Admin or the user themself",
+    "delete": "Admin only"
+   },
+   "useAsTitle": "email",
+   "defaultColumns": [
+    "full_name",
+    "role",
+    "phone"
+   ]
+  },
+  {
+   "slug": "developers",
+   "label": "Developers",
+   "singular": "Developer",
+   "group": "Companies & Professionals",
+   "visible": {
+    "admin": true,
+    "developer": true
+   },
+   "scopedForDeveloper": true,
+   "access": {
+    "read": "Public",
+    "create": "admin or owning developer / team member",
+    "update": "admin or owning developer / team member",
+    "delete": "Admin only"
+   },
+   "useAsTitle": "name",
+   "defaultColumns": [
+    "name",
+    "contact_email",
+    "plan",
+    "verification_status",
+    "profile_completeness"
+   ]
+  },
+  {
+   "slug": "projects",
+   "label": "Projects",
+   "singular": "Project",
+   "group": "Properties",
+   "visible": {
+    "admin": true,
+    "developer": true
+   },
+   "scopedForDeveloper": true,
+   "access": {
+    "read": "Public",
+    "create": "admin or owning developer / team member",
+    "update": "owning developer / team member",
+    "delete": "owning developer / team member"
+   },
+   "useAsTitle": "name",
+   "defaultColumns": [
+    "name",
+    "developer",
+    "status",
+    "startingPriceLkr",
+    "completeness_score",
+    "package"
+   ]
+  },
+  {
+   "slug": "lands",
+   "label": "Lands",
+   "singular": "Land",
+   "group": "Properties",
+   "visible": {
+    "admin": true,
+    "developer": true
+   },
+   "scopedForDeveloper": true,
+   "access": {
+    "read": "Public",
+    "create": "Admin only",
+    "update": "Admin, owning developer, or team member for assigned lands",
+    "delete": "Admin, owning developer, or team member for assigned lands"
+   },
+   "useAsTitle": "title",
+   "defaultColumns": [
+    "title",
+    "sellerName",
+    "status",
+    "priceLkr",
+    "completeness",
+    "district"
+   ]
+  },
+  {
+   "slug": "addon-requests",
+   "label": "Addon Requests",
+   "singular": "Addon Request",
+   "group": "Business",
+   "visible": {
+    "admin": true,
+    "developer": true
+   },
+   "scopedForDeveloper": false,
+   "access": {
+    "read": "admin or owning developer / team member",
+    "create": "admin or owning developer / team member",
+    "update": "admin or owning developer / team member",
+    "delete": "Admin only"
+   },
+   "useAsTitle": "id",
+   "defaultColumns": [
+    "developer",
+    "project",
+    "addon_type",
+    "price",
+    "status",
+    "createdAt"
+   ]
+  },
+  {
+   "slug": "construction-companies",
+   "label": "Construction Companies",
+   "singular": "Construction Company",
+   "group": "Companies & Professionals",
+   "visible": {
+    "admin": true,
+    "developer": false
+   },
+   "scopedForDeveloper": false,
+   "access": {
+    "read": "Public",
+    "create": "Admin only",
+    "update": "Admin only",
+    "delete": "Admin only"
+   },
+   "useAsTitle": "name",
+   "defaultColumns": [
+    "name",
+    "contact_email",
+    "profile_completeness"
+   ]
+  },
+  {
+   "slug": "marketing-companies",
+   "label": "Marketing Companies",
+   "singular": "Marketing Company",
+   "group": "Companies & Professionals",
+   "visible": {
+    "admin": true,
+    "developer": false
+   },
+   "scopedForDeveloper": false,
+   "access": {
+    "read": "Public",
+    "create": "Admin only",
+    "update": "Admin only",
+    "delete": "Admin only"
+   },
+   "useAsTitle": "name",
+   "defaultColumns": [
+    "name",
+    "contact_email",
+    "profile_completeness"
+   ]
+  },
+  {
+   "slug": "sales-companies",
+   "label": "Sales Companies",
+   "singular": "Sales Company",
+   "group": "Companies & Professionals",
+   "visible": {
+    "admin": true,
+    "developer": false
+   },
+   "scopedForDeveloper": false,
+   "access": {
+    "read": "Public",
+    "create": "Admin only",
+    "update": "Admin only",
+    "delete": "Admin only"
+   },
+   "useAsTitle": "name",
+   "defaultColumns": [
+    "name",
+    "contact_email",
+    "profile_completeness"
+   ]
+  },
+  {
+   "slug": "architects",
+   "label": "Architects",
+   "singular": "Architect",
+   "group": "Companies & Professionals",
+   "visible": {
+    "admin": true,
+    "developer": false
+   },
+   "scopedForDeveloper": false,
+   "access": {
+    "read": "Public",
+    "create": "Admin only",
+    "update": "Admin only",
+    "delete": "Admin only"
+   },
+   "useAsTitle": "name",
+   "defaultColumns": [
+    "name",
+    "contact_email",
+    "profile_completeness"
+   ]
+  },
+  {
+   "slug": "interior-designers",
+   "label": "Interior Designers",
+   "singular": "Interior Designer",
+   "group": "Companies & Professionals",
+   "visible": {
+    "admin": true,
+    "developer": false
+   },
+   "scopedForDeveloper": false,
+   "access": {
+    "read": "Public",
+    "create": "Admin only",
+    "update": "Admin only",
+    "delete": "Admin only"
+   },
+   "useAsTitle": "name",
+   "defaultColumns": [
+    "name",
+    "contact_email",
+    "profile_completeness"
+   ]
+  },
+  {
+   "slug": "neighborhoods",
+   "label": "Neighborhoods",
+   "singular": "Neighborhood",
+   "group": "Properties",
+   "visible": {
+    "admin": true,
+    "developer": false
+   },
+   "scopedForDeveloper": false,
+   "access": {
+    "read": "Public",
+    "create": "Admin only",
+    "update": "Admin only",
+    "delete": "Admin only"
+   },
+   "useAsTitle": "name",
+   "defaultColumns": [
+    "name",
+    "district",
+    "province"
+   ]
+  },
+  {
+   "slug": "hero-slides",
+   "label": "Hero Slides",
+   "singular": "Hero Slide",
+   "group": "Content",
+   "visible": {
+    "admin": true,
+    "developer": true
+   },
+   "scopedForDeveloper": false,
+   "access": {
+    "read": "Public",
+    "create": "admin or owning developer / team member",
+    "update": "Admin only",
+    "delete": "Admin only"
+   },
+   "useAsTitle": "page_target",
+   "defaultColumns": [
+    "page_target",
+    "status",
+    "display_order",
+    "is_paid_placement"
+   ]
+  },
+  {
+   "slug": "saved-listings",
+   "label": "Saved Listings",
+   "singular": "Saved Listing",
+   "group": "Leads & Engagement",
+   "visible": {
+    "admin": true,
+    "developer": false
+   },
+   "scopedForDeveloper": false,
+   "access": {
+    "read": "Admin or record owner",
+    "create": "Any signed-in user",
+    "update": "Admin or record owner",
+    "delete": "Admin or record owner"
+   },
+   "useAsTitle": "id",
+   "defaultColumns": [
+    "user",
+    "project",
+    "createdAt"
+   ]
+  },
+  {
+   "slug": "social-assets",
+   "label": "Social Assets",
+   "singular": "Social Asset",
+   "group": "Marketing",
+   "visible": {
+    "admin": true,
+    "developer": false
+   },
+   "scopedForDeveloper": false,
+   "access": {
+    "read": "Admin only",
+    "create": "Admin only",
+    "update": "Admin only",
+    "delete": "Admin only"
+   },
+   "useAsTitle": "id",
+   "defaultColumns": [
+    "project",
+    "reelUrl",
+    "generatedAt"
+   ]
+  },
+  {
+   "slug": "social-posts",
+   "label": "Social Posts",
+   "singular": "Social Post",
+   "group": "Marketing",
+   "visible": {
+    "admin": true,
+    "developer": false
+   },
+   "scopedForDeveloper": false,
+   "access": {
+    "read": "Admin only",
+    "create": "Admin only",
+    "update": "Admin only",
+    "delete": "Admin only"
+   },
+   "useAsTitle": "id",
+   "defaultColumns": [
+    "project",
+    "platform",
+    "kind",
+    "status",
+    "permalink",
+    "postedAt"
+   ]
+  },
+  {
+   "slug": "seo-keywords",
+   "label": "Seo Keywords",
+   "singular": "Seo Keyword",
+   "group": "Marketing",
+   "visible": {
+    "admin": true,
+    "developer": false
+   },
+   "scopedForDeveloper": false,
+   "access": {
+    "read": "Admin only",
+    "create": "Admin only",
+    "update": "Admin only",
+    "delete": "Admin only"
+   },
+   "useAsTitle": "keyword",
+   "defaultColumns": [
+    "keyword",
+    "category",
+    "volume",
+    "searchDifficulty",
+    "position",
+    "targetPage"
+   ]
+  },
+  {
+   "slug": "listing-todos",
+   "label": "To-do list",
+   "singular": "To-do",
+   "group": "Properties",
+   "visible": {
+    "admin": true,
+    "developer": false
+   },
+   "scopedForDeveloper": true,
+   "access": {
+    "read": "Admin only",
+    "create": "Admin only",
+    "update": "Admin only",
+    "delete": "Admin only"
+   },
+   "useAsTitle": "title",
+   "defaultColumns": [
+    "listingName",
+    "title",
+    "done",
+    "sourceLinks",
+    "updatedAt"
+   ]
+  },
+  {
+   "slug": "outreach",
+   "label": "Outreach log",
+   "singular": "Outreach email",
+   "group": "Leads & Engagement",
+   "visible": {
+    "admin": false,
+    "developer": false
+   },
+   "scopedForDeveloper": false,
+   "access": {
+    "read": "Admin only",
+    "create": "Admin only",
+    "update": "Admin only",
+    "delete": "Admin only"
+   },
+   "useAsTitle": "subject",
+   "defaultColumns": [
+    "developerName",
+    "subject",
+    "sentAt",
+    "status",
+    "clickCount"
+   ]
+  },
+  {
+   "slug": "mail-accounts",
+   "label": "Mailboxes",
+   "singular": "Mailbox",
+   "group": "Mail",
+   "visible": {
+    "admin": true,
+    "developer": false
+   },
+   "scopedForDeveloper": false,
+   "access": {
+    "read": "Admin only",
+    "create": "Admin only",
+    "update": "Admin only",
+    "delete": "Admin only"
+   },
+   "useAsTitle": "email",
+   "defaultColumns": [
+    "email",
+    "displayName",
+    "zohoAccountId",
+    "active"
+   ]
+  },
+  {
+   "slug": "mail-folders",
+   "label": "Mail folders",
+   "singular": "Mail folder",
+   "group": "Mail",
+   "visible": {
+    "admin": true,
+    "developer": false
+   },
+   "scopedForDeveloper": false,
+   "access": {
+    "read": "Admin only",
+    "create": "Admin only",
+    "update": "Admin only",
+    "delete": "Admin only"
+   },
+   "useAsTitle": "name",
+   "defaultColumns": [
+    "account",
+    "name",
+    "type",
+    "unreadCount",
+    "totalCount"
+   ]
+  },
+  {
+   "slug": "mail-messages",
+   "label": "Mail messages",
+   "singular": "Mail message",
+   "group": "Mail",
+   "visible": {
+    "admin": true,
+    "developer": false
+   },
+   "scopedForDeveloper": false,
+   "access": {
+    "read": "Admin only",
+    "create": "Admin only",
+    "update": "Admin only",
+    "delete": "Admin only"
+   },
+   "useAsTitle": "subject",
+   "defaultColumns": [
+    "subject",
+    "fromEmail",
+    "account",
+    "isRead",
+    "receivedAt"
+   ]
+  },
+  {
+   "slug": "mail-sync-state",
+   "label": "Mail sync state",
+   "singular": "Mail sync state",
+   "group": "Mail",
+   "visible": {
+    "admin": true,
+    "developer": false
+   },
+   "scopedForDeveloper": false,
+   "access": {
+    "read": "Admin only",
+    "create": "Admin only",
+    "update": "Admin only",
+    "delete": "Admin only"
+   },
+   "useAsTitle": "zohoFolderId",
+   "defaultColumns": [
+    "account",
+    "zohoFolderId",
+    "importStatus",
+    "importedCount",
+    "totalCount",
+    "lastSyncedAt"
+   ]
+  },
+  {
+   "slug": "subscriptions",
+   "label": "Subscriptions",
+   "singular": "Subscription",
+   "group": "Business",
+   "visible": {
+    "admin": true,
+    "developer": true
+   },
+   "scopedForDeveloper": false,
+   "access": {
+    "read": "admin or owning developer / team member",
+    "create": "admin or owning developer / team member",
+    "update": "admin or owning developer / team member",
+    "delete": "Admin only"
+   },
+   "useAsTitle": "id",
+   "defaultColumns": [
+    "developer",
+    "package",
+    "status",
+    "amount",
+    "current_period_end"
+   ]
+  },
+  {
+   "slug": "leads",
+   "label": "Leads",
+   "singular": "Lead",
+   "group": "Leads & Engagement",
+   "visible": {
+    "admin": true,
+    "developer": true
+   },
+   "scopedForDeveloper": false,
+   "access": {
+    "read": "Admin, the buyer, or the developer / team member the lead is about",
+    "create": "Everyone",
+    "update": "Admin, the buyer, or the developer / team member the lead is about",
+    "delete": "Admin or record owner"
+   },
+   "useAsTitle": "id",
+   "defaultColumns": [
+    "name",
+    "project",
+    "status",
+    "response_minutes",
+    "createdAt"
+   ]
+  },
+  {
+   "slug": "reviews",
+   "label": "Reviews",
+   "singular": "Review",
+   "group": "Leads & Engagement",
+   "visible": {
+    "admin": true,
+    "developer": true
+   },
+   "scopedForDeveloper": false,
+   "access": {
+    "read": "admin or owning developer / team member",
+    "create": "Everyone",
+    "update": "admin or owning developer / team member",
+    "delete": "Admin only"
+   },
+   "useAsTitle": "id",
+   "defaultColumns": [
+    "reviewer_name",
+    "entity_type",
+    "rating",
+    "status",
+    "createdAt"
+   ]
+  },
+  {
+   "slug": "analytics",
+   "label": "Analytics",
+   "singular": "Analytics",
+   "group": "Business",
+   "visible": {
+    "admin": true,
+    "developer": true
+   },
+   "scopedForDeveloper": false,
+   "access": {
+    "read": "Admin or the developer / team member who owns the project",
+    "create": "Everyone",
+    "update": "Custom rule",
+    "delete": "Admin or the developer / team member who owns the project"
+   },
+   "useAsTitle": "event_type",
+   "defaultColumns": [
+    "event_type",
+    "project",
+    "traffic_source",
+    "device_type",
+    "is_duplicate",
+    "timestamp"
+   ]
+  },
+  {
+   "slug": "payments",
+   "label": "Payments",
+   "singular": "Payment",
+   "group": "Business",
+   "visible": {
+    "admin": true,
+    "developer": true
+   },
+   "scopedForDeveloper": false,
+   "access": {
+    "read": "admin or owning developer / team member",
+    "create": "admin or owning developer / team member",
+    "update": "Admin only",
+    "delete": "Admin only"
+   },
+   "useAsTitle": "id",
+   "defaultColumns": [
+    "payer",
+    "payment_type",
+    "amount",
+    "status",
+    "payment_date"
+   ]
+  },
+  {
+   "slug": "placement-pricing",
+   "label": "Placement Pricings",
+   "singular": "Placement Pricing",
+   "group": "Business",
+   "visible": {
+    "admin": true,
+    "developer": false
+   },
+   "scopedForDeveloper": false,
+   "access": {
+    "read": "Public",
+    "create": "Admin only",
+    "update": "Admin only",
+    "delete": "Admin only"
+   },
+   "useAsTitle": "tier_name",
+   "defaultColumns": [
+    "payment_type",
+    "tier_name",
+    "featured_page",
+    "price",
+    "currency",
+    "duration_days"
+   ]
+  },
+  {
+   "slug": "plan-waitlist",
+   "label": "Plan Waitlists",
+   "singular": "Plan Waitlist",
+   "group": "Business",
+   "visible": {
+    "admin": true,
+    "developer": true
+   },
+   "scopedForDeveloper": false,
+   "access": {
+    "read": "Admin only",
+    "create": "Everyone",
+    "update": "Admin only",
+    "delete": "Admin only"
+   },
+   "useAsTitle": "email",
+   "defaultColumns": [
+    "name",
+    "interested_plan",
+    "status",
+    "createdAt"
+   ]
+  },
+  {
+   "slug": "team-members",
+   "label": "Team members",
+   "singular": "Team member",
+   "group": "Users & Team",
+   "visible": {
+    "admin": true,
+    "developer": true
+   },
+   "scopedForDeveloper": false,
+   "access": {
+    "read": "admin or owning developer / team member",
+    "create": "admin or owning developer / team member",
+    "update": "admin or owning developer / team member",
+    "delete": "admin or owning developer / team member"
+   },
+   "useAsTitle": "email",
+   "defaultColumns": [
+    "email",
+    "listings",
+    "lands",
+    "status",
+    "role"
+   ]
+  },
+  {
+   "slug": "articles",
+   "label": "Articles",
+   "singular": "Article",
+   "group": "Content",
+   "visible": {
+    "admin": true,
+    "developer": false
+   },
+   "scopedForDeveloper": false,
+   "access": {
+    "read": "Public",
+    "create": "Admin only",
+    "update": "Admin only",
+    "delete": "Admin only"
+   },
+   "useAsTitle": "title",
+   "defaultColumns": [
+    "title",
+    "publishedDate"
+   ]
+  },
+  {
+   "slug": "media",
+   "label": "Media",
+   "singular": "Media",
+   "group": "Content",
+   "visible": {
+    "admin": true,
+    "developer": true
+   },
+   "scopedForDeveloper": false,
+   "access": {
+    "read": "Public",
+    "create": "Any signed-in user",
+    "update": "Any signed-in user",
+    "delete": "Any signed-in user"
+   },
+   "useAsTitle": "filename",
+   "defaultColumns": [
+    "alt",
+    "mimeType",
+    "filesize",
+    "createdAt"
+   ]
+  }
+ ],
+ "globals": [
+  {
+   "slug": "site-settings",
+   "label": "Site Settings"
+  },
+  {
+   "slug": "lead-alert-settings",
+   "label": "Lead alert settings"
+  }
+ ]
+}
