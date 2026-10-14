@@ -2711,6 +2711,6 @@ Paid tiers still outrank Free (hard partition by plan tier). Inside a tier the o
 
 ## Header search bar (2026-10-14)
 
-The search field in the main nav (`.header-search`, `components.tsx`) is a soft grey (#f1f3f4) rounded (8px) field with the magnifier on the
+The search field in the main nav (`.header-search`, `components.tsx`) is a soft grey (#f1f3f4) square-cornered field with the magnifier on the
 left and the hint `Try searching "apartments in Colombo"`: no border, no orange button (the submit button is kept but visually hidden so
-Enter and screen readers still work). Focused, it turns white with a light shadow. Suggestions drop down in a white rounded card.
+Enter and screen readers still work). Focused, it turns white with a light shadow. Suggestions drop down in a white square card.

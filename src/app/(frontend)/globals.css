@@ -20587,7 +20587,7 @@ body:has(.compare-bar) {
   .price-band-range { font-size: 18px; }
 }
 
-/* Header search (owner, 2026-10-14: "design the search bar like this"): a soft grey rounded field with the magnifier on the left and a
+/* Header search (owner, 2026-10-14: "design the search bar like this"): a soft grey field (square corners, like the rest of the site) with the magnifier on the left and a
    hint to try, no border and no orange button. It lifts to white with a light shadow when focused. Enter still submits (the button is
    kept for keyboards and screen readers but is not drawn). */
 .header-search {
@@ -20595,7 +20595,7 @@ body:has(.compare-bar) {
   height: 44px;
   padding: 0 18px;
   border: 0;
-  border-radius: 8px;
+  border-radius: 0;
   background: #f1f3f4;
   color: #5f6368;
   transition: background 0.15s ease, box-shadow 0.15s ease;
@@ -20625,7 +20625,7 @@ body:has(.compare-bar) {
 .header-search-suggestions {
   top: calc(100% + 6px);
   border: 0;
-  border-radius: 8px;
+  border-radius: 0;
   background: #fff;
   overflow: hidden;
   box-shadow: 0 4px 18px rgba(32, 33, 36, 0.22);
