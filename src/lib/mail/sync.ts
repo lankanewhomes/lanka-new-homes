@@ -154,12 +154,13 @@ export async function upsertMessages(payload: Payload, account: AccountRow, fold
   return { upserted, inserted }
 }
 
-/** Drop cached messages inside a window that Zoho no longer lists (deleted, or moved out). Boundaries are exclusive so ties are never removed. */
+/** Drop cached messages inside a window that Zoho no longer lists (deleted, or moved out). Boundaries are exclusive so ties are never removed. Rows with a `local-` id (outreach emails sent before the Zoho connection) only exist here, so they are kept. */
 export async function removeMissingInWindow(payload: Payload, accountId: number, folderId: number, keepIds: string[], after: string | null, before: string | null): Promise<number> {
   const res = await poolOf(payload).query(
     `delete from payload.mail_messages where account_id = $1 and folder_id = $2
        and ($3::timestamptz is null or received_at > $3) and ($4::timestamptz is null or received_at < $4)
-       and not (zoho_message_id = any($5::text[]))`,
+       and not (zoho_message_id = any($5::text[]))
+       and zoho_message_id not like 'local-%'`,
     [accountId, folderId, after, before, keepIds],
   )
   return res.rowCount ?? 0
