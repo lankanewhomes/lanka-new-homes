@@ -20592,7 +20592,8 @@ body:has(.compare-bar) {
    kept for keyboards and screen readers but is not drawn). */
 .header-search {
   gap: 12px;
-  height: 44px;
+  /* Same height as the hero search on the home page (52px field + its 1px border top and bottom). */
+  height: 54px;
   padding: 0 18px;
   border: 0;
   border-radius: 0;

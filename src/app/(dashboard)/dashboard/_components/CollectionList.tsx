@@ -10,6 +10,7 @@ import { StatusChip } from "./StatusChip";
 import { flatFields, getPath } from "./schema-utils";
 import { allOf } from "../_data/scope";
 import { apiCount, apiCreate, apiDelete, apiFind, apiGet, apiUpdate, type Doc, type Where } from "../_data/api";
+import { TABS, loadTiles, type Tile } from "../_data/list-extras";
 import type { SchemaField } from "../_mock/types";
 
 // Generic list page for any Payload collection, driven by the exported schema and loaded from Payload's REST API one page at a
@@ -18,19 +19,6 @@ import type { SchemaField } from "../_mock/types";
 
 const PAGE_SIZES = [10, 25, 50];
 const fmtDate = (v: unknown) => { const d = new Date(String(v)); return Number.isNaN(d.getTime()) ? "" : d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }); };
-
-// The company directories get the same summary strip as /cms (counts of what is there and what is missing).
-const DIRECTORIES = ["developers", "construction-companies", "marketing-companies", "sales-companies", "architects", "interior-designers"];
-const blank = (field: string): Where => ({ or: [{ [field]: { exists: false } }, { [field]: { equals: "" } }] });
-
-type Tab = { key: string; label: string; where: Where | null };
-const DEVELOPER_TABS: Tab[] = [
-  { key: "all", label: "All", where: null },
-  { key: "verified", label: "Verified", where: { domain_verified: { equals: true } } },
-  { key: "pending", label: "Waiting for review", where: { verification_status: { equals: "pending" } } },
-  { key: "approved", label: "Approved", where: { verification_status: { equals: "approved" } } },
-  { key: "rejected", label: "Rejected", where: { verification_status: { equals: "rejected" } } },
-];
 
 function Cell({ field, row, titleOf }: { field: SchemaField; row: Doc; titleOf: (collection: string, id: unknown) => string }) {
   const v = getPath(row, field.name ?? "");
@@ -70,8 +58,10 @@ function ListInner({ slug, initialFilter }: ListProps) {
   const [error, setError] = useState("");
   const [q, setQ] = useState("");
   const [qDebounced, setQDebounced] = useState("");
-  const [filters, setFilters] = useState<{ field: string; value: string }[]>(initialFilter ? [initialFilter] : []);
-  const [tab, setTab] = useState("all");
+  // A sidebar link such as "New Leads" arrives as a filter; when it is one of the status tabs it opens that tab instead.
+  const startTab = initialFilter ? TABS[slug]?.find((t) => JSON.stringify(t.where) === JSON.stringify({ [initialFilter.field]: { equals: initialFilter.value } })) : undefined;
+  const [filters, setFilters] = useState<{ field: string; value: string }[]>(initialFilter && !startTab ? [initialFilter] : []);
+  const [tab, setTab] = useState(startTab?.key ?? "all");
   const [sort, setSort] = useState<{ field: string; dir: 1 | -1 } | null>(null);
   const [page, setPage] = useState(1);
   const [size, setSize] = useState(10);
@@ -80,7 +70,7 @@ function ListInner({ slug, initialFilter }: ListProps) {
   const [panel, setPanel] = useState<"" | "filter" | "cols">("");
   const [confirm, setConfirm] = useState<(number | string)[] | null>(null);
   const [reload, setReload] = useState(0);
-  const [stats, setStats] = useState<{ total: number; noLogo: number; noEmail: number; noPhone: number; verified: number; pending: number } | null>(null);
+  const [tiles, setTiles] = useState<Tile[]>([]);
   const [tabCounts, setTabCounts] = useState<Record<string, number>>({});
 
   useEffect(() => { const t = setTimeout(() => setQDebounced(q.trim()), 300); return () => clearTimeout(t); }, [q]);
@@ -94,8 +84,8 @@ function ListInner({ slug, initialFilter }: ListProps) {
   }, [schema, byName, fields]);
   const shown = useMemo(() => (cols ?? defaultCols).map((n) => byName.get(n)).filter(Boolean) as SchemaField[], [cols, defaultCols, byName]);
   const titleField = schema?.useAsTitle && byName.has(schema.useAsTitle) ? schema.useAsTitle : shown[0]?.name;
-  const isDirectory = DIRECTORIES.includes(slug) && d.role === "admin";
-  const activeTab = DEVELOPER_TABS.find((t) => t.key === tab) ?? DEVELOPER_TABS[0];
+  const tabs = TABS[slug];
+  const activeTab = tabs?.find((t) => t.key === tab) ?? tabs?.[0];
 
   const where = useMemo<Where | null>(() => {
     if (!schema) return null;
@@ -110,9 +100,9 @@ function ListInner({ slug, initialFilter }: ListProps) {
       const def = byName.get(f.field);
       parts.push({ [f.field]: { equals: def?.type === "checkbox" ? f.value === "true" : f.value } });
     }
-    if (slug === "developers" && isDirectory) parts.push(activeTab.where);
+    if (activeTab?.where) parts.push(activeTab.where);
     return allOf(...parts);
-  }, [schema, d, slug, qDebounced, filters, fields, byName, isDirectory, activeTab]);
+  }, [schema, d, slug, qDebounced, filters, fields, byName, activeTab]);
 
   // Only the columns on screen are requested, which keeps pages of 350-field records light.
   const select = useMemo(() => {
@@ -161,25 +151,24 @@ function ListInner({ slug, initialFilter }: ListProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [schema, slug, page, size, sortParam, whereKey, selectKey, reload]);
 
-  // Directory summary (same numbers as /cms) and the Developers status tabs.
+  // Summary tiles and status-tab counts (same numbers and rules as /cms, see _data/list-extras.ts).
   useEffect(() => {
-    if (!isDirectory) return;
     let alive = true;
     (async () => {
       try {
-        const dev = slug === "developers";
-        const [t, noLogo, noEmail, noPhone, verified, pending, approved, rejected] = await Promise.all([
-          apiCount(slug), apiCount(slug, blank("logo")), apiCount(slug, blank("contact_email")), apiCount(slug, blank("contact_phone")),
-          dev ? apiCount(slug, { domain_verified: { equals: true } }) : 0, dev ? apiCount(slug, { verification_status: { equals: "pending" } }) : 0,
-          dev ? apiCount(slug, { verification_status: { equals: "approved" } }) : 0, dev ? apiCount(slug, { verification_status: { equals: "rejected" } }) : 0,
+        const scope = d.scope(slug);
+        const [t, counts] = await Promise.all([
+          loadTiles(slug, scope, d.role),
+          tabs ? Promise.all(tabs.map((x) => apiCount(slug, allOf(scope, x.where)))) : Promise.resolve([] as number[]),
         ]);
         if (!alive) return;
-        setStats({ total: t, noLogo, noEmail, noPhone, verified, pending });
-        setTabCounts({ all: t, verified, pending, approved, rejected });
-      } catch { /* the strip is optional */ }
+        setTiles(t ?? []);
+        setTabCounts(Object.fromEntries((tabs ?? []).map((x, i) => [x.key, counts[i]])));
+      } catch { /* the strip and tabs are optional */ }
     })();
     return () => { alive = false; };
-  }, [slug, isDirectory, reload]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- tabs is a constant per collection
+  }, [slug, d, reload]);
 
   const resetView = () => { setPage(1); setPicked(new Set()); };
   const onSearch = (v: string) => { setQ(v); resetView(); };
@@ -215,13 +204,6 @@ function ListInner({ slug, initialFilter }: ListProps) {
   const filterable = fields.filter((f) => (f.type === "select" || f.type === "radio" || f.type === "checkbox") && (f.options?.length ?? 2) <= 40);
   const loading = rows === null;
 
-  const tiles = stats ? [
-    { value: stats.total, label: "In the directory" },
-    { value: stats.total - stats.noLogo, label: "With a logo" },
-    { value: Math.max(0, stats.total - Math.max(stats.noEmail, stats.noPhone)), label: "With email and phone" },
-    ...(slug === "developers" ? [{ value: stats.verified, label: "Verified Developers" }, { value: stats.pending, label: "Waiting for review" }] : [{ value: stats.noLogo, label: "Still need a logo" }]),
-  ] : [];
-
   return (
     <div>
       <PageHero
@@ -233,18 +215,18 @@ function ListInner({ slug, initialFilter }: ListProps) {
 
       <div className="d-box">
         {tiles.length ? (
-          <div className="mb-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          <div className="mb-5 grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))" }}>
             {tiles.map((t) => (
               <div key={t.label} className="border border-line bg-panel px-5 py-4">
-                <p className="text-[34px] font-normal leading-none tabular-nums">{t.value.toLocaleString("en-LK")}</p>
+                <p className="text-[34px] font-normal leading-none tabular-nums">{t.value}</p>
                 <p className="d-label mt-2">{t.label}</p>
               </div>
             ))}
           </div>
         ) : null}
-        {isDirectory && slug === "developers" ? (
-          <div className="mb-5 flex flex-wrap gap-2" role="tablist" aria-label="Developer status">
-            {DEVELOPER_TABS.map((t) => (
+        {tabs ? (
+          <div className="mb-5 flex flex-wrap gap-2" role="tablist" aria-label={`${schema.label} status`}>
+            {tabs.map((t) => (
               <button key={t.key} type="button" role="tab" aria-selected={tab === t.key} onClick={() => { setTab(t.key); resetView(); }} className={`inline-flex items-center gap-2 border px-4 py-2 text-sm transition ${tab === t.key ? "border-ink bg-ink font-medium text-white" : "border-line bg-panel hover:border-fg/40"}`}>
                 {t.label}<span className={`text-xs tabular-nums ${tab === t.key ? "text-white/70" : "text-muted"}`}>{tabCounts[t.key] ?? "…"}</span>
               </button>
