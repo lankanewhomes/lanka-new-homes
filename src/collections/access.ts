@@ -218,6 +218,30 @@ export function ownPayerAccess(relationField: string): Access {
   }
 }
 
+// Land ids a team member may manage (the `lands` ticked on their Team members row).
+export async function getTeamLandIds(req: PayloadRequest): Promise<(string | number)[]> {
+  const user = authedUser(req)
+  if (!user || getRole(req) !== 'developer') return []
+  const rows = await req.payload.find({ collection: 'team-members', where: { user: { equals: user.id } }, limit: 200, depth: 0, overrideAccess: true, req })
+  const ids: (string | number)[] = []
+  for (const row of rows.docs as { lands?: unknown[] | null }[]) for (const l of row.lands ?? []) ids.push(relatedId(l) as string | number)
+  return Array.from(new Set(ids.filter((id) => id !== undefined && id !== null)))
+}
+
+// Land listings are polymorphic on `seller` (developer or construction company). A developer's owner login may edit and delete the
+// lands whose seller is their company; a team member only the lands ticked for them. Creating lands stays admin-only.
+export const manageOwnLands: Access = async ({ req }) => {
+  if (isAdmin(req)) return true
+  if (getRole(req) !== 'developer') return false
+  const owned = await getOwnedDeveloperIds(req)
+  const team = await getTeamLandIds(req)
+  const clauses: Where[] = []
+  if (owned.length) clauses.push({ and: [{ 'seller.relationTo': { equals: 'developers' } }, { 'seller.value': { in: owned } }] })
+  if (team.length) clauses.push({ id: { in: team } })
+  if (clauses.length === 0) return false
+  return clauses.length === 1 ? clauses[0] : { or: clauses }
+}
+
 // update/delete on a project: whoever `base` already allows (admin, or the owner of the developer profile), plus a team member
 // for the listings assigned to them. Team members cannot create listings (the base rule still applies to create).
 export function withTeamListings(base: Access): Access {

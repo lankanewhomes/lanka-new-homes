@@ -4489,17 +4489,21 @@ export interface TeamMember {
    */
   listings?: (number | Project)[] | null;
   /**
+   * Same as above, for land listings.
+   */
+  lands?: (number | Land)[] | null;
+  /**
    * Filled in automatically with your company.
    */
-  company:
-    | {
+  company?:
+    | ({
         relationTo: 'developers';
         value: number | Developer;
-      }
-    | {
+      } | null)
+    | ({
         relationTo: 'construction-companies';
         value: number | ConstructionCompany;
-      };
+      } | null);
   /**
    * Set automatically once they have an account with the email confirmed.
    */
@@ -4508,119 +4512,7 @@ export interface TeamMember {
   /**
    * A label only. What they can do is set by the listings you tick.
    */
-  role: 'owner' | 'sales' | 'marketing' | 'member';
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payments".
- */
-export interface Payment {
-  id: number;
-  /**
-   * The developer or construction company (builder) this payment is for.
-   */
-  payer:
-    | {
-        relationTo: 'developers';
-        value: number | Developer;
-      }
-    | {
-        relationTo: 'construction-companies';
-        value: number | ConstructionCompany;
-      };
-  amount: number;
-  currency: 'LKR' | 'USD';
-  payment_type:
-    | 'featured_listing'
-    | 'featured_search'
-    | 'hero_slide'
-    | 'hero_image'
-    | 'banner_ad'
-    | 'top_of_category'
-    | 'subscription'
-    | 'lead_package';
-  related_project?: (number | null) | Project;
-  /**
-   * For a hero_slide (or hero_image) payment: which hero slide request this pays for. Confirming this payment activates that slide automatically.
-   */
-  related_hero_slide?: (number | null) | HeroSlide;
-  /**
-   * For a featured_listing (or featured_search) payment: which page to feature the project on once confirmed.
-   */
-  featured_page?:
-    | (
-        | 'sitewide'
-        | 'colombo'
-        | 'colombo-luxury'
-        | 'pre-construction'
-        | 'branded-residences'
-        | 'villas'
-        | 'beachfront'
-        | 'serviced-apartments'
-        | 'port-city-colombo'
-        | 'search'
-        | 'land'
-      )
-    | null;
-  status: 'pending' | 'completed' | 'failed' | 'refunded';
-  payment_date?: string | null;
-  /**
-   * For time-limited placements, e.g. a featured-listing or hero-slide window.
-   */
-  expiry_date?: string | null;
-  /**
-   * Placeholder for a future payment provider (e.g. Stripe) reference id.
-   */
-  provider_reference?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "hero-slides".
- */
-export interface HeroSlide {
-  id: number;
-  /**
-   * Shown over the banner image, e.g. "Now Selling: Colombo Heights".
-   */
-  headline: string;
-  /**
-   * Wide banner image URL (at least 2000px). Upload one in Media and paste its URL here, same as any other image field.
-   */
-  image: string;
-  /**
-   * The project opened when a visitor clicks this paid hero placement.
-   */
-  project: number | Project;
-  link?: string | null;
-  /**
-   * Which page this banner shows on. Pick one, or choose Other and type your own.
-   */
-  page_target?: string | null;
-  display_order?: number | null;
-  advertiser?: (number | null) | Developer;
-  start_date?: string | null;
-  end_date?: string | null;
-  /**
-   * Homepage hero placements are paid inventory.
-   */
-  is_paid_placement?: boolean | null;
-  /**
-   * Auto-created/updated/archived by a Developer Pro/Campaign developer's plan (hooks/sync-developer-plan.ts's syncHeroSlideFromDeveloper) — one slide per developer, using the FIRST project in their featuredProjectIds as the representative one (a judgment call, not a spec'd 'pick your hero project' UI — see the placement-inventory notes). Skipped if that project has no heroImage yet. Archived (not deleted) once the developer drops below Developer Pro/Campaign or has no featured projects left. Don't hand-edit a slide with this checked — the next Developers save will overwrite it.
-   */
-  auto_generated?: boolean | null;
-  /**
-   * Attach the completed Hero Slide or Hero Image payment before activating this placement — set automatically once that payment is confirmed.
-   */
-  payment?: (number | null) | Payment;
-  status?: ('pending' | 'active' | 'rejected' | 'archived') | null;
-  /**
-   * Shown to the developer, e.g. the reason a request was rejected.
-   */
-  review_note?: string | null;
+  role?: ('owner' | 'sales' | 'marketing' | 'member') | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -7339,6 +7231,118 @@ export interface Land {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payments".
+ */
+export interface Payment {
+  id: number;
+  /**
+   * The developer or construction company (builder) this payment is for.
+   */
+  payer:
+    | {
+        relationTo: 'developers';
+        value: number | Developer;
+      }
+    | {
+        relationTo: 'construction-companies';
+        value: number | ConstructionCompany;
+      };
+  amount: number;
+  currency: 'LKR' | 'USD';
+  payment_type:
+    | 'featured_listing'
+    | 'featured_search'
+    | 'hero_slide'
+    | 'hero_image'
+    | 'banner_ad'
+    | 'top_of_category'
+    | 'subscription'
+    | 'lead_package';
+  related_project?: (number | null) | Project;
+  /**
+   * For a hero_slide (or hero_image) payment: which hero slide request this pays for. Confirming this payment activates that slide automatically.
+   */
+  related_hero_slide?: (number | null) | HeroSlide;
+  /**
+   * For a featured_listing (or featured_search) payment: which page to feature the project on once confirmed.
+   */
+  featured_page?:
+    | (
+        | 'sitewide'
+        | 'colombo'
+        | 'colombo-luxury'
+        | 'pre-construction'
+        | 'branded-residences'
+        | 'villas'
+        | 'beachfront'
+        | 'serviced-apartments'
+        | 'port-city-colombo'
+        | 'search'
+        | 'land'
+      )
+    | null;
+  status: 'pending' | 'completed' | 'failed' | 'refunded';
+  payment_date?: string | null;
+  /**
+   * For time-limited placements, e.g. a featured-listing or hero-slide window.
+   */
+  expiry_date?: string | null;
+  /**
+   * Placeholder for a future payment provider (e.g. Stripe) reference id.
+   */
+  provider_reference?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "hero-slides".
+ */
+export interface HeroSlide {
+  id: number;
+  /**
+   * Shown over the banner image, e.g. "Now Selling: Colombo Heights".
+   */
+  headline: string;
+  /**
+   * Wide banner image URL (at least 2000px). Upload one in Media and paste its URL here, same as any other image field.
+   */
+  image: string;
+  /**
+   * The project opened when a visitor clicks this paid hero placement.
+   */
+  project: number | Project;
+  link?: string | null;
+  /**
+   * Which page this banner shows on. Pick one, or choose Other and type your own.
+   */
+  page_target?: string | null;
+  display_order?: number | null;
+  advertiser?: (number | null) | Developer;
+  start_date?: string | null;
+  end_date?: string | null;
+  /**
+   * Homepage hero placements are paid inventory.
+   */
+  is_paid_placement?: boolean | null;
+  /**
+   * Auto-created/updated/archived by a Developer Pro/Campaign developer's plan (hooks/sync-developer-plan.ts's syncHeroSlideFromDeveloper) — one slide per developer, using the FIRST project in their featuredProjectIds as the representative one (a judgment call, not a spec'd 'pick your hero project' UI — see the placement-inventory notes). Skipped if that project has no heroImage yet. Archived (not deleted) once the developer drops below Developer Pro/Campaign or has no featured projects left. Don't hand-edit a slide with this checked — the next Developers save will overwrite it.
+   */
+  auto_generated?: boolean | null;
+  /**
+   * Attach the completed Hero Slide or Hero Image payment before activating this placement — set automatically once that payment is confirmed.
+   */
+  payment?: (number | null) | Payment;
+  status?: ('pending' | 'active' | 'rejected' | 'archived') | null;
+  /**
+   * Shown to the developer, e.g. the reason a request was rejected.
+   */
+  review_note?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "addon-requests".
  */
 export interface AddonRequest {
@@ -9832,6 +9836,7 @@ export interface PlanWaitlistSelect<T extends boolean = true> {
 export interface TeamMembersSelect<T extends boolean = true> {
   email?: T;
   listings?: T;
+  lands?: T;
   company?: T;
   user?: T;
   status?: T;

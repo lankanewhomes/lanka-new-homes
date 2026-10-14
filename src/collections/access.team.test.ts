@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Access, PayloadRequest } from 'payload'
-import { getOwnedProjectIds, getTeamProjectIds, withTeamListings } from './access'
+import { getOwnedProjectIds, getTeamLandIds, getTeamProjectIds, manageOwnLands, withTeamListings } from './access'
 
 // Fake request: `payload.find` answers from small in-memory tables, enough to exercise the team-member rules.
 function req(user: { id: number; role: string } | null, tables: { developers?: any[]; projects?: any[]; 'team-members'?: any[] }): PayloadRequest { // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -57,5 +57,16 @@ describe('team member listing access', () => {
 
     const nobody = req({ id: 300, role: 'developer' }, { developers, projects, 'team-members': [] })
     expect(await withTeamListings(base)({ req: nobody } as never)).toBe(false)
+  })
+
+  it('lands: owner gets their company\'s lands, a team member only the ticked ones, others nothing', async () => {
+    const owner = req({ id: 100, role: 'developer' }, { developers, projects, 'team-members': [] })
+    expect(await manageOwnLands({ req: owner } as never)).toEqual({ and: [{ 'seller.relationTo': { equals: 'developers' } }, { 'seller.value': { in: [10] } }] })
+    const member = req({ id: 200, role: 'developer' }, { developers, projects, 'team-members': [{ user: 200, lands: [5, { id: 6 }] }] })
+    expect(await getTeamLandIds(member)).toEqual([5, 6])
+    expect(await manageOwnLands({ req: member } as never)).toEqual({ id: { in: [5, 6] } })
+    expect(await manageOwnLands({ req: req({ id: 300, role: 'developer' }, { developers, projects, 'team-members': [] }) } as never)).toBe(false)
+    expect(await manageOwnLands({ req: req({ id: 100, role: 'buyer' }, { developers, projects }) } as never)).toBe(false)
+    expect(await manageOwnLands({ req: req({ id: 1, role: 'admin' }, {}) } as never)).toBe(true)
   })
 })

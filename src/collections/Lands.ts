@@ -1,5 +1,5 @@
-import type { CollectionConfig } from 'payload'
-import { adminOnly, adminOnlyField, hiddenUnlessAdmin, publicRead } from './access'
+import type { CollectionConfig, Where } from 'payload'
+import { adminOnly, adminOnlyField, getOwnedDeveloperIds, getRole, getTeamLandIds, isAdmin, manageOwnLands, publicRead } from './access'
 import { syncLandDeleteToSupabase, syncLandToSupabase } from './hooks/sync-to-supabase'
 import {
   amenitiesField,
@@ -55,13 +55,26 @@ export const Lands: CollectionConfig = {
         '@/components/payload/LandListSummary#LandListSummary',
       ],
     },
-    hidden: hiddenUnlessAdmin,
+    // Visible to admins and to developer logins (their own lands only, see baseListFilter); hidden from everyone else.
+    hidden: ({ user }: { user?: unknown }) => !['admin', 'developer'].includes((user as { role?: string } | null | undefined)?.role ?? ''),
+    // `read` is public for the live site, so the CMS list is narrowed here: a developer sees only their company's lands plus the
+    // ones handed to them as a team member, and nothing at all when they have neither (-1 matches no row).
+    baseListFilter: async ({ req }) => {
+      if (isAdmin(req)) return null
+      if (getRole(req) !== 'developer') return { id: { in: [-1] } }
+      const owned = await getOwnedDeveloperIds(req)
+      const team = await getTeamLandIds(req)
+      const clauses: Where[] = []
+      if (owned.length) clauses.push({ and: [{ 'seller.relationTo': { equals: 'developers' } }, { 'seller.value': { in: owned } }] })
+      if (team.length) clauses.push({ id: { in: team } })
+      return clauses.length === 0 ? { id: { in: [-1] } } : clauses.length === 1 ? clauses[0] : { or: clauses }
+    },
   },
   access: {
     read: publicRead,
     create: adminOnly,
-    update: adminOnly,
-    delete: adminOnly,
+    update: manageOwnLands,
+    delete: manageOwnLands,
   },
   hooks: {
     afterChange: [syncLandToSupabase],
@@ -90,6 +103,8 @@ export const Lands: CollectionConfig = {
               name: 'seller',
               type: 'relationship',
               relationTo: ['developers', 'construction-companies'],
+              // Only an admin can move a land listing to another seller.
+              access: { update: adminOnlyField },
               admin: { description: 'Used when sellerType is developer or construction_company.' },
             },
             { name: 'sellerName', type: 'text', required: true, admin: { description: 'Always shown; the only identifier when sellerType is "builder".' } },
