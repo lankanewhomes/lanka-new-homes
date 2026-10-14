@@ -14,6 +14,7 @@ import {
   PROVINCE_OPTIONS,
   ROAD_ACCESS_OPTIONS,
   referenceLinksTab,
+  doneTasksTab,
   seoFields,
   selectWithOther,
   textDropdown,
@@ -251,6 +252,7 @@ export const Lands: CollectionConfig = {
           fields: [coordinatesField, contactField],
         },
         referenceLinksTab,
+        doneTasksTab,
         {
           label: 'SEO',
           fields: [seoFields],

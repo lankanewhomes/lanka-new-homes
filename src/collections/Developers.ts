@@ -1,6 +1,6 @@
 import type { CollectionConfig, Field, Tab, Where } from 'payload'
 import { adminOnly, adminOnlyField, getOwnedDeveloperIds, getRole, isAdmin, publicRead } from './access'
-import { companyProfileFields, referenceLinksTab, seoFields, socialLinksField } from './shared-fields'
+import { companyProfileFields, doneTasksTab, referenceLinksTab, seoFields, socialLinksField } from './shared-fields'
 import { syncDeveloperDeleteToSupabase, syncDeveloperToSupabase } from './hooks/sync-to-supabase'
 import { syncFeaturedProjectsFromDeveloper } from './hooks/sync-developer-plan'
 import { maxFeaturedProjects, PACKAGE_LIST } from '@/lib/packages'
@@ -95,6 +95,7 @@ function groupDeveloperFields(fields: Field[]): Field[] {
     { label: 'Verification', fields: verification },
     { label: 'Listings & team', fields: buckets['Listings & team'] },
     referenceLinksTab,
+    doneTasksTab,
     emailsTab,
     { label: 'SEO', fields: buckets.SEO },
   ].filter((tab) => tab.fields.length > 0)
