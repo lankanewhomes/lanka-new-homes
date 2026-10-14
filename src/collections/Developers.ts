@@ -1,4 +1,4 @@
-import type { CollectionConfig, Field, Where } from 'payload'
+import type { CollectionConfig, Field, Tab, Where } from 'payload'
 import { adminOnly, adminOnlyField, getOwnedDeveloperIds, getRole, isAdmin, publicRead } from './access'
 import { companyProfileFields, referenceLinksTab, seoFields, socialLinksField } from './shared-fields'
 import { syncDeveloperDeleteToSupabase, syncDeveloperToSupabase } from './hooks/sync-to-supabase'
@@ -63,6 +63,29 @@ function groupDeveloperFields(fields: Field[]): Field[] {
     ...rest(planAll, ['planPanel', ...planAdminNames]),
   ]
 
+  // Admin-only "Emails & contact" tab: every email with the company (read from the synced mailboxes) plus a manual log of other contact.
+  const emailsTab: Tab = {
+    label: 'Emails & contact',
+    admin: { condition: (_data, _siblingData, { user }) => (user as { role?: string } | null)?.role === 'admin' },
+    fields: [
+      { name: 'developer_emails', type: 'ui', admin: { components: { Field: '@/components/payload/DeveloperEmails#DeveloperEmails' } } } as Field,
+      {
+        name: 'contactLog',
+        type: 'array',
+        label: 'Other contact (Instagram, WhatsApp, phone…)',
+        labels: { singular: 'Contact', plural: 'Contacts' },
+        access: { read: ({ req }) => (req.user as { role?: string } | null)?.role === 'admin', update: ({ req }) => (req.user as { role?: string } | null)?.role === 'admin' },
+        admin: { description: 'Internal only. A note for every time you reached this company outside email, for example an Instagram message asking them to register. Emails appear above by themselves.' },
+        fields: [
+          { name: 'channel', type: 'select', required: true, defaultValue: 'instagram', options: [{ label: 'Instagram', value: 'instagram' }, { label: 'WhatsApp', value: 'whatsapp' }, { label: 'Phone call', value: 'phone' }, { label: 'Facebook', value: 'facebook' }, { label: 'LinkedIn', value: 'linkedin' }, { label: 'In person', value: 'in_person' }, { label: 'Other', value: 'other' }] },
+          { name: 'date', type: 'date', required: true, admin: { date: { pickerAppearance: 'dayOnly' } } },
+          { name: 'summary', type: 'text', required: true, admin: { description: 'What happened, e.g. "Asked them to register and verify".' } },
+          { name: 'link', type: 'text', admin: { description: 'Optional: link to the conversation or profile.' } },
+        ],
+      },
+    ],
+  }
+
   const tabs = [
     { label: 'Overview', fields: overview },
     { label: 'Profile', fields: buckets.Profile },
@@ -72,7 +95,7 @@ function groupDeveloperFields(fields: Field[]): Field[] {
     { label: 'Verification', fields: verification },
     { label: 'Listings & team', fields: buckets['Listings & team'] },
     referenceLinksTab,
-    { label: 'Emails', fields: [{ name: 'developer_emails', type: 'ui', admin: { components: { Field: '@/components/payload/DeveloperEmails#DeveloperEmails' } } } as Field] },
+    emailsTab,
     { label: 'SEO', fields: buckets.SEO },
   ].filter((tab) => tab.fields.length > 0)
 

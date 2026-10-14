@@ -410,6 +410,24 @@ export interface Developer {
       }[]
     | null;
   /**
+   * Internal only. A note for every time you reached this company outside email, for example an Instagram message asking them to register. Emails appear above by themselves.
+   */
+  contactLog?:
+    | {
+        channel: 'instagram' | 'whatsapp' | 'phone' | 'facebook' | 'linkedin' | 'in_person' | 'other';
+        date: string;
+        /**
+         * What happened, e.g. "Asked them to register and verify".
+         */
+        summary: string;
+        /**
+         * Optional: link to the conversation or profile.
+         */
+        link?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
    * What Google and social apps show for this page. Everything is optional — blank fields fall back to the page name and text.
    */
   seo?: {
@@ -8358,6 +8376,15 @@ export interface DevelopersSelect<T extends boolean = true> {
         label?: T;
         url?: T;
         note?: T;
+        id?: T;
+      };
+  contactLog?:
+    | T
+    | {
+        channel?: T;
+        date?: T;
+        summary?: T;
+        link?: T;
         id?: T;
       };
   seo?:
