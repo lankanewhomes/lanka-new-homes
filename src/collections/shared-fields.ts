@@ -625,9 +625,11 @@ export function directoryCollection(
 // map pins, third-party pages). Admin-only tab; never read by the public site and not mirrored to Supabase (owner, 2026-10-12:
 // "save all the links in the CMS for each project ... in the backend, not the front end").
 export const referenceLinksTab: Tab = {
-  label: 'Reference links',
+  label: 'Links & done tasks',
   admin: { condition: (_data, _siblingData, { user }) => (user as { role?: string } | null)?.role === 'admin' },
   fields: [
+    // Tasks ticked off in the To-do list are hidden there and listed here instead.
+    { name: 'doneTodos', type: 'ui', admin: { components: { Field: '@/components/payload/DoneTodos#DoneTodos' } } },
     {
       name: 'referenceLinks',
       type: 'array',

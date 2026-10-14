@@ -13,6 +13,7 @@ import { PlanCell as PlanCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/compone
 import { VerifySummary as VerifySummary_ba05a0e30dca264b11cfc6386a9a4afa } from '@/components/payload/DeveloperTabSummaries'
 import { DeveloperVerifyPanel as DeveloperVerifyPanel_ce4d2c1d15521de372507861fc6fe344 } from '@/components/payload/DeveloperVerifyPanel'
 import { DeveloperStatusCell as DeveloperStatusCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
+import { DoneTodos as DoneTodos_786519844c72b4d04579ed8801aa595d } from '@/components/payload/DoneTodos'
 import { DeveloperEmails as DeveloperEmails_e95ca7605988b751fee9ef1f028045e9 } from '@/components/payload/DeveloperEmails'
 import { SeoPreview as SeoPreview_55675bcab4b82c96fbbbf5279a6cd2dc } from '@/components/payload/SeoPreview'
 import { DeveloperListTabs as DeveloperListTabs_2581ee59914b19566144bedd6630e7c8 } from '@/components/payload/DeveloperListTabs'
@@ -108,6 +109,7 @@ export const importMap = {
   "@/components/payload/DeveloperTabSummaries#VerifySummary": VerifySummary_ba05a0e30dca264b11cfc6386a9a4afa,
   "@/components/payload/DeveloperVerifyPanel#DeveloperVerifyPanel": DeveloperVerifyPanel_ce4d2c1d15521de372507861fc6fe344,
   "@/components/payload/ListingCells#DeveloperStatusCell": DeveloperStatusCell_76baef6cf7c9eb87fad9c61807ea9c87,
+  "@/components/payload/DoneTodos#DoneTodos": DoneTodos_786519844c72b4d04579ed8801aa595d,
   "@/components/payload/DeveloperEmails#DeveloperEmails": DeveloperEmails_e95ca7605988b751fee9ef1f028045e9,
   "@/components/payload/SeoPreview#SeoPreview": SeoPreview_55675bcab4b82c96fbbbf5279a6cd2dc,
   "@/components/payload/DeveloperListTabs#DeveloperListTabs": DeveloperListTabs_2581ee59914b19566144bedd6630e7c8,
