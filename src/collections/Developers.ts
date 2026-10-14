@@ -72,6 +72,7 @@ function groupDeveloperFields(fields: Field[]): Field[] {
     { label: 'Verification', fields: verification },
     { label: 'Listings & team', fields: buckets['Listings & team'] },
     referenceLinksTab,
+    { label: 'Emails', fields: [{ name: 'developer_emails', type: 'ui', admin: { components: { Field: '@/components/payload/DeveloperEmails#DeveloperEmails' } } } as Field] },
     { label: 'SEO', fields: buckets.SEO },
   ].filter((tab) => tab.fields.length > 0)
 
