@@ -3,16 +3,12 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { Bell, Check, ChevronDown, ChevronRight, LogOut, Menu, Moon, PanelLeftClose, PanelLeftOpen, Search, ShieldCheck, Sun, User, X } from "lucide-react";
+import { Bell, Check, ChevronDown, ChevronRight, LogOut, Menu, Moon, PanelLeftClose, PanelLeftOpen, Search, Sun, X } from "lucide-react";
 import { useDash } from "./DashProvider";
+import { apiCount, apiFind, apiLogout } from "../_data/api";
+import { allOf } from "../_data/scope";
 import { buildSidebar } from "./nav";
-import { MOCK_DEVELOPER } from "../_mock/types";
 
-const NOTIFICATIONS = [
-  { id: 1, text: "New lead: Nimal Perera asked about The Golf - Colombo 08", when: "12 min ago", unread: true },
-  { id: 2, text: "Your featured spot on Colombo ends in 4 days", when: "2 h ago", unread: true },
-  { id: 3, text: "Review pending approval: Prime Lands, 5 stars", when: "yesterday", unread: false },
-];
 
 export function AppShell({ children }: { children: ReactNode }) {
   const d = useDash();
@@ -26,7 +22,6 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { d.ensure("leads"); d.ensure("projects"); }, [d]);
   useEffect(() => {
     if (!menu) return;
     const close = (e: MouseEvent) => { if (!menuRef.current?.contains(e.target as Node)) setMenu(""); };
@@ -34,25 +29,45 @@ export function AppShell({ children }: { children: ReactNode }) {
     return () => document.removeEventListener("mousedown", close);
   }, [menu]);
 
-  const newLeads = (d.scoped("leads") ?? []).filter((l) => l.status === "new").length;
-  const side = useMemo(() => buildSidebar(d.role, newLeads), [d.role, newLeads]);
+  // Live numbers from Payload: the "new leads" badge and the bell (latest enquiries), refreshed on every page change.
+  const [newLeads, setNewLeads] = useState(0);
+  const [recent, setRecent] = useState<{ id: number | string; name: string; project: unknown; at: string }[]>([]);
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const scope = d.scope("leads");
+        const [count, page] = await Promise.all([
+          apiCount("leads", allOf(scope, { status: { equals: "new" } })),
+          apiFind("leads", { limit: 5, sort: "-createdAt", where: scope, select: { name: true, project: true, createdAt: true } }),
+        ]);
+        if (!alive) return;
+        setNewLeads(count);
+        setRecent(page.docs.map((l) => ({ id: l.id, name: String(l.name ?? "Someone"), project: l.project, at: String(l.createdAt ?? "") })));
+        d.ensureLabels("projects", page.docs.map((l) => l.project));
+      } catch { /* the badge is optional */ }
+    })();
+    return () => { alive = false; };
+  }, [d, pathname]);
+  const side = useMemo(() => buildSidebar(d.role, newLeads, d.session.developerIds[0]), [d.role, newLeads, d.session.developerIds]);
 
-  // Global search: matches titles of the collections that are loaded in this session.
-  const hits = useMemo(() => {
-    const s = q.trim().toLowerCase();
-    if (s.length < 2) return [];
-    const out: { href: string; title: string; kind: string }[] = [];
-    for (const slug of ["projects", "lands", "developers", "leads"]) {
-      const schema = d.schemaOf(slug);
-      const rows = d.scoped(slug) ?? [];
-      const title = schema && schema.kind === "collection" ? schema.useAsTitle : null;
-      for (const r of rows) {
-        const t = String((title ? r[title] : "") ?? "");
-        if (t.toLowerCase().includes(s)) out.push({ href: `/dashboard/${slug}/${r.id}`, title: t, kind: slug });
-        if (out.length >= 8) return out;
-      }
-    }
-    return out;
+  // Global search: matches titles in Projects, Land, Developers and Leads, within what this login may see.
+  const [hits, setHits] = useState<{ href: string; title: string; kind: string }[]>([]);
+  useEffect(() => {
+    const term = q.trim();
+    if (term.length < 2) return;
+    let alive = true;
+    const t = setTimeout(async () => {
+      const found: { href: string; title: string; kind: string }[] = [];
+      await Promise.all([["projects", "name"], ["lands", "title"], ["developers", "name"], ["leads", "name"]].map(async ([slug, field]) => {
+        try {
+          const page = await apiFind(slug, { limit: 3, where: allOf(d.scope(slug), { [field]: { like: term } }), select: { [field]: true } });
+          page.docs.forEach((r) => found.push({ href: `/dashboard/${slug}/${r.id}`, title: String(r[field] ?? ""), kind: slug }));
+        } catch { /* skip a collection this login cannot read */ }
+      }));
+      if (alive) setHits(found.slice(0, 10));
+    }, 300);
+    return () => { alive = false; clearTimeout(t); };
   }, [q, d]);
 
   // Menu rows are flat bordered boxes like the account menu; the open page is a solid dark row with a tick.
@@ -129,7 +144,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <div className="flex">
               <div className="relative flex-1">
                 <Search size={15} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-                <input value={q} onChange={(e) => { setQ(e.target.value); setSearchOpen(true); }} onFocus={() => { setSearchOpen(true); ["lands", "developers"].forEach((s) => d.ensure(s)); }} onBlur={() => setTimeout(() => setSearchOpen(false), 150)} placeholder="Search projects, land, developers, leads…" className="h-10 w-full border border-line bg-panel pl-9 pr-3 text-sm outline-none focus:border-ink" />
+                <input value={q} onChange={(e) => { setQ(e.target.value); setSearchOpen(true); }} onFocus={() => setSearchOpen(true)} onBlur={() => setTimeout(() => setSearchOpen(false), 150)} placeholder="Search projects, land, developers, leads…" className="h-10 w-full border border-line bg-panel pl-9 pr-3 text-sm outline-none focus:border-ink" />
               </div>
               <span className="grid h-10 w-10 shrink-0 place-items-center bg-brand text-white" aria-hidden="true"><Search size={17} /></span>
             </div>
@@ -149,38 +164,29 @@ export function AppShell({ children }: { children: ReactNode }) {
               </button>
               {menu === "bell" ? (
                 <div className="absolute right-0 mt-2 w-80 overflow-hidden rounded-lg border border-line bg-panel shadow-card">
-                  <div className="border-b border-line px-3 py-2 text-sm font-semibold">Notifications</div>
-                  {NOTIFICATIONS.map((n) => (
-                    <div key={n.id} className="flex gap-2 border-b border-line px-3 py-2.5 text-sm last:border-0">
-                      <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${n.unread ? "bg-brand" : "bg-line"}`} />
-                      <div><p>{n.text}</p><p className="text-xs text-muted">{n.when}</p></div>
-                    </div>
+                  <div className="border-b border-line px-3 py-2 text-sm font-semibold">Latest enquiries</div>
+                  {recent.length === 0 ? <p className="px-3 py-4 text-sm text-muted">No enquiries yet.</p> : recent.map((n) => (
+                    <Link key={String(n.id)} href={`/dashboard/leads/${n.id}`} onClick={() => setMenu("")} className="flex gap-2 border-b border-line px-3 py-2.5 text-sm last:border-0 hover:bg-subtle">
+                      <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-brand" />
+                      <div><p>{n.name} asked about {d.labelOf("projects", typeof n.project === "object" && n.project ? (n.project as { id?: unknown }).id : n.project)}</p><p className="text-xs text-muted">{n.at ? new Date(n.at).toLocaleDateString("en-GB", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }) : ""}</p></div>
+                    </Link>
                   ))}
                 </div>
               ) : null}
             </div>
             <div className="relative">
               <button type="button" aria-label="Account menu" onClick={() => setMenu(menu === "user" ? "" : "user")} className="flex items-center gap-2 rounded-md p-1 pr-2 hover:bg-subtle">
-                <span className="grid h-8 w-8 place-items-center rounded-full bg-ink text-xs font-semibold text-white">{d.role === "admin" ? "RS" : "PL"}</span>
+                <span className="grid h-8 w-8 place-items-center rounded-full bg-ink text-xs font-semibold text-white">{d.session.name.split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase() || "U"}</span>
                 <ChevronDown size={14} className="hidden text-muted sm:block" />
               </button>
               {menu === "user" ? (
                 <div className="absolute right-0 mt-2 w-64 overflow-hidden rounded-lg border border-line bg-panel shadow-card">
                   <div className="border-b border-line px-3 py-2.5">
-                    <p className="text-sm font-semibold">{d.role === "admin" ? "Rupan Sinnarajah" : MOCK_DEVELOPER.name}</p>
-                    <p className="text-xs text-muted">{d.role === "admin" ? "rupan@lankanewhomes.com" : MOCK_DEVELOPER.email}</p>
+                    <p className="text-sm font-semibold">{d.session.name}</p>
+                    <p className="text-xs text-muted">{d.session.email}</p>
+                    <p className="d-label mt-1.5">{d.role === "admin" ? "Admin" : "Developer"}</p>
                   </div>
-                  <div className="p-2">
-                    <p className="px-1 pb-1 text-[11px] font-semibold uppercase tracking-wide text-muted">Preview as</p>
-                    <div className="grid grid-cols-2 gap-1 rounded-md bg-subtle p-1">
-                      {(["admin", "developer"] as const).map((r) => (
-                        <button key={r} type="button" onClick={() => { d.setRole(r); setMenu(""); d.toast(`Now previewing the ${r === "admin" ? "Admin" : "Developer"} view`, "info"); router.push("/dashboard/overview"); }} className={`flex items-center justify-center gap-1.5 rounded px-2 py-1.5 text-xs font-medium ${d.role === r ? "bg-panel shadow-sm" : "text-muted hover:text-fg"}`}>
-                          {r === "admin" ? <ShieldCheck size={13} /> : <User size={13} />}{r === "admin" ? "Admin" : "Developer"}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <Link href="/dashboard/login" onClick={() => setMenu("")} className="flex items-center gap-2 border-t border-line px-3 py-2.5 text-sm text-muted hover:bg-subtle hover:text-fg"><LogOut size={15} /> Sign out</Link>
+                  <button type="button" onClick={async () => { await apiLogout(); setMenu(""); router.replace("/dashboard/login"); router.refresh(); }} className="flex w-full items-center gap-2 border-t border-line px-3 py-2.5 text-left text-sm text-muted hover:bg-subtle hover:text-fg"><LogOut size={15} /> Sign out</button>
                 </div>
               ) : null}
             </div>

@@ -85,6 +85,3 @@ export type SchemaIndex = {
   collections: Pick<CollectionSchema, "slug" | "label" | "singular" | "group" | "visible" | "scopedForDeveloper" | "access" | "useAsTitle" | "defaultColumns">[];
   globals: { slug: string; label: string }[];
 };
-
-/** The developer the "Developer" role pretends to be. */
-export const MOCK_DEVELOPER = { id: 1, name: "Prime Lands", email: "info@primelands.lk" } as const;

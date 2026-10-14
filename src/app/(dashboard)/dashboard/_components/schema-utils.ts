@@ -41,3 +41,33 @@ export function collectErrors(fields: SchemaField[], data: Record<string, unknow
 }
 
 export const isPublishedRow = (row: Row) => (typeof row.isPublished === "boolean" ? row.isPublished : undefined);
+
+/** A blank record for "Create new": defaults only. */
+export function blankRow(fields: SchemaField[]): Row {
+  const row: Row = { id: "new" };
+  const walk = (list: SchemaField[], target: Record<string, unknown>) => {
+    for (const f of list) {
+      if (f.type === "tabs") {
+        for (const tab of f.tabs ?? []) {
+          if (tab.name) {
+            const sub: Record<string, unknown> = {};
+            walk(tab.fields, sub);
+            target[tab.name] = sub;
+          } else walk(tab.fields, target);
+        }
+      } else if (f.type === "row" || f.type === "collapsible") walk(f.fields ?? [], target);
+      else if (f.name && f.type !== "ui" && f.type !== "join") {
+        if (f.type === "group") {
+          const sub: Record<string, unknown> = {};
+          walk(f.fields ?? [], sub);
+          target[f.name] = sub;
+        } else if (f.type === "array") target[f.name] = [];
+        else if (f.defaultValue !== undefined) target[f.name] = f.defaultValue;
+        else if (f.type === "checkbox") target[f.name] = false;
+        else target[f.name] = f.hasMany ? [] : null;
+      }
+    }
+  };
+  walk(fields, row);
+  return row;
+}

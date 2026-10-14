@@ -7,7 +7,7 @@ import { inputCls } from "./fields/shared";
 export type ComboOption = { value: string | number; label: string; hint?: string };
 
 /** Searchable single/multi picker used by Select (long lists) and Relationship fields. */
-export function Combobox({ options, value, onChange, multiple, placeholder = "Select…", disabled, loading }: {
+export function Combobox({ options, value, onChange, multiple, placeholder = "Select…", disabled, loading, remote, onQuery, labelFor }: {
   options: ComboOption[];
   value: (string | number)[];
   onChange: (next: (string | number)[]) => void;
@@ -15,6 +15,11 @@ export function Combobox({ options, value, onChange, multiple, placeholder = "Se
   placeholder?: string;
   disabled?: boolean;
   loading?: boolean;
+  /** Options come from a server search: do not filter them again here, and tell the parent what was typed. */
+  remote?: boolean;
+  onQuery?: (q: string) => void;
+  /** Label for a selected value that is not in `options` (e.g. a record chosen earlier). */
+  labelFor?: (value: string | number) => string;
 }) {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
@@ -29,13 +34,14 @@ export function Combobox({ options, value, onChange, multiple, placeholder = "Se
   const byValue = useMemo(() => new Map(options.map((o) => [o.value, o])), [options]);
   const filtered = useMemo(() => {
     const s = q.trim().toLowerCase();
+    if (remote) return options.slice(0, 80);
     return (s ? options.filter((o) => o.label.toLowerCase().includes(s) || o.hint?.toLowerCase().includes(s)) : options).slice(0, 80);
-  }, [options, q]);
+  }, [options, q, remote]);
   const pickOne = (v: string | number) => {
     if (multiple) onChange(value.includes(v) ? value.filter((x) => x !== v) : [...value, v]);
     else { onChange([v]); setOpen(false); setQ(""); }
   };
-  const label = (v: string | number) => byValue.get(v)?.label ?? String(v);
+  const label = (v: string | number) => byValue.get(v)?.label ?? labelFor?.(v) ?? String(v);
 
   return (
     <div ref={ref} className="relative">
@@ -54,7 +60,7 @@ export function Combobox({ options, value, onChange, multiple, placeholder = "Se
         <div className="absolute z-30 mt-1 w-full min-w-56 rounded-lg border border-line bg-panel shadow-card">
           <div className="flex items-center gap-2 border-b border-line px-2.5 py-2">
             <Search size={14} className="text-muted" />
-            <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search…" className="w-full bg-transparent text-sm outline-none" />
+            <input autoFocus value={q} onChange={(e) => { setQ(e.target.value); onQuery?.(e.target.value); }} placeholder="Search…" className="w-full bg-transparent text-sm outline-none" />
           </div>
           <ul className="d-scroll max-h-60 overflow-y-auto py-1" role="listbox">
             {filtered.length === 0 ? <li className="px-3 py-2 text-sm text-muted">{loading ? "Loading…" : "No matches"}</li> : null}

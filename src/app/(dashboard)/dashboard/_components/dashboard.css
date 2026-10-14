@@ -124,3 +124,17 @@ body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
   .d-hero { padding: 24px 18px; }
   .d-box { padding: 16px; }
 }
+
+/* The real mail client (src/components/mail, also used in /cms) reads Payload's theme variables; map them to the dashboard tokens
+   so it follows the same palette, light and dark, with square corners. */
+:root {
+  --theme-elevation-0: var(--d-panel);
+  --theme-elevation-50: var(--d-subtle);
+  --theme-elevation-100: var(--d-subtle);
+  --theme-elevation-150: var(--d-line);
+  --theme-elevation-500: var(--d-muted);
+  --theme-elevation-1000: var(--d-fg);
+  --app-header-height: 64px;
+}
+.lnh-mail { border-radius: 0 !important; height: calc(100vh - 64px - 64px) !important; }
+.lnh-mail-search > div { border-radius: 0 !important; }

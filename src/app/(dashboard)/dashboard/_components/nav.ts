@@ -20,7 +20,7 @@ const VIEW_HREF: Record<string, string> = { mail: "/dashboard/inbox", "mail-sett
 /** Collections that exist in Payload but are not in the /cms sidebar map. They get an "Other" group so nothing is missing. */
 const OTHER = ["addon-requests", "plan-waitlist", "outreach", "mail-folders", "mail-messages", "mail-sync-state"];
 
-export function buildSidebar(role: Role, newLeads: number): { top: SideItem[]; sections: SideSection[] } {
+export function buildSidebar(role: Role, newLeads: number, companyId?: number): { top: SideItem[]; sections: SideSection[] } {
   const vis = new Map(schemaIndex.collections.map((c) => [c.slug, c]));
   const canSee = (slug: string) => Boolean(vis.get(slug)?.visible[role]);
   const top: SideItem[] = [
@@ -44,9 +44,10 @@ export function buildSidebar(role: Role, newLeads: number): { top: SideItem[]; s
         items.push({ key: `g-${it.slug}`, label: it.label, href: `/dashboard/globals/${it.slug}`, icon: iconFor(it.slug) });
       }
     }
-    if (s.label === "Settings" && role === "developer") items.push({ key: "company", label: "Company profile", href: "/dashboard/developers/1", icon: Building });
+    if (s.label === "Settings" && role === "developer") items.push({ key: "company", label: "Company profile", href: `/dashboard/developers/${companyId ?? ""}`, icon: Building });
     if (s.label === "Mail" && role === "admin") items.unshift({ key: "inbox2", label: "Inbox", href: "/dashboard/inbox", icon: Mail }, { key: "conn", label: "Connection status", href: "/dashboard/inbox/connection", icon: Settings });
-    if (items.length) sections.push({ label: s.label, items });
+    // The /cms group is called "Developers", the same as its first entry; here it takes the name Payload gives these collections.
+    if (items.length) sections.push({ label: s.label === "Developers" ? "Companies & Professionals" : s.label, items });
   }
   const other = OTHER.filter(canSee).map<SideItem>((slug) => ({ key: slug, label: vis.get(slug)?.label ?? slug, href: `/dashboard/${slug}`, icon: iconFor(slug) }));
   if (other.length) sections.push({ label: "Other", items: other });

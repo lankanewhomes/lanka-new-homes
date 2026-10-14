@@ -1,6 +1,8 @@
-# LankaNewHomes dashboard: design preview
+# LankaNewHomes dashboard
 
-A UI-only preview of a new admin dashboard. **Mock data, no database, no auth, no API calls.** Everything is local React state, so a page reload resets it. It lives in its own route group and does not touch the public site, `/cms` or `payload.config.ts`.
+A new admin dashboard for admins and developers, in the site's brand. **It reads and writes real Payload data** through Payload's own REST API (`/payload-api`) with the signed-in user's cookie, so every access rule, hook and Supabase sync behaves exactly as in `/cms`. It lives in its own route group and does not change `/cms`, the public site or `payload.config.ts`.
+
+Sign in at `/dashboard/login` with a Payload account whose role is `admin` or `developer`. Every page checks the session on the server (`(app)/layout.tsx`) and redirects signed-out visitors to the login page.
 
 - Code: `src/app/(dashboard)/dashboard/`
 - Schema reference: `docs/PAYLOAD-SCHEMA.md` (generated)
