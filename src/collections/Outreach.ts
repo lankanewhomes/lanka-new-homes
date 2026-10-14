@@ -1,6 +1,6 @@
 import crypto from 'node:crypto'
 import type { CollectionConfig } from 'payload'
-import { adminOnly, hiddenUnlessAdmin } from './access'
+import { adminOnly } from './access'
 import { OUTREACH_SENDERS, OUTREACH_TEMPLATES } from '../lib/outreach-templates'
 
 // Always the public domain: these links are pasted into real emails, even when the row is created from a local session.
@@ -24,7 +24,9 @@ export const Outreach: CollectionConfig = {
     group: 'Leads & Engagement',
     useAsTitle: 'subject',
     defaultColumns: ['developerName', 'subject', 'sentAt', 'status', 'clickCount'],
-    hidden: hiddenUnlessAdmin,
+    // Retired from the CMS menu (owner, 2026-10-14): emails to developers are written in /cms/mail and shown on each developer's Emails tab.
+    // The collection, its rows and the /o/<code> tracked links stay, so old emails keep counting clicks.
+    hidden: true,
     components: { beforeListTable: ['@/components/payload/OutreachStats#OutreachStats'] },
     description: 'Emails you send to developers. Add a row for each email, copy its tracked links into the email, and clicks are counted here.',
   },
