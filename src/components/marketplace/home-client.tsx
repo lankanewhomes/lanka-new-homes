@@ -52,7 +52,7 @@ const PRICE_BANDS: { label: string; q: string; min?: number; max?: number }[] = 
   { label: "Rs. 30M – 50M", q: "between 30M and 50M", min: 30_000_000, max: 50_000_000 },
   { label: "Rs. 50M – 80M", q: "between 50M and 80M", min: 50_000_000, max: 80_000_000 },
   { label: "Rs. 80M – 150M", q: "between 80M and 150M", min: 80_000_000, max: 150_000_000 },
-  { label: "Rs. 150M and above", q: "above 150M", min: 150_000_000 },
+  { label: "Over Rs. 150M", q: "above 150M", min: 150_000_000 },
 ];
 
 export function HomeClient({

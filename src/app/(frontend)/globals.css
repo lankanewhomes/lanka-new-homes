@@ -20564,7 +20564,7 @@ body:has(.compare-bar) {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 20px 18px 18px;
+  padding: 20px 18px 16px;
   background: #fff;
   border: 1px solid #d9d1de;
   color: #1f1f1f;
