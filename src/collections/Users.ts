@@ -32,7 +32,7 @@ export const Users: CollectionConfig = {
       generateEmailHTML: ({ req, token, user }) => {
         const serverURL = getServerURL(req)
         const verificationURL = `${serverURL}/developers/confirm-email?token=${token}`
-        const loginURL = `${serverURL}${(user as { role?: string }).role === 'developer' ? '/developers/login' : '/admin-login'}`
+        const loginURL = `${serverURL}${(user as { role?: string }).role === 'developer' ? '/dashboard/login' : '/dashboard/login'}`
         return renderVerificationEmailHTML({ verificationURL, loginURL })
       },
       generateEmailSubject: () => 'Confirm your LankaNewHomes account',
