@@ -16,6 +16,12 @@ const r2Host = (() => {
 })();
 
 const nextConfig: NextConfig = {
+  // Microsoft Clarity replays and heatmaps re-draw the page on clarity.microsoft.com, so the browser fetches our stylesheets and fonts
+  // cross-origin. Without this header they are blocked and the replay shows an unstyled page (owner, 2026-10-15). Public, versioned
+  // build files only. On Cloudflare the same rule lives in public/_headers (static assets bypass Next's header handling).
+  async headers() {
+    return [{ source: "/_next/static/:path*", headers: [{ key: "Access-Control-Allow-Origin", value: "*" }] }];
+  },
   // Cloudflare Workers build only (CF_BUILD=1): give node-postgres a real Workers socket. See cloudflare/pg-cloudflare-socket.cjs.
   ...(process.env.CF_BUILD === "1" || process.env.WORKERS_CI === "1"
     ? {

@@ -1,0 +1,3 @@
+# Cloudflare static assets: let Microsoft Clarity (replays, heatmaps) fetch the stylesheets and fonts from clarity.microsoft.com.
+/_next/static/*
+  Access-Control-Allow-Origin: *
