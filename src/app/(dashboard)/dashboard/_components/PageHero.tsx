@@ -17,7 +17,7 @@ export function PageHero({ title, description, stat, chips, actions }: {
         <div className="min-w-0">
           <h1 className="text-[32px] font-normal leading-tight tracking-tight sm:text-[40px]">{title}</h1>
           {description ? <p className="mt-2 max-w-xl text-[15px] leading-relaxed text-white/75">{description}</p> : null}
-          {chips ? <div className="mt-3 flex flex-wrap items-center gap-1.5 [&>span]:bg-white [&>span]:text-[#1f1f1f]">{chips}</div> : null}
+          {chips ? <div className="mt-3 flex flex-wrap items-center gap-2">{chips}</div> : null}
           {actions ? <div className="mt-5 flex flex-wrap gap-2">{actions}</div> : null}
         </div>
         {stat ? (

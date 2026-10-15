@@ -60,6 +60,7 @@ export function FieldsRenderer({ fields, data, onChange, path, ctx, readOnly }: 
       return;
     }
     if (!f.name) return;
+    if (f.type === "ui" && /_header$/.test(f.name)) return; // the page hero replaces the /cms header panel
     if (!conditionPasses(f.condition, here)) return;
     const p = [...path, f.name];
     const value = data[f.name];
