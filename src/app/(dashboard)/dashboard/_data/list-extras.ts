@@ -85,6 +85,20 @@ export async function loadTiles(slug: string, scope: Where | null, role: "admin"
     ];
   }
 
+  if (slug === "projects") {
+    const [total, published, drafts, noPrice, featured] = await Promise.all([
+      count(), count({ isPublished: { equals: true } }), count({ isPublished: { equals: false } }),
+      count({ or: [{ startingPriceLkr: { exists: false } }, { startingPriceLkr: { equals: 0 } }] }), count({ featured: { equals: true } }),
+    ]);
+    return [
+      { value: n(total), label: "Project listings" },
+      { value: n(published), label: "Published" },
+      { value: n(drafts), label: "Drafts" },
+      { value: n(total - noPrice), label: "With a price" },
+      { value: n(featured), label: "Featured" },
+    ];
+  }
+
   if (slug === "media") {
     const [all, images, noAlt, sizes] = await Promise.all([
       count(), count({ mimeType: { like: "image/" } }),

@@ -19,6 +19,8 @@ export type ParsedSearch = {
   land?: boolean;
   /** Human-readable summary of what was understood, shown as chips ("3 bedrooms", "Under Rs. 50M"). */
   chips: string[];
+  /** Each chip with the words it came from, so the page can take just that filter off ("x" on the chip). */
+  parts: { label: string; source: string }[];
 };
 
 const WORD_NUMBERS: Record<string, number> = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6 };
@@ -67,10 +69,13 @@ const FILLER = /\b(in|at|near|around|for|sale|buy|looking|find|show|me|a|an|the|
 
 export function parseNaturalSearch(raw: string, cityNames: string[] = []): ParsedSearch {
   let rest = ` ${raw.toLowerCase().replace(/\s+/g, " ").trim()} `;
-  const out: ParsedSearch = { text: "", chips: [] };
+  const out: ParsedSearch = { text: "", chips: [], parts: [] };
+  let current = "";
+  const chip = (label: string) => { out.chips.push(label); out.parts.push({ label, source: current }); };
   const take = (re: RegExp, fn: (m: RegExpMatchArray) => void) => {
     const m = rest.match(re);
     if (!m) return false;
+    current = m[0].trim();
     fn(m);
     rest = rest.replace(m[0], " ");
     return true;
@@ -83,16 +88,16 @@ export function parseNaturalSearch(raw: string, cityNames: string[] = []): Parse
     const lo = toLkr(m[1], m[2] ?? unitB), hi = toLkr(m[3], unitB);
     out.minPriceLkr = Math.min(lo, hi);
     out.maxPriceLkr = Math.max(lo, hi);
-    out.chips.push(`${formatLkrShort(out.minPriceLkr)} – ${formatLkrShort(out.maxPriceLkr)}`);
+    chip(`${formatLkrShort(out.minPriceLkr)} – ${formatLkrShort(out.maxPriceLkr)}`);
   });
   if (out.maxPriceLkr === undefined) {
     take(new RegExp(`(?:under|below|less than|up to|upto|within|max(?:imum)?|budget(?: of)?|<)\\s*${AMOUNT}`, "i"), (m) => {
       out.maxPriceLkr = toLkr(m[1], m[2]);
-      out.chips.push(`Under ${formatLkrShort(out.maxPriceLkr)}`);
+      chip(`Under ${formatLkrShort(out.maxPriceLkr)}`);
     });
     take(new RegExp(`(?:over|above|more than|from|min(?:imum)?|at least|starting from|>)\\s*${AMOUNT}`, "i"), (m) => {
       out.minPriceLkr = toLkr(m[1], m[2]);
-      out.chips.push(`From ${formatLkrShort(out.minPriceLkr)}`);
+      chip(`From ${formatLkrShort(out.minPriceLkr)}`);
     });
   }
 
@@ -100,23 +105,23 @@ export function parseNaturalSearch(raw: string, cityNames: string[] = []): Parse
   take(new RegExp(`${NUM}\\s*(?:-|to)\\s*${NUM}\\s*(?:bed(?:room)?s?|br|bhk|bd)\\b`, "i"), (m) => {
     out.minBeds = toNumber(m[1]);
     out.maxBeds = toNumber(m[2]);
-    out.chips.push(`${out.minBeds}–${out.maxBeds} bedrooms`);
+    chip(`${out.minBeds}–${out.maxBeds} bedrooms`);
   }) ||
     take(new RegExp(`${NUM}\\s*(\\+)?\\s*[- ]?(?:bed(?:room)?s?|br|bhk|bd)\\b`, "i"), (m) => {
       const n = toNumber(m[1]);
       out.minBeds = n;
       if (!m[2]) out.maxBeds = n;
-      out.chips.push(m[2] ? `${n}+ bedrooms` : `${n} bedroom${n === 1 ? "" : "s"}`);
+      chip(m[2] ? `${n}+ bedrooms` : `${n} bedroom${n === 1 ? "" : "s"}`);
     });
 
   // Land / plots
-  if (take(/\b(land|lands|plots?|perch(?:es)?|acres?|block)\b/i, () => { out.land = true; })) out.chips.push("Land");
+  if (take(/\b(land|lands|plots?|perch(?:es)?|acres?|block)\b/i, () => { out.land = true; })) chip("Land");
 
   for (const { pattern, type } of TYPES) {
-    if (take(pattern, () => { out.type = type; })) { out.chips.push(type); break; }
+    if (take(pattern, () => { out.type = type; })) { chip(type); break; }
   }
   for (const { pattern, status } of STATUSES) {
-    if (take(pattern, () => { out.status = status; })) { out.chips.push(status); break; }
+    if (take(pattern, () => { out.status = status; })) { chip(status); break; }
   }
 
   // City: longest name first so "Mount Lavinia" wins over "Colombo"-style prefixes.
@@ -124,7 +129,7 @@ export function parseNaturalSearch(raw: string, cityNames: string[] = []): Parse
   const bases = cityNames.map((c) => c.replace(/\s+\d+$/, ""));
   for (const city of Array.from(new Set([...cityNames, ...bases])).filter((c) => c && c !== "All of Sri Lanka").sort((a, b) => b.length - a.length)) {
     const re = new RegExp(`\\b${city.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i");
-    if (take(re, () => { out.city = city; })) { out.chips.push(city); break; }
+    if (take(re, () => { out.city = city; })) { chip(city); break; }
   }
 
   // Only treat the rest as free text when something structured was understood — otherwise keep the query verbatim.

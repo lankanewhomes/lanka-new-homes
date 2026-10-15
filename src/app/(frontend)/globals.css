@@ -20563,9 +20563,8 @@ body:has(.compare-bar) {
 .price-band {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  min-height: 148px;
-  padding: 20px 18px;
+  gap: 4px;
+  padding: 20px 18px 18px;
   background: #fff;
   border: 1px solid #d9d1de;
   color: #1f1f1f;
@@ -20575,7 +20574,7 @@ body:has(.compare-bar) {
 .price-band:hover { border-color: #1f1f1f; }
 .price-band-range { font-family: var(--font-ref-sans); font-size: 22px; line-height: 1.2; font-weight: 400; }
 .price-band-count { font-size: 14px; color: #6b5b7a; }
-.price-band-go { margin-top: auto; padding-top: 18px; display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 600; }
+.price-band-go { margin-top: 10px; display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 600; }
 @media (max-width: 1100px) {
   .price-bands { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
@@ -20583,7 +20582,7 @@ body:has(.compare-bar) {
   .price-search-section { margin: 0 -8px 34px; padding: 28px 14px 30px; }
   .lnh-home .price-search-section { padding-left: calc(50vw - 50% + 0px); padding-right: calc(50vw - 50% + 0px); margin-top: 0; margin-bottom: 34px; }
   .price-bands { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-  .price-band { min-height: 120px; padding: 16px 14px; }
+  .price-band { padding: 16px 14px; }
   .price-band-range { font-size: 18px; }
 }
 
@@ -20636,3 +20635,10 @@ body:has(.compare-bar) {
 
 /* Header search: the magnifier is the brand orange (owner, 2026-10-14). */
 .header-search > svg { color: #f47b36; }
+
+/* "Understood as" chips can be removed with an x (owner, 2026-10-14). */
+.listing-search-understood-chip.is-removable { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font: inherit; font-size: 12.5px; color: #1f1f1f; }
+.listing-search-understood-chip.is-removable:hover { border-color: #1f1f1f; background: #fff; }
+.listing-search-understood-chip.is-removable svg { color: #6b6355; }
+.listing-search-clear { margin-left: 4px; padding: 0; border: 0; background: none; font: inherit; font-size: 12.5px; color: #6b6355; text-decoration: underline; cursor: pointer; }
+.listing-search-clear:hover { color: #1f1f1f; }

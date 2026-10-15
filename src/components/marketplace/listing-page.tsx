@@ -454,6 +454,17 @@ export function ListingPageBody({
   // Plain-language search ("3 bedroom apartment in Colombo under 50M") — see src/lib/natural-search.ts. When a
   // sentence is understood its parts become filters; otherwise the query is matched as plain text, as before.
   const parsedSearch = useMemo(() => parseNaturalSearch(searchQuery, cityOptions), [searchQuery, cityOptions]);
+  // The "x" on an "Understood as" chip: take just that part (e.g. "between 50M and 80M") out of the search sentence; with no part,
+  // clear the whole search. The address bar is kept in step so a shared link matches what is shown.
+  const removeSearchPart = (source: string) => {
+    const next = source ? searchQuery.replace(new RegExp(source.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i"), " ").replace(/\s+/g, " ").trim() : "";
+    setSearchQuery(next);
+    try {
+      const url = new URL(window.location.href);
+      if (next) url.searchParams.set("q", next); else url.searchParams.delete("q");
+      window.history.replaceState(null, "", url.toString());
+    } catch { /* address bar left as it was */ }
+  };
   const regionFilteredProjects = useMemo(() => {
     const understood = parsedSearch.chips.length > 0;
     const textQuery = (understood ? parsedSearch.text : trimmedQuery).toLowerCase();
@@ -712,9 +723,13 @@ export function ListingPageBody({
                     </h1>
                     <p className="listing-search-understood" aria-label="What we understood from your search">
                       Understood as:{" "}
-                      {[...parsedSearch.chips, ...(parsedSearch.text ? [`“${parsedSearch.text}”`] : [])].map((chip) => (
-                        <span key={chip} className="listing-search-understood-chip">{chip}</span>
+                      {parsedSearch.parts.map((part) => (
+                        <button key={part.label} type="button" className="listing-search-understood-chip is-removable" onClick={() => removeSearchPart(part.source)} aria-label={`Remove filter: ${part.label}`}>
+                          {part.label}<X className="h-3 w-3" aria-hidden="true" />
+                        </button>
                       ))}
+                      {parsedSearch.text ? <span className="listing-search-understood-chip">“{parsedSearch.text}”</span> : null}
+                      <button type="button" className="listing-search-clear" onClick={() => removeSearchPart("")}>Clear search</button>
                     </p>
                   </>
                 ) : activeSelection || searchPlaceLabel ? (
