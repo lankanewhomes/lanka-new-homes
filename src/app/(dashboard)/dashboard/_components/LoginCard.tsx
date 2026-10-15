@@ -44,8 +44,8 @@ function Card({ title, lede }: { title: string; lede: string }) {
           </Link>
         </div>
         <form onSubmit={submit} className="border border-line bg-panel p-7">
-          <h1 className="text-[28px] font-normal leading-tight">{title}</h1>
-          <p className="mt-0.5 text-sm text-muted">{lede}</p>
+          <h1 className="text-center text-[28px] font-normal leading-tight">{title}</h1>
+          <p className="mt-0.5 text-center text-sm text-muted">{lede}</p>
           <label className="mt-5 block text-[13px] font-medium" htmlFor="dash-email">Email</label>
           <input id="dash-email" type="email" autoComplete="username" required value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1.5 w-full border border-line bg-bg px-3 py-2 text-sm outline-none focus:border-ink" />
           <label className="mt-4 block text-[13px] font-medium" htmlFor="dash-password">Password</label>
