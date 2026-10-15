@@ -186,7 +186,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                     <p className="text-xs text-muted">{d.session.email}</p>
                     <p className="d-label mt-1.5">{d.role === "admin" ? "Admin" : "Developer"}</p>
                   </div>
-                  <button type="button" onClick={async () => { await apiLogout(); setMenu(""); router.replace("/dashboard/login"); router.refresh(); }} className="flex w-full items-center gap-2 border-t border-line px-3 py-2.5 text-left text-sm text-muted hover:bg-subtle hover:text-fg"><LogOut size={15} /> Sign out</button>
+                  <button type="button" onClick={async () => { await apiLogout(); setMenu(""); router.replace("/developers/login"); router.refresh(); }} className="flex w-full items-center gap-2 border-t border-line px-3 py-2.5 text-left text-sm text-muted hover:bg-subtle hover:text-fg"><LogOut size={15} /> Sign out</button>
                 </div>
               ) : null}
             </div>

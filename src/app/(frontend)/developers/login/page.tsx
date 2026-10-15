@@ -12,7 +12,7 @@ export const metadata: Metadata = withSocial({
 }, { path: "/developers/login" });
 
 // Redesigned 2026-10-03 like /login and /web-design (owner request). Authenticates against Payload (see
-// PayloadLoginForm) and lands in /cms, scoped to this developer's own projects/leads/analytics.
+// PayloadLoginForm) and lands in /dashboard/overview, scoped to this developer's own projects/leads/analytics.
 const PERKS = [
   { icon: FolderKanban, title: "Your projects", body: "Edit your listings, floor plans, pricing and construction updates." },
   { icon: Inbox, title: "Your leads", body: "See the enquiries buyers send about your projects." },

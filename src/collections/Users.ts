@@ -29,10 +29,10 @@ export const Users: CollectionConfig = {
     // every later request checks _verified *truthily*, which null also
     // fails. scripts/backfill-verified.ts grandfathered those in once.
     verify: {
-      generateEmailHTML: ({ req, token, user }) => {
+      generateEmailHTML: ({ req, token }) => {
         const serverURL = getServerURL(req)
         const verificationURL = `${serverURL}/developers/confirm-email?token=${token}`
-        const loginURL = `${serverURL}${(user as { role?: string }).role === 'developer' ? '/dashboard/login' : '/dashboard/login'}`
+        const loginURL = `${serverURL}/developers/login`
         return renderVerificationEmailHTML({ verificationURL, loginURL })
       },
       generateEmailSubject: () => 'Confirm your LankaNewHomes account',
