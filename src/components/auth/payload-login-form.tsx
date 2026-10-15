@@ -141,7 +141,7 @@ function PayloadLoginFormInner({ mode = "login" }: { mode?: "login" | "signup" }
         return;
       }
       await onSubmitLogin();
-      window.location.href = "/cms";
+      window.location.href = "/dashboard/overview";
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
       setLoading(false);

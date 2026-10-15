@@ -15,7 +15,8 @@ export function scopeWhere(slug: string, s: Session): Where | null {
     case "projects": return { or: [{ developer: inList(s.developerIds) }, { id: inList(s.teamProjectIds) }] };
     case "lands": return { or: [{ and: [{ "seller.relationTo": { equals: "developers" } }, { "seller.value": inList(s.developerIds) }] }, { id: inList(s.teamLandIds) }] };
     case "leads":
-    case "analytics": return { project: inList(s.projectIds) };
+    case "analytics":
+    case "social-posts": return { project: inList(s.projectIds) };
     case "reviews":
     case "subscriptions":
     case "addon-requests": return { developer: inList(s.developerIds) };

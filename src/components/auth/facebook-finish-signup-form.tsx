@@ -23,7 +23,7 @@ export function FacebookFinishSignupForm({ name }: { name: string }) {
       });
       const body = await response.json();
       if (!response.ok) throw new Error(body?.error ?? "Couldn't finish signing up. Please try again.");
-      window.location.href = "/cms";
+      window.location.href = "/dashboard/overview";
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
       setLoading(false);

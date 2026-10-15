@@ -8,7 +8,7 @@ export const ICONS: Record<string, LucideIcon> = {
   "hero-slides": GalleryHorizontal, neighborhoods: MapPinned, media: ImageIcon, "social-posts": Share2, "social-assets": GalleryHorizontal, "seo-keywords": Search,
   "placement-pricing": Tag, mail: Mail, "mail-settings": Settings, "mail-accounts": Users, "billing-overview": BarChart3, "my-billing": CreditCard, subscriptions: CreditCard,
   payments: Receipt, analytics: BarChart3, users: Users, "team-members": UserCog, "site-settings": Settings, "lead-alert-settings": Settings, overview: LayoutDashboard,
-  package: Package, inbox: Inbox,
+  package: Package, inbox: Inbox, social: Share2,
 };
 export const iconFor = (slug: string): LucideIcon => ICONS[slug] ?? LayoutDashboard;
 
@@ -26,6 +26,7 @@ export function buildSidebar(role: Role, newLeads: number, companyId?: number): 
   const top: SideItem[] = [
     { key: "overview", label: "Overview", href: "/dashboard/overview", icon: LayoutDashboard },
     { key: "package", label: role === "admin" ? "Packages" : "My package", href: "/dashboard/package", icon: Package },
+    { key: "social", label: "Social content", href: "/dashboard/social", icon: Share2 },
     ...(role === "admin" ? [{ key: "inbox", label: "Inbox", href: "/dashboard/inbox", icon: Inbox }] : []),
   ];
   const sections: SideSection[] = [];

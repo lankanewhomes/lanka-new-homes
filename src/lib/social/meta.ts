@@ -10,7 +10,7 @@
 // button be exercised end-to-end before the accounts are connected.
 
 const VERSION = process.env.META_GRAPH_VERSION || "v21.0";
-const GRAPH = `https://graph.facebook.com/${VERSION}`;
+export const GRAPH = `https://graph.facebook.com/${VERSION}`;
 
 export type MetaConfig = { pageId: string; pageToken: string; igUserId: string };
 
@@ -25,7 +25,7 @@ class GraphError extends Error {
   constructor(message: string, public readonly status: number, public readonly body: unknown) { super(message); }
 }
 
-async function graph<T = Record<string, unknown>>(path: string, token: string, params: Record<string, string | number | boolean | undefined>, method: "GET" | "POST" = "POST"): Promise<T> {
+export async function graph<T = Record<string, unknown>>(path: string, token: string, params: Record<string, string | number | boolean | undefined>, method: "GET" | "POST" = "POST"): Promise<T> {
   const url = new URL(`${GRAPH}${path}`);
   const body = new URLSearchParams();
   for (const [k, v] of Object.entries(params)) if (v !== undefined) body.set(k, String(v));

@@ -254,3 +254,13 @@ export function withTeamListings(base: Access): Access {
     return result && typeof result === 'object' ? { or: [result, teamWhere] } : teamWhere
   }
 }
+
+// Marketing content about a listing (social posts): an admin sees all; a developer sees the posts about listings they manage
+// (their company's plus any assigned to them as a team member). Posts that name no listing stay admin-only.
+export const projectContentRead: Access = async ({ req }) => {
+  if (isAdmin(req)) return true
+  const ids = await getOwnedProjectIds(req)
+  if (ids.length === 0) return false
+  const where: Where = { project: { in: ids } }
+  return where
+}

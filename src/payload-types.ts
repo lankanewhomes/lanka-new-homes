@@ -7412,14 +7412,23 @@ export interface SocialAsset {
  */
 export interface SocialPost {
   id: number;
-  project: number | Project;
+  project?: (number | null) | Project;
   platform: 'facebook' | 'instagram';
-  kind: 'carousel' | 'reel';
+  kind: 'carousel' | 'reel' | 'photo' | 'video' | 'story';
   status: 'published' | 'processing' | 'failed' | 'dry_run';
   /**
    * Post / video / media id on Meta.
    */
   externalId?: string | null;
+  source?: ('published_by_us' | 'imported' | 'manual') | null;
+  /**
+   * How the listing was found: link, name or hashtag in the caption.
+   */
+  matchedBy?: string | null;
+  mediaUrl?: string | null;
+  thumbnailUrl?: string | null;
+  likes?: number | null;
+  comments?: number | null;
   /**
    * Instagram container id (until published).
    */
@@ -9501,6 +9510,12 @@ export interface SocialPostsSelect<T extends boolean = true> {
   kind?: T;
   status?: T;
   externalId?: T;
+  source?: T;
+  matchedBy?: T;
+  mediaUrl?: T;
+  thumbnailUrl?: T;
+  likes?: T;
+  comments?: T;
   creationId?: T;
   permalink?: T;
   caption?: T;

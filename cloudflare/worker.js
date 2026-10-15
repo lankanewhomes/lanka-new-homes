@@ -11,6 +11,7 @@ const CRON_ROUTES = {
   "0 8 * * 1": "/api/cron/analytics-digest", // Mondays 08:00 UTC
   "0 2 * * *": "/api/cron/subscription-expiry", // daily 02:00 UTC
   "0 */6 * * *": "/api/cron/bay-one-availability", // every 6 hours: Bay One units sold / available
+  "30 3 * * *": "/api/cron/social-sync", // daily 03:30 UTC (9:00 in Sri Lanka): import Instagram/Facebook posts, reels, videos and stories and match them to listings
   "*/5 * * * *": "/api/mail/sync", // every 5 minutes: Zoho -> CMS mail sync (does nothing while MAIL_MOCK_MODE is on)
   "*/10 * * * *": "/api/cron/lead-alert-sweep", // every 10 minutes: email any recent lead whose instant alert never went out
 };
