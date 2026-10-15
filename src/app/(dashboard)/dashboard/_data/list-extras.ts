@@ -1,5 +1,6 @@
 import { apiCount, apiFind, type Where } from "./api";
 import { allOf } from "./scope";
+import { TODO_CATEGORIES } from "@/lib/todo-category";
 
 // The summary strips and status tabs that sit above each list. They mirror what /cms shows (CompanyListSummary, DeveloperListTabs,
 // LandListSummary, CollectionStatusTabs, MediaListTabs): same numbers, same rules, so the two screens never disagree. Counts respect
@@ -32,6 +33,10 @@ export const TABS: Record<string, Tab[]> = {
   payments: status("status", [["Pending", "pending"], ["Completed", "completed"], ["Failed", "failed"], ["Refunded", "refunded"]]),
   "hero-slides": status("status", [["Pending", "pending"], ["Active", "active"], ["Rejected", "rejected"], ["Archived", "archived"]]),
   "plan-waitlist": status("status", [["New", "new"], ["Contacted", "contacted"], ["Converted", "converted"], ["Not interested", "not_interested"]]),
+  "listing-todos": [
+    { key: "all", label: "All", where: null },
+    ...TODO_CATEGORIES.map((c) => ({ key: c.toLowerCase().replace(/[^a-z]+/g, "-"), label: c, where: { category: { equals: c } } as Where })),
+  ],
   media: [
     { key: "all", label: "All", where: null },
     { key: "images", label: "Images", where: { mimeType: { like: "image/" } } },

@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { adminOnly, hiddenUnlessAdmin } from './access'
+import { TODO_CATEGORIES, categorizeTodo } from '../lib/todo-category'
 
 // The owner's own "what is left to do" list for every listing (projects, land) — one row per task, shown as a simple table
 // at /cms/collections/listing-todos with a tick box to check a task off (owner, 2026-10-11: "have it in table and simple and
@@ -12,7 +13,7 @@ export const ListingTodos: CollectionConfig = {
     group: 'Properties',
     groupBy: true, // list view can be grouped by listing (the nav link opens it grouped)
     useAsTitle: 'title',
-    defaultColumns: ['listingName', 'title', 'done', 'sourceLinks', 'updatedAt'],
+    defaultColumns: ['listingName', 'title', 'category', 'done', 'sourceLinks', 'updatedAt'],
     hidden: hiddenUnlessAdmin,
     // Done tasks are not shown in the list (owner, 2026-10-14: "dont show it in to do list"). They stay in the database.
     baseListFilter: () => ({ done: { not_equals: true } }),
@@ -40,6 +41,8 @@ export const ListingTodos: CollectionConfig = {
         } catch {
           /* listing not found: keep whatever name was already there */
         }
+        // Sort the task into a category from its title when none is set yet.
+        if (!next.category && !originalDoc?.category) next.category = categorizeTodo(next.title ?? originalDoc?.title, next.notes ?? originalDoc?.notes)
         if (typeof next.done === 'boolean' && next.done !== Boolean(originalDoc?.done)) next.doneAt = next.done ? new Date().toISOString() : null
         return next
       },
@@ -48,6 +51,7 @@ export const ListingTodos: CollectionConfig = {
   fields: [
     { name: 'listingName', type: 'text', label: 'Listing', index: true, admin: { readOnly: true, position: 'sidebar', description: 'Filled in automatically from the listing you pick.', components: { Cell: '@/components/payload/ListingCells#TodoListingCell' } } },
     { name: 'title', type: 'text', required: true, label: 'What needs doing' },
+    { name: 'category', type: 'select', label: 'Category', index: true, options: [...TODO_CATEGORIES], admin: { description: 'Filled in automatically from the task; change it if it landed in the wrong group.' } },
     { name: 'done', type: 'checkbox', label: 'Done', defaultValue: false, index: true, admin: { components: { Cell: '@/components/payload/ListingCells#TodoDoneCell' } } },
     {
       name: 'listingType',

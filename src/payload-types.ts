@@ -7522,6 +7522,23 @@ export interface ListingTodo {
    */
   listingName?: string | null;
   title: string;
+  /**
+   * Filled in automatically from the task; change it if it landed in the wrong group.
+   */
+  category?:
+    | (
+        | 'Publishing'
+        | 'Contact & WhatsApp'
+        | 'Dates & construction'
+        | 'Pricing & payment'
+        | 'Location & map'
+        | 'Photos & media'
+        | 'Amenities & features'
+        | 'Floor plans, units & plots'
+        | 'Developer & people'
+        | 'Other'
+      )
+    | null;
   done?: boolean | null;
   listingType: 'project' | 'land' | 'other';
   project?: (number | null) | Project;
@@ -9560,6 +9577,7 @@ export interface SeoKeywordsSelect<T extends boolean = true> {
 export interface ListingTodosSelect<T extends boolean = true> {
   listingName?: T;
   title?: T;
+  category?: T;
   done?: T;
   listingType?: T;
   project?: T;
