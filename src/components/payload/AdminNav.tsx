@@ -68,9 +68,6 @@ const SECTIONS: { label: string; items: NavItem[] }[] = [
     label: "Developers",
     items: [
       { slug: "developers", kind: "collection", label: "Developers", href: "/cms/collections/developers", icon: Building },
-      // Real filtered view of the same Developers collection/data — not a
-      // fake page. verification_status is a real field on Developers.ts.
-      { slug: "developers", kind: "collection", label: "Verification", href: "/cms/collections/developers?where[verification_status][equals]=pending", icon: UserCog },
       { slug: "construction-companies", kind: "collection", label: "Construction Companies", href: "/cms/collections/construction-companies", icon: HardHat },
       { slug: "marketing-companies", kind: "collection", label: "Marketing Companies", href: "/cms/collections/marketing-companies", icon: Megaphone },
       { slug: "sales-companies", kind: "collection", label: "Sales Companies", href: "/cms/collections/sales-companies", icon: Handshake },

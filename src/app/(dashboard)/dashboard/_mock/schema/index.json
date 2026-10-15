@@ -38,13 +38,6 @@
      "filter": null
     },
     {
-     "slug": "developers",
-     "kind": "collection",
-     "roles": null,
-     "label": "Verification",
-     "filter": "where[verification_status][equals]=pending"
-    },
-    {
      "slug": "construction-companies",
      "kind": "collection",
      "roles": null,
