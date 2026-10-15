@@ -2,6 +2,7 @@ import type { CollectionConfig, Field, Tab, Where } from 'payload'
 import { adminOnly, adminOnlyField, getOwnedDeveloperIds, getRole, isAdmin, publicRead } from './access'
 import { companyProfileFields, doneTasksTab, referenceLinksTab, seoFields, socialLinksField } from './shared-fields'
 import { syncDeveloperDeleteToSupabase, syncDeveloperToSupabase } from './hooks/sync-to-supabase'
+import { notifyDeveloperVerified } from './hooks/notify-developer-verified'
 import { syncFeaturedProjectsFromDeveloper } from './hooks/sync-developer-plan'
 import { maxFeaturedProjects, PACKAGE_LIST } from '@/lib/packages'
 import { checkEmailAgainstWebsite, websiteDomain } from '@/lib/developer-domain-verification'
@@ -176,7 +177,7 @@ export const Developers: CollectionConfig = {
     // fine. Runs before the Supabase sync so a plan/slot change is already
     // reflected on each project's `.package` by the time Projects' own
     // afterChange hook mirrors that project to Supabase.
-    afterChange: [syncFeaturedProjectsFromDeveloper, syncDeveloperToSupabase],
+    afterChange: [syncFeaturedProjectsFromDeveloper, syncDeveloperToSupabase, notifyDeveloperVerified],
     afterDelete: [syncDeveloperDeleteToSupabase],
   },
   fields: groupDeveloperFields([

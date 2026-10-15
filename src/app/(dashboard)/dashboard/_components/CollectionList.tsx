@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertCircle, ArrowDown, ArrowUp, Check, ChevronLeft, ChevronRight, Columns3, Copy, Filter, Inbox, Pencil, Plus, Search, Trash2, X } from "lucide-react";
+import { AlertCircle, ArrowDown, ArrowUp, Check, ChevronLeft, ChevronRight, Columns3, BadgeCheck, Copy, Filter, Inbox, Pencil, Plus, Search, Trash2, X } from "lucide-react";
 import { useDash, useSchema } from "./DashProvider";
 import { PageHero, heroBtnSolid } from "./PageHero";
 import { StatusChip } from "./StatusChip";
@@ -76,6 +76,8 @@ function ListInner({ slug, initialFilter }: ListProps) {
   useEffect(() => { const t = setTimeout(() => setQDebounced(q.trim()), 300); return () => clearTimeout(t); }, [q]);
 
   const fields = useMemo(() => (schema ? flatFields(schema.fields).filter((f) => !f.hidden) : []), [schema]);
+  const admin = d.role === "admin";
+  const grouped = slug === "listing-todos" && !sort;
   const byName = useMemo(() => new Map(fields.map((f) => [f.name, f])), [fields]);
   const defaultCols = useMemo(() => {
     if (!schema) return [];
@@ -113,11 +115,12 @@ function ListInner({ slug, initialFilter }: ListProps) {
       if (rest.length) { const cur = (sel[head] as Record<string, unknown>) ?? {}; cur[rest.join(".")] = true; sel[head] = cur; } else sel[head] = true;
     }
     if (titleField && !titleField.includes(".")) sel[titleField] = true;
+    if (byName.has("domain_verified")) sel.domain_verified = true;
     return sel;
-  }, [shown, titleField]);
+  }, [shown, titleField, byName]);
   const selectKey = JSON.stringify(select);
   const whereKey = JSON.stringify(where);
-  const sortParam = sort ? `${sort.dir === -1 ? "-" : ""}${sort.field}` : schema?.slug === "leads" || slug === "analytics" ? "-createdAt" : "-updatedAt";
+  const sortParam = sort ? `${sort.dir === -1 ? "-" : ""}${sort.field}` : schema?.slug === "leads" || slug === "analytics" ? "-createdAt" : slug === "listing-todos" ? "listingName" : "-updatedAt";
 
   useEffect(() => {
     if (!schema) return;
@@ -266,6 +269,10 @@ function ListInner({ slug, initialFilter }: ListProps) {
             <div className="flex items-center gap-3 border-b border-line bg-accent-soft px-3 py-2 text-sm">
               <span className="font-medium">{picked.size} selected</span>
               {byName.has("isPublished") ? <button type="button" onClick={() => run([...picked], (id) => apiUpdate(slug, id, { isPublished: true }), "Published")} className="border border-line bg-panel px-2.5 py-1 text-xs font-medium hover:border-fg/40">Publish</button> : null}
+              {admin && byName.has("domain_verified") ? <>
+                <button type="button" onClick={() => run([...picked], (id) => apiUpdate(slug, id, { domain_verified: true, verification_status: "approved", verified_at: new Date().toISOString() }), "Approved as Verified Developer")} className="inline-flex items-center gap-1 border border-line bg-panel px-2.5 py-1 text-xs font-medium hover:border-fg/40"><BadgeCheck size={12} /> Approve as Verified Developer</button>
+                <button type="button" onClick={() => run([...picked], (id) => apiUpdate(slug, id, { domain_verified: false, verified_email: null, verified_domain: null, verified_at: null }), "Verified badge removed")} className="border border-line bg-panel px-2.5 py-1 text-xs font-medium hover:border-fg/40">Remove verified</button>
+              </> : null}
               <button type="button" onClick={() => setConfirm([...picked])} className="inline-flex items-center gap-1 border border-line bg-panel px-2.5 py-1 text-xs font-medium text-bad hover:border-bad"><Trash2 size={12} /> Delete</button>
               <button type="button" onClick={() => setPicked(new Set())} className="ml-auto text-xs text-muted hover:text-fg">Clear</button>
             </div>
@@ -287,18 +294,22 @@ function ListInner({ slug, initialFilter }: ListProps) {
                 </tr>
               </thead>
               <tbody>
-                {loading ? Array.from({ length: 6 }, (_, i) => <tr key={i} className="border-b border-line last:border-0"><td className="px-3 py-3"><div className="d-skeleton h-4 w-4" /></td>{shown.map((f) => <td key={f.name} className="px-3 py-3"><div className="d-skeleton h-4 w-full max-w-40" /></td>)}<td /></tr>) : list.map((r) => (
-                  <tr key={String(r.id)} onClick={() => router.push(`/dashboard/${slug}/${r.id}`)} className="group cursor-pointer border-b border-line last:border-0 hover:bg-subtle/60">
+                {loading ? Array.from({ length: 6 }, (_, i) => <tr key={i} className="border-b border-line last:border-0"><td className="px-3 py-3"><div className="d-skeleton h-4 w-4" /></td>{shown.map((f) => <td key={f.name} className="px-3 py-3"><div className="d-skeleton h-4 w-full max-w-40" /></td>)}<td /></tr>) : list.map((r, i) => (
+                  <Fragment key={String(r.id)}>
+                  {grouped && (i === 0 || String(list[i - 1].listingName ?? "") !== String(r.listingName ?? "")) ? <tr className="bg-subtle"><td colSpan={shown.length + 2} className="px-3 py-2 text-sm font-semibold">{String(r.listingName || "General")} <span className="ml-1 text-xs font-normal text-muted">{list.filter((x) => String(x.listingName ?? "") === String(r.listingName ?? "")).length} to-do{list.filter((x) => String(x.listingName ?? "") === String(r.listingName ?? "")).length === 1 ? "" : "s"}</span></td></tr> : null}
+                  <tr onClick={() => router.push(`/dashboard/${slug}/${r.id}`)} className="group cursor-pointer border-b border-line last:border-0 hover:bg-subtle/60">
                     <td className="px-3 py-2.5" onClick={(e) => e.stopPropagation()}><input type="checkbox" aria-label={`Select row ${r.id}`} checked={picked.has(r.id)} onChange={() => setPicked((p) => { const n = new Set(p); if (n.has(r.id)) n.delete(r.id); else n.add(r.id); return n; })} /></td>
                     {shown.map((f) => <td key={f.name} className={`px-3 py-2.5 ${f.name === titleField ? "min-w-[16rem] font-medium" : ""}`}><Cell field={f} row={r} titleOf={titleOf} /></td>)}
                     <td className="px-3 py-2.5" onClick={(e) => e.stopPropagation()}>
                       <span className="flex justify-end gap-0.5 opacity-0 transition group-hover:opacity-100 focus-within:opacity-100">
                         <Link href={`/dashboard/${slug}/${r.id}`} aria-label="Edit" className="p-1.5 text-muted hover:bg-subtle hover:text-fg"><Pencil size={14} /></Link>
+                        {admin && byName.has("domain_verified") ? <button type="button" aria-label={r.domain_verified ? "Remove verified" : "Approve as Verified Developer"} title={r.domain_verified ? "Remove verified" : "Approve as Verified Developer"} onClick={() => run([r.id], (id) => apiUpdate(slug, id, r.domain_verified ? { domain_verified: false, verified_email: null, verified_domain: null, verified_at: null } : { domain_verified: true, verification_status: "approved", verified_at: new Date().toISOString() }), r.domain_verified ? "Verified badge removed" : "Approved as Verified Developer")} className={`p-1.5 hover:bg-subtle ${r.domain_verified ? "text-ok hover:text-bad" : "text-muted hover:text-fg"}`}><BadgeCheck size={14} /></button> : null}
                         <button type="button" aria-label="Duplicate" onClick={() => duplicate(r.id)} className="p-1.5 text-muted hover:bg-subtle hover:text-fg"><Copy size={14} /></button>
                         <button type="button" aria-label="Delete" onClick={() => setConfirm([r.id])} className="p-1.5 text-muted hover:bg-subtle hover:text-bad"><Trash2 size={14} /></button>
                       </span>
                     </td>
                   </tr>
+                  </Fragment>
                 ))}
               </tbody>
             </table>

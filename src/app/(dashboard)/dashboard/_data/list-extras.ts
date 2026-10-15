@@ -33,9 +33,10 @@ export const TABS: Record<string, Tab[]> = {
   payments: status("status", [["Pending", "pending"], ["Completed", "completed"], ["Failed", "failed"], ["Refunded", "refunded"]]),
   "hero-slides": status("status", [["Pending", "pending"], ["Active", "active"], ["Rejected", "rejected"], ["Archived", "archived"]]),
   "plan-waitlist": status("status", [["New", "new"], ["Contacted", "contacted"], ["Converted", "converted"], ["Not interested", "not_interested"]]),
+  // Checked-off tasks stay in the database but are not listed (same rule as /cms).
   "listing-todos": [
-    { key: "all", label: "All", where: null },
-    ...TODO_CATEGORIES.map((c) => ({ key: c.toLowerCase().replace(/[^a-z]+/g, "-"), label: c, where: { category: { equals: c } } as Where })),
+    { key: "all", label: "All", where: { done: { not_equals: true } } },
+    ...TODO_CATEGORIES.map((c) => ({ key: c.toLowerCase().replace(/[^a-z]+/g, "-"), label: c, where: { and: [{ done: { not_equals: true } }, { category: { equals: c } }] } as Where })),
   ],
   media: [
     { key: "all", label: "All", where: null },
