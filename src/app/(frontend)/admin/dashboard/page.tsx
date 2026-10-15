@@ -7,5 +7,5 @@ export default async function AdminDashboardRedirect({ searchParams }: { searchP
   const query = new URLSearchParams();
   for (const [key, value] of Object.entries(await searchParams)) for (const item of Array.isArray(value) ? value : value === undefined ? [] : [value]) query.append(key, item);
   const qs = query.toString();
-  redirect(qs ? `/cms?${qs}` : "/cms");
+  redirect(qs ? `/dashboard/overview?${qs}` : "/dashboard/overview");
 }

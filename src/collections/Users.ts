@@ -31,8 +31,7 @@ export const Users: CollectionConfig = {
     verify: {
       generateEmailHTML: ({ req, token, user }) => {
         const serverURL = getServerURL(req)
-        const adminRoute = req.payload.config.routes.admin || '/cms'
-        const verificationURL = `${serverURL}${adminRoute}/users/verify/${token}`
+        const verificationURL = `${serverURL}/developers/confirm-email?token=${token}`
         const loginURL = `${serverURL}${(user as { role?: string }).role === 'developer' ? '/developers/login' : '/admin-login'}`
         return renderVerificationEmailHTML({ verificationURL, loginURL })
       },
@@ -45,9 +44,7 @@ export const Users: CollectionConfig = {
         if (!args?.req) return renderPasswordResetEmailHTML({ resetURL: '' })
         const { req, token } = args
         const serverURL = getServerURL(req)
-        const adminRoute = req.payload.config.routes.admin || '/cms'
-        const resetRoute = req.payload.config.admin.routes.reset || '/reset'
-        const resetURL = `${serverURL}${adminRoute}${resetRoute}/${token}`
+        const resetURL = `${serverURL}/developers/reset-password?token=${token}`
         return renderPasswordResetEmailHTML({ resetURL })
       },
       generateEmailSubject: () => 'Reset your LankaNewHomes password',

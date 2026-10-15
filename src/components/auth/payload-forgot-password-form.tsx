@@ -4,7 +4,7 @@ import { useState, type FormEvent } from "react";
 
 // Same shape as the buyer's ForgotPasswordForm, but against Payload's own
 // built-in forgot-password endpoint instead of Supabase — the reset link it
-// emails points at Payload's own /cms/reset/:token page (see Users.ts's
+// emails points at Payload's own /developers/reset-password page (see Users.ts's
 // auth.forgotPassword), so there's no separate reset-password page to build
 // here, just this request step.
 export function PayloadForgotPasswordForm() {
