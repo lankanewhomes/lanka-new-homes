@@ -132,13 +132,16 @@ Colombo new development real estate
 
 ### /projects/luxury
 New luxury apartments sri lanka, New luxury condominiums sri lanka, New
-luxury apartments for sale sri lanka
+luxury apartments for sale sri lanka, **Luxury apartments in Colombo Sri Lanka** (added 2026-10-15, owner request)
 
 ### /projects/branded-residences
 Branded residences sri lanka
 
 ### /projects/villas
 New villa developments sri lanka, New build homes sri lanka
+
+### /projects/brand-new-houses-for-sale
+Brand new house for sale sri lanka, **House in Sri Lanka for sale** / house for sale in sri lanka (added 2026-10-15, owner request)
 
 ### /projects/beachfront
 Beachfront condo development sri lanka, New resort residences sri lanka
