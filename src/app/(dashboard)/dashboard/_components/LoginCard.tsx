@@ -37,8 +37,11 @@ function Card({ title, lede }: { title: string; lede: string }) {
   return (
     <div className="d-box grid min-h-screen place-items-center !p-4">
       <div className="w-full max-w-sm">
-        <div className="mb-6 text-center">
-          <span className="text-[22px] font-bold leading-[1.05] tracking-tight">Lanka<br />NewHomes</span>
+        <div className="mb-6 flex justify-center">
+          <Link href="/" aria-label="LankaNewHomes home">
+            {/* eslint-disable-next-line @next/next/no-img-element -- static brand SVG */}
+            <img src="/logo-wordmark.svg" alt="LankaNewHomes" className="-my-2 block h-14 w-auto" />
+          </Link>
         </div>
         <form onSubmit={submit} className="border border-line bg-panel p-7">
           <h1 className="text-[28px] font-normal leading-tight">{title}</h1>
