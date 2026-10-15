@@ -94,8 +94,8 @@ for (const e of entries) {
     if (t.dev) {
       const id = devBySlug.get(t.dev); if (!id) { missing.push(`developer ${t.dev}`); continue }
       add('developers', id, e)
-      // developer-level links also go on each of that developer's projects
-      if (!t.project) for (const p of projects.filter((p) => p.developer === id)) add('projects', p.id, e)
+      // Developer-level links stay on the developer. (They used to be copied onto every one of its projects, which put e.g. Prime Lands'
+      // land-page links on its apartments; removed and cleaned up 2026-10-14.)
     }
   }
 }
