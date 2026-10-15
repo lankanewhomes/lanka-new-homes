@@ -7,7 +7,7 @@ import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { ApiError, apiLogin } from "../_data/api";
 
 /** Sign in with the same account as /cms (Payload login). Only admin and developer accounts can open the dashboard. */
-function Card() {
+function Card({ title, lede }: { title: string; lede: string }) {
   const router = useRouter();
   const params = useSearchParams();
   const [email, setEmail] = useState("");
@@ -41,8 +41,8 @@ function Card() {
           <span className="text-[22px] font-bold leading-[1.05] tracking-tight">Lanka<br />NewHomes</span>
         </div>
         <form onSubmit={submit} className="border border-line bg-panel p-7">
-          <h1 className="text-[28px] font-normal leading-tight">Sign in.</h1>
-          <p className="mt-0.5 text-sm text-muted">Use your LankaNewHomes developer or admin account.</p>
+          <h1 className="text-[28px] font-normal leading-tight">{title}</h1>
+          <p className="mt-0.5 text-sm text-muted">{lede}</p>
           <label className="mt-5 block text-[13px] font-medium" htmlFor="dash-email">Email</label>
           <input id="dash-email" type="email" autoComplete="username" required value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1.5 w-full border border-line bg-bg px-3 py-2 text-sm outline-none focus:border-ink" />
           <label className="mt-4 block text-[13px] font-medium" htmlFor="dash-password">Password</label>
@@ -52,13 +52,13 @@ function Card() {
           </div>
           {error ? <p role="alert" className="mt-3 text-sm text-bad">{error}</p> : null}
           <button type="submit" disabled={busy} className="mt-5 flex w-full items-center justify-center gap-2 bg-ink py-2.5 text-sm font-medium text-white hover:opacity-90 disabled:opacity-70">{busy ? <Loader2 size={15} className="animate-spin" /> : null}{busy ? "Signing in" : "Sign in"}</button>
-          <p className="mt-4 text-center text-xs text-muted">Forgot your password? <Link href="/forgot-password" className="text-fg underline">Reset it</Link></p>
+          <p className="mt-4 text-center text-xs text-muted">Forgot your password? <Link href="/developers/forgot-password" className="text-fg underline">Reset it</Link></p>
         </form>
       </div>
     </div>
   );
 }
 
-export function LoginCard() {
-  return <Suspense><Card /></Suspense>;
+export function LoginCard({ title = "Sign in.", lede = "Use your LankaNewHomes developer or admin account." }: { title?: string; lede?: string }) {
+  return <Suspense><Card title={title} lede={lede} /></Suspense>;
 }
