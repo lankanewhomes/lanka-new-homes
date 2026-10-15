@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PayloadForgotPasswordForm } from "@/components/auth/payload-forgot-password-form";
+import { AuthSplitPage } from "@/components/auth/auth-split-page";
 import { withSocial } from "@/lib/seo";
 
 export const metadata: Metadata = withSocial({
@@ -9,24 +10,17 @@ export const metadata: Metadata = withSocial({
   robots: { index: false, follow: true },
 }, { path: "/developers/forgot-password" });
 
-// One shared page for both developer and admin — same Payload Users
-// collection either way, so there's nothing role-specific to say here.
-// Linked from both /developers/login and /admin-login.
+// One shared page for developers and admins: same Payload Users collection either way.
 export default function DeveloperForgotPasswordPage() {
   return (
-    <div className="payload-auth-bg">
-      <div className="static-page-shell auth-page payload-auth-page">
-        <h1>Reset your password</h1>
-        <p className="static-page-lede auth-page-lede">
-          Enter the email on your account and we&apos;ll send you a link to set a new password.
-        </p>
-
-        <PayloadForgotPasswordForm />
-
-        <p className="static-page-note auth-page-note">
-          Remembered it? <Link href="/developers/login">Log in</Link>.
-        </p>
-      </div>
-    </div>
+    <AuthSplitPage
+      label="Reset your password"
+      headline="Reset your password."
+      sub="Enter the email on your developer or admin account and we'll send you a link to set a new password."
+      ctas={<Link href="/developers/login" className="fdv-cta-final-button">Back to log in</Link>}
+    >
+      <h2 className="login-card-title">Send a reset link</h2>
+      <PayloadForgotPasswordForm />
+    </AuthSplitPage>
   );
 }

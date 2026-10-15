@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { ForgotPasswordForm } from "@/components/auth/forgot-password-form";
+import { AuthSplitPage } from "@/components/auth/auth-split-page";
 import { withSocial } from "@/lib/seo";
 
 export const metadata: Metadata = withSocial({
@@ -10,18 +12,14 @@ export const metadata: Metadata = withSocial({
 
 export default function ForgotPasswordPage() {
   return (
-    <div className="static-page-shell">
-      <h1>Reset your password</h1>
-      <p className="static-page-lede">
-        Enter the email on your account and we&apos;ll send you a link to set a new password.
-      </p>
-
+    <AuthSplitPage
+      label="Reset your password"
+      headline="Reset your password."
+      sub="Enter the email on your account and we'll send you a link to set a new password. Signed up with Google? Use that button on the login page instead, there's no password to reset."
+      ctas={<Link href="/login" className="fdv-cta-final-button">Back to log in</Link>}
+    >
+      <h2 className="login-card-title">Send a reset link</h2>
       <ForgotPasswordForm />
-
-      <p className="static-page-note">
-        Remembered it? <a href="/login">Log in</a>. Signed up with Google, Facebook, or LinkedIn? Use that
-        button on the login page instead — there&apos;s no password to reset.
-      </p>
-    </div>
+    </AuthSplitPage>
   );
 }

@@ -15,7 +15,7 @@ const STEPS = [
   { title: "Create your account", body: "Your account and company profile are created in one step." },
   { title: "Confirm your email", body: "A confirmation link comes to your inbox before you can log in." },
   { title: "We review your profile", body: "A new company profile starts pending until our team approves it." },
-  { title: "Publish your listings", body: "Add projects, plans and pricing from your dashboard at /cms." },
+  { title: "Publish your listings", body: "Add projects, plans and pricing from your dashboard." },
 ] as const;
 
 type DeveloperRegisterPageProps = {
@@ -47,7 +47,7 @@ export default async function DeveloperRegisterPage({ searchParams }: DeveloperR
           <div className="fdv-hero-content">
             <h1 className="fdv-hero-headline">List your project.</h1>
             <p className="fdv-hero-sub">
-              Create your account and company profile in one step. Confirm your email, then your listing dashboard is at /cms.
+              Create your account and company profile in one step. Confirm your email, then your listing dashboard is ready.
             </p>
             <div className="fdv-hero-ctas">
               <Link href="/developers/login" className="fdv-cta-final-button">Already registered? Log in</Link>

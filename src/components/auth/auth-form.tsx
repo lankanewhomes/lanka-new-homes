@@ -14,6 +14,18 @@ type Provider = "google" | "facebook" | "linkedin_oidc";
 // and LinkedIn was never wired up. Only Google is live for real buyers.
 const PROVIDERS: { id: Provider; label: string; icon: ReactNode; comingSoon?: boolean }[] = [
   {
+    id: "google",
+    label: "Continue with Google",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+        <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.9c1.7-1.57 2.7-3.88 2.7-6.62Z" />
+        <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.26c-.8.54-1.84.86-3.06.86-2.35 0-4.34-1.59-5.05-3.72H.98v2.33A9 9 0 0 0 9 18Z" />
+        <path fill="#FBBC05" d="M3.95 10.7A5.41 5.41 0 0 1 3.67 9c0-.59.1-1.17.28-1.7V4.97H.98A9 9 0 0 0 0 9c0 1.45.35 2.83.98 4.03l2.97-2.33Z" />
+        <path fill="#EA4335" d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .98 4.97l2.97 2.33C4.66 5.17 6.65 3.58 9 3.58Z" />
+      </svg>
+    ),
+  },
+  {
     id: "facebook",
     label: "Continue with Facebook",
     comingSoon: true,
@@ -31,18 +43,6 @@ const PROVIDERS: { id: Provider; label: string; icon: ReactNode; comingSoon?: bo
       <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
         <rect width="18" height="18" rx="2" fill="#0A66C2" />
         <path fill="#fff" d="M5.34 7.5H3.02V15h2.32V7.5ZM4.18 3.6a1.35 1.35 0 1 0 0 2.7 1.35 1.35 0 0 0 0-2.7ZM15 15h-2.32v-4.06c0-.97-.02-2.21-1.35-2.21-1.35 0-1.56 1.05-1.56 2.14V15H7.45V7.5h2.23v1.03h.03c.31-.58 1.06-1.2 2.19-1.2 2.34 0 2.77 1.54 2.77 3.54V15Z" />
-      </svg>
-    ),
-  },
-  {
-    id: "google",
-    label: "Continue with Google",
-    icon: (
-      <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
-        <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.9c1.7-1.57 2.7-3.88 2.7-6.62Z" />
-        <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.26c-.8.54-1.84.86-3.06.86-2.35 0-4.34-1.59-5.05-3.72H.98v2.33A9 9 0 0 0 9 18Z" />
-        <path fill="#FBBC05" d="M3.95 10.7A5.41 5.41 0 0 1 3.67 9c0-.59.1-1.17.28-1.7V4.97H.98A9 9 0 0 0 0 9c0 1.45.35 2.83.98 4.03l2.97-2.33Z" />
-        <path fill="#EA4335" d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .98 4.97l2.97 2.33C4.66 5.17 6.65 3.58 9 3.58Z" />
       </svg>
     ),
   },

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PayloadConfirmEmail } from "@/components/auth/payload-confirm-email";
+import { AuthSplitPage } from "@/components/auth/auth-split-page";
 import { withSocial } from "@/lib/seo";
 
 export const metadata: Metadata = withSocial({
@@ -10,12 +11,9 @@ export const metadata: Metadata = withSocial({
 export default async function ConfirmEmailPage({ searchParams }: { searchParams: Promise<{ token?: string }> }) {
   const { token } = await searchParams;
   return (
-    <div className="payload-auth-bg">
-      <div className="static-page-shell auth-page payload-auth-page">
-        <h1>Confirm your email</h1>
-        <p className="static-page-lede auth-page-lede">One click and your account is ready.</p>
-        <PayloadConfirmEmail token={token ?? ""} />
-      </div>
-    </div>
+    <AuthSplitPage label="Confirm your email" headline="Almost there." sub="One click confirms your email and your account is ready.">
+      <h2 className="login-card-title">Confirm your email</h2>
+      <PayloadConfirmEmail token={token ?? ""} />
+    </AuthSplitPage>
   );
 }
