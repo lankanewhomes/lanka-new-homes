@@ -245,6 +245,10 @@ export interface Developer {
    * e.g. Colombo 03
    */
   location?: string | null;
+  /**
+   * For test or private accounts: leaves this developer off the Developers page, the sitemap and search, and its profile page returns not found. The dashboard is not affected.
+   */
+  hide_from_site?: boolean | null;
   establishedYear?: number | null;
   yearsInBusiness?: number | null;
   activeProjects?: number | null;
@@ -8316,6 +8320,7 @@ export interface DevelopersSelect<T extends boolean = true> {
   contact_phone?: T;
   website?: T;
   location?: T;
+  hide_from_site?: T;
   establishedYear?: T;
   yearsInBusiness?: T;
   activeProjects?: T;

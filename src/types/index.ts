@@ -251,6 +251,8 @@ export type Developer = SeoFields & {
   /** Indexed column `developers.verification_status`. NOT yet mirrored by
    * developerToRow — see supabase/migrations/20260827120500_verification_workflow.sql. */
   verificationStatus?: "pending" | "approved" | "rejected" | "changes_requested";
+  /** Test or private account: left off every public page (see developer-store). */
+  hiddenFromSite?: boolean;
   /** "Verified Developer": the company confirmed an email on its own website domain. */
   domainVerified?: boolean;
   /** Counters as the company prints them on its own site ("100+"). */

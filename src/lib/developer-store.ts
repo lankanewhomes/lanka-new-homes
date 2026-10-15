@@ -49,7 +49,7 @@ function developerToRow(developer: Developer) {
 async function loadAllDevelopers(): Promise<Developer[]> {
   const { data, error } = await retryQuery(() => supabaseAdmin.from("developers").select("slug, data"));
   if (error) throw new Error(`Failed to load developers: ${error.message}`);
-  return (data ?? []).map((row) => rowToDeveloper(row as DeveloperRow));
+  return (data ?? []).map((row) => rowToDeveloper(row as DeveloperRow)).filter((d) => !d.hiddenFromSite);
 }
 
 const sharedAllDevelopers = memoizeAsync(loadAllDevelopers);

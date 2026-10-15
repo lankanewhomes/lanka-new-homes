@@ -11,7 +11,7 @@ import { checkEmailAgainstWebsite, websiteDomain } from '@/lib/developer-domain-
 // Verification / Listings & team / SEO). The tabs are unnamed, so they are purely visual: every field keeps its name and
 // path, nothing in the database, the Supabase sync or the hooks changes. A field not named below stays on Overview.
 const DEVELOPER_TAB_FIELDS: Record<string, string[]> = {
-  Profile: ['slug', 'name', 'logo', 'description', 'contact_email', 'contact_phone', 'website', 'location'],
+  Profile: ['slug', 'name', 'hide_from_site', 'logo', 'description', 'contact_email', 'contact_phone', 'website', 'location'],
   Company: ['establishedYear', 'yearsInBusiness', 'activeProjects', 'completedProjects', 'siteStats', 'coDevelopers', 'officeHours', 'awards', 'social_links', 'socialLinks'],
   'Leads & response': ['lead_alerts', 'response_stats'],
   'Plan & billing': ['plan', 'featuredUntil', 'extra_featured_slots', 'featuredProjectIds', 'featuredLandIds', 'first_subscribed_at', 'is_founding_developer', 'planPanel'],
@@ -422,6 +422,14 @@ export const Developers: CollectionConfig = {
       label: 'First Subscribed At',
       access: { update: adminOnlyField },
       admin: { readOnly: true, description: 'Date of the first subscription ever. Never changes.' },
+    },
+    {
+      name: 'hide_from_site',
+      type: 'checkbox',
+      label: 'Hide from the public site',
+      defaultValue: false,
+      access: { update: adminOnlyField },
+      admin: { description: 'For test or private accounts: leaves this developer off the Developers page, the sitemap and search, and its profile page returns not found. The dashboard is not affected.' },
     },
     {
       // "Founding developer" launch discount (owner, 2026-09-25: first 10

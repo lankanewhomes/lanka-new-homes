@@ -6,7 +6,7 @@ type RouteContext = { params: Promise<{ slug: string }> };
 export async function GET(_request: Request, { params }: RouteContext) {
   const { slug } = await params;
   const developer = await getDeveloperBySlug(slug);
-  if (!developer) return NextResponse.json({ error: "Developer not found" }, { status: 404 });
+  if (!developer || developer.hiddenFromSite) return NextResponse.json({ error: "Developer not found" }, { status: 404 });
   return NextResponse.json({ developer });
 }
 

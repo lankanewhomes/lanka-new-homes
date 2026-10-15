@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: DeveloperProfilePageProps): P
   const { slug } = await params;
   const developer = await getDeveloperBySlug(slug);
 
-  if (!developer) {
+  if (!developer || developer.hiddenFromSite) {
     return {
       title: "Developer Not Found",
       robots: { index: false, follow: false },
@@ -66,7 +66,7 @@ export async function generateMetadata({ params }: DeveloperProfilePageProps): P
 export default async function DeveloperProfilePage({ params }: DeveloperProfilePageProps) {
   const { slug } = await params;
   const developer = await getDeveloperBySlug(slug);
-  if (!developer) return notFound();
+  if (!developer || developer.hiddenFromSite) return notFound();
 
   const allProjects = await getAllProjects();
   const allLands = await getAllLands();
