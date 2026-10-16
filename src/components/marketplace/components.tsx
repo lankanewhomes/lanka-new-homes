@@ -3752,9 +3752,9 @@ export function ProjectNarrativeDetails({ project }: { project: Project }) {
       ),
     },
     { label: "Listing status", show: isFact(project.status), value: isFact(project.statusNote) ? `${t(project.status)} — ${project.statusNote}` : project.status },
-    { label: "Construction status", show: isFact(project.constructionStatus), value: project.constructionStatus },
+    { label: "Construction status", show: isFact(project.constructionStatus) && !isFact(project.constructionStageNote), value: project.constructionStatus },
     { label: "Construction stage", show: isFact(project.constructionStageNote), value: project.constructionStageNote ?? "" },
-    { label: "Construction progress", show: isFact(constructionProgressLabel(project.constructionStatus)), value: constructionProgressLabel(project.constructionStatus) ?? "" },
+    { label: "Construction progress", show: isFact(constructionProgressLabel(project.constructionStatus)) && !isFact(project.constructionStageNote), value: constructionProgressLabel(project.constructionStatus) ?? "" },
     { label: "Sales started", show: isFact(salesStarted), value: salesStarted },
     // A year still ahead is a move-in date; a past one is simply when the
     // building was finished (rule of 2026-09-07 — no "Move in 2022").
