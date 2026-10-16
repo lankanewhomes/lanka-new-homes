@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-14T19:45:49.262Z",
+ "generatedAt": "2026-10-16T02:03:41.836Z",
  "sections": [
   {
    "label": "Listings",
@@ -637,7 +637,7 @@
    },
    "scopedForDeveloper": false,
    "access": {
-    "read": "Admin only",
+    "read": "admin or owning developer / team member",
     "create": "Admin only",
     "update": "Admin only",
     "delete": "Admin only"
@@ -698,6 +698,7 @@
    "defaultColumns": [
     "listingName",
     "title",
+    "category",
     "done",
     "sourceLinks",
     "updatedAt"
@@ -726,6 +727,55 @@
     "sentAt",
     "status",
     "clickCount"
+   ]
+  },
+  {
+   "slug": "email-log",
+   "label": "Email log",
+   "singular": "Sent email",
+   "group": null,
+   "visible": {
+    "admin": false,
+    "developer": false
+   },
+   "scopedForDeveloper": false,
+   "access": {
+    "read": "Admin only",
+    "create": "Admin only",
+    "update": "Admin only",
+    "delete": "Admin only"
+   },
+   "useAsTitle": "subject",
+   "defaultColumns": [
+    "developerName",
+    "subject",
+    "kind",
+    "toEmail",
+    "sentAt"
+   ]
+  },
+  {
+   "slug": "developer-activity",
+   "label": "Developer activity",
+   "singular": "Activity",
+   "group": null,
+   "visible": {
+    "admin": false,
+    "developer": false
+   },
+   "scopedForDeveloper": false,
+   "access": {
+    "read": "Admin only",
+    "create": "Admin only",
+    "update": "Admin only",
+    "delete": "Admin only"
+   },
+   "useAsTitle": "title",
+   "defaultColumns": [
+    "developerName",
+    "title",
+    "actor",
+    "at"
    ]
   },
   {

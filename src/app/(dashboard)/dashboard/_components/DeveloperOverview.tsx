@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { BadgeCheck, Building2, CheckCircle2, Mail, MapPin, MessageCircle, Pencil, Phone, PlusCircle, UserPlus } from "lucide-react";
+import { BadgeCheck, Building2, CheckCircle2, Mail, MapPin, MessageCircle, Pencil, Phone, PlusCircle, Rocket, Settings2, UserPlus } from "lucide-react";
 import { apiFind, apiGet, type Doc } from "../_data/api";
 
 // Overview tab of a developer: key numbers and a timeline of everything that happened with this company (owner, 2026-10-15): when
@@ -20,6 +20,7 @@ export function DeveloperOverview() {
   const [events, setEvents] = useState<Event[] | null>(null);
   const [stats, setStats] = useState<{ projects: number; lands: number; leads: number; emails: number; verified: boolean } | null>(null);
   const [error, setError] = useState("");
+  const [tick, setTick] = useState(0);
 
   useEffect(() => {
     if (!id || id === "new") return;
@@ -37,23 +38,31 @@ export function DeveloperOverview() {
         if (dev.verified_at) add({ at: String(dev.verified_at), icon: BadgeCheck, tone: "text-ok", title: "Verified Developer", detail: dev.verified_email ? `Confirmed with ${String(dev.verified_email)}` : "Approved by LankaNewHomes" });
         for (const c of (dev.contactLog as Doc[] | undefined) ?? []) add({ at: String(c.date), icon: Phone, tone: "text-fg", title: `Contact: ${String(c.channel ?? "note")}`, detail: String(c.summary ?? ""), href: c.link ? String(c.link) : undefined });
 
-        const [emails, projects, lands, todos] = await Promise.all([
+        const [activity, emails, projects, lands, todos] = await Promise.all([
+          apiFind("developer-activity", { limit: 300, sort: "-at", where: { developer: { equals: Number(id) } } }).catch(() => ({ docs: [] as Doc[], totalDocs: 0 })),
           apiFind("email-log", { limit: 200, sort: "-sentAt", where: { developer: { equals: Number(id) } } }).catch(() => ({ docs: [] as Doc[], totalDocs: 0 })),
           apiFind("projects", { limit: 100, sort: "-updatedAt", where: { developer: { equals: Number(id) } }, select: { name: true, isPublished: true, createdAt: true, updatedAt: true } }).catch(() => ({ docs: [] as Doc[], totalDocs: 0 })),
           apiFind("lands", { limit: 100, sort: "-updatedAt", where: { sellerName: { equals: String(dev.name) } }, select: { title: true, createdAt: true, updatedAt: true } }).catch(() => ({ docs: [] as Doc[], totalDocs: 0 })),
           apiFind("listing-todos", { limit: 200, where: { and: [{ done: { equals: true } }] }, select: { title: true, doneAt: true, project: true, listingName: true } }).catch(() => ({ docs: [] as Doc[], totalDocs: 0 })),
         ]);
+        const touchedSet = new Set<number>(); const createdSet = new Set<number>();
+        for (const a of activity.docs) {
+          const pid = typeof a.projectId === "number" ? a.projectId : typeof a.landId === "number" ? -a.landId : null;
+          if (pid !== null) { touchedSet.add(pid); if (/created/.test(String(a.title))) createdSet.add(pid); }
+          const kind = String(a.kind);
+          add({ at: String(a.at), icon: kind === "verification" ? BadgeCheck : kind === "listing" ? (/published/.test(String(a.title)) ? Rocket : /created/.test(String(a.title)) ? PlusCircle : Pencil) : Settings2, tone: kind === "verification" ? "text-ok" : "text-fg", title: String(a.title), detail: [a.detail, a.actor ? `by ${String(a.actor)}` : ""].filter(Boolean).join(" · ") || undefined, href: typeof a.projectId === "number" ? `/dashboard/projects/${a.projectId}` : typeof a.landId === "number" ? `/dashboard/lands/${a.landId}` : undefined });
+        }
         for (const e of emails.docs) add({ at: String(e.sentAt), icon: Mail, tone: "text-fg", title: `Email sent: ${String(e.subject)}`, detail: `${String(e.kind ?? "Email")} · to ${String(e.toEmail ?? "")}` });
         const projectIds = projects.docs.map((p) => p.id);
         for (const p of projects.docs) {
           const created = Date.parse(String(p.createdAt)); const updated = Date.parse(String(p.updatedAt));
-          add({ at: String(p.createdAt), icon: Building2, tone: "text-fg", title: `Listing added: ${String(p.name)}`, detail: p.isPublished ? "Published" : "Draft", href: `/dashboard/projects/${p.id}` });
-          if (updated - created > HOUR) add({ at: String(p.updatedAt), icon: Pencil, tone: "text-muted", title: `Listing edited: ${String(p.name)}`, href: `/dashboard/projects/${p.id}` });
+          if (!createdSet.has(p.id as number)) add({ at: String(p.createdAt), icon: Building2, tone: "text-fg", title: `Listing added: ${String(p.name)}`, detail: p.isPublished ? "Published" : "Draft", href: `/dashboard/projects/${p.id}` });
+          if (!touchedSet.has(p.id as number) && updated - created > HOUR) add({ at: String(p.updatedAt), icon: Pencil, tone: "text-muted", title: `Listing edited: ${String(p.name)}`, href: `/dashboard/projects/${p.id}` });
         }
         for (const l of lands.docs) {
           const created = Date.parse(String(l.createdAt)); const updated = Date.parse(String(l.updatedAt));
-          add({ at: String(l.createdAt), icon: MapPin, tone: "text-fg", title: `Land added: ${String(l.title)}`, href: `/dashboard/lands/${l.id}` });
-          if (updated - created > HOUR) add({ at: String(l.updatedAt), icon: Pencil, tone: "text-muted", title: `Land edited: ${String(l.title)}`, href: `/dashboard/lands/${l.id}` });
+          if (!createdSet.has(-(l.id as number))) add({ at: String(l.createdAt), icon: MapPin, tone: "text-fg", title: `Land added: ${String(l.title)}`, href: `/dashboard/lands/${l.id}` });
+          if (!touchedSet.has(-(l.id as number)) && updated - created > HOUR) add({ at: String(l.updatedAt), icon: Pencil, tone: "text-muted", title: `Land edited: ${String(l.title)}`, href: `/dashboard/lands/${l.id}` });
         }
         let leadCount = 0;
         if (projectIds.length) {
@@ -76,7 +85,10 @@ export function DeveloperOverview() {
       }
     })();
     return () => { alive = false; };
-  }, [id]);
+  }, [id, tick]);
+
+  // New activity shows up without reloading: refresh every minute.
+  useEffect(() => { const t = setInterval(() => setTick((n) => n + 1), 60_000); return () => clearInterval(t); }, []);
 
   const groups = useMemo(() => {
     const m = new Map<string, Event[]>();

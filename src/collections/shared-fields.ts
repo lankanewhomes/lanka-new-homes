@@ -643,6 +643,14 @@ export const referenceLinksTab: Tab = {
   ],
 }
 
+// "Activity" tab on a project or land (owner, 2026-10-15: "also do that for projects"): a timeline of what happened to this listing
+// (created, published, edited, enquiries, finished tasks), read from the developer-activity log and the listing's own records.
+export const activityTab: Tab = {
+  label: 'Activity',
+  admin: { condition: (_data, _siblingData, { user }) => (user as { role?: string } | null)?.role === 'admin' },
+  fields: [{ name: 'activityTimeline', type: 'ui', admin: { components: { Field: '@/components/payload/ActivityTimeline#ActivityTimeline' } } }],
+}
+
 // Its own tab (owner, 2026-10-14): tasks ticked off in the To-do list are hidden there and listed here instead.
 export const doneTasksTab: Tab = {
   label: 'Done tasks',

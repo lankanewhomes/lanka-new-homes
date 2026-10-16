@@ -4,12 +4,14 @@ import { LayoutPanelTop } from "lucide-react";
 import type { FieldProps } from "./shared";
 import { DeveloperEmailLog } from "../DeveloperEmailLog";
 import { DeveloperOverview } from "../DeveloperOverview";
+import { ListingTimeline } from "../ListingTimeline";
 
 const human = (s: string) => s.replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/[_-]+/g, " ");
 
 /** Payload `ui` field: a custom admin panel that stores no data. The preview only marks where it sits. */
 export function UiField({ field }: FieldProps<null>) {
   if (field.name === "developer_emails") return <DeveloperEmailLog />;
+  if (field.name === "activityTimeline") return <ListingTimeline />;
   // Developer Overview tab: one real panel (numbers + timeline) instead of the three /cms placeholders.
   if (field.name === "developer_summary") return <DeveloperOverview />;
   if (field.name === "overview_stats" || field.name === "profile_completeness") return null;

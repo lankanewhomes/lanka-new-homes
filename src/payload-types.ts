@@ -86,6 +86,7 @@ export interface Config {
     'listing-todos': ListingTodo;
     outreach: Outreach;
     'email-log': EmailLog;
+    'developer-activity': DeveloperActivity;
     'mail-accounts': MailAccount;
     'mail-folders': MailFolder;
     'mail-messages': MailMessage;
@@ -134,6 +135,7 @@ export interface Config {
     'listing-todos': ListingTodosSelect<false> | ListingTodosSelect<true>;
     outreach: OutreachSelect<false> | OutreachSelect<true>;
     'email-log': EmailLogSelect<false> | EmailLogSelect<true>;
+    'developer-activity': DeveloperActivitySelect<false> | DeveloperActivitySelect<true>;
     'mail-accounts': MailAccountsSelect<false> | MailAccountsSelect<true>;
     'mail-folders': MailFoldersSelect<false> | MailFoldersSelect<true>;
     'mail-messages': MailMessagesSelect<false> | MailMessagesSelect<true>;
@@ -7708,6 +7710,24 @@ export interface EmailLog {
   createdAt: string;
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "developer-activity".
+ */
+export interface DeveloperActivity {
+  id: number;
+  developer: number | Developer;
+  developerName?: string | null;
+  kind?: string | null;
+  title: string;
+  detail?: string | null;
+  actor?: string | null;
+  projectId?: number | null;
+  landId?: number | null;
+  at: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * The Zoho mailboxes shown in the CMS mail client. Open the client at /cms/mail.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -8223,6 +8243,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'email-log';
         value: number | EmailLog;
+      } | null)
+    | ({
+        relationTo: 'developer-activity';
+        value: number | DeveloperActivity;
       } | null)
     | ({
         relationTo: 'mail-accounts';
@@ -9668,6 +9692,23 @@ export interface EmailLogSelect<T extends boolean = true> {
   textBody?: T;
   resendId?: T;
   sentAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "developer-activity_select".
+ */
+export interface DeveloperActivitySelect<T extends boolean = true> {
+  developer?: T;
+  developerName?: T;
+  kind?: T;
+  title?: T;
+  detail?: T;
+  actor?: T;
+  projectId?: T;
+  landId?: T;
+  at?: T;
   updatedAt?: T;
   createdAt?: T;
 }

@@ -1,3 +1,4 @@
+import { logLandChanges } from '../lib/developer-activity'
 import type { CollectionConfig, Where } from 'payload'
 import { adminOnly, adminOnlyField, getOwnedDeveloperIds, getRole, getTeamLandIds, isAdmin, manageOwnLands, publicRead } from './access'
 import { syncLandDeleteToSupabase, syncLandToSupabase } from './hooks/sync-to-supabase'
@@ -15,6 +16,7 @@ import {
   ROAD_ACCESS_OPTIONS,
   referenceLinksTab,
   doneTasksTab,
+  activityTab,
   seoFields,
   selectWithOther,
   textDropdown,
@@ -77,7 +79,7 @@ export const Lands: CollectionConfig = {
     delete: manageOwnLands,
   },
   hooks: {
-    afterChange: [syncLandToSupabase],
+    afterChange: [syncLandToSupabase, logLandChanges],
     afterDelete: [syncLandDeleteToSupabase],
   },
   fields: [
@@ -267,6 +269,7 @@ export const Lands: CollectionConfig = {
           fields: [coordinatesField, contactField],
         },
         referenceLinksTab,
+        activityTab,
         doneTasksTab,
         {
           label: 'SEO',

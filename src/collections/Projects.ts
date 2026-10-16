@@ -1,3 +1,4 @@
+import { logProjectChanges } from '../lib/developer-activity'
 import type { CollectionConfig, Where } from 'payload'
 import { adminOnlyField, getOwnedDeveloperIds, getRole, getTeamProjectIds, isAdmin, ownDeveloperAccess, publicRead, withTeamListings } from './access'
 import {
@@ -29,6 +30,7 @@ import {
   SECURITY_OPTIONS,
   referenceLinksTab,
   doneTasksTab,
+  activityTab,
   seoFields,
   selectWithOther,
   socialLinksField,
@@ -190,7 +192,7 @@ export const Projects: CollectionConfig = {
       },
     ],
     beforeChange: [scoreProjectBeforeChange],
-    afterChange: [syncProjectToSupabase, autoPostSocialAfterChange],
+    afterChange: [syncProjectToSupabase, autoPostSocialAfterChange, logProjectChanges],
     afterDelete: [syncProjectDeleteToSupabase],
   },
   fields: [
@@ -766,6 +768,7 @@ export const Projects: CollectionConfig = {
           ],
         },
         referenceLinksTab,
+        activityTab,
         doneTasksTab,
         {
           label: 'SEO',
