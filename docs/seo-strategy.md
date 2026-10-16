@@ -361,3 +361,10 @@ gets real per-locale routes, hreflang tags become necessary at that point.
 
 ## Open Graph / Twitter metadata
 All share-preview tags are built in one place, `socialMetadata` / `withSocial` in `src/lib/seo.ts`. Every page wraps its metadata with `withSocial(...)` (static pages) or returns it from `generateMetadata`. A page's own `openGraph` replaces the root one entirely in Next, so never hand-write a partial `openGraph`. Default image: `public/og-default.jpg` (1200x630); SVG logos fall back to it because share crawlers can't render SVG.
+
+## AI Overviews / AI answers (2026-10-16, owner request: "rank in Google AI Overview for all projects and lands")
+
+- Every `/projects/<slug>` and `/land/<slug>` page now has a visible "Frequently Asked Questions" section and `FAQPage` JSON-LD, built by `src/lib/listing-faq.ts` from the listing's own fields only (location, developer, type/size, published price, status, amenities, floor plans, nearby, how to enquire). A question is dropped when its data is missing; nothing is estimated or derived.
+- Same approach as the neighbourhood FAQ (`neighborhood-faq.ts`). Rendered with `ListingFaqSection`.
+- Already in place: `/llms.txt`, AI-crawler allow rules in `robots.ts`, `Product`/`RealEstateListing` JSON-LD, hourly-refreshed sitemap.
+- Nothing guarantees an AI Overview. What helps: crawlable pages (fix 5xx), a clear short answer per question, complete listing data, and being indexed (see Search Console "Discovered - currently not indexed").
