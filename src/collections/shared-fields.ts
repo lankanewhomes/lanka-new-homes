@@ -201,6 +201,7 @@ export const AMENITY_NAME_OPTIONS = [
   'Terraces',
   'Cold Plunge',
   'Valet Service',
+  'Private Plunge Pool',
   'Forest Dining',
   'Golf Club Membership',
   'Boat & Seaplane Access',

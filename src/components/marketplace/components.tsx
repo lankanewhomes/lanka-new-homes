@@ -188,6 +188,7 @@ const amenityIcons: Record<string, React.ComponentType<{ className?: string }>> 
   Terraces: Trees,
   "Cold Plunge": Waves,
   "Valet Service": Bell,
+  "Private Plunge Pool": Waves,
   "Forest Dining": UtensilsCrossed,
   "Golf Club Membership": Trees,
   "Boat & Seaplane Access": Waves,

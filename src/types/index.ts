@@ -44,6 +44,7 @@ export type Amenity = {
     | "Terraces"
     | "Cold Plunge"
     | "Valet Service"
+    | "Private Plunge Pool"
     | "Forest Dining"
     | "Golf Club Membership"
     | "Boat & Seaplane Access"
