@@ -12,6 +12,7 @@ import { importListingEndpoint } from './src/collections/endpoints/import-listin
 import { listingTodoEndpoint } from './src/collections/endpoints/listing-todo'
 import { leadActivityEndpoint } from './src/collections/endpoints/lead-activity'
 import { socialPostEndpoint, socialStatusEndpoint } from './src/collections/endpoints/social-post'
+import { socialPostCustomEndpoint } from './src/collections/endpoints/social-post-custom'
 import { AddonRequests } from './src/collections/AddonRequests'
 import { Architects } from './src/collections/Architects'
 import { Articles } from './src/collections/Articles'
@@ -203,7 +204,7 @@ export default buildConfig({
     Media,
   ],
   globals: [SiteSettings, LeadAlertSettings],
-  endpoints: [analyticsEndpoint, analyticsSummaryEndpoint, importListingEndpoint, listingTodoEndpoint, leadActivityEndpoint, socialStatusEndpoint, socialPostEndpoint],
+  endpoints: [analyticsEndpoint, analyticsSummaryEndpoint, importListingEndpoint, listingTodoEndpoint, leadActivityEndpoint, socialStatusEndpoint, socialPostEndpoint, socialPostCustomEndpoint],
   editor: lexicalEditor(),
   db: postgresAdapter({
     // Dev-mode schema push is opt-in. It re-reads the whole remote schema on every boot ("Pulling schema from database...",

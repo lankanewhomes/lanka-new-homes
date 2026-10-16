@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRef, useState } from "react";
-import { ArrowLeft, Check, Copy, Download, Loader2, Printer } from "lucide-react";
+import { ArrowLeft, Check, Copy, Download, Loader2, Printer, Send } from "lucide-react";
 import { useDash } from "./DashProvider";
 import { Combobox, type ComboOption } from "./Combobox";
 import { PageHero } from "./PageHero";
@@ -55,6 +55,9 @@ export function CreatePostPage() {
   const [slides, setSlides] = useState<Slide[] | null>(null);
   const [working, setWorking] = useState(false);
   const [copied, setCopied] = useState("");
+  const [onIg, setOnIg] = useState(true); const [onFb, setOnFb] = useState(true);
+  const [posting, setPosting] = useState(false); const [confirmPost, setConfirmPost] = useState(false);
+  const [postResult, setPostResult] = useState<{ configured: boolean; results: { platform: string; status: string; permalink?: string | null; error?: string }[] } | null>(null);
   const token = useRef(0);
 
   const search = async (q: string) => {
@@ -97,6 +100,20 @@ export function CreatePostPage() {
 
   const downloadAll = () => (slides ?? []).forEach((s, i) => setTimeout(() => { const a = document.createElement("a"); a.href = s.data; a.download = `${built?.slug}_${s.file}`; a.click(); }, i * 250));
   const copy = async (key: string, text: string) => { try { await navigator.clipboard.writeText(text); setCopied(key); setTimeout(() => setCopied(""), 1500); } catch { d.toast("Could not copy", "warn"); } };
+
+  const postNow = async () => {
+    if (!built || !slides || !picked) return;
+    setPosting(true); setConfirmPost(false); setPostResult(null);
+    try {
+      const igImgs = slides.filter((x) => x.file.startsWith("instagram")).map((x) => x.data);
+      const fbImgs = igImgs; // Facebook takes the same 4:5 slides as a multi-photo post
+      const res = await fetch("/payload-api/social-post-custom", { method: "POST", credentials: "include", headers: { "content-type": "application/json" }, body: JSON.stringify({ projectId: picked, slug: built.slug, instagram: onIg ? { caption: ig, images: igImgs } : undefined, facebook: onFb ? { caption: fb, images: fbImgs } : undefined }) });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Could not post.");
+      setPostResult(json);
+    } catch (e) { d.toast(e instanceof Error ? e.message : "Could not post.", "warn"); }
+    setPosting(false);
+  };
 
   const printSheet = () => {
     if (!built || !slides) return;
@@ -156,6 +173,21 @@ export function CreatePostPage() {
                 <div className="mb-3 flex flex-wrap items-center gap-2"><h2 className="font-semibold">4. Your images</h2>
                   <button type="button" onClick={downloadAll} className="ml-auto inline-flex items-center gap-1.5 bg-accent px-3 py-1.5 text-sm font-medium text-white"><Download size={14} /> Download all</button>
                   <button type="button" onClick={printSheet} className="inline-flex items-center gap-1.5 border border-line px-3 py-1.5 text-sm hover:bg-subtle"><Printer size={14} /> Print caption sheet (save as PDF)</button></div>
+                <div className="mb-4 border border-line bg-subtle p-3 text-sm">
+                  <p className="mb-2 font-semibold">5. Post it</p>
+                  <div className="flex flex-wrap items-center gap-4">
+                    <label className="inline-flex items-center gap-1.5"><input type="checkbox" checked={onIg} onChange={(e) => setOnIg(e.target.checked)} /> Instagram (5-slide carousel)</label>
+                    <label className="inline-flex items-center gap-1.5"><input type="checkbox" checked={onFb} onChange={(e) => setOnFb(e.target.checked)} /> Facebook Page (multi-photo post)</label>
+                    <button type="button" onClick={() => setConfirmPost(true)} disabled={posting || (!onIg && !onFb)} className="ml-auto inline-flex items-center gap-1.5 bg-accent px-4 py-2 text-sm font-medium text-white disabled:opacity-50">{posting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />} Post now</button>
+                  </div>
+                  {confirmPost ? <p className="mt-3 border border-warn bg-panel p-3">Post these {slides.filter((x) => x.file.startsWith("instagram")).length} images and the captions above to {[onIg ? "Instagram" : "", onFb ? "Facebook" : ""].filter(Boolean).join(" and ")} now? <button type="button" onClick={postNow} className="ml-2 bg-fg px-3 py-1 text-bg">Yes, post</button> <button type="button" onClick={() => setConfirmPost(false)} className="ml-1 border border-line px-3 py-1">Cancel</button></p> : null}
+                  {postResult ? (
+                    <div className="mt-3 space-y-1">
+                      {!postResult.configured ? <p className="text-muted"><b>Instagram and Facebook are not connected yet,</b> so nothing was sent. The images were stored and what would be posted is logged in Social posts. Once META_PAGE_ID, META_PAGE_ACCESS_TOKEN and META_IG_USER_ID are set, this button posts for real.</p> : null}
+                      {postResult.results.map((r) => <p key={r.platform}><b className="capitalize">{r.platform}:</b> {r.status === "published" ? <>posted {r.permalink ? <a href={r.permalink} target="_blank" rel="noopener noreferrer" className="underline">view</a> : null}</> : r.status === "processing" ? "Instagram is still processing it; check again in a minute from the listing's Social tab" : r.status === "dry_run" ? "dry run (not sent)" : `failed: ${r.error}`}</p>)}
+                    </div>
+                  ) : null}
+                </div>
                 <div className="flex flex-wrap gap-3">{slides.map((s) => (
                   <a key={s.file} href={s.data} download={`${built.slug}_${s.file}`} className="block" title={`Download ${s.file}`}>
                     {/* eslint-disable-next-line @next/next/no-img-element -- generated data URL */}
