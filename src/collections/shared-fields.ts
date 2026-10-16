@@ -325,10 +325,20 @@ export const KEY_FEATURE_VALUE_OPTIONS = [
   'Professionally landscaped', 'Native plants', 'Irrigation system',
 ]
 
+// The Key Features tabs (owner, 2026-10-16). Facts-sheet data (units, floors, sizes, dates, bedroom counts) and shared facilities that already
+// sit in Amenities (communal pool, gym, clubhouse, playground) do NOT belong in Key Features. There is no "Recreation & Wellness" or
+// "Highlights" tab: shared facilities go to Amenities and marketing lines to the project's Highlights.
 const KEY_FEATURE_CATEGORY_LABELS: Record<string, string> = {
-  indoor: 'Indoor Features',
-  outdoor: 'Outdoor Features',
   specifications: 'Specifications',
+  finishes: 'Finishes',
+  'general-features': 'General Features',
+  'safety-security': 'Safety & Security',
+  indoor: 'Indoor Features',
+  'building-services': 'Building & Services',
+  outdoor: 'Outdoor Features',
+  sustainability: 'Sustainability',
+  accessibility: 'Accessibility',
+  utilities: 'Utilities',
 }
 
 // Same KeyFeatureCategory shape used by Project.unitFeatures and
@@ -343,7 +353,7 @@ export const unitFeaturesField: Field = {
   type: 'array',
   label: 'Key Features',
   fields: [
-    ...selectWithOther('key', 'Category', ['indoor', 'outdoor', 'specifications']),
+    ...selectWithOther('key', 'Category', Object.keys(KEY_FEATURE_CATEGORY_LABELS)),
     {
       name: 'label',
       type: 'text',
