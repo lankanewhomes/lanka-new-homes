@@ -9,7 +9,7 @@ import { useDash, useGlobalSchema, useSchema } from "./DashProvider";
 import { StatusChip } from "./StatusChip";
 import { PageHero, heroBtn } from "./PageHero";
 import { blankRow, collectErrors } from "./schema-utils";
-import { ApiError, apiCreate, apiDelete, apiFind, apiGlobal, apiUpdate, apiUpdateGlobal, type Doc } from "../_data/api";
+import { ApiError, apiCount, apiCreate, apiDelete, apiFind, apiGlobal, apiUpdate, apiUpdateGlobal, type Doc } from "../_data/api";
 import { allOf } from "../_data/scope";
 import type { FieldCtx } from "./fields/shared";
 import type { Row, SchemaField } from "../_mock/types";
@@ -18,7 +18,7 @@ import type { Row, SchemaField } from "../_mock/types";
 // tabs, arrays and show/hide conditions match /cms. Saving writes to the in-memory mock store and shows a toast.
 
 
-function Form({ title, kind, backHref, fields, initial, isNew, canDelete, onSave, onDelete, onDuplicate, liveUrl, statusChips }: {
+function Form({ title, kind, backHref, fields, initial, isNew, canDelete, onSave, onDelete, onDuplicate, liveUrl, statusChips, heroStat, heroNote }: {
   title: string;
   kind: string;
   backHref: string;
@@ -31,6 +31,9 @@ function Form({ title, kind, backHref, fields, initial, isNew, canDelete, onSave
   onDuplicate?: () => Promise<void> | void;
   liveUrl?: string;
   statusChips?: (row: Row) => { value: string; label?: string }[];
+  /** The white stat card in the hero, e.g. how many projects a developer has. */
+  heroStat?: { label: string; value: string };
+  heroNote?: string;
 }) {
   const d = useDash();
   const router = useRouter();
@@ -74,7 +77,8 @@ function Form({ title, kind, backHref, fields, initial, isNew, canDelete, onSave
       <Link href={backHref} className="mb-3 inline-flex items-center gap-1 text-sm text-muted hover:text-fg"><ArrowLeft size={14} /> Back to the list</Link>
       <PageHero
         title={`${isNew ? `New ${kind.toLowerCase()}` : title || `${kind} #${rec.id}`}.`}
-        description={!isNew && rec.updatedAt ? `Last updated ${new Date(String(rec.updatedAt)).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}` : "Fill in the form and save."}
+        description={`${!isNew && rec.updatedAt ? `Last updated ${new Date(String(rec.updatedAt)).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}` : "Fill in the form and save."}${heroNote ? ` · ${heroNote}` : ""}`}
+        stat={heroStat}
         chips={chips.map((c) => <StatusChip key={c.value + (c.label ?? "")} value={c.value} label={c.label} onDark />)}
         actions={<>
           {liveUrl ? <a href={liveUrl} target="_blank" rel="noopener noreferrer" className={heroBtn}><ExternalLink size={14} /> View live</a> : null}
@@ -131,6 +135,19 @@ export function CollectionEdit({ slug, id }: { slug: string; id: string }) {
   const schema = useSchema(slug);
   const [loaded, setLoaded] = useState<Loaded>({ state: "loading" });
   const isNew = id === "new";
+  // A developer's page shows how many projects and lands belong to them (owner, 2026-10-16).
+  const [devCounts, setDevCounts] = useState<{ projects: number; published: number; lands: number } | null>(null);
+  useEffect(() => {
+    if (slug !== "developers" || isNew || loaded.state !== "ok") return;
+    let alive = true;
+    const name = String(loaded.doc.name ?? "");
+    Promise.all([
+      apiCount("projects", { developer: { equals: Number(id) } }),
+      apiCount("projects", { and: [{ developer: { equals: Number(id) } }, { isPublished: { equals: true } }] }),
+      name ? apiCount("lands", { sellerName: { equals: name } }) : Promise.resolve(0),
+    ]).then(([projects, published, lands]) => { if (alive) setDevCounts({ projects, published, lands }); }).catch(() => undefined);
+    return () => { alive = false; };
+  }, [slug, id, isNew, loaded]);
 
   useEffect(() => {
     if (!schema) return;
@@ -166,6 +183,8 @@ export function CollectionEdit({ slug, id }: { slug: string; id: string }) {
     );
   }
   const found = loaded.doc as Row;
+  const heroStat = devCounts ? { label: "Projects", value: String(devCounts.projects) } : undefined;
+  const heroNote = devCounts ? `${devCounts.published} published, ${devCounts.projects - devCounts.published} ${devCounts.projects - devCounts.published === 1 ? "draft" : "drafts"} · ${devCounts.lands} ${devCounts.lands === 1 ? "land" : "lands"}` : undefined;
   const title = schema.useAsTitle ? String(found[schema.useAsTitle] ?? "") : "";
   return (
     <Form
@@ -188,6 +207,8 @@ export function CollectionEdit({ slug, id }: { slug: string; id: string }) {
         } catch (e) { d.toast(e instanceof Error ? e.message : "Could not duplicate", "warn"); }
       }}
       liveUrl={LIVE_PATH[slug] && typeof found.slug === "string" ? `https://www.lankanewhomes.com/${LIVE_PATH[slug]}/${found.slug}` : undefined}
+      heroStat={heroStat}
+      heroNote={heroNote}
       statusChips={(r) => [
         ...(typeof r.isPublished === "boolean" ? [{ value: r.isPublished ? "published" : "draft", label: r.isPublished ? "Published" : "Draft" }] : []),
         ...(typeof r.status === "string" && r.status ? [{ value: r.status }] : []),
