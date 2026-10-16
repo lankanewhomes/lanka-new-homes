@@ -115,7 +115,7 @@ export const Developers: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     group: 'Companies & Professionals',
-    defaultColumns: ['name', 'contact_email', 'plan', 'verification_status', 'profile_completeness'],
+    defaultColumns: ['name', 'contact_email', 'contact_phone', 'socialLinks.whatsapp', 'lead_alerts.whatsapp', 'plan', 'verification_status', 'profile_completeness'],
     components: { beforeListTable: ['@/components/payload/DeveloperListTabs#DeveloperListTabs', '@/components/payload/CompanyListSummary#CompanyListSummary'] },
     // Same idea as Projects' baseListFilter — read access is public (real
     // visitors need the whole directory), but a developer's own /cms list

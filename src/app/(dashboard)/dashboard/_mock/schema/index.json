@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-16T13:39:04.429Z",
+ "generatedAt": "2026-10-16T15:18:32.106Z",
  "sections": [
   {
    "label": "Listings",
@@ -335,6 +335,9 @@
    "defaultColumns": [
     "name",
     "contact_email",
+    "contact_phone",
+    "socialLinks.whatsapp",
+    "lead_alerts.whatsapp",
     "plan",
     "verification_status",
     "profile_completeness"

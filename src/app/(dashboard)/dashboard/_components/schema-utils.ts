@@ -7,6 +7,7 @@ export function flatFields(fields: SchemaField[], prefix = ""): SchemaField[] {
   for (const f of fields) {
     if (f.type === "tabs") for (const t of f.tabs ?? []) out.push(...flatFields(t.fields, t.name ? `${prefix}${t.name}.` : prefix));
     else if (f.type === "row" || f.type === "collapsible") out.push(...flatFields(f.fields ?? [], prefix));
+    else if (f.type === "group" && f.name) out.push(...flatFields((f.fields ?? []).map((c) => ({ ...c, label: `${f.label ?? f.name} · ${c.label ?? c.name}` })), `${prefix}${f.name}.`));
     else if (f.name && f.type !== "ui" && f.type !== "join") out.push({ ...f, name: `${prefix}${f.name}` });
   }
   return out;
