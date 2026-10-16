@@ -6,10 +6,12 @@ import { useDocumentInfo } from '@payloadcms/ui'
 import { HtmlBody } from '@/components/mail/HtmlBody'
 
 // "Emails" tab on a developer: every email we sent them and every reply they sent back, from all our mailboxes (read from the
-// synced Zoho cache). Click a row to read it here. UI-only: nothing is stored on the developer.
+// synced Zoho cache) plus every automatic email the platform sent them (lead alerts, Verified Developer, invites, reports; the Email
+// log). Click a row to read it here.
 
 type Row = { id: number; subject: string; snippet: string; receivedAt: string | null; direction: 'sent' | 'received'; accountEmail: string; from: { name?: string; email: string }; to: { name?: string; email: string }[] }
 type Full = { htmlBody: string }
+const LOG_BASE = 1_000_000_000 // email-log rows get ids above this so they never clash with mail-sync ids
 
 const when = (iso: string | null) => (iso ? new Date(iso).toLocaleString(undefined, { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit' }) : '')
 
@@ -24,15 +26,23 @@ export function DeveloperEmails() {
   useEffect(() => {
     if (!id) return
     let alive = true
-    fetch(`/api/mail/developer-emails?developerId=${id}`, { credentials: 'include' })
-      .then((r) => r.json())
-      .then((j) => {
+    Promise.all([
+      fetch(`/api/mail/developer-emails?developerId=${id}`, { credentials: 'include' }).then((r) => r.json()).catch(() => ({ messages: [], addresses: [], domains: [] })),
+      fetch(`/payload-api/email-log?where[developer][equals]=${id}&sort=-sentAt&limit=200&depth=0`, { credentials: 'include' }).then((r) => r.json()).catch(() => ({ docs: [] })),
+    ])
+      .then(([j, log]) => {
         if (!alive) return
-        if (j.error) setError(j.error)
-        else {
-          setRows(j.messages)
-          setInfo({ addresses: j.addresses, domains: j.domains })
-        }
+        if (j.error && !(log.docs ?? []).length) { setError(j.error); return }
+        const logged: Row[] = (log.docs ?? []).map((d: { id: number; subject: string; sentAt: string; fromEmail?: string; toEmail?: string; kind?: string; htmlBody?: string; textBody?: string }) => ({
+          id: LOG_BASE + d.id, subject: d.subject, snippet: d.kind ? `Automatic email: ${d.kind}` : 'Automatic email', receivedAt: d.sentAt, direction: 'sent' as const,
+          accountEmail: 'LankaNewHomes (automatic)', from: { email: d.fromEmail ?? '' }, to: String(d.toEmail ?? '').split(',').map((e) => ({ email: e.trim() })).filter((t) => t.email),
+        }))
+        const bodies0: Record<number, Full | string> = {}
+        for (const d of log.docs ?? []) bodies0[LOG_BASE + d.id] = { htmlBody: d.htmlBody || `<pre style="white-space:pre-wrap;font-family:inherit">${String(d.textBody ?? '').replace(/</g, '&lt;')}</pre>` }
+        setBodies((b) => ({ ...bodies0, ...b }))
+        const all = [...(j.messages ?? []), ...logged].sort((a: Row, b: Row) => String(b.receivedAt ?? '').localeCompare(String(a.receivedAt ?? '')))
+        setRows(all)
+        setInfo({ addresses: j.addresses ?? [], domains: j.domains ?? [] })
       })
       .catch(() => alive && setError('Could not load the emails.'))
     return () => {
@@ -42,7 +52,7 @@ export function DeveloperEmails() {
 
   const toggle = (rowId: number) => {
     setOpen(open === rowId ? null : rowId)
-    if (bodies[rowId]) return
+    if (bodies[rowId] || rowId >= LOG_BASE) return
     fetch(`/api/mail/message/${rowId}`, { credentials: 'include' })
       .then((r) => r.json())
       .then((j) => setBodies((b) => ({ ...b, [rowId]: j.message ?? j.error ?? 'Could not load the message.' })))

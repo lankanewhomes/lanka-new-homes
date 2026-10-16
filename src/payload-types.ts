@@ -85,6 +85,7 @@ export interface Config {
     'seo-keywords': SeoKeyword;
     'listing-todos': ListingTodo;
     outreach: Outreach;
+    'email-log': EmailLog;
     'mail-accounts': MailAccount;
     'mail-folders': MailFolder;
     'mail-messages': MailMessage;
@@ -132,6 +133,7 @@ export interface Config {
     'seo-keywords': SeoKeywordsSelect<false> | SeoKeywordsSelect<true>;
     'listing-todos': ListingTodosSelect<false> | ListingTodosSelect<true>;
     outreach: OutreachSelect<false> | OutreachSelect<true>;
+    'email-log': EmailLogSelect<false> | EmailLogSelect<true>;
     'mail-accounts': MailAccountsSelect<false> | MailAccountsSelect<true>;
     'mail-folders': MailFoldersSelect<false> | MailFoldersSelect<true>;
     'mail-messages': MailMessagesSelect<false> | MailMessagesSelect<true>;
@@ -7686,6 +7688,26 @@ export interface Lead {
   createdAt: string;
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-log".
+ */
+export interface EmailLog {
+  id: number;
+  developer?: (number | null) | Developer;
+  developerName?: string | null;
+  kind?: string | null;
+  subject: string;
+  toEmail?: string | null;
+  fromEmail?: string | null;
+  bccEmail?: string | null;
+  htmlBody?: string | null;
+  textBody?: string | null;
+  resendId?: string | null;
+  sentAt: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * The Zoho mailboxes shown in the CMS mail client. Open the client at /cms/mail.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -8197,6 +8219,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'outreach';
         value: number | Outreach;
+      } | null)
+    | ({
+        relationTo: 'email-log';
+        value: number | EmailLog;
       } | null)
     | ({
         relationTo: 'mail-accounts';
@@ -9623,6 +9649,25 @@ export interface OutreachSelect<T extends boolean = true> {
   notes?: T;
   code?: T;
   resendId?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-log_select".
+ */
+export interface EmailLogSelect<T extends boolean = true> {
+  developer?: T;
+  developerName?: T;
+  kind?: T;
+  subject?: T;
+  toEmail?: T;
+  fromEmail?: T;
+  bccEmail?: T;
+  htmlBody?: T;
+  textBody?: T;
+  resendId?: T;
+  sentAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }

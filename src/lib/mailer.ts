@@ -45,6 +45,13 @@ export async function sendMail(message: MailMessage): Promise<{ id?: string }> {
   })
   const body = (await response.json().catch(() => ({}))) as { id?: string; message?: string }
   if (!response.ok) throw new Error(`Resend rejected the email (${response.status}): ${body.message ?? 'unknown error'}`)
+  // Keep a copy on each developer's profile (best effort, never blocks the send).
+  try {
+    const { logEmailForDevelopers } = await import('./email-log')
+    await logEmailForDevelopers(message, body.id)
+  } catch {
+    /* logging must never break mail */
+  }
   return { id: body.id }
 }
 
