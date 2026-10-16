@@ -106,6 +106,13 @@ import {
   X,
   Zap,
   MessageCircle,
+  Paintbrush,
+  Sofa,
+  Accessibility,
+  Plug,
+  Wallet,
+  Sparkles,
+  House,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteLanguage, useLanguage } from "@/components/layout/language-provider";
@@ -3038,11 +3045,34 @@ export function PlansAndHomesSection({ project, title = "Floor Plans", excludeFl
   );
 }
 
+// One icon per Key Features tab (owner, 2026-10-16: "all the tabs need different icons"). Looked up by the tab's key, then by its
+// visitor-facing name, so older custom tabs on land listings get one too.
 const KEY_FEATURE_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
-  indoor: LayoutPanelLeft,
-  outdoor: Trees,
   specifications: ClipboardList,
+  finishes: Paintbrush,
+  "general-features": SlidersHorizontal,
+  "safety-security": ShieldCheck,
+  indoor: Sofa,
+  "building-services": Building2,
+  outdoor: Trees,
+  "recreation-wellness": Dumbbell,
+  sustainability: Leaf,
+  accessibility: Accessibility,
+  utilities: Plug,
+  "road-access": Route,
+  location: MapPin,
+  "payment-finance": Wallet,
+  "other-features": Sparkles,
+  "legal-documents": FileText,
+  community: Users,
+  plots: LayoutPanelLeft,
+  title: ScrollText,
 };
+
+function keyFeatureIcon(group: { key: string; label: string }): React.ComponentType<{ className?: string }> {
+  const slug = (value: string) => value.toLowerCase().replace(/&/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  return KEY_FEATURE_ICONS[group.key] ?? KEY_FEATURE_ICONS[slug(group.key)] ?? KEY_FEATURE_ICONS[slug(group.label)] ?? (/ithiri/i.test(group.label) ? House : LayoutGrid);
+}
 
 /** Accepts either the current `KeyFeatureCategory[]` shape or the legacy
  * `{ indoor?: string[]; outdoor?: string[]; other?: string[] }` shape still
@@ -3128,7 +3158,7 @@ export function KeyFeaturesSection({ unitFeatures, floorPlan, floorPlanLabel = "
       <div className="key-features-list">
         {groups.map((group) => {
           const isOpen = openKey === group.key;
-          const Icon = KEY_FEATURE_ICONS[group.key] ?? LayoutGrid;
+          const Icon = keyFeatureIcon(group);
           return (
             <div key={group.key} className={`key-features-row ${isOpen ? "open" : ""}`}>
               <button
