@@ -9,22 +9,13 @@ whenever a new convention is set or an existing one changes.
 
 Site brand is "LankaNewHomes" (contact: lankanewhomes@gmail.com, canonical
 domain: lankanewhomes.com — set as `FALLBACK_SITE_URL` in `src/lib/seo.ts`).
-The brand mark is a **plain-text wordmark, stacked on two lines, one
-colour, no icon** (set by the owner 2026-09-07):
-
-    Lanka
-    NewHomes
-
-Archivo 700, letter-spacing −0.02em, `#1d1d22` on light backgrounds, white
-on dark. No orange, no house badge. Both the Header (`.site-wordmark`, 17px)
-and the Footer (`.footer-wordmark`, 24px) render it as live text — two
-`<span class="wordmark-line">` inside the home link — never as an image. The
-standalone asset (outlined to paths, no font dependency) is at
-`public/logo-wordmark.svg` (dark) and `public/logo-wordmark-white.svg`
-(white); regenerate with fontkit from the Archivo TTF if the text changes.
-`public/logo.svg` (the old orange house badge + wordmark) is no longer used
-in the site chrome; it's kept only because OG/social images still reference
-it — replace those before deleting it.
+The brand mark is the **lowercase two-line logo** ("**lanka**" bold over "newhomes" light, one colour, no icon), supplied by
+the owner 2026-10-15 as `lankanewhomes-09-transparent.png`. The site header and footer show it as an image:
+`public/brand/lankanewhomes-logo.png` (black, header, `.site-logo-mark`, 38px tall) and
+`public/brand/lankanewhomes-logo-white.png` (white, footer, `.footer-logo-mark`, 64px tall), both 640px wide for sharp
+display on retina screens. (Before this the mark was the live-text wordmark "Lanka / NewHomes" set in Archivo 700, set
+2026-09-07; the old `public/logo-wordmark*.svg` files and the dashboard, login cards and emails still use it until they are
+updated.) `public/logo.svg` (the old orange house badge) is not used in the site chrome; OG/social images still reference it.
 
 Footer (`Footer` in `components.tsx`, `.site-footer` / `.footer-inner` in
 globals.css): dark `#1c1c20`, content in the sitewide 1290px container so it
