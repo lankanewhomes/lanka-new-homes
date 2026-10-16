@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-16T02:30:21.442Z",
+ "generatedAt": "2026-10-16T13:39:04.429Z",
  "sections": [
   {
    "label": "Listings",
@@ -699,6 +699,7 @@
     "listingName",
     "title",
     "category",
+    "actionTaken",
     "done",
     "sourceLinks",
     "updatedAt"

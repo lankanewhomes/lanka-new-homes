@@ -13,7 +13,7 @@ export const ListingTodos: CollectionConfig = {
     group: 'Properties',
     groupBy: true, // list view can be grouped by listing (the nav link opens it grouped)
     useAsTitle: 'title',
-    defaultColumns: ['listingName', 'title', 'category', 'done', 'sourceLinks', 'updatedAt'],
+    defaultColumns: ['listingName', 'title', 'category', 'actionTaken', 'done', 'sourceLinks', 'updatedAt'],
     hidden: hiddenUnlessAdmin,
     // Done tasks are not shown in the list (owner, 2026-10-14: "dont show it in to do list"). They stay in the database.
     baseListFilter: () => ({ done: { not_equals: true } }),
@@ -52,6 +52,8 @@ export const ListingTodos: CollectionConfig = {
     { name: 'listingName', type: 'text', label: 'Listing', index: true, admin: { readOnly: true, position: 'sidebar', description: 'Filled in automatically from the listing you pick.', components: { Cell: '@/components/payload/ListingCells#TodoListingCell' } } },
     { name: 'title', type: 'text', required: true, label: 'What needs doing' },
     { name: 'category', type: 'select', label: 'Category', index: true, options: [...TODO_CATEGORIES], admin: { description: 'Filled in automatically from the task; change it if it landed in the wrong group.' } },
+    { name: 'actionTaken', type: 'textarea', label: 'What I did', admin: { description: 'What has been done about this so far, e.g. "Emailed sales@cpg.lk on 16 Oct, waiting for a reply".' } },
+    { name: 'actionAt', type: 'date', label: 'Done on', admin: { date: { pickerAppearance: 'dayAndTime' } } },
     { name: 'done', type: 'checkbox', label: 'Done', defaultValue: false, index: true, admin: { components: { Cell: '@/components/payload/ListingCells#TodoDoneCell' } } },
     {
       name: 'listingType',

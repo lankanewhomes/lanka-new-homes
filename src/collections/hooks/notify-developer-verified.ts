@@ -7,8 +7,7 @@ import { developerVerifiedSubject, renderDeveloperVerifiedHTML, renderDeveloperV
 const TO = 'developers@lankanewhomes.com'
 const esc = (v: unknown) => String(v ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
-// Owner, 2026-10-15: when a developer is verified, (1) the developer gets the thank-you / Verified Developer email, copied to
-// developers@lankanewhomes.com, and (2) when the company verified itself (company-domain email confirmed, or the automatic check
+// Owner, 2026-10-15: when a developer is verified, (1) the developer gets the thank-you / Verified Developer email, and (2) when the company verified itself (company-domain email confirmed, or the automatic check
 // at login) developers@ also gets a heads-up with a review link and how to remove the badge. Once, when the badge switches on;
 // production only.
 export const notifyDeveloperVerified: CollectionAfterChangeHook = async ({ doc, previousDoc, operation, req }) => {
@@ -19,7 +18,7 @@ export const notifyDeveloperVerified: CollectionAfterChangeHook = async ({ doc, 
       return doc
     }
     const selfVerified = (req.user as any)?.role !== 'admin'
-    // 1. Thank-you and confirmation to the developer (every path, including an admin approval), copied to developers@.
+    // 1. Thank-you and confirmation to the developer (every path, including an admin approval). No copy to developers@ (owner, 2026-10-16).
     try {
       let to: string | null = doc.verified_email || doc.contact_email || null
       if (!to && doc.user) {
@@ -28,7 +27,7 @@ export const notifyDeveloperVerified: CollectionAfterChangeHook = async ({ doc, 
       }
       if (to) {
         const input = { companyName: doc.name, verifiedEmail: doc.verified_email || null, profileUrl: `https://www.lankanewhomes.com/developers/${doc.slug}`, loginUrl: 'https://www.lankanewhomes.com/developers/login' }
-        await sendMail({ to, from: TO, replyTo: TO, bcc: TO, subject: developerVerifiedSubject(doc.name), html: renderDeveloperVerifiedHTML(input), text: renderDeveloperVerifiedText(input) })
+        await sendMail({ to, from: TO, replyTo: TO, subject: developerVerifiedSubject(doc.name), html: renderDeveloperVerifiedHTML(input), text: renderDeveloperVerifiedText(input) })
       }
     } catch (error) {
       req.payload.logger.error(`Verified Developer thank-you failed: ${error instanceof Error ? error.message : error}`)

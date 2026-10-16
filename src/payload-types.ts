@@ -7547,6 +7547,11 @@ export interface ListingTodo {
         | 'Other'
       )
     | null;
+  /**
+   * What has been done about this so far, e.g. "Emailed sales@cpg.lk on 16 Oct, waiting for a reply".
+   */
+  actionTaken?: string | null;
+  actionAt?: string | null;
   done?: boolean | null;
   listingType: 'project' | 'land' | 'other';
   project?: (number | null) | Project;
@@ -9635,6 +9640,8 @@ export interface ListingTodosSelect<T extends boolean = true> {
   listingName?: T;
   title?: T;
   category?: T;
+  actionTaken?: T;
+  actionAt?: T;
   done?: T;
   listingType?: T;
   project?: T;
