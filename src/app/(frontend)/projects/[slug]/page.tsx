@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import { buildProjectFaqs } from "@/lib/listing-faq";
-import { ListingFaqSection } from "@/components/marketplace/listing-faq-section";
 import { notFound } from "next/navigation";
 import { projects } from "@/data/projects";
 import { getAllProjects, getProjectBySlug } from "@/lib/project-store";
@@ -26,7 +24,7 @@ import {
   StatsContactCard,
 } from "@/components/marketplace/components";
 import { ProjectViewTracker } from "@/components/marketplace/view-tracker";
-import { buildFaqJsonLd, jsonLdScriptProps, toAbsoluteUrl, withSocial } from "@/lib/seo";
+import { toAbsoluteUrl, withSocial } from "@/lib/seo";
 
 // Regenerate at most once a minute so admin edits (e.g. status changes)
 // show up without waiting for the next deploy.
@@ -135,11 +133,8 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
     url: toAbsoluteUrl(`/projects/${project.slug}`),
   };
 
-  const faqs = buildProjectFaqs(project, neighborhood?.name);
-
   return (
     <div className="space-y-8">
-      {faqs.length > 0 ? <script {...jsonLdScriptProps(buildFaqJsonLd(faqs))} /> : null}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
@@ -201,8 +196,6 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
           neighborhoodPageExists={Boolean(neighborhood)}
           neighborhood={neighborhood ? { name: neighborhood.name, slug: neighborhood.slug, heroImage: neighborhood.heroImage, description: neighborhood.description, highlights: neighborhood.highlights } : undefined}
         />
-
-        <ListingFaqSection faqs={faqs} />
 
         <StatsContactCard project={project} developer={developer} />
 
