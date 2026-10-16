@@ -186,6 +186,8 @@ const amenityIcons: Record<string, React.ComponentType<{ className?: string }>> 
   "Yoga Deck": Leaf,
   "Meditation Garden": Leaf,
   Terraces: Trees,
+  "Cold Plunge": Waves,
+  "Valet Service": Bell,
   "Forest Dining": UtensilsCrossed,
   "Golf Club Membership": Trees,
   "Boat & Seaplane Access": Waves,

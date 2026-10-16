@@ -199,6 +199,8 @@ export const AMENITY_NAME_OPTIONS = [
   'Yoga Deck',
   'Meditation Garden',
   'Terraces',
+  'Cold Plunge',
+  'Valet Service',
   'Forest Dining',
   'Golf Club Membership',
   'Boat & Seaplane Access',

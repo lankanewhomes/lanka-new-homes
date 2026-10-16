@@ -42,6 +42,8 @@ export type Amenity = {
     | "Yoga Deck"
     | "Meditation Garden"
     | "Terraces"
+    | "Cold Plunge"
+    | "Valet Service"
     | "Forest Dining"
     | "Golf Club Membership"
     | "Boat & Seaplane Access"
