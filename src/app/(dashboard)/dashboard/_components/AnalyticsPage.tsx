@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { AlertCircle, ArrowUpRight, Eye, Heart, MessageCircle, MessageSquare, Phone, FileDown, MousePointerClick } from "lucide-react";
+import { AlertCircle, ArrowUpRight, Eye, Heart, Mail, MessageCircle, MessageSquare, Phone, FileDown, MousePointerClick } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useDash } from "./DashProvider";
 import { PageHero } from "./PageHero";
@@ -44,6 +44,7 @@ const TILES = [
   { key: "lead_submitted", label: "Enquiries sent", icon: MessageCircle },
   { key: "whatsapp_click", label: "WhatsApp clicks", icon: MessageSquare },
   { key: "phone_click", label: "Phone clicks", icon: Phone },
+  { key: "email_click", label: "Email clicks", icon: Mail },
   { key: "brochure_download", label: "Brochure downloads", icon: FileDown },
   { key: "hero_click", label: "Hero slide clicks", icon: MousePointerClick },
 ];

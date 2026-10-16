@@ -2089,7 +2089,7 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
         ) : null}
 
         {hasDisplayValue(email) ? (
-          <a href={`mailto:${email}`} className="stats-contact-card-row">
+          <a href={`mailto:${email}`} className="stats-contact-card-row" onClick={() => logListingEvent("/api/events/email-click", "click_email", project.slug, project.name)}>
             <Mail className="h-4 w-4" aria-hidden="true" /> {email}
           </a>
         ) : null}

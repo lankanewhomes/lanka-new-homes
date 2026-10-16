@@ -3906,6 +3906,10 @@ export interface Project {
    */
   whatsapp_click_count?: number | null;
   /**
+   * Auto-incremented from Analytics "email_click" events for this project (the email address in the contact card was clicked).
+   */
+  email_click_count?: number | null;
+  /**
    * Paid featured placements — one row per page/window, added automatically when a featured_listing payment is confirmed.
    */
   placements?:
@@ -8059,7 +8063,14 @@ export interface Analytics {
    */
   developer?: (number | null) | Developer;
   event_type:
-    'view' | 'save' | 'lead_submitted' | 'hero_click' | 'brochure_download' | 'phone_click' | 'whatsapp_click';
+    | 'view'
+    | 'save'
+    | 'lead_submitted'
+    | 'hero_click'
+    | 'brochure_download'
+    | 'phone_click'
+    | 'whatsapp_click'
+    | 'email_click';
   timestamp?: string | null;
   /**
    * Anonymous per-browser-session id (localStorage) — same one the internal view/session tracking already uses. Used to detect repeat actions.
@@ -8991,6 +9002,7 @@ export interface ProjectsSelect<T extends boolean = true> {
   download_count?: T;
   phone_click_count?: T;
   whatsapp_click_count?: T;
+  email_click_count?: T;
   placements?:
     | T
     | {

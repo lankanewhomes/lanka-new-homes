@@ -11,6 +11,7 @@ export const ANALYTICS_EVENT_TYPES = [
   { label: 'Brochure Download', value: 'brochure_download' },
   { label: 'Phone Click', value: 'phone_click' },
   { label: 'WhatsApp Click', value: 'whatsapp_click' },
+  { label: 'Email Click', value: 'email_click' },
 ]
 
 // System-generated raw event log — the single source of truth that drives

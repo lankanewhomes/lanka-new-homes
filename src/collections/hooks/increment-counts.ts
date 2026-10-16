@@ -7,7 +7,7 @@ function relatedId(value: unknown): string | number | undefined {
   return value as string | number | undefined
 }
 
-type CounterField = 'view_count' | 'save_count' | 'lead_count' | 'download_count' | 'phone_click_count' | 'whatsapp_click_count'
+type CounterField = 'view_count' | 'save_count' | 'lead_count' | 'download_count' | 'phone_click_count' | 'whatsapp_click_count' | 'email_click_count'
 
 const COUNTER_FIELD_BY_EVENT: Record<string, CounterField | undefined> = {
   view: 'view_count',
@@ -17,6 +17,7 @@ const COUNTER_FIELD_BY_EVENT: Record<string, CounterField | undefined> = {
   brochure_download: 'download_count',
   phone_click: 'phone_click_count',
   whatsapp_click: 'whatsapp_click_count',
+  email_click: 'email_click_count',
 }
 
 function sleep(ms: number) {

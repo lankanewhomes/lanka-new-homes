@@ -191,6 +191,7 @@ export function AnalyticsDashboard() {
               <div><strong>{n("brochure_download")}</strong><span>Brochure downloads</span></div>
               <div><strong>{n("phone_click")}</strong><span>Phone clicks</span></div>
               <div><strong>{n("whatsapp_click")}</strong><span>WhatsApp clicks</span></div>
+              <div><strong>{n("email_click")}</strong><span>Email clicks</span></div>
             </div>
 
             <section className="ln-an-card">

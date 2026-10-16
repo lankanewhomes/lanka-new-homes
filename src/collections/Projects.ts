@@ -686,6 +686,7 @@ export const Projects: CollectionConfig = {
             { name: 'download_count', type: 'number', label: 'Download Count', defaultValue: 0, admin: { description: 'Auto-incremented from Analytics "brochure_download" events for this project.' } },
             { name: 'phone_click_count', type: 'number', label: 'Phone Click Count', defaultValue: 0, admin: { description: 'Auto-incremented from Analytics "phone_click" events for this project.' } },
             { name: 'whatsapp_click_count', type: 'number', label: 'WhatsApp Click Count', defaultValue: 0, admin: { description: 'Auto-incremented from Analytics "whatsapp_click" events for this project (the WhatsApp button beside "Request info").' } },
+            { name: 'email_click_count', type: 'number', label: 'Email Click Count', defaultValue: 0, admin: { description: 'Auto-incremented from Analytics "email_click" events for this project (the email address in the contact card was clicked).' } },
             {
               // A project can be paid-featured on more than one page at
               // once (e.g. sitewide AND colombo), each on its own window —
