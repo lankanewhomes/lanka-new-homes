@@ -69,6 +69,8 @@ export function ProfileView({
     // The year the company says it was founded (already on its profile), when it publishes no "years" counter.
     { label: "Established", value: !siteStats?.years && "establishedYear" in entity && entity.establishedYear ? String(entity.establishedYear) : undefined },
   ].filter((row): row is { label: string; value: string } => Boolean(row.value && String(row.value).trim()));
+  // Owner (2026-10-16): developer profiles do not link to the developer's own site, except Maison Ceylon.
+  const websiteLink = entityType === "developer" && entity.slug !== "maison-ceylon" ? undefined : entity.website;
   const coDevelopers = ((entity as ProfileEntity).coDevelopers ?? []).filter((entry) => entry.name);
   const socialEntries = Object.entries(entity.socialLinks ?? {}).filter(([, url]) => Boolean(url)) as [string, string][];
   const followLabel = entityType === "developer" ? "Follow developer" : "Follow";
@@ -176,12 +178,12 @@ export function ProfileView({
           {following ? "Following" : followLabel}
         </button>
 
-        {entity.location || entity.phone || entity.website ? (
+        {entity.location || entity.phone || websiteLink ? (
           <div className="developer-profile-contact">
             {entity.location ? <p>{entity.location}</p> : null}
             {/* A record can hold several numbers separated by "/" — each gets its own line and tel: link. */}
             {entity.phone ? entity.phone.split(/\s*\/\s*/).filter(Boolean).map((number) => <p key={number}><a href={`tel:${number.replace(/\s+/g, "")}`}>{number}</a></p>) : null}
-            {entity.website ? <a href={entity.website} target="_blank" rel="noopener noreferrer">{entity.website.replace(/^https?:\/\//, "")}</a> : null}
+            {websiteLink ? <a href={websiteLink} target="_blank" rel="noopener noreferrer">{websiteLink.replace(/^https?:\/\//, "")}</a> : null}
           </div>
         ) : null}
 
