@@ -12,9 +12,9 @@ export function ActivityTimeline() {
   const [rows, setRows] = useState<Row[] | null>(null)
   useEffect(() => {
     if (!id) return
-    const field = collectionSlug === 'lands' ? 'landId' : 'projectId'
+    const where = collectionSlug === 'lands' ? `where[landId][equals]=${id}` : collectionSlug === 'projects' ? `where[projectId][equals]=${id}` : `where[entityType][equals]=${collectionSlug}&where[entityId][equals]=${id}`
     let alive = true
-    fetch(`/payload-api/developer-activity?where[${field}][equals]=${id}&sort=-at&limit=200&depth=0`, { credentials: 'include' })
+    fetch(`/payload-api/developer-activity?${where}&sort=-at&limit=200&depth=0`, { credentials: 'include' })
       .then((r) => r.json())
       .then((j) => alive && setRows(Array.isArray(j.docs) ? j.docs : []))
       .catch(() => alive && setRows([]))

@@ -201,6 +201,7 @@ export const Projects: CollectionConfig = {
     {
       type: 'tabs',
       tabs: [
+        activityTab,
         {
           label: 'Overview',
           fields: [
@@ -367,6 +368,7 @@ export const Projects: CollectionConfig = {
           fields: [
             { name: 'launchDate', type: 'date', admin: { date: { pickerAppearance: 'dayOnly' } } },
             ...selectWithOther('constructionStatus', 'Construction Status', CONSTRUCTION_STATUS_OPTIONS),
+            { name: 'constructionStageNote', type: 'text', label: 'Construction stage (as published)', admin: { description: 'The developer\'s own wording, shown as "Construction stage" in the fact sheet, e.g. "Under Construction - Piling 60% Completed".' } },
             {
               name: 'constructionStagePercent',
               type: 'select',
@@ -768,7 +770,6 @@ export const Projects: CollectionConfig = {
           ],
         },
         referenceLinksTab,
-        activityTab,
         doneTasksTab,
         {
           label: 'SEO',

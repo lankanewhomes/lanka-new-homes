@@ -316,6 +316,10 @@ export type Project = SeoFields & {
   structuralEngineer?: string;
   mepConsultant?: string;
   contractor?: string;
+  /** Slug of the construction-company page when the main contractor is one of the linked builders (set by the Supabase sync). */
+  contractorSlug?: string;
+  /** The developer's own construction-stage wording, e.g. "Under Construction - Piling 60% Completed". */
+  constructionStageNote?: string;
   superstructureContractor?: string;
   finishingContractor?: string;
   quantitySurveyor?: string;

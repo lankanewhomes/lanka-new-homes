@@ -6,9 +6,10 @@ export async function logDeveloperActivity(
   payload: Payload,
   developerId: number | string,
   row: { kind: string; title: string; detail?: string; actor?: string; projectId?: number; landId?: number; developerName?: string },
+  req?: unknown,
 ): Promise<void> {
   try {
-    await payload.create({ collection: 'developer-activity' as never, overrideAccess: true, data: { developer: developerId, at: new Date().toISOString(), ...row } as never })
+    await payload.create({ collection: 'developer-activity' as never, overrideAccess: true, data: { developer: developerId, entityType: 'developers', entityId: Number(developerId), at: new Date().toISOString(), ...row } as never, ...(req ? { req: req as never } : {}) })
   } catch (error) {
     payload.logger.error(`Developer activity log failed: ${error instanceof Error ? error.message : error}`)
   }
@@ -54,7 +55,7 @@ export const logDeveloperChanges: CollectionAfterChangeHook = async ({ doc, prev
     kind: verified || unverified ? 'verification' : 'profile',
     title: verified ? 'Verified Developer switched on' : unverified ? 'Verified Developer removed' : 'Profile updated',
     detail: changes.join(', ').slice(0, 480), actor: actorOf(req), developerName: doc.name,
-  })
+  }, req)
   return doc
 }
 
@@ -62,7 +63,7 @@ export const logProjectChanges: CollectionAfterChangeHook = async ({ doc, previo
   const devId = typeof doc?.developer === 'object' ? doc.developer?.id : doc?.developer
   if (!devId) return doc
   if (operation === 'create') {
-    await logDeveloperActivity(req.payload, devId, { kind: 'listing', title: `Listing created: ${doc.name}`, detail: doc.isPublished ? 'Published' : 'Draft', actor: actorOf(req), projectId: doc.id })
+    await logDeveloperActivity(req.payload, devId, { kind: 'listing', title: `Listing created: ${doc.name}`, detail: doc.isPublished ? 'Published' : 'Draft', actor: actorOf(req), projectId: doc.id }, req)
     return doc
   }
   if (!previousDoc) return doc
@@ -73,7 +74,7 @@ export const logProjectChanges: CollectionAfterChangeHook = async ({ doc, previo
   await logDeveloperActivity(req.payload, devId, {
     kind: 'listing', title: published ? `Listing published: ${doc.name}` : unpublished ? `Listing unpublished: ${doc.name}` : `Listing edited: ${doc.name}`,
     detail: changes.join(', ').slice(0, 480) || undefined, actor: actorOf(req), projectId: doc.id,
-  })
+  }, req)
   return doc
 }
 
@@ -82,12 +83,35 @@ export const logLandChanges: CollectionAfterChangeHook = async ({ doc, previousD
   const devId = seller && typeof seller === 'object' && seller.relationTo === 'developers' ? (typeof seller.value === 'object' ? seller.value?.id : seller.value) : null
   if (!devId) return doc
   if (operation === 'create') {
-    await logDeveloperActivity(req.payload, devId, { kind: 'listing', title: `Land created: ${doc.title}`, actor: actorOf(req), landId: doc.id })
+    await logDeveloperActivity(req.payload, devId, { kind: 'listing', title: `Land created: ${doc.title}`, actor: actorOf(req), landId: doc.id }, req)
     return doc
   }
   if (!previousDoc) return doc
   const changes = diff(previousDoc, doc, LAND_FIELDS)
   if (!changes.length) return doc
-  await logDeveloperActivity(req.payload, devId, { kind: 'listing', title: `Land edited: ${doc.title}`, detail: changes.join(', ').slice(0, 480), actor: actorOf(req), landId: doc.id })
+  await logDeveloperActivity(req.payload, devId, { kind: 'listing', title: `Land edited: ${doc.title}`, detail: changes.join(', ').slice(0, 480), actor: actorOf(req), landId: doc.id }, req)
   return doc
+}
+
+const COMPANY_FIELDS: Tracked = {
+  name: 'Name', contact_email: 'Email', contact_phone: 'Phone', description: 'Description#', logo: 'Logo#', website: 'Website', services: 'Services#', portfolio_link: 'Portfolio link', isDesignBuild: 'Design & Build', socialLinks: 'Social links#', location: 'Location',
+}
+
+// Activity of the other company directories (construction, marketing, sales, architects, interior designers): created and edited.
+export function logCompanyChanges(entityType: string): CollectionAfterChangeHook {
+  return async ({ doc, previousDoc, operation, req }) => {
+    try {
+      if (operation === 'create') {
+        await req.payload.create({ collection: 'developer-activity' as never, overrideAccess: true, data: { entityType, entityId: doc.id, kind: 'profile', title: 'Profile created', detail: doc.name, actor: actorOf(req), at: new Date().toISOString() } as never })
+        return doc
+      }
+      if (!previousDoc) return doc
+      const changes = diff(previousDoc, doc, COMPANY_FIELDS)
+      if (!changes.length) return doc
+      await req.payload.create({ collection: 'developer-activity' as never, overrideAccess: true, data: { entityType, entityId: doc.id, kind: 'profile', title: 'Profile updated', detail: changes.join(', ').slice(0, 480), actor: actorOf(req), at: new Date().toISOString() } as never })
+    } catch (error) {
+      req.payload.logger.error(`Company activity log failed: ${error instanceof Error ? error.message : error}`)
+    }
+    return doc
+  }
 }

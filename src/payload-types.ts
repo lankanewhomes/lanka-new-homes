@@ -2923,6 +2923,10 @@ export interface Project {
    */
   constructionStatus_other?: string | null;
   /**
+   * The developer's own wording, shown as "Construction stage" in the fact sheet, e.g. "Under Construction - Piling 60% Completed".
+   */
+  constructionStageNote?: string | null;
+  /**
    * How far along construction is, shown alongside Construction Status.
    */
   constructionStagePercent?: ('0%' | '10%' | '25%' | '50%' | '75%' | '90%' | '100%') | null;
@@ -7715,7 +7719,9 @@ export interface EmailLog {
  */
 export interface DeveloperActivity {
   id: number;
-  developer: number | Developer;
+  developer?: (number | null) | Developer;
+  entityType?: string | null;
+  entityId?: number | null;
   developerName?: string | null;
   kind?: string | null;
   title: string;
@@ -8580,6 +8586,7 @@ export interface ProjectsSelect<T extends boolean = true> {
   launchDate?: T;
   constructionStatus?: T;
   constructionStatus_other?: T;
+  constructionStageNote?: T;
   constructionStagePercent?: T;
   constructionStarted?: T;
   constructionUpdates?:
@@ -9701,6 +9708,8 @@ export interface EmailLogSelect<T extends boolean = true> {
  */
 export interface DeveloperActivitySelect<T extends boolean = true> {
   developer?: T;
+  entityType?: T;
+  entityId?: T;
   developerName?: T;
   kind?: T;
   title?: T;

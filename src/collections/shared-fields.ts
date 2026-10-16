@@ -1,3 +1,4 @@
+import { logCompanyChanges } from '../lib/developer-activity'
 import type { CollectionAfterChangeHook, CollectionAfterDeleteHook, CollectionConfig, Field, Tab } from 'payload'
 import { adminOnly, hiddenUnlessAdmin, publicRead } from './access'
 import cities from '../data/cities.json'
@@ -590,7 +591,7 @@ export function groupCompanyFields(fields: Field[]): Field[] {
     const label = Object.keys(COMPANY_TAB_FIELDS).find((tab) => COMPANY_TAB_FIELDS[tab].includes(named(field)))
     ;(label ? buckets[label] : profile).push(field)
   }
-  const tabs = [{ label: 'Profile', fields: profile }, ...Object.keys(buckets).map((label) => ({ label, fields: buckets[label] }))].filter((tab) => tab.fields.length > 0)
+  const tabs = [activityTab, { label: 'Profile', fields: profile }, ...Object.keys(buckets).map((label) => ({ label, fields: buckets[label] }))].filter((tab) => tab.fields.length > 0)
   return [
     { name: 'company_header', type: 'ui', admin: { components: { Field: '@/components/payload/CompanyHeader#CompanyHeader' } } },
     { type: 'tabs', tabs },
@@ -616,7 +617,7 @@ export function directoryCollection(
       update: adminOnly,
       delete: adminOnly,
     },
-    hooks: { afterChange: afterChangeHooks, afterDelete: afterDeleteHooks },
+    hooks: { afterChange: [...afterChangeHooks, logCompanyChanges(slug)], afterDelete: afterDeleteHooks },
     fields: groupCompanyFields(companyProfileFields(extraFields)),
   }
 }

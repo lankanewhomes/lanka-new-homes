@@ -15,7 +15,7 @@ const when = (iso: string) => new Date(iso).toLocaleString("en-GB", { day: "nume
 const day = (iso: string) => new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
 const HOUR = 3600_000;
 
-export function DeveloperOverview() {
+export function DeveloperOverview({ mode = "tiles" }: { mode?: "tiles" | "timeline" }) {
   const { id } = useParams<{ id: string }>();
   const [events, setEvents] = useState<Event[] | null>(null);
   const [stats, setStats] = useState<{ projects: number; lands: number; leads: number; emails: number; verified: boolean } | null>(null);
@@ -102,10 +102,10 @@ export function DeveloperOverview() {
   const tile = (label: string, value: string) => <div className="border border-line bg-panel p-3"><p className="text-xs text-muted">{label}</p><p className="mt-1 text-xl font-semibold tabular-nums">{value}</p></div>;
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
+      {mode === "tiles" ? <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
         {tile("Projects", String(stats.projects))}{tile("Lands", String(stats.lands))}{tile("Enquiries", String(stats.leads))}{tile("Emails sent", String(stats.emails))}{tile("Verified Developer", stats.verified ? "Yes" : "Not yet")}
-      </div>
-      <section className="border border-line bg-panel">
+      </div> : null}
+      {mode === "timeline" ? <section className="border border-line bg-panel">
         <h2 className="border-b border-line px-4 py-3 font-semibold">Timeline</h2>
         {groups.length === 0 ? <p className="px-4 py-10 text-center text-sm text-muted">Nothing has happened yet.</p> : null}
         {groups.map(([date, list]) => (
@@ -120,7 +120,7 @@ export function DeveloperOverview() {
             </ul>
           </div>
         ))}
-      </section>
+      </section> : null}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import type { CollectionConfig, Field, Tab, Where } from 'payload'
 import { adminOnly, adminOnlyField, getOwnedDeveloperIds, getRole, isAdmin, publicRead } from './access'
-import { companyProfileFields, doneTasksTab, referenceLinksTab, seoFields, socialLinksField } from './shared-fields'
+import { activityTab, companyProfileFields, doneTasksTab, referenceLinksTab, seoFields, socialLinksField } from './shared-fields'
 import { syncDeveloperDeleteToSupabase, syncDeveloperToSupabase } from './hooks/sync-to-supabase'
 import { notifyDeveloperVerified } from './hooks/notify-developer-verified'
 import { logDeveloperChanges } from '../lib/developer-activity'
@@ -89,6 +89,7 @@ function groupDeveloperFields(fields: Field[]): Field[] {
   }
 
   const tabs = [
+    activityTab,
     { label: 'Overview', fields: overview },
     { label: 'Profile', fields: buckets.Profile },
     { label: 'Company', fields: buckets.Company },

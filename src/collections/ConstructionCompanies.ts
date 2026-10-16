@@ -1,3 +1,4 @@
+import { logCompanyChanges } from '../lib/developer-activity'
 import type { CollectionConfig } from 'payload'
 import { adminOnly, hiddenUnlessAdmin, publicRead } from './access'
 import { businessProfileExtraFields, companyProfileFields, groupCompanyFields } from './shared-fields'
@@ -16,7 +17,7 @@ export const ConstructionCompanies: CollectionConfig = {
     update: adminOnly,
     delete: adminOnly,
   },
-  hooks: { afterChange: [syncConstructionCompanyToSupabase], afterDelete: [syncConstructionCompanyDeleteToSupabase] },
+  hooks: { afterChange: [syncConstructionCompanyToSupabase, logCompanyChanges('construction-companies')], afterDelete: [syncConstructionCompanyDeleteToSupabase] },
   fields: groupCompanyFields([
     ...companyProfileFields([
       { name: 'services', type: 'text', hasMany: true },

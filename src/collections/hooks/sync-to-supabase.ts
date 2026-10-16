@@ -169,8 +169,20 @@ export const syncProjectToSupabase: CollectionAfterChangeHook = async ({ doc, re
       req.payload.logger.warn(`Could not resolve publishedAt for ${d.slug}: ${err instanceof Error ? err.message : err}`)
     }
 
+    // The main contractor links to its construction-company page when it is one of the builders credited on the project.
+    let contractorSlug: string | undefined
+    try {
+      const first = String(d.contractor ?? '').split('\n')[0].trim()
+      const norm = (v: string) => v.toLowerCase().replace(/[^a-z0-9]/g, '')
+      if (first && additionalBuilderSlugs.length) {
+        const builders = await req.payload.find({ collection: 'construction-companies', where: { slug: { in: additionalBuilderSlugs } }, limit: 20, depth: 0, overrideAccess: true, req })
+        contractorSlug = (builders.docs as unknown as AnyDoc[]).find((b) => norm(String(b.name ?? '')) === norm(first))?.slug as string | undefined
+      }
+    } catch { /* the contractor stays plain text */ }
+
     const project: AnyDoc = {
       ...d,
+      ...(contractorSlug ? { contractorSlug } : {}),
       ...(publishedAt ? { publishedAt } : {}),
       developerSlug: developer.slug ?? d.developerSlug,
       developerName: developer.name ?? d.developerName,

@@ -88,6 +88,7 @@ export const Lands: CollectionConfig = {
     {
       type: 'tabs',
       tabs: [
+        activityTab,
         {
           label: 'Overview',
           fields: [
@@ -269,7 +270,6 @@ export const Lands: CollectionConfig = {
           fields: [coordinatesField, contactField],
         },
         referenceLinksTab,
-        activityTab,
         doneTasksTab,
         {
           label: 'SEO',

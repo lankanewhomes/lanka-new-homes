@@ -1,6 +1,7 @@
 import { PersonCell as PersonCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
 import { StatusCell as StatusCell_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
 import { DeveloperHeader as DeveloperHeader_63e0f9a6fec321b5319fb4e71d8e519d } from '@/components/payload/DeveloperHero'
+import { ActivityTimeline as ActivityTimeline_86687291c5964c372a89f21cbdeacadc } from '@/components/payload/ActivityTimeline'
 import { DeveloperSummary as DeveloperSummary_63e0f9a6fec321b5319fb4e71d8e519d } from '@/components/payload/DeveloperHero'
 import { DeveloperOverviewStats as DeveloperOverviewStats_b1207455ce4facdbd8e0cbb4c2cb1f6e } from '@/components/payload/DeveloperOverviewStats'
 import { LandCompletenessField as LandCompletenessField_76baef6cf7c9eb87fad9c61807ea9c87 } from '@/components/payload/ListingCells'
@@ -97,6 +98,7 @@ export const importMap = {
   "@/components/payload/ListingCells#PersonCell": PersonCell_76baef6cf7c9eb87fad9c61807ea9c87,
   "@/components/payload/ListingCells#StatusCell": StatusCell_76baef6cf7c9eb87fad9c61807ea9c87,
   "@/components/payload/DeveloperHero#DeveloperHeader": DeveloperHeader_63e0f9a6fec321b5319fb4e71d8e519d,
+  "@/components/payload/ActivityTimeline#ActivityTimeline": ActivityTimeline_86687291c5964c372a89f21cbdeacadc,
   "@/components/payload/DeveloperHero#DeveloperSummary": DeveloperSummary_63e0f9a6fec321b5319fb4e71d8e519d,
   "@/components/payload/DeveloperOverviewStats#DeveloperOverviewStats": DeveloperOverviewStats_b1207455ce4facdbd8e0cbb4c2cb1f6e,
   "@/components/payload/ListingCells#LandCompletenessField": LandCompletenessField_76baef6cf7c9eb87fad9c61807ea9c87,

@@ -3095,8 +3095,8 @@ function floorPlanFeatureGroup(plan: FloorPlan, label: string): { key: string; l
 }
 
 // One published name per line (contractors etc.), stacked tight.
-function FactLines({ text }: { text: string }) {
-  return <>{text.split("\n").map((line) => line.trim()).filter(Boolean).map((line, index) => <span key={index} className="block">{line}</span>)}</>;
+function FactLines({ text, linkFirst }: { text: string; linkFirst?: { href: string } }) {
+  return <>{text.split("\n").map((line) => line.trim()).filter(Boolean).map((line, index) => <span key={index} className="block">{linkFirst && index === 0 ? <Link href={linkFirst.href} className="overview-link">{line}</Link> : line}</span>)}</>;
 }
 
 export function KeyFeaturesSection({ unitFeatures, floorPlan, floorPlanLabel = "This floor plan" }: { unitFeatures: unknown; floorPlan?: FloorPlan; floorPlanLabel?: string }) {
@@ -3742,13 +3742,18 @@ export function ProjectNarrativeDetails({ project }: { project: Project }) {
       show: isFact(project.type),
       value: (
         <>
-          <Link href={`/projects?type=${encodeURIComponent(project.type)}`} className="overview-link">{project.type}</Link>
-          {isFact(project.typeNote) ? ` — ${project.typeNote}` : ""}
+          {project.typeNote && isFact(project.typeNote) && project.typeNote.toLowerCase().includes(project.type.toLowerCase().replace(/s$/, ""))
+            ? <Link href={`/projects?type=${encodeURIComponent(project.type)}`} className="overview-link">{project.typeNote}</Link>
+            : <>
+                <Link href={`/projects?type=${encodeURIComponent(project.type)}`} className="overview-link">{project.type}</Link>
+                {isFact(project.typeNote) ? ` — ${project.typeNote}` : ""}
+              </>}
         </>
       ),
     },
     { label: "Listing status", show: isFact(project.status), value: isFact(project.statusNote) ? `${t(project.status)} — ${project.statusNote}` : project.status },
     { label: "Construction status", show: isFact(project.constructionStatus), value: project.constructionStatus },
+    { label: "Construction stage", show: isFact(project.constructionStageNote), value: project.constructionStageNote ?? "" },
     { label: "Construction progress", show: isFact(constructionProgressLabel(project.constructionStatus)), value: constructionProgressLabel(project.constructionStatus) ?? "" },
     { label: "Sales started", show: isFact(salesStarted), value: salesStarted },
     // A year still ahead is a move-in date; a past one is simply when the
@@ -3807,7 +3812,7 @@ export function ProjectNarrativeDetails({ project }: { project: Project }) {
     { label: "Architect", show: isFact(project.architectName), value: renderEntityLink(project.architectName ?? "", project.architectSlug, "/architects", "overview-link") },
     { label: "Structural engineer", show: isFact(project.structuralEngineer), value: project.structuralEngineer ?? "" },
     { label: "MEP consultant", show: isFact(project.mepConsultant), value: project.mepConsultant ?? "" },
-    { label: "Main contractor", show: isFact(project.contractor), value: <FactLines text={project.contractor ?? ""} /> },
+    { label: "Main contractor", show: isFact(project.contractor), value: project.contractorSlug ? <FactLines text={project.contractor ?? ""} linkFirst={{ href: `/construction-companies/${project.contractorSlug}` }} /> : <FactLines text={project.contractor ?? ""} /> },
     { label: "Superstructure contractor", show: isFact(project.superstructureContractor), value: <FactLines text={project.superstructureContractor ?? ""} /> },
     { label: (project.finishingContractor ?? "").trim().split("\n").filter(Boolean).length > 1 ? "Finishing contractors" : "Finishing contractor", show: isFact(project.finishingContractor), value: <FactLines text={project.finishingContractor ?? ""} /> },
     { label: "Quantity surveyor", show: isFact(project.quantitySurveyor), value: project.quantitySurveyor ?? "" },

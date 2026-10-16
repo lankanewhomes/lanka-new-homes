@@ -15,6 +15,8 @@ export function ListingTimeline() {
   const { id } = useParams<{ id: string }>();
   const path = usePathname();
   const isLand = path.includes("/dashboard/lands/");
+  const slug = path.split("/")[2] ?? "projects"; // /dashboard/<slug>/<id>
+  const isListing = slug === "projects" || slug === "lands";
   const [events, setEvents] = useState<Event[] | null>(null);
   const [error, setError] = useState("");
 
@@ -23,20 +25,31 @@ export function ListingTimeline() {
     let alive = true;
     const load = async () => {
       try {
-        const doc = await apiGet(isLand ? "lands" : "projects", id);
+        const doc = await apiGet(slug, id);
         const name = String(isLand ? doc.title : doc.name);
         const ev: Event[] = [];
         const add = (e: Event) => { if (e.at && !Number.isNaN(Date.parse(e.at))) ev.push(e); };
-        const act = await apiFind("developer-activity", { limit: 200, sort: "-at", where: { [isLand ? "landId" : "projectId"]: { equals: Number(id) } } }).catch(() => ({ docs: [] as Doc[] }));
+        const act = await apiFind("developer-activity", { limit: 200, sort: "-at", where: isListing ? { [isLand ? "landId" : "projectId"]: { equals: Number(id) } } : { and: [{ entityType: { equals: slug } }, { entityId: { equals: Number(id) } }] } }).catch(() => ({ docs: [] as Doc[] }));
         for (const a of act.docs) add({ at: String(a.at), icon: /published|unpublished/.test(String(a.title)) ? Rocket : /created/.test(String(a.title)) ? PlusCircle : Pencil, tone: "text-fg", title: String(a.title), detail: [a.detail, a.actor ? `by ${String(a.actor)}` : ""].filter(Boolean).join(" · ") || undefined });
-        if (!act.docs.some((a) => /created/.test(String(a.title)))) add({ at: String(doc.createdAt), icon: PlusCircle, tone: "text-fg", title: `${isLand ? "Land" : "Listing"} created`, detail: name });
-        if (!isLand) {
+        if (!act.docs.some((a) => /created/.test(String(a.title)))) add({ at: String(doc.createdAt), icon: PlusCircle, tone: "text-fg", title: isListing ? `${isLand ? "Land" : "Listing"} created` : "Profile created", detail: name });
+        if (!isListing) {
+          const to = String(doc.contact_email ?? "");
+          if (to) {
+            const mails = await apiFind("email-log", { limit: 100, sort: "-sentAt", where: { toEmail: { contains: to } } }).catch(() => ({ docs: [] as Doc[] }));
+            for (const m of mails.docs) add({ at: String(m.sentAt), icon: Mail, tone: "text-fg", title: `Email sent: ${String(m.subject)}`, detail: `${String(m.kind ?? "Email")} · to ${String(m.toEmail ?? "")}` });
+          }
+          if (slug === "construction-companies") {
+            const linked = await apiFind("projects", { limit: 100, where: { additional_builders: { contains: Number(id) } }, select: { name: true, updatedAt: true } }).catch(() => ({ docs: [] as Doc[] }));
+            for (const p of linked.docs) add({ at: String(p.updatedAt), icon: PlusCircle, tone: "text-fg", title: `Credited on project: ${String(p.name)}`, href: `/dashboard/projects/${p.id}` });
+          }
+        }
+        if (isListing && !isLand) {
           const leads = await apiFind("leads", { limit: 100, sort: "-createdAt", where: { project: { equals: Number(id) } }, select: { name: true, createdAt: true } }).catch(() => ({ docs: [] as Doc[] }));
           for (const l of leads.docs) add({ at: String(l.createdAt), icon: MessageCircle, tone: "text-brand", title: `Enquiry from ${String(l.name ?? "a buyer")}`, href: `/dashboard/leads/${l.id}` });
         }
-        const todos = await apiFind("listing-todos", { limit: 200, where: { and: [{ done: { equals: true } }, { [isLand ? "land" : "project"]: { equals: Number(id) } }] }, select: { title: true, doneAt: true } }).catch(() => ({ docs: [] as Doc[] }));
+        const todos = !isListing ? { docs: [] as Doc[] } : await apiFind("listing-todos", { limit: 200, where: { and: [{ done: { equals: true } }, { [isLand ? "land" : "project"]: { equals: Number(id) } }] }, select: { title: true, doneAt: true } }).catch(() => ({ docs: [] as Doc[] }));
         for (const t of todos.docs) if (t.doneAt) add({ at: String(t.doneAt), icon: CheckCircle2, tone: "text-ok", title: `Task done: ${String(t.title)}` });
-        const mails = await apiFind("email-log", { limit: 100, sort: "-sentAt", where: { subject: { contains: name } } }).catch(() => ({ docs: [] as Doc[] }));
+        const mails = !isListing ? { docs: [] as Doc[] } : await apiFind("email-log", { limit: 100, sort: "-sentAt", where: { subject: { contains: name } } }).catch(() => ({ docs: [] as Doc[] }));
         for (const m of mails.docs) add({ at: String(m.sentAt), icon: Mail, tone: "text-fg", title: `Email sent: ${String(m.subject)}`, detail: `${String(m.kind ?? "Email")} · to ${String(m.toEmail ?? "")}` });
         ev.sort((a, b) => Date.parse(b.at) - Date.parse(a.at));
         if (alive) { setEvents(ev); setError(""); }
@@ -47,7 +60,7 @@ export function ListingTimeline() {
     load();
     const timer = setInterval(load, 60_000); // new activity shows up without reloading the page
     return () => { alive = false; clearInterval(timer); };
-  }, [id, isLand]);
+  }, [id, isLand, slug, isListing]);
 
   if (!id || id === "new") return <p className="text-sm text-muted">Save first, then the activity appears here.</p>;
   if (error) return <p className="text-sm text-bad">{error}</p>;
