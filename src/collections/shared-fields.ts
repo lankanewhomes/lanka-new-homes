@@ -326,8 +326,8 @@ export const KEY_FEATURE_VALUE_OPTIONS = [
 ]
 
 // The Key Features tabs (owner, 2026-10-16). Facts-sheet data (units, floors, sizes, dates, bedroom counts) and shared facilities that already
-// sit in Amenities (communal pool, gym, clubhouse, playground) do NOT belong in Key Features. There is no "Recreation & Wellness" or
-// "Highlights" tab: shared facilities go to Amenities and marketing lines to the project's Highlights.
+// sit in Amenities (communal pool, gym, clubhouse, playground) do NOT belong in Key Features. Recreation & Wellness stays for rows that have
+// no matching amenity; Road & Access is for land developments. There is no "Highlights" tab: marketing lines go to the project's Highlights.
 const KEY_FEATURE_CATEGORY_LABELS: Record<string, string> = {
   specifications: 'Specifications',
   finishes: 'Finishes',
@@ -336,9 +336,11 @@ const KEY_FEATURE_CATEGORY_LABELS: Record<string, string> = {
   indoor: 'Indoor Features',
   'building-services': 'Building & Services',
   outdoor: 'Outdoor Features',
+  'recreation-wellness': 'Recreation & Wellness',
   sustainability: 'Sustainability',
   accessibility: 'Accessibility',
   utilities: 'Utilities',
+  'road-access': 'Road & Access',
 }
 
 // Same KeyFeatureCategory shape used by Project.unitFeatures and
