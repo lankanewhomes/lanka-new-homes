@@ -4,10 +4,12 @@ import type { ReactNode } from "react";
  * The brand's dark split hero (same as the /account pages): a big light-weight title with a short line under it on the left, and one
  * white stat card on the right. `actions` sit under the text as outline buttons.
  */
-export function PageHero({ title, description, stat, chips, actions }: {
+export function PageHero({ title, description, stat, extraStats, chips, actions }: {
   title: string;
   description?: ReactNode;
   stat?: { label: string; value: string };
+  /** More white stat cards beside the first one (e.g. Lands next to Projects). */
+  extraStats?: { label: string; value: string }[];
   chips?: ReactNode;
   actions?: ReactNode;
 }) {
@@ -21,9 +23,13 @@ export function PageHero({ title, description, stat, chips, actions }: {
           {actions ? <div className="mt-5 flex flex-wrap gap-2">{actions}</div> : null}
         </div>
         {stat ? (
-          <div className="bg-white px-6 py-5 text-[#1f1f1f]">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[#6b6355]">{stat.label}</p>
-            <p className="mt-1.5 text-[40px] font-normal leading-none tabular-nums">{stat.value}</p>
+          <div className={`grid gap-3 ${extraStats?.length ? "grid-cols-2" : ""}`}>
+            {[stat, ...(extraStats ?? [])].map((item) => (
+              <div key={item.label} className="bg-white px-6 py-5 text-[#1f1f1f]">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[#6b6355]">{item.label}</p>
+                <p className="mt-1.5 text-[40px] font-normal leading-none tabular-nums">{item.value}</p>
+              </div>
+            ))}
           </div>
         ) : null}
       </div>
