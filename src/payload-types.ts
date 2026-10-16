@@ -2738,6 +2738,10 @@ export interface Project {
   neighborhoodSlug?: string | null;
   road?: string | null;
   area?: string | null;
+  /**
+   * Shown in the Facts sheet, e.g. "2". For villas and houses with more than one living room.
+   */
+  livingRooms?: string | null;
   electricity?: ('Available' | '3-Phase Available' | 'Metered' | 'Not Available' | 'Solar') | null;
   /**
    * Custom value, used when Electricity above doesn't have the right option.
@@ -3331,6 +3335,9 @@ export interface Project {
           | 'Cold Plunge'
           | 'Valet Service'
           | 'Private Plunge Pool'
+          | 'Beach Club'
+          | 'Water Sports'
+          | 'Salon'
           | 'Forest Dining'
           | 'Golf Club Membership'
           | 'Boat & Seaplane Access'
@@ -3395,7 +3402,22 @@ export interface Project {
     | null;
   unitFeatures?:
     | {
-        key?: ('indoor' | 'outdoor' | 'specifications') | null;
+        key?:
+          | (
+              | 'specifications'
+              | 'finishes'
+              | 'general-features'
+              | 'safety-security'
+              | 'indoor'
+              | 'building-services'
+              | 'outdoor'
+              | 'recreation-wellness'
+              | 'sustainability'
+              | 'accessibility'
+              | 'utilities'
+              | 'road-access'
+            )
+          | null;
         /**
          * Custom value, used when Category above doesn't have the right option.
          */
@@ -6939,6 +6961,9 @@ export interface Land {
           | 'Cold Plunge'
           | 'Valet Service'
           | 'Private Plunge Pool'
+          | 'Beach Club'
+          | 'Water Sports'
+          | 'Salon'
           | 'Forest Dining'
           | 'Golf Club Membership'
           | 'Boat & Seaplane Access'
@@ -7003,7 +7028,22 @@ export interface Land {
     | null;
   unitFeatures?:
     | {
-        key?: ('indoor' | 'outdoor' | 'specifications') | null;
+        key?:
+          | (
+              | 'specifications'
+              | 'finishes'
+              | 'general-features'
+              | 'safety-security'
+              | 'indoor'
+              | 'building-services'
+              | 'outdoor'
+              | 'recreation-wellness'
+              | 'sustainability'
+              | 'accessibility'
+              | 'utilities'
+              | 'road-access'
+            )
+          | null;
         /**
          * Custom value, used when Category above doesn't have the right option.
          */
@@ -8568,6 +8608,7 @@ export interface ProjectsSelect<T extends boolean = true> {
   neighborhoodSlug?: T;
   road?: T;
   area?: T;
+  livingRooms?: T;
   electricity?: T;
   electricity_other?: T;
   tapWater?: T;

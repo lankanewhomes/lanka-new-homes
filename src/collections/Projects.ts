@@ -241,6 +241,7 @@ export const Projects: CollectionConfig = {
             { name: 'neighborhoodSlug', type: 'text' },
             { name: 'road', type: 'text' },
             { name: 'area', type: 'text' },
+            { name: 'livingRooms', type: 'text', label: 'Living Rooms', admin: { description: 'Shown in the Facts sheet, e.g. "2". For villas and houses with more than one living room.' } },
             ...selectWithOther('electricity', 'Electricity', ELECTRICITY_OPTIONS),
             ...selectWithOther('tapWater', 'Tap Water', TAP_WATER_OPTIONS),
             ...selectWithOther('type', 'Type', PROJECT_TYPE_OPTIONS),

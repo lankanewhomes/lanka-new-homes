@@ -113,6 +113,8 @@ import {
   Wallet,
   Sparkles,
   House,
+  Umbrella,
+  Scissors,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteLanguage, useLanguage } from "@/components/layout/language-provider";
@@ -196,6 +198,9 @@ const amenityIcons: Record<string, React.ComponentType<{ className?: string }>> 
   "Cold Plunge": Waves,
   "Valet Service": Bell,
   "Private Plunge Pool": Waves,
+  "Beach Club": Umbrella,
+  "Water Sports": Waves,
+  Salon: Scissors,
   "Forest Dining": UtensilsCrossed,
   "Golf Club Membership": Trees,
   "Boat & Seaplane Access": Waves,
@@ -3825,6 +3830,7 @@ export function ProjectNarrativeDetails({ project }: { project: Project }) {
     { label: "Address", show: isFact(project.location), value: project.location },
     { label: "Road", show: isFact(project.road), value: project.road ?? "" },
     { label: "Area", show: isFact(project.area), value: project.area ?? "" },
+    { label: "Living rooms", show: isFact(project.livingRooms), value: project.livingRooms ?? "" },
     {
       label: "Neighborhood",
       show: isFact(project.neighborhood),

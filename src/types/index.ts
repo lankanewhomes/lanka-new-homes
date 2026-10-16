@@ -45,6 +45,9 @@ export type Amenity = {
     | "Cold Plunge"
     | "Valet Service"
     | "Private Plunge Pool"
+    | "Beach Club"
+    | "Water Sports"
+    | "Salon"
     | "Forest Dining"
     | "Golf Club Membership"
     | "Boat & Seaplane Access"
@@ -350,6 +353,7 @@ export type Project = SeoFields & {
   neighborhoodSlug?: string;
   road?: string;
   area?: string;
+  livingRooms?: string;
   electricity?: string;
   tapWater?: string;
   type: string;
