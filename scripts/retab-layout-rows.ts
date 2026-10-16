@@ -30,7 +30,7 @@ for (const x of all) {
       let to = tk
       if (tk === 'finishes' && FIELD.test(f)) {
         if ((GENERAL.test(v) && !/sanitar|tile/i.test(v)) || /hot water geyser/i.test(v)) to = 'general-features'
-        else if (INDOOR.test(f + ' ' + v) && !NOT_INDOOR.test(v)) to = 'indoor'
+        else if ((INDOOR.test(f + ' ' + v) || INDOOR.test(v)) && !NOT_INDOOR.test(v)) to = 'indoor'
         else if (/^en-suite|maids? room/i.test(v)) to = 'indoor'
       }
       if (to !== tk) log.push(`${LABEL[to]}: ${f}: ${v.slice(0, 55)}`)
