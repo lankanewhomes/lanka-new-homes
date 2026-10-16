@@ -135,6 +135,7 @@ export function SocialPage() {
         actions={<>
           <a href="https://www.instagram.com/lankanewhomes/" target="_blank" rel="noopener noreferrer" className={heroBtn}>Instagram <ExternalLink size={13} /></a>
           <a href="https://www.facebook.com/lankanewhomes/" target="_blank" rel="noopener noreferrer" className={heroBtn}>Facebook <ExternalLink size={13} /></a>
+          {admin ? <Link href="/dashboard/social/create" className={heroBtn}><Plus size={14} /> Create a post</Link> : null}
           {admin ? <button type="button" onClick={runSync} disabled={syncing} className={heroBtn}>{syncing ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />} Sync now</button> : null}
         </>}
       />
