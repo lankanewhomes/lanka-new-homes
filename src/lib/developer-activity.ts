@@ -40,7 +40,9 @@ function diff(prev: any, next: any, tracked: Tracked): string[] {
     if (next?.[key] === undefined || same(prev?.[key], next?.[key])) continue
     const quiet = raw.endsWith('#')
     const label = raw.replace(/#$/, '')
-    out.push(quiet ? label : `${label} (${show(prev?.[key])} → ${show(next?.[key])})`)
+    // A list that went from filled to empty is flagged loudly: that is how silent data loss shows up (2026-10-15 incident).
+    const emptied = Array.isArray(prev?.[key]) && prev[key].length > 0 && Array.isArray(next?.[key]) && next[key].length === 0
+    out.push(emptied ? `${label} EMPTIED (was ${prev[key].length})` : quiet ? label : `${label} (${show(prev?.[key])} → ${show(next?.[key])})`)
   }
   return out
 }

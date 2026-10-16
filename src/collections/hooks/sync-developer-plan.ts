@@ -128,20 +128,20 @@ export const syncFeaturedProjectsFromDeveloper: CollectionAfterChangeHook = asyn
     req,
   })
 
-  await Promise.all(
-    projects.map((project) => {
-      const isFeaturedHere = effectiveTier !== 'free' && featuredIds.has(String(project.id))
-      const targetPackage = isFeaturedHere ? effectiveTier : 'free'
-      if (project.package === targetPackage) return null
-      return req.payload.update({
-        collection: 'projects',
-        id: project.id,
-        data: { package: targetPackage, featured: isFeaturedHere ? pkg.featured : false },
-        overrideAccess: true,
-        req,
-      })
-    }),
-  )
+  // One at a time: many updates running together inside one request's database transaction can overwrite each other's list rows
+  // (floor plans, gallery, amenities); see the 2026-10-15 data-loss note in docs/data-loss-audit.md.
+  for (const project of projects) {
+    const isFeaturedHere = effectiveTier !== 'free' && featuredIds.has(String(project.id))
+    const targetPackage = isFeaturedHere ? effectiveTier : 'free'
+    if (project.package === targetPackage) continue
+    await req.payload.update({
+      collection: 'projects',
+      id: project.id,
+      data: { package: targetPackage, featured: isFeaturedHere ? pkg.featured : false },
+      overrideAccess: true,
+      req,
+    })
+  }
 
   const { docs: lands } = await req.payload.find({
     collection: 'lands',
@@ -164,20 +164,18 @@ export const syncFeaturedProjectsFromDeveloper: CollectionAfterChangeHook = asyn
     req,
   })
 
-  await Promise.all(
-    lands.map((land) => {
-      const isFeaturedHere = effectiveTier !== 'free' && featuredLandIds.has(String(land.id))
-      const targetPackage = isFeaturedHere ? effectiveTier : 'free'
-      if (land.package === targetPackage && land.isFeatured === isFeaturedHere) return null
-      return req.payload.update({
-        collection: 'lands',
-        id: land.id,
-        data: { package: targetPackage, isFeatured: isFeaturedHere },
-        overrideAccess: true,
-        req,
-      })
-    }),
-  )
+  for (const land of lands) {
+    const isFeaturedHere = effectiveTier !== 'free' && featuredLandIds.has(String(land.id))
+    const targetPackage = isFeaturedHere ? effectiveTier : 'free'
+    if (land.package === targetPackage && land.isFeatured === isFeaturedHere) continue
+    await req.payload.update({
+      collection: 'lands',
+      id: land.id,
+      data: { package: targetPackage, isFeatured: isFeaturedHere },
+      overrideAccess: true,
+      req,
+    })
+  }
 
   await syncHeroSlideFromDeveloper(req, developerId, pkg.premiumHeroSlide, featuredIdList[0], doc.featuredUntil)
 
