@@ -16,7 +16,7 @@ export const TODO_CATEGORIES = [
 export type TodoCategory = (typeof TODO_CATEGORIES)[number]
 
 const RULES: [TodoCategory, RegExp][] = [
-  ['Publishing', /\bpublish/i],
+  ['Publishing', /^publish\b/i],
   ['Contact & WhatsApp', /whatsapp|\bcontact\b|\be-?mail\b|\bphone\b|verify invite|invite/i],
   ['Dates & construction', /completion|handover|hand-over|construction|\bstage\b|\bstatus\b|launch|progress/i],
   ['Pricing & payment', /\bprice|pricing|payment|deposit|rental|yield|\bcost\b|discount|loan/i],
