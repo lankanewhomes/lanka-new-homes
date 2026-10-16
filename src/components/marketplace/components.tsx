@@ -3764,6 +3764,7 @@ export function ProjectNarrativeDetails({ project }: { project: Project }) {
     : "";
 
   const parkingSummary = hasDisplayValue(project.parking) ? project.parking : "";
+  const balconyFact = hasDisplayValue(project.balcony) ? (project.balcony as string) : project.floorPlans.some((plan) => /balcon/i.test(plan.outdoorSpace ?? "")) ? "Available" : "";
   // "-" is the store's "not provided" placeholder — not a fact to list.
   const isFact = (value: unknown) => hasDisplayValue(value) && String(value).trim() !== "-";
 
@@ -3815,6 +3816,8 @@ export function ProjectNarrativeDetails({ project }: { project: Project }) {
     { label: "Floor plans", show: project.floorPlans.length > 0, value: String(project.floorPlans.length) },
     { label: "Beds", show: isFact(project.bedrooms), value: project.bedrooms },
     { label: "Baths", show: isFact(project.bathrooms), value: project.bathrooms },
+    // Balcony: the developer's figure when set ("1", "Type A 4, Type B 5"), otherwise "Available" when any floor plan has balconies.
+    { label: "Balcony", show: isFact(balconyFact), value: balconyFact },
     { label: "SqFt", show: isFact(project.floorAreaRange), value: withSqFt(project.floorAreaRange) },
     { label: "Avg floor area", show: Boolean(project.averageFloorAreaSqFt), value: project.averageFloorAreaSqFt ? `${project.averageFloorAreaSqFt.toLocaleString("en-US")} SqFt` : "" },
     { label: "Ceilings", show: isFact(project.ceilingInfo), value: project.ceilingInfo ?? "" },

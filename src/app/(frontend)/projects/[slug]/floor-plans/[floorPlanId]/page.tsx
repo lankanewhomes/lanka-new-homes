@@ -81,7 +81,8 @@ export default async function FloorPlanDetailPage({ params }: FloorPlanPageProps
   const [developer, allProjects] = await Promise.all([getDeveloperBySlug(project.developerSlug), getAllProjects()]);
   const similarListings = pickSimilarListings(project, allProjects, 4);
   // "Balcony: Private balcony" belongs in the fact sheet on a plan page, not in Key Features.
-  const { balcony, rest: keyFeatures } = splitBalconyFeature(project.unitFeatures);
+  const { balcony: balconyFromFeatures, rest: keyFeatures } = splitBalconyFeature(project.unitFeatures);
+  const balcony = balconyFromFeatures ?? (project.balcony?.trim() ? project.balcony.trim() : undefined);
 
   return (
     <div className="space-y-8">

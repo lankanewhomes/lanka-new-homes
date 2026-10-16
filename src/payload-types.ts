@@ -2739,6 +2739,10 @@ export interface Project {
   road?: string | null;
   area?: string | null;
   /**
+   * Shown in the Facts sheet, e.g. "Available", "1", "2" or "Type A 1, Type B 2". Leave blank to show "Available" automatically when the floor plans have balconies.
+   */
+  balcony?: string | null;
+  /**
    * Shown in the Facts sheet, e.g. "2". For villas and houses with more than one living room.
    */
   livingRooms?: string | null;
@@ -8608,6 +8612,7 @@ export interface ProjectsSelect<T extends boolean = true> {
   neighborhoodSlug?: T;
   road?: T;
   area?: T;
+  balcony?: T;
   livingRooms?: T;
   electricity?: T;
   electricity_other?: T;

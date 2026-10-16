@@ -241,6 +241,7 @@ export const Projects: CollectionConfig = {
             { name: 'neighborhoodSlug', type: 'text' },
             { name: 'road', type: 'text' },
             { name: 'area', type: 'text' },
+            { name: 'balcony', type: 'text', label: 'Balcony', admin: { description: 'Shown in the Facts sheet, e.g. "Available", "1", "2" or "Type A 1, Type B 2". Leave blank to show "Available" automatically when the floor plans have balconies.' } },
             { name: 'livingRooms', type: 'text', label: 'Living Rooms', admin: { description: 'Shown in the Facts sheet, e.g. "2". For villas and houses with more than one living room.' } },
             ...selectWithOther('electricity', 'Electricity', ELECTRICITY_OPTIONS),
             ...selectWithOther('tapWater', 'Tap Water', TAP_WATER_OPTIONS),

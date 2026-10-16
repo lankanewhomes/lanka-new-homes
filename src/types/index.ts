@@ -354,6 +354,7 @@ export type Project = SeoFields & {
   road?: string;
   area?: string;
   livingRooms?: string;
+  balcony?: string;
   electricity?: string;
   tapWater?: string;
   type: string;
