@@ -49,6 +49,13 @@ export function emailCompactList(items: { title: string; body: string }[]): stri
   return `  <tr><td style="padding:10px 32px 6px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid ${LINE};">${rows}</table></td></tr>`
 }
 
+/** Topic blocks with bullet points: a bold topic line, then short bullets (what we show, what we need). One box, thin dividers. */
+export function emailBulletSections(items: { title: string; bullets: string[] }[]): string {
+  const rows = items.map((it, i) => `
+      <tr><td style="padding:13px 18px;${i ? `border-top:1px solid ${LINE};` : ''}font-size:14px;line-height:1.55;color:${TEXT};"><div style="margin:0 0 5px;font-size:15px;font-weight:700;color:${INK};"><span style="color:${ORANGE};">${i + 1}.</span>&nbsp; ${it.title}</div><ul style="margin:0;padding:0 0 0 18px;">${it.bullets.map((b) => `<li style="margin:0 0 3px;">${b}</li>`).join('')}</ul></td></tr>`).join('')
+  return `  <tr><td style="padding:10px 32px 6px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid ${LINE};">${rows}</table></td></tr>`
+}
+
 /** A tinted panel with a heading and a body (used for the Verified Developer steps and "where buyers see it"). */
 export function emailPanel(opts: { heading: string; bodyHtml: string; pill?: boolean; tint?: string }): string {
   return `  <tr><td style="padding:14px 32px 6px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${opts.tint ?? '#faf7f2'};border:1px solid ${LINE};border-left:4px solid ${ORANGE};"><tr><td style="padding:20px 22px;">
