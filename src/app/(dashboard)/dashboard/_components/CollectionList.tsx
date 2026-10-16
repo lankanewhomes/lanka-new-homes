@@ -17,7 +17,7 @@ import type { SchemaField } from "../_mock/types";
 // time: server-side search, filters (on dropdown fields), sort and pagination, a column picker, bulk select + bulk actions, row
 // actions and loading / error / empty states.
 
-const PAGE_SIZES = [10, 25, 50];
+const PAGE_SIZES = [10, 30, 50];
 const fmtDate = (v: unknown) => { const d = new Date(String(v)); return Number.isNaN(d.getTime()) ? "" : d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }); };
 
 function Cell({ field, row, titleOf }: { field: SchemaField; row: Doc; titleOf: (collection: string, id: unknown) => string }) {
@@ -64,7 +64,7 @@ function ListInner({ slug, initialFilter }: ListProps) {
   const [tab, setTab] = useState(startTab?.key ?? "all");
   const [sort, setSort] = useState<{ field: string; dir: 1 | -1 } | null>(null);
   const [page, setPage] = useState(1);
-  const [size, setSize] = useState(10);
+  const [size, setSize] = useState(30);
   const [picked, setPicked] = useState<Set<number | string>>(new Set());
   const [cols, setCols] = useState<string[] | null>(null);
   const [panel, setPanel] = useState<"" | "filter" | "cols">("");
