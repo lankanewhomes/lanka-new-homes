@@ -42,6 +42,13 @@ export function emailNumbered(items: { title: string; body: string }[]): string 
   return `  <tr><td style="padding:14px 32px 6px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0">${rows}</table></td></tr>`
 }
 
+/** A compact numbered list in one bordered box: small orange numbers, a bold lead-in and one short line each. */
+export function emailCompactList(items: { title: string; body: string }[]): string {
+  const rows = items.map((it, i) => `
+      <tr><td width="34" valign="top" style="padding:11px 0 11px 16px;font-size:14px;font-weight:700;color:${ORANGE};${i ? `border-top:1px solid ${LINE};` : ''}">${i + 1}</td><td style="padding:11px 16px 11px 4px;font-size:14px;line-height:1.55;color:${TEXT};${i ? `border-top:1px solid ${LINE};` : ''}"><strong style="color:${INK};">${it.title}.</strong> ${it.body}</td></tr>`).join('')
+  return `  <tr><td style="padding:10px 32px 6px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid ${LINE};">${rows}</table></td></tr>`
+}
+
 /** A tinted panel with a heading and a body (used for the Verified Developer steps and "where buyers see it"). */
 export function emailPanel(opts: { heading: string; bodyHtml: string; pill?: boolean; tint?: string }): string {
   return `  <tr><td style="padding:14px 32px 6px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${opts.tint ?? '#faf7f2'};border:1px solid ${LINE};border-left:4px solid ${ORANGE};"><tr><td style="padding:20px 22px;">
