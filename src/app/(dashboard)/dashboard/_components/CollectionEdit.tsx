@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Copy, ExternalLink, Loader2, Lock, Save, Trash2, Undo2 } from "lucide-react";
+import { Activity, ArrowLeft, Copy, ExternalLink, Loader2, Lock, Save, Trash2, Undo2 } from "lucide-react";
 import { FieldsRenderer } from "./FieldsRenderer";
 import { useDash, useGlobalSchema, useSchema } from "./DashProvider";
 import { StatusChip } from "./StatusChip";
@@ -68,6 +68,7 @@ function Form({ title, kind, backHref, fields, initial, isNew, canDelete, onSave
     }
   };
   const chips = statusChips?.(rec) ?? [];
+  const hasActivityTab = fields.some((f) => f.type === "tabs" && (f.tabs ?? []).some((t) => t.label === "Activity"));
 
   return (
     <div className="pb-24">
@@ -78,6 +79,7 @@ function Form({ title, kind, backHref, fields, initial, isNew, canDelete, onSave
         chips={chips.map((c) => <StatusChip key={c.value + (c.label ?? "")} value={c.value} label={c.label} onDark />)}
         actions={<>
           {liveUrl ? <a href={liveUrl} target="_blank" rel="noopener noreferrer" className={heroBtn}><ExternalLink size={14} /> View live</a> : null}
+          {!isNew && hasActivityTab ? <button type="button" onClick={() => { window.dispatchEvent(new CustomEvent("dash:open-tab", { detail: { label: "Activity" } })); document.querySelector('[role="tablist"]')?.scrollIntoView({ behavior: "smooth", block: "start" }); }} className={heroBtn}><Activity size={14} /> Activity</button> : null}
           {onDuplicate && !isNew ? <button type="button" onClick={onDuplicate} className={heroBtn}><Copy size={14} /> Duplicate</button> : null}
           {canDelete && !isNew ? <button type="button" onClick={() => setConfirm(true)} className={heroBtn}><Trash2 size={14} /> Delete</button> : null}
         </>}

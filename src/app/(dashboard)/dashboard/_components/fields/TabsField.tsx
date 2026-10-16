@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Check } from "lucide-react";
 import { FieldsRenderer } from "../FieldsRenderer";
 import { conditionPasses, pathKey, type FieldProps } from "./shared";
@@ -11,6 +11,16 @@ type Obj = Record<string, unknown>;
 export function TabsField({ field, data, onChange, path, ctx, readOnly }: Omit<FieldProps, "value" | "onChange"> & { data: Obj; onChange: (next: Obj) => void }) {
   const tabs = (field.tabs ?? []).filter((t) => conditionPasses(t.condition, ctx));
   const [active, setActive] = useState(0);
+  // A button elsewhere on the page (the hero's "Activity" button) can ask for a tab by name.
+  useEffect(() => {
+    const open = (e: Event) => {
+      const label = (e as CustomEvent<{ label: string }>).detail?.label;
+      const i = tabs.findIndex((t) => t.label === label);
+      if (i >= 0) setActive(i);
+    };
+    window.addEventListener("dash:open-tab", open);
+    return () => window.removeEventListener("dash:open-tab", open);
+  });
   const current = tabs[Math.min(active, tabs.length - 1)];
   if (!current) return null;
   const hasError = (t: (typeof tabs)[number]) => {
