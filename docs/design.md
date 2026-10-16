@@ -2711,3 +2711,19 @@ Enter and screen readers still work). Focused, it turns white with a light shado
 Key Features tabs: Specifications, Finishes, General Features, Safety & Security, Indoor Features, Building & Services, Outdoor Features, Recreation & Wellness (only rows with no matching amenity), Sustainability, Accessibility, Utilities, and Road & Access (land developments) (labels in `KEY_FEATURE_CATEGORY_LABELS`, `src/collections/shared-fields.ts`). No "Highlights" tab. Documentation lives in the Ownership & Services "Documents" group. Do NOT put in Key Features: facts-sheet data (units, floors, sizes, bedroom counts, dates, location, developer, architect), balconies, or shared facilities that live in Amenities (communal pool, gym, clubhouse, playground). Marketing lines go to the project's Highlights. Restructure script: `scripts/restructure-key-features.ts` (backup in Stuff/Backups).
 
 Each Key Features tab has its own icon (`KEY_FEATURE_ICONS` in `src/components/marketplace/components.tsx`): Specifications clipboard, Finishes paintbrush, General Features sliders, Safety & Security shield, Indoor sofa, Building & Services building, Outdoor trees, Recreation & Wellness dumbbell, Sustainability leaf, Accessibility, Utilities plug, Road & Access route; land tabs Location pin, Payment & finance wallet, Other features sparkles, Legal & documents file.
+
+### Where a Key Features row goes (owner, 2026-10-16; follow this on every import and edit)
+
+| Tab | Put here | Never here |
+|---|---|---|
+| Specifications | Construction specs: substructure, superstructure, foundation, roof, waterproofing, termite treatment, electrical, plumbing, drainage, infrastructure | Facts-sheet data, finishes |
+| Finishes | Materials only: flooring, wall finishes, paint, ceilings, countertops, cabinetry, sanitaryware and fittings, doors, windows, glazing, colour scheme | Layouts or room arrangements (kitchen space, W/C count, pantry layout) |
+| General Features | A/C, ceiling fans, wardrobes, TV points, smart home, hot water, appliances, blinds | |
+| Safety & Security | CCTV, 24-hour security, access control, fire protection, escape routes | |
+| Indoor Features | Layout and dedicated rooms: kitchen/pantry space, utility room, maid's room, W/C arrangement, living areas, dual key, duplex layout | Materials |
+| Building & Services | Lifts, generator/power backup, water systems, waste, management, maintenance, concierge | Shared leisure facilities |
+| Outdoor Features | Private garden, terrace, verandah, private pool or plunge pool, jacuzzi on a balcony, outdoor kitchen | Balconies (they go in Facts "Balcony") |
+| Recreation & Wellness | Only shared-facility rows that have no matching amenity | Anything that exists in Amenities |
+| Sustainability, Accessibility, Utilities, Road & Access | As named (Road & Access for land developments) | |
+
+Facts sheet, not Key Features: unit counts, unit types and sizes, floors/towers, bedroom/bathroom/living-room counts, areas ("Area"), balcony ("Balcony" fact), construction start, completion, location, developer, architect. Amenities, not Key Features: communal pool, gym, clubhouse, playground, rooftop, parking, BBQ. Documents go in Ownership & Services "Documents". Never leave a group without a tab name.
