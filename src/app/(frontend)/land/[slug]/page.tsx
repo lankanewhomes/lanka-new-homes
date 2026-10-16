@@ -1,4 +1,6 @@
-import { toAbsoluteUrl, withSocial } from "@/lib/seo";
+import { buildFaqJsonLd, jsonLdScriptProps, toAbsoluteUrl, withSocial } from "@/lib/seo";
+import { buildLandFaqs } from "@/lib/listing-faq";
+import { ListingFaqSection } from "@/components/marketplace/listing-faq-section";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CheckCircle2, CircleDollarSign, Compass, HousePlus, Layers, MapPin, Ruler, Tag } from "lucide-react";
@@ -157,8 +159,11 @@ export default async function LandDetailPage({ params }: LandPageProps) {
       : {}),
   };
 
+  const faqs = buildLandFaqs(land);
+
   return (
     <div className="space-y-8">
+      {faqs.length > 0 ? <script {...jsonLdScriptProps(buildFaqJsonLd(faqs))} /> : null}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
       <ProjectHero
         project={project}
@@ -235,6 +240,8 @@ export default async function LandDetailPage({ params }: LandPageProps) {
           // Same preview card (photo, excerpt, highlights, guide link) the project page shows.
           neighborhood={neighborhood ? { name: neighborhood.name, slug: neighborhood.slug, heroImage: neighborhood.heroImage, description: neighborhood.description, highlights: neighborhood.highlights } : undefined}
         />
+
+        <ListingFaqSection faqs={faqs} />
 
         <StatsContactCard project={project} developer={developer} requestInfoVariant="inquiry" />
 
