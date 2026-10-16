@@ -4088,9 +4088,9 @@ export function Header() {
     <header className="site-header">
       <div className="site-header-inner">
         <div className="site-brand-group">
-          <Link href="/" className="site-logo site-wordmark" aria-label="LankaNewHomes home">
-            <span className="wordmark-line">Lanka</span>
-            <span className="wordmark-line">NewHomes</span>
+          <Link href="/" className="site-logo" aria-label="LankaNewHomes home">
+            {/* eslint-disable-next-line @next/next/no-img-element -- small static brand image */}
+            <img src="/brand/lankanewhomes-logo.png" alt="LankaNewHomes" width={640} height={287} className="site-logo-img site-logo-mark" />
           </Link>
           <div className={`language-dropdown${langOpen ? " is-open" : ""}`} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setLangOpen(false); }}>
             <button type="button" className="language-dropdown-button" aria-haspopup="listbox" aria-expanded={langOpen} aria-label="Language switcher" onClick={() => setLangOpen((open) => !open)}>
@@ -4284,8 +4284,8 @@ export function Footer() {
 
         <div className="footer-brand-row">
           <Link href="/" className="footer-wordmark" aria-label="LankaNewHomes home">
-            <span className="wordmark-line">Lanka</span>
-            <span className="wordmark-line">NewHomes</span>
+            {/* eslint-disable-next-line @next/next/no-img-element -- small static brand image */}
+            <img src="/brand/lankanewhomes-logo-white.png" alt="LankaNewHomes" width={640} height={287} className="footer-logo-mark" />
           </Link>
           <Link href="/for-developers" className="footer-cta">List your project</Link>
         </div>
