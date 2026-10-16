@@ -31,7 +31,7 @@ export function renderDeveloperMissingInfoHTML(input: { developerName: string; p
   const n = input.projects.length
   const body = [
     emailHero(`${n} of your projects are live. A few quick details on each.`, 'One short list per project. Reply to this email with the answers.'),
-    emailPara(`Hello ${esc(input.developerName)} team, thank you for your projects on LankaNewHomes. Here is what <u>we still need</u>, project by project.`),
+    emailPara(`Hello ${esc(input.developerName)} team, thank you for your projects on LankaNewHomes. Here is what <span style="color:${OR};font-weight:700;">we still need</span>, project by project.`),
     `  <tr><td style="padding:14px 32px 6px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0">${input.projects.map(card).join('')}</table></td></tr>`,
     emailPanel({ heading: 'Get your Verified Developer badge', pill: true, tint: '#f1fbfd', bodyHtml: `Free, and it shows on your company page and every listing. Register at <a href="${SITE}/developers/register" style="color:#1c1c20;">lankanewhomes.com/developers/register</a> with an email on your own website, click the confirmation link, then log in.` }),
     emailButton('Register and get verified', `${SITE}/developers/register`),
