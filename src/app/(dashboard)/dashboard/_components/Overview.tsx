@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { AlertCircle, ArrowUpRight, Building2, CalendarClock, Eye, MessageCircle, Star } from "lucide-react";
+import { AlertCircle, ArrowUpRight, Building2, CalendarClock, Eye, FileDown, Mail, MessageCircle, Phone, Star } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useDash } from "./DashProvider";
 import { PageHero, heroBtn } from "./PageHero";
@@ -124,6 +124,14 @@ export function Overview() {
           <Stat icon={MessageCircle} label="Leads, last 30 days" value={data ? String(data.leadsMonth) : "…"} sub={data ? `${data.newLeads} still new` : undefined} />
           <Stat icon={Building2} label="Published listings" value={data ? String(data.active) : "…"} sub={data ? `${data.drafts} ${data.drafts === 1 ? "draft" : "drafts"}` : undefined} />
           <Stat icon={CalendarClock} label={admin ? "Active subscriptions" : "Package days left"} value={!data ? "…" : admin ? String(data.subs) : daysLeft === null ? "—" : String(daysLeft)} sub={admin ? "paying developers" : featuredUntil ? `Ends ${featuredUntil.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}` : "No paid package"} />
+        </div>
+
+        <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-5" aria-label="Contact activity, last 30 days">
+          <Stat icon={MessageCircle} label="Contact form enquiries" value={data ? String(data.summary?.byType.find((t) => t.key === "lead_submitted")?.count ?? data.leadsMonth) : "…"} sub="last 30 days" />
+          <Stat icon={MessageCircle} label="WhatsApp clicks" value={data ? String(data.summary?.byType.find((t) => t.key === "whatsapp_click")?.count ?? 0) : "…"} sub="last 30 days" />
+          <Stat icon={Phone} label="Phone clicks" value={data ? String(data.summary?.byType.find((t) => t.key === "phone_click")?.count ?? 0) : "…"} sub="last 30 days" />
+          <Stat icon={Mail} label="Email clicks" value={data ? String(data.summary?.byType.find((t) => t.key === "email_click")?.count ?? 0) : "…"} sub="last 30 days" />
+          <Stat icon={FileDown} label="Brochure downloads" value={data ? String(data.summary?.byType.find((t) => t.key === "brochure_download")?.count ?? 0) : "…"} sub="last 30 days" />
         </div>
 
         <div className="mt-5 grid gap-5 xl:grid-cols-3">

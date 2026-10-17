@@ -147,6 +147,21 @@ export function AnalyticsPage() {
           ))}
         </div>
 
+        <section className="mt-5 border border-line bg-panel p-4" aria-label="Contact activity">
+          <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2"><h2 className="font-semibold">Contact activity</h2><span className="text-xs text-muted">Every way a buyer reached out in this range</span></div>
+          {(() => {
+            const rows = [["Contact form enquiries", "lead_submitted"], ["WhatsApp clicks", "whatsapp_click"], ["Phone clicks", "phone_click"], ["Email clicks", "email_click"], ["Brochure downloads", "brochure_download"]] as const;
+            const total = rows.slice(0, 4).reduce((sum, [, k]) => sum + (data ? count(k) : 0), 0);
+            const views = data ? count("view") : 0;
+            return (
+              <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))" }}>
+                {rows.map(([label, k]) => <div key={k} className="border border-line bg-subtle px-4 py-3"><p className="d-label">{label}</p><p className="mt-1 text-2xl font-semibold tabular-nums">{data ? n(count(k)) : "…"}</p></div>)}
+                <div className="border border-ink bg-panel px-4 py-3"><p className="d-label">Contact actions</p><p className="mt-1 text-2xl font-semibold tabular-nums">{data ? n(total) : "…"}</p><p className="text-[11px] text-muted">{data && views > 0 ? `${(total / views * 100).toFixed(1)} per 100 page views` : "form + WhatsApp + phone + email"}</p></div>
+              </div>
+            );
+          })()}
+        </section>
+
         <section className="mt-5 border border-line bg-panel p-4">
           <div className="mb-3 flex items-center justify-between"><h2 className="font-semibold">Activity by day</h2><span className="text-xs text-muted">Views, saves, clicks and enquiries</span></div>
           <div className="h-64">
