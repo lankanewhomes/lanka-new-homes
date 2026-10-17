@@ -182,13 +182,13 @@ export function AnalyticsPage() {
         <section className="mt-5 border border-line bg-panel">
           <div className="flex items-center justify-between border-b border-line px-4 py-3"><h2 className="font-semibold">{admin ? "Top listings" : "Your listings"}</h2><Link href="/dashboard/analytics/events" className="inline-flex items-center gap-0.5 text-xs underline">Raw events <ArrowUpRight size={12} /></Link></div>
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[640px] text-sm">
-              <thead><tr className="border-b border-line text-left text-xs font-semibold uppercase tracking-wide text-muted"><th className="px-4 py-2.5">Listing</th><th className="px-3 py-2.5 text-right">Views</th><th className="px-3 py-2.5 text-right">Saves</th><th className="px-3 py-2.5 text-right">Enquiries</th><th className="px-3 py-2.5 text-right">WhatsApp</th><th className="px-3 py-2.5 text-right">Phone</th><th className="px-3 py-2.5 text-right">Brochure</th><th className="px-4 py-2.5 text-right">Total</th></tr></thead>
+            <table className="w-full min-w-[720px] text-sm">
+              <thead><tr className="border-b border-line text-left text-xs font-semibold uppercase tracking-wide text-muted"><th className="px-4 py-2.5">Listing</th><th className="px-3 py-2.5 text-right">Views</th><th className="px-3 py-2.5 text-right">Saves</th><th className="px-3 py-2.5 text-right">Enquiries</th><th className="px-3 py-2.5 text-right">WhatsApp</th><th className="px-3 py-2.5 text-right">Phone</th><th className="px-3 py-2.5 text-right">Email</th><th className="px-3 py-2.5 text-right">Brochure</th><th className="px-4 py-2.5 text-right">Total</th></tr></thead>
               <tbody>
-                {!data ? Array.from({ length: 5 }, (_, i) => <tr key={i}><td colSpan={8} className="px-4 py-3"><div className="d-skeleton h-5 w-full" /></td></tr>) : listings.length === 0 ? <tr><td colSpan={8} className="px-4 py-10 text-center text-muted">No activity on any listing in this range yet.</td></tr> : listings.map((l) => (
+                {!data ? Array.from({ length: 5 }, (_, i) => <tr key={i}><td colSpan={9} className="px-4 py-3"><div className="d-skeleton h-5 w-full" /></td></tr>) : listings.length === 0 ? <tr><td colSpan={9} className="px-4 py-10 text-center text-muted">No activity on any listing in this range yet.</td></tr> : listings.map((l) => (
                   <tr key={String(l.projectId)} className="border-b border-line last:border-0 hover:bg-subtle/60">
                     <td className="px-4 py-2.5 font-medium"><Link href={`/dashboard/projects/${l.projectId}`} className="hover:underline">{l.projectName}</Link></td>
-                    {["view", "save", "lead_submitted", "whatsapp_click", "phone_click", "brochure_download"].map((k) => <td key={k} className="px-3 py-2.5 text-right tabular-nums">{n(l.byType[k] ?? 0)}</td>)}
+                    {["view", "save", "lead_submitted", "whatsapp_click", "phone_click", "email_click", "brochure_download"].map((k) => <td key={k} className="px-3 py-2.5 text-right tabular-nums">{n(l.byType[k] ?? 0)}</td>)}
                     <td className="px-4 py-2.5 text-right font-medium tabular-nums">{n(l.total)}</td>
                   </tr>
                 ))}
@@ -202,13 +202,13 @@ export function AnalyticsPage() {
           <section className="mt-5 border border-line bg-panel">
             <div className="border-b border-line px-4 py-3"><h2 className="font-semibold">By developer</h2></div>
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[520px] text-sm">
-                <thead><tr className="border-b border-line text-left text-xs font-semibold uppercase tracking-wide text-muted"><th className="px-4 py-2.5">Developer</th><th className="px-3 py-2.5 text-right">Views</th><th className="px-3 py-2.5 text-right">Enquiries</th><th className="px-3 py-2.5 text-right">WhatsApp</th><th className="px-4 py-2.5 text-right">Total</th></tr></thead>
+              <table className="w-full min-w-[640px] text-sm">
+                <thead><tr className="border-b border-line text-left text-xs font-semibold uppercase tracking-wide text-muted"><th className="px-4 py-2.5">Developer</th><th className="px-3 py-2.5 text-right">Views</th><th className="px-3 py-2.5 text-right">Enquiries</th><th className="px-3 py-2.5 text-right">WhatsApp</th><th className="px-3 py-2.5 text-right">Phone</th><th className="px-3 py-2.5 text-right">Email</th><th className="px-4 py-2.5 text-right">Total</th></tr></thead>
                 <tbody>
                   {data.byDeveloper.slice(0, 15).map((x) => (
                     <tr key={String(x.developerId)} className="border-b border-line last:border-0 hover:bg-subtle/60">
                       <td className="px-4 py-2.5 font-medium"><Link href={`/dashboard/developers/${x.developerId}`} className="hover:underline">{x.developerName}</Link></td>
-                      {["view", "lead_submitted", "whatsapp_click"].map((k) => <td key={k} className="px-3 py-2.5 text-right tabular-nums">{n(x.byType[k] ?? 0)}</td>)}
+                      {["view", "lead_submitted", "whatsapp_click", "phone_click", "email_click"].map((k) => <td key={k} className="px-3 py-2.5 text-right tabular-nums">{n(x.byType[k] ?? 0)}</td>)}
                       <td className="px-4 py-2.5 text-right font-medium tabular-nums">{n(x.total)}</td>
                     </tr>
                   ))}
