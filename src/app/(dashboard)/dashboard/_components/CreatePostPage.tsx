@@ -14,16 +14,30 @@ import { apiDelete, apiFind, apiGet, type Doc } from "../_data/api";
 
 const SITE = "https://www.lankanewhomes.com";
 const track = (slug: string, source: "instagram" | "facebook") => `${SITE}/projects/${slug}?utm_source=${source}&utm_medium=social&utm_campaign=${slug}-social-${new Date().toISOString().slice(0, 7)}`;
-// Times are entered in Sri Lanka time (UTC+5:30, no daylight saving).
-const LK = "+05:30";
+// Times are entered, shown and scheduled in Canadian Eastern time (Toronto, with daylight saving) (owner, 2026-10-16: "always post in Canadian time").
+const TZ = "America/Toronto";
 const pad = (n: number) => String(n).padStart(2, "0");
+/** The wall-clock parts of an instant in Toronto. */
+function torontoParts(ms: number) {
+  const f = new Intl.DateTimeFormat("en-CA", { timeZone: TZ, hourCycle: "h23", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }).formatToParts(new Date(ms));
+  const g = (t: string) => Number(f.find((x) => x.type === t)?.value);
+  return { y: g("year"), m: g("month"), d: g("day"), h: g("hour"), min: g("minute") };
+}
+/** "2026-10-16T19:00" typed as Toronto time -> the real instant (ISO, UTC), correct across daylight-saving changes. */
+function lkIso(input: string): string {
+  const [date, time] = input.split("T"); const [y, mo, da] = date.split("-").map(Number); const [h, mi] = time.split(":").map(Number);
+  const asUtc = Date.UTC(y, mo - 1, da, h, mi);
+  let guess = asUtc;
+  for (let i = 0; i < 2; i++) { const p = torontoParts(guess); guess += asUtc - Date.UTC(p.y, p.m - 1, p.d, p.h, p.min); }
+  return new Date(guess).toISOString();
+}
+/** Shortcut times: the given hour today or tomorrow in Toronto, as the value of a datetime-local input. */
 function lkInput(dayOffset: number, hour: number): string {
-  const lkNow = new Date(Date.now() + 5.5 * 3600 * 1000);
-  const t = new Date(Date.UTC(lkNow.getUTCFullYear(), lkNow.getUTCMonth(), lkNow.getUTCDate() + dayOffset, hour, 0));
+  const now = torontoParts(Date.now());
+  const t = new Date(Date.UTC(now.y, now.m - 1, now.d + dayOffset, hour, 0));
   return `${t.getUTCFullYear()}-${pad(t.getUTCMonth() + 1)}-${pad(t.getUTCDate())}T${pad(t.getUTCHours())}:${pad(t.getUTCMinutes())}`;
 }
-const lkIso = (input: string) => new Date(`${input}:00${LK}`).toISOString();
-const lkLabel = (iso: string) => new Date(iso).toLocaleString("en-GB", { timeZone: "Asia/Colombo", weekday: "short", day: "numeric", month: "short", hour: "numeric", minute: "2-digit" });
+const lkLabel = (iso: string) => new Date(iso).toLocaleString("en-CA", { timeZone: TZ, weekday: "short", day: "numeric", month: "short", hour: "numeric", minute: "2-digit", timeZoneName: "short" });
 const proxied = (url: string) => `/api/social/image?u=${encodeURIComponent(url)}`;
 const camel = (s: string) => s.replace(/[^A-Za-z0-9 ]+/g, " ").split(/\s+/).filter(Boolean).map((w) => w[0].toUpperCase() + w.slice(1)).join("");
 
@@ -222,9 +236,9 @@ export function CreatePostPage() {
                     <label className="inline-flex items-center gap-1.5"><input type="radio" name="when" checked={when === "later"} onChange={() => setWhen("later")} /> Schedule it</label>
                     {when === "later" ? (
                       <>
-                        <input type="datetime-local" value={at} onChange={(e) => setAt(e.target.value)} className="border border-line bg-bg px-2 py-1" aria-label="Date and time in Sri Lanka time" />
-                        <span className="text-xs text-muted">Sri Lanka time</span>
-                        {([["Today 7 pm", 0, 19], ["Today 9 pm", 0, 21], ["Tomorrow 7 pm", 1, 19], ["Tomorrow 9 pm", 1, 21]] as const).map(([label, off, h]) => <button key={label} type="button" onClick={() => setAt(lkInput(off, h))} className="border border-line px-2 py-1 text-xs hover:bg-bg">{label}</button>)}
+                        <input type="datetime-local" value={at} onChange={(e) => setAt(e.target.value)} className="border border-line bg-bg px-2 py-1" aria-label="Date and time in Toronto time" />
+                        <span className="text-xs text-muted">Toronto time (Eastern)</span>
+                        {([["Today 7 pm ET", 0, 19], ["Today 9 pm ET", 0, 21], ["Tomorrow 7 pm ET", 1, 19], ["Tomorrow 9 pm ET", 1, 21]] as const).map(([label, off, h]) => <button key={label} type="button" onClick={() => setAt(lkInput(off, h))} className="border border-line px-2 py-1 text-xs hover:bg-bg">{label}</button>)}
                       </>
                     ) : null}
                   </div>
