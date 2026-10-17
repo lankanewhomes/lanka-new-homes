@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, Check, Clock, Copy, Download, Loader2, Printer, Send, X } from "lucide-react";
+import { ArrowLeft, Bookmark, Check, ChevronLeft, ChevronRight, Clock, Copy, Download, Heart, Loader2, MessageCircle, Printer, Send, X } from "lucide-react";
 import { useDash } from "./DashProvider";
 import { Combobox, type ComboOption } from "./Combobox";
 import { PageHero } from "./PageHero";
@@ -66,6 +66,51 @@ function buildCaptions(p: Doc, developerName: string): Pick<Built, "ig" | "fb" |
   const ig = `${name}${city ? ` in ${city}` : ""}.      📍\n${summary}\n\n${priceLine}See the floor plans, photos and details on LankaNewHomes. Link in bio.       👆\nWhich photo is your favourite? Tell us below         👇\n${tags}`;
   const fb = `${summary}${status ? ` Status: ${status}.` : ""}\n\n${priceLine}Floor plans, photos and details here:\n${fbLink}\n\nWhich photo is your favourite?            👇`;
   return { ig, fb, igLink, fbLink };
+}
+
+/** A rough look of the Instagram carousel post: header, swipeable 4:5 slides with dots, action row and the caption. */
+function InstagramPreview({ images, caption }: { images: string[]; caption: string }) {
+  const [i, setI] = useState(0); const [more, setMore] = useState(false);
+  const shown = more || caption.length <= 125 ? caption : caption.slice(0, 125).trimEnd() + "… ";
+  const idx = Math.min(i, Math.max(images.length - 1, 0));
+  return (
+    <div className="w-[320px] border border-line bg-white text-[#1c1c20] shadow-sm">
+      <div className="flex items-center gap-2 px-3 py-2"><span className="grid h-7 w-7 place-items-center rounded-full bg-[#1c1c20] text-[10px] font-bold text-white">lnh</span><div className="text-xs"><b>lankanewhomes</b><p className="text-[10px] text-[#6b6a66]">Sri Lanka</p></div></div>
+      <div className="relative aspect-[4/5] bg-[#f3efe8]">
+        {/* eslint-disable-next-line @next/next/no-img-element -- generated data URL */}
+        {images[idx] ? <img src={images[idx]} alt={`Slide ${idx + 1}`} className="h-full w-full object-cover" /> : null}
+        {idx > 0 ? <button type="button" aria-label="Previous slide" onClick={() => setI(idx - 1)} className="absolute left-1 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded-full bg-white/80"><ChevronLeft size={14} /></button> : null}
+        {idx < images.length - 1 ? <button type="button" aria-label="Next slide" onClick={() => setI(idx + 1)} className="absolute right-1 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded-full bg-white/80"><ChevronRight size={14} /></button> : null}
+        <span className="absolute right-2 top-2 rounded-full bg-black/60 px-2 py-0.5 text-[10px] text-white">{idx + 1}/{images.length}</span>
+      </div>
+      <div className="flex items-center px-3 pt-2"><div className="flex gap-3"><Heart size={20} /><MessageCircle size={20} /><Send size={20} /></div>
+        <div className="mx-auto flex gap-1">{images.map((_, n) => <span key={n} className={`h-1.5 w-1.5 rounded-full ${n === idx ? "bg-[#3b82f6]" : "bg-[#d4d4d4]"}`} />)}</div><Bookmark size={20} /></div>
+      <p className="whitespace-pre-line px-3 pb-3 pt-2 text-[12px] leading-snug"><b>lankanewhomes</b> {shown}{!more && caption.length > 125 ? <button type="button" onClick={() => setMore(true)} className="text-[#6b6a66]">more</button> : null}</p>
+    </div>
+  );
+}
+
+/** A rough look of the Facebook multi-photo Page post: page name, text, then a photo grid. */
+function FacebookPreview({ images, caption }: { images: string[]; caption: string }) {
+  const rest = images.slice(1, 5);
+  return (
+    <div className="w-[420px] max-w-full border border-line bg-white text-[#1c1c20] shadow-sm">
+      <div className="flex items-center gap-2 px-3 py-2"><span className="grid h-9 w-9 place-items-center rounded-full bg-[#1c1c20] text-[11px] font-bold text-white">lnh</span><div className="text-sm"><b>LankaNewHomes</b><p className="text-[11px] text-[#6b6a66]">Just now · Public</p></div></div>
+      <p className="whitespace-pre-line px-3 pb-2 text-[13px] leading-snug">{caption}</p>
+      <div className="grid gap-0.5" style={{ gridTemplateColumns: rest.length ? "1fr 1fr" : "1fr" }}>
+        {/* eslint-disable-next-line @next/next/no-img-element -- generated data URL */}
+        {images[0] ? <img src={images[0]} alt="Photo 1" className={`w-full object-cover ${rest.length ? "col-span-2 aspect-[16/9]" : "aspect-[4/5]"}`} /> : null}
+        {rest.map((src, n) => (
+          <div key={n} className="relative aspect-[4/3] overflow-hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element -- generated data URL */}
+            <img src={src} alt={`Photo ${n + 2}`} className="h-full w-full object-cover" />
+            {n === 3 && images.length > 5 ? <span className="absolute inset-0 grid place-items-center bg-black/50 text-xl text-white">+{images.length - 5}</span> : null}
+          </div>
+        ))}
+      </div>
+      <div className="flex justify-around border-t border-[#e4e2db] py-2 text-xs text-[#6b6a66]"><span>Like</span><span>Comment</span><span>Share</span></div>
+    </div>
+  );
 }
 
 export function CreatePostPage() {
@@ -224,6 +269,13 @@ export function CreatePostPage() {
                 <div className="mb-3 flex flex-wrap items-center gap-2"><h2 className="font-semibold">4. Your images</h2>
                   <button type="button" onClick={downloadAll} className="ml-auto inline-flex items-center gap-1.5 bg-accent px-3 py-1.5 text-sm font-medium text-white"><Download size={14} /> Download all</button>
                   <button type="button" onClick={printSheet} className="inline-flex items-center gap-1.5 border border-line px-3 py-1.5 text-sm hover:bg-subtle"><Printer size={14} /> Print caption sheet (save as PDF)</button></div>
+                <div className="mb-4 border border-line bg-subtle p-3">
+                  <p className="mb-3 text-sm font-semibold">Preview <span className="font-normal text-muted">(a rough look; each app crops and wraps a little differently)</span></p>
+                  <div className="flex flex-wrap items-start gap-6">
+                    {onIg ? <div><p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted">Instagram</p><InstagramPreview images={slides.filter((x) => x.file.startsWith("instagram")).map((x) => x.data)} caption={ig} /></div> : null}
+                    {onFb ? <div><p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted">Facebook</p><FacebookPreview images={slides.filter((x) => x.file.startsWith("instagram")).map((x) => x.data)} caption={fb} /></div> : null}
+                  </div>
+                </div>
                 <div className="mb-4 border border-line bg-subtle p-3 text-sm">
                   <p className="mb-2 font-semibold">5. Post it</p>
                   <div className="flex flex-wrap items-center gap-4">

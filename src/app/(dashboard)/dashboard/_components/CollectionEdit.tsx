@@ -18,7 +18,7 @@ import type { Row, SchemaField } from "../_mock/types";
 // tabs, arrays and show/hide conditions match /cms. Saving writes to the in-memory mock store and shows a toast.
 
 
-function Form({ title, kind, backHref, fields, initial, isNew, canDelete, onSave, onDelete, onDuplicate, liveUrl, statusChips, heroStat, heroExtraStats, heroNote }: {
+function Form({ title, kind, backHref, fields, initial, isNew, canDelete, onSave, onDelete, onDuplicate, liveUrl, statusChips, heroStat, heroExtraStats, heroNote, engagement }: {
   title: string;
   kind: string;
   backHref: string;
@@ -35,6 +35,8 @@ function Form({ title, kind, backHref, fields, initial, isNew, canDelete, onSave
   heroStat?: { label: string; value: string };
   heroExtraStats?: { label: string; value: string }[];
   heroNote?: string;
+  /** Always-visible engagement counters (views, WhatsApp, phone, email, enquiries...). */
+  engagement?: { label: string; value: number }[];
 }) {
   const d = useDash();
   const router = useRouter();
@@ -90,6 +92,14 @@ function Form({ title, kind, backHref, fields, initial, isNew, canDelete, onSave
       />
 
       <div className="d-box">
+      {engagement ? (
+        <section aria-label="Engagement" className="mb-4">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 xl:grid-cols-7">
+            {engagement.map((t) => <div key={t.label} className="border border-line bg-panel p-3"><p className="text-xs text-muted">{t.label}</p><p className="mt-1 text-xl font-semibold tabular-nums">{t.value.toLocaleString("en-LK")}</p></div>)}
+          </div>
+          <p className="mt-1.5 text-xs text-muted">Real visits and clicks counted on the live site (your own browser and bots are not counted).</p>
+        </section>
+      ) : null}
       <div className="rounded-xl border border-line bg-panel p-4 shadow-card sm:p-6">
         <FieldsRenderer fields={fields} data={rec} onChange={(next) => setRec(next as Row)} path={[]} ctx={ctx} />
       </div>
@@ -139,6 +149,7 @@ export function CollectionEdit({ slug, id }: { slug: string; id: string }) {
   const isNew = id === "new";
   // A developer's page shows how many projects and lands belong to them (owner, 2026-10-16).
   const [devCounts, setDevCounts] = useState<{ projects: number; published: number; lands: number } | null>(null);
+  const [devEng, setDevEng] = useState<Record<string, number> | null>(null);
   useEffect(() => {
     if (slug !== "developers" || isNew || loaded.state !== "ok") return;
     let alive = true;
@@ -148,6 +159,8 @@ export function CollectionEdit({ slug, id }: { slug: string; id: string }) {
       apiCount("projects", { and: [{ developer: { equals: Number(id) } }, { isPublished: { equals: true } }] }),
       name ? apiCount("lands", { sellerName: { equals: name } }) : Promise.resolve(0),
     ]).then(([projects, published, lands]) => { if (alive) setDevCounts({ projects, published, lands }); }).catch(() => undefined);
+    apiFind("projects", { limit: 500, where: { developer: { equals: Number(id) } }, select: { view_count: true, save_count: true, lead_count: true, download_count: true, phone_click_count: true, whatsapp_click_count: true, email_click_count: true } })
+      .then((r) => { if (!alive) return; const sum: Record<string, number> = {}; for (const row of r.docs) for (const k of ["view_count", "save_count", "lead_count", "download_count", "phone_click_count", "whatsapp_click_count", "email_click_count"]) sum[k] = (sum[k] ?? 0) + (typeof row[k] === "number" ? (row[k] as number) : 0); setDevEng(sum); }).catch(() => undefined);
     return () => { alive = false; };
   }, [slug, id, isNew, loaded]);
 
@@ -188,6 +201,12 @@ export function CollectionEdit({ slug, id }: { slug: string; id: string }) {
   const heroStat = devCounts ? { label: "Projects", value: String(devCounts.projects) } : undefined;
   const heroExtraStats = devCounts && devCounts.lands > 0 ? [{ label: "Lands", value: String(devCounts.lands) }] : undefined;
   const heroNote = devCounts ? `${devCounts.published} published, ${devCounts.projects - devCounts.published} ${devCounts.projects - devCounts.published === 1 ? "draft" : "drafts"} · ${devCounts.lands} ${devCounts.lands === 1 ? "land" : "lands"}` : undefined;
+  const engSource = slug === "projects" && !isNew ? (found as Record<string, unknown>) : slug === "developers" ? devEng : null;
+  const num = (k: string) => (engSource && typeof engSource[k] === "number" ? (engSource[k] as number) : 0);
+  const engagement = engSource ? [
+    { label: "Page views", value: num("view_count") }, { label: "WhatsApp clicks", value: num("whatsapp_click_count") }, { label: "Phone clicks", value: num("phone_click_count") },
+    { label: "Email clicks", value: num("email_click_count") }, { label: "Contact form enquiries", value: num("lead_count") }, { label: "Brochure downloads", value: num("download_count") }, { label: "Saves", value: num("save_count") },
+  ] : undefined;
   const title = schema.useAsTitle ? String(found[schema.useAsTitle] ?? "") : "";
   return (
     <Form
@@ -213,6 +232,7 @@ export function CollectionEdit({ slug, id }: { slug: string; id: string }) {
       heroStat={heroStat}
       heroExtraStats={heroExtraStats}
       heroNote={heroNote}
+      engagement={engagement}
       statusChips={(r) => [
         ...(typeof r.isPublished === "boolean" ? [{ value: r.isPublished ? "published" : "draft", label: r.isPublished ? "Published" : "Draft" }] : []),
         ...(typeof r.status === "string" && r.status ? [{ value: r.status }] : []),
