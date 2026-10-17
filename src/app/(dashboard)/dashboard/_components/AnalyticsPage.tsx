@@ -8,6 +8,7 @@ import { useDash } from "./DashProvider";
 import { PageHero } from "./PageHero";
 import { apiGetJson } from "../_data/api";
 import { ANALYTICS_START } from "@/lib/analytics-start";
+import { TodayPanel } from "./TodayPanel";
 
 // Analytics: the same numbers as the /cms analytics screen (the analytics-summary endpoint), laid out in the dashboard design.
 // An admin sees the whole platform; a developer sees only the listings they manage. Bots and repeat clicks are already removed
@@ -137,6 +138,8 @@ export function AnalyticsPage() {
         <p className="mb-4 text-sm text-muted">
           Real visitors only: bots and repeat clicks are removed.{clipped ? ` Counting starts on ${startFloor.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })} (fresh start), so earlier days in this range are empty.` : ""}
         </p>
+
+        <div className="mb-5"><TodayPanel /></div>
 
         <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))" }}>
           {TILES.map((t) => (

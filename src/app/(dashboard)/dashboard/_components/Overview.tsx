@@ -7,6 +7,7 @@ import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YA
 import { useDash } from "./DashProvider";
 import { PageHero, heroBtn } from "./PageHero";
 import { StatusChip } from "./StatusChip";
+import { TodayPanel } from "./TodayPanel";
 import { allOf } from "../_data/scope";
 import { apiCount, apiFind, apiGet, apiGetJson, type Doc } from "../_data/api";
 
@@ -119,6 +120,7 @@ export function Overview() {
       />
 
       <div className="d-box">
+        <div className="mb-5"><TodayPanel /></div>
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <Stat icon={Eye} label="Page views, last 30 days" value={data ? views.toLocaleString("en-LK") : "…"} sub={data?.summary ? "Real visits, bots and repeats removed" : data ? "No analytics yet" : undefined} />
           <Stat icon={MessageCircle} label="Leads, last 30 days" value={data ? String(data.leadsMonth) : "…"} sub={data ? `${data.newLeads} still new` : undefined} />
