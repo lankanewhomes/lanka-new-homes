@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState } from "react";
-import { ArrowLeft, Check, Copy, Download, Loader2, Printer, Send } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ArrowLeft, Check, Clock, Copy, Download, Loader2, Printer, Send, X } from "lucide-react";
 import { useDash } from "./DashProvider";
 import { Combobox, type ComboOption } from "./Combobox";
 import { PageHero } from "./PageHero";
-import { apiFind, apiGet, type Doc } from "../_data/api";
+import { apiDelete, apiFind, apiGet, type Doc } from "../_data/api";
 
 // Create a social post for a listing (owner, 2026-10-16: "automate the social posts"). Pick a listing, tick up to 5 photos, and get the five
 // 1080x1350 Instagram slides, two 1200x630 Facebook images, both captions built from the listing's own fields, and the UTM tracking links.
@@ -14,6 +14,16 @@ import { apiFind, apiGet, type Doc } from "../_data/api";
 
 const SITE = "https://www.lankanewhomes.com";
 const track = (slug: string, source: "instagram" | "facebook") => `${SITE}/projects/${slug}?utm_source=${source}&utm_medium=social&utm_campaign=${slug}-social-${new Date().toISOString().slice(0, 7)}`;
+// Times are entered in Sri Lanka time (UTC+5:30, no daylight saving).
+const LK = "+05:30";
+const pad = (n: number) => String(n).padStart(2, "0");
+function lkInput(dayOffset: number, hour: number): string {
+  const lkNow = new Date(Date.now() + 5.5 * 3600 * 1000);
+  const t = new Date(Date.UTC(lkNow.getUTCFullYear(), lkNow.getUTCMonth(), lkNow.getUTCDate() + dayOffset, hour, 0));
+  return `${t.getUTCFullYear()}-${pad(t.getUTCMonth() + 1)}-${pad(t.getUTCDate())}T${pad(t.getUTCHours())}:${pad(t.getUTCMinutes())}`;
+}
+const lkIso = (input: string) => new Date(`${input}:00${LK}`).toISOString();
+const lkLabel = (iso: string) => new Date(iso).toLocaleString("en-GB", { timeZone: "Asia/Colombo", weekday: "short", day: "numeric", month: "short", hour: "numeric", minute: "2-digit" });
 const proxied = (url: string) => `/api/social/image?u=${encodeURIComponent(url)}`;
 const camel = (s: string) => s.replace(/[^A-Za-z0-9 ]+/g, " ").split(/\s+/).filter(Boolean).map((w) => w[0].toUpperCase() + w.slice(1)).join("");
 
@@ -55,6 +65,8 @@ export function CreatePostPage() {
   const [slides, setSlides] = useState<Slide[] | null>(null);
   const [working, setWorking] = useState(false);
   const [copied, setCopied] = useState("");
+  const [when, setWhen] = useState<"now" | "later">("now"); const [at, setAt] = useState("");
+  const [scheduled, setScheduled] = useState<Doc[]>([]); const [reload, setReload] = useState(0);
   const [onIg, setOnIg] = useState(true); const [onFb, setOnFb] = useState(true);
   const [posting, setPosting] = useState(false); const [confirmPost, setConfirmPost] = useState(false);
   const [postResult, setPostResult] = useState<{ configured: boolean; results: { platform: string; status: string; permalink?: string | null; error?: string }[] } | null>(null);
@@ -83,6 +95,13 @@ export function CreatePostPage() {
     } catch (e) { d.toast(e instanceof Error ? e.message : "Could not load the listing.", "warn"); }
   };
 
+  useEffect(() => {
+    let alive = true;
+    apiFind("social-posts", { limit: 50, sort: "scheduledFor", where: { status: { equals: "scheduled" } } }).then((r) => { if (alive) setScheduled(r.docs); }).catch(() => undefined);
+    return () => { alive = false; };
+  }, [reload]);
+  const cancelScheduled = async (id: unknown) => { try { await apiDelete("social-posts", id as number); d.toast("Scheduled post cancelled"); setReload((n) => n + 1); } catch (e) { d.toast(e instanceof Error ? e.message : "Could not cancel", "warn"); } };
+
   const toggle = (url: string) => setChosen((cur) => (cur.includes(url) ? cur.filter((u) => u !== url) : cur.length >= 5 ? cur : [...cur, url]));
 
   const make = async () => {
@@ -107,10 +126,11 @@ export function CreatePostPage() {
     try {
       const igImgs = slides.filter((x) => x.file.startsWith("instagram")).map((x) => x.data);
       const fbImgs = igImgs; // Facebook takes the same 4:5 slides as a multi-photo post
-      const res = await fetch("/payload-api/social-post-custom", { method: "POST", credentials: "include", headers: { "content-type": "application/json" }, body: JSON.stringify({ projectId: picked, slug: built.slug, instagram: onIg ? { caption: ig, images: igImgs } : undefined, facebook: onFb ? { caption: fb, images: fbImgs } : undefined }) });
+      const res = await fetch("/payload-api/social-post-custom", { method: "POST", credentials: "include", headers: { "content-type": "application/json" }, body: JSON.stringify({ scheduledFor: when === "later" ? lkIso(at) : undefined, projectId: picked, slug: built.slug, instagram: onIg ? { caption: ig, images: igImgs } : undefined, facebook: onFb ? { caption: fb, images: fbImgs } : undefined }) });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error ?? "Could not post.");
       setPostResult(json);
+      if (when === "later") setReload((n) => n + 1);
     } catch (e) { d.toast(e instanceof Error ? e.message : "Could not post.", "warn"); }
     setPosting(false);
   };
@@ -136,6 +156,23 @@ export function CreatePostPage() {
             <Combobox options={opts} value={picked ? [picked] : []} onChange={(v) => v[0] && choose(Number(v[0]))} placeholder="Search a listing…" remote loading={searching} onQuery={search} labelFor={() => built?.name ?? "Listing"} />
           </div>
         </section>
+
+        {scheduled.length > 0 ? (
+          <section className="border border-line bg-panel p-4">
+            <h2 className="mb-2 flex items-center gap-2 font-semibold"><Clock size={16} /> Scheduled posts</h2>
+            <ul className="divide-y divide-line text-sm">
+              {scheduled.map((x) => (
+                <li key={String(x.id)} className="flex items-center gap-3 py-2">
+                  <span className="w-44 shrink-0 font-medium">{x.scheduledFor ? lkLabel(String(x.scheduledFor)) : ""}</span>
+                  <span className="w-24 shrink-0 capitalize">{String(x.platform)}</span>
+                  <span className="min-w-0 flex-1 truncate text-muted">{d.labelOf("projects", typeof x.project === "object" && x.project ? (x.project as Doc).id : x.project)} · {String(x.caption ?? "").split("\n")[0]}</span>
+                  <button type="button" onClick={() => cancelScheduled(x.id)} className="inline-flex items-center gap-1 border border-line px-2 py-1 text-xs hover:bg-subtle"><X size={12} /> Cancel</button>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-2 text-xs text-muted">They go out within 5 minutes of the time. If Instagram and Facebook are not connected yet, they wait and go out once they are (up to a day late).</p>
+          </section>
+        ) : null}
 
         {built ? (
           <>
@@ -178,13 +215,24 @@ export function CreatePostPage() {
                   <div className="flex flex-wrap items-center gap-4">
                     <label className="inline-flex items-center gap-1.5"><input type="checkbox" checked={onIg} onChange={(e) => setOnIg(e.target.checked)} /> Instagram (5-slide carousel)</label>
                     <label className="inline-flex items-center gap-1.5"><input type="checkbox" checked={onFb} onChange={(e) => setOnFb(e.target.checked)} /> Facebook Page (multi-photo post)</label>
-                    <button type="button" onClick={() => setConfirmPost(true)} disabled={posting || (!onIg && !onFb)} className="ml-auto inline-flex items-center gap-1.5 bg-accent px-4 py-2 text-sm font-medium text-white disabled:opacity-50">{posting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />} Post now</button>
+                    <button type="button" onClick={() => setConfirmPost(true)} disabled={posting || (!onIg && !onFb) || (when === "later" && !at)} className="ml-auto inline-flex items-center gap-1.5 bg-accent px-4 py-2 text-sm font-medium text-white disabled:opacity-50">{posting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />} {when === "later" ? "Schedule" : "Post now"}</button>
                   </div>
-                  {confirmPost ? <p className="mt-3 border border-warn bg-panel p-3">Post these {slides.filter((x) => x.file.startsWith("instagram")).length} images and the captions above to {[onIg ? "Instagram" : "", onFb ? "Facebook" : ""].filter(Boolean).join(" and ")} now? <button type="button" onClick={postNow} className="ml-2 bg-fg px-3 py-1 text-bg">Yes, post</button> <button type="button" onClick={() => setConfirmPost(false)} className="ml-1 border border-line px-3 py-1">Cancel</button></p> : null}
+                  <div className="mt-3 flex flex-wrap items-center gap-3">
+                    <label className="inline-flex items-center gap-1.5"><input type="radio" name="when" checked={when === "now"} onChange={() => setWhen("now")} /> Post now</label>
+                    <label className="inline-flex items-center gap-1.5"><input type="radio" name="when" checked={when === "later"} onChange={() => setWhen("later")} /> Schedule it</label>
+                    {when === "later" ? (
+                      <>
+                        <input type="datetime-local" value={at} onChange={(e) => setAt(e.target.value)} className="border border-line bg-bg px-2 py-1" aria-label="Date and time in Sri Lanka time" />
+                        <span className="text-xs text-muted">Sri Lanka time</span>
+                        {([["Today 7 pm", 0, 19], ["Today 9 pm", 0, 21], ["Tomorrow 7 pm", 1, 19], ["Tomorrow 9 pm", 1, 21]] as const).map(([label, off, h]) => <button key={label} type="button" onClick={() => setAt(lkInput(off, h))} className="border border-line px-2 py-1 text-xs hover:bg-bg">{label}</button>)}
+                      </>
+                    ) : null}
+                  </div>
+                  {confirmPost ? <p className="mt-3 border border-warn bg-panel p-3">{when === "later" && at ? <b>On {lkLabel(lkIso(at))}: </b> : null}Post these {slides.filter((x) => x.file.startsWith("instagram")).length} images and the captions above to {[onIg ? "Instagram" : "", onFb ? "Facebook" : ""].filter(Boolean).join(" and ")} now? <button type="button" onClick={postNow} className="ml-2 bg-fg px-3 py-1 text-bg">{when === "later" ? "Yes, schedule" : "Yes, post"}</button> <button type="button" onClick={() => setConfirmPost(false)} className="ml-1 border border-line px-3 py-1">Cancel</button></p> : null}
                   {postResult ? (
                     <div className="mt-3 space-y-1">
-                      {!postResult.configured ? <p className="text-muted"><b>Instagram and Facebook are not connected yet,</b> so nothing was sent. The images were stored and what would be posted is logged in Social posts. Once META_PAGE_ID, META_PAGE_ACCESS_TOKEN and META_IG_USER_ID are set, this button posts for real.</p> : null}
-                      {postResult.results.map((r) => <p key={r.platform}><b className="capitalize">{r.platform}:</b> {r.status === "published" ? <>posted {r.permalink ? <a href={r.permalink} target="_blank" rel="noopener noreferrer" className="underline">view</a> : null}</> : r.status === "processing" ? "Instagram is still processing it; check again in a minute from the listing's Social tab" : r.status === "dry_run" ? "dry run (not sent)" : `failed: ${r.error}`}</p>)}
+                      {!postResult.configured && when === "now" ? <p className="text-muted"><b>Instagram and Facebook are not connected yet,</b> so nothing was sent. The images were stored and what would be posted is logged in Social posts. Once META_PAGE_ID, META_PAGE_ACCESS_TOKEN and META_IG_USER_ID are set, this button posts for real.</p> : null}
+                      {postResult.results.map((r) => <p key={r.platform}><b className="capitalize">{r.platform}:</b> {r.status === "published" ? <>posted {r.permalink ? <a href={r.permalink} target="_blank" rel="noopener noreferrer" className="underline">view</a> : null}</> : r.status === "processing" ? "Instagram is still processing it; check again in a minute from the listing's Social tab" : r.status === "scheduled" ? `scheduled for ${lkLabel(lkIso(at))}` : r.status === "dry_run" ? "dry run (not sent)" : `failed: ${r.error}`}</p>)}
                     </div>
                   ) : null}
                 </div>

@@ -27,6 +27,7 @@ export const SOCIAL_STATUSES = [
   { label: 'Processing', value: 'processing' },
   { label: 'Failed', value: 'failed' },
   { label: 'Dry run', value: 'dry_run' },
+  { label: 'Scheduled', value: 'scheduled' },
 ] as const
 
 export const SocialPosts: CollectionConfig = {
@@ -58,6 +59,7 @@ export const SocialPosts: CollectionConfig = {
     { name: 'error', type: 'text' },
     { name: 'triggeredBy', type: 'text', admin: { description: 'User email, or "auto-post".' } },
     { name: 'details', type: 'json', admin: { description: 'Media URLs sent (dry runs keep the whole would-be request here).' } },
+    { name: 'scheduledFor', type: 'date', admin: { description: 'When a scheduled post goes out (checked every 5 minutes).', date: { pickerAppearance: 'dayAndTime' } } },
     { name: 'postedAt', type: 'date', admin: { components: { Cell: '@/components/payload/ListingCells#DateCell' } } },
   ],
 }

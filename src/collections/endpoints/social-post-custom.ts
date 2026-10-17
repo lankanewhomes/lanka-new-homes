@@ -12,11 +12,12 @@ export const socialPostCustomEndpoint: Endpoint = {
     if (!req.user) return Response.json({ error: 'Unauthorized' }, { status: 401 })
     if (!isAdmin(req)) return Response.json({ error: 'Admins only' }, { status: 403 })
     await addDataAndFileToRequest(req)
-    const b = (req.data ?? {}) as { projectId?: string | number; slug?: string; instagram?: { caption: string; images: string[] }; facebook?: { caption: string; images: string[] } }
+    const b = (req.data ?? {}) as { scheduledFor?: string; projectId?: string | number; slug?: string; instagram?: { caption: string; images: string[] }; facebook?: { caption: string; images: string[] } }
     if (!b.projectId || !b.slug || (!b.instagram && !b.facebook)) return Response.json({ error: 'projectId, slug and at least one platform are required' }, { status: 400 })
+    if (b.scheduledFor && (Number.isNaN(Date.parse(b.scheduledFor)) || Date.parse(b.scheduledFor) < Date.now() - 60_000)) return Response.json({ error: 'Pick a time in the future.' }, { status: 400 })
     const actor = (req.user as { email?: string }).email ?? 'dashboard'
     try {
-      return Response.json(await postCustom(req.payload, { projectId: b.projectId, slug: b.slug, instagram: b.instagram, facebook: b.facebook }, actor))
+      return Response.json(await postCustom(req.payload, { scheduledFor: b.scheduledFor, projectId: b.projectId, slug: b.slug, instagram: b.instagram, facebook: b.facebook }, actor))
     } catch (error) {
       return Response.json({ error: error instanceof Error ? error.message : String(error) }, { status: 422 })
     }

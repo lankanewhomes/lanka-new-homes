@@ -6,8 +6,8 @@ import { createInstagramCarousel, metaConfig, postFacebookCarousel, publishInsta
 // can fetch them, then posted to the Facebook Page and Instagram as carousels. Without META_* settings this is a dry run: nothing is sent to Meta
 // and the would-be request is logged. Every attempt is logged in Social posts (one row per platform).
 
-export type CustomPostInput = { projectId: string | number; slug: string; instagram?: { caption: string; images: string[] }; facebook?: { caption: string; images: string[] } };
-export type CustomPostResult = { configured: boolean; results: { platform: "instagram" | "facebook"; status: "published" | "processing" | "failed" | "dry_run"; permalink?: string | null; error?: string; urls: string[] }[] };
+export type CustomPostInput = { scheduledFor?: string; projectId: string | number; slug: string; instagram?: { caption: string; images: string[] }; facebook?: { caption: string; images: string[] } };
+export type CustomPostResult = { configured: boolean; results: { platform: "instagram" | "facebook"; status: "published" | "processing" | "failed" | "dry_run" | "scheduled"; permalink?: string | null; error?: string; urls: string[] }[] };
 
 async function store(slug: string, platform: string, images: string[], stamp: string): Promise<string[]> {
   const urls: string[] = [];
@@ -31,6 +31,11 @@ export async function postCustom(payload: Payload, input: CustomPostInput, actor
     let urls: string[] = [];
     try {
       urls = await store(input.slug, platform, part.images, stamp);
+      if (input.scheduledFor) {
+        await payload.create({ collection: "social-posts", overrideAccess: true, data: { project: input.projectId, platform, kind: "carousel", status: "scheduled", scheduledFor: input.scheduledFor, caption: part.caption, triggeredBy: actor, details: { urls, dashboard: true } } as never });
+        results.push({ platform, status: "scheduled", urls });
+        continue;
+      }
       let status: "published" | "processing" | "dry_run" = "dry_run"; let permalink: string | null = null; let externalId: string | undefined; let creationId: string | undefined;
       if (cfg) {
         if (platform === "facebook") { const r = await postFacebookCarousel(cfg, urls, part.caption); status = "published"; permalink = r.permalink; externalId = r.postId; }
@@ -51,4 +56,37 @@ export async function postCustom(payload: Payload, input: CustomPostInput, actor
     }
   }
   return { configured: cfg !== null, results };
+}
+
+/** Called every 5 minutes by the cron: posts every scheduled row that is due. Rows stay "scheduled" while Meta is not connected; one more than a day overdue is marked failed. */
+export async function runScheduledPosts(payload: Payload): Promise<{ due: number; published: number; waiting: number; failed: number }> {
+  const cfg = metaConfig();
+  const now = new Date();
+  const { docs } = await payload.find({ collection: "social-posts", where: { and: [{ status: { equals: "scheduled" } }, { scheduledFor: { less_than_equal: now.toISOString() } }] } as never, sort: "scheduledFor", limit: 10, depth: 0, overrideAccess: true });
+  const out = { due: docs.length, published: 0, waiting: 0, failed: 0 };
+  for (const row of docs as unknown as { id: string | number; platform: "facebook" | "instagram"; caption?: string; scheduledFor: string; details?: { urls?: string[] } }[]) {
+    const urls = row.details?.urls ?? [];
+    const overdue = now.getTime() - new Date(row.scheduledFor).getTime() > 24 * 3600 * 1000;
+    if (!cfg) {
+      if (overdue) { await payload.update({ collection: "social-posts", id: row.id, overrideAccess: true, data: { status: "failed", error: "Instagram and Facebook were not connected when this was due." } as never }); out.failed++; } else out.waiting++;
+      continue;
+    }
+    try {
+      if (row.platform === "facebook") {
+        const r = await postFacebookCarousel(cfg, urls, row.caption ?? "");
+        await payload.update({ collection: "social-posts", id: row.id, overrideAccess: true, data: { status: "published", permalink: r.permalink, externalId: r.postId, postedAt: now.toISOString() } as never });
+      } else {
+        const { creationId } = await createInstagramCarousel(cfg, urls, row.caption ?? "");
+        const st = await waitForInstagramContainer(cfg, creationId, { timeoutMs: 20_000 });
+        if (st === "FINISHED") { const r = await publishInstagramContainer(cfg, creationId); await payload.update({ collection: "social-posts", id: row.id, overrideAccess: true, data: { status: "published", permalink: r.permalink, externalId: r.mediaId, creationId, postedAt: now.toISOString() } as never }); }
+        else if (st === "IN_PROGRESS") await payload.update({ collection: "social-posts", id: row.id, overrideAccess: true, data: { status: "processing", creationId, postedAt: now.toISOString() } as never });
+        else throw new Error(`Instagram container ${creationId} ended in ${st}.`);
+      }
+      out.published++;
+    } catch (error) {
+      await payload.update({ collection: "social-posts", id: row.id, overrideAccess: true, data: { status: "failed", error: error instanceof Error ? error.message : String(error) } as never });
+      out.failed++;
+    }
+  }
+  return out;
 }
