@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Check, LayoutGrid, List, X } from "lucide-react";
 import { RequestInfoDialog, compactLkrLabel } from "@/components/marketplace/components";
 import type { LandPlot, Project, SiteMapLandmark } from "@/types";
+import { BADGE_FILL, BADGE_TEXT, LOT_FILL, LOT_STROKE, centroid, lotMapBase, lotNumber, sizeLabel } from "@/lib/lot-map-svg";
 
 // Plots section for land listings with more than PLOT_GRID_THRESHOLD plots (src/lib/plot-grid.ts; owner, 2026-10-06):
 // every plot in this one section, nothing paged and no plot pages. Left: the block plan and a summary. Right: find a lot,
@@ -29,18 +30,9 @@ const perches = (value: number) => (Number.isInteger(value) ? value.toFixed(1) :
 // Every lot is a numbered shape coloured by live status (available, reserved, sold); a phase filter dims the rest; clicking an available or
 // reserved lot ticks it for the enquiry bar below; "Book a viewing" opens the enquiry with the lot already named. Landmarks (clubhouse, pool,
 // model home, park, roads) are drawn from `siteMapLandmarks`; a 360 tour of the model home opens from `tourUrl`.
-const STATUS_FILL: Record<string, string> = { Available: "#bfe8c9", Reserved: "#fde7a9", Sold: "#d9d6cf" };
-const STATUS_STROKE: Record<string, string> = { Available: "#2f8f4e", Reserved: "#c58a07", Sold: "#a7a39a" };
-const LANDMARK_FILL: Record<SiteMapLandmark["kind"], string> = { clubhouse: "#e8dff5", pool: "#bfe3f6", "model-home": "#ffd9c2", park: "#dff1d4", road: "#e4e2db", gate: "#cfd3dc" };
+const LEGEND_FILL = BADGE_FILL;
 
-function centroid(points: string): [number, number] {
-  const pts = points.trim().split(/\s+/).map((pair) => pair.split(",").map(Number));
-  const x = pts.reduce((sum, p) => sum + p[0], 0) / pts.length;
-  const y = pts.reduce((sum, p) => sum + p[1], 0) / pts.length;
-  return [x, y];
-}
-
-function LotMap({ plots, landmarks, selected, onToggle, tourUrl, onBook }: { plots: LandPlot[]; landmarks: SiteMapLandmark[]; selected: Set<string>; onToggle: (id: string) => void; tourUrl?: string; onBook: () => void }) {
+function LotMap({ plots, landmarks, selected, onToggle, tourUrl, onBook, project }: { plots: LandPlot[]; landmarks: SiteMapLandmark[]; selected: Set<string>; onToggle: (id: string) => void; tourUrl?: string; onBook: () => void; project: Project }) {
   const [phase, setPhase] = useState("all");
   const [hover, setHover] = useState<string | null>(null);
   const [tour, setTour] = useState(false);
@@ -60,29 +52,19 @@ function LotMap({ plots, landmarks, selected, onToggle, tourUrl, onBook }: { plo
           {phases.map((p) => <button key={p} type="button" className={phase === p ? "active" : undefined} onClick={() => setPhase(p)}>{p}</button>)}
         </div>
         <div className="lot-map-legend" aria-label="Legend">
-          {(["Available", "Reserved", "Sold"] as const).map((status) => <span key={status}><i style={{ background: STATUS_FILL[status], borderColor: STATUS_STROKE[status] }} />{status} <b>{counts[status]}</b></span>)}
+          {(["Available", "Reserved", "Sold"] as const).map((status) => <span key={status}><i style={{ background: LEGEND_FILL[status], borderColor: LEGEND_FILL[status], borderRadius: "50%" }} />{status} <b>{counts[status]}</b></span>)}
         </div>
       </div>
       <div className="lot-map-stage">
-        <svg viewBox="0 0 1000 700" role="img" aria-label="Site map with numbered lots">
-          <rect x="0" y="0" width="1000" height="700" fill="#f4f1ea" />
-          {landmarks.map((l, i) => {
-            const [cx, cy] = centroid(l.shape);
-            return (
-              <g key={`${l.kind}-${i}`}>
-                <polygon points={l.shape} fill={LANDMARK_FILL[l.kind]} stroke="#b9b5aa" strokeWidth={l.kind === "road" ? 0 : 1.5} />
-                {l.label && l.kind !== "road" ? <text x={cx} y={cy} textAnchor="middle" dominantBaseline="middle" fontSize="15" fontWeight="700" fill="#3b3a36">{l.label}</text> : null}
-                {l.kind === "road" && l.label ? <text x={cx} y={cy} textAnchor="middle" dominantBaseline="middle" fontSize="12" fill="#8c887d">{l.label}</text> : null}
-              </g>
-            );
-          })}
+        <svg viewBox="0 -40 1000 750" role="img" aria-label="Site map with numbered lots" fontFamily="Arial, Helvetica, sans-serif">
+          <g dangerouslySetInnerHTML={{ __html: lotMapBase(landmarks, project.name.replace(/^DEMO:\s*/i, "").replace(/ Residential Lands$/i, ""), project.district ? String(project.district) : "Block plan") }} />
           {plots.filter((plot) => plot.shape).map((plot) => {
             const status = plot.status ?? "Available";
             const dim = phase !== "all" && plot.phase !== phase;
             const isSelected = selected.has(plot.id);
             const clickable = status !== "Sold";
             const [cx, cy] = centroid(plot.shape as string);
-            const number = plot.name.replace(/^\s*lots?\s*/i, "").trim();
+            const number = lotNumber(plot);
             return (
               <g
                 key={plot.id}
@@ -99,8 +81,10 @@ function LotMap({ plots, landmarks, selected, onToggle, tourUrl, onBook }: { plo
                 onClick={() => { if (clickable) onToggle(plot.id); }}
                 onKeyDown={(event) => { if (clickable && (event.key === "Enter" || event.key === " ")) { event.preventDefault(); onToggle(plot.id); } }}
               >
-                <polygon points={plot.shape} fill={STATUS_FILL[status]} stroke={isSelected ? "#1c1c20" : STATUS_STROKE[status]} strokeWidth={isSelected ? 4 : 1.5} />
-                <text x={cx} y={cy} textAnchor="middle" dominantBaseline="middle" fontSize="17" fontWeight="700" fill={status === "Sold" ? "#8c887d" : "#1c1c20"} pointerEvents="none">{number}</text>
+                <polygon points={plot.shape} fill={LOT_FILL[status]} stroke={isSelected ? "#1c1c20" : LOT_STROKE} strokeWidth={isSelected ? 4 : 1.5} />
+                <circle cx={cx} cy={cy - 8} r={16} fill={BADGE_FILL[status]} pointerEvents="none" />
+                <text x={cx} y={cy - 7} textAnchor="middle" dominantBaseline="middle" fontSize="17" fontWeight="700" fill={BADGE_TEXT[status]} pointerEvents="none">{number}</text>
+                <text x={cx} y={cy + 20} textAnchor="middle" dominantBaseline="middle" fontSize="14" fontWeight="600" fill="#1c1c20" pointerEvents="none">{sizeLabel(plot)}</text>
               </g>
             );
           })}
@@ -194,7 +178,7 @@ export function LandPlotsGridSection({ plots, project, blockPlan, landmarks, tou
         <p>Choose the lots you like, tick them, and send one enquiry.</p>
       </div>
 
-      {hasMap ? <LotMap plots={plots} landmarks={landmarks ?? []} selected={selected} onToggle={toggle} tourUrl={tourUrl} onBook={() => { setViewing(true); setRequestOpen(true); }} /> : null}
+      {hasMap ? <LotMap project={project} plots={plots} landmarks={landmarks ?? []} selected={selected} onToggle={toggle} tourUrl={tourUrl} onBook={() => { setViewing(true); setRequestOpen(true); }} /> : null}
 
       <div className="plots-grid-controls">
         <div className="plots-grid-controls-row">
