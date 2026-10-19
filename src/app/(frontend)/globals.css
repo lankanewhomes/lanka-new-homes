@@ -20645,3 +20645,34 @@ body:has(.compare-bar) {
 .listing-search-understood-chip.is-removable svg { color: #6b6355; }
 .listing-search-clear { margin-left: 4px; padding: 0; border: 0; background: none; font: inherit; font-size: 12.5px; color: #6b6355; text-decoration: underline; cursor: pointer; }
 .listing-search-clear:hover { color: #1f1f1f; }
+
+/* Interactive lot map (TEST feature, owner 2026-10-19). Only rendered for lands whose plots carry a map shape; today that is the demo preview only. */
+.lot-map { margin: 0 0 24px; border: 1px solid #e4e2db; background: #ffffff; }
+.lot-map-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; border-bottom: 1px solid #e4e2db; }
+.lot-map-phases { display: flex; flex-wrap: wrap; gap: 6px; }
+.lot-map-phases button { border: 1px solid #d9d6cf; background: #ffffff; padding: 6px 14px; font-size: 13px; cursor: pointer; }
+.lot-map-phases button.active { background: #1c1c20; border-color: #1c1c20; color: #ffffff; }
+.lot-map-legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px; color: #4a4a4a; }
+.lot-map-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.lot-map-legend i { display: inline-block; width: 14px; height: 14px; border: 1.5px solid; }
+.lot-map-stage { display: grid; grid-template-columns: minmax(0, 1fr) 280px; }
+.lot-map-stage svg { width: 100%; height: auto; display: block; }
+.lot-map-lot.is-clickable { cursor: pointer; }
+.lot-map-lot.is-clickable:hover polygon, .lot-map-lot.is-clickable:focus polygon { filter: brightness(0.93); stroke-width: 3; }
+.lot-map-lot:focus { outline: none; }
+.lot-map-info { border-left: 1px solid #e4e2db; padding: 18px; background: #faf7f2; }
+.lot-map-info-lot { margin: 0 0 10px; font-size: 20px; font-weight: 700; }
+.lot-map-badge { display: inline-block; margin-left: 6px; padding: 2px 8px; font-size: 11px; font-weight: 700; vertical-align: middle; }
+.lot-map-badge.is-available { background: #bfe8c9; color: #1d6a38; }
+.lot-map-badge.is-reserved { background: #fde7a9; color: #8a5d00; }
+.lot-map-badge.is-sold { background: #e4e2db; color: #6b6a66; }
+.lot-map-info dl { margin: 0 0 14px; }
+.lot-map-info dl div { display: flex; justify-content: space-between; padding: 6px 0; border-top: 1px solid #e4e2db; font-size: 14px; }
+.lot-map-info dt { color: #6b6a66; }
+.lot-map-info dd { margin: 0; font-weight: 700; }
+.lot-map-book { width: 100%; border: 0; background: #f47b36; color: #1c1c20; font-weight: 700; font-size: 15px; padding: 13px 14px; cursor: pointer; }
+.lot-map-hint, .lot-map-sold { margin: 0; font-size: 14px; line-height: 1.5; color: #6b6a66; }
+.lot-map-tour { border-top: 1px solid #e4e2db; padding: 12px 16px; }
+.lot-map-tour button { border: 1px solid #1c1c20; background: #ffffff; padding: 9px 16px; font-size: 14px; font-weight: 700; cursor: pointer; }
+.lot-map-tour iframe { display: block; width: 100%; height: 420px; margin-top: 12px; border: 0; }
+@media (max-width: 760px) { .lot-map-stage { grid-template-columns: 1fr; } .lot-map-info { border-left: 0; border-top: 1px solid #e4e2db; } }
