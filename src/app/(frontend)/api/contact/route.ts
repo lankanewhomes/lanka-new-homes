@@ -41,7 +41,7 @@ export async function POST(req: Request) {
 
     const isTest = !isProductionDeployment();
     const testInbox = process.env.LEAD_ALERTS_OVERRIDE_TO || process.env.LEAD_ALERTS_TEST_INBOX || DEFAULT_TEST_INBOX;
-    const to = isTest ? testInbox : "support@lankanewhomes.com";
+    const to = isTest ? testInbox : "developers@lankanewhomes.com";
 
     const transporter = createMailTransport();
 
@@ -56,7 +56,7 @@ export async function POST(req: Request) {
       to,
       from: process.env.EMAIL_FROM,
       replyTo: email,
-      subject: `${isTest ? `[TEST — would go to support@lankanewhomes.com] ` : ""}Contact form (${audienceLabel}): ${name}`,
+      subject: `${isTest ? `[TEST — would go to developers@lankanewhomes.com] ` : ""}Contact form (${audienceLabel}): ${name}`,
       html: `<p><strong>${escapeHtml(name)}</strong> (${escapeHtml(email)}) sent a message from the /contact form:</p><p>${detailLines.map(escapeHtml).join("<br>")}</p><p>${escapeHtml(message).replace(/\n/g, "<br>")}</p>`,
       text: `${name} (${email}) sent a message from the /contact form:\n\n${detailLines.join("\n")}\n\n${message}`,
     });

@@ -12,6 +12,9 @@ export type LeadAlertEmailInput = {
   preferredContact?: string | null
   message?: string | null
   receivedAt: Date
+  /** Set for a brochure request: whether we had a brochure to email the buyer. Drives the banner and the plain-language line. */
+  brochure?: { requested: boolean; sent: boolean } | null
+  projectUrl?: string | null
   /** Signed one-tap links (src/lib/lead-reply-links.ts) — tapping one marks
    * the lead answered and forwards to WhatsApp / the dialer / mail. Null
    * when the buyer left no number / address for that channel. */
@@ -47,6 +50,7 @@ export function renderLeadAlertEmailHTML(input: LeadAlertEmailInput): string {
     replyLinks.call ? button(replyLinks.call, 'Call', INK) : '',
     replyLinks.email ? button(replyLinks.email, 'Email', INK) : '',
   ].filter(Boolean).join('')
+  const asked = input.brochure?.requested ? (input.brochure.sent ? `${escapeHtml(input.buyerName)} asked for the <strong>brochure</strong> of ${what}. We emailed them the brochure we hold on LankaNewHomes. Please follow up with them.` : `${escapeHtml(input.buyerName)} asked for the <strong>brochure</strong> of ${what}. <strong>We do not have a brochure for this listing, so none was sent.</strong> Please send it to them directly using the details below.`) : ''
   const when = input.receivedAt.toLocaleString('en-GB', { timeZone: 'Asia/Colombo', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
 
   return `<!DOCTYPE html>
@@ -65,13 +69,17 @@ export function renderLeadAlertEmailHTML(input: LeadAlertEmailInput): string {
       <div style="margin:6px 0 4px; font-size:22px; line-height:1.3; font-weight:700; color:${INK};">${what}</div>
       <div style="font-size:13px; color:${MUTED};">Received ${when} (Sri Lanka time)</div>
     </td></tr>
+    ${asked ? `<tr><td style="padding:14px 32px 0;"><div style="border:1px solid ${ACCENT}; background:#fff7ed; padding:12px 16px; font-size:15px; line-height:1.55; color:${INK};">${asked}</div></td></tr>` : ''}
     <tr><td style="padding:18px 32px 0;">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${PAPER}; border:1px solid ${LINE}; border-left:4px solid ${ACCENT};"><tr><td style="padding:16px 18px;">
         <table role="presentation" cellpadding="0" cellspacing="0">
+          ${input.brochure?.requested ? row('Requested', '<strong>The brochure</strong>') : ''}
           ${row('Name', `<strong>${escapeHtml(input.buyerName)}</strong>`)}
           ${input.buyerPhone ? row('Phone', replyLinks.call ? `<a href="${replyLinks.call}" style="color:${INK};">${escapeHtml(input.buyerPhone)}</a>` : escapeHtml(input.buyerPhone)) : ''}
           ${input.buyerEmail ? row('Email', replyLinks.email ? `<a href="${replyLinks.email}" style="color:${INK};">${escapeHtml(input.buyerEmail)}</a>` : escapeHtml(input.buyerEmail)) : ''}
           ${input.preferredContact ? row('Prefers', escapeHtml(input.preferredContact)) : ''}
+          ${input.planName ? row('Floor plan', escapeHtml(input.planName)) : ''}
+          ${input.projectUrl ? row('Listing', `<a href="${input.projectUrl}" style="color:${INK};">${escapeHtml(input.projectUrl.replace(/^https?:\/\//, ''))}</a>`) : ''}
           ${input.message ? row('Message', `“${escapeHtml(input.message).replace(/\n/g, '<br>')}”`) : ''}
         </table>
       </td></tr></table>

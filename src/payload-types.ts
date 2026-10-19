@@ -7495,7 +7495,7 @@ export interface SocialPost {
   project?: (number | null) | Project;
   platform: 'facebook' | 'instagram';
   kind: 'carousel' | 'reel' | 'photo' | 'video' | 'story';
-  status: 'published' | 'processing' | 'failed' | 'dry_run';
+  status: 'published' | 'processing' | 'failed' | 'dry_run' | 'scheduled';
   /**
    * Post / video / media id on Meta.
    */
@@ -7532,6 +7532,10 @@ export interface SocialPost {
     | number
     | boolean
     | null;
+  /**
+   * When a scheduled post goes out (checked every 5 minutes).
+   */
+  scheduledFor?: string | null;
   postedAt?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -9684,6 +9688,7 @@ export interface SocialPostsSelect<T extends boolean = true> {
   error?: T;
   triggeredBy?: T;
   details?: T;
+  scheduledFor?: T;
   postedAt?: T;
   updatedAt?: T;
   createdAt?: T;

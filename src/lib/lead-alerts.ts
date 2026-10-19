@@ -190,6 +190,9 @@ export async function sendLeadAlerts(payload: Payload, lead: LeadLike, opts: { r
   const message = text(lead.message) || null
   const receivedAt = typeof lead.createdAt === 'string' ? new Date(lead.createdAt) : new Date()
   const serverURL = payload.config.serverURL || process.env.NEXT_PUBLIC_SITE_URL || 'https://www.lankanewhomes.com'
+  const brochureRequest = text(lead.source) === 'brochure_request'
+  const brochure = brochureRequest ? { requested: true, sent: Boolean(text(project.brochureUrl)) } : null
+  const projectUrl = `${serverURL}/projects/${text(project.slug)}`
   const dashboardPath = `collections/leads/${lead.id}`
   const dashboardUrl = `${serverURL}/cms/${dashboardPath}`
   // One-tap reply links: tapping marks the lead answered, then forwards
@@ -207,16 +210,18 @@ export async function sendLeadAlerts(payload: Payload, lead: LeadLike, opts: { r
         to: alertEmail,
         ...(ccEmails.length ? { cc: ccEmails } : {}),
         from: process.env.EMAIL_FROM,
-        subject: `${subjectPrefix}${sourceLabel}: ${planName ? `${planName} · ` : ''}${projectName} — ${buyerName}${buyerPhone ? ` (${buyerPhone})` : ''}`,
-        html: renderLeadAlertEmailHTML({ projectName, planName, sourceLabel, buyerName, buyerPhone, buyerEmail, preferredContact: preferred, message, receivedAt, replyLinks, dashboardUrl }),
+        subject: `${subjectPrefix}${brochure && !brochure.sent ? 'Brochure requested, please send it' : sourceLabel}: ${planName ? `${planName} · ` : ''}${projectName} — ${buyerName}${buyerPhone ? ` (${buyerPhone})` : ''}`,
+        html: renderLeadAlertEmailHTML({ projectName, planName, sourceLabel, buyerName, buyerPhone, buyerEmail, preferredContact: preferred, message, receivedAt, replyLinks, dashboardUrl, brochure, projectUrl }),
         text: [
           `${sourceLabel}: ${planName ? `${planName} · ` : ''}${projectName}`,
+          ...(brochure ? ['', brochure.sent ? `${buyerName} asked for the brochure. We emailed them the brochure we hold. Please follow up.` : `${buyerName} asked for the brochure. We do not have a brochure for this listing, so none was sent. Please send it to them directly.`] : []),
           '',
           `Name: ${buyerName}`,
           buyerPhone ? `Phone: ${buyerPhone}` : null,
           buyerEmail ? `Email: ${buyerEmail}` : null,
           preferred ? `Preferred contact: ${preferred}` : null,
           message ? `Message: ${message}` : null,
+          `Listing: ${projectUrl}`,
           '',
           `View in dashboard: ${dashboardUrl}`,
         ].filter(Boolean).join('\n'),
