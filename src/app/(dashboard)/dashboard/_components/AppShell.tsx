@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { Bell, Check, ChevronDown, ChevronRight, LogOut, Menu, Moon, PanelLeftClose, PanelLeftOpen, Search, Sun, X } from "lucide-react";
+import { BarChart3, Bell, Building, ChevronDown, ChevronUp, CreditCard, ListChecks, LogOut, Mail, Megaphone, Menu, MessageCircle, Moon, Newspaper, Package, PanelLeftClose, PanelLeftOpen, Search, Settings, Sun, Users, X, type LucideIcon } from "lucide-react";
 import { useDash } from "./DashProvider";
 import { apiCount, apiFind, apiLogout } from "../_data/api";
 import { allOf } from "../_data/scope";
@@ -16,7 +16,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const router = useRouter();
   const [drawer, setDrawer] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
-  const [closed, setClosed] = useState<Record<string, boolean>>({});
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
   const [menu, setMenu] = useState<"" | "user" | "bell">("");
   const [q, setQ] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
@@ -70,67 +70,81 @@ export function AppShell({ children }: { children: ReactNode }) {
     return () => { alive = false; clearTimeout(t); };
   }, [q, d]);
 
-  // Menu rows are flat bordered boxes like the account menu; the open page is a solid dark row with a tick.
-  const rowCls = (active: boolean) => `flex items-center gap-2.5 border px-3 py-1.5 text-sm transition ${active ? "border-ink bg-ink font-medium text-white" : "border-line bg-panel text-fg hover:border-fg/40"}`;
+  // Sidebar (owner, 2026-10-18): a soft rounded panel; every group is a collapsible row with an icon and a chevron, its pages sit under it as
+  // plain text, and the open page is a white pill. The group that holds the open page is open by default.
+  const GROUP_ICON: Record<string, LucideIcon> = { Listings: Building, "Companies & Professionals": Users, Leads: MessageCircle, Content: Newspaper, Marketing: Megaphone, Mail, Billing: CreditCard, Analytics: BarChart3, Users, Settings, Other: Package };
   const isActive = (href: string) => { const base = href.split("?")[0]; return pathname === base || (base !== "/dashboard" && pathname.startsWith(`${base}/`)); };
+  const holdsActive = (items: { href: string }[]) => items.some((it) => isActive(it.href));
+  const groupOpen = (label: string, items: { href: string }[]) => (label in openGroups ? openGroups[label] : holdsActive(items));
+  const pill = (active: boolean) => `flex items-center gap-3 rounded-[12px] px-3 py-2 text-[13px] transition ${active ? "bg-side-active font-medium text-fg shadow-[0_1px_3px_rgba(0,0,0,0.08)]" : "text-side-text hover:bg-side-active/60 hover:text-fg"}`;
+  const badgeCls = "rounded-full bg-brand/15 px-2 py-0.5 text-[10px] font-semibold text-brand";
   const nav = (
-    <nav className="d-scroll flex-1 overflow-y-auto px-3 pb-6">
-      <ul className="mb-2 space-y-1.5">
+    <nav className="d-scroll flex-1 overflow-y-auto px-3 pb-4">
+      <ul className="space-y-0.5">
         {side.top.map((it) => (
           <li key={it.key}>
-            <Link href={it.href} title={it.label} onClick={() => setDrawer(false)} className={rowCls(isActive(it.href))}>
-              <it.icon size={16} className="shrink-0" />{collapsed ? null : <span className="flex-1 truncate">{it.label}</span>}
-              {!collapsed && isActive(it.href) ? <Check size={14} className="shrink-0" /> : null}
+            <Link href={it.href} title={it.label} onClick={() => setDrawer(false)} className={pill(isActive(it.href))}>
+              <it.icon size={17} strokeWidth={1.6} className="shrink-0" />{collapsed ? null : <span className="flex-1 truncate">{it.label}</span>}
             </Link>
           </li>
         ))}
       </ul>
-      {side.sections.map((s) => (
-        <div key={s.label} className="mt-4">
-          {collapsed ? <div className="mx-2 mb-1 border-t border-line" /> : (
-            <button type="button" onClick={() => setClosed({ ...closed, [s.label]: !closed[s.label] })} className="d-label flex w-full items-center gap-1 px-0.5 pb-1.5 hover:text-fg">
-              {closed[s.label] ? <ChevronRight size={12} /> : <ChevronDown size={12} />}{s.label}
-            </button>
-          )}
-          {closed[s.label] && !collapsed ? null : (
-            <ul className="space-y-1.5">
-              {s.items.map((it) => (
-                <li key={it.key}>
-                  <Link href={it.href} title={it.label} onClick={() => setDrawer(false)} className={rowCls(isActive(it.href) && !(it.href.includes("?") && !pathname.includes("?")))}>
-                    <it.icon size={16} className="shrink-0" />
-                    {collapsed ? null : <span className="flex-1 truncate">{it.label}</span>}
-                    {!collapsed && it.badge ? <span className="bg-brand px-1.5 text-[10px] font-semibold text-white">{it.badge}</span> : null}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      ))}
+      <div className="mt-2 space-y-0.5">
+        {side.sections.map((s) => {
+          const GroupIcon = GROUP_ICON[s.label] ?? ListChecks;
+          const open = groupOpen(s.label, s.items);
+          const holds = holdsActive(s.items);
+          if (collapsed) return <Link key={s.label} href={s.items[0].href} title={s.label} className={pill(holds)}><GroupIcon size={17} strokeWidth={1.6} className="shrink-0" /></Link>;
+          const groupBadge = s.items.reduce((sum, it) => sum + (it.badge ?? 0), 0);
+          return (
+            <div key={s.label}>
+              <button type="button" aria-expanded={open} onClick={() => setOpenGroups({ ...openGroups, [s.label]: !open })} className={`${pill(false)} w-full ${holds && !open ? "text-fg" : ""}`}>
+                <GroupIcon size={17} strokeWidth={1.6} className="shrink-0" /><span className="flex-1 truncate text-left">{s.label}</span>
+                {!open && groupBadge ? <span className={badgeCls}>{groupBadge}</span> : null}
+                {open ? <ChevronUp size={14} className="shrink-0" /> : <ChevronDown size={14} className="shrink-0" />}
+              </button>
+              {open ? (
+                <ul className="mb-1 mt-0.5 space-y-0.5">
+                  {s.items.map((it) => (
+                    <li key={it.key}>
+                      <Link href={it.href} title={it.label} onClick={() => setDrawer(false)} className={`${pill(isActive(it.href) && !(it.href.includes("?") && !pathname.includes("?")))} py-1.5 pl-11 text-[12.5px]`}>
+                        <span className="flex-1 truncate">{it.label}</span>
+                        {it.badge ? <span className={badgeCls}>{it.badge}</span> : null}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </div>
+          );
+        })}
+      </div>
     </nav>
   );
 
   const brand = (
-    <div className="flex h-16 shrink-0 items-center gap-2.5 px-4">
+    <div className="flex h-16 shrink-0 items-center gap-2.5 px-5">
       <span className="text-[17px] font-bold leading-[1.05] tracking-tight">{collapsed ? "L" : <>Lanka<br />NewHomes</>}</span>
-      {collapsed ? null : <span className="ml-auto border border-line px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted">{d.role}</span>}
+      {collapsed ? null : <span className="ml-auto rounded-full bg-side-active px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-side-text">{d.role}</span>}
     </div>
   );
 
   return (
     <div className="flex min-h-screen bg-bg text-fg">
-      <aside className={`sticky top-0 hidden h-screen shrink-0 flex-col border-r border-line bg-bg transition-[width] lg:flex ${collapsed ? "w-[64px]" : "w-72"}`}>
-        {brand}
-        {nav}
-        <button type="button" onClick={() => setCollapsed(!collapsed)} className="flex items-center gap-2 border-t border-line px-4 py-3 text-xs text-muted hover:text-fg">
-          {collapsed ? <PanelLeftOpen size={16} /> : <><PanelLeftClose size={16} /> Collapse</>}
-        </button>
+      <aside className={`sticky top-0 hidden h-screen shrink-0 p-3 transition-[width] lg:block ${collapsed ? "w-[88px]" : "w-[296px]"}`}>
+        <div className="flex h-full flex-col overflow-hidden rounded-[22px] bg-side">
+          {brand}
+          {nav}
+          <button type="button" onClick={() => setCollapsed(!collapsed)} className="flex items-center gap-2 px-5 py-3 text-xs text-side-text hover:text-fg">
+            {collapsed ? <PanelLeftOpen size={16} /> : <><PanelLeftClose size={16} /> Collapse</>}
+          </button>
+        </div>
       </aside>
 
       {drawer ? (
         <div className="fixed inset-0 z-40 lg:hidden">
           <div className="absolute inset-0 bg-black/40" onClick={() => setDrawer(false)} />
-          <aside className="absolute inset-y-0 left-0 flex w-72 max-w-[85vw] flex-col bg-bg">
+          <aside className="absolute inset-y-0 left-0 flex w-72 max-w-[85vw] flex-col bg-side">
             <div className="flex items-center justify-between pr-3">{brand}<button type="button" aria-label="Close menu" onClick={() => setDrawer(false)}><X size={18} /></button></div>
             {nav}
           </aside>

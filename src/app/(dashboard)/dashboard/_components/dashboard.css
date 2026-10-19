@@ -19,6 +19,10 @@
   --d-ok: #15803d;
   --d-warn: #b45309;
   --d-bad: #b91c1c;
+  /* Sidebar (owner, 2026-10-18): a soft rounded panel, white pill for the open page. */
+  --d-side: #efeeeb;
+  --d-side-active: #ffffff;
+  --d-side-text: #6f6c66;
 }
 .dark {
   --d-bg: #0f0f12;
@@ -36,6 +40,9 @@
   --d-ok: #4ade80;
   --d-warn: #fbbf24;
   --d-bad: #f87171;
+  --d-side: #1b1b20;
+  --d-side-active: #2a2a31;
+  --d-side-text: #a8a196;
 }
 
 @theme inline {
@@ -52,6 +59,9 @@
   --color-ok: var(--d-ok);
   --color-warn: var(--d-warn);
   --color-bad: var(--d-bad);
+  --color-side: var(--d-side);
+  --color-side-active: var(--d-side-active);
+  --color-side-text: var(--d-side-text);
   --font-sans: var(--font-avenir-trial), ui-sans-serif, system-ui, sans-serif;
   --shadow-card: none;
   /* The brand has square corners (account pages, listing cards, buttons); only pills and dots stay round. */
