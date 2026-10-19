@@ -24,6 +24,7 @@
 
 import type { Payload, PayloadRequest } from 'payload'
 import { renderLeadAlertEmailHTML } from '@/lib/lead-alert-email'
+import { leadNoticeSubject, renderLeadNoticeHTML } from '@/lib/lead-notice-email'
 import { renderLeadConfirmationEmailHTML } from '@/lib/lead-confirmation-email'
 import { leadReplyUrl } from '@/lib/lead-reply-links'
 import { buyerWhatsAppMessage, toWhatsAppNumber, whatsappChatHref } from '@/lib/whatsapp'
@@ -209,8 +210,6 @@ export async function sendLeadAlerts(payload: Payload, lead: LeadLike, opts: { r
       await payload.sendEmail({
         to: alertEmail,
         ...(ccEmails.length ? { cc: ccEmails } : {}),
-        // Owner (2026-10-18): every live lead alert is also copied to the no-reply mailbox (hidden copy). Never in test mode.
-        ...(routing.mode === 'test' ? {} : { bcc: ['no-reply@lankanewhomes.com'] }),
         from: process.env.EMAIL_FROM,
         subject: `${subjectPrefix}${brochure && !brochure.sent ? 'Brochure requested, please send it' : sourceLabel}: ${planName ? `${planName} · ` : ''}${projectName} — ${buyerName}${buyerPhone ? ` (${buyerPhone})` : ''}`,
         html: renderLeadAlertEmailHTML({ projectName, planName, sourceLabel, buyerName, buyerPhone, buyerEmail, preferredContact: preferred, message, receivedAt, replyLinks, dashboardUrl, brochure, projectUrl }),
@@ -232,6 +231,16 @@ export async function sendLeadAlerts(payload: Payload, lead: LeadLike, opts: { r
     } catch (error) {
       outcome.email = 'failed'
       payload.logger.error({ err: error, leadId: lead.id }, 'Lead alert email failed')
+    }
+  }
+
+  // Owner notice (2026-10-18): a short "you got a lead" email for the LankaNewHomes owner, separate from the developer's alert. Live leads only.
+  if (routing.mode !== 'test') {
+    try {
+      const notice = { buyerName, buyerPhone, buyerEmail, preferredContact: preferred, message, sourceLabel, projectName, planName, projectUrl, developerName: text(developer.name) || 'the developer', sentTo: [alertEmail, ...ccEmails].filter(Boolean), brochure, receivedAt, dashboardUrl }
+      await payload.sendEmail({ to: process.env.LEAD_NOTICE_TO || 'developers@lankanewhomes.com', from: process.env.EMAIL_FROM, subject: leadNoticeSubject(notice), html: renderLeadNoticeHTML(notice) })
+    } catch (error) {
+      payload.logger.error({ err: error, leadId: lead.id }, 'Lead notice email failed')
     }
   }
 

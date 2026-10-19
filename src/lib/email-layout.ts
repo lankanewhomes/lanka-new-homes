@@ -65,8 +65,23 @@ export function emailPanel(opts: { heading: string; bodyHtml: string; pill?: boo
   </td></tr></table></td></tr>`
 }
 
-export const emailButton = (label: string, href: string, secondary?: { label: string; href: string }) =>
-  `  <tr><td align="center" style="padding:22px 32px 8px;"><a href="${esc(href)}" style="display:inline-block;background:${ORANGE};color:${INK};text-decoration:none;font-size:16px;font-weight:700;padding:15px 30px;">${label}</a>${secondary ? `<div style="margin-top:14px;font-size:13px;"><a href="${esc(secondary.href)}" style="color:${INK};">${secondary.label}</a></div>` : ''}</td></tr>`
+export const emailButton = (label: string, href: string, secondary?: { label: string; href: string }, color?: { bg: string; fg: string }) =>
+  `  <tr><td align="center" style="padding:22px 32px 8px;"><a href="${esc(href)}" style="display:inline-block;background:${color?.bg ?? ORANGE};color:${color?.fg ?? INK};text-decoration:none;font-size:16px;font-weight:700;padding:15px 30px;">${label}</a>${secondary ? `<div style="margin-top:14px;font-size:13px;"><a href="${esc(secondary.href)}" style="color:${INK};">${secondary.label}</a></div>` : ''}</td></tr>`
 
 export const emailSignoff = (extra = '') =>
   `  <tr><td style="padding:18px 32px 30px;font-size:15px;line-height:1.65;color:${TEXT};">${extra}<p style="margin:${extra ? '14px' : '0'} 0 0;">Warm regards,<br><strong>The LankaNewHomes team</strong><br><span style="color:${MUTED};font-size:13px;">developers@lankanewhomes.com</span></p></td></tr>`
+
+/** WhatsApp green, so a "reply on WhatsApp" button stands apart from the orange action buttons (owner, 2026-10-18). */
+export const WHATSAPP_BUTTON = { bg: '#25d366', fg: '#ffffff' }
+
+/** A label / value table in a bordered, tinted card with the orange left rule. Values are HTML (already escaped by the caller). */
+export function emailFacts(rows: [string, string][]): string {
+  const body = rows.filter(([, v]) => v).map(([a, b]) => `<tr><td valign="top" style="padding:7px 0;font-size:14px;color:${MUTED};width:34%;border-top:1px solid ${LINE};">${a}</td><td valign="top" style="padding:7px 0;font-size:14px;color:${INK};font-weight:700;border-top:1px solid ${LINE};">${b}</td></tr>`).join('')
+  return `  <tr><td style="padding:14px 32px 6px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid ${LINE};border-left:4px solid ${ORANGE};background:#faf7f2;"><tr><td style="padding:10px 20px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0">${body}</table></td></tr></table></td></tr>`
+}
+
+/** Several buttons side by side (they wrap on a phone). Each can have its own colour. */
+export function emailButtonRow(buttons: { label: string; href: string; bg?: string; fg?: string }[]): string {
+  const cells = buttons.map((b) => `<td style="padding:0 6px 8px;"><a href="${esc(b.href)}" style="display:inline-block;background:${b.bg ?? ORANGE};color:${b.fg ?? INK};text-decoration:none;font-size:15px;font-weight:700;padding:13px 22px;">${b.label}</a></td>`).join('')
+  return `  <tr><td align="center" style="padding:20px 26px 6px;"><table role="presentation" cellpadding="0" cellspacing="0"><tr>${cells}</tr></table></td></tr>`
+}
