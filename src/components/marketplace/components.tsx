@@ -376,7 +376,7 @@ function logListingEvent(endpoint: string, ga4EventName: string, projectSlug: st
   fetch(endpoint, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ projectSlug, sessionId, trafficSource }),
+    body: JSON.stringify({ projectSlug, sessionId, trafficSource, utm: getStoredUtmParams() }),
     keepalive: true,
   }).catch(() => {});
   trackEvent(ga4EventName, { listing_id: projectSlug, listing_name: listingName });
@@ -2252,6 +2252,7 @@ export function RequestInfoDialog({
           marketingOptIn: keepPosted,
           sessionId: getSessionId(),
           trafficSource: getTrafficSource(),
+          utm: getStoredUtmParams(),
           isBrochureRequest: isBrochure,
           floorPlanName: planLabel || undefined,
         }),

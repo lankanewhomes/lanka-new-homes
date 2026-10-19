@@ -27,6 +27,7 @@ type Summary = {
   byListing: Listing[];
   byDeveloper?: Dev[];
   trend: { date: string; count: number }[];
+  socialCampaigns?: { source: string; campaign: string; projectName: string; views: number; contacts: number; total: number }[];
   leads?: {
     total: number;
     stages: { status: string; label: string; count: number }[];
@@ -196,6 +197,25 @@ export function AnalyticsPage() {
             {data ? <Bars rows={data.deviceTypes} empty="No visits in this range yet." /> : <div className="d-skeleton h-40" />}
           </section>
         </div>
+
+        <section className="mt-5 border border-line bg-panel" aria-label="Social posts">
+          <div className="border-b border-line px-4 py-3"><h2 className="font-semibold">Social posts</h2><p className="text-xs text-muted">Visits and contact actions that came in on your Instagram and Facebook post links (the tracking links made on the Create a post page).</p></div>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[560px] text-sm">
+              <thead><tr className="border-b border-line text-left text-xs font-semibold uppercase tracking-wide text-muted"><th className="px-4 py-2.5">Where</th><th className="px-3 py-2.5">Listing / post</th><th className="px-3 py-2.5 text-right">Views</th><th className="px-3 py-2.5 text-right">Contact actions</th></tr></thead>
+              <tbody>
+                {!data ? <tr><td colSpan={4} className="px-4 py-3"><div className="d-skeleton h-5 w-full" /></td></tr> : (data.socialCampaigns ?? []).length === 0 ? <tr><td colSpan={4} className="px-4 py-8 text-center text-muted">No visits from social post links in this range yet.</td></tr> : (data.socialCampaigns ?? []).slice(0, 20).map((r) => (
+                  <tr key={`${r.source}|${r.campaign}`} className="border-b border-line last:border-0 hover:bg-subtle/60">
+                    <td className="px-4 py-2.5 font-medium capitalize">{r.source}</td>
+                    <td className="px-3 py-2.5">{r.projectName || r.campaign}<span className="block text-xs text-muted">{r.campaign}</span></td>
+                    <td className="px-3 py-2.5 text-right tabular-nums">{n(r.views)}</td>
+                    <td className="px-3 py-2.5 text-right font-medium tabular-nums">{n(r.contacts)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
 
         <section className="mt-5 border border-line bg-panel">
           <div className="flex items-center justify-between border-b border-line px-4 py-3"><h2 className="font-semibold">{admin ? "Top listings" : "Your listings"}</h2><Link href="/dashboard/analytics/events" className="inline-flex items-center gap-0.5 text-xs underline">Raw events <ArrowUpRight size={12} /></Link></div>

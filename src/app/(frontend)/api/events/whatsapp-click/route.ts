@@ -18,6 +18,7 @@ export async function POST(req: Request) {
       eventType: "whatsapp_click",
       sessionId: body.sessionId,
       trafficSource: body.trafficSource,
+        utm: body.utm,
     });
   } catch (error) {
     console.error("Failed to log whatsapp_click analytics event", error);

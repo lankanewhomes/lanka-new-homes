@@ -21,6 +21,7 @@ export async function POST(req: Request) {
       eventType: "phone_click",
       sessionId: body.sessionId,
       trafficSource: body.trafficSource,
+        utm: body.utm,
     });
   } catch (error) {
     console.error("Failed to log phone_click analytics event", error);

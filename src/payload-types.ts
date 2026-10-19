@@ -8097,6 +8097,15 @@ export interface Analytics {
    */
   traffic_source?: string | null;
   referrer?: string | null;
+  /**
+   * From the link the visitor came in on, e.g. instagram or facebook (our social post links).
+   */
+  utm_source?: string | null;
+  utm_medium?: string | null;
+  /**
+   * e.g. mira-weligama-social-2026-10: which listing's post the visitor clicked.
+   */
+  utm_campaign?: string | null;
   city?: string | null;
   region?: string | null;
   device_type?: ('desktop' | 'mobile' | 'tablet' | 'unknown') | null;
@@ -9996,6 +10005,9 @@ export interface AnalyticsSelect<T extends boolean = true> {
   is_bot?: T;
   traffic_source?: T;
   referrer?: T;
+  utm_source?: T;
+  utm_medium?: T;
+  utm_campaign?: T;
   city?: T;
   region?: T;
   device_type?: T;

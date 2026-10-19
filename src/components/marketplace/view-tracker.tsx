@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { trackEvent } from "@/lib/ga4";
+import { captureUtmParams, getStoredUtmParams, getTrafficSource, trackEvent } from "@/lib/ga4";
 import { isInternalBrowser } from "@/lib/internal-traffic";
 
 export const SESSION_KEY = "newhomessrilanka-session-id";
@@ -26,11 +26,12 @@ export function ProjectViewTracker({
   useEffect(() => {
     if (isInternalBrowser()) return; // the owner's own visits are never counted
     const sessionId = getSessionId();
+    captureUtmParams(); // first touch of the session: make sure the landing link's utm_* are stored before this view is sent
 
     fetch("/api/events/view", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ projectSlug, developerSlug, sessionId }),
+      body: JSON.stringify({ projectSlug, developerSlug, sessionId, trafficSource: getTrafficSource(), utm: getStoredUtmParams() }),
     }).catch(() => {
       // No-op for UI mode.
     });

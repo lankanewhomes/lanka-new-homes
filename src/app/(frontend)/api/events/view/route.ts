@@ -31,6 +31,7 @@ export async function POST(req: Request) {
         eventType: "view",
         sessionId: body.sessionId,
         trafficSource: body.trafficSource,
+        utm: body.utm,
       });
     } catch (error) {
       console.error("Failed to log view analytics event", error);

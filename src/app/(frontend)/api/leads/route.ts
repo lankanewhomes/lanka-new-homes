@@ -78,7 +78,7 @@ export async function POST(req: Request) {
           // Also enriches the Analytics "lead_submitted" event that Leads'
           // own afterChange hook (logLeadSubmitted) auto-creates — see
           // hooks/increment-counts.ts's analyticsEnrichment context read.
-          const analyticsEnrichment = buildEventEnrichment(req, { sessionId: body.sessionId, trafficSource: body.trafficSource });
+          const analyticsEnrichment = buildEventEnrichment(req, { sessionId: body.sessionId, trafficSource: body.trafficSource, utm: body.utm });
           // Where the buyer was (country/city from Vercel's geo headers,
           // device, how they arrived) — shown to admins on Lead activity.
           const origin = requestOrigin(req);

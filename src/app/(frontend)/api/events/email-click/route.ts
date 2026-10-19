@@ -21,6 +21,7 @@ export async function POST(req: Request) {
       eventType: "email_click",
       sessionId: body.sessionId,
       trafficSource: body.trafficSource,
+        utm: body.utm,
     });
   } catch (error) {
     console.error("Failed to log email_click analytics event", error);

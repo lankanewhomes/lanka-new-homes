@@ -8,6 +8,9 @@ import { isInternalRequest } from "@/lib/internal-traffic";
 export type EventEnrichment = {
   session_id?: string;
   traffic_source?: string;
+  utm_source?: string;
+  utm_medium?: string;
+  utm_campaign?: string;
   referrer?: string;
   city?: string;
   region?: string;
@@ -59,7 +62,10 @@ export function classifyReferrer(referrer: string | null, siteHost: string): str
   }
 }
 
-export function buildEventEnrichment(request: Request, body: { sessionId?: unknown; trafficSource?: unknown }): EventEnrichment {
+const utmText = (v: unknown) => (typeof v === "string" && v.trim() ? v.trim().slice(0, 100) : undefined);
+
+export function buildEventEnrichment(request: Request, body: { sessionId?: unknown; trafficSource?: unknown; utm?: unknown }): EventEnrichment {
+  const utm = (body.utm && typeof body.utm === "object" ? body.utm : {}) as Record<string, unknown>;
   const userAgent = request.headers.get("user-agent");
   const referrer = request.headers.get("referer");
   const { city, region } = getRequestGeo(request.headers);
@@ -68,6 +74,9 @@ export function buildEventEnrichment(request: Request, body: { sessionId?: unkno
   return {
     session_id: typeof body.sessionId === "string" ? body.sessionId : undefined,
     traffic_source: typeof body.trafficSource === "string" ? body.trafficSource : classifyReferrer(referrer, siteHost),
+    utm_source: utmText(utm.utm_source),
+    utm_medium: utmText(utm.utm_medium),
+    utm_campaign: utmText(utm.utm_campaign),
     referrer: referrer ?? undefined,
     city,
     region,
@@ -89,7 +98,7 @@ async function getPayloadInstance(): Promise<Payload> {
 // visitor-facing action this is attached to).
 export async function logRawAnalyticsEvent(
   request: Request,
-  args: { projectSlug: string; eventType: "view" | "brochure_download" | "phone_click" | "whatsapp_click" | "email_click"; sourcePage?: string; sessionId?: unknown; trafficSource?: unknown },
+  args: { projectSlug: string; eventType: "view" | "brochure_download" | "phone_click" | "whatsapp_click" | "email_click"; sourcePage?: string; sessionId?: unknown; trafficSource?: unknown; utm?: unknown },
 ): Promise<void> {
   if (isInternalRequest(request)) return; // the owner's own traffic is never counted
   const payload = await getPayloadInstance();
@@ -103,7 +112,7 @@ export async function logRawAnalyticsEvent(
   const projectDoc = projectRes.docs[0];
   if (!projectDoc) return;
 
-  const enrichment = buildEventEnrichment(request, { sessionId: args.sessionId, trafficSource: args.trafficSource });
+  const enrichment = buildEventEnrichment(request, { sessionId: args.sessionId, trafficSource: args.trafficSource, utm: args.utm });
 
   await payload.create({
     collection: "analytics",

@@ -20,6 +20,7 @@ export async function POST(req: Request) {
       eventType: "brochure_download",
       sessionId: body.sessionId,
       trafficSource: body.trafficSource,
+        utm: body.utm,
     });
   } catch (error) {
     console.error("Failed to log brochure_download analytics event", error);

@@ -6,6 +6,7 @@ import { fromAnalyticsStart } from '@/lib/analytics-start'
 export type AnalyticsBreakdownRow = { key: string; label: string; count: number; percent: number }
 export type ListingBreakdownRow = { projectId: string | number; projectName: string; projectSlug: string; total: number; byType: Record<string, number> }
 export type DeveloperBreakdownRow = { developerId: string | number; developerName: string; total: number; byType: Record<string, number> }
+export type SocialCampaignRow = { source: string; campaign: string; projectName: string; views: number; contacts: number; total: number }
 export type TrendPoint = { date: string; count: number }
 
 export type AnalyticsSummaryResponse = {
@@ -18,6 +19,8 @@ export type AnalyticsSummaryResponse = {
   byListing: ListingBreakdownRow[]
   byDeveloper?: DeveloperBreakdownRow[]
   trend: TrendPoint[]
+  /** Visits and contact actions that came in on our Instagram / Facebook post links (utm_medium=social), one row per source and campaign. */
+  socialCampaigns: SocialCampaignRow[]
   /** Lead pipeline + response times (src/lib/lead-pipeline.ts); added by the endpoint. */
   leads?: LeadPipelineSummary
 }
@@ -88,6 +91,7 @@ export async function buildAnalyticsSummary(
   const trendCounts = new Map<string, number>()
   const listingMap = new Map<string, ListingBreakdownRow>()
   const developerMap = new Map<string, DeveloperBreakdownRow>()
+  const socialMap = new Map<string, SocialCampaignRow>()
 
   for (const doc of docs) {
     const eventType = String(doc.event_type ?? 'unknown')
@@ -95,6 +99,16 @@ export async function buildAnalyticsSummary(
 
     const source = (doc.traffic_source as string | null) || 'direct'
     trafficSourceCounts.set(source, (trafficSourceCounts.get(source) ?? 0) + 1)
+
+    if (String(doc.utm_medium ?? '').toLowerCase() === 'social' && doc.utm_source) {
+      const proj = doc.project as { name?: string } | string | number | null
+      const sKey = `${String(doc.utm_source).toLowerCase()}|${String(doc.utm_campaign ?? '')}`
+      const row = socialMap.get(sKey) ?? { source: String(doc.utm_source).toLowerCase(), campaign: String(doc.utm_campaign ?? ''), projectName: typeof proj === 'object' && proj ? (proj.name ?? '') : '', views: 0, contacts: 0, total: 0 }
+      row.total += 1
+      if (eventType === 'view') row.views += 1
+      else if (['lead_submitted', 'whatsapp_click', 'phone_click', 'email_click', 'brochure_download'].includes(eventType)) row.contacts += 1
+      socialMap.set(sKey, row)
+    }
 
     const device = (doc.device_type as string | null) || 'unknown'
     deviceTypeCounts.set(device, (deviceTypeCounts.get(device) ?? 0) + 1)
@@ -157,5 +171,6 @@ export async function buildAnalyticsSummary(
     byListing: Array.from(listingMap.values()).sort((a, b) => b.total - a.total),
     byDeveloper: includeByDeveloper ? Array.from(developerMap.values()).sort((a, b) => b.total - a.total) : undefined,
     trend,
+    socialCampaigns: Array.from(socialMap.values()).sort((a, b) => b.total - a.total),
   }
 }
