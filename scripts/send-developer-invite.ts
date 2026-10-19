@@ -38,7 +38,7 @@ const file = path.join(dir, `${slug}${toOverride ? '-to-' + toOverride.split('@'
 fs.writeFileSync(file, html)
 console.log({ to, subject, autoVerify: input.autoVerify, missingListings: input.missing?.length ?? 0, preview: file })
 if (!send) { console.log('Dry run: nothing sent. Add --send to send.'); process.exit(0) }
-const result = await sendMail({ from: 'LankaNewHomes <developers@lankanewhomes.com>', to, bcc: 'developers@lankanewhomes.com', replyTo: 'developers@lankanewhomes.com', subject, html, text: `Your ${dev.name} page is live on LankaNewHomes. Register and get Verified: https://www.lankanewhomes.com/developers/register` })
+const result = await sendMail({ from: 'LankaNewHomes <developers@lankanewhomes.com>', to, replyTo: 'developers@lankanewhomes.com', subject, html, text: `Your ${dev.name} page is live on LankaNewHomes. Register and get Verified: https://www.lankanewhomes.com/developers/register` })
 console.log('SENT, Resend id:', result.id)
 await payload.create({ collection: 'listing-todos' as never, overrideAccess: true, data: {
   title: `Verification invite emailed to ${to} on ${new Date().toISOString().slice(0, 10)}`, listingType: 'other', listingName: dev.name, done: true,
