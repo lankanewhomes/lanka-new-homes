@@ -70,14 +70,14 @@ export function AppShell({ children }: { children: ReactNode }) {
     return () => { alive = false; clearTimeout(t); };
   }, [q, d]);
 
-  // Sidebar (owner, 2026-10-18): a soft rounded panel; every group is a collapsible row with an icon and a chevron, its pages sit under it as
+  // Sidebar (owner, 2026-10-18): a soft grey panel with square corners (no radius anywhere in the sidebar); every group is a collapsible row with an icon and a chevron, its pages sit under it as
   // plain text, and the open page is a white pill. The group that holds the open page is open by default.
   const GROUP_ICON: Record<string, LucideIcon> = { Listings: Building, "Companies & Professionals": Users, Leads: MessageCircle, Content: Newspaper, Marketing: Megaphone, Mail, Billing: CreditCard, Analytics: BarChart3, Users, Settings, Other: Package };
   const isActive = (href: string) => { const base = href.split("?")[0]; return pathname === base || (base !== "/dashboard" && pathname.startsWith(`${base}/`)); };
   const holdsActive = (items: { href: string }[]) => items.some((it) => isActive(it.href));
   const groupOpen = (label: string, items: { href: string }[]) => (label in openGroups ? openGroups[label] : holdsActive(items));
-  const pill = (active: boolean) => `flex items-center gap-3 rounded-[12px] px-3 py-2 text-[13px] transition ${active ? "bg-side-active font-medium text-fg shadow-[0_1px_3px_rgba(0,0,0,0.08)]" : "text-side-text hover:bg-side-active/60 hover:text-fg"}`;
-  const badgeCls = "rounded-full bg-brand/15 px-2 py-0.5 text-[10px] font-semibold text-brand";
+  const pill = (active: boolean) => `flex items-center gap-3 px-3 py-2 text-[13px] transition ${active ? "bg-side-active font-medium text-fg shadow-[0_1px_3px_rgba(0,0,0,0.08)]" : "text-side-text hover:bg-side-active/60 hover:text-fg"}`;
+  const badgeCls = "bg-brand/15 px-2 py-0.5 text-[10px] font-semibold text-brand";
   const nav = (
     <nav className="d-scroll flex-1 overflow-y-auto px-3 pb-4">
       <ul className="space-y-0.5">
@@ -125,14 +125,14 @@ export function AppShell({ children }: { children: ReactNode }) {
   const brand = (
     <div className="flex h-16 shrink-0 items-center gap-2.5 px-5">
       <span className="text-[17px] font-bold leading-[1.05] tracking-tight">{collapsed ? "L" : <>Lanka<br />NewHomes</>}</span>
-      {collapsed ? null : <span className="ml-auto rounded-full bg-side-active px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-side-text">{d.role}</span>}
+      {collapsed ? null : <span className="ml-auto bg-side-active px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-side-text">{d.role}</span>}
     </div>
   );
 
   return (
     <div className="flex min-h-screen bg-bg text-fg">
       <aside className={`sticky top-0 hidden h-screen shrink-0 p-3 transition-[width] lg:block ${collapsed ? "w-[88px]" : "w-[296px]"}`}>
-        <div className="flex h-full flex-col overflow-hidden rounded-[22px] bg-side">
+        <div className="flex h-full flex-col overflow-hidden bg-side">
           {brand}
           {nav}
           <button type="button" onClick={() => setCollapsed(!collapsed)} className="flex items-center gap-2 px-5 py-3 text-xs text-side-text hover:text-fg">
