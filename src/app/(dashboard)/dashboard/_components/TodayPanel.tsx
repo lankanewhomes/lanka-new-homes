@@ -91,49 +91,52 @@ export function TodayPanel() {
   const notable = (events ?? []).filter((e) => e.event_type !== "view").slice(0, 12);
   const quiet = events !== null && events.length === 0;
 
+  const box = "border border-[#e6d3a3] bg-white";
   return (
-    <section className="border border-line bg-panel" aria-label="Today">
-      <div className="flex flex-wrap items-center gap-2 border-b border-line px-4 py-3">
-        <Sparkles size={16} className="text-brand" /><h2 className="font-semibold">Today</h2>
-        <span className="text-xs text-muted">since midnight, Toronto time · updates every minute</span>
-        <Link href="/dashboard/analytics" className="ml-auto text-xs underline">Full analytics</Link>
+    <section className="border border-[#e6d3a3] bg-[#fbf1dc] p-4 sm:p-6" aria-label="Today">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+        <Sparkles size={18} className="text-brand" /><h2 className="text-lg font-semibold">Today</h2>
+        <span className="text-sm text-muted">since midnight, Toronto time · updates every minute</span>
+        <Link href="/dashboard/analytics" className="ml-auto text-sm font-medium underline">Full analytics</Link>
       </div>
-      {error ? <p className="px-4 py-4 text-sm text-bad">{error}</p> : (
-        <div className="grid gap-0 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
-          <div className="grid grid-cols-2 gap-px bg-line sm:grid-cols-4 lg:grid-cols-2">
+      {error ? <p className="mt-4 text-sm text-bad">{error}</p> : (
+        <>
+          <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
             {TYPES.map((t) => (
-              <div key={t.key} className="bg-panel px-4 py-3">
-                <div className="flex items-center justify-between text-muted"><span className="d-label">{t.label}</span><t.icon size={14} /></div>
-                <p className={`mt-1 text-2xl font-semibold tabular-nums ${count(t.key) > 0 && t.key !== "view" ? "text-brand" : ""}`}>{events ? count(t.key) : "…"}</p>
+              <div key={t.key} className={`${box} p-4`}>
+                <div className="flex items-center justify-between gap-2 text-muted"><span className="text-sm">{t.label}</span><t.icon size={16} /></div>
+                <p className={`mt-3 text-3xl font-semibold tabular-nums ${count(t.key) > 0 && t.key !== "view" ? "text-brand" : ""}`}>{events ? count(t.key) : "…"}</p>
               </div>
             ))}
           </div>
-          <div className="border-t border-line lg:border-l lg:border-t-0">
-            <p className="d-label px-4 pt-3">What happened</p>
-            {events === null ? <div className="d-skeleton m-4 h-24" /> : quiet ? <p className="px-4 py-6 text-sm text-muted">Nothing yet today.</p> : notable.length === 0 ? <p className="px-4 py-6 text-sm text-muted">Only page views so far today ({count("view")}). No clicks or enquiries yet.</p> : (
-              <ul className="divide-y divide-line">
-                {notable.map((e, i) => (
-                  <li key={`${String(e.id ?? i)}`} className="flex items-baseline gap-3 px-4 py-2 text-sm">
-                    <span className="w-16 shrink-0 tabular-nums text-muted">{e.timestamp ? timeOf(String(e.timestamp)) : ""}</span>
-                    <span className="min-w-0 flex-1">A visitor {VERB[String(e.event_type)] ?? "did something on"} <Link href={`/dashboard/projects/${String(idOf(e.project))}`} className="font-medium hover:underline">{d.labelOf("projects", idOf(e.project))}</Link>{e.city ? <span className="text-muted"> ({String(e.city)})</span> : null}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
+          <div className={`mt-4 grid gap-4 ${d.role === "admin" ? "lg:grid-cols-2" : ""}`}>
+            <div className={box}>
+              <h3 className="border-b border-[#e6d3a3] px-4 py-3 font-semibold">What happened</h3>
+              {events === null ? <div className="d-skeleton m-4 h-24" /> : quiet ? <p className="px-4 py-6 text-sm text-muted">Nothing yet today.</p> : notable.length === 0 ? <p className="px-4 py-6 text-sm text-muted">Only page views so far today ({count("view")}). No clicks or enquiries yet.</p> : (
+                <ul className="divide-y divide-line">
+                  {notable.map((e, i) => (
+                    <li key={`${String(e.id ?? i)}`} className="flex items-baseline gap-3 px-4 py-2.5 text-sm">
+                      <span className="w-16 shrink-0 tabular-nums text-muted">{e.timestamp ? timeOf(String(e.timestamp)) : ""}</span>
+                      <span className="min-w-0 flex-1">A visitor {VERB[String(e.event_type)] ?? "did something on"} <Link href={`/dashboard/projects/${String(idOf(e.project))}`} className="font-medium hover:underline">{d.labelOf("projects", idOf(e.project))}</Link>{e.city ? <span className="text-muted"> ({String(e.city)})</span> : null}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            {d.role === "admin" ? <div className={box}>
+              <h3 className="border-b border-[#e6d3a3] px-4 py-3 font-semibold">On the platform</h3>
+              {happenings === null ? <div className="d-skeleton m-4 h-16" /> : happenings.length === 0 ? <p className="px-4 py-6 text-sm text-muted">No listings, emails, verifications or tasks yet today.</p> : (
+                <ul className="divide-y divide-line">
+                  {happenings.slice(0, 15).map((h, i) => {
+                    const Icon = h.icon;
+                    const body = <><span className="w-16 shrink-0 tabular-nums text-muted">{timeOf(h.at)}</span><Icon size={14} className="mt-0.5 shrink-0 text-muted" /><span className="min-w-0 flex-1"><b className="font-medium">{h.title}</b>{h.detail ? <span className="block truncate text-xs text-muted">{h.detail}</span> : null}</span></>;
+                    return <li key={`${h.at}-${i}`}>{h.href ? <Link href={h.href} className="flex items-start gap-3 px-4 py-2.5 text-sm hover:bg-subtle/60">{body}</Link> : <div className="flex items-start gap-3 px-4 py-2.5 text-sm">{body}</div>}</li>;
+                  })}
+                </ul>
+              )}
+            </div> : null}
           </div>
-          {d.role === "admin" ? <div className="border-t border-line lg:col-span-2">
-            <p className="d-label px-4 pt-3">On the platform</p>
-            {happenings === null ? <div className="d-skeleton m-4 h-16" /> : happenings.length === 0 ? <p className="px-4 py-5 text-sm text-muted">No listings, emails, verifications or tasks yet today.</p> : (
-              <ul className="divide-y divide-line">
-                {happenings.slice(0, 15).map((h, i) => {
-                  const Icon = h.icon;
-                  const body = <><span className="w-16 shrink-0 tabular-nums text-muted">{timeOf(h.at)}</span><Icon size={14} className="mt-0.5 shrink-0 text-muted" /><span className="min-w-0 flex-1"><b className="font-medium">{h.title}</b>{h.detail ? <span className="block truncate text-xs text-muted">{h.detail}</span> : null}</span></>;
-                  return <li key={`${h.at}-${i}`}>{h.href ? <Link href={h.href} className="flex items-start gap-3 px-4 py-2 text-sm hover:bg-subtle/60">{body}</Link> : <div className="flex items-start gap-3 px-4 py-2 text-sm">{body}</div>}</li>;
-                })}
-              </ul>
-            )}
-          </div> : null}
-        </div>
+        </>
       )}
     </section>
   );
