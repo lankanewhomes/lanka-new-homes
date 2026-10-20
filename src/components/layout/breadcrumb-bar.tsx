@@ -37,13 +37,15 @@ export function BreadcrumbBar() {
   const [projects, setProjects] = useState<Project[]>(staticProjects);
 
   useEffect(() => {
+    // The homepage renders no breadcrumb, so don't download the ~235 KB project list there.
+    if (!pathname || pathname === "/") return;
     fetch("/api/projects")
       .then((response) => response.json())
       .then((data) => {
         if (Array.isArray(data?.projects)) setProjects(data.projects);
       })
       .catch(() => {});
-  }, []);
+  }, [pathname === "/"]); // eslint-disable-line react-hooks/exhaustive-deps -- only needs to run once, the first time a non-home page shows
 
   if (!pathname || pathname === "/") {
     return null;
