@@ -2727,3 +2727,13 @@ Each Key Features tab has its own icon (`KEY_FEATURE_ICONS` in `src/components/m
 | Sustainability, Accessibility, Utilities, Road & Access | As named (Road & Access for land developments) | |
 
 Facts sheet, not Key Features: unit counts, unit types and sizes, floors/towers, bedroom/bathroom/living-room counts, areas ("Area"), balcony ("Balcony" fact), construction start, completion, location, developer, architect. Amenities, not Key Features: communal pool, gym, clubhouse, playground, rooftop, parking, BBQ. Documents go in Ownership & Services "Documents". Never leave a group without a tab name.
+
+## /links — Instagram link-in-bio page (2026-10-20)
+
+`src/app/(frontend)/links/page.tsx`. The @lankanewhomes Instagram bio points here once (Instagram only allows bio-link
+edits in the phone app); the page keeps itself current from the Payload `social-posts` collection: published Instagram
+posts, newest first, one card per listing, cover = the post's first slide (fallback: listing hero). Card links carry the
+same Instagram UTM tags as the captions (`utm_campaign=<slug>-social-<YYYY-MM of the post>`). Grid of plain listing
+cards (listing-card type scale): **4 columns on desktop** (owner: "make 4 columns"), 3 under 980px, 2 under 640px;
+"Latest post" badge on the first card; pill "Browse all new homes" button below. `noindex, follow`; revalidates every
+5 minutes. Classes: `.bio-links-*` at the end of globals.css.
