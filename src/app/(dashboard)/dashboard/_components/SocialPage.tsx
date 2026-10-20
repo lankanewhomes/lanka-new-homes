@@ -145,7 +145,7 @@ export function SocialPage() {
           {sync === undefined ? <span className="text-muted">Checking the last update…</span> : sync === null ? (
             <span className="text-muted">Updated every day at about 9:00 Sri Lanka time. No update has run yet.</span>
           ) : !sync.configured ? (
-            <span><b>Not connected to Instagram and Facebook yet.</b> {admin ? "Add META_PAGE_ID, META_PAGE_ACCESS_TOKEN and META_IG_USER_ID (a token that can read posts) and this page fills itself every day. Until then, add posts by link below." : "Posts will appear here once the accounts are connected."}</span>
+            <span>{admin ? <b>Not connected to Instagram and Facebook yet. </b> : null}{admin ? "Add META_PAGE_ID, META_PAGE_ACCESS_TOKEN and META_IG_USER_ID (a token that can read posts) and this page fills itself every day. Until then, add posts by link below." : "Every post about your listings on LankaNewHomes Instagram and Facebook shows here."}</span>
           ) : (
             <span>Last update {new Date(sync.at).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" })}: {sync.fetched} items found, {sync.created} new, {sync.matched} linked to a listing{admin ? `, ${sync.unmatched} not linked` : ""}. Updated every day at about 9:00 Sri Lanka time.{sync.errors.length ? <span className="text-bad"> {sync.errors[0]}</span> : null}</span>
           )}
