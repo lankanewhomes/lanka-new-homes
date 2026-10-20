@@ -616,8 +616,6 @@ export type Land = SeoFields & {
   ownershipServices?: KeyFeatureCategory[];
   /** Individual plots/lots within this land development — the "Floor Plans" equivalent for a subdivided parcel. Omit when the listing is a single, unsubdivided parcel. */
   plots?: LandPlot[];
-  /** Test feature: clubhouse, pool, model home, parks and roads drawn on the interactive lot map (demo preview only). */
-  siteMapLandmarks?: SiteMapLandmark[];
   /** Total plot count when the developer publishes only a number (e.g. "Only 12 exclusive plots"), not individual plot data — falls back to plots.length when both are set. */
   plotCount?: number;
   status: "Available" | "Reserved" | "Sold";
@@ -662,13 +660,7 @@ export type LandPlot = {
   /** Missing when the developer does not say; never assumed. */
   status?: "Available" | "Reserved" | "Sold";
   image?: string;
-  /** Test feature (interactive lot map, owner 2026-10-19): the phase this lot belongs to, e.g. "Phase 2". Only used by the demo preview. */
-  phase?: string;
-  /** Test feature: the lot's outline on the site map, as SVG polygon points in a 1000 x 700 space, e.g. "100,100 180,100 180,160 100,160". */
-  shape?: string;
 };
-
-export type SiteMapLandmark = { label: string; kind: "clubhouse" | "pool" | "model-home" | "park" | "road" | "gate"; shape: string };
 
 export type Lead = {
   id: string;
