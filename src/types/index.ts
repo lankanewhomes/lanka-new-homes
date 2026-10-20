@@ -668,7 +668,7 @@ export type LandPlot = {
   shape?: string;
 };
 
-export type SiteMapLandmark = { label: string; kind: "clubhouse" | "pool" | "model-home" | "park" | "road" | "gate" | "tree"; shape: string; /** Text rotation in degrees (roads). A tree is a single "x,y" point. */ angle?: number };
+export type SiteMapLandmark = { label: string; kind: "clubhouse" | "pool" | "model-home" | "park" | "road" | "gate"; shape: string };
 
 export type Lead = {
   id: string;
