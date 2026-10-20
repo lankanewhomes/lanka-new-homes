@@ -18,7 +18,7 @@ import type { Row, SchemaField } from "../_mock/types";
 // tabs, arrays and show/hide conditions match /cms. Saving writes to the in-memory mock store and shows a toast.
 
 
-function Form({ title, kind, backHref, fields, initial, isNew, canDelete, onSave, onDelete, onDuplicate, liveUrl, statusChips, heroStat, heroExtraStats, heroNote, engagement }: {
+function Form({ title, kind, backHref, fields, initial, isNew, canDelete, onSave, onDelete, onDuplicate, liveUrl, statusChips, heroStat, heroExtraStats, heroNote, engagement, socialPosts }: {
   title: string;
   kind: string;
   backHref: string;
@@ -37,6 +37,8 @@ function Form({ title, kind, backHref, fields, initial, isNew, canDelete, onSave
   heroNote?: string;
   /** Always-visible engagement counters (views, WhatsApp, phone, email, enquiries...). */
   engagement?: { label: string; value: number }[];
+  /** Social posts made for this listing (Instagram / Facebook), shown under the counters. */
+  socialPosts?: { id: string | number; platform: string; status: string; date: string; link: string }[];
 }) {
   const d = useDash();
   const router = useRouter();
@@ -98,6 +100,22 @@ function Form({ title, kind, backHref, fields, initial, isNew, canDelete, onSave
             {engagement.map((t) => <div key={t.label} className="border border-line bg-panel p-3"><p className="text-xs text-muted">{t.label}</p><p className="mt-1 text-xl font-semibold tabular-nums">{t.value.toLocaleString("en-LK")}</p></div>)}
           </div>
           <p className="mt-1.5 text-xs text-muted">Real visits and clicks counted on the live site (your own browser and bots are not counted).</p>
+        </section>
+      ) : null}
+      {socialPosts ? (
+        <section aria-label="Social posts" className="mb-4 border border-line bg-panel p-3">
+          <p className="text-xs text-muted">Social posts</p>
+          {socialPosts.length === 0 ? <p className="mt-1 text-sm text-muted">No social posts made for this listing yet.</p> : (
+            <ul className="mt-1 divide-y divide-line text-sm">
+              {socialPosts.map((p) => (
+                <li key={p.id} className="flex flex-wrap items-center gap-x-3 py-1.5">
+                  <span className="font-medium">{p.platform === "instagram" ? "Instagram" : "Facebook"}</span>
+                  <span className="text-muted">{p.status === "published" ? "Posted" : p.status === "scheduled" ? "Scheduled" : p.status === "processing" ? "Processing" : "Not posted yet"}{p.date ? ` · ${p.date}` : ""}</span>
+                  {p.link ? <a href={p.link} target="_blank" rel="noreferrer" className="underline">View post</a> : null}
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
       ) : null}
       <div className="rounded-xl border border-line bg-panel p-4 shadow-card sm:p-6">
@@ -163,6 +181,16 @@ export function CollectionEdit({ slug, id }: { slug: string; id: string }) {
       .then((r) => { if (!alive) return; const sum: Record<string, number> = {}; for (const row of r.docs) for (const k of ["view_count", "save_count", "lead_count", "download_count", "phone_click_count", "whatsapp_click_count", "email_click_count"]) sum[k] = (sum[k] ?? 0) + (typeof row[k] === "number" ? (row[k] as number) : 0); setDevEng(sum); }).catch(() => undefined);
     return () => { alive = false; };
   }, [slug, id, isNew, loaded]);
+
+  const [socialRows, setSocialRows] = useState<{ id: string | number; platform: string; status: string; date: string; link: string }[] | null>(null);
+  useEffect(() => {
+    if (slug !== "projects" || isNew) return;
+    let alive = true;
+    apiFind("social-posts", { limit: 20, sort: "-postedAt", where: { project: { equals: Number(id) } } })
+      .then((r) => { if (alive) setSocialRows(r.docs.filter((x) => x.status !== "failed" && x.status !== "dry_run").map((x) => ({ id: x.id, platform: String(x.platform ?? ""), status: String(x.status ?? ""), date: typeof x.postedAt === "string" ? new Date(x.postedAt).toLocaleDateString("en-CA", { timeZone: "America/Toronto", year: "numeric", month: "short", day: "numeric" }) : "", link: typeof x.permalink === "string" ? x.permalink : "" }))); })
+      .catch(() => undefined);
+    return () => { alive = false; };
+  }, [slug, id, isNew]);
 
   useEffect(() => {
     if (!schema) return;
@@ -233,6 +261,7 @@ export function CollectionEdit({ slug, id }: { slug: string; id: string }) {
       heroExtraStats={heroExtraStats}
       heroNote={heroNote}
       engagement={engagement}
+      socialPosts={slug === "projects" && socialRows ? socialRows : undefined}
       statusChips={(r) => [
         ...(typeof r.isPublished === "boolean" ? [{ value: r.isPublished ? "published" : "draft", label: r.isPublished ? "Published" : "Draft" }] : []),
         ...(typeof r.status === "string" && r.status ? [{ value: r.status }] : []),
