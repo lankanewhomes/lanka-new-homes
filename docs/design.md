@@ -2733,7 +2733,8 @@ Facts sheet, not Key Features: unit counts, unit types and sizes, floors/towers,
 `src/app/(frontend)/links/page.tsx`. The @lankanewhomes Instagram bio points here once (Instagram only allows bio-link
 edits in the phone app); the page keeps itself current from the Payload `social-posts` collection: published Instagram
 posts, newest first, one card per listing, cover = the post's first slide (fallback: listing hero). Card links carry the
-same Instagram UTM tags as the captions (`utm_campaign=<slug>-social-<YYYY-MM of the post>`). Grid of plain listing
-cards (listing-card type scale): **4 columns on desktop** (owner: "make 4 columns"), 3 under 980px, 2 under 640px;
-"Latest post" badge on the first card; pill "Browse all new homes" button below. `noindex, follow`; revalidates every
-5 minutes. Classes: `.bio-links-*` at the end of globals.css.
+same Instagram UTM tags as the captions (`utm_campaign=<slug>-social-<YYYY-MM of the post>`). Built in the same
+contained-box system as /neighborhoods (owner: "built the design like this"): dark split hero (Browse new homes /
+Follow @lankanewhomes, live-count panel: homes posted, latest post date), then a sage box of white `.fdv-box-card`
+listing cards with a 4:5 photo — **4 columns on desktop** (owner: "make 4 columns"), 3 under 900px, 2 under 640px.
+`noindex, follow`; revalidates every 5 minutes. Extra classes: `.bio-links-*` at the end of globals.css.

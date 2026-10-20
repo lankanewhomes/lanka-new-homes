@@ -55,44 +55,70 @@ async function getBioLinks(): Promise<BioLink[]> {
   }
 }
 
+const INSTAGRAM_URL = "https://www.instagram.com/lankanewhomes/";
+
 export default async function LinksPage() {
   const links = await getBioLinks();
+  const newest = links[0] ? new Date(links[0].postedAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "Asia/Colombo" }) : null;
 
+  // Owner, 2026-10-20: "built the design like this" (/neighborhoods) — same contained-box system: dark split hero with
+  // live counts, then a soft box of white cards (docs/design.md "Page section style: contained boxes").
   return (
-    <div className="bio-links-page">
-      <header className="bio-links-head">
-        <h1>Homes from our Instagram</h1>
-        <p>Tap a listing for floor plans, photos and prices. Newest first.</p>
-      </header>
+    <div className="fdv-page bio-links-page">
+      <section className="fdv-hero fdv-hero--split" aria-label="Homes from our Instagram">
+        <div className="fdv-hero-split-inner">
+          <div className="fdv-hero-content">
+            <h1 className="fdv-hero-headline">Homes from our Instagram.</h1>
+            <p className="fdv-hero-sub">
+              Every home we&apos;ve posted on Instagram, newest first. Tap a listing for floor plans, photos and prices.
+            </p>
+            <div className="fdv-hero-ctas">
+              <Link href="/projects?utm_source=instagram&utm_medium=social&utm_campaign=bio-links" className="fdv-cta-final-button">Browse new homes</Link>
+              <a href={INSTAGRAM_URL} className="fdv-cta-secondary fdv-hero-explore-link" target="_blank" rel="noopener noreferrer">Follow @lankanewhomes</a>
+            </div>
+          </div>
+          <div className="about-hero-panel">
+            <dl className="about-hero-panel-grid" aria-label="Instagram posts by the numbers">
+              <div className="about-hero-panel-stat">
+                <dd>{links.length}</dd>
+                <dt>Homes posted</dt>
+              </div>
+              <div className="about-hero-panel-stat">
+                <dd>{newest ?? "–"}</dd>
+                <dt>Latest post</dt>
+              </div>
+            </dl>
+            <p className="fdv-hero-mock-caption">Live from our Instagram posts.</p>
+          </div>
+        </div>
+      </section>
 
-      {links.length ? (
-        <ul className="bio-links-list">
-          {links.map((link, index) => (
-            <li key={link.slug}>
-              <a href={link.href} className="bio-links-card">
+      <section className="fdv-box fdv-box--sage" id="latest" aria-label="Latest posts">
+        <div className="wdx-section-head">
+          <h2>Latest posts.</h2>
+          <p>The homes from our Instagram, newest first.</p>
+        </div>
+        {links.length ? (
+          <div className="fdv-box-grid fdv-box-grid--4 bio-links-grid">
+            {links.map((link, index) => (
+              <a key={link.slug} href={link.href} className="fdv-box-card fdv-box-card-link bio-links-card">
                 <span className="bio-links-media">
                   {link.image ? (
                     // eslint-disable-next-line @next/next/no-img-element -- remote R2 images, same as the listing cards
-                    <img src={link.image} alt={link.name} loading={index < 2 ? "eager" : "lazy"} />
+                    <img src={link.image} alt={link.name} loading={index < 4 ? "eager" : "lazy"} />
                   ) : null}
                   {index === 0 ? <span className="bio-links-badge">Latest post</span> : null}
                 </span>
-                <span className="bio-links-body">
-                  <span className="bio-links-name">{link.name}</span>
-                  {link.area ? <span className="bio-links-area">{link.area}</span> : null}
-                  {link.price ? <span className="bio-links-price">{link.price}</span> : null}
-                </span>
+                <h3>{link.name}</h3>
+                {link.area ? <p>{link.area}</p> : null}
+                {link.price ? <p className="guides-card-who">{link.price}</p> : null}
               </a>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="bio-links-empty">New posts are on their way. In the meantime, browse every listing below.</p>
-      )}
-
-      <Link href="/projects?utm_source=instagram&utm_medium=social&utm_campaign=bio-links" className="bio-links-all">
-        Browse all new homes in Sri Lanka
-      </Link>
+            ))}
+          </div>
+        ) : (
+          <p className="bio-links-empty">New posts are on their way. In the meantime, browse every listing.</p>
+        )}
+      </section>
     </div>
   );
 }
