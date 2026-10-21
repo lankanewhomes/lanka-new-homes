@@ -6,7 +6,7 @@ import { toWhatsAppNumber } from '@/lib/whatsapp'
 
 // Reminder emails for buyer enquiries nobody has answered (owner, 2026-10-21: "reminder email, that's smart"). A lead counts as unanswered
 // while its status is still "New" and no reply button in the alert was tapped. The developer gets a reminder 12 hours after the enquiry and a
-// last one at 48 hours, only between 08:00 and 20:00 Sri Lanka time. Same recipients as the instant alert (including an agency that handles
+// last one at 48 hours, only during working hours in Sri Lanka (09:00 to 17:00, Monday to Saturday). Same recipients as the instant alert (including an agency that handles
 // the sale). Test leads are never reminded. Nothing is emailed unless LEAD_REMINDERS_ENABLED=true; otherwise this only reports what it would send.
 // Run from the lead-alert-sweep cron (every 10 minutes).
 
@@ -16,10 +16,11 @@ const relId = (v: unknown) => (v && typeof v === 'object' && 'id' in v ? (v as {
 
 /** Hours after the enquiry at which reminder 1, 2… go out. */
 export const REMINDER_AFTER_HOURS = [12, 48]
-const SEND_FROM_HOUR = 8
-const SEND_UNTIL_HOUR = 20
+const SEND_FROM_HOUR = 9
+const SEND_UNTIL_HOUR = 17
 const BATCH = 10
 
+const colomboDay = (d: Date) => new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Colombo', weekday: 'short' }).format(d)
 const colomboHour = (d: Date) => Number(new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Colombo', hour: '2-digit', hour12: false }).format(d)) % 24
 
 export type ReminderResult = { id: string | number; reminder: number; to?: string; status: 'sent' | 'would-send' | 'skipped' | 'failed'; why?: string }
@@ -29,7 +30,7 @@ export async function sendLeadReminders(payload: Payload, opts: { now?: Date; en
   const enabled = opts.enabled ?? process.env.LEAD_REMINDERS_ENABLED === 'true'
   const results: ReminderResult[] = []
   const hour = colomboHour(now)
-  if (hour < SEND_FROM_HOUR || hour >= SEND_UNTIL_HOUR) return { enabled, checked: 0, results }
+  if (hour < SEND_FROM_HOUR || hour >= SEND_UNTIL_HOUR || colomboDay(now) === 'Sun') return { enabled, checked: 0, results }
 
   const found = await payload.find({
     collection: 'leads',
