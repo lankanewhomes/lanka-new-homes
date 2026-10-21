@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 import { sendLeadAlerts } from "@/lib/lead-alerts";
+import { sendLeadReminders } from "@/lib/lead-reminders";
 
 // Safety net for lead alerts (owner, 2026-10-13). The instant alert runs inside the lead-creation request, and on Cloudflare it can be
 // cut off before the email goes out (the 12 Oct Oceanista enquiry was never emailed to the developer). Every 10 minutes this finds
 // recent leads that still have no alert recorded and sends it. sendLeadAlerts records an alert summary on the lead, so each lead
-// is picked up once. Same auth as the other cron routes: `Authorization: Bearer $CRON_SECRET`.
+// is picked up once. The same run also sends reminders for enquiries still "New" after 12 and 48 hours (src/lib/lead-reminders.ts; off
+// unless LEAD_REMINDERS_ENABLED=true). Same auth as the other cron routes: `Authorization: Bearer $CRON_SECRET`.
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
@@ -36,5 +38,6 @@ export async function GET(request: Request) {
     const outcome = await sendLeadAlerts(payload, lead as never).catch(() => null);
     results.push({ id: lead.id, email: outcome?.email ?? "error" });
   }
-  return NextResponse.json({ checked: found.docs.length, results });
+  const reminders = await sendLeadReminders(payload).catch((error) => ({ error: error instanceof Error ? error.message : String(error) }));
+  return NextResponse.json({ checked: found.docs.length, results, reminders });
 }

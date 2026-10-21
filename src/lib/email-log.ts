@@ -11,6 +11,7 @@ const addr = (v: string) => (v.match(/<([^>]+)>/)?.[1] ?? v).trim().toLowerCase(
 export function classifyEmail(subject: string): string {
   const s = subject.toLowerCase()
   if (/verified developer/.test(s)) return 'Verified Developer'
+  if (/reminder/.test(s) && /lead|enquiry|inquiry/.test(s)) return 'Lead reminder'
   if (/new (lead|enquiry|inquiry)|enquiry|inquiry|lead/.test(s)) return 'Lead alert'
   if (/reset your|password/.test(s)) return 'Password'
   if (/confirm your|verify|verification/.test(s)) return 'Confirmation'

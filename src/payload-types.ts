@@ -7725,6 +7725,8 @@ export interface Lead {
    * When this lead first left "New".
    */
   first_response_at?: string | null;
+  reminder_count?: number | null;
+  last_reminder_at?: string | null;
   response_minutes?: number | null;
   /**
    * How the developer first answered — a tap on the alert’s reply buttons counts automatically.
@@ -7789,8 +7791,6 @@ export interface EmailLog {
   trackId?: string | null;
   clickCount?: number | null;
   firstClickedAt?: string | null;
-  openCount?: number | null;
-  firstOpenedAt?: string | null;
   clicks?:
     | {
         [k: string]: unknown;
@@ -7800,6 +7800,8 @@ export interface EmailLog {
     | number
     | boolean
     | null;
+  openCount?: number | null;
+  firstOpenedAt?: string | null;
   sentAt: string;
   updatedAt: string;
   createdAt: string;
@@ -9814,9 +9816,9 @@ export interface EmailLogSelect<T extends boolean = true> {
   trackId?: T;
   clickCount?: T;
   firstClickedAt?: T;
+  clicks?: T;
   openCount?: T;
   firstOpenedAt?: T;
-  clicks?: T;
   sentAt?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -9955,6 +9957,8 @@ export interface LeadsSelect<T extends boolean = true> {
   message?: T;
   status?: T;
   first_response_at?: T;
+  reminder_count?: T;
+  last_reminder_at?: T;
   response_minutes?: T;
   first_reply_via?: T;
   alert_summary?: T;

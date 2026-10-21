@@ -90,6 +90,9 @@ export const Leads: CollectionConfig = {
       access: { update: adminOnlyField },
       admin: { readOnly: true, position: 'sidebar', date: { pickerAppearance: 'dayAndTime' }, description: 'When this lead first left "New".' },
     },
+    // Reminder emails to the developer while the lead is still "New" (src/lib/lead-reminders.ts, sent from the lead-alert-sweep cron).
+    { name: 'reminder_count', type: 'number', defaultValue: 0, label: 'Reminders sent', access: { update: adminOnlyField }, admin: { readOnly: true, position: 'sidebar' } },
+    { name: 'last_reminder_at', type: 'date', label: 'Last reminder', access: { update: adminOnlyField }, admin: { readOnly: true, position: 'sidebar', date: { pickerAppearance: 'dayAndTime' } } },
     {
       name: 'response_minutes',
       type: 'number',
