@@ -2,7 +2,7 @@ import { toAbsoluteUrl, withSocial } from "@/lib/seo";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CheckCircle2, CircleDollarSign, Compass, HousePlus, Layers, MapPin, Ruler, Tag } from "lucide-react";
-import { getAllLands, getLandBySlug } from "@/lib/land-store";
+import { getLandBySlug, getSimilarLandCandidates } from "@/lib/land-store";
 import { buildLandDetailRows, formatLandSize, landToProjectShape } from "@/lib/land-to-project";
 import { getNeighborhoodBySlug } from "@/lib/neighborhood-store";
 import { pickSimilarListings } from "@/lib/similar-listings";
@@ -70,7 +70,7 @@ export default async function LandDetailPage({ params }: LandPageProps) {
   if (!land) return notFound();
 
   const project = landToProjectShape(land);
-  const otherLands = (await getAllLands()).filter((item) => item.slug !== land.slug).map(landToProjectShape);
+  const otherLands = (await getSimilarLandCandidates(land)).map(landToProjectShape);
   const similarListings = pickSimilarListings(project, otherLands, 4);
 
   // Land has no dedicated neighborhood relationship field (unlike Project) — its

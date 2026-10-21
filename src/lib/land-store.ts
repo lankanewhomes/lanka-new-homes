@@ -51,6 +51,30 @@ export async function getAllLands(): Promise<Land[]> {
   return [...(await sharedAllLands())];
 }
 
+// Candidates for the "Similar listings" rail on a land page. Loading every land (350 rows with their plots, many MB) on each cold
+// page render took 10+ seconds, so only the lands in the same district are read (falling back to a small mixed set when a
+// district has too few); the ranking itself is unchanged (similar-listings.ts scores district, city, price and status).
+export async function getSimilarLandCandidates(land: { slug: string; district?: string | null; city?: string | null; sellerSlug?: string | null }, limit = 60): Promise<Land[]> {
+  const pick = async (build: (q: ReturnType<typeof baseQuery>) => ReturnType<typeof baseQuery>) => {
+    const { data, error } = await retryQuery(() => build(baseQuery()).neq("slug", land.slug).limit(limit));
+    if (error) throw new Error(`Failed to load similar lands: ${error.message}`);
+    return (data ?? []).map((row) => rowToLand(row as LandRow));
+  };
+  // Same city first (the ranking gives it the most weight), then the rest of the district.
+  let rows = land.city ? await pick((q) => q.eq("city", land.city as string)) : [];
+  if (land.district && rows.length < limit) {
+    const seenCity = new Set(rows.map((r) => r.slug));
+    rows = [...rows, ...(await pick((q) => q.eq("district", land.district as string))).filter((r) => !seenCity.has(r.slug))].slice(0, limit * 2);
+  }
+  if (rows.length < 8) {
+    const extra = await pick((q) => q.eq("is_featured", true));
+    const seen = new Set(rows.map((r) => r.slug));
+    rows = [...rows, ...extra.filter((r) => !seen.has(r.slug))];
+  }
+  return rows;
+}
+const baseQuery = () => supabaseAdmin.from("lands").select("slug, data, created_at");
+
 export async function getLandBySlug(slug: string): Promise<Land | undefined> {
   const { data, error } = await supabaseAdmin.from("lands").select("slug, data, created_at").eq("slug", slug).maybeSingle();
   if (error) throw new Error(`Failed to load land ${slug}: ${error.message}`);

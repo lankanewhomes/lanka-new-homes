@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getAllLands, getLandBySlug } from "@/lib/land-store";
+import { getLandBySlug, getSimilarLandCandidates } from "@/lib/land-store";
 import { buildLandDetailRows, landToProjectShape } from "@/lib/land-to-project";
 import { getDeveloperBySlug } from "@/lib/developer-store";
 import { pickSimilarListings } from "@/lib/similar-listings";
@@ -69,7 +69,7 @@ export default async function LandPlotDetailPage({ params }: PlotPageProps) {
     developer = await getDeveloperBySlug(land.sellerSlug);
   }
 
-  const otherLands = (await getAllLands()).filter((item) => item.slug !== land.slug).map(landToProjectShape);
+  const otherLands = (await getSimilarLandCandidates(land)).map(landToProjectShape);
   const similarListings = pickSimilarListings(project, otherLands, 4);
 
   return (

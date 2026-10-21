@@ -3086,7 +3086,13 @@ function keyFeatureIcon(group: { key: string; label: string }): React.ComponentT
  * has no schema to enforce the newer type at read time. */
 function normalizeUnitFeaturesForDisplay(raw: unknown): { key: string; label: string; items: { field: string; value: string }[] }[] {
   if (!raw) return [];
-  if (Array.isArray(raw)) return raw as { key: string; label: string; items: { field: string; value: string }[] }[];
+  if (Array.isArray(raw)) {
+    // A group typed under "Other" in the CMS arrives with key: null and the text in key_other / label — never let a null key through.
+    return (raw as { key?: string | null; key_other?: string | null; label?: string | null; items?: { field: string; value: string }[] }[]).map((g, i) => {
+      const key = g.key || g.key_other || g.label || `group-${i}`;
+      return { key, label: g.label || key, items: g.items ?? [] };
+    });
+  }
 
   const legacy = raw as { indoor?: string[]; outdoor?: string[]; other?: string[] };
   const parseLines = (lines?: string[]) =>
