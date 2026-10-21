@@ -19,7 +19,7 @@ export function classifyEmail(subject: string): string {
   return 'Other'
 }
 
-export async function logEmailForDevelopers(message: Msg, resendId?: string): Promise<void> {
+export async function logEmailForDevelopers(message: Msg, resendId?: string, trackId?: string): Promise<void> {
   try {
     const recipients = [...new Set([...list(message.to), ...list(message.bcc)].map(addr).filter((e) => e.includes('@')))]
     if (!recipients.length) return
@@ -44,7 +44,7 @@ export async function logEmailForDevelopers(message: Msg, resendId?: string): Pr
         data: {
           developer: d.id, developerName: d.name, kind: classifyEmail(message.subject), subject: message.subject,
           toEmail: list(message.to).join(', '), fromEmail: message.from ?? 'no-reply@lankanewhomes.com', bccEmail: list(message.bcc).join(', ') || undefined,
-          htmlBody: message.html, textBody: message.text, resendId, sentAt: new Date().toISOString(),
+          htmlBody: message.html, textBody: message.text, resendId, trackId, sentAt: new Date().toISOString(),
         } as never,
       })
     }

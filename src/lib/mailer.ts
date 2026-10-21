@@ -24,7 +24,24 @@ function withName(from: string | undefined, fallbackName = 'LankaNewHomes') {
   return address.includes('<') ? address : `${fallbackName} <${address}>`
 }
 
-export async function sendMail(message: MailMessage): Promise<{ id?: string }> {
+export async function sendMail(initial: MailMessage): Promise<{ id?: string }> {
+  let message = initial
+  // Every link in the email goes through /e/<trackId> so clicks (WhatsApp, Call, Email, View listing…) are counted on the email's log row.
+  // Password-reset / verification / sign-in emails are left alone (see src/lib/email-tracking.ts).
+  let trackId: string | undefined
+  if (message.html) {
+    try {
+      const { classifyEmail } = await import('./email-log')
+      const kind = classifyEmail(message.subject)
+      if (kind !== 'Password' && kind !== 'Confirmation') {
+        const { newTrackId, trackLinks } = await import('./email-tracking')
+        trackId = newTrackId()
+        message = { ...message, html: trackLinks(message.html, trackId) }
+      }
+    } catch {
+      trackId = undefined /* tracking must never stop an email */
+    }
+  }
   const apiKey = process.env.RESEND_API_KEY || process.env.SMTP_PASS
   if (!apiKey) throw new Error('Email is not configured: set SMTP_PASS (the Resend API key).')
   const response = await fetch('https://api.resend.com/emails', {
@@ -48,7 +65,7 @@ export async function sendMail(message: MailMessage): Promise<{ id?: string }> {
   // Keep a copy on each developer's profile (best effort, never blocks the send).
   try {
     const { logEmailForDevelopers } = await import('./email-log')
-    await logEmailForDevelopers(message, body.id)
+    await logEmailForDevelopers(message, body.id, trackId)
   } catch {
     /* logging must never break mail */
   }

@@ -33,11 +33,26 @@ export function DeveloperEmailLog() {
           <button type="button" onClick={() => setOpen(open === r.id ? null : (r.id as string | number))} className="flex w-full items-start gap-3 px-4 py-3 text-left hover:bg-subtle/60">
             <span className="mt-0.5 shrink-0 border border-line bg-subtle px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide">{String(r.kind || "Email")}</span>
             <span className="min-w-0 flex-1"><b className="block truncate text-sm font-medium">{String(r.subject)}</b><i className="block truncate text-xs not-italic text-muted">to {String(r.toEmail ?? "")}{r.bccEmail ? `, copied to ${String(r.bccEmail)}` : ""}</i></span>
+            {Number(r.clickCount) > 0 ? <span className="shrink-0 border border-line bg-subtle px-2 py-0.5 text-[11px] font-semibold">{Number(r.clickCount)} {Number(r.clickCount) === 1 ? "click" : "clicks"}</span> : null}
             <span className="shrink-0 whitespace-nowrap text-xs text-muted">{r.sentAt ? new Date(String(r.sentAt)).toLocaleString("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "numeric", minute: "2-digit" }) : ""}</span>
           </button>
+          {open === r.id ? <Clicks clicks={r.clicks} /> : null}
           {open === r.id ? <iframe title="Email" sandbox="" srcDoc={String(r.htmlBody || `<pre style="white-space:pre-wrap;font-family:Arial">${String(r.textBody ?? "").replace(/</g, "&lt;")}</pre>`)} className="h-[520px] w-full border-t border-line bg-white" /> : null}
         </div>
       ))}
     </div>
+  );
+}
+
+/** Which buttons in an email were tapped (WhatsApp, Call, Email, View listing…), newest first. */
+function Clicks({ clicks }: { clicks: unknown }) {
+  const list = (Array.isArray(clicks) ? clicks : []) as { button?: string; at?: string; device?: string }[];
+  if (!list.length) return <p className="border-t border-line px-4 py-2 text-xs text-muted">No button clicked yet.</p>;
+  return (
+    <ul className="border-t border-line px-4 py-2 text-xs">
+      {[...list].reverse().map((c, i) => (
+        <li key={i} className="flex gap-3 py-0.5"><b className="w-40 shrink-0 truncate">{c.button || "Link"}</b><span className="text-muted">{c.at ? new Date(c.at).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }) : ""}{c.device ? ` · ${c.device}` : ""}</span></li>
+      ))}
+    </ul>
   );
 }

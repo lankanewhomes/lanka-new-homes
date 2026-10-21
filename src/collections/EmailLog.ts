@@ -22,6 +22,11 @@ export const EmailLog: CollectionConfig = {
     { name: 'htmlBody', type: 'textarea' },
     { name: 'textBody', type: 'textarea' },
     { name: 'resendId', type: 'text' },
+    { name: 'trackId', type: 'text', index: true, label: 'Tracking id', admin: { readOnly: true } },
+    // Filled by the /e/[id] click redirect (src/app/(frontend)/e/[id]/route.ts) with one SQL statement, not by Payload.
+    { name: 'clickCount', type: 'number', defaultValue: 0, admin: { readOnly: true } },
+    { name: 'firstClickedAt', type: 'date', admin: { readOnly: true, date: { pickerAppearance: 'dayAndTime' } } },
+    { name: 'clicks', type: 'json', admin: { readOnly: true } },
     { name: 'sentAt', type: 'date', required: true, index: true, admin: { date: { pickerAppearance: 'dayAndTime' } } },
   ],
 }

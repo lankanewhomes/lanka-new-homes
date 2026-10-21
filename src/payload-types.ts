@@ -7786,6 +7786,18 @@ export interface EmailLog {
   htmlBody?: string | null;
   textBody?: string | null;
   resendId?: string | null;
+  trackId?: string | null;
+  clickCount?: number | null;
+  firstClickedAt?: string | null;
+  clicks?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   sentAt: string;
   updatedAt: string;
   createdAt: string;
@@ -9797,6 +9809,10 @@ export interface EmailLogSelect<T extends boolean = true> {
   htmlBody?: T;
   textBody?: T;
   resendId?: T;
+  trackId?: T;
+  clickCount?: T;
+  firstClickedAt?: T;
+  clicks?: T;
   sentAt?: T;
   updatedAt?: T;
   createdAt?: T;
