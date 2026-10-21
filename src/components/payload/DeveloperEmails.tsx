@@ -33,8 +33,8 @@ export function DeveloperEmails() {
       .then(([j, log]) => {
         if (!alive) return
         if (j.error && !(log.docs ?? []).length) { setError(j.error); return }
-        const logged: Row[] = (log.docs ?? []).map((d: { id: number; subject: string; sentAt: string; fromEmail?: string; toEmail?: string; kind?: string; htmlBody?: string; textBody?: string; clickCount?: number; clicks?: { button?: string }[] }) => ({
-          id: LOG_BASE + d.id, subject: d.subject, snippet: `${d.kind ? `Automatic email: ${d.kind}` : 'Automatic email'}${d.clickCount ? ` · clicked: ${[...new Set((d.clicks ?? []).map((c) => c.button || 'Link'))].join(', ')}` : ''}`, receivedAt: d.sentAt, direction: 'sent' as const,
+        const logged: Row[] = (log.docs ?? []).map((d: { id: number; subject: string; sentAt: string; fromEmail?: string; toEmail?: string; kind?: string; htmlBody?: string; textBody?: string; clickCount?: number; openCount?: number; clicks?: { button?: string }[] }) => ({
+          id: LOG_BASE + d.id, subject: d.subject, snippet: `${d.kind ? `Automatic email: ${d.kind}` : 'Automatic email'}${d.openCount ? ` · opened${d.openCount > 1 ? ` ${d.openCount}×` : ''}` : ''}${d.clickCount ? ` · clicked: ${[...new Set((d.clicks ?? []).map((c) => c.button || 'Link'))].join(', ')}` : ''}`, receivedAt: d.sentAt, direction: 'sent' as const,
           accountEmail: 'LankaNewHomes (automatic)', from: { email: d.fromEmail ?? '' }, to: String(d.toEmail ?? '').split(',').map((e) => ({ email: e.trim() })).filter((t) => t.email),
         }))
         const bodies0: Record<number, Full | string> = {}

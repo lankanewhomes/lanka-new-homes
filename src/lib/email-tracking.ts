@@ -40,6 +40,12 @@ export function buttonLabel(url: string, anchorHtml: string): string {
 
 const SKIP = /\/api\/leads\/reply|\/e\/[A-Za-z0-9_-]+\?|[?&](token|code|key)=|\/reset-password|\/verify|magic|\/auth\//i
 
+/** A 1x1 image at the end of the email; loading it counts as an open (approximate: image-blocking clients never load it). */
+export function trackOpen(html: string, trackId: string): string {
+  const pixel = `<img src="${SITE}/e/${trackId}/open" width="1" height="1" alt="" style="display:block;border:0;width:1px;height:1px" />`
+  return /<\/body>/i.test(html) ? html.replace(/<\/body>/i, `${pixel}</body>`) : html + pixel
+}
+
 export function trackLinks(html: string, trackId: string): string {
   return html.replace(/<a\b([^>]*?)\bhref="([^"]*)"([^>]*)>([\s\S]*?)<\/a>/gi, (whole, pre: string, rawHref: string, post: string, inner: string) => {
     const url = decodeEntities(rawHref).trim()

@@ -7789,6 +7789,8 @@ export interface EmailLog {
   trackId?: string | null;
   clickCount?: number | null;
   firstClickedAt?: string | null;
+  openCount?: number | null;
+  firstOpenedAt?: string | null;
   clicks?:
     | {
         [k: string]: unknown;
@@ -9812,6 +9814,8 @@ export interface EmailLogSelect<T extends boolean = true> {
   trackId?: T;
   clickCount?: T;
   firstClickedAt?: T;
+  openCount?: T;
+  firstOpenedAt?: T;
   clicks?: T;
   sentAt?: T;
   updatedAt?: T;

@@ -33,6 +33,7 @@ export function DeveloperEmailLog() {
           <button type="button" onClick={() => setOpen(open === r.id ? null : (r.id as string | number))} className="flex w-full items-start gap-3 px-4 py-3 text-left hover:bg-subtle/60">
             <span className="mt-0.5 shrink-0 border border-line bg-subtle px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide">{String(r.kind || "Email")}</span>
             <span className="min-w-0 flex-1"><b className="block truncate text-sm font-medium">{String(r.subject)}</b><i className="block truncate text-xs not-italic text-muted">to {String(r.toEmail ?? "")}{r.bccEmail ? `, copied to ${String(r.bccEmail)}` : ""}</i></span>
+            {Number(r.openCount) > 0 ? <span className="shrink-0 border border-line bg-subtle px-2 py-0.5 text-[11px] font-semibold">Opened{Number(r.openCount) > 1 ? ` ${Number(r.openCount)}×` : ""}</span> : null}
             {Number(r.clickCount) > 0 ? <span className="shrink-0 border border-line bg-subtle px-2 py-0.5 text-[11px] font-semibold">{Number(r.clickCount)} {Number(r.clickCount) === 1 ? "click" : "clicks"}</span> : null}
             <span className="shrink-0 whitespace-nowrap text-xs text-muted">{r.sentAt ? new Date(String(r.sentAt)).toLocaleString("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "numeric", minute: "2-digit" }) : ""}</span>
           </button>

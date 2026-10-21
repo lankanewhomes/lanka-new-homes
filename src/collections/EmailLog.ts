@@ -27,6 +27,9 @@ export const EmailLog: CollectionConfig = {
     { name: 'clickCount', type: 'number', defaultValue: 0, admin: { readOnly: true } },
     { name: 'firstClickedAt', type: 'date', admin: { readOnly: true, date: { pickerAppearance: 'dayAndTime' } } },
     { name: 'clicks', type: 'json', admin: { readOnly: true } },
+    // Filled by the /e/[id]/open pixel (src/app/(frontend)/e/[id]/open/route.ts), also with one SQL statement.
+    { name: 'openCount', type: 'number', defaultValue: 0, admin: { readOnly: true } },
+    { name: 'firstOpenedAt', type: 'date', admin: { readOnly: true, date: { pickerAppearance: 'dayAndTime' } } },
     { name: 'sentAt', type: 'date', required: true, index: true, admin: { date: { pickerAppearance: 'dayAndTime' } } },
   ],
 }

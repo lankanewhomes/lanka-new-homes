@@ -34,9 +34,9 @@ export async function sendMail(initial: MailMessage): Promise<{ id?: string }> {
       const { classifyEmail } = await import('./email-log')
       const kind = classifyEmail(message.subject)
       if (kind !== 'Password' && kind !== 'Confirmation') {
-        const { newTrackId, trackLinks } = await import('./email-tracking')
+        const { newTrackId, trackLinks, trackOpen } = await import('./email-tracking')
         trackId = newTrackId()
-        message = { ...message, html: trackLinks(message.html, trackId) }
+        message = { ...message, html: trackOpen(trackLinks(message.html, trackId), trackId) }
       }
     } catch {
       trackId = undefined /* tracking must never stop an email */
