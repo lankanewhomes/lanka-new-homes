@@ -1,19 +1,5 @@
 {
-  "regions": [
-    "pdx1"
-  ],
-  "crons": [
-    {
-      "path": "/api/cron/subscription-expiry",
-      "schedule": "0 2 * * *"
-    },
-    {
-      "path": "/api/cron/social-sync",
-      "schedule": "30 3 * * *"
-    },
-    {
-      "path": "/api/mail/sync",
-      "schedule": "*/5 * * * *"
-    }
-  ]
+  "git": {
+    "deploymentEnabled": false
+  }
 }
