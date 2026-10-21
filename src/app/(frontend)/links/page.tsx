@@ -99,22 +99,29 @@ export default async function LinksPage() {
           <p>The homes from our Instagram, newest first.</p>
         </div>
         {links.length ? (
-          <div className="fdv-box-grid fdv-box-grid--4 bio-links-grid">
+          // Owner, 2026-10-21: rows like Instagram's own links sheet (round photo, bold name, small detail line, dividers).
+          <ul className="bio-links-list">
             {links.map((link, index) => (
-              <a key={link.slug} href={link.href} className="fdv-box-card fdv-box-card-link bio-links-card">
-                <span className="bio-links-media">
-                  {link.image ? (
-                    // eslint-disable-next-line @next/next/no-img-element -- remote R2 images, same as the listing cards
-                    <img src={link.image} alt={link.name} loading={index < 4 ? "eager" : "lazy"} />
-                  ) : null}
-                  {index === 0 ? <span className="bio-links-badge">Latest post</span> : null}
-                </span>
-                <h3>{link.name}</h3>
-                {link.area ? <p>{link.area}</p> : null}
-                {link.price ? <p className="guides-card-who">{link.price}</p> : null}
-              </a>
+              <li key={link.slug}>
+                <a href={link.href} className="bio-links-row">
+                  <span className="bio-links-thumb">
+                    {link.image ? (
+                      // eslint-disable-next-line @next/next/no-img-element -- remote R2 images, same as the listing cards
+                      <img src={link.image} alt="" loading={index < 8 ? "eager" : "lazy"} />
+                    ) : null}
+                  </span>
+                  <span className="bio-links-text">
+                    <span className="bio-links-name">
+                      {link.name}
+                      {index === 0 ? <span className="bio-links-badge">Latest</span> : null}
+                    </span>
+                    <span className="bio-links-meta">{[link.area, link.price].filter(Boolean).join(" · ")}</span>
+                  </span>
+                  <svg className="bio-links-arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+                </a>
+              </li>
             ))}
-          </div>
+          </ul>
         ) : (
           <p className="bio-links-empty">New posts are on their way. In the meantime, browse every listing.</p>
         )}

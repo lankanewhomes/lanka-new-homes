@@ -20649,14 +20649,20 @@ body:has(.compare-bar) {
 /* /links — Instagram link-in-bio page (owner, 2026-10-20). Same contained-box system as /neighborhoods (dark split hero,
    then a sage box of white .fdv-box-card cards). Listing grid: 4 columns on desktop (owner: "make 4 columns"), 3 on
    tablets, 2 on phones (most visitors arrive from the Instagram app). */
-.bio-links-card { display: flex; flex-direction: column; padding: 12px 12px 16px; color: inherit; }
-.bio-links-media { position: relative; display: block; aspect-ratio: 4 / 5; overflow: hidden; margin-bottom: 14px; background: #ececea; }
-.bio-links-media img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.25s ease; }
-.bio-links-card:hover .bio-links-media img { transform: scale(1.04); }
-.bio-links-badge { position: absolute; left: 8px; top: 8px; padding: 4px 8px; border-radius: 3px; background: rgba(20, 20, 20, 0.75); color: #fff; font-size: 10px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
-.bio-links-card h3 { margin: 0 0 6px; }
-.bio-links-card p { margin: 0; }
-.bio-links-card p + p { margin-top: 10px; }
+/* Owner, 2026-10-21: listings as rows like Instagram's own links sheet — round photo, bold name, small detail line,
+   divider lines; one white panel inside the sage box, 2 columns of rows on desktop, 1 on phones. */
+.bio-links-list { list-style: none; margin: 0; padding: 0 20px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 40px; border: 1px solid var(--fdv-line); background: #fff; }
+.bio-links-list li { border-bottom: 1px solid var(--fdv-line); }
+.bio-links-row { display: flex; align-items: center; gap: 16px; padding: 16px 0; color: #1f1f1f; text-decoration: none; }
+.bio-links-thumb { flex: 0 0 auto; width: 60px; height: 60px; border-radius: 50%; overflow: hidden; background: #ececea; }
+.bio-links-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.bio-links-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
+.bio-links-name { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 600; line-height: 1.25; color: #1a1a1a; }
+.bio-links-meta { font-size: 13px; color: #6b6355; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bio-links-badge { flex: 0 0 auto; padding: 3px 7px; border-radius: 3px; background: #1f1f1f; color: #fff; font-size: 10px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+.bio-links-arrow { flex: 0 0 auto; color: #9a9184; transition: transform 0.15s ease, color 0.15s ease; }
+.bio-links-row:hover .bio-links-name { text-decoration: underline; text-underline-offset: 3px; }
+.bio-links-row:hover .bio-links-arrow { color: #f47b36; transform: translateX(3px); }
 .bio-links-empty { margin: 0; font-size: 15px; color: #6b6355; }
-@media (max-width: 900px) { .fdv-box-grid--4.bio-links-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-@media (max-width: 640px) { .fdv-box-grid--4.bio-links-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; } .bio-links-card { padding: 8px 8px 12px; } }
+@media (max-width: 900px) { .bio-links-list { grid-template-columns: 1fr; padding: 0 16px; } }
+@media (max-width: 640px) { .bio-links-thumb { width: 52px; height: 52px; } .bio-links-name { font-size: 15px; } .bio-links-row { gap: 14px; padding: 14px 0; } }
