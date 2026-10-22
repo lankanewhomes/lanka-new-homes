@@ -1125,6 +1125,12 @@ reduce `.project-page-content`'s bottom padding from 140px to 48px
 (`:has(> .similar-listings-section)`): the 140px exists to clear the floating
 bar, but the footer follows this section, so it was just empty space.
 
+## Header order (owner, 2026-10-21)
+
+Desktop header, left to right: logo, search, New Homes / Land / Company, **Log in, then the EN language dropdown** (the dropdown used
+to sit beside the logo). Its menu opens right-aligned (`.language-dropdown--end`) so it stays on screen. On mobile the language switcher
+is still at the bottom of the menu panel.
+
 ## Languages (Sinhala / Tamil listing content)
 
 The header language toggle (`LanguageProvider`, localStorage key
