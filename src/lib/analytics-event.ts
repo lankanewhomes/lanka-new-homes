@@ -1,4 +1,5 @@
 import type { Payload } from "payload";
+import { isAiAssistantHost, isAiAssistantUtmSource } from "@/lib/ai-traffic";
 import { isInternalRequest } from "@/lib/internal-traffic";
 
 // Server-side helpers for enriching an Analytics event with request-derived
@@ -54,6 +55,7 @@ export function classifyReferrer(referrer: string | null, siteHost: string): str
   try {
     const host = new URL(referrer).hostname.replace(/^www\./, "");
     if (host === siteHost) return "direct";
+    if (isAiAssistantHost(host)) return "ai_assistant"; // before the Google check: gemini.google.com
     if (/google\.|bing\.|yahoo\.|duckduckgo\./.test(host)) return "organic_search";
     if (/facebook\.|instagram\.|linkedin\.|twitter\.|x\.com|tiktok\./.test(host)) return "organic_social";
     return "referral";
@@ -73,7 +75,7 @@ export function buildEventEnrichment(request: Request, body: { sessionId?: unkno
 
   return {
     session_id: typeof body.sessionId === "string" ? body.sessionId : undefined,
-    traffic_source: typeof body.trafficSource === "string" ? body.trafficSource : classifyReferrer(referrer, siteHost),
+    traffic_source: typeof body.trafficSource === "string" ? body.trafficSource : isAiAssistantUtmSource(utmText(utm.utm_source)) ? "ai_assistant" : classifyReferrer(referrer, siteHost),
     utm_source: utmText(utm.utm_source),
     utm_medium: utmText(utm.utm_medium),
     utm_campaign: utmText(utm.utm_campaign),

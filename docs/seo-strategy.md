@@ -366,3 +366,14 @@ All share-preview tags are built in one place, `socialMetadata` / `withSocial` i
 
 - A data-built FAQ section + FAQPage JSON-LD was added to project and land pages, then REMOVED the same day (owner: "i dont need faq sections"). Do not re-add it unless asked. FAQ markup must match visible text, so it cannot be kept hidden.
 - Still in place: `/llms.txt`, AI-crawler allow rules in `robots.ts`, `Product`/`RealEstateListing` JSON-LD, hourly-refreshed sitemap. Neighbourhood pages and guides keep their own FAQs.
+
+## AI assistants (ChatGPT, Perplexity, Claude, Gemini) — added 2026-10-22
+
+Owner: the site now gets real traffic from AI assistants. What is in place:
+- **Crawler access** (`src/app/robots.ts`): the retrieval bots (OAI-SearchBot, ChatGPT-User, Claude-SearchBot, Claude-User, PerplexityBot, Perplexity-User) and the training bots are all allowed; private areas stay disallowed in every group. If a Cloudflare WAF / Bot Fight rule is blocking these bots, robots.txt alone does not help — check Cloudflare > Security > Bots.
+- **`/llms.txt`**: live-data map of the site; each project/land line now carries price, units/plots and a link to its markdown version.
+- **Markdown per listing**: `/llms/projects/<slug>.md` and `/llms/land/<slug>.md` (`src/lib/listing-markdown.ts`): same facts as the page, no menus or scripts. Advertised from each listing page with `<link rel="alternate" type="text/markdown">`.
+- **Structured data** (`src/lib/listing-jsonld.ts`): every project/land page's JSON-LD now has PostalAddress, GeoCoordinates, datePosted and the seller organisation; land without a whole-parcel price exposes price per perch, plot size and plot count as properties.
+- **Server-rendered HTML**: listing facts are in the first HTML response (AI crawlers do not run JavaScript reliably).
+- **AI traffic channel**: visitors referred by chatgpt.com, perplexity.ai, claude.ai, gemini.google.com, copilot.microsoft.com etc. (or `utm_source=chatgpt.com`) are stored as `traffic_source = ai_assistant` (`src/lib/ai-traffic.ts`) and labelled "AI assistants" in the analytics summary. GA4 itself still lists them as referral — create a custom channel group in GA4 Admin to split them there.
+- Not done on purpose: no FAQ blocks (owner removed them 2026-10-16); llms.txt is optional for the big assistants (no evidence they rely on it), kept because it is cheap.

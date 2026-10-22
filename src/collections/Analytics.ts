@@ -101,7 +101,7 @@ export const Analytics: CollectionConfig = {
     },
 
     // Attribution.
-    { name: 'traffic_source', type: 'text', label: 'Traffic Source', admin: { description: 'organic_search / organic_social / paid_search / paid_social / referral / direct.' } },
+    { name: 'traffic_source', type: 'text', label: 'Traffic Source', admin: { description: 'organic_search / ai_assistant / organic_social / paid_search / paid_social / referral / direct.' } },
     { name: 'referrer', type: 'text', label: 'Referrer URL' },
     { name: 'utm_source', type: 'text', label: 'UTM source', admin: { description: 'From the link the visitor came in on, e.g. instagram or facebook (our social post links).' } },
     { name: 'utm_medium', type: 'text', label: 'UTM medium' },

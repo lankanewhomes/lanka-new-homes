@@ -34,6 +34,7 @@ const EVENT_TYPE_LABELS: Record<string, string> = Object.fromEntries(ANALYTICS_E
 // collect, just a friendlier label for what's already stored.
 const TRAFFIC_SOURCE_LABELS: Record<string, string> = {
   organic_search: 'Organic search',
+  ai_assistant: 'AI assistants (ChatGPT, Perplexity, Claude, Gemini)',
   organic_social: 'Organic social (Facebook/Instagram, unpaid)',
   paid_search: 'Google Ads',
   paid_social: 'Facebook & Instagram Ads',

@@ -24,7 +24,7 @@ const SOURCE_LABEL: Record<string, string> = { request_info: "Request info", bro
 
 const when = (iso: string) => (iso ? new Date(iso).toLocaleString("en-GB", { timeZone: "Asia/Colombo", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "—");
 
-const TRAFFIC_LABEL: Record<string, string> = { organic_search: "Google search", organic_social: "Facebook/Instagram", paid_search: "Google Ads", paid_social: "Facebook & Instagram Ads", referral: "Referral", direct: "Direct" };
+const TRAFFIC_LABEL: Record<string, string> = { organic_search: "Google search", ai_assistant: "AI assistants", organic_social: "Facebook/Instagram", paid_search: "Google Ads", paid_social: "Facebook & Instagram Ads", referral: "Referral", direct: "Direct" };
 
 // "LK" → "Sri Lanka"; falls back to the code.
 function countryName(code: string): string {

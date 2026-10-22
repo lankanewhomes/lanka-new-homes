@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { datePostedField, placeFields, sellerField } from "@/lib/listing-jsonld";
 import { notFound } from "next/navigation";
 import { projects } from "@/data/projects";
 import { getAllProjects, getProjectBySlug } from "@/lib/project-store";
@@ -63,6 +64,8 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
     description,
     alternates: {
       canonical: canonicalPath,
+      // Clean markdown version of this page for AI assistants (src/lib/listing-markdown.ts).
+      types: { "text/markdown": `/llms/projects/${project.slug}.md` },
     },
     openGraph: {
       title,
@@ -130,6 +133,9 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
           ],
         }
       : { provider: { "@type": "Organization", name: project.developerName } }),
+    ...placeFields(project),
+    ...datePostedField(project.publishedAt, project.createdAt),
+    ...sellerField(project.developerName, project.developerSlug ? toAbsoluteUrl(`/developers/${project.developerSlug}`) : null),
     url: toAbsoluteUrl(`/projects/${project.slug}`),
   };
 

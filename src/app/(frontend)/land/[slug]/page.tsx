@@ -1,4 +1,5 @@
 import { toAbsoluteUrl, withSocial } from "@/lib/seo";
+import { datePostedField, placeFields, sellerField } from "@/lib/listing-jsonld";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CheckCircle2, CircleDollarSign, Compass, HousePlus, Layers, MapPin, Ruler, Tag } from "lucide-react";
@@ -59,7 +60,7 @@ export async function generateMetadata({ params }: LandPageProps): Promise<Metad
   return withSocial({
     title: fitTitle(`${land.title} - Land for Sale in ${land.location}`, `${land.title} - Land for Sale`),
     description: land.summary?.trim() || fallbackLandDescription(land),
-    alternates: { canonical: `/land/${land.slug}` },
+    alternates: { canonical: `/land/${land.slug}`, types: { "text/markdown": `/llms/land/${land.slug}.md` } },
     robots: land.status === "Sold" ? { index: false, follow: true } : undefined,
   }, { socialTitle: `${land.title} - Land for Sale in ${land.location}`, image: land.heroImage, imageAlt: land.title });
 }
@@ -155,6 +156,22 @@ export default async function LandDetailPage({ params }: LandPageProps) {
           ],
         }
       : {}),
+    ...placeFields(land),
+    ...datePostedField(land.createdAt),
+    ...sellerField(land.sellerName, land.sellerType === "developer" && land.sellerSlug ? toAbsoluteUrl(`/developers/${land.sellerSlug}`) : null),
+    // Land is sold per perch: expose the per-perch price, plot size and plot count as properties (the Offer above needs a whole-parcel price).
+    ...(land.priceLkr > 0
+      ? {}
+      : {
+          additionalProperty: [
+            { "@type": "PropertyValue", name: "Status", value: land.status },
+            ...(land.pricePerPerchLkrMin ? [{ "@type": "PropertyValue", name: "Price per perch from (LKR)", value: land.pricePerPerchLkrMin }] : []),
+            ...(land.pricePerPerchLkrMax ? [{ "@type": "PropertyValue", name: "Price per perch up to (LKR)", value: land.pricePerPerchLkrMax }] : []),
+            ...(land.landSizePerches ? [{ "@type": "PropertyValue", name: "Plot size from (perches)", value: land.landSizePerches }] : []),
+            ...((land.plots?.length || land.plotCount) ? [{ "@type": "PropertyValue", name: "Plots", value: land.plots?.length || land.plotCount }] : []),
+            ...((land.landUse ?? []).length ? [{ "@type": "PropertyValue", name: "Land use", value: (land.landUse ?? []).join(", ") }] : []),
+          ],
+        }),
   };
 
   return (

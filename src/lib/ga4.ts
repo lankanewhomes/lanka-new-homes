@@ -1,5 +1,6 @@
 "use client";
 import { isInternalBrowser } from "@/lib/internal-traffic";
+import { isAiAssistantHost, isAiAssistantUtmSource } from "@/lib/ai-traffic";
 
 import { sendGAEvent } from "@next/third-parties/google";
 
@@ -56,6 +57,7 @@ export function getTrafficSource(): string {
   if (utm_source) {
     const source = utm_source.toLowerCase();
     const medium = (utm_medium ?? "").toLowerCase();
+    if (isAiAssistantUtmSource(source)) return "ai_assistant";
     if (medium.includes("cpc") || medium.includes("ppc") || medium.includes("paid")) {
       if (source.includes("google")) return "paid_search";
       if (source.includes("facebook") || source.includes("instagram") || source.includes("meta")) return "paid_social";
@@ -71,6 +73,7 @@ export function getTrafficSource(): string {
     const referrerHost = new URL(referrer).hostname.replace(/^www\./, "");
     const currentHost = window.location.hostname.replace(/^www\./, "");
     if (referrerHost === currentHost) return "direct";
+    if (isAiAssistantHost(referrerHost)) return "ai_assistant"; // before the Google check: gemini.google.com
     if (/google\.|bing\.|yahoo\.|duckduckgo\./.test(referrerHost)) return "organic_search";
     if (/facebook\.|instagram\.|linkedin\.|twitter\.|x\.com|tiktok\./.test(referrerHost)) return "organic_social";
     return "referral";
