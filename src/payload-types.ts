@@ -7493,6 +7493,10 @@ export interface SocialAsset {
 export interface SocialPost {
   id: number;
   project?: (number | null) | Project;
+  /**
+   * The land listing this post is about (leave empty for project posts).
+   */
+  land?: (number | null) | Land;
   platform: 'facebook' | 'instagram';
   kind: 'carousel' | 'reel' | 'photo' | 'video' | 'story';
   status: 'published' | 'processing' | 'failed' | 'dry_run' | 'scheduled';
@@ -9697,6 +9701,7 @@ export interface SocialAssetsSelect<T extends boolean = true> {
  */
 export interface SocialPostsSelect<T extends boolean = true> {
   project?: T;
+  land?: T;
   platform?: T;
   kind?: T;
   status?: T;

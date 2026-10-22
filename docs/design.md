@@ -2734,9 +2734,14 @@ Each Key Features tab has its own icon (`KEY_FEATURE_ICONS` in `src/components/m
 
 Facts sheet, not Key Features: unit counts, unit types and sizes, floors/towers, bedroom/bathroom/living-room counts, areas ("Area"), balcony ("Balcony" fact), construction start, completion, location, developer, architect. Amenities, not Key Features: communal pool, gym, clubhouse, playground, rooftop, parking, BBQ. Documents go in Ownership & Services "Documents". Never leave a group without a tab name.
 
-## /links — Instagram link-in-bio page (2026-10-20)
+## /links/projects and /links/land — Instagram link-in-bio pages (2026-10-20, split 2026-10-22)
 
-`src/app/(frontend)/links/page.tsx`. The @lankanewhomes Instagram bio points here once (Instagram only allows bio-link
+Two pages, same design: **/links/projects** (`src/app/(frontend)/links/projects/page.tsx`, homes) and **/links/land**
+(`.../links/land/page.tsx`, plots; built from social posts whose new `land` relation is set; price = the developer's
+per-perch figure, "From Rs. X per perch"). Each hero links to the other. `/links` itself only redirects to /links/projects, because
+the @lankanewhomes Instagram bio still points at /links (Instagram only allows bio-link edits in the phone app).
+The description below is for /links/projects; /links/land is identical except for lands.
+The @lankanewhomes Instagram bio points at /links once (Instagram only allows bio-link
 edits in the phone app); the page keeps itself current from the Payload `social-posts` collection: published Instagram
 posts, newest first, one card per listing, cover = the post's first slide (fallback: listing hero). Card links carry the
 same Instagram UTM tags as the captions (`utm_campaign=<slug>-social-<YYYY-MM of the post>`). Built in the same

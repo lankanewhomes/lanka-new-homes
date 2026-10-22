@@ -43,6 +43,8 @@ export const SocialPosts: CollectionConfig = {
   fields: [
     // Not required: imported posts that name no listing are kept here for an admin to assign.
     { name: 'project', type: 'relationship', relationTo: 'projects', index: true },
+    // Set for posts about a land listing instead of a project; /links/land is built from these.
+    { name: 'land', type: 'relationship', relationTo: 'lands', index: true, admin: { description: 'The land listing this post is about (leave empty for project posts).' } },
     { name: 'platform', type: 'select', options: [...SOCIAL_PLATFORMS], required: true },
     { name: 'kind', type: 'select', options: [...SOCIAL_KINDS], required: true },
     { name: 'status', type: 'select', options: [...SOCIAL_STATUSES], required: true, admin: { components: { Cell: '@/components/payload/ListingCells#StatusCell' } } },
