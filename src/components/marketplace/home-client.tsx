@@ -1,5 +1,6 @@
 "use client";
 
+import { dailyPick } from "@/lib/daily-rotation";
 import { parseNaturalSearch } from "@/lib/natural-search";
 import { tileCityMatches } from "@/lib/city-match";
 import { FormEvent, useEffect, useMemo, useState } from "react";
@@ -62,6 +63,7 @@ export function HomeClient({
   landPlotTotal = 0,
   developers = [],
   newListingsSince,
+  rotationSeed,
   popularSearches = [],
 }: {
   landPlotTotal?: number;
@@ -72,6 +74,8 @@ export function HomeClient({
   developers?: Developer[];
   /** ISO cutoff for the 30-day "New listings" window, computed on the server (see lib/new-listings.ts). Omitted = no time limit. */
   newListingsSince?: string;
+  /** Sri Lanka calendar date, from the server (lib/daily-rotation.ts): the New listings and Land shelves reshuffle once a day. Omitted = newest first. */
+  rotationSeed?: string;
   /** Popular-searches links that have at least one listing (see lib/popular-searches.ts). */
   popularSearches?: PopularGroup[];
 }) {
@@ -280,16 +284,18 @@ export function HomeClient({
   // listings.
   const newListings = useMemo(() => {
     const featuredSlugs = new Set(featuredProjects.map((project) => project.slug));
-    return [...projects]
+    const fresh = [...projects]
       .filter((project) => !featuredSlugs.has(project.slug))
       .filter((project) => !newListingsSince || isInNewListingsWindow(project, newListingsSince))
-      .sort((a, b) => (b.publishedAt ?? b.createdAt ?? "").localeCompare(a.publishedAt ?? a.createdAt ?? ""))
-      .slice(0, 8);
-  }, [projects, featuredProjects, newListingsSince]);
-  const landListings = useMemo(
-    () => [...lands].sort((a, b) => (b.createdAt ?? "").localeCompare(a.createdAt ?? "")).slice(0, 8),
-    [lands]
-  );
+      .sort((a, b) => (b.publishedAt ?? b.createdAt ?? "").localeCompare(a.publishedAt ?? a.createdAt ?? ""));
+    // Owner, 2026-10-21: keep rotating the shelf every day. Over 8 fresh listings, today's 8 are picked by a date-seeded shuffle.
+    return rotationSeed ? dailyPick(fresh, 8, `new-${rotationSeed}`) : fresh.slice(0, 8);
+  }, [projects, featuredProjects, newListingsSince, rotationSeed]);
+  const landListings = useMemo(() => {
+    const newestFirst = [...lands].sort((a, b) => (b.createdAt ?? "").localeCompare(a.createdAt ?? ""));
+    // Land shelf rotates daily across every land listing, at most 2 per developer so one seller's block doesn't fill it.
+    return rotationSeed ? dailyPick(newestFirst, 8, `land-${rotationSeed}`, { groupOf: (land) => land.developerSlug || land.developerName || land.slug, maxPerGroup: 2 }) : newestFirst.slice(0, 8);
+  }, [lands, rotationSeed]);
   // Same suggestions as the header search: projects, land, developers, cities and collection pages (Luxury, Beachfront...).
   const [searchSuggestions, setSearchSuggestions] = useState<{ label: string; detail: string; href: string }[]>([]);
   useEffect(() => {
