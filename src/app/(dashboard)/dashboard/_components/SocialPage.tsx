@@ -21,7 +21,8 @@ const TABS: Tab[] = [
   { key: "facebook", label: "Facebook", where: { platform: { equals: "facebook" } } },
   { key: "reels", label: "Reels and videos", where: { kind: { in: ["reel", "video"] } } },
   { key: "stories", label: "Stories", where: { kind: { equals: "story" } } },
-  { key: "unmatched", label: "Not linked to a listing", where: { project: { exists: false } }, adminOnly: true },
+  { key: "land", label: "Land", where: { land: { exists: true } } },
+  { key: "unmatched", label: "Not linked to a listing", where: { and: [{ project: { exists: false } }, { land: { exists: false } }] }, adminOnly: true },
 ];
 const KINDS = [["photo", "Photo post"], ["carousel", "Carousel"], ["reel", "Reel"], ["video", "Video"], ["story", "Story"]] as const;
 const KIND_LABEL: Record<string, string> = { photo: "Photo", carousel: "Carousel", reel: "Reel", video: "Video", story: "Story" };
@@ -184,7 +185,7 @@ export function SocialPage() {
                   <a href={String(p.permalink || "#")} target="_blank" rel="noopener noreferrer" aria-label="Open the post"><Thumb post={p} /></a>
                   <div className="flex flex-1 flex-col gap-1.5 p-3">
                     <p className="d-label">{p.platform === "instagram" ? "Instagram" : "Facebook"} · {when(p.postedAt)}</p>
-                    {p.project ? <Link href={`/dashboard/projects/${idOf(p.project)}`} className="text-sm font-semibold hover:underline">{d.labelOf("projects", idOf(p.project))}</Link> : admin ? <Assign post={p} onDone={() => setReload((n) => n + 1)} /> : null}
+                    {p.project ? <Link href={`/dashboard/projects/${idOf(p.project)}`} className="text-sm font-semibold hover:underline">{d.labelOf("projects", idOf(p.project))}</Link> : p.land ? <a href={`/land/${String((p.details as { landSlug?: string } | null)?.landSlug ?? "")}`} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold hover:underline">Land: {String((p.details as { landSlug?: string } | null)?.landSlug ?? "listing")}</a> : (p.details as { listingType?: string } | null)?.listingType === "business" ? <p className="text-sm font-semibold">LankaNewHomes: {String((p.details as { topic?: string } | null)?.topic ?? "business post")}</p> : admin ? <Assign post={p} onDone={() => setReload((n) => n + 1)} /> : null}
                     {p.caption ? <p className="line-clamp-3 text-xs leading-relaxed text-muted">{String(p.caption)}</p> : null}
                     <div className="mt-auto flex items-center gap-3 pt-1.5 text-xs text-muted">
                       {typeof p.likes === "number" ? <span className="inline-flex items-center gap-1"><Heart size={12} /> {p.likes}</span> : null}
