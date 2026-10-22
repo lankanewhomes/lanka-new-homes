@@ -2738,10 +2738,9 @@ Facts sheet, not Key Features: unit counts, unit types and sizes, floors/towers,
 
 Two pages, same design: **/links/projects** (`src/app/(frontend)/links/projects/page.tsx`, homes) and **/links/land**
 (`.../links/land/page.tsx`, plots; built from social posts whose new `land` relation is set; price = the developer's
-per-perch figure, "From Rs. X per perch"). Each hero links to the other. `/links` itself only redirects to /links/projects, because
-the @lankanewhomes Instagram bio still points at /links (Instagram only allows bio-link edits in the phone app).
+per-perch figure, "From Rs. X per perch"). Each hero links to the other. There is no `/links` page any more (owner, 2026-10-22: the Instagram bio link is changed to /links/projects by hand).
 The description below is for /links/projects; /links/land is identical except for lands.
-The @lankanewhomes Instagram bio points at /links once (Instagram only allows bio-link
+The @lankanewhomes Instagram bio points at /links/projects once (Instagram only allows bio-link
 edits in the phone app); the page keeps itself current from the Payload `social-posts` collection: published Instagram
 posts, newest first, one card per listing, cover = the post's first slide (fallback: listing hero). Card links carry the
 same Instagram UTM tags as the captions (`utm_campaign=<slug>-social-<YYYY-MM of the post>`). Built in the same
