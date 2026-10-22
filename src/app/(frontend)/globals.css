@@ -20643,8 +20643,12 @@ body:has(.compare-bar) {
 .listing-search-understood-chip.is-removable { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font: inherit; font-size: 12.5px; color: #1f1f1f; }
 .listing-search-understood-chip.is-removable:hover { border-color: #1f1f1f; background: #fff; }
 .listing-search-understood-chip.is-removable svg { color: #6b6355; }
-.listing-search-clear { margin-left: 4px; padding: 0; border: 0; background: none; font: inherit; font-size: 12.5px; color: #6b6355; text-decoration: underline; cursor: pointer; }
-.listing-search-clear:hover { color: #1f1f1f; }
+/* The text "Clear search" link beside the chips. It used to share .listing-search-clear (the 22px round x button inside the
+   search box), which squeezed the words onto two lines (owner, 2026-10-21: "fix the styling"). */
+.listing-search-understood-clear { flex: 0 0 auto; margin-left: 4px; padding: 0; border: 0; background: none; font: inherit; font-size: 12.5px; line-height: 1.4; white-space: nowrap; color: #6b6355; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.listing-search-understood-clear:hover { color: #1f1f1f; }
+.listing-search-understood { row-gap: 8px; margin-top: 10px; line-height: 1.4; }
+.listing-header-title .listing-header-count { margin-top: 12px; }
 
 /* /links — Instagram link-in-bio page (owner, 2026-10-20). Same contained-box system as /neighborhoods (dark split hero,
    then a sage box of white .fdv-box-card cards). Listing grid: 4 columns on desktop (owner: "make 4 columns"), 3 on

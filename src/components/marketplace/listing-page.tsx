@@ -729,7 +729,7 @@ export function ListingPageBody({
                         </button>
                       ))}
                       {parsedSearch.text ? <span className="listing-search-understood-chip">“{parsedSearch.text}”</span> : null}
-                      <button type="button" className="listing-search-clear" onClick={() => removeSearchPart("")}>Clear search</button>
+                      <button type="button" className="listing-search-understood-clear" onClick={() => removeSearchPart("")}>Clear search</button>
                     </p>
                   </>
                 ) : activeSelection || searchPlaceLabel ? (
