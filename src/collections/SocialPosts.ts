@@ -45,6 +45,8 @@ export const SocialPosts: CollectionConfig = {
     { name: 'project', type: 'relationship', relationTo: 'projects', index: true },
     // Set for posts about a land listing instead of a project; /links/land is built from these.
     { name: 'land', type: 'relationship', relationTo: 'lands', index: true, admin: { description: 'The land listing this post is about (leave empty for project posts).' } },
+    // Set when the post was deleted on the platform itself. The record is kept (history, images) but hidden from /links.
+    { name: 'removedAt', type: 'date', index: true, admin: { description: 'When the post was deleted on Instagram or Facebook. Leave empty while it is live.', date: { pickerAppearance: 'dayAndTime' } } },
     { name: 'platform', type: 'select', options: [...SOCIAL_PLATFORMS], required: true },
     { name: 'kind', type: 'select', options: [...SOCIAL_KINDS], required: true },
     { name: 'status', type: 'select', options: [...SOCIAL_STATUSES], required: true, admin: { components: { Cell: '@/components/payload/ListingCells#StatusCell' } } },

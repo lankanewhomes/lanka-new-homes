@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { withSocial } from "@/lib/seo";
+import { formatPostDate, getLandLinks } from "@/lib/bio-links";
 
 export const metadata: Metadata = withSocial({
   title: "Latest Land from Instagram",
@@ -15,60 +16,11 @@ export const metadata: Metadata = withSocial({
 // listing, each linking to /land/<slug> with the same Instagram UTM tags the captions use.
 export const revalidate = 300;
 
-type BioLink = { slug: string; name: string; area: string | null; price: string | null; image: string | null; href: string; postedAt: string };
-
-async function getLandLinks(): Promise<BioLink[]> {
-  try {
-    const { getPayload } = await import("payload");
-    const payloadConfig = (await import("../../../../../payload.config")).default;
-    const payload = await getPayload({ config: payloadConfig });
-    const { docs } = await payload.find({
-      collection: "social-posts",
-      where: { and: [{ platform: { equals: "instagram" } }, { status: { equals: "published" } }, { land: { exists: true } }] },
-      sort: "-postedAt",
-      limit: 60,
-      depth: 1,
-      overrideAccess: true,
-    });
-    const seen = new Set<string>();
-    const links: BioLink[] = [];
-    for (const doc of docs as unknown as { postedAt?: string; thumbnailUrl?: string | null; mediaUrl?: string | null; land?: unknown }[]) {
-      const land = doc.land as { slug?: string; title?: string; status?: string; location?: string | null; city?: string | null; city_other?: string | null; district?: string | null; priceLkr?: number | null; pricePerPerchLkrMin?: number | null; pricePerPerchLkrMax?: number | null; heroImage?: string | null } | null;
-      if (!land?.slug || !land.title || land.status === "Sold" || seen.has(land.slug)) continue;
-      seen.add(land.slug);
-      const postedAt = doc.postedAt ?? new Date().toISOString();
-      const campaign = `${land.slug}-social-${postedAt.slice(0, 7)}`;
-      const min = land.pricePerPerchLkrMin ?? 0;
-      const max = land.pricePerPerchLkrMax ?? 0;
-      // Only prices the developer published: a whole-plot price, else the per-perch figure(s), else nothing.
-      const price = land.priceLkr && land.priceLkr > 0
-        ? `Rs. ${land.priceLkr.toLocaleString("en-US")}`
-        : min && max && min !== max
-          ? `Rs. ${min.toLocaleString("en-US")} to ${max.toLocaleString("en-US")} per perch`
-          : min || max
-            ? `From Rs. ${(min || max).toLocaleString("en-US")} per perch`
-            : null;
-      links.push({
-        slug: land.slug,
-        name: land.title,
-        area: (land.location || (land.city && land.city !== "Other" ? land.city : land.city_other) || land.district) || null,
-        price,
-        image: doc.thumbnailUrl || doc.mediaUrl || land.heroImage || null,
-        href: `/land/${land.slug}?utm_source=instagram&utm_medium=social&utm_campaign=${encodeURIComponent(campaign)}`,
-        postedAt,
-      });
-    }
-    return links;
-  } catch {
-    return [];
-  }
-}
-
 const INSTAGRAM_URL = "https://www.instagram.com/lankanewhomes/";
 
 export default async function LandLinksPage() {
   const links = await getLandLinks();
-  const newest = links[0] ? new Date(links[0].postedAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "Asia/Colombo" }) : null;
+  const newest = formatPostDate(links[0]?.postedAt);
 
   // Same contained-box system and row layout as /links (docs/design.md "Page section style: contained boxes").
   return (

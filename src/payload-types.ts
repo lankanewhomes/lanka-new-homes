@@ -7497,6 +7497,10 @@ export interface SocialPost {
    * The land listing this post is about (leave empty for project posts).
    */
   land?: (number | null) | Land;
+  /**
+   * When the post was deleted on Instagram or Facebook. Leave empty while it is live.
+   */
+  removedAt?: string | null;
   platform: 'facebook' | 'instagram';
   kind: 'carousel' | 'reel' | 'photo' | 'video' | 'story';
   status: 'published' | 'processing' | 'failed' | 'dry_run' | 'scheduled';
@@ -8113,7 +8117,7 @@ export interface Analytics {
    */
   is_bot?: boolean | null;
   /**
-   * organic_search / organic_social / paid_search / paid_social / referral / direct.
+   * organic_search / ai_assistant / organic_social / paid_search / paid_social / referral / direct.
    */
   traffic_source?: string | null;
   referrer?: string | null;
@@ -9702,6 +9706,7 @@ export interface SocialAssetsSelect<T extends boolean = true> {
 export interface SocialPostsSelect<T extends boolean = true> {
   project?: T;
   land?: T;
+  removedAt?: T;
   platform?: T;
   kind?: T;
   status?: T;

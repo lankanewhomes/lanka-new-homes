@@ -2742,7 +2742,7 @@ Facts sheet, not Key Features: unit counts, unit types and sizes, floors/towers,
 
 Two pages, same design: **/links/projects** (`src/app/(frontend)/links/projects/page.tsx`, homes) and **/links/land**
 (`.../links/land/page.tsx`, plots; built from social posts whose new `land` relation is set; price = the developer's
-per-perch figure, "From Rs. X per perch"). Each hero links to the other. There is no `/links` page any more (owner, 2026-10-22: the Instagram bio link is changed to /links/projects by hand).
+per-perch figure, "From Rs. X per perch"). Each hero links to the other. `/links` is the combined page (owner, 2026-10-23): hero with homes / lands counts, then a sage "Homes" box and a cream "Land" box, each with a "… only" link to the single-list pages. The Instagram bio points at `/links`. All three read `src/lib/bio-links.ts`, which leaves out posts whose `removedAt` is set (a post deleted on Instagram; the record is kept and shows a "Deleted on Instagram" badge on the dashboard Social page).
 The description below is for /links/projects; /links/land is identical except for lands.
 The @lankanewhomes Instagram bio points at /links/projects once (Instagram only allows bio-link
 edits in the phone app); the page keeps itself current from the Payload `social-posts` collection: published Instagram

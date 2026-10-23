@@ -20678,6 +20678,9 @@ body:has(.compare-bar) {
 .bio-links-arrow { flex: 0 0 auto; color: #9a9184; transition: transform 0.15s ease, color 0.15s ease; }
 .bio-links-row:hover .bio-links-name { text-decoration: underline; text-underline-offset: 3px; }
 .bio-links-row:hover .bio-links-arrow { color: #f47b36; transform: translateX(3px); }
+.bio-links-more { margin: 16px 0 0; font-size: 14px; }
+.bio-links-more a { color: #6b6355; text-decoration: underline; text-underline-offset: 3px; }
+.bio-links-more a:hover { color: #1f1f1f; }
 .bio-links-empty { margin: 0; font-size: 15px; color: #6b6355; }
 @media (max-width: 900px) { .bio-links-list { grid-template-columns: 1fr; padding: 0 16px; } }
 @media (max-width: 640px) { .bio-links-thumb { width: 52px; height: 52px; } .bio-links-name { font-size: 15px; } .bio-links-row { gap: 14px; padding: 14px 0; } }

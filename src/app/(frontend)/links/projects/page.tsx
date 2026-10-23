@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { withSocial } from "@/lib/seo";
+import { formatPostDate, getProjectLinks } from "@/lib/bio-links";
 
 export const metadata: Metadata = withSocial({
   title: "Latest Listings from Instagram",
@@ -15,51 +16,11 @@ export const metadata: Metadata = withSocial({
 // one card per listing, each linking to the listing with the same Instagram UTM tags the captions use.
 export const revalidate = 300;
 
-type BioLink = { slug: string; name: string; area: string | null; price: string | null; image: string | null; href: string; postedAt: string };
-
-async function getBioLinks(): Promise<BioLink[]> {
-  try {
-    const { getPayload } = await import("payload");
-    const payloadConfig = (await import("../../../../../payload.config")).default;
-    const payload = await getPayload({ config: payloadConfig });
-    const { docs } = await payload.find({
-      collection: "social-posts",
-      where: { and: [{ platform: { equals: "instagram" } }, { status: { equals: "published" } }, { project: { exists: true } }] },
-      sort: "-postedAt",
-      limit: 60,
-      depth: 1,
-      overrideAccess: true,
-    });
-    const seen = new Set<string>();
-    const links: BioLink[] = [];
-    for (const doc of docs as unknown as { postedAt?: string; thumbnailUrl?: string | null; mediaUrl?: string | null; project?: unknown }[]) {
-      const project = doc.project as { slug?: string; name?: string; city?: string | null; city_other?: string | null; district?: string | null; priceRange?: string | null; startingPriceLkr?: number | null; heroImage?: string | null; isPublished?: boolean } | null;
-      if (!project?.slug || !project.name || project.isPublished === false || seen.has(project.slug)) continue;
-      seen.add(project.slug);
-      const postedAt = doc.postedAt ?? new Date().toISOString();
-      const campaign = `${project.slug}-social-${postedAt.slice(0, 7)}`;
-      links.push({
-        slug: project.slug,
-        name: project.name,
-        // city is empty when the area isn't in the city list (e.g. "Colombo 07", "South Coast"); fall back to city_other, then district.
-        area: (project.city && project.city !== "Other" ? project.city : project.city_other || project.district) || null,
-        price: project.priceRange || (project.startingPriceLkr ? `From Rs. ${project.startingPriceLkr.toLocaleString("en-US")}` : null),
-        image: doc.thumbnailUrl || doc.mediaUrl || project.heroImage || null,
-        href: `/projects/${project.slug}?utm_source=instagram&utm_medium=social&utm_campaign=${encodeURIComponent(campaign)}`,
-        postedAt,
-      });
-    }
-    return links;
-  } catch {
-    return [];
-  }
-}
-
 const INSTAGRAM_URL = "https://www.instagram.com/lankanewhomes/";
 
 export default async function LinksPage() {
-  const links = await getBioLinks();
-  const newest = links[0] ? new Date(links[0].postedAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "Asia/Colombo" }) : null;
+  const links = await getProjectLinks();
+  const newest = formatPostDate(links[0]?.postedAt);
 
   // Owner, 2026-10-20: "built the design like this" (/neighborhoods) — same contained-box system: dark split hero with
   // live counts, then a soft box of white cards (docs/design.md "Page section style: contained boxes").
