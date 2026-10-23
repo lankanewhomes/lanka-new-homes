@@ -1,9 +1,27 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { blogPosts, buildBlogMetadata, formatBlogDate } from "@/lib/blog";
+
+
+// Article copy can link to other pages on the site with [text](/path). Only internal paths (starting with a single "/")
+// are turned into links, so nothing external can be slipped into a post (owner, 2026-10-23: "do some internal linking").
+const INTERNAL_LINK = /\[([^\]]+)\]\((\/[^)\s]*)\)/g;
+function renderCopy(text: string): ReactNode[] {
+  const out: ReactNode[] = [];
+  let last = 0;
+  for (const match of text.matchAll(INTERNAL_LINK)) {
+    const start = match.index ?? 0;
+    if (start > last) out.push(text.slice(last, start));
+    out.push(<Link key={`${start}-${match[2]}`} href={match[2]}>{match[1]}</Link>);
+    last = start + match[0].length;
+  }
+  if (last < text.length) out.push(text.slice(last));
+  return out;
+}
 
 type BlogPostPageProps = { params: Promise<{ slug: string }> };
 
@@ -59,11 +77,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       </div>
 
       <div className="blog-article-body">
-        <p className="blog-article-intro">{post.intro}</p>
+        <p className="blog-article-intro">{renderCopy(post.intro)}</p>
         {post.sections.map((section) => (
           <section key={section.heading}>
             <h2>{section.heading}</h2>
-            <p>{section.body}</p>
+            <p>{renderCopy(section.body)}</p>
           </section>
         ))}
       </div>

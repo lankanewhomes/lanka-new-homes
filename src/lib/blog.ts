@@ -242,11 +242,11 @@ export const blogPosts: Record<string, BlogPost> = {
     sections: [
       {
         heading: "Start with what the land is for",
-        body: "Decide the purpose first, because it shapes every other choice. Land for your own home should be near work, schools and family, with a road you can use every day. Land you plan to hold as an investment should sit in an area with steady demand and a clear way to resell. Land for farming or a quiet retreat will be judged on soil, water and access instead. Write down the purpose, your total budget including the costs after purchase, and the largest size you would actually use. A short list makes the rest of the search much easier.",
+        body: "Decide the purpose first, because it shapes every other choice. Land for your own home should be near work, schools and family, with a road you can use every day. If you are still deciding between a plot and a finished home, read [what buyers look for in a new home](/blog/what-buyers-actually-look-for-in-a-new-home-in-sri-lanka) first. Land you plan to hold as an investment should sit in an area with steady demand and a clear way to resell. Land for farming or a quiet retreat will be judged on soil, water and access instead. Write down the purpose, your total budget including the costs after purchase, and the largest size you would actually use. A short list makes the rest of the search much easier.",
       },
       {
         heading: "Understand how land is measured and priced",
-        body: "Land in Sri Lanka is measured in perches, roods and acres. One acre is 160 perches, which is the same as 4 roods of 40 perches each. Listings usually quote a price per perch, so always multiply by the size to see the full price before comparing two plots. On LankaNewHomes, 259 of the 349 land listings publish a price per perch, and those prices run from Rs. 65,000 to Rs. 6,950,000. That range is wide because location matters more than anything else, so compare plots in the same area, with similar road access, rather than comparing the cheapest with the dearest.",
+        body: "Land in Sri Lanka is measured in perches, roods and acres. One acre is 160 perches, which is the same as 4 roods of 40 perches each, and you can see what an acre-size plot looks like on the [1 acre land page](/land/1-acre-land-for-sale-in-sri-lanka). Listings usually quote a price per perch, so always multiply by the size to see the full price before comparing two plots. On LankaNewHomes, 259 of the 349 [land listings](/land) publish a price per perch, and those prices run from Rs. 65,000 to Rs. 6,950,000. That range is wide because location matters more than anything else, so compare plots in the same area, with similar road access, rather than comparing the cheapest with the dearest. The [lowest-priced plots](/land/cheap-land-for-sale-in-sri-lanka) and the [land around Colombo](/land/best-land-for-sale-in-colombo) are good places to see how far apart prices can be.",
       },
       {
         heading: "Know the land structure: the deed, the survey plan and the boundaries",
@@ -262,11 +262,11 @@ export const blogPosts: Record<string, BlogPost> = {
       },
       {
         heading: "Look at access, utilities and the surroundings",
-        body: "Visit more than once, at different times of day, and after rain if you can. Check the road: who owns it, how wide it is, and whether a vehicle can reach the plot all year. Of the land listings on LankaNewHomes that state a road width, the widths run from 15 feet to 30 feet. A plot behind other plots needs a legal right of way, so ask to see it in the deed. Find out whether electricity and piped water are at the boundary or still to be connected, how the land drains, and whether the area floods. Talk to the neighbours, and ask whether any road widening or other public project is planned nearby.",
+        body: "Visit more than once, at different times of day, and after rain if you can. Check the road: who owns it, how wide it is, and whether a vehicle can reach the plot all year. Of the land listings on LankaNewHomes that state a road width, the widths run from 15 feet to 30 feet. A plot behind other plots needs a legal right of way, so ask to see it in the deed. Find out whether electricity and piped water are at the boundary or still to be connected, how the land drains, and whether the area floods. Talk to the neighbours, and ask whether any road widening or other public project is planned nearby. Our [neighbourhood guides](/neighborhoods) describe many areas, and the [rural land listings](/land/rural-land-for-sale-in-sri-lanka) cover plots outside the Colombo, Gampaha and Kalutara districts.",
       },
       {
         heading: "Gated developments and single plots",
-        body: "A plot in a planned development usually comes with an approved subdivision plan, laid-out internal roads and shared utilities, so more of the checking has been done for you. You should still ask for the approved plan, the deed for your own lot, and a clear description of the shared areas and who maintains them. A single plot from a private owner can suit you well, but the checking falls on you, so the title search, the survey plan and the approvals matter even more. Neither is automatically safer, and the same questions apply to both.",
+        body: "A plot in a planned development, from one of the [developers on LankaNewHomes](/developers), usually comes with an approved subdivision plan, laid-out internal roads and shared utilities, so more of the checking has been done for you. You should still ask for the approved plan, the deed for your own lot, and a clear description of the shared areas and who maintains them. A single plot from a private owner can suit you well, but the checking falls on you, so the title search, the survey plan and the approvals matter even more. Neither is automatically safer, and the same questions apply to both.",
       },
       {
         heading: "Costly mistakes to avoid",
@@ -278,7 +278,7 @@ export const blogPosts: Record<string, BlogPost> = {
       },
       {
         heading: "Using LankaNewHomes to shortlist land",
-        body: "Browse land by district, compare the price per perch of similar plots, and open the listings that publish a road width, a title description and approvals. When a listing leaves something out, message the developer or seller and ask for the deed, the survey plan and the approved plan before you visit. Every listing shows who is selling, so you can ask the right person. This article is general guidance and is not legal advice. Always have a qualified attorney-at-law check the documents for the specific land you want to buy.",
+        body: "Browse [land by district](/land), compare the price per perch of similar plots, and open the listings that publish a road width, a title description and approvals. When a listing leaves something out, message the developer or seller and ask for the deed, the survey plan and the approved plan before you visit. Every listing shows who is selling, so you can ask the right person. If you would rather buy a finished home, see the [new homes for sale](/projects). This article is general guidance and is not legal advice. Always have a qualified attorney-at-law check the documents for the specific land you want to buy.",
       },
     ],
     cta: {

@@ -2523,6 +2523,10 @@ post + its resources/blog listing page):
   `BlogPost` type and a `blogPosts` record (slug, title, excerpt, category,
   author, publishDate, readMinutes, heroImage, intro, `sections[]`). Adding
   a post means adding a record, not a bespoke page.
+- **Internal links in article copy** (owner, 2026-10-23): write `[text](/path)` inside a section `body` or the `intro`;
+  `renderCopy()` in `blog/[slug]/page.tsx` turns only internal paths (starting with `/`) into links, styled dark with an
+  orange underline (`.blog-article-body a`). Link to live pages only (check they return 200) and never to a `draft` post.
+  "Before Buying Land in Sri Lanka" (2026-10-23) has 10 such links (land pages, neighbourhoods, developers, projects, a guide-style post).
 - Both pages wrap in `.fdv-page` for its `--fdv-*` colour tokens (the same
   ones `/web-design`, `/for-developers` and `/pricing`'s Placement section
   read) rather than inventing a fourth palette.
