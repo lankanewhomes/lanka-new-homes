@@ -82,6 +82,19 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <section key={section.heading}>
             <h2>{section.heading}</h2>
             <p>{renderCopy(section.body)}</p>
+            {section.image ? (
+              <figure className="blog-article-figure">
+                <Image src={section.image.src} alt={section.image.alt} width={1200} height={675} sizes="(min-width: 860px) 760px, 100vw" />
+              </figure>
+            ) : null}
+            {section.bullets ? (
+              <ul className="blog-article-list">
+                {section.bullets.map((item) => (
+                  <li key={item}>{renderCopy(item)}</li>
+                ))}
+              </ul>
+            ) : null}
+            {section.callout ? <aside className="blog-article-callout">{renderCopy(section.callout)}</aside> : null}
           </section>
         ))}
       </div>
@@ -89,22 +102,34 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       <div className="blog-article-cta">
         {post.cta ? (
           <>
-            <h2>{post.cta.heading}</h2>
-            <p>{post.cta.body}</p>
-            <div className="blog-article-cta-links">
-              {post.cta.links.map((link, index) => (
-                <Link key={link.href} href={link.href} className={index === 0 ? "fdv-cta-primary" : "fdv-cta-secondary"}>{link.label}</Link>
-              ))}
+            <div className="blog-article-cta-copy">
+              <h2>{post.cta.heading}</h2>
+              <p>{post.cta.body}</p>
+              <div className="blog-article-cta-links">
+                {post.cta.links.map((link, index) => (
+                  <Link key={link.href} href={link.href} className={index === 0 ? "blog-cta-button" : "blog-cta-button blog-cta-button--ghost"}>{link.label}</Link>
+                ))}
+              </div>
             </div>
+            {post.cta.steps?.length ? (
+              <ol className="blog-article-cta-steps">
+                {post.cta.steps.map((step, index) => (
+                  <li key={step}>
+                    <span className="blog-article-cta-step-num">{index + 1}</span>
+                    <span>{step}</span>
+                  </li>
+                ))}
+              </ol>
+            ) : null}
           </>
         ) : (
-          <>
+          <div className="blog-article-cta-copy">
             <h2>Want your project&apos;s website doing this?</h2>
             <p>We design and build dedicated websites for property developments — a new site, or a rebuild of one that isn&apos;t working.</p>
             <div className="blog-article-cta-links">
-              <Link href="/web-design" className="fdv-cta-primary">See our web design service</Link>
+              <Link href="/web-design" className="blog-cta-button">See our web design service</Link>
             </div>
-          </>
+          </div>
         )}
       </div>
 
