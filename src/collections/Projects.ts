@@ -1,4 +1,5 @@
 import { logProjectChanges } from '../lib/developer-activity'
+import { PROJECT_PROTECTED_ARRAYS, protectArrays } from './hooks/protect-arrays'
 import type { CollectionConfig, Where } from 'payload'
 import { adminOnlyField, getOwnedDeveloperIds, getRole, getTeamProjectIds, isAdmin, ownDeveloperAccess, publicRead, withTeamListings } from './access'
 import {
@@ -191,7 +192,7 @@ export const Projects: CollectionConfig = {
         return ownedId ? { ...data, developer: ownedId } : data
       },
     ],
-    beforeChange: [scoreProjectBeforeChange],
+    beforeChange: [protectArrays(PROJECT_PROTECTED_ARRAYS, 'projects'), scoreProjectBeforeChange],
     afterChange: [syncProjectToSupabase, autoPostSocialAfterChange, logProjectChanges],
     afterDelete: [syncProjectDeleteToSupabase],
   },

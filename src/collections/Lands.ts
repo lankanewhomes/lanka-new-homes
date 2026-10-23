@@ -1,4 +1,5 @@
 import { logLandChanges } from '../lib/developer-activity'
+import { LAND_PROTECTED_ARRAYS, protectArrays } from './hooks/protect-arrays'
 import type { CollectionConfig, Where } from 'payload'
 import { adminOnly, adminOnlyField, getOwnedDeveloperIds, getRole, getTeamLandIds, isAdmin, manageOwnLands, publicRead } from './access'
 import { syncLandDeleteToSupabase, syncLandToSupabase } from './hooks/sync-to-supabase'
@@ -79,6 +80,7 @@ export const Lands: CollectionConfig = {
     delete: manageOwnLands,
   },
   hooks: {
+    beforeChange: [protectArrays(LAND_PROTECTED_ARRAYS, 'lands')],
     afterChange: [syncLandToSupabase, logLandChanges],
     afterDelete: [syncLandDeleteToSupabase],
   },
