@@ -53,6 +53,11 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
   // The root layout appends " | LankaNewHomes"; keep the whole title within ~60 characters.
   const titleBudget = 60 - " | LankaNewHomes".length;
   const shortTitle = `${project.name} - New ${homeLabel}`;
+  // The share card (Facebook, WhatsApp, Instagram links) gets a short title too: the name once, plus just the area, and no
+  // area when the name already has it ("The Kingdom Residencies, Sigiriya - New Apartments"). The street address stays out
+  // (owner, 2026-10-23: the old card title was "too long and repeating").
+  const area = project.city?.trim();
+  const socialTitle = !area || project.name.toLowerCase().includes(area.toLowerCase()) ? shortTitle : `${shortTitle} in ${area}`;
   // An SEO title / description typed in the CMS (SEO tab) wins over the generated ones.
   const title = project.seoTitle?.trim() || (fullTitle.length <= titleBudget ? fullTitle : shortTitle.length <= titleBudget ? shortTitle : `${project.name.slice(0, titleBudget - 1).trimEnd()}…`);
   const generatedDescription = `${project.summary} Starting from ${typeof project.priceRange === "string" ? project.priceRange.replace(/^\s*from\s+/i, "") : project.priceRange}. Explore floor plans, amenities, and availability.`;
@@ -85,7 +90,7 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
       description,
       images: [project.heroImage],
     },
-  }, { socialTitle: fullTitle });
+  }, { socialTitle });
 }
 
 export default async function ProjectDetailPage({ params }: ProjectPageProps) {
