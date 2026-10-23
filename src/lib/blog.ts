@@ -223,6 +223,73 @@ export const blogPosts: Record<string, BlogPost> = {
       ],
     },
   },
+  "before-buying-land-in-sri-lanka": {
+    slug: "before-buying-land-in-sri-lanka",
+    path: "/blog/before-buying-land-in-sri-lanka",
+    metaTitle: "Before Buying Land in Sri Lanka: A Simple Guide",
+    metaDescription:
+      "A simple guide to buying land in Sri Lanka: choosing the right plot, understanding perches, deeds and survey plans, and avoiding costly mistakes before you pay.",
+    title: "Before Buying Land in Sri Lanka",
+    excerpt:
+      "A simple guide to choosing the right land, understanding the land structure, and avoiding costly mistakes.",
+    category: "Buying guide",
+    author: "LankaNewHomes",
+    publishDate: "2026-10-23",
+    readMinutes: 7,
+    heroImage: "https://media.lankanewhomes.com/lands/isla-hokandara/gallery/isla-hokandara_photo-01.png",
+    intro:
+      "Land looks simple: a piece of ground, a price and a seller. In practice it is the purchase where small mistakes cost the most, because a problem with the title, the boundaries or what you are allowed to build usually only shows up after the money has been paid. This guide walks through how to choose the right plot, how land is measured and described in Sri Lanka, and the checks to finish before you pay anything. It is general guidance, not legal advice, so use it to ask better questions and have an attorney-at-law confirm the answers.",
+    sections: [
+      {
+        heading: "Start with what the land is for",
+        body: "Decide the purpose first, because it shapes every other choice. Land for your own home should be near work, schools and family, with a road you can use every day. Land you plan to hold as an investment should sit in an area with steady demand and a clear way to resell. Land for farming or a quiet retreat will be judged on soil, water and access instead. Write down the purpose, your total budget including the costs after purchase, and the largest size you would actually use. A short list makes the rest of the search much easier.",
+      },
+      {
+        heading: "Understand how land is measured and priced",
+        body: "Land in Sri Lanka is measured in perches, roods and acres. One acre is 160 perches, which is the same as 4 roods of 40 perches each. Listings usually quote a price per perch, so always multiply by the size to see the full price before comparing two plots. On LankaNewHomes, 259 of the 349 land listings publish a price per perch, and those prices run from Rs. 65,000 to Rs. 6,950,000. That range is wide because location matters more than anything else, so compare plots in the same area, with similar road access, rather than comparing the cheapest with the dearest.",
+      },
+      {
+        heading: "Know the land structure: the deed, the survey plan and the boundaries",
+        body: "Every plot has two documents that matter. The deed shows who owns the land and how it passed to the seller. The survey plan, drawn by a licensed surveyor, shows the exact shape, boundaries, lot number and extent of the land. Ask to see both. Then walk the land with the plan in your hand and check that the boundary marks on the ground match the drawing, that the extent on the plan matches the extent in the deed and the advertisement, and that nobody has built over or fenced part of the plot.",
+      },
+      {
+        heading: "Check the title before you pay anything",
+        body: "Ask an attorney-at-law to trace the title through the Land Registry. They check that the seller is the registered owner, that the chain of earlier deeds is complete, and that nothing is attached to the land, such as a mortgage, a court case or a co-owner who has not agreed to the sale. This is the most important step, and it is worth paying for. Many listings, here and elsewhere, do not state the type of title at all, so ask for it in writing. Until your lawyer has cleared the title, keep any reservation payment small and put it in writing.",
+      },
+      {
+        heading: "Confirm what you are allowed to build",
+        body: "A plot is only worth what you can legally do on it. Find out how the land is classified, because paddy land, wetlands and some agricultural land carry restrictions on building, and a plot sold for a house should be classified for one. Ask for the approved subdivision plan from the local authority, and ask about building lines, the road reservation at the front, and any approvals needed for the building you have in mind. If the seller cannot show an approval, ask the local authority directly before you commit.",
+      },
+      {
+        heading: "Look at access, utilities and the surroundings",
+        body: "Visit more than once, at different times of day, and after rain if you can. Check the road: who owns it, how wide it is, and whether a vehicle can reach the plot all year. Of the land listings on LankaNewHomes that state a road width, the widths run from 15 feet to 30 feet. A plot behind other plots needs a legal right of way, so ask to see it in the deed. Find out whether electricity and piped water are at the boundary or still to be connected, how the land drains, and whether the area floods. Talk to the neighbours, and ask whether any road widening or other public project is planned nearby.",
+      },
+      {
+        heading: "Gated developments and single plots",
+        body: "A plot in a planned development usually comes with an approved subdivision plan, laid-out internal roads and shared utilities, so more of the checking has been done for you. You should still ask for the approved plan, the deed for your own lot, and a clear description of the shared areas and who maintains them. A single plot from a private owner can suit you well, but the checking falls on you, so the title search, the survey plan and the approvals matter even more. Neither is automatically safer, and the same questions apply to both.",
+      },
+      {
+        heading: "Costly mistakes to avoid",
+        body: "The same mistakes cause most of the damage. Paying a large deposit before the title has been checked. Relying on photos, a drone video or a verbal promise instead of documents. Buying through someone holding a power of attorney without checking their authority. Skipping the survey and discovering later that the plot is smaller than advertised. Forgetting the costs after the price, such as stamp duty, legal and notary fees and registration, so ask your lawyer for a figure up front. And rushing because a seller says only a few plots are left. If you are not a Sri Lankan citizen, there are special rules on owning land, so get legal advice before you start.",
+      },
+      {
+        heading: "A short checklist before you pay",
+        body: "Before you pay more than a small reservation, make sure that you know what the land is for and have compared it with similar plots on a per-perch basis. Make sure that the deed and survey plan have been seen and match the land on the ground, that your attorney-at-law has traced the title and found it clear, and that the classification and approvals allow what you want to build. Make sure that the road, electricity, water and drainage are settled, that the full cost including fees is understood, and that every agreed term is written down and signed.",
+      },
+      {
+        heading: "Using LankaNewHomes to shortlist land",
+        body: "Browse land by district, compare the price per perch of similar plots, and open the listings that publish a road width, a title description and approvals. When a listing leaves something out, message the developer or seller and ask for the deed, the survey plan and the approved plan before you visit. Every listing shows who is selling, so you can ask the right person. This article is general guidance and is not legal advice. Always have a qualified attorney-at-law check the documents for the specific land you want to buy.",
+      },
+    ],
+    cta: {
+      heading: "Find land with the details you need.",
+      body: "Browse land for sale across Sri Lanka, compare prices per perch, and contact the seller directly for the deed and plans.",
+      links: [
+        { label: "Browse all land", href: "/land" },
+        { label: "Land in Colombo", href: "/land/best-land-for-sale-in-colombo" },
+      ],
+    },
+  },
 };
 
 export function buildBlogMetadata(post: BlogPost): Metadata {
