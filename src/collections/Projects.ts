@@ -89,6 +89,8 @@ const MARKETING_BADGE_OPTIONS = [
   'Hospitality',
   // Added 2026-10-04 for Odiliya's ICON V Talpe (owner: "give a new badge" for the ICON 30-40% ROI net profit-sharing model).
   'Profit-Share Model',
+  // Added 2026-10-24 for Ocean Breeze Hikkaduwa (owner: a badge for the brochure line "investors can rent out units individually or opt for GHR's hotel management services").
+  'Rent Out or Hotel-Managed',
 ]
 
 const LOCATION_BADGE_OPTIONS = ['Beachfront', 'Ocean View', 'City View', 'Mountain View', 'Nature View', 'Prime Location', 'Gated Community']
