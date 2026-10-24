@@ -262,7 +262,7 @@ export function ProfileView({
             {visibleProjects.length === 0 ? (
               <p className="developer-empty-note">{entityType === "developer" ? "No projects listed yet." : `No projects link to ${entity.name} yet.`}</p>
             ) : listProjects.length <= CARD_LAYOUT_MAX ? (
-              <div className="developer-profile-cards">
+              <div className={`developer-profile-cards${visibleProjects.every((project) => project.isLand) ? " is-land" : ""}`}>
                 {visibleProjects.map((project) => (
                   <ListingGridCard key={project.slug} project={project} basePath={project.isLand ? "/land" : "/projects"} />
                 ))}

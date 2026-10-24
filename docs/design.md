@@ -1142,6 +1142,9 @@ On a developer (or company) profile, the Projects / Lands tab shows photo cards 
 listings or fewer**, and the compact rows (`.developer-profile-row`) when it has more (`CARD_LAYOUT_MAX` in `profile-view.tsx`). Cards are one
 full-width card per row on phones (<=640px), two on tablets, three on small desktops and four from 1280px wide (`.developer-profile-cards`) because most visitors are on mobile.
 The three front-end marketing badges (`src/lib/marketing-badges.ts`) show on the cards and on the rows.
+The card area is a contained box like the home-page listing boxes (owner, 2026-10-24: "styling like other cards", "no radius"): mint box with a
+teal grid for projects, light-green box with green lines for land (`.developer-profile-cards`, `.is-land`); white square cards with no border and no
+radius, 40px between rows on tablet/desktop, 24px on phones.
 
 ## Languages (Sinhala / Tamil listing content)
 

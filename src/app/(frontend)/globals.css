@@ -7320,17 +7320,41 @@ a.developer-profile-press-title {
 .developer-profile-cards {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 28px 16px;
+  gap: 24px 14px;
   margin-top: 20px;
+  padding: 16px;
+  /* Same look as the home-page listing boxes (owner, 2026-10-24: "styling like other cards", "no radius", more space between the rows):
+     projects on the soft mint box with a teal grid, land on the light green box with green lines; white square cards, no border. */
+  background-color: #dfeae8;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 79px, rgba(40, 100, 96, 0.22) 79px 80px),
+    repeating-linear-gradient(90deg, transparent 0 79px, rgba(40, 100, 96, 0.22) 79px 80px);
+  border-radius: 0;
 }
+.developer-profile-cards.is-land {
+  background-color: #e8ede2;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 79px, rgba(85, 115, 75, 0.2) 79px 80px),
+    repeating-linear-gradient(90deg, transparent 0 79px, rgba(85, 115, 75, 0.2) 79px 80px);
+}
+.developer-profile-cards .listing-grid-card { background: #fff; border: 0; border-radius: 0; padding: 10px; box-sizing: border-box; }
+.developer-profile-cards .listing-grid-card-media,
+.developer-profile-cards .listing-grid-card-image,
+.developer-profile-cards .listing-grid-card-status,
+.developer-profile-cards .badge-payment-plan,
+.developer-profile-cards .badge-premium,
+.developer-profile-cards .badge-featured { border-radius: 0; }
+.developer-profile-cards .listing-grid-card-body { padding: 12px 4px 6px; }
+.developer-profile-cards .badge-payment-plan { font-size: 10px; letter-spacing: 0.03em; padding: 4px 8px; white-space: nowrap; }
+.developer-profile-cards .listing-grid-card-facts-row { flex-wrap: wrap; row-gap: 4px; }
 @media (min-width: 641px) {
-  .developer-profile-cards { grid-template-columns: repeat(2, 1fr); }
+  .developer-profile-cards { grid-template-columns: repeat(2, 1fr); gap: 40px 18px; padding: 28px; }
 }
 @media (min-width: 1100px) {
   .developer-profile-cards { grid-template-columns: repeat(3, 1fr); }
 }
 @media (min-width: 1280px) {
-  .developer-profile-cards { grid-template-columns: repeat(4, 1fr); gap: 28px 14px; }
+  .developer-profile-cards { grid-template-columns: repeat(4, 1fr); gap: 40px 16px; }
 }
 .developer-profile-row-badges { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 0; }
 
