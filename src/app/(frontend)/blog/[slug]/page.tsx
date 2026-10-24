@@ -104,8 +104,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
       <div className="blog-article-body">
         <p className="blog-article-intro">{renderCopy(post.intro)}</p>
-        {post.sections.map((section) => (
-          <section key={section.heading} className={section.tone ? `blog-article-box blog-article-box--${section.tone}` : undefined}>
+        {post.sections.map((section, index) => {
+          // Every section sits in a soft box. Posts that do not set a tone rotate gray, sage, cream in order (owner, 2026-10-24).
+          const tone = section.tone ?? (["gray", "sage", "cream"] as const)[index % 3];
+          return (
+          <section key={section.heading} className={`blog-article-box blog-article-box--${tone}`}>
             <h2>{section.heading}</h2>
             <p>{renderCopy(section.body)}</p>
             {section.image ? (
@@ -122,7 +125,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             ) : null}
             {section.callout ? <aside className="blog-article-callout">{renderCopy(section.callout)}</aside> : null}
           </section>
-        ))}
+          );
+        })}
       </div>
 
       <div className="blog-article-cta">

@@ -133,6 +133,13 @@ export const blogPosts: Record<string, BlogPost> = {
         body: "A full project page, unlimited photos and floor plans, brochure download, WhatsApp and phone enquiries, and the Verified badge once any package is active — none of that is gated behind a specific tier. Paying moves you up in search and city-page ranking, into the homepage's featured rotation, and (on Developer Pro) pins you in the developer directory — it doesn't unlock features your free listing was missing.",
       },
     ],
+    cta: {
+      heading: "List your project for free.",
+      body: "Listing is always free. Paid packages only add reach.",
+      links: [
+        { label: "List your project", href: "/for-developers" },
+      ],
+    },
   },
   "what-buyers-actually-look-for-in-a-new-home-in-sri-lanka": {
     slug: "what-buyers-actually-look-for-in-a-new-home-in-sri-lanka",
@@ -173,6 +180,14 @@ export const blogPosts: Record<string, BlogPost> = {
         body: "An enquiry that gets a same-day reply is far more likely to turn into a viewing than one that sits for three days — buyers researching several projects at once simply move on to whichever developer responded first. This is also why LankaNewHomes' \"Responds within 24 hours\" badge is one buyers specifically look for on a listing.",
       },
     ],
+    cta: {
+      heading: "Find your next home.",
+      body: "Browse new homes and land across Sri Lanka.",
+      links: [
+        { label: "Browse new homes", href: "/projects" },
+        { label: "Browse land", href: "/land" },
+      ],
+    },
   },
   "sri-lanka-new-home-market-october-2026": {
     slug: "sri-lanka-new-home-market-october-2026",
