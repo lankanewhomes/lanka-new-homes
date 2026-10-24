@@ -31,6 +31,7 @@ Update this file whenever a new keyword group or page is added.
 | `/guides/golden-visa` | Golden visa / residency-by-investment guide | new |
 | `/blog` | Blog index (list of posts) | rebuilt (was a "check back soon" stub) 2026-09-29, now indexed — real content exists |
 | `/blog/{slug}` | Individual blog post | new 2026-09-29 — config in `src/lib/blog.ts`, same "add a record, add a route" pattern as `guides.ts`. First post: "7 Ways Sri Lankan Developers Can Make Their Project Websites Sell More Units" (targets developers researching web design, not buyer-side keywords) |
+| `/blog/before-buying-land-in-sri-lanka` | "buying land in sri lanka", "how to buy land in sri lanka", "land buying guide sri lanka", "land perch acre sri lanka" — buyer-side guide; title tag "Buying Land in Sri Lanka: A Simple Guide" (+ site suffix), 10 internal links into /land pages, BlogPosting + BreadcrumbList JSON-LD, descriptive image alt text, 11 illustrations on R2 `blog/before-buying-land-in-sri-lanka/` (added 2026-10-23, owner request) | new |
 | `/construction-companies` | Construction company directory | rebuilt (was a stub) |
 | `/construction-companies/colombo` | Colombo-specific construction companies | new |
 | `/construction-companies/swimming-pools` | Pool construction companies | new |

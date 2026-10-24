@@ -5,6 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { blogPosts, buildBlogMetadata, formatBlogDate } from "@/lib/blog";
+import { buildBreadcrumbJsonLd, jsonLdScriptProps, toAbsoluteUrl } from "@/lib/seo";
 
 
 // Article copy can link to other pages on the site with [text](/path). Only internal paths (starting with a single "/")
@@ -49,8 +50,31 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const post = blogPosts[slug];
   if (!post) notFound();
 
+  // Structured data for search engines: the article itself (BlogPosting) and its breadcrumb trail. Drafts are noindex, so no markup.
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.metaDescription,
+    image: [post.heroImage],
+    datePublished: post.publishDate,
+    dateModified: post.updatedDate ?? post.publishDate,
+    inLanguage: "en",
+    articleSection: post.category,
+    mainEntityOfPage: { "@type": "WebPage", "@id": toAbsoluteUrl(post.path) },
+    author: { "@type": "Organization", name: post.author },
+    publisher: { "@type": "Organization", name: "LankaNewHomes", logo: { "@type": "ImageObject", url: toAbsoluteUrl("/logo-wordmark.svg") } },
+  };
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd([{ label: "Home", href: "/" }, { label: "Blog", href: "/blog" }, { label: post.title, href: post.path }]);
+
   return (
     <article className="fdv-page blog-article">
+      {post.draft ? null : (
+        <>
+          <script {...jsonLdScriptProps(articleJsonLd)} />
+          <script {...jsonLdScriptProps(breadcrumbJsonLd)} />
+        </>
+      )}
       {post.draft ? (
         <p className="blog-draft-notice" role="note">
           Draft preview. This article is not listed on the blog or in search results yet.
@@ -71,7 +95,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             </p>
           </div>
           <div className="blog-article-hero-media">
-            <Image src={post.heroImage} alt="" fill sizes="(min-width: 860px) 50vw, 100vw" priority className="blog-article-hero-img" />
+            <Image src={post.heroImage} alt={post.heroImageAlt ?? ""} fill sizes="(min-width: 860px) 50vw, 100vw" priority className="blog-article-hero-img" />
           </div>
         </div>
       </div>
@@ -133,7 +157,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         )}
       </div>
 
-      <p className="blog-article-back"><Link href="/blog">← Back to all posts</Link></p>
+      <p className="blog-article-back"><Link href="/blog"><span className="blog-back-arrow" aria-hidden="true">←</span> Back to all posts</Link></p>
     </article>
   );
 }
