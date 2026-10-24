@@ -1,6 +1,7 @@
 "use client";
 
 import { bedroomsMatch, cityMatches, parseNaturalSearch, typeMatches } from "@/lib/natural-search";
+import { shownMarketingBadges } from "@/lib/marketing-badges";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
@@ -203,6 +204,7 @@ export function ListingGridCard({ project, basePath = "/projects" }: { project: 
   const { isComparing, toggle: toggleCompare, atMax } = useCompareListings();
   const comparing = isComparing(project.slug);
   const hasPrice = project.startingPriceLkr > 0;
+  const cardMarketingBadges = shownMarketingBadges(project.marketingBadges); // same short list as the project page (src/lib/marketing-badges.ts)
   const hasLandSize = project.floorAreaRange && project.floorAreaRange !== "-";
   const href = `${basePath}/${project.slug}`;
   // Same filter as ProjectHero's photo grid: amenity, floor-plan, road-map
@@ -286,7 +288,7 @@ export function ListingGridCard({ project, basePath = "/projects" }: { project: 
       </Link>
 
       <div className="listing-grid-card-body">
-        {project.isFeatured || project.paymentPlanBadge ? (
+        {project.isFeatured || project.paymentPlanBadge || cardMarketingBadges.length ? (
           <div className="home-card-badge-row">
             {hasPremiumStyleBadge(project.package) ? (
               <span className="badge-premium">{t("Premium")}</span>
@@ -294,6 +296,7 @@ export function ListingGridCard({ project, basePath = "/projects" }: { project: 
               <span className="badge-featured">{t("Featured")}</span>
             ) : null}
             {project.paymentPlanBadge ? <span className="badge-payment-plan">{project.paymentPlanBadge}</span> : null}
+            {cardMarketingBadges.map((label) => <span key={label} className="badge-payment-plan">{label}</span>)}
           </div>
         ) : null}
         <Link href={href} className="listing-grid-card-name">{project.name}</Link>

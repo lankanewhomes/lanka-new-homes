@@ -7315,6 +7315,22 @@ a.developer-profile-press-title {
   margin-top: 8px;
 }
 
+/* Developer / company page: listing cards when there are 16 or fewer (owner, 2026-10-24). Mobile first: one full-width card per row on phones,
+   two on tablets, three on desktop. The row layout below is kept for developers with more listings. */
+.developer-profile-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 28px 16px;
+  margin-top: 20px;
+}
+@media (min-width: 641px) {
+  .developer-profile-cards { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1100px) {
+  .developer-profile-cards { grid-template-columns: repeat(3, 1fr); }
+}
+.developer-profile-row-badges { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 0; }
+
 .developer-profile-row {
   display: flex;
   gap: 24px;
@@ -16714,7 +16730,7 @@ body:has(.compare-bar) {
 }
 
 /* A whole article section in one of the site's soft contained boxes (owner, 2026-10-23): flat colour plus the dot or line
-   texture, same as .fdv-box. A takeaway box inside it is the dark ink box, so it stands out. */
+   texture, same as .fdv-box. A takeaway box inside it is the orange box, so it stands out. */
 .blog-article-body section.blog-article-box {
   position: relative;
   overflow: hidden;
@@ -16776,18 +16792,19 @@ body:has(.compare-bar) {
   height: auto;
   border: 1px solid #e2ddd0;
 }
-/* Takeaway boxes are the site's dark ink box with the white line grid, the same everywhere, so they stand out from the soft
-   section boxes around them (owner, 2026-10-24: "I need it to standout", "the same bg"). */
+/* Takeaway boxes are solid brand orange with ink text and a faint white line grid: the same on every section, and they stand out from
+   the soft section boxes without being black (owner, 2026-10-24: "a better bg that stands out, not black"). */
 .blog-article-callout {
   position: relative;
   overflow: hidden;
   margin: 24px 0 0;
   padding: 24px 28px;
-  background: var(--fdv-ink);
+  background: #f47b36;
   border: 0;
   font-size: 19px;
+  font-weight: 500;
   line-height: 1.6;
-  color: #fff;
+  color: #15141a;
 }
 .blog-article-callout::before {
   content: "";
@@ -16795,14 +16812,14 @@ body:has(.compare-bar) {
   inset: 0;
   pointer-events: none;
   background-image:
-    repeating-linear-gradient(0deg, transparent 0 28px, rgba(255, 255, 255, 0.07) 28px 29px),
-    repeating-linear-gradient(90deg, transparent 0 28px, rgba(255, 255, 255, 0.07) 28px 29px);
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(255, 255, 255, 0.18) 28px 29px),
+    repeating-linear-gradient(90deg, transparent 0 28px, rgba(255, 255, 255, 0.18) 28px 29px);
   -webkit-mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
   mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
 }
 .blog-article-callout > * { position: relative; z-index: 1; }
-.blog-article-callout a { color: #fff; text-decoration-color: #f47b36; }
-.blog-article-callout a:hover { color: #f47b36; }
+.blog-article-callout a { color: #15141a; text-decoration-color: #15141a; }
+.blog-article-callout a:hover { color: #fff; text-decoration-color: #fff; }
 
 /* Internal links inside article copy (owner, 2026-10-23): dark text, orange underline like the site's other text links. */
 .blog-article-body a {

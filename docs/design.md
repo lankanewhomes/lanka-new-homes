@@ -248,8 +248,9 @@ Seller, Special Offer, Price Reduced, Early Bird, Investor Friendly, High
 Rental Potential, BOI Approved Project, Hospitality (added 2026-09-20 for
 hospitality-use projects such as a wellness retreat or coastal retreat),
 Profit-Share Model (2026-10-04, ICON V), Rent Out or Hotel-Managed (2026-10-24,
-Ocean Breeze Hikkaduwa: units can be rented out individually or put into the developer's hotel management). The project page shows only those
-two marketing badges (Profit-Share Model, Rent Out or Hotel-Managed); every other marketing badge stays hidden on the front end;
+Ocean Breeze Hikkaduwa: units can be rented out individually or put into the developer's hotel management). Hotel Management Option (2026-10-24: the developer offers hotel
+management but does not say owners can let the unit themselves). The project page AND the listing cards show only those three
+marketing badges (`src/lib/marketing-badges.ts`); every other marketing badge stays hidden on the front end;
 `locationBadges` (multi-select) —
 Beachfront, Ocean View, City View, Mountain View, Nature View, Prime
 Location. All three feed into `ProjectHero`'s existing `extraBadges` prop
@@ -1133,6 +1134,14 @@ bar, but the footer follows this section, so it was just empty space.
 Desktop header, left to right: logo, search, New Homes / Land / Company, **Log in, then the EN language dropdown** (the dropdown used
 to sit beside the logo). Its menu opens right-aligned (`.language-dropdown--end`) so it stays on screen. On mobile the language switcher
 is still at the bottom of the menu panel.
+
+
+## Developer / company page: cards or rows (owner, 2026-10-24)
+
+On a developer (or company) profile, the Projects / Lands tab shows photo cards (`ListingGridCard`, same as the home page) when the tab has **16
+listings or fewer**, and the compact rows (`.developer-profile-row`) when it has more (`CARD_LAYOUT_MAX` in `profile-view.tsx`). Cards are one
+full-width card per row on phones (<=640px), two on tablets, three on desktop (`.developer-profile-cards`) because most visitors are on mobile.
+The three front-end marketing badges (`src/lib/marketing-badges.ts`) show on the cards and on the rows.
 
 ## Languages (Sinhala / Tamil listing content)
 

@@ -10,6 +10,8 @@ import type { CoDeveloperEntry, CompanyProfile, Developer, ProfileEntityType, Pr
 import { formatLkr, formatOfficeHours } from "@/lib/format";
 import { getPackage, isPaidPackageTier } from "@/lib/packages";
 import { RequestInfoDialog, SOCIAL_ICON } from "@/components/marketplace/components";
+import { ListingGridCard } from "@/components/marketplace/listing-page";
+import { shownMarketingBadges } from "@/lib/marketing-badges";
 import { useSavedProfile } from "@/lib/use-saved-profile";
 import { useListingT } from "@/lib/i18n/use-listing-t";
 import { Button } from "@/components/ui/button";
@@ -23,6 +25,9 @@ function awardYear(year: string | null | undefined): number {
 }
 
 const LIST_PAGE_SIZE = 24;
+// Owner, 2026-10-24: a developer with 16 listings or fewer (on this tab) shows them as photo cards, like the home page; more than that keeps the compact
+// rows. Phones get one full-width card per row (see .developer-profile-cards).
+const CARD_LAYOUT_MAX = 16;
 
 // The fields the profile page actually renders — satisfied by both Developer
 // and CompanyProfile, so one view serves all six directories.
@@ -256,6 +261,12 @@ export function ProfileView({
 
             {visibleProjects.length === 0 ? (
               <p className="developer-empty-note">{entityType === "developer" ? "No projects listed yet." : `No projects link to ${entity.name} yet.`}</p>
+            ) : listProjects.length <= CARD_LAYOUT_MAX ? (
+              <div className="developer-profile-cards">
+                {visibleProjects.map((project) => (
+                  <ListingGridCard key={project.slug} project={project} basePath={project.isLand ? "/land" : "/projects"} />
+                ))}
+              </div>
             ) : (
               <div className="developer-profile-list">
                 {visibleProjects.map((project) => (
@@ -268,6 +279,9 @@ export function ProfileView({
                       <p className="developer-profile-row-price">{project.status === "Coming Soon" ? t("Register now") : project.startingPriceLkr > 0 ? tPrice(`From ${formatLkr(project.startingPriceLkr)}`) : t(project.status)}</p>
                       <p className="developer-profile-row-meta">{t(project.type)} | {t(project.constructionStatus)}</p>
                       <p className="developer-profile-row-address">{project.location}</p>
+                      {shownMarketingBadges(project.marketingBadges).length ? (
+                        <p className="developer-profile-row-badges">{shownMarketingBadges(project.marketingBadges).map((label) => <span key={label} className="badge-payment-plan">{label}</span>)}</p>
+                      ) : null}
                     </div>
                   </Link>
                 ))}

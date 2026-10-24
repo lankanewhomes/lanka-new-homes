@@ -91,6 +91,8 @@ const MARKETING_BADGE_OPTIONS = [
   'Profit-Share Model',
   // Added 2026-10-24 for Ocean Breeze Hikkaduwa (owner: a badge for the brochure line "investors can rent out units individually or opt for GHR's hotel management services").
   'Rent Out or Hotel-Managed',
+  // Added 2026-10-24: the developer offers hotel management but does not say owners can let the unit themselves (Lakefront, Negombo Phase 2, Edmonton, Park Road, Springfield).
+  'Hotel Management Option',
 ]
 
 const LOCATION_BADGE_OPTIONS = ['Beachfront', 'Ocean View', 'City View', 'Mountain View', 'Nature View', 'Prime Location', 'Gated Community']

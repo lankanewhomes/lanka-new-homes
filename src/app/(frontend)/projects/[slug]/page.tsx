@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { shownMarketingBadges } from "@/lib/marketing-badges";
 import { datePostedField, placeFields, sellerField } from "@/lib/listing-jsonld";
 import { notFound } from "next/navigation";
 import { projects } from "@/data/projects";
@@ -175,9 +176,8 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
           ...(project.availabilityBadge === "Now Selling" ? [{ label: "Now Selling", kind: "availability" as const }] : []),
           ...(project.availabilityBadge === "ADD ON" || project.floorPlans.some((plan) => plan.planType === "ADD ON") ? [{ label: "ADD ON", kind: "availability" as const }] : []),
           ...(project.locationBadges ?? []).map((label) => ({ label, kind: "location" as const })),
-          // The marketing badges shown on the page (every other one stays hidden): the ICON net profit-sharing model (owner, 2026-10-04) and
-          // "Rent Out or Hotel-Managed" (owner, 2026-10-24, Ocean Breeze Hikkaduwa: units can be rented out individually or put into hotel management).
-          ...(project.marketingBadges ?? []).filter((label) => label === "Profit-Share Model" || label === "Rent Out or Hotel-Managed").map((label) => ({ label, kind: "marketing" as const })),
+          // The marketing badges shown on the page (every other one stays hidden): see src/lib/marketing-badges.ts.
+          ...shownMarketingBadges(project.marketingBadges).map((label) => ({ label, kind: "marketing" as const })),
         ]}
       />
 
