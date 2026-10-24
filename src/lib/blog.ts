@@ -134,6 +134,7 @@ export const blogPosts: Record<string, BlogPost> = {
     publishDate: "2026-09-30",
     updatedDate: "2026-10-24",
     readMinutes: 2,
+    draft: true,
     heroImage: unsplash("1560448204-e02f11c3d0e2", 2200),
     heroImageAlt: "Exterior of a modern home with a lit entrance at dusk",
     intro:
