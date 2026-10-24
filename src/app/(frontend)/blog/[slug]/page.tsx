@@ -3,7 +3,6 @@ import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
 import { blogPosts, buildBlogMetadata, formatBlogDate } from "@/lib/blog";
 import { buildBreadcrumbJsonLd, jsonLdScriptProps, toAbsoluteUrl } from "@/lib/seo";
 
@@ -83,10 +82,13 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       <div className="blog-article-hero">
         <div className="blog-article-hero-inner">
           <div className="blog-article-hero-text">
-            <Link href="/blog" className="blog-article-back-link">
-              <ArrowLeft size={16} strokeWidth={2.5} aria-hidden="true" />
-              All posts
-            </Link>
+            <nav className="blog-article-crumbs" aria-label="Breadcrumb">
+              <Link href="/">Home</Link>
+              <span aria-hidden="true">/</span>
+              <Link href="/blog">Blog</Link>
+              <span aria-hidden="true">/</span>
+              <span aria-current="page">{post.title}</span>
+            </nav>
             <h1>{post.title}</h1>
             <p className="blog-article-byline">
               By {post.author}

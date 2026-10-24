@@ -16650,6 +16650,18 @@ body:has(.compare-bar) {
   gap: 56px;
 }
 
+.blog-article-crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 28px;
+  font-size: 14px;
+  color: #a8a49b;
+}
+.blog-article-crumbs a { color: #a8a49b; text-decoration: none; }
+.blog-article-crumbs a:hover { color: #fff; }
+.blog-article-crumbs [aria-current] { color: #fff; }
 .blog-article-back-link {
   display: inline-flex;
   align-items: center;
@@ -16730,7 +16742,7 @@ body:has(.compare-bar) {
 }
 
 /* A whole article section in one of the site's soft contained boxes (owner, 2026-10-23): flat colour plus the dot or line
-   texture, same as .fdv-box. A takeaway box inside it is the orange box, so it stands out. */
+   texture, same as .fdv-box. A takeaway box inside it is the green box, so it stands out. */
 .blog-article-body section.blog-article-box {
   position: relative;
   overflow: hidden;
@@ -16786,25 +16798,28 @@ body:has(.compare-bar) {
 .blog-article-figure {
   margin: 22px 0 0;
 }
+/* White mat with a thin line around each illustration (owner, 2026-10-24: "you had a border with white"). */
 .blog-article-figure img {
   display: block;
+  box-sizing: border-box;
   width: 100%;
   height: auto;
+  padding: 14px;
+  background: #fff;
   border: 1px solid #e2ddd0;
 }
-/* Takeaway boxes are solid brand orange with ink text and a faint white line grid: the same on every section, and they stand out from
-   the soft section boxes without being black (owner, 2026-10-24: "a better bg that stands out, not black"). */
+/* Takeaway boxes are a deep plum with white text and a faint line grid: calm, in the lilac family of the site, and clearly different
+   from the soft tones around them (owner, 2026-10-24: not black, orange "too bright", not green). */
 .blog-article-callout {
   position: relative;
   overflow: hidden;
   margin: 24px 0 0;
   padding: 24px 28px;
-  background: #f47b36;
+  background: #4b3a5e;
   border: 0;
   font-size: 19px;
-  font-weight: 500;
   line-height: 1.6;
-  color: #15141a;
+  color: #fff;
 }
 .blog-article-callout::before {
   content: "";
@@ -16812,14 +16827,15 @@ body:has(.compare-bar) {
   inset: 0;
   pointer-events: none;
   background-image:
-    repeating-linear-gradient(0deg, transparent 0 28px, rgba(255, 255, 255, 0.18) 28px 29px),
-    repeating-linear-gradient(90deg, transparent 0 28px, rgba(255, 255, 255, 0.18) 28px 29px);
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(255, 255, 255, 0.08) 28px 29px),
+    repeating-linear-gradient(90deg, transparent 0 28px, rgba(255, 255, 255, 0.08) 28px 29px);
   -webkit-mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
   mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
 }
 .blog-article-callout > * { position: relative; z-index: 1; }
-.blog-article-callout a { color: #15141a; text-decoration-color: #15141a; }
-.blog-article-callout a:hover { color: #fff; text-decoration-color: #fff; }
+.blog-article-callout a { color: #fff; text-decoration-color: #f47b36; }
+.blog-article-callout a:hover { color: #f47b36; }
+
 
 /* Internal links inside article copy (owner, 2026-10-23): dark text, orange underline like the site's other text links. */
 .blog-article-body a {

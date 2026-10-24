@@ -58,7 +58,7 @@ type PageDef = {
 };
 
 const ABOUT_FOOT = "Listing on LankaNewHomes is free for sellers, and an enquiry from any plot goes straight to the developer or builder with no agent in between.";
-const CHECKS = "Whatever the price, ask for the deed and the approved survey plan, check how wide the access road is, and find out about drainage, flooding in the rainy season and utilities (water, electricity, internet) before you commit.";
+const CHECKS = "Whatever the price, ask for the deed and the approved survey plan, check how wide the access road is, and find out about drainage, flooding in the rainy season and utilities (water, electricity, internet) before you commit. Our short guide, [before buying land in Sri Lanka](/blog/before-buying-land-in-sri-lanka), covers the title check and building approvals.";
 
 export const LAND_SEO_PAGES: Record<string, PageDef> = {
   cheap: {

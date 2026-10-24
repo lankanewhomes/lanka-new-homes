@@ -33,6 +33,7 @@ export async function GET() {
     `- [Developers](${site}/developers): the directory of property developers`,
     `- [Neighbourhood guides](${site}/neighborhoods): area guides with landmarks and the projects in each area`,
     `- [Guides](${site}/guides): buying guides for new homes in Sri Lanka`,
+    `- [Before buying land in Sri Lanka](${site}/blog/before-buying-land-in-sri-lanka): short guide to perches, deeds, survey plans, title checks and building approvals`,
     `- [For developers](${site}/for-developers): how developers list projects`,
     `- [About](${site}/about)`,
     `- [Contact](${site}/contact)`,
