@@ -311,8 +311,7 @@ export const blogPosts: Record<string, BlogPost> = {
     ],
     cta: {
       heading: "Find land with the details you need.",
-      body: "Browse land for sale across Sri Lanka and contact sellers directly.",
-      steps: ["Compare prices per perch", "Check road width and title details", "Ask for the deed and plans"],
+      body: "Browse land for sale across Sri Lanka.",
       links: [
         { label: "Browse all land", href: "/land" },
         { label: "Land in Colombo", href: "/land/best-land-for-sale-in-colombo" },
