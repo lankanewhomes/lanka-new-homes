@@ -12,6 +12,9 @@ import { getPackage, isPaidPackageTier } from "@/lib/packages";
 import { RequestInfoDialog, SOCIAL_ICON } from "@/components/marketplace/components";
 import { ListingGridCard } from "@/components/marketplace/listing-page";
 import { useSavedProfile } from "@/lib/use-saved-profile";
+import { isInternalBrowser } from "@/lib/internal-traffic";
+import { getStoredUtmParams, getTrafficSource, trackEvent } from "@/lib/ga4";
+import { getSessionId } from "@/components/marketplace/view-tracker";
 import { useListingT } from "@/lib/i18n/use-listing-t";
 import { Button } from "@/components/ui/button";
 
@@ -21,6 +24,20 @@ type Tab = "projects" | "lands" | "reviews" | "awards" | "press";
 function awardYear(year: string | null | undefined): number {
   const years = (year ?? "").match(/\d{4}/g)?.map(Number) ?? [];
   return years.length ? Math.max(...years) : 0;
+}
+
+// Counts a tap on a developer's phone number (owner, 2026-10-24: "make sure you track this number also"): a profile-page click on the
+// developer's first listing (source page "developer-profile") plus a GA4 event. The owner's own clicks are never counted.
+function logProfilePhoneClick(slug: string, entityType: ProfileEntityType) {
+  if (isInternalBrowser()) return;
+  trackEvent("click_phone_profile", { profile_slug: slug, profile_type: entityType });
+  if (entityType !== "developer") return;
+  fetch("/api/events/phone-click", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ developerSlug: slug, sessionId: getSessionId(), trafficSource: getTrafficSource(), utm: getStoredUtmParams() }),
+    keepalive: true,
+  }).catch(() => {});
 }
 
 const LIST_PAGE_SIZE = 24;
@@ -58,6 +75,7 @@ export function ProfileView({
   const { saved: following, toggle: toggleFollow } = useSavedProfile(entityType, entity.slug);
   const { t } = useListingT();
   const [locationFilter, setLocationFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [shown, setShown] = useState(LIST_PAGE_SIZE);
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [spotlightContactOpen, setSpotlightContactOpen] = useState(false);
@@ -87,7 +105,14 @@ export function ProfileView({
 
   const locations = useMemo(() => Array.from(new Set(listProjects.map((project) => project.location))).sort(), [listProjects]);
 
-  const filteredProjects = locationFilter === "all" ? listProjects : listProjects.filter((project) => project.location === locationFilter);
+  // Status chips (Now Selling, Under Construction, ...) count what is left after the location filter, so the numbers always match the cards.
+  const byLocation = locationFilter === "all" ? listProjects : listProjects.filter((project) => project.location === locationFilter);
+  const statusCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const project of byLocation) counts.set(project.status, (counts.get(project.status) ?? 0) + 1);
+    return Array.from(counts.entries()).sort((a, b) => b[1] - a[1]);
+  }, [byLocation]);
+  const filteredProjects = statusFilter === "all" ? byLocation : byLocation.filter((project) => project.status === statusFilter);
   const visibleProjects = filteredProjects.slice(0, shown);
   const sortedAwards = useMemo(
     () => [...(entity.awards ?? [])].sort((a, b) => awardYear(b.year) - awardYear(a.year)),
@@ -185,7 +210,7 @@ export function ProfileView({
           <div className="developer-profile-contact">
             {entity.location ? <p>{entity.location}</p> : null}
             {/* A record can hold several numbers separated by "/" — each gets its own line and tel: link. */}
-            {entity.phone ? entity.phone.split(/\s*\/\s*/).filter(Boolean).map((number) => <p key={number}><a href={`tel:${number.replace(/\s+/g, "")}`}>{number}</a></p>) : null}
+            {entity.phone ? entity.phone.split(/\s*\/\s*/).filter(Boolean).map((number) => <p key={number}><a href={`tel:${number.replace(/\s+/g, "")}`} onClick={() => logProfilePhoneClick(entity.slug, entityType)}>{number}</a></p>) : null}
             {websiteLink ? <a href={websiteLink} target="_blank" rel="noopener noreferrer">{websiteLink.replace(/^https?:\/\//, "")}</a> : null}
           </div>
         ) : null}
@@ -236,24 +261,39 @@ export function ProfileView({
 
       <div className="developer-profile-main">
         <div className="developer-profile-tabs" role="tablist">
-          {hasProjectsTab ? <button type="button" role="tab" aria-selected={tab === "projects"} className={tab === "projects" ? "active" : undefined} onClick={() => { setTab("projects"); setLocationFilter("all"); setShown(LIST_PAGE_SIZE); }}>{hasLandsTab ? `Projects (${homeProjects.length})` : "Projects"}</button> : null}
-          {hasLandsTab ? <button type="button" role="tab" aria-selected={tab === "lands"} className={tab === "lands" ? "active" : undefined} onClick={() => { setTab("lands"); setLocationFilter("all"); setShown(LIST_PAGE_SIZE); }}>Lands ({landProjects.length})</button> : null}
+          {hasProjectsTab ? <button type="button" role="tab" aria-selected={tab === "projects"} className={tab === "projects" ? "active" : undefined} onClick={() => { setTab("projects"); setLocationFilter("all"); setStatusFilter("all"); setShown(LIST_PAGE_SIZE); }}>{hasLandsTab ? `Projects (${homeProjects.length})` : "Projects"}</button> : null}
+          {hasLandsTab ? <button type="button" role="tab" aria-selected={tab === "lands"} className={tab === "lands" ? "active" : undefined} onClick={() => { setTab("lands"); setLocationFilter("all"); setStatusFilter("all"); setShown(LIST_PAGE_SIZE); }}>Lands ({landProjects.length})</button> : null}
           <button type="button" role="tab" aria-selected={tab === "reviews"} className={tab === "reviews" ? "active" : undefined} onClick={() => setTab("reviews")}>Reviews</button>
           <button type="button" role="tab" aria-selected={tab === "awards"} className={tab === "awards" ? "active" : undefined} onClick={() => setTab("awards")}>Awards</button>
           <button type="button" role="tab" aria-selected={tab === "press"} className={tab === "press" ? "active" : undefined} onClick={() => setTab("press")}>Press mentions</button>
-          {(tab === "projects" || tab === "lands") && locations.length > 1 ? (
-            <div className="developer-profile-filter developer-profile-filter--tabs">
-              <select value={locationFilter} onChange={(event) => { setLocationFilter(event.target.value); setShown(LIST_PAGE_SIZE); }} aria-label="Filter by location">
-                <option value="all">All locations ({listProjects.length})</option>
-                {locations.map((location) => <option key={location} value={location}>{location}</option>)}
-              </select>
-              <ChevronDown size={16} />
-            </div>
-          ) : null}
         </div>
 
         {tab === "projects" || tab === "lands" ? (
           <section className="developer-profile-communities">
+
+            {statusCounts.length > 1 || statusFilter !== "all" || locations.length > 1 ? (
+              <div className="developer-profile-filter-row">
+                <div className="developer-profile-status-row" role="group" aria-label="Filter by status">
+                  {statusCounts.length > 1 || statusFilter !== "all" ? (
+                    <>
+                      <button type="button" className={statusFilter === "all" ? "active" : undefined} onClick={() => { setStatusFilter("all"); setShown(LIST_PAGE_SIZE); }}>All ({byLocation.length})</button>
+                      {statusCounts.map(([status, count]) => (
+                        <button key={status} type="button" className={statusFilter === status ? "active" : undefined} onClick={() => { setStatusFilter(status); setShown(LIST_PAGE_SIZE); }}>{t(status)} ({count})</button>
+                      ))}
+                    </>
+                  ) : null}
+                </div>
+                {locations.length > 1 ? (
+                  <div className="developer-profile-filter">
+                    <select value={locationFilter} onChange={(event) => { setLocationFilter(event.target.value); setStatusFilter("all"); setShown(LIST_PAGE_SIZE); }} aria-label="Filter by location">
+                      <option value="all">All locations ({listProjects.length})</option>
+                      {locations.map((location) => <option key={location} value={location}>{location}</option>)}
+                    </select>
+                    <ChevronDown size={16} />
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
 
             {visibleProjects.length === 0 ? (
               <p className="developer-empty-note">{entityType === "developer" ? "No projects listed yet." : `No projects link to ${entity.name} yet.`}</p>
