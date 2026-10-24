@@ -4,14 +4,13 @@ import { useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Check, ChevronDown, Heart, House, MessageCircle, Star, X, Zap } from "lucide-react";
+import { Check, ChevronDown, Heart, MessageCircle, Star, X, Zap } from "lucide-react";
 import { FEATURED_LABEL, FEATURED_TOOLTIP, VERIFIED_DEVELOPER_LABEL, VERIFIED_DEVELOPER_TOOLTIP } from "@/lib/developer-badges";
 import type { CoDeveloperEntry, CompanyProfile, Developer, ProfileEntityType, Project, Review } from "@/types";
-import { formatLkr, formatOfficeHours } from "@/lib/format";
+import { formatOfficeHours } from "@/lib/format";
 import { getPackage, isPaidPackageTier } from "@/lib/packages";
 import { RequestInfoDialog, SOCIAL_ICON } from "@/components/marketplace/components";
 import { ListingGridCard } from "@/components/marketplace/listing-page";
-import { shownMarketingBadges } from "@/lib/marketing-badges";
 import { useSavedProfile } from "@/lib/use-saved-profile";
 import { useListingT } from "@/lib/i18n/use-listing-t";
 import { Button } from "@/components/ui/button";
@@ -25,9 +24,8 @@ function awardYear(year: string | null | undefined): number {
 }
 
 const LIST_PAGE_SIZE = 24;
-// Owner, 2026-10-24: a developer with 16 listings or fewer (on this tab) shows them as photo cards, like the home page; more than that keeps the compact
-// rows. Phones get one full-width card per row (see .developer-profile-cards).
-const CARD_LAYOUT_MAX = 16;
+// Owner, 2026-10-24: every developer and company shows its projects and lands as photo cards, four per row on desktop (one on phones, see
+// .developer-profile-cards). 24 per page is a multiple of four, so the last row is always full.
 
 // The fields the profile page actually renders — satisfied by both Developer
 // and CompanyProfile, so one view serves all six directories.
@@ -58,7 +56,7 @@ export function ProfileView({
   // A developer with only land parcels (e.g. Gangani Land Sales) opens on the Lands tab.
   const [tab, setTab] = useState<Tab>(projects.length > 0 && projects.every((project) => project.isLand) ? "lands" : "projects");
   const { saved: following, toggle: toggleFollow } = useSavedProfile(entityType, entity.slug);
-  const { t, tPrice } = useListingT();
+  const { t } = useListingT();
   const [locationFilter, setLocationFilter] = useState("all");
   const [shown, setShown] = useState(LIST_PAGE_SIZE);
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
@@ -243,47 +241,26 @@ export function ProfileView({
           <button type="button" role="tab" aria-selected={tab === "reviews"} className={tab === "reviews" ? "active" : undefined} onClick={() => setTab("reviews")}>Reviews</button>
           <button type="button" role="tab" aria-selected={tab === "awards"} className={tab === "awards" ? "active" : undefined} onClick={() => setTab("awards")}>Awards</button>
           <button type="button" role="tab" aria-selected={tab === "press"} className={tab === "press" ? "active" : undefined} onClick={() => setTab("press")}>Press mentions</button>
+          {(tab === "projects" || tab === "lands") && locations.length > 1 ? (
+            <div className="developer-profile-filter developer-profile-filter--tabs">
+              <select value={locationFilter} onChange={(event) => { setLocationFilter(event.target.value); setShown(LIST_PAGE_SIZE); }} aria-label="Filter by location">
+                <option value="all">All locations ({listProjects.length})</option>
+                {locations.map((location) => <option key={location} value={location}>{location}</option>)}
+              </select>
+              <ChevronDown size={16} />
+            </div>
+          ) : null}
         </div>
 
         {tab === "projects" || tab === "lands" ? (
           <section className="developer-profile-communities">
-            {locations.length > 1 ? (
-              <div className="developer-profile-communities-head developer-profile-communities-head-filter-only">
-                <div className="developer-profile-filter">
-                  <select value={locationFilter} onChange={(event) => { setLocationFilter(event.target.value); setShown(LIST_PAGE_SIZE); }} aria-label="Filter by location">
-                    <option value="all">All locations ({listProjects.length})</option>
-                    {locations.map((location) => <option key={location} value={location}>{location}</option>)}
-                  </select>
-                  <ChevronDown size={16} />
-                </div>
-              </div>
-            ) : null}
 
             {visibleProjects.length === 0 ? (
               <p className="developer-empty-note">{entityType === "developer" ? "No projects listed yet." : `No projects link to ${entity.name} yet.`}</p>
-            ) : listProjects.length <= CARD_LAYOUT_MAX ? (
+            ) : (
               <div className={`developer-profile-cards${visibleProjects.every((project) => project.isLand) ? " is-land" : ""}`}>
                 {visibleProjects.map((project) => (
                   <ListingGridCard key={project.slug} project={project} basePath={project.isLand ? "/land" : "/projects"} />
-                ))}
-              </div>
-            ) : (
-              <div className="developer-profile-list">
-                {visibleProjects.map((project) => (
-                  <Link href={`${project.isLand ? "/land" : "/projects"}/${project.slug}`} key={project.slug} className="developer-profile-row">
-                    <div className="developer-profile-row-image">
-                      {project.heroImage ? <Image src={project.heroImage} alt={project.name} width={150} height={110} /> : <House size={28} />}
-                    </div>
-                    <div className="developer-profile-row-body">
-                      <h3>{project.name}</h3>
-                      <p className="developer-profile-row-price">{project.status === "Coming Soon" ? t("Register now") : project.startingPriceLkr > 0 ? tPrice(`From ${formatLkr(project.startingPriceLkr)}`) : t(project.status)}</p>
-                      <p className="developer-profile-row-meta">{t(project.type)} | {t(project.constructionStatus)}</p>
-                      <p className="developer-profile-row-address">{project.location}</p>
-                      {shownMarketingBadges(project.marketingBadges).length ? (
-                        <p className="developer-profile-row-badges">{shownMarketingBadges(project.marketingBadges).map((label) => <span key={label} className="badge-payment-plan">{label}</span>)}</p>
-                      ) : null}
-                    </div>
-                  </Link>
                 ))}
               </div>
             )}
