@@ -10,6 +10,8 @@ export type BlogSection = {
   image?: { src: string; alt: string };
   /** One highlighted takeaway at the end of the section. */
   callout?: string;
+  /** Puts the whole section in one of the site's soft contained boxes (owner, 2026-10-23: "apply a container bg"). */
+  tone?: "sage" | "cream" | "gray" | "lilac";
 };
 
 export type BlogPost = {
@@ -251,6 +253,7 @@ export const blogPosts: Record<string, BlogPost> = {
     sections: [
       {
         heading: "The short version",
+        tone: "gray",
         body: "If you only read one part, read this.",
         bullets: [
           "Know what the land is for before you start looking.",
@@ -262,6 +265,7 @@ export const blogPosts: Record<string, BlogPost> = {
       },
       {
         heading: "Start with what the land is for",
+        tone: "sage",
         body: "Decide the purpose first. It shapes every other choice.",
         bullets: [
           "Your own home: near work, schools and family, with a road you can use every day.",
@@ -273,6 +277,7 @@ export const blogPosts: Record<string, BlogPost> = {
       },
       {
         heading: "Understand how land is measured and priced",
+        tone: "cream",
         body: "Land in Sri Lanka is measured in perches, roods and acres.",
         image: { src: "https://media.lankanewhomes.com/blog/before-buying-land-in-sri-lanka/land-measures.png", alt: "1 acre equals 4 roods equals 160 perches" },
         bullets: [
@@ -285,6 +290,7 @@ export const blogPosts: Record<string, BlogPost> = {
       },
       {
         heading: "Know the land structure: deed, survey plan, boundaries",
+        tone: "lilac",
         body: "Every plot has two documents that matter. Ask to see both.",
         image: { src: "https://media.lankanewhomes.com/blog/before-buying-land-in-sri-lanka/land-documents.png", alt: "The deed, the survey plan and the title check" },
         bullets: [
@@ -297,6 +303,7 @@ export const blogPosts: Record<string, BlogPost> = {
       },
       {
         heading: "Check the title before you pay anything",
+        tone: "gray",
         body: "This is the most important step, and it is worth paying for. Ask an attorney-at-law to trace the title at the Land Registry.",
         bullets: [
           "The seller is the registered owner.",
@@ -307,6 +314,7 @@ export const blogPosts: Record<string, BlogPost> = {
       },
       {
         heading: "Confirm what you are allowed to build",
+        tone: "sage",
         body: "A plot is only worth what you can legally do on it.",
         bullets: [
           "Find out how the land is classified. Paddy land, wetlands and some agricultural land carry building restrictions.",
@@ -318,6 +326,7 @@ export const blogPosts: Record<string, BlogPost> = {
       },
       {
         heading: "Visit the land and check the surroundings",
+        tone: "cream",
         body: "Visit more than once, at different times of day, and after rain if you can.",
         image: { src: "https://media.lankanewhomes.com/blog/before-buying-land-in-sri-lanka/land-site-visit.png", alt: "What to check on site: road, utilities, drainage and boundaries" },
         bullets: [
@@ -330,6 +339,7 @@ export const blogPosts: Record<string, BlogPost> = {
       },
       {
         heading: "Gated developments and single plots",
+        tone: "lilac",
         body: "Both can be a good choice. The checking just falls in different places.",
         bullets: [
           "A plot in a planned development, from one of the [developers on LankaNewHomes](/developers), usually comes with an approved plan, laid-out roads and shared utilities.",
@@ -340,6 +350,7 @@ export const blogPosts: Record<string, BlogPost> = {
       },
       {
         heading: "Five costly mistakes",
+        tone: "gray",
         body: "These cause most of the damage.",
         image: { src: "https://media.lankanewhomes.com/blog/before-buying-land-in-sri-lanka/land-mistakes.png", alt: "Five costly mistakes when buying land" },
         bullets: [
@@ -353,11 +364,13 @@ export const blogPosts: Record<string, BlogPost> = {
       },
       {
         heading: "Your checklist before you pay",
+        tone: "sage",
         body: "Screenshot this and tick every box before you pay more than a small reservation.",
         image: { src: "https://media.lankanewhomes.com/blog/before-buying-land-in-sri-lanka/land-checklist.png", alt: "Checklist to complete before paying for land" },
       },
       {
         heading: "Use LankaNewHomes to shortlist land",
+        tone: "cream",
         body: "A good shortlist saves time and money.",
         bullets: [
           "Browse [land by district](/land) and compare the price per perch of similar plots.",

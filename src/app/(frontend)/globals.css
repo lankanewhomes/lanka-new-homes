@@ -16713,6 +16713,49 @@ body:has(.compare-bar) {
   margin: 0;
 }
 
+/* A whole article section in one of the site's soft contained boxes (owner, 2026-10-23): flat colour plus the dot or line
+   texture, same as .fdv-box. A takeaway box inside it keeps its own sage dot background, so it reads as a different tone from the section box. */
+.blog-article-body section.blog-article-box {
+  position: relative;
+  overflow: hidden;
+  padding: 36px 32px 34px;
+  margin-bottom: 34px;
+}
+.blog-article-body section.blog-article-box::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
+  mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
+}
+.blog-article-body section.blog-article-box > * { position: relative; z-index: 1; }
+.blog-article-box--sage { background: #ecf1ea; }
+.blog-article-box--gray { background: #f1f0ec; }
+.blog-article-box--sage::before,
+.blog-article-box--gray::before {
+  background-image: radial-gradient(rgba(21, 20, 26, 0.18) 1.5px, transparent 0);
+  background-size: 18px 18px;
+}
+.blog-article-box--cream { background: #f7f1e6; }
+.blog-article-box--lilac { background: #f1ecf3; }
+.blog-article-box--cream::before,
+.blog-article-box--lilac::before {
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(21, 20, 26, 0.07) 28px 29px),
+    repeating-linear-gradient(90deg, transparent 0 28px, rgba(21, 20, 26, 0.07) 28px 29px);
+}
+/* The takeaway box inside a section box is always a different tone from the box around it. */
+.blog-article-box--sage { --callout-bg: #f1ecf3; --callout-tex: repeating-linear-gradient(0deg, transparent 0 28px, rgba(21, 20, 26, 0.07) 28px 29px), repeating-linear-gradient(90deg, transparent 0 28px, rgba(21, 20, 26, 0.07) 28px 29px); --callout-size: auto; }
+.blog-article-box--gray, .blog-article-box--cream { --callout-bg: #ecf1ea; }
+.blog-article-box--lilac { --callout-bg: #f7f1e6; --callout-tex: repeating-linear-gradient(0deg, transparent 0 28px, rgba(21, 20, 26, 0.07) 28px 29px), repeating-linear-gradient(90deg, transparent 0 28px, rgba(21, 20, 26, 0.07) 28px 29px); --callout-size: auto; }
+@media (min-width: 900px) {
+  .blog-article-body section.blog-article-box { margin-left: -32px; margin-right: -32px; }
+}
+@media (max-width: 560px) {
+  .blog-article-body section.blog-article-box { padding: 28px 18px; }
+}
+
 /* Lists, illustrations and takeaway boxes inside article sections (owner, 2026-10-23: easier to read). */
 .blog-article-list {
   margin: 18px 0 0;
@@ -16737,15 +16780,29 @@ body:has(.compare-bar) {
   height: auto;
   border: 1px solid #e2ddd0;
 }
+/* Takeaway boxes use the site's sage box with its dot texture (owner, 2026-10-23: "change the bg"). */
 .blog-article-callout {
+  position: relative;
+  overflow: hidden;
   margin: 22px 0 0;
-  padding: 18px 22px;
-  background: #f7f1e6;
+  padding: 20px 24px;
+  background: var(--callout-bg, #ecf1ea);
   border: 1px solid #e2ddd0;
   font-size: 18px;
   line-height: 1.6;
   color: #1f1f1f;
 }
+.blog-article-callout::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: var(--callout-tex, radial-gradient(rgba(21, 20, 26, 0.18) 1.5px, transparent 0));
+  background-size: var(--callout-size, 18px 18px);
+  -webkit-mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
+  mask-image: radial-gradient(ellipse 80% 100% at center, #000 35%, transparent 100%);
+}
+.blog-article-callout > * { position: relative; z-index: 1; }
 
 /* Internal links inside article copy (owner, 2026-10-23): dark text, orange underline like the site's other text links. */
 .blog-article-body a {

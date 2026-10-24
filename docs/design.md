@@ -2523,6 +2523,10 @@ post + its resources/blog listing page):
   `BlogPost` type and a `blogPosts` record (slug, title, excerpt, category,
   author, publishDate, readMinutes, heroImage, intro, `sections[]`). Adding
   a post means adding a record, not a bespoke page.
+- **Article sections as contained boxes** (owner, 2026-10-23): a `BlogSection` can set `tone` (`gray` / `sage` / `cream` / `lilac`) to sit in
+  the site's soft box (`.blog-article-box--<tone>`, same textures as `.fdv-box`; 34px between boxes). Neighbouring sections use different
+  tones (the land guide cycles gray, sage, cream, lilac). A takeaway `callout` inside a box takes a different tone from its box via CSS variables.
+  Lists use `bullets`, illustrations use `image` (hosted on R2 `blog/<slug>/`).
 - **Internal links in article copy** (owner, 2026-10-23): write `[text](/path)` inside a section `body` or the `intro`;
   `renderCopy()` in `blog/[slug]/page.tsx` turns only internal paths (starting with `/`) into links, styled dark with an
   orange underline (`.blog-article-body a`). Link to live pages only (check they return 200) and never to a `draft` post.

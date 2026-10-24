@@ -79,7 +79,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       <div className="blog-article-body">
         <p className="blog-article-intro">{renderCopy(post.intro)}</p>
         {post.sections.map((section) => (
-          <section key={section.heading}>
+          <section key={section.heading} className={section.tone ? `blog-article-box blog-article-box--${section.tone}` : undefined}>
             <h2>{section.heading}</h2>
             <p>{renderCopy(section.body)}</p>
             {section.image ? (
