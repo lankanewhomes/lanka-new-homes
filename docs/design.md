@@ -248,7 +248,8 @@ Seller, Special Offer, Price Reduced, Early Bird, Investor Friendly, High
 Rental Potential, BOI Approved Project, Hospitality (added 2026-09-20 for
 hospitality-use projects such as a wellness retreat or coastal retreat),
 Profit-Share Model (2026-10-04, ICON V), Rent Out or Hotel-Managed (2026-10-24,
-Ocean Breeze Hikkaduwa: units can be rented out individually or put into the developer's hotel management);
+Ocean Breeze Hikkaduwa: units can be rented out individually or put into the developer's hotel management). The project page shows only those
+two marketing badges (Profit-Share Model, Rent Out or Hotel-Managed); every other marketing badge stays hidden on the front end;
 `locationBadges` (multi-select) —
 Beachfront, Ocean View, City View, Mountain View, Nature View, Prime
 Location. All three feed into `ProjectHero`'s existing `extraBadges` prop
