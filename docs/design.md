@@ -1140,7 +1140,7 @@ is still at the bottom of the menu panel.
 
 On a developer (or company) profile, the Projects / Lands tab shows photo cards (`ListingGridCard`, same as the home page) when the tab has **16
 listings or fewer**, and the compact rows (`.developer-profile-row`) when it has more (`CARD_LAYOUT_MAX` in `profile-view.tsx`). Cards are one
-full-width card per row on phones (<=640px), two on tablets, three on desktop (`.developer-profile-cards`) because most visitors are on mobile.
+full-width card per row on phones (<=640px), two on tablets, three on small desktops and four from 1280px wide (`.developer-profile-cards`) because most visitors are on mobile.
 The three front-end marketing badges (`src/lib/marketing-badges.ts`) show on the cards and on the rows.
 
 ## Languages (Sinhala / Tamil listing content)
