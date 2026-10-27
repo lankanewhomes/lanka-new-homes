@@ -2892,6 +2892,8 @@ export interface Project {
         | 'BOI Approved Project'
         | 'Hospitality'
         | 'Profit-Share Model'
+        | 'Rent Out or Hotel-Managed'
+        | 'Hotel Management Option'
       )[]
     | null;
   /**
@@ -7501,7 +7503,7 @@ export interface SocialPost {
    * When the post was deleted on Instagram or Facebook. Leave empty while it is live.
    */
   removedAt?: string | null;
-  platform: 'facebook' | 'instagram';
+  platform: 'facebook' | 'instagram' | 'tiktok';
   kind: 'carousel' | 'reel' | 'photo' | 'video' | 'story';
   status: 'published' | 'processing' | 'failed' | 'dry_run' | 'scheduled';
   /**

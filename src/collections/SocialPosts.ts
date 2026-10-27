@@ -2,13 +2,14 @@ import type { CollectionConfig } from 'payload'
 import { adminOnly, hiddenUnlessAdmin, projectContentRead } from './access'
 
 // Append-only log of every attempt to post a listing to Facebook /
-// Instagram (src/lib/social/publish.ts). `processing` rows are Instagram
+// Instagram / TikTok (src/lib/social/publish.ts). `processing` rows are Instagram
 // containers Meta is still encoding — the Social tab's "Check & publish"
 // finishes them. `dry_run` rows are what would have been posted while the
 // Meta credentials aren't configured yet.
 export const SOCIAL_PLATFORMS = [
   { label: 'Facebook Page', value: 'facebook' },
   { label: 'Instagram', value: 'instagram' },
+  { label: 'TikTok', value: 'tiktok' },
 ] as const
 export const SOCIAL_KINDS = [
   { label: 'Photo carousel', value: 'carousel' },

@@ -19,6 +19,7 @@ const TABS: Tab[] = [
   { key: "all", label: "All", where: null },
   { key: "instagram", label: "Instagram", where: { platform: { equals: "instagram" } } },
   { key: "facebook", label: "Facebook", where: { platform: { equals: "facebook" } } },
+  { key: "tiktok", label: "TikTok", where: { platform: { equals: "tiktok" } } },
   { key: "reels", label: "Reels and videos", where: { kind: { in: ["reel", "video"] } } },
   { key: "stories", label: "Stories", where: { kind: { equals: "story" } } },
   { key: "land", label: "Land", where: { land: { exists: true } } },
@@ -257,8 +258,8 @@ function AddByLink({ onAdded }: { onAdded: () => void }) {
     e.preventDefault();
     let host = "";
     try { host = new URL(url.trim()).hostname; } catch { d.toast("That does not look like a link.", "warn"); return; }
-    const platform = /instagram\.com/.test(host) ? "instagram" : /facebook\.com|fb\.watch|fb\.com/.test(host) ? "facebook" : null;
-    if (!platform) { d.toast("Only Instagram and Facebook links can be added.", "warn"); return; }
+    const platform = /instagram\.com/.test(host) ? "instagram" : /facebook\.com|fb\.watch|fb\.com/.test(host) ? "facebook" : /tiktok\.com/.test(host) ? "tiktok" : null;
+    if (!platform) { d.toast("Only Instagram, Facebook and TikTok links can be added.", "warn"); return; }
     if (project === null) { d.toast("Choose the listing this post is about.", "warn"); return; }
     setBusy(true);
     try {
