@@ -1,5 +1,7 @@
 # Social publishing — reels, carousels, Facebook & Instagram
 
+> Strategy and Reel rules live in `docs/social-strategy.md` and take priority. The renderer described below still makes ~30 s Reels with a floor-plan scene; do not use its Reel output until a 15–20 s variant exists.
+
 One listing → a 9:16 story reel and a 4:5 photo carousel, generated from the
 listing's **own** photos and drawings, then posted to the LankaNewHomes
 Facebook Page and Instagram account from the project's **Social** tab in
