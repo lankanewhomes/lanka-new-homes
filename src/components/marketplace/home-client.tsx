@@ -359,6 +359,7 @@ export function HomeClient({
       <div className="luxury-hero-two-panel">
           <h1>{t.heroTitle}</h1>
           <p className="luxury-hero-two-subheading">{t.heroSubtitle}</p>
+          <div className="hero-search-wrap">
           <form className="hero-search luxury-hero-two-top-search" onSubmit={submitSearch}>
             <label><input aria-label="Search homes" value={searchTerm} onFocus={() => { setMobileSearchOpen(true); setDesktopSearchOpen(true); }} onChange={(event) => setSearchTerm(event.target.value)} placeholder={t.searchPlaceholder} /></label>
             <button type="button" className="hero-region-picker" aria-label="Select region"><MapPin size={17} /><span>{t.searchRegion}</span><ChevronDown size={16} /></button>
@@ -373,6 +374,7 @@ export function HomeClient({
               ))}
             </div>
           ) : null}
+          </div>
           <div className="hero-quick-links" aria-label="Browse by category">
             {heroQuickLinks.map((category) => (
               <Link

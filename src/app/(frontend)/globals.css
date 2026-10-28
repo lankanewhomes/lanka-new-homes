@@ -775,12 +775,16 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
   background: #ff9a5c;
 }
 
+.hero-search-wrap {
+  position: relative;
+}
+
 .hero-search-suggestions {
   position: absolute;
   left: 0;
-  top: calc(100% - 22px);
-  z-index: 8;
-  width: min(480px, 100%);
+  top: calc(100% + 4px);
+  z-index: 20;
+  width: 100%;
   border: 1px solid #cbd7e3;
   background: #edf3f8;
   box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14);
@@ -1035,9 +1039,8 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
   }
 
   .hero-search-suggestions {
-    left: 50%;
-    width: min(480px, calc(100% - 36px));
-    transform: translateX(-50%);
+    left: 0;
+    width: 100%;
   }
 }
 
