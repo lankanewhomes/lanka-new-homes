@@ -72,7 +72,7 @@ export function buildOrganizationJsonLd() {
     name: "LankaNewHomes",
     url: getSiteUrl(),
     logo: toAbsoluteUrl("/logo-wordmark.svg"),
-    sameAs: ["https://www.facebook.com/lankanewhomes", "https://www.instagram.com/lankanewhomes/"],
+    sameAs: ["https://www.facebook.com/lankanewhomes", "https://www.instagram.com/lankanewhomes/", "https://www.tiktok.com/@lankanewhomes"],
   };
 }
 

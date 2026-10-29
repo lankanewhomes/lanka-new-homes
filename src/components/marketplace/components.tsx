@@ -6,7 +6,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { AccountMenu } from "@/components/auth/account-menu";
-import { IconBrandFacebook, IconBrandInstagram, IconChevronRight as TablerChevronRight, IconMenu2, IconSearch, IconX as TablerX } from "@tabler/icons-react";
+import { IconBrandFacebook, IconBrandInstagram, IconBrandTiktok, IconChevronRight as TablerChevronRight, IconMenu2, IconSearch, IconX as TablerX } from "@tabler/icons-react";
 import { useSavedListing } from "@/lib/use-saved-listing";
 import { useSavedDeveloper } from "@/lib/use-saved-developer";
 import { getStoredUtmParams, getTrafficSource, trackEvent } from "@/lib/ga4";
@@ -4340,6 +4340,9 @@ export function Footer() {
           </a>
           <a href="https://www.instagram.com/lankanewhomes/" target="_blank" rel="noopener noreferrer" className="footer-social-icon" aria-label="LankaNewHomes on Instagram">
             <IconBrandInstagram size={18} stroke={1.75} aria-hidden="true" />
+          </a>
+          <a href="https://www.tiktok.com/@lankanewhomes" target="_blank" rel="noopener noreferrer" className="footer-social-icon" aria-label="LankaNewHomes on TikTok">
+            <IconBrandTiktok size={18} stroke={1.75} aria-hidden="true" />
           </a>
         </div>
 
