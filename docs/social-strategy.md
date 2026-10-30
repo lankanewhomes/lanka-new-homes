@@ -162,6 +162,8 @@ One row per candidate listing. Owner picks listings; leave the rest empty.
 
 ## 11. Quality-control checklist
 
+Never post a sold-out listing (owner rule, 2026-10-30). Check the project's status before choosing it, on every platform and format.
+
 Reel:
 - [ ] 15–20 s, 9:16
 - [ ] Logo top-left, consistent
@@ -177,7 +179,7 @@ destination right · Story link sticker added to the exact listing.
 Facebook link post: exact listing URL · accurate caption · automatic preview ·
 no photo post/album/designed image.
 
-All: positioning fits · permissions confirmed · single objective · no developer name.
+All: listing is not sold out · positioning fits · permissions confirmed · single objective · no developer name.
 
 ## 12. Gaps to close before the first Reel
 

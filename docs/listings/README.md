@@ -54,3 +54,4 @@ One file per listing built from a developer's website — what was captured, whe
 - [Springfield Residencies](springfield-residencies.md) — Townhouse, Thalawathugoda; 2 plans, 20 images, brochure, handover — (published)
 - [The Kingdom Residencies, Sigiriya](the-kingdom-sigiriya.md) — Apartments, Sigiriya; 2 plans, 17 images, brochure, handover — (published)
 - [Lakefront Residencies](lakefront-residencies.md) — Apartments, Nuwara Eliya; 10 plans, 37 images, brochure, handover — (published)
+- [Dynasty Residence](dynasty-residence-kandy.md) — Apartments, Kandy; 10 plans, 11 images, brochure, completed, no prices published (published)
