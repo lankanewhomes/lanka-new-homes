@@ -27,6 +27,12 @@ const TABS: Tab[] = [
 ];
 const KINDS = [["photo", "Photo post"], ["carousel", "Carousel"], ["reel", "Reel"], ["video", "Video"], ["story", "Story"]] as const;
 const KIND_LABEL: Record<string, string> = { photo: "Photo", carousel: "Carousel", reel: "Reel", video: "Video", story: "Story" };
+// Brand colours for the platform name on each post (Facebook blue, Instagram pink, TikTok red; TikTok's own black would vanish in dark mode).
+const PLATFORM: Record<string, { name: string; color: string }> = {
+  facebook: { name: "Facebook", color: "#1877F2" },
+  instagram: { name: "Instagram", color: "#E1306C" },
+  tiktok: { name: "TikTok", color: "#FE2C55" },
+};
 const PAGE = 24;
 const idOf = (v: unknown) => (v && typeof v === "object" ? (v as { id?: unknown }).id : v);
 
@@ -185,7 +191,7 @@ export function SocialPage() {
                 <article key={String(p.id)} className={`flex flex-col border border-line bg-panel${p.removedAt ? " opacity-60" : ""}`}>
                   <a href={String(p.permalink || "#")} target="_blank" rel="noopener noreferrer" aria-label="Open the post"><Thumb post={p} /></a>
                   <div className="flex flex-1 flex-col gap-1.5 p-3">
-                    <p className="d-label">{p.platform === "instagram" ? "Instagram" : "Facebook"} · {when(p.postedAt)}{p.removedAt ? <span className="ml-1.5 border border-line px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-muted">Deleted on {p.platform === "instagram" ? "Instagram" : "Facebook"}</span> : null}</p>
+                    <p className="d-label">{(() => { const brand = PLATFORM[String(p.platform)] ?? PLATFORM.facebook; return <><span className="inline-flex items-center gap-1.5 font-semibold" style={{ color: brand.color }}><span aria-hidden="true" className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: brand.color }} />{brand.name}</span> · {when(p.postedAt)}{p.removedAt ? <span className="ml-1.5 border border-line px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-muted">Deleted on {brand.name}</span> : null}</>; })()}</p>
                     {p.project ? <Link href={`/dashboard/projects/${idOf(p.project)}`} className="text-sm font-semibold hover:underline">{d.labelOf("projects", idOf(p.project))}</Link> : p.land ? <a href={`/land/${String((p.details as { landSlug?: string } | null)?.landSlug ?? "")}`} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold hover:underline">Land: {String((p.details as { landSlug?: string } | null)?.landSlug ?? "listing")}</a> : (p.details as { listingType?: string } | null)?.listingType === "business" ? <p className="text-sm font-semibold">LankaNewHomes: {String((p.details as { topic?: string } | null)?.topic ?? "business post")}</p> : admin ? <Assign post={p} onDone={() => setReload((n) => n + 1)} /> : null}
                     {p.caption ? <p className="line-clamp-3 text-xs leading-relaxed text-muted">{String(p.caption)}</p> : null}
                     <div className="mt-auto flex items-center gap-3 pt-1.5 text-xs text-muted">
