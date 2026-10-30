@@ -107,6 +107,24 @@ on developer profiles). The phone event is named `call_click` (was
   `download_brochure`, `generate_lead` (the enquiry/brochure form submit).
   An event only appears in that list after GA has received it once.
 
+### 2c. Interest events added 2026-10-30
+
+| Event | Fired when | Parameters |
+|---|---|---|
+| `save_listing` / `unsave_listing` | Save tapped (also when not signed in yet) | `listing_id`, `logged_in` |
+| `follow_developer` / `unfollow_developer` | Get updates tapped | `developer_slug`, `logged_in` |
+| `compare_add` / `compare_remove` | Compare toggled on a card | `listing_id`, `listing_type` |
+| `view_floor_plan` | A floor plan page is opened | `listing_id`, `floor_plan_id`, `floor_plan_name`, `developer_slug` |
+| `search` | Home search submitted, or listing search typed (after a 1.5 s pause) | `search_term`, `search_location` |
+| `filter_listings` | A filter is changed | `filter_group`, `filter_value` |
+| `view_map` | Map view opened on a listing page | `page_path` |
+| `map_pin_click` | A pin is tapped on the map | `listing_id`, `developer_slug` |
+| `click_social` | A developer's social link is tapped on a listing | `platform`, `listing_id`, `developer_slug` |
+
+`generate_lead` also carries `landing_page` (first page of the session) and `form_type` (brochure / inquiry / request_info).
+Land listings reuse the project components, so their contact events are covered by the same code.
+Register the parameters you want to report on as event-scoped custom dimensions (Admin → Custom definitions).
+
 ### 3. Service account for the GA4 Data API
 
 The Payload endpoint reads GA4 server-side via a service account (never a

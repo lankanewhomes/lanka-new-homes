@@ -11,6 +11,7 @@ import { formatLkr, withSqFt } from "@/lib/format";
 import { hasPremiumStyleBadge, planRotationWeight } from "@/lib/packages";
 import { useListingT } from "@/lib/i18n/use-listing-t";
 import { useSavedListing } from "@/lib/use-saved-listing";
+import { trackEvent } from "@/lib/ga4";
 import { useCompareListings, MAX_COMPARE } from "@/lib/use-compare-listings";
 import { MapSidebar } from "@/components/marketplace/map-sidebar";
 import { searchablePages } from "@/lib/listing-categories";
@@ -378,6 +379,13 @@ export function ListingPageBody({
   const [areaCity, setAreaCity] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [moreFiltersOpen, setMoreFiltersOpen] = useState(false);
+  // What visitors type into the listing search, once they pause (shows what buyers want that may not be listed).
+  useEffect(() => {
+    const term = searchQuery.trim();
+    if (term.length < 3) return;
+    const timer = window.setTimeout(() => trackEvent("search", { search_term: term.slice(0, 100), search_location: "listing_page" }), 1500);
+    return () => window.clearTimeout(timer);
+  }, [searchQuery]);
   const [filterSelections, setFilterSelections] = useState<Record<string, string>>({});
   const [regionFilter, setRegionFilter] = useState("All of Sri Lanka");
   const [searchFocused, setSearchFocused] = useState(false);
@@ -578,7 +586,7 @@ export function ListingPageBody({
                     type="radio"
                     name={`listing-more-${group.label}`}
                     checked={(filterSelections[group.label] ?? group.options[0]) === option}
-                    onChange={() => setFilterSelections((prev) => ({ ...prev, [group.label]: option }))}
+                    onChange={() => { trackEvent("filter_listings", { filter_group: group.label, filter_value: option }); setFilterSelections((prev) => ({ ...prev, [group.label]: option })); }}
                   />
                   <span>{option}</span>
                 </label>
@@ -649,7 +657,7 @@ export function ListingPageBody({
                   label={group.label}
                   options={group.options}
                   value={filterSelections[group.label] ?? group.options[0]}
-                  onChange={(next) => setFilterSelections((prev) => ({ ...prev, [group.label]: next }))}
+                  onChange={(next) => { trackEvent("filter_listings", { filter_group: group.label, filter_value: next }); setFilterSelections((prev) => ({ ...prev, [group.label]: next })); }}
                 />
               ))}
 
@@ -666,7 +674,7 @@ export function ListingPageBody({
                 <button type="button" className={viewMode === "list" ? "active" : undefined} onClick={() => setViewMode((v) => (v === "list" ? "split" : "list"))} aria-pressed={viewMode === "list"}>
                   <List className="h-4 w-4" aria-hidden="true" /> <span className="listing-view-toggle-label">List</span>
                 </button>
-                <button type="button" className={viewMode === "map" ? "active" : undefined} onClick={() => setViewMode((v) => (v === "map" ? "split" : "map"))} aria-pressed={viewMode === "map"}>
+                <button type="button" className={viewMode === "map" ? "active" : undefined} onClick={() => { trackEvent("view_map", { page_path: window.location.pathname }); setViewMode((v) => (v === "map" ? "split" : "map")); }} aria-pressed={viewMode === "map"}>
                   <MapIcon className="h-4 w-4" aria-hidden="true" /> <span className="listing-view-toggle-label">Map</span>
                 </button>
               </div>
@@ -700,7 +708,7 @@ export function ListingPageBody({
                 <button type="button" className={viewMode === "list" ? "active" : undefined} onClick={() => setViewMode((v) => (v === "list" ? "split" : "list"))} aria-pressed={viewMode === "list"}>
                   <List className="h-4 w-4" aria-hidden="true" /> <span className="listing-view-toggle-label">List</span>
                 </button>
-                <button type="button" className={viewMode === "map" ? "active" : undefined} onClick={() => setViewMode((v) => (v === "map" ? "split" : "map"))} aria-pressed={viewMode === "map"}>
+                <button type="button" className={viewMode === "map" ? "active" : undefined} onClick={() => { trackEvent("view_map", { page_path: window.location.pathname }); setViewMode((v) => (v === "map" ? "split" : "map")); }} aria-pressed={viewMode === "map"}>
                   <MapIcon className="h-4 w-4" aria-hidden="true" /> <span className="listing-view-toggle-label">Map</span>
                 </button>
               </div>
@@ -774,7 +782,7 @@ export function ListingPageBody({
                 type="button"
                 className="listing-map-collapse"
                 aria-label={viewMode === "map" ? "Show list" : "Show map only"}
-                onClick={() => setViewMode((v) => (v === "map" ? "split" : "map"))}
+                onClick={() => { trackEvent("view_map", { page_path: window.location.pathname }); setViewMode((v) => (v === "map" ? "split" : "map")); }}
               >
                 {viewMode === "map" ? "›" : "‹"}
               </button>

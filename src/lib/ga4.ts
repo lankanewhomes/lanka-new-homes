@@ -5,6 +5,7 @@ import { isAiAssistantHost, isAiAssistantUtmSource } from "@/lib/ai-traffic";
 import { sendGAEvent } from "@next/third-parties/google";
 
 const UTM_SESSION_KEY = "lnh-utm-session";
+const LANDING_SESSION_KEY = "lnh-landing-page";
 
 type UtmParams = {
   utm_source?: string;
@@ -21,6 +22,12 @@ type UtmParams = {
 export function captureUtmParams(): void {
   if (typeof window === "undefined") return;
   try {
+    // First page of the session, so a lead can be traced back to the page that brought the visitor in.
+    if (!sessionStorage.getItem(LANDING_SESSION_KEY)) sessionStorage.setItem(LANDING_SESSION_KEY, window.location.pathname);
+  } catch {
+    // sessionStorage unavailable — no-op.
+  }
+  try {
     if (sessionStorage.getItem(UTM_SESSION_KEY)) return;
     const params = new URLSearchParams(window.location.search);
     const utm: UtmParams = {};
@@ -33,6 +40,16 @@ export function captureUtmParams(): void {
     sessionStorage.setItem(UTM_SESSION_KEY, JSON.stringify(utm));
   } catch {
     // sessionStorage unavailable (private mode, blocked storage) — no-op.
+  }
+}
+
+/** Path of the first page this visitor opened in this session (falls back to the current page). */
+export function getLandingPage(): string {
+  if (typeof window === "undefined") return "";
+  try {
+    return sessionStorage.getItem(LANDING_SESSION_KEY) || window.location.pathname;
+  } catch {
+    return window.location.pathname;
   }
 }
 

@@ -44,3 +44,11 @@ export function ProjectViewTracker({
 
   return null;
 }
+
+/** A floor plan page was opened: a strong buying signal on apartment projects. */
+export function FloorPlanViewTracker({ projectSlug, floorPlanId, floorPlanName, developerSlug }: { projectSlug: string; floorPlanId: string; floorPlanName: string; developerSlug: string }) {
+  useEffect(() => {
+    trackEvent("view_floor_plan", { listing_id: projectSlug, floor_plan_id: floorPlanId, floor_plan_name: floorPlanName, ...(developerSlug ? { developer_slug: developerSlug } : {}) });
+  }, [projectSlug, floorPlanId, floorPlanName, developerSlug]);
+  return null;
+}

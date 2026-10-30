@@ -11,6 +11,7 @@ import { ArrowUpRight, Check, ChevronDown, ChevronLeft, ChevronRight, MapPin, Pa
 import { SiteLanguage, useLanguage } from "@/components/layout/language-provider";
 import { ListingGridCard } from "@/components/marketplace/listing-page";
 import { allProjectCategories } from "@/lib/listing-categories";
+import { trackEvent } from "@/lib/ga4";
 import { getPackage, planRotationWeight } from "@/lib/packages";
 import { weightedTake } from "@/lib/weighted-random";
 import { isInNewListingsWindow } from "@/lib/new-listings";
@@ -168,6 +169,7 @@ export function HomeClient({
     const query = searchTerm.trim();
     // "plots in Negombo" etc. go to the land page, everything else to project search.
     const wantsLand = query ? parseNaturalSearch(query).land === true : false;
+    if (query) trackEvent("search", { search_term: query.slice(0, 100), search_location: "home", wants_land: wantsLand });
     router.push(query ? `${wantsLand ? "/land" : "/search"}?q=${encodeURIComponent(query)}` : "/search");
     setMobileSearchOpen(false);
   };

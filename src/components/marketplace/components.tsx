@@ -9,7 +9,7 @@ import { AccountMenu } from "@/components/auth/account-menu";
 import { IconBrandFacebook, IconBrandInstagram, IconBrandTiktok, IconChevronRight as TablerChevronRight, IconMenu2, IconSearch, IconX as TablerX } from "@tabler/icons-react";
 import { useSavedListing } from "@/lib/use-saved-listing";
 import { useSavedDeveloper } from "@/lib/use-saved-developer";
-import { getStoredUtmParams, getTrafficSource, trackEvent } from "@/lib/ga4";
+import { getLandingPage, getStoredUtmParams, getTrafficSource, trackEvent } from "@/lib/ga4";
 import { hasPremiumStyleBadge, isPaidPackageTier } from "@/lib/packages";
 import { FEATURED_LABEL, FEATURED_TOOLTIP, VERIFIED_DEVELOPER_LABEL, VERIFIED_DEVELOPER_TOOLTIP } from "@/lib/developer-badges";
 import { getSessionId } from "@/components/marketplace/view-tracker";
@@ -2137,7 +2137,7 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
             const Icon = SOCIAL_ICON[platform];
             if (!Icon) return null;
             return (
-              <a key={platform} href={url} target="_blank" rel="noreferrer noopener" aria-label={`Visit us on ${platform}`} className="stats-contact-card-social-link">
+              <a key={platform} href={url} target="_blank" rel="noreferrer noopener" aria-label={`Visit us on ${platform}`} onClick={() => trackEvent("click_social", { platform, listing_id: project.slug, ...(project.developerSlug ? { developer_slug: project.developerSlug } : {}) })} className="stats-contact-card-social-link">
                 <Icon className="h-4 w-4" />
               </a>
             );
@@ -2272,6 +2272,8 @@ export function RequestInfoDialog({
         listing_name: project.name,
         ...(project.developerSlug ? { developer_slug: project.developerSlug } : {}),
         traffic_source: getTrafficSource(),
+        landing_page: getLandingPage(),
+        form_type: isBrochure ? "brochure" : isInquiry ? "inquiry" : "request_info",
         ...(utm_campaign ? { utm_campaign } : {}),
       });
 
@@ -3501,7 +3503,7 @@ export function ListingSidebarCard({ project, developer }: { project: Project; d
             const Icon = SOCIAL_ICON[platform];
             if (!Icon) return null;
             return (
-              <a key={platform} href={url} target="_blank" rel="noreferrer noopener" aria-label={`Visit us on ${platform}`} className="listing-sidebar-social-link">
+              <a key={platform} href={url} target="_blank" rel="noreferrer noopener" aria-label={`Visit us on ${platform}`} onClick={() => trackEvent("click_social", { platform, listing_id: project.slug, ...(project.developerSlug ? { developer_slug: project.developerSlug } : {}) })} className="listing-sidebar-social-link">
                 <Icon className="h-4 w-4" />
               </a>
             );
@@ -3588,7 +3590,7 @@ export function SalesCenterSection({ project, developer }: { project: Project; d
                   const Icon = SOCIAL_ICON[platform];
                   if (!Icon) return null;
                   return (
-                    <a key={platform} href={url} target="_blank" rel="noreferrer noopener" aria-label={`Visit us on ${platform}`} className="sales-alert-social">
+                    <a key={platform} href={url} target="_blank" rel="noreferrer noopener" aria-label={`Visit us on ${platform}`} onClick={() => trackEvent("click_social", { platform, listing_id: project.slug, ...(project.developerSlug ? { developer_slug: project.developerSlug } : {}) })} className="sales-alert-social">
                       <Icon className="h-4 w-4" />
                     </a>
                   );
