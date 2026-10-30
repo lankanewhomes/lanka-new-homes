@@ -11,8 +11,18 @@
 
 export const INTERNAL_COOKIE = "lnh_internal";
 
+// Link-preview fetchers and headless browsers (Facebook/Meta crawlers, Lighthouse, scripted Chrome) that load pages from data centres:
+// in October 2026 Facebook showed 84 sessions of about 5 seconds each with no leads. They are skipped like internal traffic.
+const BOT_USER_AGENT = /facebookexternalhit|facebookcatalog|meta-externalagent|meta-externalfetcher|facebot|bot\/|\bbot\b|crawl|spider|slurp|headless|lighthouse|pagespeed|chrome-lighthouse|python-requests|curl\/|wget|node-fetch|axios|go-http-client|preview/i;
+
+/** Is this user-agent string a crawler, link-preview fetcher or headless browser? */
+export function isBotUserAgent(userAgent: string | null | undefined): boolean {
+  return BOT_USER_AGENT.test(userAgent ?? "");
+}
+
 /** Server side: is this request from an internal browser? */
 export function isInternalRequest(request: Request): boolean {
+  if (isBotUserAgent(request.headers.get("user-agent"))) return true;
   const cookie = request.headers.get("cookie") ?? "";
   if (new RegExp(`(?:^|;\\s*)${INTERNAL_COOKIE}=1(?:;|$)`).test(cookie)) return true;
   if (/(?:^|;\s*)payload-token=/.test(cookie)) return true;
@@ -27,6 +37,7 @@ export function isInternalRequest(request: Request): boolean {
 /** Browser side: has this browser been marked internal? */
 export function isInternalBrowser(): boolean {
   if (typeof document === "undefined") return false;
+  if (navigator.webdriver || isBotUserAgent(navigator.userAgent)) return true;
   return new RegExp(`(?:^|;\\s*)${INTERNAL_COOKIE}=1(?:;|$)`).test(document.cookie);
 }
 

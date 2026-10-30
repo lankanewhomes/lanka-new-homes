@@ -144,9 +144,9 @@ export default async function NeighborhoodPage({ params }: NeighborhoodPageProps
   // No "Map" entry — the location map only lives inside the hero's popup now (owner,
   // 2026-09-23), not as its own scrollable page section, so there's no anchor for it to jump to.
   const quickjumpItems: NeighborhoodQuickjumpItem[] = [
+    { key: "projects", href: "#projects", label: "New homes", show: neighborhoodProjects.length > 0 },
     { key: "overview", href: "#overview", label: "Overview", show: true },
     { key: "photos", href: "#known-landmarks", label: "Photos", show: totalPhotoCount > 1 },
-    { key: "projects", href: "#projects", label: "New homes", show: neighborhoodProjects.length > 0 },
     { key: "landmarks", href: "#known-landmarks", label: "Landmarks", show: (neighborhood.nearby ?? []).length > 0 },
     { key: "faq", href: "#faq", label: "FAQ", show: faqs.length > 0 },
   ];
@@ -213,6 +213,24 @@ export default async function NeighborhoodPage({ params }: NeighborhoodPageProps
           </div>
         ) : null}
 
+        {/* What new projects are here? Placed first (owner, 2026-10-30): visitors from Google were leaving without seeing a listing. */}
+        <section id="projects" className="developer-projects-section">
+          <h2>New homes and projects in {neighborhood.name}</h2>
+          {neighborhoodProjects.length === 0 ? (
+            <p className="developer-empty-note">
+              No projects listed in {neighborhood.name} yet.{" "}
+              <Link href={`/projects?location=${encodeURIComponent(neighborhood.city)}`}>See new homes in {neighborhood.city}</Link>
+              {" "}or <Link href="/land">browse land for sale</Link>.
+            </p>
+          ) : (
+            <div className="home-card-grid developer-projects-grid">
+              {neighborhoodProjects.map((project) => (
+                <ListingGridCard key={project.slug} project={project} />
+              ))}
+            </div>
+          )}
+        </section>
+
         {/* What is this area? */}
         <section id="overview" className="project-description-shell" aria-label="About the neighbourhood">
           <h2>About the neighbourhood</h2>
@@ -273,20 +291,6 @@ export default async function NeighborhoodPage({ params }: NeighborhoodPageProps
             )}
           </p>
         ) : null}
-
-        {/* What new projects are here? */}
-        <section id="projects" className="developer-projects-section">
-          <h2>New homes and projects in the neighbourhood</h2>
-          {neighborhoodProjects.length === 0 ? (
-            <p className="developer-empty-note">No projects listed in this neighborhood yet.</p>
-          ) : (
-            <div className="home-card-grid developer-projects-grid">
-              {neighborhoodProjects.map((project) => (
-                <ListingGridCard key={project.slug} project={project} />
-              ))}
-            </div>
-          )}
-        </section>
 
         {/* Who are the developers? */}
         {developers.length > 0 ? (

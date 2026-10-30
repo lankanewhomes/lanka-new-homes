@@ -30,7 +30,7 @@ function awardYear(year: string | null | undefined): number {
 // developer's first listing (source page "developer-profile") plus a GA4 event. The owner's own clicks are never counted.
 function logProfilePhoneClick(slug: string, entityType: ProfileEntityType) {
   if (isInternalBrowser()) return;
-  trackEvent("click_phone_profile", { profile_slug: slug, profile_type: entityType });
+  trackEvent("click_phone_profile", { profile_slug: slug, profile_type: entityType, ...(entityType === "developer" ? { developer_slug: slug } : {}) });
   if (entityType !== "developer") return;
   fetch("/api/events/phone-click", {
     method: "POST",

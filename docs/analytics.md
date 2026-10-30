@@ -94,6 +94,19 @@ Without this step, every report the Payload endpoint runs will silently
 return zero rows for views/traffic/trend — inquiries and lead status will
 still work fine since those don't touch GA4 at all.
 
+### 2b. Key events and the `developer_slug` dimension (2026-10-30)
+
+Every listing event now carries `developer_slug` (view_listing, click_whatsapp,
+call_click, click_email, download_brochure, generate_lead; `click_phone_profile`
+on developer profiles). The phone event is named `call_click` (was
+`click_phone`). In GA4:
+
+- Admin → Custom definitions → create an **Event**-scoped custom dimension for
+  `developer_slug` (same steps as `listing_id`).
+- Admin → Events → mark as **key events**: `click_whatsapp`, `call_click`,
+  `download_brochure`, `generate_lead` (the enquiry/brochure form submit).
+  An event only appears in that list after GA has received it once.
+
 ### 3. Service account for the GA4 Data API
 
 The Payload endpoint reads GA4 server-side via a service account (never a

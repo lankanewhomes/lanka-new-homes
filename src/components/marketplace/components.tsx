@@ -369,7 +369,7 @@ function describeFloorPlanForLead(plan: FloorPlan): string {
   ].filter(Boolean).join(" · ");
 }
 
-function logListingEvent(endpoint: string, ga4EventName: string, projectSlug: string, listingName: string) {
+function logListingEvent(endpoint: string, ga4EventName: string, projectSlug: string, listingName: string, developerSlug?: string) {
   if (isInternalBrowser()) return; // the owner's own clicks are never counted
   const sessionId = getSessionId();
   const trafficSource = getTrafficSource();
@@ -379,7 +379,7 @@ function logListingEvent(endpoint: string, ga4EventName: string, projectSlug: st
     body: JSON.stringify({ projectSlug, sessionId, trafficSource, utm: getStoredUtmParams() }),
     keepalive: true,
   }).catch(() => {});
-  trackEvent(ga4EventName, { listing_id: projectSlug, listing_name: listingName });
+  trackEvent(ga4EventName, { listing_id: projectSlug, listing_name: listingName, ...(developerSlug ? { developer_slug: developerSlug } : {}) });
 }
 
 export function StatusBadge({ status }: { status: string }) {
@@ -1248,7 +1248,7 @@ export function ProjectHero({
               target="_blank"
               rel="noopener noreferrer"
               className="request-info-btn whatsapp-btn"
-              onClick={() => logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project.slug, project.name)}
+              onClick={() => logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project.slug, project.name, project.developerSlug)}
             >
               <MessageCircle className="h-4 w-4" aria-hidden="true" />
               WhatsApp
@@ -1777,9 +1777,10 @@ export function ProjectHero({
               rel="noopener noreferrer"
               className="listing-hero-mobile-btn listing-hero-mobile-btn-whatsapp"
               aria-label="Chat on WhatsApp"
-              onClick={() => logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project.slug, project.name)}
+              onClick={() => logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project.slug, project.name, project.developerSlug)}
             >
-              <MessageCircle className="h-5 w-5" aria-hidden="true" />
+              <MessageCircle className="h-4 w-4" aria-hidden="true" />
+              WhatsApp
             </a>
           ) : null}
           <button type="button" className="listing-hero-mobile-btn listing-hero-mobile-btn-request" onClick={openRequestInfo}>
@@ -2089,7 +2090,7 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
         ) : null}
 
         {hasDisplayValue(email) ? (
-          <a href={`mailto:${email}`} className="stats-contact-card-row" onClick={() => logListingEvent("/api/events/email-click", "click_email", project.slug, project.name)}>
+          <a href={`mailto:${email}`} className="stats-contact-card-row" onClick={() => logListingEvent("/api/events/email-click", "click_email", project.slug, project.name, project.developerSlug)}>
             <Mail className="h-4 w-4" aria-hidden="true" /> {email}
           </a>
         ) : null}
@@ -2100,7 +2101,7 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
             key={number}
             href={`tel:${number.replace(/\s+/g, "")}`}
             className="stats-contact-card-row"
-            onClick={() => logListingEvent("/api/events/phone-click", "click_phone", project.slug, project.name)}
+            onClick={() => logListingEvent("/api/events/phone-click", "call_click", project.slug, project.name, project.developerSlug)}
           >
             <Phone className="h-4 w-4" aria-hidden="true" /> {number}
           </a>
@@ -2123,7 +2124,7 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
             target="_blank"
             rel="noopener noreferrer"
             className="stats-contact-card-row stats-contact-card-row-whatsapp"
-            onClick={() => logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project.slug, project.name)}
+            onClick={() => logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project.slug, project.name, project.developerSlug)}
           >
             <MessageCircle className="h-4 w-4" aria-hidden="true" /> WhatsApp {formatWhatsAppNumber(developer?.socialLinks?.whatsapp)}
           </a>
@@ -2151,7 +2152,7 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
             target="_blank"
             rel="noopener noreferrer"
             className="stats-contact-card-btn stats-contact-card-btn-whatsapp"
-            onClick={() => logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project.slug, project.name)}
+            onClick={() => logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project.slug, project.name, project.developerSlug)}
           >
             <MessageCircle className="h-4 w-4" aria-hidden="true" /> WhatsApp
           </a>
@@ -2269,6 +2270,7 @@ export function RequestInfoDialog({
       trackEvent("generate_lead", {
         listing_id: project.slug,
         listing_name: project.name,
+        ...(project.developerSlug ? { developer_slug: project.developerSlug } : {}),
         traffic_source: getTrafficSource(),
         ...(utm_campaign ? { utm_campaign } : {}),
       });
@@ -2278,7 +2280,7 @@ export function RequestInfoDialog({
       // since a window.open() this far into an async handler can still get
       // blocked by the browser's popup blocker in some cases.
       if (isBrochure && project.brochureUrl) {
-        logListingEvent("/api/events/brochure-download", "download_brochure", project.slug, project.name);
+        logListingEvent("/api/events/brochure-download", "download_brochure", project.slug, project.name, project.developerSlug);
         window.open(project.brochureUrl, "_blank", "noopener,noreferrer");
       }
     } catch {
@@ -2322,7 +2324,7 @@ export function RequestInfoDialog({
               <Button
                 type="button"
                 onClick={() => {
-                  logListingEvent("/api/events/brochure-download", "download_brochure", project.slug, project.name);
+                  logListingEvent("/api/events/brochure-download", "download_brochure", project.slug, project.name, project.developerSlug);
                   window.open(project.brochureUrl, "_blank", "noopener,noreferrer");
                 }}
               >
@@ -2360,6 +2362,8 @@ export function RequestInfoDialog({
               </label>
             ) : null}
 
+            {/* The brochure form is kept short (name, phone, email): 3 in 8 people who started it did not finish. */}
+            {!isBrochure ? (
             <label className="request-info-field">
               <span>{isInquiry ? "Message" : "Anything else we should know?"}</span>
               <textarea
@@ -2370,7 +2374,9 @@ export function RequestInfoDialog({
               />
               <span className="request-info-char-count">{MESSAGE_MAX - message.length} characters remaining</span>
             </label>
+            ) : null}
 
+            {!isBrochure ? (
             <div className="request-info-field">
               <span className="request-info-field-visible-label">How would you like to get in touch?</span>
               <div className="request-info-radio-row">
@@ -2387,6 +2393,7 @@ export function RequestInfoDialog({
                 ))}
               </div>
             </div>
+            ) : null}
 
             {isInquiry ? (
               <label className="request-info-consent">
@@ -3510,7 +3517,7 @@ export function ListingSidebarCard({ project, developer }: { project: Project; d
         <a
           href={`tel:${phone.replace(/[^+\d]/g, "")}`}
           className="listing-sidebar-call-line"
-          onClick={() => logListingEvent("/api/events/phone-click", "click_phone", project.slug, project.name)}
+          onClick={() => logListingEvent("/api/events/phone-click", "call_click", project.slug, project.name, project.developerSlug)}
         >
           <Phone className="h-4 w-4" aria-hidden="true" /> Call us {phone}
         </a>
@@ -3522,7 +3529,7 @@ export function ListingSidebarCard({ project, developer }: { project: Project; d
           target="_blank"
           rel="noopener noreferrer"
           className="listing-sidebar-call-line listing-sidebar-whatsapp-line"
-          onClick={() => logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project.slug, project.name)}
+          onClick={() => logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project.slug, project.name, project.developerSlug)}
         >
           <MessageCircle className="h-4 w-4" aria-hidden="true" /> Chat on WhatsApp
         </a>

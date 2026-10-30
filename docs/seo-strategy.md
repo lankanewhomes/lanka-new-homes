@@ -24,6 +24,7 @@ Update this file whenever a new keyword group or page is added.
 | `/land/1-acre-land-for-sale-in-sri-lanka` | "1 acre land for sale in sri lanka" / "1 acre land price in sri lanka" — acre-size plots (160 perches+), acre/perch conversion, published per-perch price by district; no invented market price (added 2026-10-11, owner request; only 1 acre-size listing so far) | new |
 | `/land/rural-land-for-sale-in-sri-lanka` | "rural land for sale in sri lanka" — plots outside Colombo/Gampaha/Kalutara (added 2026-10-11, owner request) | new |
 | `/land/farm-land-for-sale-in-sri-lanka` | "farm land for sale in sri lanka" — agricultural/farm plots; **no such listings yet, so the page is noindex and left out of the sitemap until one is added** (added 2026-10-11, owner request) | new |
+| `/projects/apartments-for-sale-in-athurugiriya` | "Apartments for sale in Athurugiriya" — apartment/condominium listings whose city or location is Athurugiriya; links to `/neighborhoods/athurugiriya` (added 2026-10-30, owner request) | new |
 | `/projects/keells-homes-for-sale` | "Keells homes for sale" / "John Keells apartments" / "Keels" spelling variant (all John Keells Properties listings; added 2026-10-10, owner request) | new |
 | `/guides` | Guides index (hub page, links the 3 guides below) | new |
 | `/guides/foreigners-buying-property` | Foreign ownership guide | new |
@@ -139,10 +140,13 @@ luxury apartments for sale sri lanka, **Luxury apartments in Colombo Sri Lanka**
 Branded residences sri lanka
 
 ### /projects/villas
-New villa developments sri lanka, New build homes sri lanka
+New villa developments sri lanka, New build homes sri lanka, **Luxury beach villa for sale in Sri Lanka** (added 2026-10-30, owner request; secondary: `/projects/beachfront`)
 
 ### /projects/brand-new-houses-for-sale
 Brand new house for sale sri lanka, **House in Sri Lanka for sale** / house for sale in sri lanka (added 2026-10-15, owner request)
+
+### /projects/apartments-for-sale-in-athurugiriya
+Apartments for sale in Athurugiriya, Athurugiriya apartments, Athurugiriya condominium
 
 ### /projects/beachfront
 Beachfront condo development sri lanka, New resort residences sri lanka

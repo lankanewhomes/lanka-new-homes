@@ -26,7 +26,7 @@ import {
   StatsContactCard,
 } from "@/components/marketplace/components";
 import { ProjectViewTracker } from "@/components/marketplace/view-tracker";
-import { toAbsoluteUrl, withSocial } from "@/lib/seo";
+import { buildBreadcrumbJsonLd, jsonLdScriptProps, toAbsoluteUrl, withSocial } from "@/lib/seo";
 
 // Regenerate at most once a minute so admin edits (e.g. status changes)
 // show up without waiting for the next deploy.
@@ -143,7 +143,14 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
     ...datePostedField(project.publishedAt, project.createdAt),
     ...sellerField(project.developerName, project.developerSlug ? toAbsoluteUrl(`/developers/${project.developerSlug}`) : null),
     url: toAbsoluteUrl(`/projects/${project.slug}`),
+    // Amenities are shown on the page (Amenities section), so they are safe to expose to AI assistants and Google as structured facts.
+    ...(project.amenities?.length ? { amenityFeature: project.amenities.map((amenity) => ({ "@type": "LocationFeatureSpecification", name: amenity.name, value: true })) } : {}),
   };
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+    { label: "Home", href: "/" },
+    { label: "New Projects", href: "/projects" },
+    { label: project.name },
+  ]);
 
   return (
     <div className="space-y-8">
@@ -151,6 +158,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
+      <script {...jsonLdScriptProps(breadcrumbJsonLd)} />
       <ProjectViewTracker projectSlug={project.slug} projectName={project.name} developerSlug={project.developerSlug} />
       <ProjectHero
         project={project}

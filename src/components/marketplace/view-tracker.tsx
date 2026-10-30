@@ -39,7 +39,7 @@ export function ProjectViewTracker({
     // listing_id is passed as a custom event parameter (not GA4's built-in
     // item_id) so it can be filtered on directly in GA4/Looker Studio — see
     // docs/analytics.md for the GA4-side custom dimension setup this needs.
-    trackEvent("view_listing", { listing_id: projectSlug, listing_name: projectName });
+    trackEvent("view_listing", { listing_id: projectSlug, listing_name: projectName, ...(developerSlug ? { developer_slug: developerSlug } : {}) });
   }, [projectSlug, projectName, developerSlug]);
 
   return null;
