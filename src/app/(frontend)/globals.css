@@ -20671,4 +20671,280 @@ body:has(.compare-bar) {
 @keyframes l360-fade { from { opacity: 0; } to { opacity: 1; } }
 .l360-bubble, .l360-pin { animation: l360-fade 220ms ease-out; }
 
-/* ==============================================================
+/* =====================================================================
+   MAP ON PHONES (2026-10-09): "the icons are too big". Markers, buttons and
+   the popup are scaled down; the Lanka360 map is shorter so the listings
+   are reachable with one scroll; the filter row scrolls sideways.
+   ===================================================================== */
+@media (max-width: 760px) {
+  .xmap .l360-bubble { transform: scale(0.68); transform-origin: center; }
+  .xmap .l360-bubble:hover { transform: scale(0.72); }
+  .xmap .l360-bubble-name { font-size: 10px; padding: 1px 5px; margin-top: 2px; }
+  .xmap .l360-bubble-count { top: -5px; right: -5px; min-width: 18px; height: 18px; line-height: 16px; font-size: 10.5px; }
+  .xmap .l360-pin { padding: 3px 6px; font-size: 10.5px; gap: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.25); }
+  .xmap .l360-pin svg { width: 12px; height: 12px; }
+  .xmap .l360-controls { top: 10px; right: 10px; gap: 6px; }
+  .xmap .l360-controls button { width: 34px; height: 34px; }
+  .xmap .l360-controls button svg { width: 16px; height: 16px; }
+  .xmap .l360-controls button small { font-size: 8.5px; }
+  .xmap .maplibregl-ctrl-attrib { font-size: 9px; }
+  .xmap .xmap-popup .maplibregl-popup-content { max-width: 200px; }
+  .xmap .xmap-popup .project-popup { transform: scale(0.9); transform-origin: bottom center; }
+
+  /* Lanka360 on a phone */
+  .l360 { padding: 14px 12px 32px; }
+  .l360-head p { font-size: 13.5px; margin-bottom: 12px; }
+  .l360-filters { flex-wrap: nowrap; overflow-x: auto; gap: 8px; padding-bottom: 6px; scrollbar-width: none; }
+  .l360-filters::-webkit-scrollbar { display: none; }
+  .l360-filter, .l360-reset { flex: 0 0 auto; height: 38px; padding: 0 12px; }
+  .l360-filter select { font-size: 13px; }
+  .l360-count { flex: 0 0 auto; width: auto; white-space: nowrap; align-self: center; }
+  .l360-mapwrap { height: 52vh; min-height: 340px; border-radius: 0; }
+}
+
+/* "In this map area 36" / "More listings": small and regular weight (not bold) */
+.listing-area-heading { font-size: 13px !important; font-weight: 400 !important; color: #3d3d39; margin-bottom: -26px; }
+.listing-area-heading span { font-weight: 400 !important; font-size: 13px; color: #6b6b66; }
+
+/* =====================================================================
+   PHONE: map view gets the room (2026-10-10). When "Map" is chosen the search
+   bar (search box, "All of Sri Lanka", search button) and the page heading
+   are hidden and the map is tall. Choose "List" (or tap the button again) to
+   bring them back.
+   ===================================================================== */
+@media (max-width: 760px) {
+  .listing-content-shade[data-view="map"] .listing-search-bar { display: none; }
+  .listing-columns[data-view="map"] .listing-map-pane {
+    position: relative;
+    top: 0;
+    margin-top: 0;
+    margin-right: 0;
+    height: calc(100dvh - 190px);
+    min-height: 460px;
+  }
+  .listing-columns[data-view="map"] .listing-map-pane .xmap { height: 100%; }
+  /* the little ‹ › collapse tab is for desktop */
+  .listing-columns[data-view="map"] .listing-map-collapse { display: none; }
+}
+@media (max-width: 760px) {
+  /* edge to edge in map view */
+  .listing-columns[data-view="map"] .listing-map-pane { margin-left: -24px; margin-right: -24px; width: calc(100% + 48px); }
+}
+
+/* Apartment Explorer (hero pill on a listing page): full-screen building view with clickable apartments + a details panel.
+   Square corners, bordered boxes, cream ground like the rest of the site. Sold = green wash, available = grey wash (as on the developer's own explorer). */
+.axp-modal { position: fixed; inset: 0; z-index: 210; display: flex; flex-direction: column; background: #f4f1ed; color: #1f1f1f; }
+.axp-bar { display: flex; align-items: center; gap: 18px; padding: 10px 16px; background: #fff; border-bottom: 1px solid #e4e2db; flex-wrap: wrap; }
+.axp-title { display: flex; flex-direction: column; line-height: 1.25; margin-right: auto; }
+.axp-title strong { font-size: 16px; font-weight: 600; }
+.axp-title span { font-size: 13px; color: #6b6355; }
+.axp-legend { display: flex; gap: 14px; font-size: 13px; color: #3a3a38; }
+.axp-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.axp-dot { width: 12px; height: 12px; border: 1px solid rgba(0,0,0,0.25); display: inline-block; }
+.axp-dot-available { background: rgba(140, 150, 155, 0.55); }
+.axp-dot-sold { background: rgba(39, 174, 96, 0.6); }
+.axp-tabs { display: inline-flex; border: 1px solid #d8d4c9; }
+.axp-tabs button { padding: 8px 16px; font-size: 13px; background: #fff; color: #3a3a38; border: 0; cursor: pointer; }
+.axp-tabs button + button { border-left: 1px solid #d8d4c9; }
+.axp-tabs button.active { background: #1f1f1f; color: #fff; }
+.axp-close { width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #d8d4c9; background: #fff; cursor: pointer; }
+.axp-body { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) 340px; }
+.axp-stage { position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f4f1ed; touch-action: pan-y; }
+.axp-stage.is-zoomed { cursor: grab; touch-action: none; }
+.axp-canvas { position: relative; width: 100%; max-height: 100%; transform-origin: center center; }
+.axp-canvas img { display: block; width: 100%; height: 100%; object-fit: contain; user-select: none; pointer-events: none; }
+.axp-hot { position: absolute; padding: 0; border: 1px solid rgba(255,255,255,0.35); cursor: pointer; box-sizing: border-box; transition: background 0.15s, border-color 0.15s; }
+.axp-hot-available { background: rgba(140, 150, 155, 0.3); }
+.axp-hot-sold { background: rgba(39, 174, 96, 0.42); }
+.axp-hot-none { background: rgba(100, 100, 100, 0.12); }
+.axp-hot:hover { background: rgba(244, 123, 54, 0.55); border-color: #fff; }
+.axp-hot.is-selected { background: rgba(244, 123, 54, 0.6); border: 2px solid #1f1f1f; z-index: 2; }
+.axp-zoom { position: absolute; right: 14px; bottom: 14px; display: flex; flex-direction: column; gap: 6px; }
+.axp-zoom button { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; background: #1f1f1f; color: #fff; border: 0; cursor: pointer; }
+.axp-panel { background: #fff; border-left: 1px solid #e4e2db; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
+.axp-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.axp-code { font-size: 13px; padding: 5px 10px; border: 1px solid #d8d4c9; background: #faf7f2; }
+.axp-status { font-size: 12px; padding: 5px 10px; border: 1px solid; }
+.axp-status-available { background: #eef0f1; border-color: #c5cbce; color: #4a5256; }
+.axp-status-sold { background: #e6f5ec; border-color: #9bd3b2; color: #1d7a47; }
+.axp-panel h3 { margin: 0; font-size: 22px; font-weight: 400; }
+.axp-facts { margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.axp-facts div { border: 1px solid #e4e2db; background: #faf7f2; padding: 10px 12px; }
+.axp-facts dt { font-size: 12px; color: #6b6355; margin-bottom: 4px; }
+.axp-facts dd { margin: 0; font-size: 15px; color: #1f1f1f; }
+.axp-facts dd small { color: #6b6355; font-size: 12px; }
+.axp-empty { border: 1px solid #e4e2db; background: #faf7f2; padding: 28px 16px; text-align: center; }
+.axp-empty strong { display: block; font-size: 18px; font-weight: 500; margin-bottom: 6px; }
+.axp-empty p { margin: 0; font-size: 14px; color: #6b6355; }
+.axp-note { margin: auto 0 0; font-size: 12px; line-height: 1.55; color: #6b6355; }
+@media (max-width: 900px) {
+  .axp-body { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; }
+  .axp-panel { border-left: 0; border-top: 1px solid #e4e2db; max-height: 46vh; padding: 14px 16px; }
+  .axp-bar { gap: 10px; padding: 8px 12px; }
+  .axp-legend { order: 3; }
+  .axp-stage { align-items: flex-start; }
+}
+
+.axp-open { padding: 8px 14px; border: 1px solid #d8d4c9; background: #fff; font-size: 13px; color: #1f1f1f; text-decoration: none; white-space: nowrap; }
+
+/* Apartment Explorer as a tab inside the gallery viewer: fills the stage, no own title/close */
+.listing-photo-lightbox-explorer { position: relative; width: 100%; height: 100%; }
+.axp-embedded { position: absolute; inset: 0; z-index: auto; }
+.axp-embedded .axp-title, .axp-embedded .axp-close { display: none; }
+.axp-embedded .axp-bar { justify-content: flex-end; }
+
+/* Single-listing map pin: square with the header's building / land icon (same look as the /search map), tier colours kept */
+/* Owner, 2026-10-12: the project pin must stand out on the hero map. The nearby-place dots are black, so the project pin is the brand
+   orange, a little larger, with a white border and a soft orange halo. Paid tiers keep their darker, bigger orange. */
+.listing-map-marker { border-radius: 0; width: 38px; height: 38px; border: 3px solid #ffffff; background: #f47b36; color: #ffffff; box-shadow: 0 0 0 3px rgba(244, 123, 54, 0.35), 0 4px 10px rgba(0, 0, 0, 0.35); }
+.listing-map-marker.active { background: #c85f24; }
+.listing-map-marker.marker-free { background: #f47b36; }
+.listing-map-marker.marker-premium { width: 44px; height: 44px; background: #c65a1e; box-shadow: 0 0 0 4px rgba(198, 90, 30, 0.3), 0 4px 12px rgba(0, 0, 0, 0.35); }
+
+/* Legend swatch for the project pin matches the orange square pin */
+.neighborhood-map-legend-project { border-radius: 0; background: #f47b36; }
+
+/* Room above the results heading ("Keells Homes for Sale in Sri Lanka"): on phones it sat right under the sticky filter bar */
+.listing-list-pane .listing-header-title { padding-top: 14px; }
+@media (max-width: 760px) {
+  .listing-list-pane .listing-header-title { padding-top: 26px; }
+}
+
+/* Search by price (owner, 2026-10-14). Contained box like the other home sections, its own flat background (lilac, no blue),
+   box-line texture, 34px below. Bands are real links with real project counts. */
+.price-search-section {
+  position: relative;
+  overflow: hidden;
+  padding: 56px 30px 52px;
+  margin: 0 auto 34px;
+  max-width: 1280px;
+  background: #f1ecf3;
+}
+.price-search-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 55px, rgba(112, 86, 130, 0.16) 55px 56px),
+    repeating-linear-gradient(90deg, transparent 0 55px, rgba(112, 86, 130, 0.16) 55px 56px);
+}
+.price-search-section > * { position: relative; z-index: 1; }
+.price-search-section .featured-listings-head h2 { color: #1f1f1f; }
+.price-search-section .featured-listings-subhead { color: #6b5b7a; }
+.price-bands {
+  margin-top: 28px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+}
+.price-band {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 20px 18px 16px;
+  background: #fff;
+  border: 1px solid #d9d1de;
+  color: #1f1f1f;
+  text-decoration: none;
+  transition: border-color 0.15s ease;
+}
+.price-band:hover { border-color: #1f1f1f; }
+.price-band-range { font-family: var(--font-ref-sans); font-size: 22px; line-height: 1.2; font-weight: 400; }
+.price-band-count { font-size: 14px; color: #6b5b7a; }
+.price-band-go { margin-top: 10px; display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 600; }
+@media (max-width: 1100px) {
+  .price-bands { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
+  .price-search-section { margin: 0 -8px 34px; padding: 28px 14px 30px; }
+  .lnh-home .price-search-section { padding-left: calc(50vw - 50% + 0px); padding-right: calc(50vw - 50% + 0px); margin-top: 0; margin-bottom: 34px; }
+  .price-bands { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .price-band { padding: 16px 14px; }
+  .price-band-range { font-size: 18px; }
+}
+
+/* Header search (owner, 2026-10-14: "design the search bar like this"): a soft grey field (square corners, like the rest of the site) with the magnifier on the left and a
+   hint to try, no border and no orange button. It lifts to white with a light shadow when focused. Enter still submits (the button is
+   kept for keyboards and screen readers but is not drawn). */
+.header-search {
+  gap: 12px;
+  /* Same height as the hero search on the home page (52px field + its 1px border top and bottom). */
+  height: 54px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 0;
+  background: #f1f3f4;
+  color: #5f6368;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+.header-search:focus-within {
+  background: #fff;
+  box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
+}
+.header-search input {
+  width: 270px;
+  font-size: 15px;
+  color: #1f1f1f;
+}
+.header-search input::placeholder { color: #5f6368; opacity: 1; }
+.header-search input::-webkit-search-cancel-button { display: none; }
+.header-search-button {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.header-search-suggestions {
+  top: calc(100% + 6px);
+  border: 0;
+  border-radius: 0;
+  background: #fff;
+  overflow: hidden;
+  box-shadow: 0 4px 18px rgba(32, 33, 36, 0.22);
+}
+.header-search-suggestions button { border-top: 0; background: #fff; }
+.header-search-suggestions button:hover { background: #f1f3f4; }
+
+/* Header search: the magnifier is the brand orange (owner, 2026-10-14). */
+.header-search > svg { color: #f47b36; }
+
+/* "Understood as" chips can be removed with an x (owner, 2026-10-14). */
+.listing-search-understood-chip.is-removable { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font: inherit; font-size: 12.5px; color: #1f1f1f; }
+.listing-search-understood-chip.is-removable:hover { border-color: #1f1f1f; background: #fff; }
+.listing-search-understood-chip.is-removable svg { color: #6b6355; }
+/* The text "Clear search" link beside the chips. It used to share .listing-search-clear (the 22px round x button inside the
+   search box), which squeezed the words onto two lines (owner, 2026-10-21: "fix the styling"). */
+.listing-search-understood-clear { flex: 0 0 auto; margin-left: 4px; padding: 0; border: 0; background: none; font: inherit; font-size: 12.5px; line-height: 1.4; white-space: nowrap; color: #6b6355; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.listing-search-understood-clear:hover { color: #1f1f1f; }
+.listing-search-understood { row-gap: 8px; margin-top: 10px; line-height: 1.4; }
+.listing-header-title .listing-header-count { margin-top: 12px; }
+
+/* /links — Instagram link-in-bio page (owner, 2026-10-20). Same contained-box system as /neighborhoods (dark split hero,
+   then a sage box of white .fdv-box-card cards). Listing grid: 4 columns on desktop (owner: "make 4 columns"), 3 on
+   tablets, 2 on phones (most visitors arrive from the Instagram app). */
+/* Owner, 2026-10-21: listings as rows like Instagram's own links sheet — round photo, bold name, small detail line,
+   divider lines; one white panel inside the sage box, 2 columns of rows on desktop, 1 on phones. */
+.bio-links-list { list-style: none; margin: 0; padding: 0 20px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 40px; border: 1px solid var(--fdv-line); background: #fff; }
+.bio-links-list li { border-bottom: 1px solid var(--fdv-line); }
+.bio-links-row { display: flex; align-items: center; gap: 16px; padding: 16px 0; color: #1f1f1f; text-decoration: none; }
+.bio-links-thumb { flex: 0 0 auto; width: 60px; height: 60px; border-radius: 50%; overflow: hidden; background: #ececea; }
+.bio-links-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.bio-links-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
+.bio-links-name { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 600; line-height: 1.25; color: #1a1a1a; }
+.bio-links-meta { font-size: 13px; color: #6b6355; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bio-links-badge { flex: 0 0 auto; padding: 3px 7px; border-radius: 3px; background: #1f1f1f; color: #fff; font-size: 10px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+.bio-links-arrow { flex: 0 0 auto; color: #9a9184; transition: transform 0.15s ease, color 0.15s ease; }
+.bio-links-row:hover .bio-links-name { text-decoration: underline; text-underline-offset: 3px; }
+.bio-links-row:hover .bio-links-arrow { color: #f47b36; transform: translateX(3px); }
+.bio-links-more { margin: 16px 0 0; font-size: 14px; }
+.bio-links-more a { color: #6b6355; text-decoration: underline; text-underline-offset: 3px; }
+.bio-links-more a:hover { color: #1f1f1f; }
+.bio-links-empty { margin: 0; font-size: 15px; color: #6b6355; }
+@media (max-width: 900px) { .bio-links-list { grid-template-columns: 1fr; padding: 0 16px; } }
+@media (max-width: 640px) { .bio-links-thumb { width: 52px; height: 52px; } .bio-links-name { font-size: 15px; } .bio-links-row { gap: 14px; padding: 14px 0; } }
