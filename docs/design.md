@@ -267,7 +267,8 @@ ItemList JSON-LD, related links) + `listing-page.tsx` (client: filter bar,
 sort, list/map toggle) + `map-pane.tsx` (lazy-loaded map visual).
 
 - **Search + filter bar**: sits below the breadcrumb bar, above the H1/sort
-  row. One row — the address search input (icon on the right) first, then
+  row, on a light cream panel (`#faf7f2`, `1px #ece6d8` border, `16px` padding;
+  `12px` on mobile) with the white inputs inside it (owner, 2026-10-31). One row — the address search input (icon on the right) first, then
   the region picker ("All of Sri Lanka", a real `<select>` of every distinct
   `project.city` in the current list — picking one filters the grid), then
   filter pills (For sale / Home type / Any price / 0+ beds / Construction
