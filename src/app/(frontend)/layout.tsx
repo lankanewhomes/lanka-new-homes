@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { archivoSite as bodyFont } from "@/lib/local-fonts";
 import { DeferredGoogleTags } from "@/components/analytics/deferred-google-tags";
 import { DeferredClarity } from "@/components/analytics/deferred-clarity";
+import { DeferredMetaPixel } from "@/components/analytics/deferred-meta-pixel";
 import { Footer, Header } from "@/components/marketplace/components";
 import { BreadcrumbBar } from "@/components/layout/breadcrumb-bar";
 import { LanguageProvider } from "@/components/layout/language-provider";
@@ -16,6 +17,8 @@ const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 const gtmContainerId = process.env.NEXT_PUBLIC_GTM_ID;
 // Microsoft Clarity project id (public). Set NEXT_PUBLIC_CLARITY_ID to override or, with an empty value, to switch it off.
 const clarityId = process.env.NEXT_PUBLIC_CLARITY_ID ?? "yxrv3ynig5";
+// Meta Pixel id (public). Set NEXT_PUBLIC_META_PIXEL_ID to override or, with an empty value, to switch it off.
+const metaPixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID ?? "1121255190765288";
 
 const siteUrl = getSiteUrl();
 
@@ -52,6 +55,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <script {...jsonLdScriptProps(buildWebsiteJsonLd())} />
         <DeferredGoogleTags gaId={gaMeasurementId} gtmId={gtmContainerId} />
         <DeferredClarity projectId={clarityId} />
+        <DeferredMetaPixel pixelId={metaPixelId} />
         <InternalTrafficFlag gaId={gaMeasurementId} />
         <UtmCapture />
         <LanguageProvider>

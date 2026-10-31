@@ -110,4 +110,49 @@ export function trackEvent(name: string, params: Record<string, string | number 
   } catch {
     // GA not loaded — ignore.
   }
+  trackMetaEvent(name, params);
+}
+
+// The same actions, sent to the Meta Pixel as Meta's standard events so Facebook/Instagram ads can optimise for them
+// (Lead, Contact, ViewContent, Search, AddToWishlist). Actions with no standard equivalent go as custom events.
+// No-ops when the pixel is not on the page (non-production, owner's browser, or switched off).
+function trackMetaEvent(name: string, params: Record<string, string | number | boolean>): void {
+  const fbq = (window as unknown as { fbq?: (...args: unknown[]) => void }).fbq;
+  if (!fbq) return;
+  const listing = typeof params.listing_id === "string" ? { content_ids: [params.listing_id], content_name: params.listing_name, content_type: "home_listing" } : {};
+  try {
+    switch (name) {
+      case "view_listing":
+        fbq("track", "ViewContent", listing);
+        break;
+      case "view_floor_plan":
+        fbq("track", "ViewContent", { ...listing, content_category: "floor_plan", content_name: params.floor_plan_name });
+        break;
+      case "generate_lead":
+        fbq("track", "Lead", { ...listing, content_category: params.form_type });
+        break;
+      case "click_whatsapp":
+      case "call_click":
+      case "click_email":
+      case "click_phone_profile":
+        fbq("track", "Contact", { ...listing, content_category: name });
+        break;
+      case "download_brochure":
+        fbq("trackCustom", "DownloadBrochure", listing);
+        break;
+      case "search":
+        fbq("track", "Search", { search_string: params.search_term });
+        break;
+      case "save_listing":
+        fbq("track", "AddToWishlist", listing);
+        break;
+      case "follow_developer":
+        fbq("trackCustom", "FollowDeveloper", { developer_slug: params.developer_slug });
+        break;
+      default:
+        break;
+    }
+  } catch {
+    // Pixel blocked or not ready — ignore.
+  }
 }
