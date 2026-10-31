@@ -3042,7 +3042,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
     top: 0;
     z-index: 45;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr; /* Request info alone; 1fr 1fr once WhatsApp is shown (.has-whatsapp) */
     gap: 8px;
     background: #fff;
     padding: calc(10px + env(safe-area-inset-top)) 12px 10px;
@@ -12611,7 +12611,7 @@ body:has(.compare-bar) {
 
 @media (max-width: 980px) {
   .listing-hero-mobile-ctas.has-whatsapp {
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
   }
 
   /* Labelled (was an icon-only 48px button): a visible "WhatsApp" is the quickest way for a visitor to ask. */

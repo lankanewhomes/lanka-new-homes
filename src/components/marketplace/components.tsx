@@ -1766,10 +1766,6 @@ export function ProjectHero({
       {isHotDealActive(project) ? <HotDealCard hotDeal={project.hotDeal!} /> : null}
 
         <div className={`listing-hero-mobile-ctas${scrolledPastTitle ? " is-visible" : ""}${whatsappHref ? " has-whatsapp" : ""}`} aria-label="Mobile quick actions">
-          <button type="button" className="listing-hero-mobile-btn listing-hero-mobile-btn-updates" aria-pressed={followingDeveloper} onClick={toggleFollowDeveloper}>
-            <Bell className="h-4 w-4" aria-hidden="true" fill={followingDeveloper ? "currentColor" : "none"} />
-            {followingDeveloper ? t("Following") : t("Get updates")}
-          </button>
           {whatsappHref ? (
             <a
               href={whatsappHref}
