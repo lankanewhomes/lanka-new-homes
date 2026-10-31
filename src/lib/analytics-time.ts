@@ -21,7 +21,7 @@ export const dayEndIso = (key: string): string => new Date(`${key}T23:59:59.999$
 export const addDays = (key: string, days: number): string => new Date(Date.parse(`${key}T00:00:00Z`) + days * DAY_MS).toISOString().slice(0, 10);
 
 /** "9:41 pm" in Sri Lanka time. */
-export const timeOf = (iso: string): string => new Date(iso).toLocaleTimeString("en-GB", { timeZone: ANALYTICS_TZ, hour: "numeric", minute: "2-digit", hour12: true }).replace(/\s/g, " ").toLowerCase();
+export const timeOf = (iso: string): string => new Date(iso).toLocaleTimeString("en-US", { timeZone: ANALYTICS_TZ, hour: "numeric", minute: "2-digit", hour12: true }).replace(/\s/g, " ").toLowerCase();
 
 /** "31 Oct" for a day key. */
 export const shortDay = (key: string): string => new Date(`${key}T00:00:00Z`).toLocaleDateString("en-GB", { timeZone: "UTC", day: "numeric", month: "short" });
