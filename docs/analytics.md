@@ -117,6 +117,7 @@ on developer profiles). The phone event is named `call_click` (was
 | `view_floor_plan` | A floor plan page is opened | `listing_id`, `floor_plan_id`, `floor_plan_name`, `developer_slug` |
 | `search` | Home search submitted, or listing search typed (after a 1.5 s pause) | `search_term`, `search_location` |
 | `filter_listings` | A filter is changed | `filter_group`, `filter_value` |
+| `form_field_focus` | A field of the Contact Us / Brochure / inquiry form is tapped (once per field per opening) | `field_name` (name, phone, email, message), `form_type`, `listing_id`, `listing_name`, `developer_slug` |
 | `view_map` | Map view opened on a listing page | `page_path` |
 | `map_pin_click` | A pin is tapped on the map | `listing_id`, `developer_slug` |
 | `click_social` | A developer's social link is tapped on a listing | `platform`, `listing_id`, `developer_slug` |

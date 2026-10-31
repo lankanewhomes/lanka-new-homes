@@ -126,7 +126,7 @@ import { planTitleWithFloor } from "@/lib/floor-plan-title";
 import { Amenity, Article, Developer, FloorPlan, Lead, Location, NearbyPlace, Project } from "@/types";
 import { localizedProjectCopy, useListingT } from "@/lib/i18n/use-listing-t";
 import { floorPlanSummarySentence } from "@/lib/i18n/floor-plan-sentence";
-import { formatWhatsAppNumber, listingWhatsAppHref } from "@/lib/whatsapp";
+import { formatWhatsAppNumber, listingWhatsAppHref, toWhatsAppNumber, whatsappChatHref } from "@/lib/whatsapp";
 import { buildInternationalPhone, DEFAULT_PHONE_COUNTRY, isPlausiblePhone } from "@/lib/phone";
 import { PhoneField, type PhoneValue } from "@/components/marketplace/phone-field";
 import { groupNearbyPlaces } from "@/lib/nearby-places";
@@ -1833,7 +1833,7 @@ export function ProjectHero({
       </div>
     )}
 
-    <RequestInfoDialog open={requestInfoOpen} onClose={() => setRequestInfoOpen(false)} project={project} floorPlan={floorPlan} variant={requestInfoDialogVariant} />
+    <RequestInfoDialog open={requestInfoOpen} onClose={() => setRequestInfoOpen(false)} project={project} floorPlan={floorPlan} variant={requestInfoDialogVariant} whatsappHref={whatsappHref} />
     </>
   );
 }
@@ -2158,7 +2158,7 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
         </button>
       </div>
 
-      <RequestInfoDialog open={requestInfoOpen} onClose={() => setRequestInfoOpen(false)} project={project} variant={requestInfoVariant} />
+      <RequestInfoDialog open={requestInfoOpen} onClose={() => setRequestInfoOpen(false)} project={project} variant={requestInfoVariant} whatsappHref={contactWhatsAppHref} />
     </div>
   );
 }
@@ -2173,6 +2173,7 @@ export function RequestInfoDialog({
   floorPlan,
   variant = "standard",
   defaultMessage = "",
+  whatsappHref = null,
 }: {
   open: boolean;
   onClose: () => void;
@@ -2188,6 +2189,8 @@ export function RequestInfoDialog({
   variant?: "standard" | "inquiry" | "brochure";
   /** Pre-filled message (e.g. the plots a buyer selected). The parent re-keys the dialog when it changes. */
   defaultMessage?: string;
+  /** The developer's wa.me link (any form; only the number is used) for the "Get price on WhatsApp" button. */
+  whatsappHref?: string | null;
 }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -2195,21 +2198,30 @@ export function RequestInfoDialog({
   // the international prefix (see lib/phone.ts) so reply links work abroad.
   const [phoneValue, setPhoneValue] = useState<PhoneValue>({ country: DEFAULT_PHONE_COUNTRY, national: "" });
   const [message, setMessage] = useState(defaultMessage);
-  const [contactMethod, setContactMethod] = useState<"Phone" | "Text" | "Email">("Phone");
+  const [contactMethod] = useState<"Phone" | "Text" | "Email">("Phone"); // the form no longer asks; replies go by phone/WhatsApp
   const [agreed, setAgreed] = useState(false);
   const [keepPosted, setKeepPosted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<{ name?: string; phone?: string }>({});
+  const formRef = useRef<HTMLFormElement>(null);
+  const focusedFields = useRef(new Set<string>());
   const MESSAGE_MAX = 900;
   const isInquiry = variant === "inquiry";
   const isBrochure = variant === "brochure";
+  // Contact Us and Brochure ask for a name and one number only (owner, 2026-10-31): long forms made people stop, and many
+  // Sri Lankan buyers will not hand over details before they have seen a price. The land inquiry keeps its own longer layout.
+  const isShort = !isInquiry;
+  const formType = isBrochure ? "brochure" : isInquiry ? "inquiry" : "request_info";
 
   useEffect(() => {
     if (!open) return;
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setSubmitted(false);
     setErrorMessage("");
+    setFieldErrors({});
+    focusedFields.current.clear();
   }, [open]);
 
   useEffect(() => {
@@ -2225,10 +2237,18 @@ export function RequestInfoDialog({
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const phone = isPlausiblePhone(phoneValue.country, phoneValue.national) ? buildInternationalPhone(phoneValue.country, phoneValue.national) : null;
-    if (!phone) {
-      setErrorMessage("Please enter a valid phone number, including the right country code.");
+    // Say exactly what is wrong, next to the field, instead of the browser's generic "fill out this field".
+    const errors: { name?: string; phone?: string } = {};
+    if (!name.trim()) errors.name = "Please enter your name so the team knows who to reply to.";
+    if (!phone) errors.phone = phoneValue.country === "LK" ? "That number does not look right. Type your mobile number without the first 0, for example 77 123 4567." : "That number does not look right. Please check it and the country code.";
+    if (isInquiry && !agreed) setErrorMessage("Please tick the box to agree to be contacted.");
+    if (errors.name || errors.phone || (isInquiry && !agreed)) {
+      setFieldErrors(errors);
+      if (errors.name) formRef.current?.querySelector<HTMLInputElement>("#request-info-name")?.focus();
+      else if (errors.phone) formRef.current?.querySelector<HTMLInputElement>(".request-info-phone-row input")?.focus();
       return;
     }
+    setFieldErrors({});
     setSubmitting(true);
     setErrorMessage("");
 
@@ -2239,10 +2259,10 @@ export function RequestInfoDialog({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name,
-          email,
+          name: name.trim(),
+          email: isShort ? "" : email,
           phone,
-          preferredContactMethod: contactMethod,
+          preferredContactMethod: isShort ? "Phone" : contactMethod,
           message: message.trim() || (isBrochure ? `Brochure request for ${subject}` : `Request info for ${subject}`),
           projectSlug: project.slug,
           developerSlug: project.developerSlug,
@@ -2269,7 +2289,7 @@ export function RequestInfoDialog({
         ...(project.developerSlug ? { developer_slug: project.developerSlug } : {}),
         traffic_source: getTrafficSource(),
         landing_page: getLandingPage(),
-        form_type: isBrochure ? "brochure" : isInquiry ? "inquiry" : "request_info",
+        form_type: formType,
         ...(utm_campaign ? { utm_campaign } : {}),
       });
 
@@ -2287,6 +2307,26 @@ export function RequestInfoDialog({
       setSubmitting(false);
     }
   };
+
+  // Which field did people stop at? One event per field, the first time it is tapped in each opening of the form.
+  const onFieldFocus = (field: string, input?: HTMLElement | null) => {
+    if (!focusedFields.current.has(field)) {
+      focusedFields.current.add(field);
+      trackEvent("form_field_focus", {
+        field_name: field,
+        form_type: formType,
+        listing_id: project.slug,
+        listing_name: project.name,
+        ...(project.developerSlug ? { developer_slug: project.developerSlug } : {}),
+      });
+    }
+    // On a phone the keyboard rises over the lower half: bring the tapped field (and the buttons below it) into view.
+    if (input && typeof window !== "undefined" && window.matchMedia("(max-width: 520px)").matches) {
+      window.setTimeout(() => input.scrollIntoView({ block: "center", behavior: "smooth" }), 350);
+    }
+  };
+  const askAbout = floorPlan ? `${describeFloorPlanForLead(floorPlan)} at ${project.name}` : project.name;
+  const priceHref = whatsappChatHref(toWhatsAppNumber(whatsappHref ?? project.socialLinks?.whatsapp), `Hi, could you send me the price and payment plan for ${askAbout} that I saw on LankaNewHomes?`);
 
   return (
     <div className="request-info-overlay" role="dialog" aria-modal="true" aria-label="Contact us" onClick={onClose}>
@@ -2314,7 +2354,7 @@ export function RequestInfoDialog({
             <p>
               {isBrochure
                 ? project.brochureUrl
-                  ? `Thanks, ${name.split(" ")[0] || "there"} — your download should start automatically. We've also emailed a copy to ${email}.`
+                  ? `Thanks, ${name.split(" ")[0] || "there"} — your download should start automatically.${email ? ` We've also emailed a copy to ${email}.` : ""}`
                   : `Thanks, ${name.split(" ")[0] || "there"} — we don't have a digital brochure for ${project.name} yet, but the sales team will send you the details shortly.`
                 : `Thanks, ${name.split(" ")[0] || "there"} — the ${project.name} sales team will reach out to you by ${contactMethod.toLowerCase()} shortly.`}
             </p>
@@ -2332,85 +2372,88 @@ export function RequestInfoDialog({
             <Button type="button" onClick={onClose}>Close</Button>
           </div>
         ) : (
-          <form onSubmit={onSubmit} className="request-info-body">
+          <form ref={formRef} onSubmit={onSubmit} noValidate className="request-info-body">
             {isInquiry && <h2>Want to find out more?</h2>}
-            <p className="request-info-required-note"><span className="request-info-star">*</span> Indicates a required field</p>
+            {isInquiry ? <p className="request-info-required-note"><span className="request-info-star">*</span> Indicates a required field</p> : <p className="request-info-lead">Just your name and number. We reply within 24 hours.</p>}
 
             <label className="request-info-field">
               <span>{isInquiry ? "Your Name" : "Name"}<span className="request-info-star">*</span></span>
-              <input value={name} onChange={(event) => setName(event.target.value)} required placeholder="Enter your name" />
+              <input
+                id="request-info-name"
+                value={name}
+                onChange={(event) => { setName(event.target.value); if (fieldErrors.name) setFieldErrors((e) => ({ ...e, name: undefined })); }}
+                onFocus={(event) => onFieldFocus("name", event.currentTarget)}
+                autoComplete="name"
+                autoCapitalize="words"
+                aria-invalid={fieldErrors.name ? true : undefined}
+                aria-describedby={fieldErrors.name ? "request-info-name-error" : undefined}
+                placeholder="Enter your name"
+              />
+              {fieldErrors.name ? <span id="request-info-name-error" className="request-info-field-error" role="alert">{fieldErrors.name}</span> : null}
             </label>
 
             {isInquiry ? (
               <label className="request-info-field">
                 <span>Email Address</span>
-                <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="Enter your email" />
+                <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} onFocus={(event) => onFieldFocus("email", event.currentTarget)} autoComplete="email" placeholder="Enter your email" />
               </label>
             ) : null}
 
-            <div className="request-info-field">
-              <span id="request-info-phone-label">{isInquiry ? "Contact Number" : "Phone number"}<span className="request-info-star">*</span></span>
-              <PhoneField value={phoneValue} onChange={setPhoneValue} labelId="request-info-phone-label" required />
+            <div className="request-info-field" onFocusCapture={(event) => onFieldFocus("phone", event.target as HTMLElement)}>
+              <span id="request-info-phone-label" className={isShort ? "request-info-field-visible-label" : undefined}>{isInquiry ? "Contact Number" : "Phone or WhatsApp number"}<span className="request-info-star">*</span></span>
+              <PhoneField value={phoneValue} onChange={(next) => { setPhoneValue(next); if (fieldErrors.phone) setFieldErrors((e) => ({ ...e, phone: undefined })); }} labelId="request-info-phone-label" />
+              {fieldErrors.phone ? <span className="request-info-field-error" role="alert">{fieldErrors.phone}</span> : null}
             </div>
 
-            {!isInquiry ? (
+            {isInquiry ? (
               <label className="request-info-field">
-                <span>Email<span className="request-info-star">*</span></span>
-                <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} required placeholder="Enter your email" />
+                <span>Message</span>
+                <textarea
+                  value={message}
+                  onChange={(event) => setMessage(event.target.value.slice(0, MESSAGE_MAX))}
+                  onFocus={(event) => onFieldFocus("message", event.currentTarget)}
+                  placeholder="Enter your message"
+                  rows={4}
+                />
+                <span className="request-info-char-count">{MESSAGE_MAX - message.length} characters remaining</span>
               </label>
-            ) : null}
-
-            {/* The brochure form is kept short (name, phone, email): 3 in 8 people who started it did not finish. */}
-            {!isBrochure ? (
-            <label className="request-info-field">
-              <span>{isInquiry ? "Message" : "Anything else we should know?"}</span>
-              <textarea
-                value={message}
-                onChange={(event) => setMessage(event.target.value.slice(0, MESSAGE_MAX))}
-                placeholder="Enter your message"
-                rows={4}
-              />
-              <span className="request-info-char-count">{MESSAGE_MAX - message.length} characters remaining</span>
-            </label>
-            ) : null}
-
-            {!isBrochure ? (
-            <div className="request-info-field">
-              <span className="request-info-field-visible-label">How would you like to get in touch?</span>
-              <div className="request-info-radio-row">
-                {(["Phone", "Text", "Email"] as const).map((method) => (
-                  <label key={method} className="request-info-radio">
-                    <input
-                      type="radio"
-                      name="contactMethod"
-                      checked={contactMethod === method}
-                      onChange={() => setContactMethod(method)}
-                    />
-                    {method}
-                  </label>
-                ))}
-              </div>
-            </div>
             ) : null}
 
             {isInquiry ? (
-              <label className="request-info-consent">
-                <input type="checkbox" checked={keepPosted} onChange={(event) => setKeepPosted(event.target.checked)} />
-                <span>Yes, keep me posted on new launches, property digest and partner offers.</span>
-              </label>
+              <>
+                <label className="request-info-consent">
+                  <input type="checkbox" checked={keepPosted} onChange={(event) => setKeepPosted(event.target.checked)} />
+                  <span>Yes, keep me posted on new launches, property digest and partner offers.</span>
+                </label>
+                <label className="request-info-consent">
+                  <input type="checkbox" checked={agreed} onChange={(event) => setAgreed(event.target.checked)} />
+                  <span>I agree to be contacted by LankaNewHomes agents via WhatsApp, SMS, Call, Email etc.</span>
+                </label>
+              </>
             ) : null}
 
-            <label className="request-info-consent">
-              <input type="checkbox" checked={agreed} onChange={(event) => setAgreed(event.target.checked)} required />
-              <span>I agree to be contacted by LankaNewHomes agents via WhatsApp, SMS, Call, Email etc.</span>
-            </label>
+            {errorMessage ? <p className="request-info-error" role="alert">{errorMessage}</p> : null}
 
-            {errorMessage ? <p className="request-info-error">{errorMessage}</p> : null}
-
-            <button type="submit" className="request-info-submit-big" disabled={submitting || !agreed}>
-              <span className="request-info-submit-icon" aria-hidden="true"><ArrowRight size={16} strokeWidth={2.5} /></span>
-              {submitting ? "Sending..." : isBrochure ? "Download Brochure" : isInquiry ? "Send" : "Submit Form"}
-            </button>
+            <div className="request-info-actions">
+              {isShort ? <p className="request-info-promise">We reply within 24 hours and never spam you. By sending, you agree to be contacted by LankaNewHomes agents by WhatsApp, SMS, call or email.</p> : null}
+              <div className="request-info-actions-row">
+                <button type="submit" className="request-info-submit-big" disabled={submitting || (isInquiry && !agreed)}>
+                  <span className="request-info-submit-icon" aria-hidden="true"><ArrowRight size={16} strokeWidth={2.5} /></span>
+                  {submitting ? "Sending..." : isBrochure ? "Download Brochure" : isInquiry ? "Send" : "Submit Form"}
+                </button>
+                {isShort && priceHref ? (
+                  <a
+                    href={priceHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="request-info-whatsapp-price"
+                    onClick={() => logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project.slug, project.name, project.developerSlug)}
+                  >
+                    <WhatsappIcon className="h-4 w-4" /> Get price on WhatsApp
+                  </a>
+                ) : null}
+              </div>
+            </div>
           </form>
         )}
       </div>

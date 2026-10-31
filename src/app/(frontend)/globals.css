@@ -20950,3 +20950,27 @@ body:has(.compare-bar) {
 .bio-links-empty { margin: 0; font-size: 15px; color: #6b6355; }
 @media (max-width: 900px) { .bio-links-list { grid-template-columns: 1fr; padding: 0 16px; } }
 @media (max-width: 640px) { .bio-links-thumb { width: 52px; height: 52px; } .bio-links-name { font-size: 15px; } .bio-links-row { gap: 14px; padding: 14px 0; } }
+
+/* Contact Us / Brochure form: name + one number, a "Get price on WhatsApp" button beside the submit button, and a calm note about
+   replies and spam (owner, 2026-10-31). Phone-first: 16px text so iOS does not zoom in, 48px fields, and the buttons stay in view
+   above the keyboard (sticky at the bottom of the scrolling dialog). */
+.request-info-lead { margin: 0 0 14px; font-size: 14px; color: #4a4338; }
+.request-info-field-error { display: block; margin-top: 6px; font-size: 13px; line-height: 1.4; color: #c0392b; }
+.request-info-field input[aria-invalid="true"] { border-color: #c0392b; }
+.request-info-promise { margin: 0 0 10px; font-size: 12px; line-height: 1.5; color: #6b6355; }
+.request-info-actions { position: sticky; bottom: 0; z-index: 2; margin: 0 -24px -24px; padding: 12px 24px 24px; background: linear-gradient(to top, #f7f1e6 78%, rgba(247, 241, 230, 0)); }
+.request-info-actions-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.request-info-whatsapp-price { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; padding: 0 22px; border-radius: 999px; background: #25d366; border: 1px solid #25d366; color: #0b2e13; font-size: 15px; font-weight: 600; text-decoration: none; }
+.request-info-whatsapp-price:hover { background: #1fb858; border-color: #1fb858; }
+@media (max-width: 640px) {
+  .request-info-actions { margin: 0 -20px -24px; padding: 12px 20px 24px; }
+}
+@media (max-width: 520px) {
+  .request-info-field input,
+  .request-info-field textarea,
+  .request-info-phone-flag { min-height: 48px; font-size: 16px; }
+  .request-info-field select { font-size: 16px; }
+  .request-info-actions { margin: 0 -18px -18px; padding: 10px 18px 18px; }
+  .request-info-actions-row { flex-direction: column; align-items: stretch; }
+  .request-info-whatsapp-price, .request-info-actions .request-info-submit-big { width: 100%; }
+}
