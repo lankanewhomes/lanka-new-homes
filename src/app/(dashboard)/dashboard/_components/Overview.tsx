@@ -2,19 +2,20 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { AlertCircle, ArrowUpRight, Building2, CalendarClock, Eye, FileDown, Mail, MessageCircle, Phone, Star } from "lucide-react";
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { AlertCircle, ArrowDownRight, ArrowUpRight, Building2, CalendarClock, Eye, FileDown, Mail, MessageCircle, Phone, Star } from "lucide-react";
+import { Area, AreaChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useDash } from "./DashProvider";
 import { PageHero, heroBtn } from "./PageHero";
 import { StatusChip } from "./StatusChip";
 import { TodayPanel } from "./TodayPanel";
+import { ANALYTICS_TZ_LABEL, addDays, dayKey, shortDay } from "@/lib/analytics-time";
 import { allOf } from "../_data/scope";
 import { apiCount, apiFind, apiGet, apiGetJson, type Doc } from "../_data/api";
 
 // Overview: every number here is read live from Payload (leads, projects, subscriptions) and from the same analytics summary
 // endpoint that /cms uses, scoped to what this login may see. Nothing is estimated.
 
-type Summary = { totalEvents: number; byType: { key: string; count: number }[]; trend: { date: string; count: number }[] };
+type Summary = { totalEvents: number; byType: { key: string; count: number }[]; trend: { date: string; count: number }[]; viewsTrend?: { date: string; count: number }[] };
 
 const DAY = 86400000;
 const ago = (iso: string, now: number) => {
@@ -23,11 +24,21 @@ const ago = (iso: string, now: number) => {
 };
 const idOf = (v: unknown) => (v && typeof v === "object" ? (v as { id?: unknown }).id : v);
 
-function Stat({ icon: Icon, label, value, sub }: { icon: typeof Eye; label: string; value: string; sub?: string }) {
+/** Up or down against the 30 days before. */
+function Change({ now, was }: { now: number; was: number | null }) {
+  if (was === null) return null;
+  if (was === 0) return now > 0 ? <span className="ml-1 text-xs font-medium text-ok">new</span> : null;
+  const pct = Math.round(((now - was) / was) * 100);
+  if (pct === 0) return null;
+  const up = pct > 0;
+  return <span className={`ml-1 inline-flex items-center gap-0.5 text-xs font-medium ${up ? "text-ok" : "text-bad"}`}>{up ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}{Math.abs(pct)}%</span>;
+}
+
+function Stat({ icon: Icon, label, value, sub, change }: { icon: typeof Eye; label: string; value: string; sub?: string; change?: React.ReactNode }) {
   return (
     <div className="border border-line bg-panel p-4">
       <div className="flex items-center justify-between text-sm text-muted"><span>{label}</span><span className="grid h-8 w-8 place-items-center bg-subtle"><Icon size={16} /></span></div>
-      <p className="mt-2 text-2xl font-semibold tabular-nums tracking-tight">{value}</p>
+      <p className="mt-2 text-2xl font-semibold tabular-nums tracking-tight">{value}{change}</p>
       {sub ? <p className="mt-0.5 text-xs text-muted">{sub}</p> : null}
     </div>
   );
@@ -35,6 +46,8 @@ function Stat({ icon: Icon, label, value, sub }: { icon: typeof Eye; label: stri
 
 type Data = {
   summary: Summary | null;
+  /** The 30 days before, for the change arrows (null when it could not be read). */
+  before: Summary | null;
   leadsMonth: number;
   newLeads: number;
   active: number;
@@ -59,13 +72,15 @@ export function Overview() {
     (async () => {
       try {
         const since = new Date(Date.now() - 30 * DAY);
-        const start = since.toISOString().slice(0, 10);
-        const end = new Date().toISOString().slice(0, 10);
+        // Sri Lanka days, the same ones GA4 and the Analytics page use.
+        const end = dayKey();
+        const start = addDays(end, -30);
         const leadsScope = d.scope("leads");
         const projScope = d.scope("projects");
         const companyId = d.session.developerIds[0];
-        const [summary, leadsMonth, newLeads, active, drafts, subs, company, recent, featured] = await Promise.all([
+        const [summary, before, leadsMonth, newLeads, active, drafts, subs, company, recent, featured] = await Promise.all([
           apiGetJson<Summary>(`/analytics-summary?startDate=${start}&endDate=${end}`).catch(() => null),
+          apiGetJson<Summary>(`/analytics-summary?startDate=${addDays(start, -31)}&endDate=${addDays(start, -1)}`).catch(() => null),
           apiCount("leads", allOf(leadsScope, { createdAt: { greater_than_equal: since.toISOString() } })),
           apiCount("leads", allOf(leadsScope, { status: { equals: "new" } })),
           apiCount("projects", allOf(projScope, { isPublished: { equals: true } })),
@@ -77,7 +92,7 @@ export function Overview() {
         ]);
         if (!alive) return;
         d.ensureLabels("projects", recent.docs.map((l) => idOf(l.project)));
-        setData({ summary, leadsMonth, newLeads, active, drafts, subs, company, recent: recent.docs, featured: featured.docs, at: Date.now() });
+        setData({ summary, before, leadsMonth, newLeads, active, drafts, subs, company, recent: recent.docs, featured: featured.docs, at: Date.now() });
         setError("");
       } catch (e) {
         if (alive) setError(e instanceof Error ? e.message : "Could not load the overview.");
@@ -98,12 +113,16 @@ export function Overview() {
   }
 
   const views = data?.summary?.byType.find((t) => t.key === "view")?.count ?? 0;
+  const viewsBefore = data?.before ? (data.before.byType.find((t) => t.key === "view")?.count ?? 0) : null;
   const now = data?.at ?? 0;
   const trend = (() => {
-    const by = new Map((data?.summary?.trend ?? []).map((p) => [p.date, p.count]));
+    const all = new Map((data?.summary?.trend ?? []).map((p) => [p.date, p.count]));
+    const seen = new Map((data?.summary?.viewsTrend ?? []).map((p) => [p.date, p.count]));
+    if (!now) return [];
+    const last = dayKey(now);
     return Array.from({ length: 30 }, (_, i) => {
-      const day = new Date(now - (29 - i) * DAY);
-      return { day: day.toLocaleDateString("en-GB", { day: "numeric", month: "short" }), count: by.get(day.toISOString().slice(0, 10)) ?? 0 };
+      const key = addDays(last, i - 29);
+      return { day: shortDay(key), views: seen.get(key) ?? 0, activity: all.get(key) ?? 0 };
     });
   })();
   const featuredUntil = data?.company?.featuredUntil ? new Date(String(data.company.featuredUntil)) : null;
@@ -120,9 +139,16 @@ export function Overview() {
       />
 
       <div className="d-box">
+        {data && (data.newLeads > 0 || data.drafts > 0) ? (
+          <div className="mb-5 flex flex-wrap items-center gap-x-6 gap-y-2 border border-ink bg-panel px-4 py-3 text-sm" aria-label="Needs your attention">
+            <span className="d-label">Needs your attention</span>
+            {data.newLeads > 0 ? <Link href="/dashboard/leads" className="font-medium hover:underline">{data.newLeads} {data.newLeads === 1 ? "enquiry is" : "enquiries are"} waiting for a first reply</Link> : null}
+            {data.drafts > 0 ? <Link href="/dashboard/projects" className="font-medium hover:underline">{data.drafts} {data.drafts === 1 ? "listing is a draft" : "listings are drafts"}, not live yet</Link> : null}
+          </div>
+        ) : null}
         <div className="mb-5"><TodayPanel /></div>
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <Stat icon={Eye} label="Page views, last 30 days" value={data ? views.toLocaleString("en-LK") : "…"} sub={data?.summary ? "Real visits, bots and repeats removed" : data ? "No analytics yet" : undefined} />
+          <Stat icon={Eye} label="Page views, last 30 days" value={data ? views.toLocaleString("en-LK") : "…"} change={data ? <Change now={views} was={viewsBefore} /> : null} sub={data?.summary ? "Real visits: bots, crawlers and repeats removed" : data ? "No analytics yet" : undefined} />
           <Stat icon={MessageCircle} label="Leads, last 30 days" value={data ? String(data.leadsMonth) : "…"} sub={data ? `${data.newLeads} still new` : undefined} />
           <Stat icon={Building2} label="Published listings" value={data ? String(data.active) : "…"} sub={data ? `${data.drafts} ${data.drafts === 1 ? "draft" : "drafts"}` : undefined} />
           <Stat icon={CalendarClock} label={admin ? "Active subscriptions" : "Package days left"} value={!data ? "…" : admin ? String(data.subs) : daysLeft === null ? "—" : String(daysLeft)} sub={admin ? "paying developers" : featuredUntil ? `Ends ${featuredUntil.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}` : "No paid package"} />
@@ -138,7 +164,7 @@ export function Overview() {
 
         <div className="mt-5 grid gap-5 xl:grid-cols-3">
           <section className="border border-line bg-panel p-4 xl:col-span-2">
-            <div className="mb-3 flex items-center justify-between"><h2 className="font-semibold">Visitor activity, last 30 days</h2><span className="text-xs text-muted">Views, saves, clicks and enquiries</span></div>
+            <div className="mb-3 flex items-center justify-between"><h2 className="font-semibold">Visitor activity, last 30 days</h2><span className="text-xs text-muted">Page views against everything buyers did ({ANALYTICS_TZ_LABEL} days)</span></div>
             <div className="h-64">
               {data ? (
                 <ResponsiveContainer width="100%" height="100%">
@@ -148,7 +174,9 @@ export function Overview() {
                     <XAxis dataKey="day" tick={{ fill: "var(--d-muted)", fontSize: 11 }} tickLine={false} axisLine={false} interval={4} />
                     <YAxis allowDecimals={false} tick={{ fill: "var(--d-muted)", fontSize: 11 }} tickLine={false} axisLine={false} />
                     <Tooltip contentStyle={{ background: "var(--d-panel)", border: "1px solid var(--d-line)", fontSize: 12 }} labelStyle={{ color: "var(--d-fg)" }} />
-                    <Area type="monotone" dataKey="count" name="Events" stroke="var(--d-brand)" strokeWidth={2} fill="url(#viewsFill)" />
+                    <Legend iconType="line" wrapperStyle={{ fontSize: 12 }} />
+                    <Area type="monotone" dataKey="activity" name="All activity" stroke="var(--d-muted)" strokeWidth={1.5} fill="none" />
+                    <Area type="monotone" dataKey="views" name="Page views" stroke="var(--d-brand)" strokeWidth={2} fill="url(#viewsFill)" />
                   </AreaChart>
                 </ResponsiveContainer>
               ) : <div className="d-skeleton h-full w-full" />}

@@ -2,6 +2,8 @@ import type { Payload, Where } from 'payload'
 import { ANALYTICS_EVENT_TYPES } from '@/collections/Analytics'
 import type { LeadPipelineSummary } from '@/lib/lead-pipeline'
 import { fromAnalyticsStart } from '@/lib/analytics-start'
+import { dayEndIso, dayKey, dayStartIso } from '@/lib/analytics-time'
+import { isDatacenterCity } from '@/lib/datacenter-traffic'
 
 export type AnalyticsBreakdownRow = { key: string; label: string; count: number; percent: number }
 export type ListingBreakdownRow = { projectId: string | number; projectName: string; projectSlug: string; total: number; byType: Record<string, number> }
@@ -19,6 +21,8 @@ export type AnalyticsSummaryResponse = {
   byListing: ListingBreakdownRow[]
   byDeveloper?: DeveloperBreakdownRow[]
   trend: TrendPoint[]
+  /** Page views only, per Sri Lanka day. */
+  viewsTrend: TrendPoint[]
   /** Visits and contact actions that came in on our Instagram / Facebook post links (utm_medium=social), one row per source and campaign. */
   socialCampaigns: SocialCampaignRow[]
   /** Lead pipeline + response times (src/lib/lead-pipeline.ts); added by the endpoint. */
@@ -73,11 +77,11 @@ export async function buildAnalyticsSummary(
   const where: Where = {
     is_duplicate: { equals: false },
     is_bot: { equals: false },
-    timestamp: { greater_than_equal: fromAnalyticsStart(`${startDate}T00:00:00.000Z`), less_than_equal: `${endDate}T23:59:59.999Z` },
+    timestamp: { greater_than_equal: fromAnalyticsStart(dayStartIso(startDate)), less_than_equal: dayEndIso(endDate) },
   }
   if (projectIds) where.project = { in: projectIds }
 
-  const { docs } = await payload.find({
+  const { docs: found } = await payload.find({
     collection: 'analytics',
     where,
     limit: 20000,
@@ -86,10 +90,14 @@ export async function buildAnalyticsSummary(
     sort: '-timestamp',
   })
 
+  // Crawlers from data-centre towns are dropped here too, so events saved before that rule existed stop counting.
+  const docs = found.filter((doc) => !isDatacenterCity(doc.city))
+
   const byTypeCounts = new Map<string, number>()
   const trafficSourceCounts = new Map<string, number>()
   const deviceTypeCounts = new Map<string, number>()
   const trendCounts = new Map<string, number>()
+  const viewTrendCounts = new Map<string, number>()
   const listingMap = new Map<string, ListingBreakdownRow>()
   const developerMap = new Map<string, DeveloperBreakdownRow>()
   const socialMap = new Map<string, SocialCampaignRow>()
@@ -114,8 +122,11 @@ export async function buildAnalyticsSummary(
     const device = (doc.device_type as string | null) || 'unknown'
     deviceTypeCounts.set(device, (deviceTypeCounts.get(device) ?? 0) + 1)
 
-    const day = typeof doc.timestamp === 'string' ? doc.timestamp.slice(0, 10) : null
-    if (day) trendCounts.set(day, (trendCounts.get(day) ?? 0) + 1)
+    const day = typeof doc.timestamp === 'string' ? dayKey(doc.timestamp) : null
+    if (day) {
+      trendCounts.set(day, (trendCounts.get(day) ?? 0) + 1)
+      if (eventType === 'view') viewTrendCounts.set(day, (viewTrendCounts.get(day) ?? 0) + 1)
+    }
 
     const project = doc.project as { id?: string | number; name?: string; slug?: string } | string | number | null
     const projectId = relId(project)
@@ -156,6 +167,10 @@ export async function buildAnalyticsSummary(
     .sort(([a], [b]) => (a < b ? -1 : 1))
     .map(([date, count]) => ({ date, count }))
 
+  const viewsTrend: TrendPoint[] = Array.from(viewTrendCounts.entries())
+    .sort(([a], [b]) => (a < b ? -1 : 1))
+    .map(([date, count]) => ({ date, count }))
+
   const adSourceCounts = new Map<string, number>()
   for (const key of Object.keys(AD_SOURCE_LABELS)) {
     const count = trafficSourceCounts.get(key)
@@ -172,6 +187,7 @@ export async function buildAnalyticsSummary(
     byListing: Array.from(listingMap.values()).sort((a, b) => b.total - a.total),
     byDeveloper: includeByDeveloper ? Array.from(developerMap.values()).sort((a, b) => b.total - a.total) : undefined,
     trend,
+    viewsTrend,
     socialCampaigns: Array.from(socialMap.values()).sort((a, b) => b.total - a.total),
   }
 }

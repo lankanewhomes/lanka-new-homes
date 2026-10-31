@@ -175,5 +175,17 @@ the cron run still completes normally.
   traffic-source *attribution* of those visits, which Payload has no way to
   know.
 
+## Dashboard clock and crawler filtering (2026-10-31)
+
+- **One clock: Sri Lanka time** (`src/lib/analytics-time.ts`, `Asia/Colombo`, +05:30, no daylight saving). The dashboard Overview,
+  Analytics page, Today panel and the `/analytics-summary` endpoint all cut days at Sri Lanka midnight, the same day GA4 uses.
+  `startDate`/`endDate` sent to `/analytics-summary` are Sri Lanka days. The `/cms` analytics screen still sends UTC dates.
+- **Every page view is listed with its time** in the Today panel ("Page views today, one by one").
+- **Data-centre crawlers are not counted** (`src/lib/datacenter-traffic.ts`): Facebook/Instagram link previews load pages from
+  Prineville and Luleå, Google from Council Bluffs and Boardman. New events from those towns are saved with `is_bot`, and the
+  summary and Today panel drop them from past events too. Own visits are still excluded only by the `lnh_internal` cookie or login.
+- The dashboard counts listing page views from our own server, GA4 counts every page from the browser, so the numbers differ
+  (repeats within 30 minutes, ad blockers, other pages). Compare the dashboard's "Page views" with GA4's `view_listing`.
+
 ## Internal traffic (own visits)
 Open any page with `?internal=1` (or `?no-track=1`) once per browser; `?internal=0` undoes it. This sets the `lnh_internal` cookie (stops our own events being counted) and `localStorage.ga_internal = "1"`. For a flagged browser, `src/components/analytics/internal-traffic-flag.tsx` puts `gtag('set', { traffic_type: 'internal' })` on `dataLayer` before the deferred GA tag loads, so GA's active "Internal Traffic" filter (traffic_type = internal) drops those hits. GA itself still loads exactly once, from `deferred-google-tags.tsx` (`@next/third-parties`).

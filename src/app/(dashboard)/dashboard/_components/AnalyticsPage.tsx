@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { AlertCircle, ArrowUpRight, Eye, Heart, Mail, MessageCircle, MessageSquare, Phone, FileDown, MousePointerClick } from "lucide-react";
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { AlertCircle, ArrowDownRight, ArrowUpRight, Eye, Heart, Mail, MessageCircle, MessageSquare, Phone, FileDown, MousePointerClick } from "lucide-react";
+import { Area, AreaChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useDash } from "./DashProvider";
 import { PageHero } from "./PageHero";
 import { apiGetJson } from "../_data/api";
 import { ANALYTICS_START } from "@/lib/analytics-start";
 import { TodayPanel } from "./TodayPanel";
+import { ANALYTICS_TZ_LABEL, addDays, dayKey, shortDay } from "@/lib/analytics-time";
 
 // Analytics: the same numbers as the /cms analytics screen (the analytics-summary endpoint), laid out in the dashboard design.
 // An admin sees the whole platform; a developer sees only the listings they manage. Bots and repeat clicks are already removed
@@ -27,6 +28,7 @@ type Summary = {
   byListing: Listing[];
   byDeveloper?: Dev[];
   trend: { date: string; count: number }[];
+  viewsTrend?: { date: string; count: number }[];
   socialCampaigns?: { source: string; campaign: string; projectName: string; views: number; contacts: number; total: number }[];
   leads?: {
     total: number;
@@ -38,7 +40,6 @@ type Summary = {
   };
 };
 
-const DAY = 86400000;
 const RANGES = [{ days: 7, label: "7 days" }, { days: 28, label: "28 days" }, { days: 90, label: "90 days" }];
 const TILES = [
   { key: "view", label: "Page views", icon: Eye },
@@ -52,6 +53,17 @@ const TILES = [
 ];
 const n = (v: number) => v.toLocaleString("en-LK");
 const minutes = (m: number | null) => (m === null ? "—" : m < 60 ? `${Math.round(m)} min` : m < 1440 ? `${(m / 60).toFixed(1)} h` : `${(m / 1440).toFixed(1)} days`);
+
+/** Up or down against the period just before, in plain words ("vs the 28 days before"). */
+function Delta({ now, was, loaded }: { now: number; was: number; loaded: boolean }) {
+  if (!loaded) return <span className="text-[11px] text-muted">no earlier data</span>;
+  if (was === 0 && now === 0) return <span className="text-[11px] text-muted">same as before</span>;
+  if (was === 0) return <span className="text-[11px] font-medium text-ok">new</span>;
+  const pct = Math.round(((now - was) / was) * 100);
+  if (pct === 0) return <span className="text-[11px] text-muted">same as before</span>;
+  const up = pct > 0;
+  return <span className={`inline-flex items-center gap-0.5 text-[11px] font-medium ${up ? "text-ok" : "text-bad"}`}>{up ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}{Math.abs(pct)}%</span>;
+}
 
 function Bars({ rows, empty }: { rows: Row[]; empty: string }) {
   if (rows.length === 0) return <p className="py-6 text-center text-sm text-muted">{empty}</p>;
@@ -73,6 +85,7 @@ export function AnalyticsPage() {
   const admin = d.role === "admin";
   const [days, setDays] = useState(28);
   const [data, setData] = useState<Summary | null>(null);
+  const [before, setBefore] = useState<Summary | null>(null);
   const [error, setError] = useState("");
   const [showAll, setShowAll] = useState(false);
   const [reload, setReload] = useState(0);
@@ -81,11 +94,14 @@ export function AnalyticsPage() {
     let alive = true;
     (async () => {
       try {
-        const now = Date.now();
-        const start = new Date(now - days * DAY).toISOString().slice(0, 10);
-        const end = new Date(now).toISOString().slice(0, 10);
-        const res = await apiGetJson<Summary>(`/analytics-summary?startDate=${start}&endDate=${end}`);
-        if (alive) { setData(res); setError(""); }
+        // Days are Sri Lanka days, the same ones GA4 uses. The period just before this one is read too, for the change arrows.
+        const end = dayKey();
+        const start = addDays(end, -days);
+        const [res, prev] = await Promise.all([
+          apiGetJson<Summary>(`/analytics-summary?startDate=${start}&endDate=${end}`),
+          apiGetJson<Summary>(`/analytics-summary?startDate=${addDays(start, -days - 1)}&endDate=${addDays(start, -1)}`).catch(() => null),
+        ]);
+        if (alive) { setData(res); setBefore(prev); setError(""); }
       } catch (e) {
         if (alive) setError(e instanceof Error ? e.message : "Could not load analytics.");
       }
@@ -105,16 +121,17 @@ export function AnalyticsPage() {
   }
 
   const count = (key: string) => data?.byType.find((t) => t.key === key)?.count ?? 0;
+  const countBefore = (key: string) => before?.byType.find((t) => t.key === key)?.count ?? 0;
   const startFloor = new Date(ANALYTICS_START);
-  const clipped = data ? new Date(`${data.range.startDate}T00:00:00Z`) < startFloor : false;
+  const clipped = data ? data.range.startDate < dayKey(startFloor) : false;
   const trend = (() => {
     if (!data) return [];
-    const by = new Map(data.trend.map((p) => [p.date, p.count]));
-    const end = new Date(`${data.range.endDate}T00:00:00Z`).getTime();
-    const len = Math.round((end - new Date(`${data.range.startDate}T00:00:00Z`).getTime()) / DAY) + 1;
+    const all = new Map(data.trend.map((p) => [p.date, p.count]));
+    const views = new Map((data.viewsTrend ?? []).map((p) => [p.date, p.count]));
+    const len = Math.round((Date.parse(`${data.range.endDate}T00:00:00Z`) - Date.parse(`${data.range.startDate}T00:00:00Z`)) / 86400000) + 1;
     return Array.from({ length: len }, (_, i) => {
-      const day = new Date(end - (len - 1 - i) * DAY);
-      return { day: day.toLocaleDateString("en-GB", { day: "numeric", month: "short" }), count: by.get(day.toISOString().slice(0, 10)) ?? 0 };
+      const key = addDays(data.range.startDate, i);
+      return { day: shortDay(key), views: views.get(key) ?? 0, activity: all.get(key) ?? 0 };
     });
   })();
   const listings = data ? (showAll ? data.byListing : data.byListing.slice(0, 12)) : [];
@@ -137,7 +154,7 @@ export function AnalyticsPage() {
 
       <div className="d-box">
         <p className="mb-4 text-sm text-muted">
-          Real visitors only: bots and repeat clicks are removed.{clipped ? ` Counting starts on ${startFloor.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })} (fresh start), so earlier days in this range are empty.` : ""}
+          Real visitors only: bots, data-centre crawlers and repeat clicks are removed. Days run on {ANALYTICS_TZ_LABEL}, like GA4.{clipped ? ` Counting starts on ${startFloor.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })} (fresh start), so earlier days in this range are empty.` : ""}
         </p>
 
         <div className="mb-5"><TodayPanel /></div>
@@ -147,6 +164,7 @@ export function AnalyticsPage() {
             <div key={t.key} className="border border-line bg-panel px-5 py-4">
               <div className="flex items-center justify-between text-muted"><span className="d-label">{t.label}</span><t.icon size={15} /></div>
               <p className="mt-2 text-[34px] font-normal leading-none tabular-nums">{data ? n(count(t.key)) : "…"}</p>
+              <p className="mt-2 flex items-center gap-1.5">{data ? <><Delta now={count(t.key)} was={countBefore(t.key)} loaded={before !== null} /><span className="text-[11px] text-muted">vs {days} days before</span></> : <span className="d-skeleton inline-block h-3 w-20" />}</p>
             </div>
           ))}
         </div>
@@ -167,7 +185,7 @@ export function AnalyticsPage() {
         </section>
 
         <section className="mt-5 border border-line bg-panel p-4">
-          <div className="mb-3 flex items-center justify-between"><h2 className="font-semibold">Activity by day</h2><span className="text-xs text-muted">Views, saves, clicks and enquiries</span></div>
+          <div className="mb-3 flex items-center justify-between"><h2 className="font-semibold">Activity by day</h2><span className="text-xs text-muted">Page views against everything buyers did ({ANALYTICS_TZ_LABEL} days)</span></div>
           <div className="h-64">
             {data ? (
               <ResponsiveContainer width="100%" height="100%">
@@ -177,7 +195,9 @@ export function AnalyticsPage() {
                   <XAxis dataKey="day" tick={{ fill: "var(--d-muted)", fontSize: 11 }} tickLine={false} axisLine={false} minTickGap={24} />
                   <YAxis allowDecimals={false} tick={{ fill: "var(--d-muted)", fontSize: 11 }} tickLine={false} axisLine={false} />
                   <Tooltip contentStyle={{ background: "var(--d-panel)", border: "1px solid var(--d-line)", fontSize: 12 }} labelStyle={{ color: "var(--d-fg)" }} />
-                  <Area type="monotone" dataKey="count" name="Events" stroke="var(--d-brand)" strokeWidth={2} fill="url(#anFill)" />
+                  <Legend iconType="line" wrapperStyle={{ fontSize: 12 }} />
+                  <Area type="monotone" dataKey="activity" name="All activity" stroke="var(--d-muted)" strokeWidth={1.5} fill="none" />
+                  <Area type="monotone" dataKey="views" name="Page views" stroke="var(--d-brand)" strokeWidth={2} fill="url(#anFill)" />
                 </AreaChart>
               </ResponsiveContainer>
             ) : <div className="d-skeleton h-full w-full" />}

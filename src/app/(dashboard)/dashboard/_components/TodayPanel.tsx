@@ -7,11 +7,13 @@ import { useDash } from "./DashProvider";
 import { allOf } from "../_data/scope";
 import { apiFind, type Doc } from "../_data/api";
 import { ANALYTICS_START } from "@/lib/analytics-start";
+import { ANALYTICS_TZ_LABEL, dayKey, dayStartIso, timeOf } from "@/lib/analytics-time";
+import { isDatacenterCity } from "@/lib/datacenter-traffic";
 
-// "Today": what happened since midnight in Toronto time (owner, 2026-10-16: "also add if something happened today"). Real visitors only (bots and
-// repeat clicks are removed, like the rest of Analytics). Refreshes every minute.
+// "Today": what happened since midnight in Sri Lanka time, the same day GA4 uses (owner, 2026-10-16: "also add if something happened today";
+// 2026-10-31: match GA4's day). Real visitors only (bots, data-centre crawlers and repeat clicks are removed, like the rest of Analytics).
+// Refreshes every minute. Every page view is listed with its time.
 
-const TZ = "America/Toronto";
 const TYPES: { key: string; label: string; icon: typeof Eye; verb: string }[] = [
   { key: "view", label: "Page views", icon: Eye, verb: "viewed" },
   { key: "lead_submitted", label: "Enquiries", icon: MessageCircle, verb: "sent an enquiry about" },
@@ -25,21 +27,6 @@ const VERB = Object.fromEntries(TYPES.map((t) => [t.key, t.verb]));
 type Happening = { at: string; icon: typeof Mail; title: string; detail?: string; href?: string };
 const idOf = (v: unknown) => (v && typeof v === "object" ? (v as { id?: unknown }).id : v);
 
-/** Midnight at the start of today in Toronto, as an ISO instant. */
-function startOfTodayToronto(): string {
-  const parts = (ms: number) => {
-    const f = new Intl.DateTimeFormat("en-CA", { timeZone: TZ, hourCycle: "h23", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }).formatToParts(new Date(ms));
-    const g = (t: string) => Number(f.find((x) => x.type === t)?.value);
-    return { y: g("year"), m: g("month"), d: g("day"), h: g("hour"), min: g("minute") };
-  };
-  const now = parts(Date.now());
-  const asUtc = Date.UTC(now.y, now.m - 1, now.d, 0, 0);
-  let guess = asUtc;
-  for (let i = 0; i < 2; i++) { const p = parts(guess); guess += asUtc - Date.UTC(p.y, p.m - 1, p.d, p.h, p.min); }
-  return new Date(guess).toISOString();
-}
-const timeOf = (iso: string) => new Date(iso).toLocaleTimeString("en-CA", { timeZone: TZ, hour: "numeric", minute: "2-digit" });
-
 export function TodayPanel() {
   const d = useDash();
   const [events, setEvents] = useState<Doc[] | null>(null);
@@ -52,11 +39,12 @@ export function TodayPanel() {
     let alive = true;
     (async () => {
       try {
-        const start = new Date(Math.max(Date.parse(startOfTodayToronto()), Date.parse(ANALYTICS_START))).toISOString();
-        const res = await apiFind("analytics", { limit: 500, sort: "-timestamp", where: allOf(d.scope("analytics"), { timestamp: { greater_than_equal: start }, is_bot: { equals: false }, is_duplicate: { equals: false } }), select: { event_type: true, project: true, timestamp: true, city: true } });
+        const start = new Date(Math.max(Date.parse(dayStartIso(dayKey())), Date.parse(ANALYTICS_START))).toISOString();
+        const res = await apiFind("analytics", { limit: 500, sort: "-timestamp", where: allOf(d.scope("analytics"), { timestamp: { greater_than_equal: start }, is_bot: { equals: false }, is_duplicate: { equals: false } }), select: { event_type: true, project: true, timestamp: true, city: true, device_type: true, traffic_source: true } });
         if (!alive) return;
-        d.ensureLabels("projects", res.docs.map((e) => idOf(e.project)));
-        setEvents(res.docs); setError("");
+        const real = res.docs.filter((e) => !isDatacenterCity(e.city));
+        d.ensureLabels("projects", real.map((e) => idOf(e.project)));
+        setEvents(real); setError("");
         const since = { greater_than_equal: start };
         const safe = <T,>(p: Promise<T>, fallback: T) => p.catch(() => fallback);
         const none = { docs: [] as Doc[], totalDocs: 0 };
@@ -89,6 +77,7 @@ export function TodayPanel() {
 
   const count = (k: string) => (events ?? []).filter((e) => e.event_type === k).length;
   const notable = (events ?? []).filter((e) => e.event_type !== "view").slice(0, 12);
+  const viewList = (events ?? []).filter((e) => e.event_type === "view").slice(0, 25);
   const quiet = events !== null && events.length === 0;
 
   const box = "border border-[#e6d3a3] bg-white";
@@ -96,7 +85,7 @@ export function TodayPanel() {
     <section className="border border-[#e6d3a3] bg-[#fbf1dc] p-4 sm:p-6" aria-label="Today">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <Sparkles size={18} className="text-brand" /><h2 className="text-lg font-semibold">Today</h2>
-        <span className="text-sm text-muted">since midnight, Toronto time · updates every minute</span>
+        <span className="text-sm text-muted">since midnight, {ANALYTICS_TZ_LABEL} (same day as GA4) · updates every minute</span>
         <Link href="/dashboard/analytics" className="ml-auto text-sm font-medium underline">Full analytics</Link>
       </div>
       {error ? <p className="mt-4 text-sm text-bad">{error}</p> : (
@@ -116,7 +105,7 @@ export function TodayPanel() {
                 <ul className="divide-y divide-line">
                   {notable.map((e, i) => (
                     <li key={`${String(e.id ?? i)}`} className="flex items-baseline gap-3 px-4 py-2.5 text-sm">
-                      <span className="w-16 shrink-0 tabular-nums text-muted">{e.timestamp ? timeOf(String(e.timestamp)) : ""}</span>
+                      <span className="w-20 shrink-0 tabular-nums text-muted">{e.timestamp ? timeOf(String(e.timestamp)) : ""}</span>
                       <span className="min-w-0 flex-1">A visitor {VERB[String(e.event_type)] ?? "did something on"} <Link href={`/dashboard/projects/${String(idOf(e.project))}`} className="font-medium hover:underline">{d.labelOf("projects", idOf(e.project))}</Link>{e.city ? <span className="text-muted"> ({String(e.city)})</span> : null}</span>
                     </li>
                   ))}
@@ -129,12 +118,27 @@ export function TodayPanel() {
                 <ul className="divide-y divide-line">
                   {happenings.slice(0, 15).map((h, i) => {
                     const Icon = h.icon;
-                    const body = <><span className="w-16 shrink-0 tabular-nums text-muted">{timeOf(h.at)}</span><Icon size={14} className="mt-0.5 shrink-0 text-muted" /><span className="min-w-0 flex-1"><b className="font-medium">{h.title}</b>{h.detail ? <span className="block truncate text-xs text-muted">{h.detail}</span> : null}</span></>;
+                    const body = <><span className="w-20 shrink-0 tabular-nums text-muted">{timeOf(h.at)}</span><Icon size={14} className="mt-0.5 shrink-0 text-muted" /><span className="min-w-0 flex-1"><b className="font-medium">{h.title}</b>{h.detail ? <span className="block truncate text-xs text-muted">{h.detail}</span> : null}</span></>;
                     return <li key={`${h.at}-${i}`}>{h.href ? <Link href={h.href} className="flex items-start gap-3 px-4 py-2.5 text-sm hover:bg-subtle/60">{body}</Link> : <div className="flex items-start gap-3 px-4 py-2.5 text-sm">{body}</div>}</li>;
                   })}
                 </ul>
               )}
             </div> : null}
+          </div>
+          <div className={`${box} mt-4`}>
+            <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-[#e6d3a3] px-4 py-3"><h3 className="font-semibold">Page views today, one by one</h3><span className="text-xs text-muted">Time in {ANALYTICS_TZ_LABEL}</span></div>
+            {events === null ? <div className="d-skeleton m-4 h-24" /> : viewList.length === 0 ? <p className="px-4 py-6 text-sm text-muted">No page views yet today.</p> : (
+              <ul className="divide-y divide-line">
+                {viewList.map((e, i) => (
+                  <li key={`${String(e.id ?? i)}`} className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5 px-4 py-2 text-sm">
+                    <span className="w-20 shrink-0 tabular-nums text-muted">{e.timestamp ? timeOf(String(e.timestamp)) : ""}</span>
+                    <Link href={`/dashboard/projects/${String(idOf(e.project))}`} className="min-w-0 flex-1 truncate font-medium hover:underline">{d.labelOf("projects", idOf(e.project))}</Link>
+                    <span className="text-xs text-muted">{[e.city ? String(e.city) : "", e.device_type ? String(e.device_type) : "", e.traffic_source ? String(e.traffic_source).replace(/_/g, " ") : ""].filter(Boolean).join(" · ")}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {events !== null && count("view") > viewList.length ? <p className="border-t border-line px-4 py-2 text-xs text-muted">Showing the latest {viewList.length} of {count("view")}.</p> : null}
           </div>
         </>
       )}

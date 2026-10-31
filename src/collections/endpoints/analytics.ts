@@ -3,13 +3,11 @@ import { getOwnedDeveloperIds, getOwnedProjectIds, isAdmin } from '../access'
 import { buildListingAnalyticsReport, type AnalyticsRange } from '@/lib/analytics-report'
 import { buildAnalyticsSummary } from '@/lib/analytics-summary'
 import { buildLeadPipelineSummary } from '@/lib/lead-pipeline'
-
-const DAY_MS = 24 * 60 * 60 * 1000
+import { addDays, dayKey } from '@/lib/analytics-time'
 
 function defaultRange(): { startDate: string; endDate: string } {
-  const end = new Date()
-  const start = new Date(end.getTime() - 28 * DAY_MS)
-  return { startDate: start.toISOString().slice(0, 10), endDate: end.toISOString().slice(0, 10) }
+  const endDate = dayKey()
+  return { startDate: addDays(endDate, -28), endDate }
 }
 
 function parseRange(url: URL): AnalyticsRange {

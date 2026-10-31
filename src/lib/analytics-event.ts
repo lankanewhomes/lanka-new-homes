@@ -1,6 +1,7 @@
 import type { Payload } from "payload";
 import { isAiAssistantHost, isAiAssistantUtmSource } from "@/lib/ai-traffic";
 import { isInternalRequest } from "@/lib/internal-traffic";
+import { isDatacenterCity } from "@/lib/datacenter-traffic";
 
 // Server-side helpers for enriching an Analytics event with request-derived
 // metadata (geo, device, bot detection) — used by every route that logs an
@@ -83,7 +84,7 @@ export function buildEventEnrichment(request: Request, body: { sessionId?: unkno
     city,
     region,
     device_type: classifyDeviceType(userAgent),
-    is_bot: isBotUserAgent(userAgent),
+    is_bot: isBotUserAgent(userAgent) || isDatacenterCity(city),
   };
 }
 
