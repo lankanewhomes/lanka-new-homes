@@ -1,4 +1,4 @@
-import { Building, Building2, BarChart3, CreditCard, GalleryHorizontal, Handshake, HardHat, Heart, Image as ImageIcon, LayoutDashboard, ListChecks, Mail, MapPin, MapPinned, Megaphone, MessageCircle, Newspaper, Package, Receipt, Ruler, Search, Settings, Share2, Sofa, Star, Tag, UserCog, Users, Inbox, type LucideIcon } from "lucide-react";
+import { Activity, Building, Building2, BarChart3, FileText, Globe2, ListTree, CreditCard, GalleryHorizontal, Handshake, HardHat, Heart, Image as ImageIcon, LayoutDashboard, ListChecks, Mail, MapPin, MapPinned, Megaphone, MessageCircle, Newspaper, Package, Receipt, Ruler, Search, Settings, Share2, Sofa, Star, Tag, UserCog, Users, Inbox, type LucideIcon } from "lucide-react";
 import { schemaIndex } from "../_mock/schema-index";
 import type { Role } from "../_mock/types";
 
@@ -12,7 +12,7 @@ export const ICONS: Record<string, LucideIcon> = {
 };
 export const iconFor = (slug: string): LucideIcon => ICONS[slug] ?? LayoutDashboard;
 
-export type SideItem = { key: string; label: string; href: string; icon: LucideIcon; badge?: number };
+export type SideItem = { key: string; label: string; href: string; icon: LucideIcon; badge?: number; /** Active only on this exact path, not on pages beneath it. */ exact?: boolean };
 export type SideSection = { label: string; items: SideItem[] };
 
 const VIEW_HREF: Record<string, string> = { mail: "/dashboard/inbox", "mail-settings": "/dashboard/inbox/connection", "billing-overview": "/dashboard/billing", "my-billing": "/dashboard/billing" };
@@ -44,6 +44,18 @@ export function buildSidebar(role: Role, newLeads: number, companyId?: number): 
       } else if (role === "admin") {
         items.push({ key: `g-${it.slug}`, label: it.label, href: `/dashboard/globals/${it.slug}`, icon: iconFor(it.slug) });
       }
+    }
+    // Analytics is a group of its own pages (the schema only lists the one collection): this site's numbers, then GA4's, then keywords.
+    if (s.label === "Analytics") {
+      const pages: SideItem[] = [{ key: "an-overview", label: "Overview", href: "/dashboard/analytics", icon: BarChart3, exact: true }];
+      if (role === "admin") pages.push(
+        { key: "an-events", label: "Events (GA4)", href: "/dashboard/analytics/ga4-events", icon: Activity },
+        { key: "an-traffic", label: "Traffic sources", href: "/dashboard/analytics/traffic", icon: Globe2 },
+        { key: "an-pages", label: "Pages & countries", href: "/dashboard/analytics/pages", icon: FileText },
+        { key: "an-keywords", label: "Keywords", href: "/dashboard/analytics/keywords", icon: Search },
+      );
+      pages.push({ key: "an-raw", label: "Raw events", href: "/dashboard/analytics/events", icon: ListTree });
+      items.splice(0, items.length, ...pages);
     }
     if (s.label === "Settings" && role === "developer") items.push({ key: "company", label: "Company profile", href: `/dashboard/developers/${companyId ?? ""}`, icon: Building });
     if (s.label === "Mail" && role === "admin") items.unshift({ key: "inbox2", label: "Inbox", href: "/dashboard/inbox", icon: Mail }, { key: "conn", label: "Connection status", href: "/dashboard/inbox/connection", icon: Settings });

@@ -7,7 +7,7 @@ import { useDash } from "./DashProvider";
 import { allOf } from "../_data/scope";
 import { apiFind, type Doc } from "../_data/api";
 import { ANALYTICS_START } from "@/lib/analytics-start";
-import { ANALYTICS_TZ_LABEL, dayKey, dayStartIso, timeOf } from "@/lib/analytics-time";
+import { ANALYTICS_TZ_LABEL, dayEndIso, dayKey, dayStartIso, shortDay, timeOf } from "@/lib/analytics-time";
 import { isDatacenterCity } from "@/lib/datacenter-traffic";
 
 // "Today": what happened since midnight in Sri Lanka time, the same day GA4 uses (owner, 2026-10-16: "also add if something happened today";
@@ -27,25 +27,28 @@ const VERB = Object.fromEntries(TYPES.map((t) => [t.key, t.verb]));
 type Happening = { at: string; icon: typeof Mail; title: string; detail?: string; href?: string };
 const idOf = (v: unknown) => (v && typeof v === "object" ? (v as { id?: unknown }).id : v);
 
-export function TodayPanel() {
+/** `day` (a Sri Lanka day, YYYY-MM-DD) shows that earlier day instead of today, and stops refreshing. */
+export function TodayPanel({ day }: { day?: string } = {}) {
+  const shown = day ?? dayKey();
+  const isToday = shown === dayKey();
   const d = useDash();
   const [events, setEvents] = useState<Doc[] | null>(null);
   const [tick, setTick] = useState(0);
   const [error, setError] = useState("");
   const [happenings, setHappenings] = useState<Happening[] | null>(null);
 
-  useEffect(() => { const t = setInterval(() => setTick((n) => n + 1), 60_000); return () => clearInterval(t); }, []);
+  useEffect(() => { if (!isToday) return; const t = setInterval(() => setTick((n) => n + 1), 60_000); return () => clearInterval(t); }, [isToday]);
   useEffect(() => {
     let alive = true;
     (async () => {
       try {
-        const start = new Date(Math.max(Date.parse(dayStartIso(dayKey())), Date.parse(ANALYTICS_START))).toISOString();
-        const res = await apiFind("analytics", { limit: 500, sort: "-timestamp", where: allOf(d.scope("analytics"), { timestamp: { greater_than_equal: start }, is_bot: { equals: false }, is_duplicate: { equals: false } }), select: { event_type: true, project: true, timestamp: true, city: true, device_type: true, traffic_source: true } });
+        const start = new Date(Math.max(Date.parse(dayStartIso(shown)), Date.parse(ANALYTICS_START))).toISOString();
+        const res = await apiFind("analytics", { limit: 500, sort: "-timestamp", where: allOf(d.scope("analytics"), { timestamp: { greater_than_equal: start, ...(isToday ? {} : { less_than_equal: dayEndIso(shown) }) }, is_bot: { equals: false }, is_duplicate: { equals: false } }), select: { event_type: true, project: true, timestamp: true, city: true, device_type: true, traffic_source: true } });
         if (!alive) return;
         const real = res.docs.filter((e) => !isDatacenterCity(e.city));
         d.ensureLabels("projects", real.map((e) => idOf(e.project)));
         setEvents(real); setError("");
-        const since = { greater_than_equal: start };
+        const since = { greater_than_equal: start, ...(isToday ? {} : { less_than_equal: dayEndIso(shown) }) };
         const safe = <T,>(p: Promise<T>, fallback: T) => p.catch(() => fallback);
         const none = { docs: [] as Doc[], totalDocs: 0 };
         const isAdmin = d.role === "admin";
@@ -73,7 +76,7 @@ export function TodayPanel() {
       } catch (e) { if (alive) setError(e instanceof Error ? e.message : "Could not load today's activity."); }
     })();
     return () => { alive = false; };
-  }, [d, tick]);
+  }, [d, tick, shown, isToday]);
 
   const count = (k: string) => (events ?? []).filter((e) => e.event_type === k).length;
   const notable = (events ?? []).filter((e) => e.event_type !== "view").slice(0, 12);
@@ -84,8 +87,8 @@ export function TodayPanel() {
   return (
     <section className="border border-[#e6d3a3] bg-[#fbf1dc] p-4 sm:p-6" aria-label="Today">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-        <Sparkles size={18} className="text-brand" /><h2 className="text-lg font-semibold">Today</h2>
-        <span className="text-sm text-muted">since midnight, {ANALYTICS_TZ_LABEL} (same day as GA4) · updates every minute</span>
+        <Sparkles size={18} className="text-brand" /><h2 className="text-lg font-semibold">{isToday ? "Today" : shortDay(shown)}</h2>
+        <span className="text-sm text-muted">{isToday ? `since midnight, ${ANALYTICS_TZ_LABEL} (same day as GA4) · updates every minute` : `the whole day, ${ANALYTICS_TZ_LABEL}`}</span>
         <Link href="/dashboard/analytics" className="ml-auto text-sm font-medium underline">Full analytics</Link>
       </div>
       {error ? <p className="mt-4 text-sm text-bad">{error}</p> : (
@@ -101,7 +104,7 @@ export function TodayPanel() {
           <div className={`mt-4 grid gap-4 ${d.role === "admin" ? "lg:grid-cols-2" : ""}`}>
             <div className={box}>
               <h3 className="border-b border-[#e6d3a3] px-4 py-3 font-semibold">What happened</h3>
-              {events === null ? <div className="d-skeleton m-4 h-24" /> : quiet ? <p className="px-4 py-6 text-sm text-muted">Nothing yet today.</p> : notable.length === 0 ? <p className="px-4 py-6 text-sm text-muted">Only page views so far today ({count("view")}). No clicks or enquiries yet.</p> : (
+              {events === null ? <div className="d-skeleton m-4 h-24" /> : quiet ? <p className="px-4 py-6 text-sm text-muted">{isToday ? "Nothing yet today." : "Nothing that day."}</p> : notable.length === 0 ? <p className="px-4 py-6 text-sm text-muted">{isToday ? "Only page views so far today" : "Only page views that day"} ({count("view")}). No clicks or enquiries.</p> : (
                 <ul className="divide-y divide-line">
                   {notable.map((e, i) => (
                     <li key={`${String(e.id ?? i)}`} className="flex items-baseline gap-3 px-4 py-2.5 text-sm">
@@ -126,8 +129,8 @@ export function TodayPanel() {
             </div> : null}
           </div>
           <div className={`${box} mt-4`}>
-            <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-[#e6d3a3] px-4 py-3"><h3 className="font-semibold">Page views today, one by one</h3><span className="text-xs text-muted">Time in {ANALYTICS_TZ_LABEL}</span></div>
-            {events === null ? <div className="d-skeleton m-4 h-24" /> : viewList.length === 0 ? <p className="px-4 py-6 text-sm text-muted">No page views yet today.</p> : (
+            <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-[#e6d3a3] px-4 py-3"><h3 className="font-semibold">{isToday ? "Page views today, one by one" : "Page views that day, one by one"}</h3><span className="text-xs text-muted">Time in {ANALYTICS_TZ_LABEL}</span></div>
+            {events === null ? <div className="d-skeleton m-4 h-24" /> : viewList.length === 0 ? <p className="px-4 py-6 text-sm text-muted">{isToday ? "No page views yet today." : "No page views that day."}</p> : (
               <ul className="divide-y divide-line">
                 {viewList.map((e, i) => (
                   <li key={`${String(e.id ?? i)}`} className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5 px-4 py-2 text-sm">

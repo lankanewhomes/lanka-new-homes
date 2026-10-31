@@ -107,7 +107,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <ul className="mb-1 mt-0.5 space-y-0.5">
                   {s.items.map((it) => (
                     <li key={it.key}>
-                      <Link href={it.href} title={it.label} onClick={() => setDrawer(false)} className={`${pill(isActive(it.href) && !(it.href.includes("?") && !pathname.includes("?")))} py-1.5 pl-11 text-[12.5px]`}>
+                      <Link href={it.href} title={it.label} onClick={() => setDrawer(false)} className={`${pill((it.exact ? pathname === it.href : isActive(it.href)) && !(it.href.includes("?") && !pathname.includes("?")))} py-1.5 pl-11 text-[12.5px]`}>
                         <span className="flex-1 truncate">{it.label}</span>
                         {it.badge ? <span className={badgeCls}>{it.badge}</span> : null}
                       </Link>

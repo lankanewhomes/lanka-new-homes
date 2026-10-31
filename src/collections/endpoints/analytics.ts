@@ -4,6 +4,8 @@ import { buildListingAnalyticsReport, type AnalyticsRange } from '@/lib/analytic
 import { buildAnalyticsSummary } from '@/lib/analytics-summary'
 import { buildLeadPipelineSummary } from '@/lib/lead-pipeline'
 import { addDays, dayKey } from '@/lib/analytics-time'
+import { isGa4DataApiConfigured, runGa4Report } from '@/lib/ga4-data-client'
+import { getSearchConsoleRows } from '@/lib/search-console-client'
 
 function defaultRange(): { startDate: string; endDate: string } {
   const endDate = dayKey()
@@ -125,5 +127,40 @@ export const analyticsSummaryEndpoint: Endpoint = {
     ])
 
     return Response.json({ ...summary, leads })
+  },
+}
+
+// GET /payload-api/site-report/:kind?startDate=&endDate= — the whole-site GA4 reports behind the Analytics sub-pages (events, traffic,
+// pages, keywords). Admin only: GA4 numbers cover every listing, and a developer must only ever see their own. Days are GA4's own days.
+// kind: events | traffic | pages | geo | on-site-search | google-queries | google-pages
+export const siteReportEndpoint: Endpoint = {
+  path: '/site-report/:kind',
+  method: 'get',
+  handler: async (req: PayloadRequest) => {
+    if (!req.user) return Response.json({ error: 'Not signed in.' }, { status: 401 })
+    if (!isAdmin(req)) return Response.json({ error: 'Only the site admin can see site-wide reports.' }, { status: 403 })
+
+    const kind = String(req.routeParams?.kind ?? '')
+    const url = new URL(req.url ?? '', 'http://localhost')
+    const { startDate, endDate } = parseRange(url)
+
+    if (kind === 'google-queries' || kind === 'google-pages') {
+      const result = await getSearchConsoleRows({ startDate, endDate, dimension: kind === 'google-queries' ? 'query' : 'page', limit: 200 })
+      return Response.json({ range: { startDate, endDate }, ...result })
+    }
+
+    if (!isGa4DataApiConfigured()) return Response.json({ range: { startDate, endDate }, configured: false, rows: [] })
+    const report = (dimensions: string[], metrics: string[], extra: { filters?: { field: string; value: string }[]; limit?: number } = {}) =>
+      runGa4Report({ startDate, endDate, dimensions, metrics, orderByMetric: metrics[0], limit: extra.limit ?? 100, filters: extra.filters })
+
+    let rows: { dimensionValues: string[]; metricValues: number[] }[] = []
+    if (kind === 'events') rows = await report(['eventName'], ['eventCount', 'totalUsers'], { limit: 100 })
+    else if (kind === 'traffic') rows = await report(['sessionDefaultChannelGroup', 'sessionSource', 'sessionMedium'], ['sessions', 'totalUsers', 'engagedSessions'], { limit: 100 })
+    else if (kind === 'pages') rows = await report(['pagePath', 'pageTitle'], ['screenPageViews', 'activeUsers', 'userEngagementDuration'], { limit: 100 })
+    else if (kind === 'geo') rows = await report(['country', 'city'], ['totalUsers', 'sessions'], { limit: 100 })
+    else if (kind === 'on-site-search') rows = await report(['searchTerm'], ['eventCount', 'totalUsers'], { limit: 100 })
+    else return Response.json({ error: 'Unknown report.' }, { status: 404 })
+
+    return Response.json({ range: { startDate, endDate }, configured: true, rows })
   },
 }

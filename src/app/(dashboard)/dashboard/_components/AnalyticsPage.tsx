@@ -9,6 +9,7 @@ import { PageHero } from "./PageHero";
 import { apiGetJson } from "../_data/api";
 import { ANALYTICS_START } from "@/lib/analytics-start";
 import { TodayPanel } from "./TodayPanel";
+import { RangePicker, describeRange, lastDays, rangeLength, type Range } from "./RangePicker";
 import { ANALYTICS_TZ_LABEL, addDays, dayKey, shortDay } from "@/lib/analytics-time";
 
 // Analytics: the same numbers as the /cms analytics screen (the analytics-summary endpoint), laid out in the dashboard design.
@@ -40,7 +41,6 @@ type Summary = {
   };
 };
 
-const RANGES = [{ days: 7, label: "7 days" }, { days: 28, label: "28 days" }, { days: 90, label: "90 days" }];
 const TILES = [
   { key: "view", label: "Page views", icon: Eye },
   { key: "save", label: "Saves", icon: Heart },
@@ -83,7 +83,8 @@ function Bars({ rows, empty }: { rows: Row[]; empty: string }) {
 export function AnalyticsPage() {
   const d = useDash();
   const admin = d.role === "admin";
-  const [days, setDays] = useState(28);
+  const [range, setRange] = useState<Range>(() => lastDays(28));
+  const days = rangeLength(range);
   const [data, setData] = useState<Summary | null>(null);
   const [before, setBefore] = useState<Summary | null>(null);
   const [error, setError] = useState("");
@@ -95,11 +96,10 @@ export function AnalyticsPage() {
     (async () => {
       try {
         // Days are Sri Lanka days, the same ones GA4 uses. The period just before this one is read too, for the change arrows.
-        const end = dayKey();
-        const start = addDays(end, -days);
+        const { start, end } = range;
         const [res, prev] = await Promise.all([
           apiGetJson<Summary>(`/analytics-summary?startDate=${start}&endDate=${end}`),
-          apiGetJson<Summary>(`/analytics-summary?startDate=${addDays(start, -days - 1)}&endDate=${addDays(start, -1)}`).catch(() => null),
+          apiGetJson<Summary>(`/analytics-summary?startDate=${addDays(start, -days)}&endDate=${addDays(start, -1)}`).catch(() => null),
         ]);
         if (alive) { setData(res); setBefore(prev); setError(""); }
       } catch (e) {
@@ -107,7 +107,7 @@ export function AnalyticsPage() {
       }
     })();
     return () => { alive = false; };
-  }, [days, reload]);
+  }, [range, days, reload]);
 
   if (error) {
     return (
@@ -142,14 +142,8 @@ export function AnalyticsPage() {
       <PageHero
         title="Analytics."
         description={admin ? "Visits, clicks and enquiries across every listing, live from the site." : "How buyers find and react to your listings."}
-        stat={{ label: `Activity, last ${days} days`, value: data ? n(data.totalEvents) : "…" }}
-        actions={
-          <div className="flex flex-wrap gap-2" role="group" aria-label="Date range">
-            {RANGES.map((r) => (
-              <button key={r.days} type="button" onClick={() => { setData(null); setDays(r.days); }} className={`rounded-full border px-5 py-2 text-sm font-medium transition ${days === r.days ? "border-white bg-white text-[#17171b]" : "border-white/70 text-white hover:bg-white hover:text-[#17171b]"}`}>{r.label}</button>
-            ))}
-          </div>
-        }
+        stat={{ label: `Activity, ${describeRange(range).toLowerCase()}`, value: data ? n(data.totalEvents) : "…" }}
+        actions={<RangePicker light value={range} onChange={(next) => { setData(null); setBefore(null); setRange(next); }} />}
       />
 
       <div className="d-box">
@@ -157,14 +151,14 @@ export function AnalyticsPage() {
           Real visitors only: bots, data-centre crawlers and repeat clicks are removed. Days run on {ANALYTICS_TZ_LABEL}, like GA4.{clipped ? ` Counting starts on ${startFloor.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })} (fresh start), so earlier days in this range are empty.` : ""}
         </p>
 
-        <div className="mb-5"><TodayPanel /></div>
+        <div className="mb-5"><TodayPanel day={range.start === range.end ? range.start : undefined} /></div>
 
         <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))" }}>
           {TILES.map((t) => (
             <div key={t.key} className="border border-line bg-panel px-5 py-4">
               <div className="flex items-center justify-between text-muted"><span className="d-label">{t.label}</span><t.icon size={15} /></div>
               <p className="mt-2 text-[34px] font-normal leading-none tabular-nums">{data ? n(count(t.key)) : "…"}</p>
-              <p className="mt-2 flex items-center gap-1.5">{data ? <><Delta now={count(t.key)} was={countBefore(t.key)} loaded={before !== null} /><span className="text-[11px] text-muted">vs {days} days before</span></> : <span className="d-skeleton inline-block h-3 w-20" />}</p>
+              <p className="mt-2 flex items-center gap-1.5">{data ? <><Delta now={count(t.key)} was={countBefore(t.key)} loaded={before !== null} /><span className="text-[11px] text-muted">vs the {days === 1 ? "day" : `${days} days`} before</span></> : <span className="d-skeleton inline-block h-3 w-20" />}</p>
             </div>
           ))}
         </div>

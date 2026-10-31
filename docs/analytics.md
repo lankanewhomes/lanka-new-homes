@@ -188,5 +188,18 @@ the cron run still completes normally.
 - The dashboard counts listing page views from our own server, GA4 counts every page from the browser, so the numbers differ
   (repeats within 30 minutes, ad blockers, other pages). Compare the dashboard's "Page views" with GA4's `view_listing`.
 
+## Analytics pages in the dashboard (2026-10-31)
+
+The dashboard's Analytics group (`src/app/(dashboard)/dashboard/(app)/analytics/*`, sidebar built in `_components/nav.ts`) has: **Overview**
+(this site's own numbers, with a date picker: quick choices, back/forward arrows, exact From/To; a single day shows that day's views one
+by one), then for the admin **Events (GA4)**, **Traffic sources**, **Pages & countries**, **Keywords**, and **Raw events**. The GA4 pages
+read `GET /payload-api/site-report/:kind` (`events | traffic | pages | geo | on-site-search | google-queries | google-pages`), admin only,
+through `runGa4Report` and `src/lib/search-console-client.ts`. Counting on the Overview still starts at `ANALYTICS_START` (12 Oct 2026).
+
+**Keywords** need Search Console, because GA4 hides Google search words. One-time setup (read-only): turn on the *Google Search Console
+API* in the service account's Google Cloud project, then add the `GA4_SERVICE_ACCOUNT_EMAIL` address as a **Restricted** user in Search
+Console (Settings, Users and permissions). The page shows these steps itself until it works. `SEARCH_CONSOLE_SITE` can override the
+property (default `sc-domain:lankanewhomes.com`, then the https URLs). Search words typed into our own box come from GA4's `search_term`.
+
 ## Internal traffic (own visits)
 Open any page with `?internal=1` (or `?no-track=1`) once per browser; `?internal=0` undoes it. This sets the `lnh_internal` cookie (stops our own events being counted) and `localStorage.ga_internal = "1"`. For a flagged browser, `src/components/analytics/internal-traffic-flag.tsx` puts `gtag('set', { traffic_type: 'internal' })` on `dataLayer` before the deferred GA tag loads, so GA's active "Internal Traffic" filter (traffic_type = internal) drops those hits. GA itself still loads exactly once, from `deferred-google-tags.tsx` (`@next/third-parties`).

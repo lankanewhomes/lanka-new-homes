@@ -2,7 +2,8 @@
 // (@google-analytics/data). That library builds code at runtime (protobufjs codegen), which Cloudflare Workers forbid, and it
 // crashed the /cms dashboard there. This version runs identically on Node (Vercel) and Workers.
 let configWarned = false;
-let cachedToken: { value: string; expiresAt: number } | null = null;
+const cachedTokens = new Map<string, { value: string; expiresAt: number }>();
+const ANALYTICS_SCOPE = "https://www.googleapis.com/auth/analytics.readonly";
 
 export function isGa4DataApiConfigured(): boolean {
   return Boolean(process.env.GA4_PROPERTY_ID && process.env.GA4_SERVICE_ACCOUNT_EMAIL && process.env.GA4_SERVICE_ACCOUNT_PRIVATE_KEY);
@@ -15,7 +16,9 @@ const base64Url = (input: ArrayBuffer | string): string => {
   return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 };
 
-async function getAccessToken(): Promise<string> {
+/** A read-only Google access token for the service account, for one scope (GA4 reports, Search Console). Cached until it nearly expires. */
+export async function getGoogleAccessToken(scope: string = ANALYTICS_SCOPE): Promise<string> {
+  const cachedToken = cachedTokens.get(scope);
   if (cachedToken && cachedToken.expiresAt > Date.now() + 60_000) return cachedToken.value;
 
   const clientEmail = process.env.GA4_SERVICE_ACCOUNT_EMAIL;
@@ -31,7 +34,7 @@ async function getAccessToken(): Promise<string> {
 
   const now = Math.floor(Date.now() / 1000);
   const unsigned = `${base64Url(JSON.stringify({ alg: "RS256", typ: "JWT" }))}.${base64Url(
-    JSON.stringify({ iss: clientEmail, scope: "https://www.googleapis.com/auth/analytics.readonly", aud: "https://oauth2.googleapis.com/token", iat: now, exp: now + 3600 }),
+    JSON.stringify({ iss: clientEmail, scope, aud: "https://oauth2.googleapis.com/token", iat: now, exp: now + 3600 }),
   )}`;
   const signature = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", key, new TextEncoder().encode(unsigned));
   const assertion = `${unsigned}.${base64Url(signature)}`;
@@ -43,9 +46,11 @@ async function getAccessToken(): Promise<string> {
   });
   if (!response.ok) throw new Error(`Google token request failed (${response.status})`);
   const json = (await response.json()) as { access_token: string; expires_in: number };
-  cachedToken = { value: json.access_token, expiresAt: Date.now() + json.expires_in * 1000 };
-  return cachedToken.value;
+  cachedTokens.set(scope, { value: json.access_token, expiresAt: Date.now() + json.expires_in * 1000 });
+  return json.access_token;
 }
+
+const getAccessToken = () => getGoogleAccessToken(ANALYTICS_SCOPE);
 
 function getPropertyPath(): string {
   const propertyId = process.env.GA4_PROPERTY_ID;
