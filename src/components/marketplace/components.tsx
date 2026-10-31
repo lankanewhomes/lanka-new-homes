@@ -2301,7 +2301,7 @@ export function RequestInfoDialog({
           {!isInquiry ? (
             <div className="request-info-listing-text">
               <p className="request-info-listing-title">{project.name}</p>
-              <p className="request-info-listing-address">{[project.location, project.city].filter(Boolean).join(", ")}</p>
+              <p className="request-info-listing-address">{project.city && !project.location?.toLowerCase().includes(project.city.toLowerCase()) ? [project.location, project.city].filter(Boolean).join(", ") : (project.location || project.city)}</p>
             </div>
           ) : (
             <p className="request-info-listing-title">{project.name}</p>
