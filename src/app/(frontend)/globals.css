@@ -18622,14 +18622,15 @@ body:has(.compare-bar) {
 
 /* Brochure / contact / inquiry popup: same cream + crossed-line background as the contact forms
    (owner, 2026-10-01: "make it as the same background. for popup"). Fields stay white. */
+/* Owner, 2026-10-31: the popup moves from cream to a lighter grey, keeping the crossed lines. */
 .request-info-dialog {
-  background-color: #f7f1e6;
+  background-color: #f6f6f4;
   background-image:
-    repeating-linear-gradient(0deg, transparent 0 28px, rgba(21, 20, 26, 0.06) 28px 29px),
-    repeating-linear-gradient(90deg, transparent 0 28px, rgba(21, 20, 26, 0.06) 28px 29px);
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(21, 20, 26, 0.07) 28px 29px),
+    repeating-linear-gradient(90deg, transparent 0 28px, rgba(21, 20, 26, 0.07) 28px 29px);
   background-attachment: local;
 }
-.request-info-topbar { background: #f7f1e6; border-bottom-color: #e6dcc6; }
+.request-info-topbar { background: #f6f6f4; border-bottom-color: #e2e2de; }
 .request-info-dialog input, .request-info-dialog textarea, .request-info-dialog select { background-color: #fff; }
 
 /* Hero chips: two rows that stretch to the search bar's full width (owner, 2026-10-01). */
@@ -20958,7 +20959,7 @@ body:has(.compare-bar) {
 .request-info-field-error { display: block; margin-top: 6px; font-size: 13px; line-height: 1.4; color: #c0392b; }
 .request-info-field input[aria-invalid="true"] { border-color: #c0392b; }
 .request-info-promise { margin: 0 0 10px; font-size: 12px; line-height: 1.5; color: #6b6355; }
-.request-info-actions { position: sticky; bottom: 0; z-index: 2; margin: 0 -24px -24px; padding: 12px 24px 24px; background: linear-gradient(to top, #f7f1e6 78%, rgba(247, 241, 230, 0)); }
+.request-info-actions { position: sticky; bottom: 0; z-index: 2; margin: 0 -24px -24px; padding: 12px 24px 24px; background: linear-gradient(to top, #f6f6f4 78%, rgba(246, 246, 244, 0)); }
 .request-info-actions-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 .request-info-whatsapp-price { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; padding: 0 22px; border-radius: 999px; background: #25d366; border: 1px solid #25d366; color: #0b2e13; font-size: 15px; font-weight: 600; text-decoration: none; }
 .request-info-whatsapp-price:hover { background: #1fb858; border-color: #1fb858; }

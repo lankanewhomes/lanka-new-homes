@@ -2204,7 +2204,7 @@ export function RequestInfoDialog({
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [fieldErrors, setFieldErrors] = useState<{ name?: string; phone?: string }>({});
+  const [fieldErrors, setFieldErrors] = useState<{ name?: string; phone?: string; email?: string }>({});
   const formRef = useRef<HTMLFormElement>(null);
   const focusedFields = useRef(new Set<string>());
   const MESSAGE_MAX = 900;
@@ -2238,14 +2238,16 @@ export function RequestInfoDialog({
     event.preventDefault();
     const phone = isPlausiblePhone(phoneValue.country, phoneValue.national) ? buildInternationalPhone(phoneValue.country, phoneValue.national) : null;
     // Say exactly what is wrong, next to the field, instead of the browser's generic "fill out this field".
-    const errors: { name?: string; phone?: string } = {};
+    const errors: { name?: string; phone?: string; email?: string } = {};
     if (!name.trim()) errors.name = "Please enter your name so the team knows who to reply to.";
     if (!phone) errors.phone = phoneValue.country === "LK" ? "That number does not look right. Type your mobile number without the first 0, for example 77 123 4567." : "That number does not look right. Please check it and the country code.";
+    if (isShort && email.trim() && !/^\S+@\S+\.\S+$/.test(email.trim())) errors.email = "That email does not look right. It should look like name@example.com, or leave it empty.";
     if (isInquiry && !agreed) setErrorMessage("Please tick the box to agree to be contacted.");
-    if (errors.name || errors.phone || (isInquiry && !agreed)) {
+    if (errors.name || errors.phone || errors.email || (isInquiry && !agreed)) {
       setFieldErrors(errors);
       if (errors.name) formRef.current?.querySelector<HTMLInputElement>("#request-info-name")?.focus();
       else if (errors.phone) formRef.current?.querySelector<HTMLInputElement>(".request-info-phone-row input")?.focus();
+      else if (errors.email) formRef.current?.querySelector<HTMLInputElement>("#request-info-email")?.focus();
       return;
     }
     setFieldErrors({});
@@ -2260,7 +2262,7 @@ export function RequestInfoDialog({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: name.trim(),
-          email: isShort ? "" : email,
+          email: email.trim(),
           phone,
           preferredContactMethod: isShort ? "Phone" : contactMethod,
           message: message.trim() || (isBrochure ? `Brochure request for ${subject}` : `Request info for ${subject}`),
@@ -2374,7 +2376,7 @@ export function RequestInfoDialog({
         ) : (
           <form ref={formRef} onSubmit={onSubmit} noValidate className="request-info-body">
             {isInquiry && <h2>Want to find out more?</h2>}
-            {isInquiry ? <p className="request-info-required-note"><span className="request-info-star">*</span> Indicates a required field</p> : <p className="request-info-lead">Just your name and number. We reply within 24 hours.</p>}
+            {isInquiry ? <p className="request-info-required-note"><span className="request-info-star">*</span> Indicates a required field</p> : <p className="request-info-lead">Your name and number, and an email if you like. We reply within 24 hours.</p>}
 
             <label className="request-info-field">
               <span>{isInquiry ? "Your Name" : "Name"}<span className="request-info-star">*</span></span>
@@ -2404,6 +2406,24 @@ export function RequestInfoDialog({
               <PhoneField value={phoneValue} onChange={(next) => { setPhoneValue(next); if (fieldErrors.phone) setFieldErrors((e) => ({ ...e, phone: undefined })); }} labelId="request-info-phone-label" />
               {fieldErrors.phone ? <span className="request-info-field-error" role="alert">{fieldErrors.phone}</span> : null}
             </div>
+
+            {isShort ? (
+              <label className="request-info-field">
+                <span>Email (optional)</span>
+                <input
+                  id="request-info-email"
+                  type="email"
+                  inputMode="email"
+                  value={email}
+                  onChange={(event) => { setEmail(event.target.value); if (fieldErrors.email) setFieldErrors((e) => ({ ...e, email: undefined })); }}
+                  onFocus={(event) => onFieldFocus("email", event.currentTarget)}
+                  autoComplete="email"
+                  aria-invalid={fieldErrors.email ? true : undefined}
+                  placeholder="Email (optional)"
+                />
+                {fieldErrors.email ? <span className="request-info-field-error" role="alert">{fieldErrors.email}</span> : null}
+              </label>
+            ) : null}
 
             {isInquiry ? (
               <label className="request-info-field">
