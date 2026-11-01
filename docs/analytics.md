@@ -194,7 +194,7 @@ The dashboard's Analytics group (`src/app/(dashboard)/dashboard/(app)/analytics/
 (this site's own numbers, with a date picker: quick choices, back/forward arrows, exact From/To; a single day shows that day's views one
 by one), then for the admin **Events (GA4)**, **Traffic sources**, **Pages & countries**, **Keywords**, and **Raw events**. The GA4 pages
 read `GET /payload-api/site-report/:kind` (`events | traffic | pages | geo | on-site-search | google-queries | google-pages`), admin only,
-through `runGa4Report` and `src/lib/search-console-client.ts`. Counting on the Overview still starts at `ANALYTICS_START` (12 Oct 2026).
+through `runGa4Report` and `src/lib/search-console-client.ts`. Counting on the Overview still starts at `ANALYTICS_START` (11 Oct 2026, Sri Lanka midnight); the Analytics and report pages open on "11 Oct to today".
 
 **Keywords** need Search Console, because GA4 hides Google search words. One-time setup (read-only): turn on the *Google Search Console
 API* in the service account's Google Cloud project, then add the `GA4_SERVICE_ACCOUNT_EMAIL` address as a **Restricted** user in Search

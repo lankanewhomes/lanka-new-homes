@@ -4,7 +4,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { AlertCircle, ExternalLink } from "lucide-react";
 import { useDash } from "./DashProvider";
 import { PageHero } from "./PageHero";
-import { RangePicker, describeRange, lastDays, type Range } from "./RangePicker";
+import { RangePicker, describeRange, sinceStart, type Range } from "./RangePicker";
 import { apiGetJson } from "../_data/api";
 
 // The whole-site reports (admin only): what GA4 sees, in the dashboard's own design. Each page has the same date picker as Analytics,
@@ -53,7 +53,7 @@ const EVENT_LABELS: Record<string, [string, string]> = {
   file_download: ["File downloads", "Someone downloaded a file"],
 };
 
-function useRange(): [Range, (r: Range) => void] { const [r, setR] = useState<Range>(() => lastDays(28)); return [r, setR]; }
+function useRange(): [Range, (r: Range) => void] { const [r, setR] = useState<Range>(sinceStart); return [r, setR]; }
 
 function useReport<T>(path: string, range: Range): { data: T | null; error: string } {
   const [state, setState] = useState<{ key: string; data: T | null; error: string }>({ key: "", data: null, error: "" });

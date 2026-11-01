@@ -9,7 +9,7 @@ import { PageHero } from "./PageHero";
 import { apiGetJson } from "../_data/api";
 import { ANALYTICS_START } from "@/lib/analytics-start";
 import { TodayPanel } from "./TodayPanel";
-import { RangePicker, describeRange, lastDays, rangeLength, type Range } from "./RangePicker";
+import { RangePicker, describeRange, rangeLength, sinceStart, type Range } from "./RangePicker";
 import { ANALYTICS_TZ_LABEL, addDays, dayKey, shortDay } from "@/lib/analytics-time";
 
 // Analytics: the same numbers as the /cms analytics screen (the analytics-summary endpoint), laid out in the dashboard design.
@@ -83,7 +83,7 @@ function Bars({ rows, empty }: { rows: Row[]; empty: string }) {
 export function AnalyticsPage() {
   const d = useDash();
   const admin = d.role === "admin";
-  const [range, setRange] = useState<Range>(() => lastDays(28));
+  const [range, setRange] = useState<Range>(sinceStart);
   const days = rangeLength(range);
   const [data, setData] = useState<Summary | null>(null);
   const [before, setBefore] = useState<Summary | null>(null);

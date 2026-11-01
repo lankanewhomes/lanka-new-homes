@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ANALYTICS_START } from "@/lib/analytics-start";
 import { ANALYTICS_TZ_LABEL, addDays, dayKey, shortDay } from "@/lib/analytics-time";
 
 // Pick any period to look at: a quick choice (today, yesterday, 7 / 28 / 90 days), the two arrows to step back or forward by the same
@@ -9,6 +10,8 @@ import { ANALYTICS_TZ_LABEL, addDays, dayKey, shortDay } from "@/lib/analytics-t
 export type Range = { start: string; end: string };
 
 export const lastDays = (days: number): Range => { const end = dayKey(); return { start: addDays(end, -(days - 1)), end }; };
+/** From the first counted day (11 Oct 2026) up to today, so new days appear on their own. */
+export const sinceStart = (): Range => ({ start: dayKey(ANALYTICS_START), end: dayKey() });
 export const rangeLength = (r: Range) => Math.round((Date.parse(`${r.end}T00:00:00Z`) - Date.parse(`${r.start}T00:00:00Z`)) / 86400000) + 1;
 
 const PRESETS: { label: string; make: () => Range }[] = [
