@@ -33,26 +33,33 @@ export function RangePicker({ value, onChange, light = false }: { value: Range; 
     if (next.end > today) onChange({ start: addDays(today, -(len - 1)), end: today });
     else onChange(next);
   };
-  const chip = (active: boolean) => light
-    ? `rounded-full border px-4 py-1.5 text-sm font-medium transition ${active ? "border-white bg-white text-[#17171b]" : "border-white/70 text-white hover:bg-white hover:text-[#17171b]"}`
-    : `rounded-full border px-4 py-1.5 text-sm font-medium transition ${active ? "border-ink bg-ink text-white" : "border-line hover:bg-subtle"}`;
-  const field = light ? "border border-white/70 bg-transparent px-2 py-1.5 text-sm text-white [color-scheme:dark]" : "border border-line bg-panel px-2 py-1.5 text-sm";
-  const arrow = light ? "grid h-9 w-9 place-items-center border border-white/70 text-white hover:bg-white hover:text-[#17171b] disabled:opacity-40" : "grid h-9 w-9 place-items-center border border-line hover:bg-subtle disabled:opacity-40";
+  // One tidy panel: a joined row of quick choices, then the period with its arrows, then exact dates. On the dark hero it is a
+  // faint white-on-dark panel; on a plain page it is a normal bordered box.
+  const panel = light ? "border border-white/25 bg-white/[0.06] text-white" : "border border-line bg-panel";
+  const edge = light ? "border-white/25" : "border-line";
+  const seg = (active: boolean) => `whitespace-nowrap px-3.5 py-2 text-[13px] font-medium transition ${active ? (light ? "bg-white text-[#17171b]" : "bg-ink text-white") : (light ? "hover:bg-white/15" : "hover:bg-subtle")}`;
+  const arrow = `grid h-10 w-10 shrink-0 place-items-center transition disabled:opacity-35 ${light ? "hover:bg-white/15" : "hover:bg-subtle"}`;
+  const label = `mb-1 block text-[10.5px] font-semibold uppercase tracking-[0.08em] ${light ? "text-white/65" : "text-muted"}`;
+  const field = `h-10 w-full border px-2.5 text-sm ${light ? "border-white/25 bg-transparent text-white [color-scheme:dark]" : "border-line bg-panel"}`;
   return (
-    <div className="flex flex-col gap-2" role="group" aria-label="Choose dates">
-      <div className="flex flex-wrap items-center gap-2">
-        <button type="button" aria-label="Earlier dates" title="Go back by the same number of days" onClick={() => step(-1)} className={arrow}><ChevronLeft size={16} /></button>
-        <span className={`min-w-[150px] text-center text-sm font-medium ${light ? "text-white" : ""}`}>{describeRange(value)}</span>
-        <button type="button" aria-label="Later dates" title="Go forward by the same number of days" disabled={value.end >= today} onClick={() => step(1)} className={arrow}><ChevronRight size={16} /></button>
-        {PRESETS.map((p) => {
+    <div className={`w-full max-w-[560px] space-y-3 p-3 ${panel}`} role="group" aria-label="Choose dates">
+      <div className={`flex overflow-x-auto border ${edge}`}>
+        {PRESETS.map((p, i) => {
           const r = p.make();
-          return <button key={p.label} type="button" onClick={() => onChange(r)} className={chip(r.start === value.start && r.end === value.end)}>{p.label}</button>;
+          return <button key={p.label} type="button" onClick={() => onChange(r)} className={`${seg(r.start === value.start && r.end === value.end)} flex-1 ${i > 0 ? `border-l ${edge}` : ""}`}>{p.label}</button>;
         })}
       </div>
-      <div className={`flex flex-wrap items-center gap-2 text-xs ${light ? "text-white/80" : "text-muted"}`}>
-        <label className="flex items-center gap-1.5">From <input type="date" value={value.start} max={value.end} onChange={(e) => e.target.value && onChange({ start: e.target.value, end: value.end })} className={field} /></label>
-        <label className="flex items-center gap-1.5">To <input type="date" value={value.end} min={value.start} max={today} onChange={(e) => e.target.value && onChange({ start: value.start, end: e.target.value })} className={field} /></label>
-        <span>{ANALYTICS_TZ_LABEL}</span>
+      <div className={`flex items-stretch border ${edge}`}>
+        <button type="button" aria-label="Earlier dates" title="Go back by the same number of days" onClick={() => step(-1)} className={`${arrow} border-r ${edge}`}><ChevronLeft size={17} /></button>
+        <div className="flex min-w-0 flex-1 flex-col items-center justify-center px-3 py-1 text-center">
+          <span className="truncate text-[15px] font-semibold leading-tight">{describeRange(value)}</span>
+          <span className={`text-[11px] ${light ? "text-white/65" : "text-muted"}`}>{len === 1 ? "1 day" : `${len} days`} · {ANALYTICS_TZ_LABEL}</span>
+        </div>
+        <button type="button" aria-label="Later dates" title="Go forward by the same number of days" disabled={value.end >= today} onClick={() => step(1)} className={`${arrow} border-l ${edge}`}><ChevronRight size={17} /></button>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <label><span className={label}>From</span><input type="date" value={value.start} max={value.end} onChange={(e) => e.target.value && onChange({ start: e.target.value, end: value.end })} className={field} /></label>
+        <label><span className={label}>To</span><input type="date" value={value.end} min={value.start} max={today} onChange={(e) => e.target.value && onChange({ start: value.start, end: e.target.value })} className={field} /></label>
       </div>
     </div>
   );
