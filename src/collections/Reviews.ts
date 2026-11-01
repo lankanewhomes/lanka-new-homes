@@ -31,7 +31,7 @@ export const Reviews: CollectionConfig = {
   admin: {
     components: { beforeListTable: [{ path: '@/components/payload/CollectionStatusTabs#CollectionStatusTabs', clientProps: { field: 'status', values: [{ label: 'Pending', value: 'pending' }, { label: 'Approved', value: 'approved' }, { label: 'Rejected', value: 'rejected' }] } }] }, group: 'Leads & Engagement', defaultColumns: ['reviewer_name', 'entity_type', 'rating', 'status', 'createdAt'] },
   access: {
-    create: () => true,
+    create: adminOnly, // visitors post through POST /api/reviews (rate-limited, server-side); the open REST route was closed 2026-11-01
     read: ownDeveloperAccess('developer'),
     update: ownDeveloperAccess('developer'),
     delete: adminOnly,

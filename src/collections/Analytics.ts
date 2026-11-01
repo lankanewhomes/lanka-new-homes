@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { analyticsOwnerOrAdmin } from './access'
+import { adminOnly, analyticsOwnerOrAdmin } from './access'
 import { enrichAnalyticsEvent } from './hooks/analytics-dedup'
 import { recordAnalyticsEvent } from './hooks/increment-counts'
 
@@ -45,7 +45,7 @@ export const Analytics: CollectionConfig = {
     },
   },
   access: {
-    create: () => true,
+    create: adminOnly, // events are written by our own server routes; the open REST route let anyone fake analytics (closed 2026-11-01)
     read: analyticsOwnerOrAdmin,
     update: () => false, // events are immutable once logged
     delete: analyticsOwnerOrAdmin,

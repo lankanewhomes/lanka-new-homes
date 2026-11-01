@@ -1,5 +1,10 @@
-import type { CollectionConfig } from 'payload'
-import { authenticatedCreate, publicRead } from './access'
+import type { Access, CollectionConfig } from 'payload'
+import { adminOnly, publicRead } from './access'
+
+// Any signed-in CMS user except a plain buyer may upload; only an admin may replace or delete files (a self-registered buyer
+// account used to be able to delete every image on the site, closed 2026-11-01).
+const uploaderRoles = new Set(['admin', 'developer', 'construction_company'])
+const canUpload: Access = ({ req }) => uploaderRoles.has(String((req.user as { role?: string } | null)?.role ?? ''))
 
 // Backs the "upload a file" option next to every URL field across Projects/
 // Lands/Developers/etc. (heroImage, gallery, brochureUrl, videos, virtual
@@ -20,9 +25,9 @@ export const Media: CollectionConfig = {
   },
   access: {
     read: publicRead,
-    create: authenticatedCreate,
-    update: authenticatedCreate,
-    delete: authenticatedCreate,
+    create: canUpload,
+    update: adminOnly,
+    delete: adminOnly,
   },
   upload: {
     mimeTypes: ['image/*', 'video/*', 'application/pdf'],

@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { textDropdown } from './shared-fields'
-import { adminOnlyField, isAdmin, leadOwnerOrDeveloperOrAdmin, ownerOrAdmin } from './access'
+import { adminOnly, adminOnlyField, isAdmin, leadOwnerOrDeveloperOrAdmin, ownerOrAdmin } from './access'
 import { logLeadSubmitted } from './hooks/increment-counts'
 import { notifyDeveloperOfLead, stampFirstResponse, syncLeadStatusToSupabase } from './hooks/lead-hooks'
 import { syncLeadToSupabase } from './hooks/sync-to-supabase'
@@ -30,7 +30,7 @@ export const Leads: CollectionConfig = {
     listSearchableFields: ['name', 'email', 'phone'],
   },
   access: {
-    create: () => true, // guests can submit without an account
+    create: adminOnly, // guests submit through POST /api/leads (rate-limited, server-side); the open REST route was closed 2026-11-01
     read: leadOwnerOrDeveloperOrAdmin,
     update: leadOwnerOrDeveloperOrAdmin,
     delete: ownerOrAdmin,

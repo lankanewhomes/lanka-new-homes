@@ -29,8 +29,23 @@ Note: the in-code rate limit counts inside one running Worker instance, so it st
 
 Anything a visitor can see in a browser can be copied by a determined person; the goal is to make bulk copying slow and expensive, and to stop writes. Public pages and the sitemap must stay readable for Google.
 
+## Payload REST access (`/payload-api/*`), reviewed 2026-11-01 from the access rules in `src/collections`
+
+| Collection | Before | Now |
+|---|---|---|
+| Leads, Analytics, Reviews | anyone could create through the REST route (fake analytics, form spam that skipped the rate limits) | admin only; visitors still submit through `/api/leads`, `/api/reviews` and the event routes, which write server-side |
+| Media | any signed-in account, even a plain buyer, could upload, replace and delete every file | uploads: admin, developer, construction company; replace / delete: admin only |
+| Users | anyone may register (needs email confirmation); `role` cannot be raised to admin by a non-admin; read / update own record only | unchanged |
+| Plan waitlist | anyone may create (the "Get early access" button posts here) | unchanged: cover it with the Cloudflare rate-limit rule for `POST /payload-api/plan-waitlist` |
+| Everything else (mail, outreach, payments, SEO keywords, social assets...) | admin only or owner only | unchanged |
+
+Checked by reading the rules, not by signing in as a buyer. To prove it, sign in with a throwaway buyer account and request `/payload-api/leads`, `/payload-api/users` and `/payload-api/media/<id>` (DELETE): you should get empty / 403.
+
+## Content-Security-Policy
+
+Running in **report-only** mode since 2026-11-01 (`CSP_REPORT_ONLY` in `next.config.ts`): the browser logs what it would block and blocks nothing. After a week of normal browsing with the console open (and checking GA4, Meta Pixel, Clarity, YouTube and map embeds still work), rename the header to `Content-Security-Policy`. `'unsafe-inline'` and `'unsafe-eval'` stay for now because Next.js and the tracking snippets use them.
+
 ## Next steps (not done)
 
-- Content-Security-Policy: trial as `Content-Security-Policy-Report-Only` first; Google Analytics, Meta Pixel, Clarity and the video / map embeds all need allowing.
-- Check Payload's access rules for the `leads`, `users` and `analytics` collections at `/payload-api/*` (needs a signed-in test, not done from code reading alone).
+- The Cloudflare and 2-step-verification items above are the owner's to do.
 - Public `GET /api/projects` etc. return full listing data; trim fields or cache at Cloudflare if scraping of those becomes a problem.

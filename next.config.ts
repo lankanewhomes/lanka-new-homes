@@ -15,6 +15,21 @@ const r2Host = (() => {
   }
 })();
 
+const CSP_REPORT_ONLY = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://www.clarity.ms https://scripts.clarity.ms",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob: https:",
+  "media-src 'self' blob: https:",
+  "font-src 'self' data:",
+  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://www.facebook.com https://connect.facebook.net https://*.clarity.ms https://media.lankanewhomes.com https://*.r2.dev",
+  "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://www.google.com https://www.facebook.com https://www.instagram.com",
+  "frame-ancestors 'self'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "object-src 'none'",
+].join("; ");
+
 const nextConfig: NextConfig = {
   // Microsoft Clarity replays and heatmaps re-draw the page on clarity.microsoft.com, so the browser fetches our stylesheets and fonts
   // cross-origin. Without this header they are blocked and the replay shows an unstyled page (owner, 2026-10-15). Public, versioned
@@ -34,6 +49,9 @@ const nextConfig: NextConfig = {
           { key: "X-Frame-Options", value: "SAMEORIGIN" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "Permissions-Policy", value: "camera=(), microphone=(), payment=(), usb=(), geolocation=(self)" },
+          // Trial run: the browser only REPORTS what this policy would block (see the console, "[Report Only]"), it blocks nothing.
+          // When a week of real browsing shows no warnings for Analytics, Pixel, Clarity and the embeds, rename to Content-Security-Policy.
+          { key: "Content-Security-Policy-Report-Only", value: CSP_REPORT_ONLY },
         ],
       },
     ];
