@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
 import { PROFILE_ENTITY_COLLECTION, isProfileEntityType } from "@/lib/profile-entities";
 import type { ProfileEntityType, Review } from "@/types";
+import { rateLimited } from "@/lib/rate-limit";
 
 type ReviewRow = { id: string; data: Review };
 
@@ -39,6 +40,8 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
+  const limited = rateLimited(req, "reviews", 5, 60 * 60 * 1000);
+  if (limited) return limited;
   try {
     const body = await req.json();
 

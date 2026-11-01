@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createMailTransport } from "@/lib/mailer";
 import { DEFAULT_TEST_INBOX, isProductionDeployment } from "@/lib/lead-alerts";
+import { rateLimited } from "@/lib/rate-limit";
 
 const AUDIENCE_LABELS: Record<string, string> = {
   general: "General inquiries",
@@ -23,6 +24,8 @@ const AUDIENCE_LABELS: Record<string, string> = {
 // feedback memory "lead-alert-test-routing": never assume a new channel is
 // exempt from this.
 export async function POST(req: Request) {
+  const limited = rateLimited(req, "contact", 5, 15 * 60 * 1000); // each send is an email to the team inbox
+  if (limited) return limited;
   try {
     const body = await req.json();
     const name = typeof body?.name === "string" ? body.name.trim() : "";

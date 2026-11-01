@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createDeveloper, getAllDevelopers } from "@/lib/developer-store";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { supabaseAdmin } from "@/lib/supabase";
+import { requireAdmin } from "@/lib/api-guard";
 
 export async function GET() {
   const developers = await getAllDevelopers();
@@ -9,6 +10,8 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const guard = await requireAdmin(request);
+  if ("error" in guard) return guard.error;
   const body = await request.json().catch(() => null);
 
   if (!body) {

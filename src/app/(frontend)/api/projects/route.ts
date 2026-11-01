@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createProject, getAllProjects } from "@/lib/project-store";
+import { requireAdmin } from "@/lib/api-guard";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -12,6 +13,8 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const guard = await requireAdmin(request);
+  if ("error" in guard) return guard.error;
   const body = await request.json().catch(() => null);
   if (!body) return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
 

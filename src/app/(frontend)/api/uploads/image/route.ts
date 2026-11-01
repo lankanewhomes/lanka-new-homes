@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
+import { requireSignedIn } from "@/lib/api-guard";
+import { rateLimited } from "@/lib/rate-limit";
 
 // Generic image upload used by every "photo URL" field on the site that
 // should also let someone just pick a file — profile photos, developer
@@ -18,6 +20,11 @@ async function ensureBucketExists() {
 }
 
 export async function POST(request: Request) {
+  // Only signed-in people may upload (profile photos, logos). Before 2026-11-01 anyone could fill the storage bucket.
+  const limited = rateLimited(request, "upload", 20, 10 * 60 * 1000);
+  if (limited) return limited;
+  const guard = await requireSignedIn(request);
+  if ("error" in guard) return guard.error;
   const formData = await request.formData().catch(() => null);
   const file = formData?.get("file");
   const folderInput = formData?.get("folder");

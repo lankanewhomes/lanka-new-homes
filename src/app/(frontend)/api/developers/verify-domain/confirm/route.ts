@@ -3,10 +3,13 @@ import { NextResponse } from "next/server";
 import { getPayload } from "payload";
 import config from "../../../../../../../payload.config";
 import { emailDomain, hashToken } from "@/lib/developer-domain-verification";
+import { rateLimited } from "@/lib/rate-limit";
 
 // POST (from the /developers/verify page's button), not GET, so an email scanner that pre-fetches links can't use up
 // the single-use token.
 export async function POST(request: Request) {
+  const limited = rateLimited(request, "verify-confirm", 20, 15 * 60 * 1000);
+  if (limited) return limited;
   const body = await request.json().catch(() => null);
   const token = typeof body?.token === "string" ? body.token.trim() : "";
   if (!/^[0-9a-f]{64}$/.test(token)) return NextResponse.json({ error: "This link isn't valid." }, { status: 400 });

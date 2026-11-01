@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 import { updateLand } from "@/lib/land-store";
+import { requireAdmin } from "@/lib/api-guard";
 
 type RouteContext = { params: Promise<{ slug: string }> };
 
 export async function PUT(request: Request, { params }: RouteContext) {
+  const guard = await requireAdmin(request);
+  if ("error" in guard) return guard.error;
   const { slug } = await params;
   const body = await request.json().catch(() => null);
   if (!body) return NextResponse.json({ error: "Invalid request body" }, { status: 400 });

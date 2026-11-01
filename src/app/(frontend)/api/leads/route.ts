@@ -5,8 +5,11 @@ import { buildEventEnrichment } from "@/lib/analytics-event";
 import { isInternalRequest } from "@/lib/internal-traffic";
 import { renderBrochureEmailHTML } from "@/lib/brochure-email";
 import { requestOrigin } from "@/lib/request-origin";
+import { rateLimited } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
+  const limited = rateLimited(req, "leads", 8, 15 * 60 * 1000); // each enquiry alerts a developer
+  if (limited) return limited;
   try {
     const body = await req.json();
 

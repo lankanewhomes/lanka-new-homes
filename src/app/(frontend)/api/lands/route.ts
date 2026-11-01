@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createLand, getAllLands } from "@/lib/land-store";
+import { requireAdmin } from "@/lib/api-guard";
 
 export async function GET() {
   const lands = await getAllLands();
@@ -7,6 +8,8 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const guard = await requireAdmin(request);
+  if ("error" in guard) return guard.error;
   const body = await request.json().catch(() => null);
   if (!body) return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
 

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { deleteNeighborhood, getNeighborhoodBySlug, updateNeighborhood } from "@/lib/neighborhood-store";
+import { requireAdmin } from "@/lib/api-guard";
 
 type RouteContext = { params: Promise<{ slug: string }> };
 
@@ -11,6 +12,8 @@ export async function GET(_request: Request, { params }: RouteContext) {
 }
 
 export async function PATCH(request: Request, { params }: RouteContext) {
+  const guard = await requireAdmin(request);
+  if ("error" in guard) return guard.error;
   const { slug } = await params;
   const body = await request.json().catch(() => null);
   if (!body) return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
@@ -26,7 +29,9 @@ export async function PATCH(request: Request, { params }: RouteContext) {
   return NextResponse.json({ ok: true, neighborhood });
 }
 
-export async function DELETE(_request: Request, { params }: RouteContext) {
+export async function DELETE(request: Request, { params }: RouteContext) {
+  const guard = await requireAdmin(request);
+  if ("error" in guard) return guard.error;
   const { slug } = await params;
   await deleteNeighborhood(slug);
   return NextResponse.json({ ok: true });

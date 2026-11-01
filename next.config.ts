@@ -19,9 +19,26 @@ const nextConfig: NextConfig = {
   // Microsoft Clarity replays and heatmaps re-draw the page on clarity.microsoft.com, so the browser fetches our stylesheets and fonts
   // cross-origin. Without this header they are blocked and the replay shows an unstyled page (owner, 2026-10-15). Public, versioned
   // build files only. On Cloudflare the same rule lives in public/_headers (static assets bypass Next's header handling).
+  // Browser-side protections on every page and API response (owner asked for the site to be locked down, 2026-11-01): HTTPS only
+  // for a year, no guessing file types, no putting our pages inside someone else's frame (click-jacking), a stricter referrer,
+  // and camera / microphone / payment switched off. A Content-Security-Policy is deliberately not here yet: Google Analytics,
+  // Meta Pixel, Clarity and the embeds need a Report-Only trial first (see docs/security.md).
   async headers() {
-    return [{ source: "/_next/static/:path*", headers: [{ key: "Access-Control-Allow-Origin", value: "*" }] }];
+    return [
+      { source: "/_next/static/:path*", headers: [{ key: "Access-Control-Allow-Origin", value: "*" }] },
+      {
+        source: "/:path*",
+        headers: [
+          { key: "Strict-Transport-Security", value: "max-age=31536000" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "Permissions-Policy", value: "camera=(), microphone=(), payment=(), usb=(), geolocation=(self)" },
+        ],
+      },
+    ];
   },
+  poweredByHeader: false, // don't announce "Next.js, Payload" to scanners
   // Cloudflare Workers build only (CF_BUILD=1): give node-postgres a real Workers socket. See cloudflare/pg-cloudflare-socket.cjs.
   ...(process.env.CF_BUILD === "1" || process.env.WORKERS_CI === "1"
     ? {

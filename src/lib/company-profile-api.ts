@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { CompanyProfile } from "@/types";
+import { requireAdmin } from "@/lib/api-guard";
 
 type Store = {
   getAll: () => Promise<CompanyProfile[]>;
@@ -29,6 +30,8 @@ export function companyProfileListHandlers(store: Store) {
   }
 
   async function POST(request: Request) {
+    const guard = await requireAdmin(request);
+    if ("error" in guard) return guard.error;
     const body = await request.json().catch(() => null);
     if (!body) return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
 
@@ -67,6 +70,8 @@ export function companyProfileItemHandlers(store: Store, entityLabel: string) {
   }
 
   async function PATCH(request: Request, { params }: { params: Promise<{ slug: string }> }) {
+    const guard = await requireAdmin(request);
+    if ("error" in guard) return guard.error;
     const { slug } = await params;
     const body = await request.json().catch(() => null);
     if (!body) return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
