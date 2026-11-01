@@ -15,7 +15,7 @@ the owner 2026-10-15 as `lankanewhomes-09-transparent.png`. The site header and 
 `public/brand/lankanewhomes-logo-white.png` (white, footer, `.footer-logo-mark`, 64px tall), both 640px wide for sharp
 display on retina screens. (Before this the mark was the live-text wordmark "Lanka / NewHomes" set in Archivo 700, set
 2026-09-07; the old `public/logo-wordmark*.svg` files and the dashboard, login cards and emails still use it until they are
-updated.) `public/logo.svg` (the old orange house badge) is not used in the site chrome; OG/social images still reference it.
+updated. As of 2026-11-01 the /press brand kit and the Organization / blog-publisher schema logo use the new PNGs; the CMS sidebar and login still use the old SVGs.) `public/logo.svg` (the old orange house badge) is not used in the site chrome; OG/social images still reference it.
 
 Footer (`Footer` in `components.tsx`, `.site-footer` / `.footer-inner` in
 globals.css): dark `#1c1c20`, content in the sitewide 1290px container so it

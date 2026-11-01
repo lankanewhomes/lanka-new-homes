@@ -17,13 +17,15 @@ export const metadata: Metadata = withSocial({
 // (a Planned.com-style press page: hero, Media inquiries, Brand kit, "As
 // seen in"). We only build the parts that are real: a real contact address
 // (the same support@lankanewhomes.com used on /contact) and the two real
-// logo files this repo actually has (public/logo-wordmark*.svg). No "As
+// logo files this repo actually has. Owner, 2026-11-01: "update the logo and everything", so the kit now serves the current
+// lowercase two-line logo (public/brand/lankanewhomes-logo*.png, the one in the header, footer and emails) instead of the old
+// 7 Sep SVG wordmarks. No "As
 // seen in" section — LankaNewHomes has no real press coverage to show yet,
 // and inventing outlet logos/quotes would be fabricating credibility that
 // doesn't exist. Add that section once there's real coverage to list.
 const BRAND_ASSETS = [
-  { label: "Wordmark — dark", href: "/logo-wordmark.svg", cardClassName: "press-asset-preview-light" },
-  { label: "Wordmark — white", href: "/logo-wordmark-white.svg", cardClassName: "press-asset-preview-dark" },
+  { label: "Logo — black", href: "/brand/lankanewhomes-logo.png", cardClassName: "press-asset-preview-light press-asset-preview-logo" },
+  { label: "Logo — white", href: "/brand/lankanewhomes-logo-white.png", cardClassName: "press-asset-preview-dark press-asset-preview-logo" },
   { label: "Favicon", href: "/brand/lankanewhomes-favicon.png", cardClassName: "press-asset-preview-light press-asset-preview-icon" },
 ] as const;
 
@@ -106,7 +108,7 @@ export default async function PressPage() {
       <section className="fdv-box fdv-box--cream" id="brand-kit" aria-label="Brand kit">
         <div className="wdx-section-head" data-reveal>
           <h2>Brand kit.</h2>
-          <p>The LankaNewHomes wordmark and favicon, for press and media use.</p>
+          <p>The LankaNewHomes logo in black and white, and the favicon, as PNG files for press and media use.</p>
         </div>
         <div className="press-assets-grid" data-reveal>
           {BRAND_ASSETS.map((asset) => (

@@ -62,7 +62,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     articleSection: post.category,
     mainEntityOfPage: { "@type": "WebPage", "@id": toAbsoluteUrl(post.path) },
     author: { "@type": "Organization", name: post.author },
-    publisher: { "@type": "Organization", name: "LankaNewHomes", logo: { "@type": "ImageObject", url: toAbsoluteUrl("/logo-wordmark.svg") } },
+    publisher: { "@type": "Organization", name: "LankaNewHomes", logo: { "@type": "ImageObject", url: toAbsoluteUrl("/brand/lankanewhomes-logo.png") } },
   };
   const breadcrumbJsonLd = buildBreadcrumbJsonLd([{ label: "Home", href: "/" }, { label: "Blog", href: "/blog" }, { label: post.title, href: post.path }]);
 

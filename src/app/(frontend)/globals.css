@@ -20503,6 +20503,7 @@ body:has(.compare-bar) {
 .plots-grid-lot, .plots-grid-tile-lot, .plots-grid-count, .plots-grid-facts dt { color: #5d6672; }
 
 .press-asset-preview-icon img { height: 64px; width: 64px; }
+.press-asset-preview-logo img { height: 84px; width: auto; }
 
 @media (min-width: 900px) { .press-assets-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 
