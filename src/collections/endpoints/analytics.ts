@@ -145,7 +145,7 @@ export const siteReportEndpoint: Endpoint = {
     const { startDate, endDate } = parseRange(url)
 
     if (kind === 'google-queries' || kind === 'google-pages') {
-      const result = await getSearchConsoleRows({ startDate, endDate, dimension: kind === 'google-queries' ? 'query' : 'page', limit: 200 })
+      const result = await getSearchConsoleRows({ startDate, endDate, dimension: kind === 'google-queries' ? 'query' : 'page', limit: 1000 })
       return Response.json({ range: { startDate, endDate }, ...result })
     }
 

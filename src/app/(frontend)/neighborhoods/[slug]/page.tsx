@@ -56,9 +56,19 @@ export async function generateMetadata({ params }: NeighborhoodPageProps): Promi
     return { title: "Neighborhood Not Found", robots: { index: false, follow: false } };
   }
 
-  const title = `${neighborhood.name} Neighborhood Guide - New Homes in ${neighborhood.city}`;
+  // Titles that match what people type on Google (owner, 2026-11-01: Search Console showed "meegoda", "kiriwaththuduwa",
+  // "thalawathugoda", "raddolugama" shown hundreds of times with almost no clicks): property for sale, with the real
+  // number of listings here when there are some.
+  const listingCount = (await getAllProjects()).filter((project) => project.neighborhoodSlug === slug).length;
+  const title = listingCount > 0
+    ? `Property for Sale in ${neighborhood.name}: ${listingCount} New ${listingCount === 1 ? "Home" : "Homes"} & Listings`
+    : `${neighborhood.name}, ${neighborhood.city}: Area Guide, Land & New Homes for Sale`;
   const canonicalPath = `/neighborhoods/${neighborhood.slug}`;
-  const description = excerpt(neighborhood.description);
+  const lead = listingCount > 0
+    ? `${listingCount} new ${listingCount === 1 ? "home" : "homes"} in ${neighborhood.name}: prices, floor plans, developers. `
+    : `${neighborhood.name}, ${neighborhood.city}: area guide, land and new homes. `;
+  // Google shows about 160 characters, so the area's own intro only fills what is left.
+  const description = `${lead}${excerpt(neighborhood.description, Math.max(50, 160 - lead.length))}`;
 
   return withSocial({
     title,

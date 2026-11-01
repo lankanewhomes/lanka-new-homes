@@ -199,7 +199,7 @@ through `runGa4Report` and `src/lib/search-console-client.ts`. Counting on the O
 **Keywords** need Search Console, because GA4 hides Google search words. One-time setup (read-only): turn on the *Google Search Console
 API* in the service account's Google Cloud project, then add the `GA4_SERVICE_ACCOUNT_EMAIL` address as a **Restricted** user in Search
 Console (Settings, Users and permissions). The page shows these steps itself until it works. `SEARCH_CONSOLE_SITE` can override the
-property (default `sc-domain:lankanewhomes.com`, then the https URLs). Search words typed into our own box come from GA4's `search_term`.
+property (default `sc-domain:lankanewhomes.com`, then the https URLs). Search words typed into our own box come from GA4's `search_term`. The Keywords table's **Search volume** is Search Console's times-shown for our site, sortable, with totals above (top 1,000 words). Total Google-wide volume for a word (Keyword Planner) would need a Google Ads account and developer token, which are not connected.
 
 ## Internal traffic (own visits)
 Open any page with `?internal=1` (or `?no-track=1`) once per browser; `?internal=0` undoes it. This sets the `lnh_internal` cookie (stops our own events being counted) and `localStorage.ga_internal = "1"`. For a flagged browser, `src/components/analytics/internal-traffic-flag.tsx` puts `gtag('set', { traffic_type: 'internal' })` on `dataLayer` before the deferred GA tag loads, so GA's active "Internal Traffic" filter (traffic_type = internal) drops those hits. GA itself still loads exactly once, from `deferred-google-tags.tsx` (`@next/third-parties`).

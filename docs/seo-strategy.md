@@ -39,7 +39,7 @@ Update this file whenever a new keyword group or page is added.
 | `/construction-companies/consulting` | Construction consultants | new |
 | `/land` | Land parcel listings (separate from projects) | new, no listings yet |
 | `/land/{slug}` | Individual land listing detail page | new, no listings yet |
-| `/neighborhoods/{slug}` | Neighborhood guide (highlights, nearby places, homes in that area) | existing — no `/neighborhoods` index/hub page yet, only detail pages |
+| `/neighborhoods/{slug}` | Neighborhood guide (highlights, nearby places, homes in that area). Title is `Property for Sale in {Name}: {n} New Homes & Listings` (real listing count; `{Name}, {City}: Area Guide, Land & New Homes for Sale` when none), description about 160 characters (2026-11-01, from Search Console: meegoda, kiriwaththuduwa, ganemulla, thalawathugoda, raddolugama were shown 600-1,000 times with ~0 clicks) | existing — no `/neighborhoods` index/hub page yet, only detail pages |
 | `/architects`, `/architects/{slug}` | Architect directory + profiles | existing |
 | `/interior-designers`, `/interior-designers/{slug}` | Interior designer directory + profiles | existing |
 | `/marketing-companies`, `/marketing-companies/{slug}` | Marketing company directory + profiles | existing |

@@ -165,6 +165,7 @@ export function KeywordsPage() {
   const queries = useReport<ConsoleReport>("google-queries", range);
   const landing = useReport<ConsoleReport>("google-pages", range);
   const onSite = useReport<Ga4Report>("on-site-search", range);
+  const [sortBy, setSortBy] = useState<"clicks" | "impressions">("impressions");
 
   const consoleTable = (report: { data: ConsoleReport | null; error: string }, first: string) => {
     if (report.error) return <Message icon>{report.error}</Message>;
@@ -172,10 +173,12 @@ export function KeywordsPage() {
     if (!r) return <div className="d-skeleton m-4 h-32" />;
     if (r.status !== "ready") return null;
     if (r.rows.length === 0) return <Message>Google has no search data for this period yet. It runs 2 to 3 days behind.</Message>;
+    const rows = [...r.rows].sort((a, b) => b[sortBy] - a[sortBy] || b.clicks - a.clicks);
+    const sortBtn = (key: "clicks" | "impressions", text: string) => <button type="button" onClick={() => setSortBy(key)} className={`uppercase tracking-wide ${sortBy === key ? "text-fg underline" : ""}`} title="Sort by this column">{text}{sortBy === key ? " ↓" : ""}</button>;
     return (
       <table className="w-full min-w-[560px] text-sm">
-        <thead><tr className="border-b border-line text-left"><th className={th}>{first}</th><th className={`${th} text-right`}>Clicks</th><th className={`${th} text-right`}>Shown</th><th className={`${th} text-right`}>Click rate</th><th className={`${th} text-right`}>Avg. position</th></tr></thead>
-        <tbody>{r.rows.map((x) => <tr key={x.key} className="border-b border-line last:border-0 hover:bg-subtle/60"><td className={`${td} font-medium`}>{x.key.replace(/^https?:\/\/(www\.)?lankanewhomes\.com/, "") || "/"}</td><td className={`${td} text-right tabular-nums`}>{n(x.clicks)}</td><td className={`${td} text-right tabular-nums`}>{n(x.impressions)}</td><td className={`${td} text-right tabular-nums`}>{(x.ctr * 100).toFixed(1)}%</td><td className={`${td} text-right tabular-nums`}>{x.position.toFixed(1)}</td></tr>)}</tbody>
+        <thead><tr className="border-b border-line text-left"><th className={th}>{first}</th><th className={`${th} text-right`}>{sortBtn("clicks", "Clicks")}</th><th className={`${th} text-right`}>{sortBtn("impressions", "Search volume")}</th><th className={`${th} text-right`}>Click rate</th><th className={`${th} text-right`}>Avg. position</th></tr></thead>
+        <tbody>{rows.map((x) => <tr key={x.key} className="border-b border-line last:border-0 hover:bg-subtle/60"><td className={`${td} font-medium`}>{x.key.replace(/^https?:\/\/(www\.)?lankanewhomes\.com/, "") || "/"}</td><td className={`${td} text-right tabular-nums`}>{n(x.clicks)}</td><td className={`${td} text-right tabular-nums`}>{n(x.impressions)}</td><td className={`${td} text-right tabular-nums`}>{(x.ctr * 100).toFixed(1)}%</td><td className={`${td} text-right tabular-nums`}>{x.position.toFixed(1)}</td></tr>)}</tbody>
       </table>
     );
   };
@@ -195,9 +198,22 @@ export function KeywordsPage() {
           <p className="mt-3 text-xs text-muted">Status right now: {blocked.message} Once both are done, this page fills in by itself. Search Console data is 2 to 3 days behind.</p>
         </section>
       ) : (
-        <Card title="Words people searched on Google" note={queries.data?.status === "ready" ? `From Google Search Console for ${queries.data.site}. Clicks are visits to the site; Shown is how often the site appeared in results.` : undefined}>
-          {consoleTable(queries, "Search words")}
-        </Card>
+        <>
+          {queries.data?.status === "ready" ? (() => {
+            const clicks = queries.data.rows.reduce((sum, x) => sum + x.clicks, 0);
+            const shown = queries.data.rows.reduce((sum, x) => sum + x.impressions, 0);
+            return (
+              <div className="grid gap-3 sm:grid-cols-4">
+                {[["Search words", n(queries.data.rows.length)], ["Search volume (times shown on Google)", n(shown)], ["Clicks to the site", n(clicks)], ["Click rate", shown ? `${((clicks / shown) * 100).toFixed(1)}%` : "-"]].map(([label, value]) => (
+                  <div key={label} className="border border-line bg-panel px-4 py-3"><p className="d-label">{label}</p><p className="mt-1 text-2xl font-semibold tabular-nums">{value}</p></div>
+                ))}
+              </div>
+            );
+          })() : null}
+          <Card title="Words people searched on Google" note={queries.data?.status === "ready" ? `From Google Search Console for ${queries.data.site} (top ${queries.data.rows.length} words). Search volume is how many times the site appeared in Google results for that word, which is what real people searched. Clicks are visits to the site. Google reports 2 to 3 days late.` : undefined}>
+            {consoleTable(queries, "Search words")}
+          </Card>
+        </>
       )}
       {!blocked ? <Card title="Pages people landed on from Google">{consoleTable(landing, "Page")}</Card> : null}
       <Card title="What people type into our own search box" note="Searches made on lankanewhomes.com (home page and listing pages). These show what buyers are looking for.">
