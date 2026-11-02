@@ -8,6 +8,7 @@ import { getAllProjects } from "@/lib/project-store";
 import { getAllLands } from "@/lib/land-store";
 import { landToProjectShape } from "@/lib/land-to-project";
 import { landsInArea } from "@/lib/area-lands";
+import { areaDescription, areaTitle } from "@/lib/area-meta";
 import { getDeveloperBySlug } from "@/lib/developer-store";
 import { buildFaqJsonLd, jsonLdScriptProps, toAbsoluteUrl, withSocial } from "@/lib/seo";
 import { ListingGridCard } from "@/components/marketplace/listing-page";
@@ -63,18 +64,25 @@ export async function generateMetadata({ params }: NeighborhoodPageProps): Promi
   // "thalawathugoda", "raddolugama" shown hundreds of times with almost no clicks, and Ubersuggest showed the real searches are
   // "houses for sale in <area>" and "land for sale in <area>" (docs/seo-opportunities-2026-11-02.md), so both phrases are in the title.
   const [projectsHere, landsHere] = await Promise.all([getAllProjects(), getAllLands()]);
-  const listingCount = projectsHere.filter((project) => project.neighborhoodSlug === slug).length;
-  const plotCount = landsInArea(landsHere, neighborhood).length;
-  const title = listingCount > 0
-    ? `Houses & Land for Sale in ${neighborhood.name}: ${listingCount} New ${listingCount === 1 ? "Home" : "Homes"}`
-    : `Houses & Land for Sale in ${neighborhood.name}, ${neighborhood.city}: Area Guide`;
+  const areaProjects = projectsHere.filter((project) => project.neighborhoodSlug === slug);
+  const areaPlots = landsInArea(landsHere, neighborhood);
+  const positive = (values: number[]) => values.filter((value) => value > 0);
+  const homePrices = positive(areaProjects.map((project) => project.startingPriceLkr));
+  const perchPrices = positive(areaPlots.map((land) => land.pricePerPerchLkrMin ?? 0));
+  const meta = {
+    name: neighborhood.name,
+    city: neighborhood.city,
+    district: neighborhood.district,
+    homeCount: areaProjects.length,
+    plotCount: areaPlots.length,
+    lowestHomePrice: homePrices.length ? Math.min(...homePrices) : 0,
+    lowestPerPerch: perchPrices.length ? Math.min(...perchPrices) : 0,
+    intro: neighborhood.description,
+  };
+  const title = areaTitle(meta);
   const canonicalPath = `/neighborhoods/${neighborhood.slug}`;
-  const found = [listingCount > 0 ? `${listingCount} new ${listingCount === 1 ? "home" : "homes"}` : "", plotCount > 0 ? `${plotCount} land ${plotCount === 1 ? "plot" : "plots"}` : ""].filter(Boolean).join(" and ");
-  const lead = found
-    ? `Houses and land for sale in ${neighborhood.name}: ${found}, with prices and developers. `
-    : `Houses and land for sale in ${neighborhood.name}, ${neighborhood.city}: area guide and new homes. `;
-  // Google shows about 160 characters, so the area's own intro only fills what is left.
-  const description = `${lead}${excerpt(neighborhood.description, Math.max(50, 160 - lead.length))}`;
+  // Google shows about 160 characters of description.
+  const description = areaDescription(meta);
 
   return withSocial({
     title,
