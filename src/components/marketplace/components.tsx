@@ -4388,18 +4388,6 @@ export function Footer() {
   return (
     <footer className="site-footer">
       <div className="footer-inner">
-        <div className="footer-social-row" aria-label="Follow LankaNewHomes">
-          <a href="https://www.facebook.com/lankanewhomes" target="_blank" rel="noopener noreferrer" className="footer-social-icon" aria-label="LankaNewHomes on Facebook">
-            <IconBrandFacebook size={18} stroke={1.75} aria-hidden="true" />
-          </a>
-          <a href="https://www.instagram.com/lankanewhomes/" target="_blank" rel="noopener noreferrer" className="footer-social-icon" aria-label="LankaNewHomes on Instagram">
-            <IconBrandInstagram size={18} stroke={1.75} aria-hidden="true" />
-          </a>
-          <a href="https://www.tiktok.com/@lankanewhomes" target="_blank" rel="noopener noreferrer" className="footer-social-icon" aria-label="LankaNewHomes on TikTok">
-            <IconBrandTiktok size={18} stroke={1.75} aria-hidden="true" />
-          </a>
-        </div>
-
         <div className="footer-brand-row">
           <Link href="/" className="footer-wordmark" aria-label="LankaNewHomes home">
             {/* eslint-disable-next-line @next/next/no-img-element -- small static brand image */}
@@ -4408,6 +4396,19 @@ export function Footer() {
           <Link href="/for-developers" className="footer-cta">List your project</Link>
         </div>
         <p className="footer-tagline">Find new homes, apartments and land for sale across Sri Lanka — with floor plans, pricing and developer details in one place.</p>
+        <div className="footer-social-row" role="group" aria-label="Follow LankaNewHomes">
+          <div className="footer-follow-buttons">
+            <a href="https://www.instagram.com/lankanewhomes/" target="_blank" rel="noopener noreferrer" className="footer-follow-button" aria-label="Follow LankaNewHomes on Instagram">
+              <IconBrandInstagram size={16} stroke={1.75} aria-hidden="true" /> Instagram
+            </a>
+            <a href="https://www.tiktok.com/@lankanewhomes" target="_blank" rel="noopener noreferrer" className="footer-follow-button" aria-label="Follow LankaNewHomes on TikTok">
+              <IconBrandTiktok size={16} stroke={1.75} aria-hidden="true" /> TikTok
+            </a>
+            <a href="https://www.facebook.com/lankanewhomes" target="_blank" rel="noopener noreferrer" className="footer-follow-button" aria-label="Follow LankaNewHomes on Facebook">
+              <IconBrandFacebook size={16} stroke={1.75} aria-hidden="true" /> Facebook
+            </a>
+          </div>
+        </div>
 
         <div className="footer-link-groups">
           <div className="footer-link-group">

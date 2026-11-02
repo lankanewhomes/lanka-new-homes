@@ -534,9 +534,9 @@ Three columns on desktop, stacked under 980px. Updated 2026-09-25:
 **Hero category chips on phones (owner, 2026-09-25):** the last chip,
 "Lands" (`.hero-quick-link-pill-land`), takes a full-width row of its own.
 
-**Footer on phones (owner, 2026-09-25):** the wordmark sits on the left
-and the social icons on the right of the same top row. Desktop keeps the
-icons above the wordmark.
+**Footer follow buttons (owner, 2026-11-02):** three outline pill buttons (Instagram, TikTok, Facebook; `.footer-follow-button`, same look as
+`.footer-cta`) sit directly under the tagline ("Find new homes, apartments and land for sale…"), with no heading line. They replace the three round
+icon-only buttons that used to sit above the wordmark.
 
 **Listing-page header on phones (owner, 2026-09-25):** the white sticky
 box (`.listing-filter-sticky`: title, count, Filter/Sort) runs edge to edge

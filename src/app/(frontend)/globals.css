@@ -8174,27 +8174,34 @@ a.developer-profile-press-title {
 }
 
 .footer-social-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 24px;
+  margin-top: 18px;
 }
 
-.footer-social-icon {
+.footer-follow-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* Same outline pill as .footer-cta, with the network icon (owner, 2026-11-02: Instagram, TikTok and Facebook follow buttons). */
+.footer-follow-button {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
+  gap: 8px;
+  padding: 9px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
   border-radius: 999px;
-  background: #fff;
-  color: #1c1c20;
-  transition: background-color 0.15s ease;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  text-decoration: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
-.footer-social-icon:hover {
+.footer-follow-button:hover {
   background: #f47b36;
-  color: #fff;
+  border-color: #f47b36;
+  text-decoration: none;
 }
 
 .footer-brand-row {
@@ -8318,30 +8325,6 @@ a.developer-profile-press-title {
 @media (max-width: 760px) {
   .site-footer {
     padding: 44px 0 24px;
-  }
-
-  /* Phones: wordmark on the left and the social icons on the right of the same top row
-     (owner, 2026-09-25). Desktop keeps the icons above the wordmark. */
-  .footer-inner {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    column-gap: 16px;
-  }
-
-  .footer-inner > * {
-    grid-column: 1 / -1;
-  }
-
-  .footer-inner > .footer-brand-row {
-    grid-column: 1;
-    grid-row: 1;
-  }
-
-  .footer-inner > .footer-social-row {
-    grid-column: 2;
-    grid-row: 1;
-    align-self: start;
-    margin-bottom: 0;
   }
 
   .footer-brand-row {
