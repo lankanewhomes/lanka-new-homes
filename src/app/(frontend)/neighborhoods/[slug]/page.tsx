@@ -5,6 +5,9 @@ import Link from "next/link";
 import { Building2, Compass, Home, Map as MapIcon, MapPin, Route } from "lucide-react";
 import { getAllNeighborhoods, getNeighborhoodBySlug } from "@/lib/neighborhood-store";
 import { getAllProjects } from "@/lib/project-store";
+import { getAllLands } from "@/lib/land-store";
+import { landToProjectShape } from "@/lib/land-to-project";
+import { landsInArea } from "@/lib/area-lands";
 import { getDeveloperBySlug } from "@/lib/developer-store";
 import { buildFaqJsonLd, jsonLdScriptProps, toAbsoluteUrl, withSocial } from "@/lib/seo";
 import { ListingGridCard } from "@/components/marketplace/listing-page";
@@ -56,17 +59,20 @@ export async function generateMetadata({ params }: NeighborhoodPageProps): Promi
     return { title: "Neighborhood Not Found", robots: { index: false, follow: false } };
   }
 
-  // Titles that match what people type on Google (owner, 2026-11-01: Search Console showed "meegoda", "kiriwaththuduwa",
-  // "thalawathugoda", "raddolugama" shown hundreds of times with almost no clicks): property for sale, with the real
-  // number of listings here when there are some.
-  const listingCount = (await getAllProjects()).filter((project) => project.neighborhoodSlug === slug).length;
+  // Titles that match what people type on Google. Owner, 2026-11-01: Search Console showed "meegoda", "kiriwaththuduwa",
+  // "thalawathugoda", "raddolugama" shown hundreds of times with almost no clicks, and Ubersuggest showed the real searches are
+  // "houses for sale in <area>" and "land for sale in <area>" (docs/seo-opportunities-2026-11-02.md), so both phrases are in the title.
+  const [projectsHere, landsHere] = await Promise.all([getAllProjects(), getAllLands()]);
+  const listingCount = projectsHere.filter((project) => project.neighborhoodSlug === slug).length;
+  const plotCount = landsInArea(landsHere, neighborhood).length;
   const title = listingCount > 0
-    ? `Property for Sale in ${neighborhood.name}: ${listingCount} New ${listingCount === 1 ? "Home" : "Homes"} & Listings`
-    : `${neighborhood.name}, ${neighborhood.city}: Area Guide, Land & New Homes for Sale`;
+    ? `Houses & Land for Sale in ${neighborhood.name}: ${listingCount} New ${listingCount === 1 ? "Home" : "Homes"}`
+    : `Houses & Land for Sale in ${neighborhood.name}, ${neighborhood.city}: Area Guide`;
   const canonicalPath = `/neighborhoods/${neighborhood.slug}`;
-  const lead = listingCount > 0
-    ? `${listingCount} new ${listingCount === 1 ? "home" : "homes"} in ${neighborhood.name}: prices, floor plans, developers. `
-    : `${neighborhood.name}, ${neighborhood.city}: area guide, land and new homes. `;
+  const found = [listingCount > 0 ? `${listingCount} new ${listingCount === 1 ? "home" : "homes"}` : "", plotCount > 0 ? `${plotCount} land ${plotCount === 1 ? "plot" : "plots"}` : ""].filter(Boolean).join(" and ");
+  const lead = found
+    ? `Houses and land for sale in ${neighborhood.name}: ${found}, with prices and developers. `
+    : `Houses and land for sale in ${neighborhood.name}, ${neighborhood.city}: area guide and new homes. `;
   // Google shows about 160 characters, so the area's own intro only fills what is left.
   const description = `${lead}${excerpt(neighborhood.description, Math.max(50, 160 - lead.length))}`;
 
@@ -88,7 +94,8 @@ export default async function NeighborhoodPage({ params }: NeighborhoodPageProps
   const neighborhood = await getNeighborhoodBySlug(slug);
   if (!neighborhood) return notFound();
 
-  const [allProjects, allNeighborhoods] = await Promise.all([getAllProjects(), getAllNeighborhoods()]);
+  const [allProjects, allNeighborhoods, allLands] = await Promise.all([getAllProjects(), getAllNeighborhoods(), getAllLands()]);
+  const areaLands = landsInArea(allLands, neighborhood).map(landToProjectShape);
   const neighborhoodProjects = allProjects.filter((project) => project.neighborhoodSlug === slug);
   const nearbyGroups = groupNearbyPlaces(neighborhood.nearby ?? [], { neighborhood: true });
   const highlights = (neighborhood.highlights ?? []).filter(Boolean);
@@ -155,6 +162,7 @@ export default async function NeighborhoodPage({ params }: NeighborhoodPageProps
   // 2026-09-23), not as its own scrollable page section, so there's no anchor for it to jump to.
   const quickjumpItems: NeighborhoodQuickjumpItem[] = [
     { key: "projects", href: "#projects", label: "New homes", show: neighborhoodProjects.length > 0 },
+    { key: "land", href: "#land", label: "Land", show: areaLands.length > 0 },
     { key: "overview", href: "#overview", label: "Overview", show: true },
     { key: "photos", href: "#known-landmarks", label: "Photos", show: totalPhotoCount > 1 },
     { key: "landmarks", href: "#known-landmarks", label: "Landmarks", show: (neighborhood.nearby ?? []).length > 0 },
@@ -225,10 +233,10 @@ export default async function NeighborhoodPage({ params }: NeighborhoodPageProps
 
         {/* What new projects are here? Placed first (owner, 2026-10-30): visitors from Google were leaving without seeing a listing. */}
         <section id="projects" className="developer-projects-section">
-          <h2>New homes and projects in {neighborhood.name}</h2>
+          <h2>Houses and new homes for sale in {neighborhood.name}</h2>
           {neighborhoodProjects.length === 0 ? (
             <p className="developer-empty-note">
-              No projects listed in {neighborhood.name} yet.{" "}
+              No houses or new homes are listed for sale in {neighborhood.name} yet.{" "}
               <Link href={`/projects?location=${encodeURIComponent(neighborhood.city)}`}>See new homes in {neighborhood.city}</Link>
               {" "}or <Link href="/land">browse land for sale</Link>.
             </p>
@@ -240,6 +248,18 @@ export default async function NeighborhoodPage({ params }: NeighborhoodPageProps
             </div>
           )}
         </section>
+
+        {/* Land plots in this area, so "land for sale in <area>" searches land on something real. Only shown when there are some. */}
+        {areaLands.length > 0 ? (
+          <section id="land" className="developer-projects-section">
+            <h2>Land for sale in {neighborhood.name}</h2>
+            <div className="home-card-grid developer-projects-grid">
+              {areaLands.map((plot) => (
+                <ListingGridCard key={plot.slug} project={plot} basePath="/land" />
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         {/* What is this area? */}
         <section id="overview" className="project-description-shell" aria-label="About the neighbourhood">

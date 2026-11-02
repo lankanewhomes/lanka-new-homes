@@ -159,8 +159,10 @@ export async function landSeoMetadata(key: string): Promise<Metadata> {
 }
 
 export async function LandSeoPage({ pageKey }: { pageKey: string }) {
-  const def = LAND_SEO_PAGES[pageKey];
-  const all = await getAllLands();
+  return renderLandPage(LAND_SEO_PAGES[pageKey], await getAllLands());
+}
+
+function renderLandPage(def: PageDef, all: Land[]) {
   const picked = def.select(all);
   return (
     <ProjectListingShell
@@ -181,4 +183,71 @@ export async function LandSeoPage({ pageKey }: { pageKey: string }) {
 
 export async function landSeoHasListings(key: string) {
   return LAND_SEO_PAGES[key].select(await getAllLands()).length > 0;
+}
+
+
+// One page per district that has land ("land for sale in Kandy district"), built from the same data. Owner, 2026-11-02: Prime Lands has a
+// page for each of the 13 districts and we only had Colombo (docs/seo-opportunities-2026-11-02.md). The Colombo district keeps its own
+// page, /land/best-land-for-sale-in-colombo, so it is not repeated here.
+export const kebab = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+
+/** The districts that have at least one land plot, other than Colombo, as { name, slug, count }. */
+export function landDistricts(lands: Land[]): { name: string; slug: string; count: number }[] {
+  const counts = new Map<string, number>();
+  for (const land of lands) {
+    const name = (land.district ?? "").trim();
+    if (name && name.toLowerCase() !== "colombo") counts.set(name, (counts.get(name) ?? 0) + 1);
+  }
+  return [...counts.entries()].map(([name, count]) => ({ name, slug: kebab(name), count })).sort((a, b) => b.count - a.count);
+}
+
+function districtPageDef(district: string): PageDef {
+  const isIn = (land: Land) => (land.district ?? "").trim().toLowerCase() === district.toLowerCase();
+  const path = `/land/district/${kebab(district)}`;
+  return {
+    path,
+    title: `Land for Sale in ${district} District`,
+    h1: `Land for Sale in ${district} District`,
+    description: `Land for sale in ${district} district, Sri Lanka: plots from developers and builders with prices, sizes in perches and exact locations on LankaNewHomes.`,
+    intro: `Land plots for sale in the ${district} district, listed by developers and builders, with prices, sizes in perches and exact locations.`,
+    aboutTitle: `About land for sale in ${district} district.`,
+    emptyText: `No land listings in ${district} district yet. Browse all land for sale in Sri Lanka.`,
+    relatedPaths: ["/land", "/land/cheap-land-for-sale-in-sri-lanka", "/land/rural-land-for-sale-in-sri-lanka"],
+    select: (lands) => lands.filter(isIn).sort((a, b) => (perPerchLow(a) || Infinity) - (perPerchLow(b) || Infinity)),
+    paragraphs: (picked) => {
+      const cities = new Map<string, number>();
+      for (const land of picked) {
+        const city = (land.city ?? "").trim();
+        if (city) cities.set(city, (cities.get(city) ?? 0) + 1);
+      }
+      const topCities = [...cities.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6).map(([city, count]) => `${city} (${count})`).join(", ");
+      const priced = picked.filter((land) => perPerchLow(land) > 0);
+      const low = priced.length ? Math.min(...priced.map(perPerchLow)) : 0;
+      const high = priced.length ? Math.max(...priced.map(perPerchHigh)) : 0;
+      return [
+        picked.length
+          ? `This page lists the ${picked.length} land ${picked.length === 1 ? "plot" : "plots"} for sale in ${district} district on LankaNewHomes, from developers, construction companies and independent builders.${topCities ? ` Areas with plots: ${topCities}.` : ""}`
+          : `Land plots in ${district} district will appear here as developers and builders list them.`,
+        priced.length ? `Published prices per perch in ${district} district run from ${formatLkr(low)}${high > low ? ` to ${formatLkr(high)}` : ""} (${priced.length} ${priced.length === 1 ? "plot" : "plots"} with a published per-perch price). Compare plots by price per perch rather than total price, because plot sizes differ.` : "",
+        CHECKS,
+        ABOUT_FOOT,
+      ].filter(Boolean);
+    },
+  };
+}
+
+export async function landDistrictMetadata(slug: string): Promise<Metadata> {
+  const all = await getAllLands();
+  const match = landDistricts(all).find((entry) => entry.slug === slug);
+  if (!match) return { title: "Land Not Found", robots: { index: false, follow: false } };
+  const def = districtPageDef(match.name);
+  return withSocial({ title: `${def.title}: ${match.count} ${match.count === 1 ? "Plot" : "Plots"}`, description: def.description, alternates: { canonical: def.path } }, { path: def.path });
+}
+
+/** The page body for /land/district/<slug>, or null when no district has that slug (the route then 404s). */
+export async function LandDistrictPage({ slug }: { slug: string }) {
+  const all = await getAllLands();
+  const match = landDistricts(all).find((entry) => entry.slug === slug);
+  if (!match) return null;
+  return renderLandPage(districtPageDef(match.name), all);
 }

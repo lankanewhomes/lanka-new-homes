@@ -39,7 +39,9 @@ Update this file whenever a new keyword group or page is added.
 | `/construction-companies/consulting` | Construction consultants | new |
 | `/land` | Land parcel listings (separate from projects) | new, no listings yet |
 | `/land/{slug}` | Individual land listing detail page | new, no listings yet |
-| `/neighborhoods/{slug}` | Neighborhood guide (highlights, nearby places, homes in that area). Title is `Property for Sale in {Name}: {n} New Homes & Listings` (real listing count; `{Name}, {City}: Area Guide, Land & New Homes for Sale` when none), description about 160 characters (2026-11-01, from Search Console: meegoda, kiriwaththuduwa, ganemulla, thalawathugoda, raddolugama were shown 600-1,000 times with ~0 clicks) | existing — no `/neighborhoods` index/hub page yet, only detail pages |
+| `/neighborhoods/{slug}` | Neighborhood guide (highlights, nearby places, homes in that area). Title is `Houses & Land for Sale in {Name}: {n} New Homes` (real listing count; `Houses & Land for Sale in {Name}, {City}: Area Guide` when none), with a "Land for sale in {Name}" section of the plots whose city is the area (2026-11-02, was `Property for Sale in {Name}…` from 2026-11-01), description about 160 characters (2026-11-01, from Search Console: meegoda, kiriwaththuduwa, ganemulla, thalawathugoda, raddolugama were shown 600-1,000 times with ~0 clicks) | existing — no `/neighborhoods` index/hub page yet, only detail pages |
+| `/neighborhoods` | Areas hub: every area page grouped by district with live counts of new homes and land plots, plus links to the district land pages (added 2026-11-02, from docs/seo-opportunities-2026-11-02.md) | new |
+| `/land/district/{district}` | "Land for sale in {district} district": one page per district that has land (15 today; Colombo redirects to `/land/best-land-for-sale-in-colombo`); text from live data in `src/lib/land-seo-pages.tsx` (added 2026-11-02) | new |
 | `/architects`, `/architects/{slug}` | Architect directory + profiles | existing |
 | `/interior-designers`, `/interior-designers/{slug}` | Interior designer directory + profiles | existing |
 | `/marketing-companies`, `/marketing-companies/{slug}` | Marketing company directory + profiles | existing |
@@ -382,3 +384,9 @@ Owner: the site now gets real traffic from AI assistants. What is in place:
 - **Server-rendered HTML**: listing facts are in the first HTML response (AI crawlers do not run JavaScript reliably).
 - **AI traffic channel**: visitors referred by chatgpt.com, perplexity.ai, claude.ai, gemini.google.com, copilot.microsoft.com etc. (or `utm_source=chatgpt.com`) are stored as `traffic_source = ai_assistant` (`src/lib/ai-traffic.ts`) and labelled "AI assistants" in the analytics summary. GA4 itself still lists them as referral — create a custom channel group in GA4 Admin to split them there.
 - Not done on purpose: no FAQ blocks (owner removed them 2026-10-16); llms.txt is optional for the big assistants (no evidence they rely on it), kept because it is cheap.
+
+
+## 2026-11-02 additions (from docs/seo-opportunities-2026-11-02.md)
+
+- New area pages (written from Wikipedia facts, one Commons photo each, credited): maharagama, wellawatte, matale, bandarawela, peradeniya, borella, avissawella, padukka, vavuniya, colombo-01 (Fort), colombo-10 (Maradana), colombo-11 (Pettah), colombo-12 (Hulftsdorp), colombo-13 (Kotahena). Colombo 03, 04 and 09 are covered by the Kollupitiya, Bambalapitiya and Dematagoda pages; Colombo 15 (Mutwal/Modara) is not added yet (no usable photo, very little published text). Texts are short (80 to 165 words): add landmarks, photos and sources over time.
+- Developer profile default title: `{Name}: Projects, Prices & Contact`; description starts with the live project and land counts. A title or description set in the CMS SEO tab still wins.

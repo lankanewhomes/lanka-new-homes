@@ -32,8 +32,17 @@ export async function generateMetadata({ params }: DeveloperProfilePageProps): P
   }
 
   // SEO title / description set in the CMS (SEO tab) win; otherwise the generic profile wording.
-  const title = developer.seoTitle?.trim() || `${developer.name} Developer Profile`;
-  const description = developer.seoDescription?.trim() || `${developer.description} View current and upcoming projects in Sri Lanka.`;
+  // Default (owner, 2026-11-02): people search developer names (Search Console: "sanken construction", "crystal property group",
+  // "john keells properties" were shown hundreds of times), so the title is the name plus what they want to find, and the description
+  // carries the real project count.
+  const [projectsOfDeveloper, landsOfDeveloper] = await Promise.all([getAllProjects(), getAllLands()]);
+  const projectCount = projectsOfDeveloper.filter((project) => project.developerSlug === developer.slug).length;
+  const landCount = landsOfDeveloper.filter((land) => land.sellerSlug === developer.slug).length;
+  const intro = developer.description.replace(/\s+/g, " ").trim();
+  const found = [projectCount > 0 ? `${projectCount} ${projectCount === 1 ? "project" : "projects"}` : "", landCount > 0 ? `${landCount} land ${landCount === 1 ? "listing" : "listings"}` : ""].filter(Boolean).join(" and ");
+  const countLead = found ? `${found} by ${developer.name} in Sri Lanka: prices, floor plans and contact. ` : `${developer.name}, a Sri Lanka developer: profile, projects and contact. `;
+  const title = developer.seoTitle?.trim() || `${developer.name}: Projects, Prices & Contact`;
+  const description = developer.seoDescription?.trim() || `${countLead}${intro.length > Math.max(0, 160 - countLead.length) ? `${intro.slice(0, Math.max(40, 157 - countLead.length)).replace(/\s+\S*$/, "")}…` : intro}`;
   const canonicalPath = `/developers/${developer.slug}`;
 
   return withSocial({
