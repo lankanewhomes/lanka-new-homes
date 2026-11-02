@@ -426,6 +426,164 @@ export const blogPosts: Record<string, BlogPost> = {
       ],
     },
   },
+  "questions-to-ask-before-buying-a-home-in-sri-lanka": {
+    slug: "questions-to-ask-before-buying-a-home-in-sri-lanka",
+    path: "/blog/questions-to-ask-before-buying-a-home-in-sri-lanka",
+    metaTitle: "Questions to Ask a Developer Before You Buy",
+    metaDescription:
+      "Buying a new apartment or house in Sri Lanka? Ask these questions first: when you get the deed, what you pay and when, how far the build is, and what happens if handover is late.",
+    title: "Questions to Ask a Developer Before You Buy a Home in Sri Lanka",
+    excerpt:
+      "Deeds, payments, build quality and late handover. The questions buyers worry about most, and what a good answer sounds like.",
+    category: "Buying guide",
+    author: "LankaNewHomes",
+    publishDate: "2026-11-02",
+    readMinutes: 4,
+    draft: true,
+    heroImage: unsplash("1600585154526-990dced4db0d", 2200),
+    heroImageAlt: "A new house in Sri Lanka seen from the street",
+    intro:
+      "Before you pay a deposit on a new home in Sri Lanka, ask the developer five things in writing: when you receive the deed, what you pay and when, how far the build has got, what the finishes are, and what happens if handover is late. These are the worries buyers raise most often when they ask each other for advice online. This is general guidance, not legal advice.",
+    sections: [
+      {
+        heading: "When will I receive the deed?",
+        tone: "gray",
+        body: "Buyers most often worry about the deed arriving late or not at all. Ask for the date and put it in the sales agreement, not only in a brochure or a message.",
+        bullets: [
+          "Ask when the deed is signed and registered, and who pays the stamp duty and legal fees.",
+          "Ask your own attorney-at-law to read the sales agreement before you sign. A developer's lawyer works for the developer.",
+          "Ask what happens to your payments if the deed is delayed.",
+        ],
+        callout: "A clear answer with a date is a good sign. \"It will be done after handover\" with no date is a reason to ask again.",
+      },
+      {
+        heading: "What do I pay, and when?",
+        tone: "sage",
+        body: "A price is only the start. Ask for the deposit, each stage payment and the amount due at handover, as a schedule you can keep.",
+        bullets: [
+          "Ask which payments are tied to a building stage, such as foundations or roof, and which are tied to a date.",
+          "Ask whether the price can rise after you reserve, and what the reservation fee covers.",
+          "Ask what is refundable if you change your mind or the project is delayed.",
+        ],
+        callout: "Keep the reservation payment small until your attorney has checked the documents. Our [guide to what buyers check](/blog/what-buyers-actually-look-for-in-a-new-home-in-sri-lanka) covers the payment plan too.",
+      },
+      {
+        heading: "How far has the building got, and can I see it?",
+        tone: "cream",
+        body: "\"Under construction\" can mean a cleared site or a finished frame. Ask for dated photos, and visit the site yourself.",
+        bullets: [
+          "Ask for the approved plans and the building approval, and ask your attorney or an engineer to confirm they match what is being built.",
+          "Ask to see a show unit or a finished building by the same developer. Many projects have no show unit, so a finished earlier project is the next best proof.",
+          "Check the [project page](/projects) for construction updates and the date they were posted.",
+        ],
+      },
+      {
+        heading: "What exactly will the finishes be?",
+        tone: "gray",
+        body: "Buyers say the brochure can look better than the finished home. Ask for a written list of finishes, brands and fittings, and ask that the agreement says the home will match it.",
+        bullets: [
+          "Ask for floor areas in the agreement, and whether they include shared walls and balconies.",
+          "Ask who is responsible for fixing faults after handover, and for how long.",
+          "If you can, speak to someone already living in a building by the same developer.",
+        ],
+      },
+      {
+        heading: "What happens if handover is late?",
+        tone: "sage",
+        body: "Delays happen. What matters is what the agreement says about them.",
+        bullets: [
+          "Ask for the handover date in writing, and for any penalty or refund if it is missed.",
+          "Ask what the developer will do if the project stops.",
+          "Compare the answers from two developers. The clearer and faster reply is usually the safer choice.",
+        ],
+        callout: "Look for the \"Responds within 24 hours\" badge on a [project page](/projects), and ask the question before you pay anything.",
+      },
+    ],
+    cta: {
+      heading: "Compare new homes side by side.",
+      body: "See prices, floor plans and construction progress for new homes across Sri Lanka.",
+      links: [
+        { label: "Browse new homes", href: "/projects" },
+        { label: "Browse land", href: "/land" },
+      ],
+    },
+  },
+  "land-apartment-or-house-in-sri-lanka": {
+    slug: "land-apartment-or-house-in-sri-lanka",
+    path: "/blog/land-apartment-or-house-in-sri-lanka",
+    metaTitle: "Land, Apartment or House in Sri Lanka: Which to Buy?",
+    metaDescription:
+      "Choosing between land, an apartment and a house in Sri Lanka? Compare cost, control, upkeep, risk and what you can do with each, with a short checklist for your budget.",
+    title: "Land, Apartment or House in Sri Lanka: Which Should You Buy?",
+    excerpt:
+      "Same budget, three choices. What you get, what you take on, and the questions to ask before you pick one.",
+    category: "Buying guide",
+    author: "LankaNewHomes",
+    publishDate: "2026-11-02",
+    readMinutes: 4,
+    draft: true,
+    heroImage: unsplash("1487958449943-2429e8be8625", 2200),
+    heroImageAlt: "Apartment buildings and houses in a Sri Lankan city",
+    intro:
+      "With one budget you can often choose between buying land and building, buying a new apartment, or buying a house. Land gives you the most control and the most work. An apartment gives you a finished home with shared upkeep. A house sits between the two. This guide compares them so you can match the choice to your plans. It is general guidance, not financial or legal advice.",
+    sections: [
+      {
+        heading: "What do you get with each choice?",
+        tone: "gray",
+        body: "Start with what you want to own at the end.",
+        bullets: [
+          "Land: a plot you own outright. You decide what to build and when, within the approvals.",
+          "Apartment: a finished unit in a building. You own your unit and share the common areas, such as the lift, the roof and the grounds.",
+          "House: a home on its own plot, ready to live in, or a new house from a developer.",
+        ],
+      },
+      {
+        heading: "What does each one cost you?",
+        tone: "sage",
+        body: "The price you see is not the whole cost. On LankaNewHomes, 259 of the 349 [land listings](/land) publish a price per perch, from Rs. 65,000 to Rs. 6,950,000 (October 2026), so the same budget buys very different land depending on the area.",
+        bullets: [
+          "Land: add the cost of building, approvals, a boundary wall and utilities. Building costs come after the purchase, often over years.",
+          "Apartment: add a monthly service charge for the shared areas, and legal fees at purchase.",
+          "House: add legal fees, and keep a repair budget for an older house.",
+        ],
+        callout: "Ask your attorney for every cost at purchase: stamp duty, legal and notary fees and registration.",
+      },
+      {
+        heading: "How much work and risk do you take on?",
+        tone: "cream",
+        body: "Each choice moves the work to a different person.",
+        bullets: [
+          "Land: the most work. You manage the builder and the approvals. The main risk is the title, so [check it before you pay](/blog/before-buying-land-in-sri-lanka).",
+          "Apartment: the least work once handed over. The main risk is a late or unfinished building, so [ask the developer the right questions](/blog/questions-to-ask-before-buying-a-home-in-sri-lanka).",
+          "House: little work if it is finished and in good repair. Ask for the deed, the approved plan and the condition of the structure.",
+        ],
+      },
+      {
+        heading: "Which one suits you?",
+        tone: "gray",
+        body: "Match the choice to how you plan to live and how long you will stay.",
+        bullets: [
+          "Choose land if you want to build your own home, can wait, and have a trusted builder and attorney.",
+          "Choose an apartment if you want to be close to work and services, want shared security and want to move in without managing a build.",
+          "Choose a house if you want a private garden and a finished home now.",
+        ],
+        callout: "Not sure? Compare real listings: [new homes](/projects), [land](/land) and the [area guides](/neighborhoods) for the places you are considering.",
+      },
+      {
+        heading: "What should you do next?",
+        tone: "sage",
+        body: "Write down your budget including the costs after purchase, the longest commute you accept, and when you want to move in. Then look at two or three options in each category in the same area, and ask an attorney-at-law to check the documents before you pay.",
+      },
+    ],
+    cta: {
+      heading: "See what your budget buys.",
+      body: "Browse new homes and land across Sri Lanka.",
+      links: [
+        { label: "Browse new homes", href: "/projects" },
+        { label: "Browse land", href: "/land" },
+      ],
+    },
+  },
 };
 
 export function buildBlogMetadata(post: BlogPost): Metadata {
