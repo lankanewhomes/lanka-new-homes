@@ -4165,7 +4165,6 @@ function MobileLandIcon({ size = 22 }: { size?: number }) {
 export function Header() {
   const { language, setLanguage } = useLanguage();
   const navPath = usePathname() ?? "";
-  const [langOpen, setLangOpen] = useState(false);
   const router = useRouter();
   const [navQuery, setNavQuery] = useState("");
   const [navSuggestions, setNavSuggestions] = useState<{ label: string; detail: string; href: string }[]>([]);
@@ -4281,19 +4280,6 @@ export function Header() {
         <div className="header-actions">
           {/* Log in is enough on desktop; the login form links to sign up (owner, 2026-10-05). */}
           <AccountMenu loginLabel={text.login} signupLabel={text.signup} showSignup={false} />
-          <div className={`language-dropdown language-dropdown--end${langOpen ? " is-open" : ""}`} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setLangOpen(false); }}>
-            <button type="button" className="language-dropdown-button" aria-haspopup="listbox" aria-expanded={langOpen} aria-label="Language switcher" onClick={() => setLangOpen((open) => !open)}>
-              {language === "en" ? "EN" : language === "si" ? "සිංහල" : "தமிழ்"}
-              <TablerChevronRight size={14} stroke={1.5} className="language-dropdown-chevron" aria-hidden="true" />
-            </button>
-            {langOpen ? (
-              <div className="language-dropdown-menu" role="listbox">
-                {([["en", "EN"], ["si", "සිංහල"], ["ta", "தமிழ்"]] as const).map(([code, label]) => (
-                  <button key={code} type="button" role="option" aria-selected={language === code} className={language === code ? "active" : undefined} onClick={() => { setLanguage(code); setLangOpen(false); }}>{label}</button>
-                ))}
-              </div>
-            ) : null}
-          </div>
         </div>
         <div className="mobile-header-actions">
           <Link href="/search" className="mobile-search-trigger" aria-label={text.search}>

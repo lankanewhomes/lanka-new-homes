@@ -1132,9 +1132,7 @@ bar, but the footer follows this section, so it was just empty space.
 
 ## Header order (owner, 2026-10-21)
 
-Desktop header, left to right: logo, search, New Homes / Land / Company, **Log in, then the EN language dropdown** (the dropdown used
-to sit beside the logo). Its menu opens right-aligned (`.language-dropdown--end`) so it stays on screen. On mobile the language switcher
-is still at the bottom of the menu panel.
+Desktop header, left to right: logo, search, New Homes / Land / Company, **Log in**. The desktop language dropdown was removed (owner, 2026-11-02: "beside the login on nav delete language"). The EN / සිංහල / தமிழ் switcher remains at the bottom of the mobile menu panel; its `.language-dropdown*` CSS is now unused.
 
 
 ## Developer / company page: cards or rows (owner, 2026-10-24)
