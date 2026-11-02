@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { GoogleAnalytics, GoogleTagManager } from "@next/third-parties/google";
+import { shouldSkipAnalytics } from "@/lib/bots";
 
 // GA4 + GTM are ~200 KiB of third-party script that competed with the hero image on first load (PageSpeed,
 // 2026-10-01: mobile 68, LCP 6.1 s). Load them once the page has finished loading and the browser is idle —
@@ -11,6 +12,9 @@ export function DeferredGoogleTags({ gaId, gtmId }: { gaId?: string; gtmId?: str
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    // Bots and automated browsers never load Google Analytics (owner, 2026-11-02: fake "users" from data-centre towns). Real browsers, even
+    // from a data centre or a VPN, load it as before.
+    if (shouldSkipAnalytics(navigator.userAgent, navigator.webdriver)) return;
     const w = window as unknown as { dataLayer?: unknown[] };
     w.dataLayer = w.dataLayer || [];
     let done = false;

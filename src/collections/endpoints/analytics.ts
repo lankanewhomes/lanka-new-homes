@@ -132,7 +132,7 @@ export const analyticsSummaryEndpoint: Endpoint = {
 
 // GET /payload-api/site-report/:kind?startDate=&endDate= — the whole-site GA4 reports behind the Analytics sub-pages (events, traffic,
 // pages, keywords). Admin only: GA4 numbers cover every listing, and a developer must only ever see their own. Days are GA4's own days.
-// kind: events | traffic | pages | geo | on-site-search | google-queries | google-pages
+// kind: events | traffic | pages | geo | on-site-search | google-queries | google-pages | bots
 export const siteReportEndpoint: Endpoint = {
   path: '/site-report/:kind',
   method: 'get',
@@ -147,6 +147,17 @@ export const siteReportEndpoint: Endpoint = {
     if (kind === 'google-queries' || kind === 'google-pages') {
       const result = await getSearchConsoleRows({ startDate, endDate, dimension: kind === 'google-queries' ? 'query' : 'page', limit: 1000 })
       return Response.json({ range: { startDate, endDate }, ...result })
+    }
+
+    // Bot visits counted by middleware.ts (table bot_daily_stats, Sri Lanka days) — see src/lib/bots.ts.
+    if (kind === 'bots') {
+      const { supabaseAdmin } = await import('@/lib/supabase')
+      const [rows, googlebot] = await Promise.all([
+        supabaseAdmin.from('bot_daily_stats').select('date, bot_name, category, action, hits, last_path, last_seen').gte('date', startDate).lte('date', endDate).limit(20000),
+        supabaseAdmin.from('bot_daily_stats').select('last_seen').eq('bot_name', 'Googlebot').order('last_seen', { ascending: false }).limit(1),
+      ])
+      if (rows.error) return Response.json({ error: `Could not read bot visits: ${rows.error.message}` }, { status: 500 })
+      return Response.json({ range: { startDate, endDate }, configured: true, rows: rows.data ?? [], googlebotLastSeen: googlebot.data?.[0]?.last_seen ?? null })
     }
 
     if (!isGa4DataApiConfigured()) return Response.json({ range: { startDate, endDate }, configured: false, rows: [] })

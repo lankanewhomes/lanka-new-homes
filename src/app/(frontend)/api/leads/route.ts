@@ -8,7 +8,7 @@ import { requestOrigin } from "@/lib/request-origin";
 import { rateLimited } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
-  const limited = rateLimited(req, "leads", 8, 15 * 60 * 1000); // each enquiry alerts a developer
+  const limited = rateLimited(req, "leads", 30, 15 * 60 * 1000); // each enquiry alerts a developer. Generous on purpose: phone networks put many real buyers behind one address and a lead must never be lost
   if (limited) return limited;
   try {
     const body = await req.json();

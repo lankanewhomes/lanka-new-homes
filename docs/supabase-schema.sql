@@ -565,3 +565,16 @@ create table if not exists project_notification_snapshots (
   updated_at timestamptz not null default now()
 );
 alter table project_notification_snapshots enable row level security;
+
+-- Bot visit counts (2026-11-02). Written by increment_bot_hit() from middleware.ts; read by the dashboard's Bots page.
+-- See supabase/migrations/20261102120000_bot_daily_stats.sql (RLS on, no policies: service role only).
+create table if not exists public.bot_daily_stats (
+  date date not null,
+  bot_name text not null,
+  category text not null,
+  action text not null check (action in ('allowed', 'blocked')),
+  hits bigint not null default 0,
+  last_path text,
+  last_seen timestamptz not null default now(),
+  primary key (date, bot_name, action)
+);

@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
-import { AlertCircle, ExternalLink } from "lucide-react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { AlertCircle, AlertTriangle, CheckCircle2, ExternalLink } from "lucide-react";
+import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { ANALYTICS_TZ, ANALYTICS_TZ_LABEL, addDays, dayKey, shortDay } from "@/lib/analytics-time";
 import { useDash } from "./DashProvider";
 import { PageHero } from "./PageHero";
-import { RangePicker, describeRange, sinceStart, type Range } from "./RangePicker";
+import { RangePicker, describeRange, lastDays, sinceStart, type Range } from "./RangePicker";
 import { apiGetJson } from "../_data/api";
 
 // The whole-site reports (admin only): what GA4 sees, in the dashboard's own design. Each page has the same date picker as Analytics,
@@ -218,6 +220,150 @@ export function KeywordsPage() {
       {!blocked ? <Card title="Pages people landed on from Google">{consoleTable(landing, "Page")}</Card> : null}
       <Card title="What people type into our own search box" note="Searches made on lankanewhomes.com (home page and listing pages). These show what buyers are looking for.">
         <Ga4Table report={onSite.data ? { ...onSite.data, rows: onSite.data.rows.filter((r) => r.dimensionValues[0] && r.dimensionValues[0] !== "(not set)") } : null} error={onSite.error} head={["Search", "Times", "Visitors"]} empty="No searches in this period." row={(r) => [<span key="s" className="font-medium">{r.dimensionValues[0]}</span>, n(r.metricValues[0]), n(r.metricValues[1])]} />
+      </Card>
+    </Shell>
+  );
+}
+
+
+// ---- Bots (src/lib/bots.ts decides who is a bot; middleware.ts counts each visit into bot_daily_stats) -----------------------------
+
+type BotRow = { date: string; bot_name: string; category: string; action: "allowed" | "blocked"; hits: number; last_path: string | null; last_seen: string };
+type BotReport = { configured: boolean; rows: BotRow[]; googlebotLastSeen: string | null };
+
+const BOT_COUNT_START = "2026-11-02";
+const CATEGORIES: Record<string, { label: string; good: boolean; note: string }> = {
+  "search-engine": { label: "Search engines", good: true, note: "Google, Bing and others. GOOD traffic: it is how buyers find the site. Never blocked." },
+  "ai-search": { label: "AI search and assistants", good: true, note: "ChatGPT, Claude, Perplexity and others. GOOD traffic: it is how AI answers mention the site. Never blocked." },
+  "social-preview": { label: "Social previews", good: true, note: "Facebook, WhatsApp, X and others loading a link someone shared. GOOD: it makes the shared card look right. Never blocked." },
+  "seo-scraper": { label: "SEO tools and scrapers", good: false, note: "AhrefsBot, SemrushBot and similar. They bring nothing, so they get a 403 (blocked)." },
+  monitor: { label: "Monitors and speed tests", good: false, note: "Uptime checkers and tools like Lighthouse. Allowed, only counted." },
+  "unknown-bot": { label: "Other bots", good: false, note: "Scripts and crawlers we do not know, and visits with no name. Allowed, only counted." },
+};
+
+const stamp = (iso: string) => new Date(iso).toLocaleString("en-GB", { timeZone: ANALYTICS_TZ, day: "numeric", month: "short", year: "numeric", hour: "numeric", minute: "2-digit", hour12: true }).replace(/\s/g, " ");
+
+export function BotsPage() {
+  const [range, setRange] = useState<Range>(() => lastDays(7));
+  const { data, error } = useReport<BotReport>("bots", range);
+
+  const view = useMemo(() => {
+    const rows = data?.rows ?? [];
+    const total = rows.reduce((sum, r) => sum + r.hits, 0);
+    const blocked = rows.filter((r) => r.action === "blocked").reduce((sum, r) => sum + r.hits, 0);
+    const byCategory = new Map<string, number>();
+    const byBot = new Map<string, { name: string; category: string; action: string; hits: number; lastSeen: string; lastPath: string }>();
+    const byDay = new Map<string, { allowed: number; blocked: number }>();
+    for (const r of rows) {
+      byCategory.set(r.category, (byCategory.get(r.category) ?? 0) + r.hits);
+      const key = `${r.bot_name}|${r.action}`;
+      const prev = byBot.get(key);
+      const newer = !prev || r.last_seen > prev.lastSeen;
+      byBot.set(key, { name: r.bot_name, category: r.category, action: r.action, hits: (prev?.hits ?? 0) + r.hits, lastSeen: newer ? r.last_seen : prev!.lastSeen, lastPath: newer ? r.last_path ?? "" : prev!.lastPath });
+      const day = byDay.get(r.date) ?? { allowed: 0, blocked: 0 };
+      day[r.action] += r.hits;
+      byDay.set(r.date, day);
+    }
+    const days: { day: string; allowed: number; blocked: number }[] = [];
+    for (let d = range.start; d <= range.end && days.length < 400; d = addDays(d, 1)) days.push({ day: shortDay(d), ...(byDay.get(d) ?? { allowed: 0, blocked: 0 }) });
+    return { total, blocked, allowed: total - blocked, distinct: new Set(rows.map((r) => r.bot_name)).size, byCategory, bots: [...byBot.values()], days };
+  }, [data, range.start, range.end]);
+
+  const [desc, setDesc] = useState(true);
+  const bots = [...view.bots].sort((a, b) => (desc ? b.hits - a.hits : a.hits - b.hits));
+
+  const googlebot = data?.googlebotLastSeen ?? null;
+  const [now] = useState(() => Date.now()); // when the page was opened; fine for a banner measured in days
+  const daysSince = googlebot && now ? Math.floor((now - new Date(googlebot).getTime()) / 86400000) : null;
+  const countingDays = Math.floor((Date.parse(`${dayKey()}T00:00:00Z`) - Date.parse(`${BOT_COUNT_START}T00:00:00Z`)) / 86400000);
+
+  const chip = (label: string, next: Range) => {
+    const on = range.start === next.start && range.end === next.end;
+    return <button key={label} type="button" onClick={() => setRange(next)} className={`border px-3 py-1.5 text-sm ${on ? "border-ink bg-ink text-white" : "border-line bg-panel hover:bg-subtle"}`}>{label}</button>;
+  };
+
+  return (
+    <Shell title="Bots." description="Every automated visitor: which are welcome (search engines, AI assistants, link previews) and which are turned away." range={range} setRange={setRange}>
+      <div className="flex flex-wrap items-center gap-2">
+        {chip("Today", lastDays(1))}{chip("7 days", lastDays(7))}{chip("30 days", lastDays(30))}
+        <span className="text-xs text-muted">or pick any dates with the date button above · {ANALYTICS_TZ_LABEL}</span>
+      </div>
+
+      {data ? (
+        !now ? null : googlebot && daysSince !== null && daysSince < 7 ? (
+          <div className="flex items-start gap-2 border border-line bg-panel px-4 py-3 text-sm" role="status"><CheckCircle2 size={18} className="mt-0.5 shrink-0 text-ok" /><span><strong>Googlebot last seen: {stamp(googlebot)}.</strong> Google is able to read the site.</span></div>
+        ) : googlebot ? (
+          <div className="flex items-start gap-2 border border-bad bg-panel px-4 py-3 text-sm" role="alert"><AlertTriangle size={18} className="mt-0.5 shrink-0 text-bad" /><span><strong>Googlebot was last seen {stamp(googlebot)} ({daysSince} days ago).</strong> This could mean search is being blocked. Check robots.txt and the Cloudflare bot settings.</span></div>
+        ) : countingDays < 7 ? (
+          <div className="flex items-start gap-2 border border-line bg-panel px-4 py-3 text-sm" role="status"><AlertCircle size={18} className="mt-0.5 shrink-0 text-muted" /><span>Googlebot has not been seen yet. Bot counting started on 2 Nov 2026, and Google does not visit every day, so give it a few days before worrying.</span></div>
+        ) : (
+          <div className="flex items-start gap-2 border border-bad bg-panel px-4 py-3 text-sm" role="alert"><AlertTriangle size={18} className="mt-0.5 shrink-0 text-bad" /><span><strong>Googlebot has not been seen in {countingDays} days.</strong> This could mean search is being blocked. Check robots.txt and the Cloudflare bot settings.</span></div>
+        )
+      ) : null}
+
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {[["Total bot visits", view.total, "all bots, allowed and blocked"], ["Allowed", view.allowed, "let in, as normal"], ["Blocked", view.blocked, "turned away with a 403"], ["Different bots", view.distinct, "names seen in this period"]].map(([label, value, note]) => (
+          <div key={label as string} className="border border-line bg-panel px-4 py-3"><p className="d-label">{label}</p><p className="mt-1 text-2xl font-semibold tabular-nums">{data ? n(value as number) : "…"}</p><p className="text-[11px] text-muted">{note}</p></div>
+        ))}
+      </div>
+
+      <Card title="Bot visits by day" note="Allowed against blocked, one bar per day.">
+        <div className="h-64 p-4">
+          {data ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={view.days} margin={{ top: 4, right: 8, left: -12, bottom: 0 }}>
+                <CartesianGrid stroke="var(--d-line)" strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="day" tick={{ fill: "var(--d-muted)", fontSize: 11 }} tickLine={false} axisLine={false} minTickGap={24} />
+                <YAxis allowDecimals={false} tick={{ fill: "var(--d-muted)", fontSize: 11 }} tickLine={false} axisLine={false} />
+                <Tooltip contentStyle={{ background: "var(--d-panel)", border: "1px solid var(--d-line)", fontSize: 12 }} labelStyle={{ color: "var(--d-fg)" }} />
+                <Legend wrapperStyle={{ fontSize: 12 }} />
+                <Bar dataKey="allowed" name="Allowed" stackId="a" fill="var(--d-brand)" />
+                <Bar dataKey="blocked" name="Blocked" stackId="a" fill="#c0392b" />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : <div className="d-skeleton h-full w-full" />}
+        </div>
+      </Card>
+
+      <Card title="By kind of bot" note="Search engines, AI assistants and social previews are GOOD traffic and are never blocked or limited.">
+        {error ? <Message icon>{error}</Message> : !data ? <div className="d-skeleton m-4 h-32" /> : (
+          <table className="w-full min-w-[560px] text-sm">
+            <thead><tr className="border-b border-line text-left"><th className={th}>Kind</th><th className={th}>What it is</th><th className={`${th} text-right`}>Visits</th></tr></thead>
+            <tbody>
+              {Object.entries(CATEGORIES).map(([key, c]) => (
+                <tr key={key} className="border-b border-line last:border-0">
+                  <td className={td}><span className="font-medium">{c.label}</span>{c.good ? <span className="ml-2 border border-ok px-1.5 py-0.5 text-[10px] font-semibold uppercase text-ok">Good traffic</span> : null}</td>
+                  <td className={`${td} text-muted`}>{c.note}</td>
+                  <td className={`${td} text-right tabular-nums`}>{n(view.byCategory.get(key) ?? 0)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </Card>
+
+      <Card title="Every bot" note="Click Visits to sort. A bot that was both allowed and blocked has one row for each.">
+        {error ? <Message icon>{error}</Message> : !data ? <div className="d-skeleton m-4 h-32" /> : bots.length === 0 ? <Message>No bot visits in this period yet.</Message> : (
+          <table className="w-full min-w-[720px] text-sm">
+            <thead><tr className="border-b border-line text-left">
+              <th className={th}>Bot</th><th className={th}>Kind</th><th className={th}>Result</th>
+              <th className={`${th} text-right`}><button type="button" onClick={() => setDesc(!desc)} className="font-semibold uppercase tracking-wide">Visits {desc ? "↓" : "↑"}</button></th>
+              <th className={th}>Last seen</th><th className={th}>Last page</th>
+            </tr></thead>
+            <tbody>
+              {bots.map((b) => (
+                <tr key={`${b.name}|${b.action}`} className="border-b border-line last:border-0 hover:bg-subtle/60">
+                  <td className={`${td} font-medium`}>{b.name}</td>
+                  <td className={td}>{CATEGORIES[b.category]?.label ?? b.category}</td>
+                  <td className={td}><span className={b.action === "blocked" ? "text-bad" : "text-ok"}>{b.action === "blocked" ? "Blocked" : "Allowed"}</span></td>
+                  <td className={`${td} text-right tabular-nums`}>{n(b.hits)}</td>
+                  <td className={`${td} whitespace-nowrap`}>{stamp(b.lastSeen)}</td>
+                  <td className={`${td} max-w-[240px] truncate text-muted`} title={b.lastPath}>{b.lastPath || "-"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </Card>
     </Shell>
   );
