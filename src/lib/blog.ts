@@ -439,7 +439,6 @@ export const blogPosts: Record<string, BlogPost> = {
     author: "LankaNewHomes",
     publishDate: "2026-11-02",
     readMinutes: 4,
-    draft: true,
     heroImage: unsplash("1600585154526-990dced4db0d", 2200),
     heroImageAlt: "A new house in Sri Lanka seen from the street",
     intro:
@@ -521,7 +520,6 @@ export const blogPosts: Record<string, BlogPost> = {
     author: "LankaNewHomes",
     publishDate: "2026-11-02",
     readMinutes: 4,
-    draft: true,
     heroImage: unsplash("1487958449943-2429e8be8625", 2200),
     heroImageAlt: "Apartment buildings and houses in a Sri Lankan city",
     intro:
