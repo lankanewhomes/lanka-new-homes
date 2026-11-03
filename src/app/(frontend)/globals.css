@@ -15337,6 +15337,37 @@ body:has(.compare-bar) {
   margin-top: 14px;
 }
 
+/* Land overview: short distance / "close to" lines are grouped into one tight list (src/lib/description-blocks.ts) instead of one
+   widely spaced paragraph each (owner, 2026-11-02: "too many spaces"). */
+.project-description-paragraphs p + ul.project-description-list,
+.project-description-paragraphs ul.project-description-list + p {
+  margin-top: 14px;
+}
+.project-description-paragraphs ul.project-description-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+}
+.project-description-paragraphs ul.project-description-list:first-child {
+  margin-top: 0;
+}
+.project-description-paragraphs .project-description-list li {
+  position: relative;
+  padding-left: 16px;
+  line-height: 1.6;
+}
+.project-description-paragraphs .project-description-list li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 0.72em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #1f1f1f;
+}
 .project-description-paragraphs {
   margin: 12px 0 0;
   font-size: 14.5px;

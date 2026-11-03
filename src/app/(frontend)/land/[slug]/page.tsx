@@ -27,6 +27,7 @@ import {
   StatsContactCard,
 } from "@/components/marketplace/components";
 import type { Developer } from "@/types";
+import { descriptionBlocks } from "@/lib/description-blocks";
 
 // Regenerate at most once a minute so admin edits (e.g. status changes)
 // show up without waiting for the next deploy.
@@ -225,7 +226,19 @@ export default async function LandDetailPage({ params }: LandPageProps) {
                 ))}
               </ul>
             ) : null}
-            <p style={{ whiteSpace: "pre-line" }}>{land.description}</p>
+            <div className="project-description-paragraphs">
+              {descriptionBlocks(land.description).map((block, index) =>
+                block.type === "list" ? (
+                  <ul key={index} className="project-description-list">
+                    {block.items.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p key={index}>{block.text}</p>
+                ),
+              )}
+            </div>
           </section>
         ) : null}
 

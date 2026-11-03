@@ -2776,3 +2776,12 @@ desktop, 1 under 900px. (Replaced the earlier 4-column photo-card grid.)
 ### Contact Us / Brochure form (2026-10-31)
 
 `RequestInfoDialog` (standard and brochure variants) asks for a name, one phone-or-WhatsApp number and an optional email: no message, contact-method radios or consent checkbox (a note says replies come within 24 hours, no spam, and sending means agreeing to be contacted). A green "Get price on WhatsApp" button sits next to the submit button when the developer has a WhatsApp number. Errors are inline under the field. Fields are 48px / 16px text on phones and the buttons are sticky at the bottom so the keyboard never hides them. The land `inquiry` variant keeps its longer layout. Each field's first tap sends `form_field_focus` (register `field_name` as a GA4 custom dimension to report on it).
+
+## Land overview text spacing (owner, 2026-11-02)
+
+A land listing's description is plain text, often pasted with a blank line between every short line ("4Km to Hanwella town"). It is no
+longer shown with `white-space: pre-line` (that made each short line a widely spaced paragraph). `src/lib/description-blocks.ts` turns it
+into blocks: runs of two or more short lines that do not end a sentence become one tight bulleted list (`.project-description-list`),
+everything else is a normal paragraph (14px between paragraphs, 6px between list items), and runs of spaces are collapsed. Used on
+`/land/[slug]` only; project pages show the description as one paragraph.
+
