@@ -59,10 +59,14 @@ function getPropertyPath(): string {
   return propertyId.startsWith("properties/") ? propertyId : `properties/${propertyId}`;
 }
 
-function buildFilterExpression(filters: { field: string; value: string }[] | undefined) {
+export type Ga4Filter = { field: string; value: string } | { field: string; values: string[] };
+
+function buildFilterExpression(filters: Ga4Filter[] | undefined) {
   if (!filters || filters.length === 0) return undefined;
   const expressions = filters.map((f) => ({
-    filter: { fieldName: f.field, stringFilter: { matchType: "EXACT" as const, value: f.value } },
+    filter: "values" in f
+      ? { fieldName: f.field, inListFilter: { values: f.values, caseSensitive: true } }
+      : { fieldName: f.field, stringFilter: { matchType: "EXACT" as const, value: f.value } },
   }));
   return expressions.length === 1 ? expressions[0] : { andGroup: { expressions } };
 }
@@ -78,7 +82,7 @@ export type RunReportArgs = {
    * event parameter (must be registered as a GA4 custom dimension first — see docs/analytics.md)
    * or a bare GA4 dimension name (eventName, sessionDefaultChannelGroup, city, date, ...).
    */
-  filters?: { field: string; value: string }[];
+  filters?: Ga4Filter[];
   limit?: number;
   orderByMetric?: string;
 };

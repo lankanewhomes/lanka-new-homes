@@ -81,6 +81,7 @@ export function getTrafficSource(): string {
       return "paid_search";
     }
     if (source.includes("facebook") || source.includes("instagram") || source.includes("meta")) return "organic_social";
+    if (medium === "email" || medium === "e-mail" || medium === "newsletter") return "email"; // GA4 files these under Email too
     return "referral";
   }
 

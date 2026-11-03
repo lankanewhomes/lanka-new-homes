@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { AlertCircle, ArrowDownRight, ArrowUpRight, Eye, Heart, Mail, MessageCircle, MessageSquare, Phone, FileDown, MousePointerClick } from "lucide-react";
+import { AlertCircle, ArrowDownRight, ArrowUpRight, Eye, Heart, Users, Mail, MessageCircle, MessageSquare, Phone, FileDown, MousePointerClick } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useDash } from "./DashProvider";
 import { PageHero } from "./PageHero";
@@ -11,6 +11,7 @@ import { ANALYTICS_START } from "@/lib/analytics-start";
 import { TodayPanel } from "./TodayPanel";
 import { RangePicker, describeRange, rangeLength, sinceStart, type Range } from "./RangePicker";
 import { ANALYTICS_TZ_LABEL, addDays, dayKey, shortDay } from "@/lib/analytics-time";
+import { buildCompareRows, type CompareSide } from "@/lib/analytics-compare";
 
 // Analytics: the same numbers as the /cms analytics screen (the analytics-summary endpoint), laid out in the dashboard design.
 // An admin sees the whole platform; a developer sees only the listings they manage. Bots and repeat clicks are already removed
@@ -30,6 +31,8 @@ type Summary = {
   byDeveloper?: Dev[];
   trend: { date: string; count: number }[];
   viewsTrend?: { date: string; count: number }[];
+  visitors?: number;
+  viewCompare?: CompareSide;
   socialCampaigns?: { source: string; campaign: string; projectName: string; views: number; contacts: number; total: number }[];
   leads?: {
     total: number;
@@ -41,8 +44,11 @@ type Summary = {
   };
 };
 
+type GoogleSide = { configured: boolean; google: CompareSide | null };
+
 const TILES = [
   { key: "view", label: "Page views", icon: Eye },
+  { key: "visitors", label: "Visitors", icon: Users },
   { key: "save", label: "Saves", icon: Heart },
   { key: "lead_submitted", label: "Enquiries sent", icon: MessageCircle },
   { key: "whatsapp_click", label: "WhatsApp clicks", icon: MessageSquare },
@@ -87,6 +93,7 @@ export function AnalyticsPage() {
   const days = rangeLength(range);
   const [data, setData] = useState<Summary | null>(null);
   const [before, setBefore] = useState<Summary | null>(null);
+  const [google, setGoogle] = useState<GoogleSide | null>(null);
   const [error, setError] = useState("");
   const [showAll, setShowAll] = useState(false);
   const [reload, setReload] = useState(0);
@@ -102,6 +109,9 @@ export function AnalyticsPage() {
           apiGetJson<Summary>(`/analytics-summary?startDate=${addDays(start, -days)}&endDate=${addDays(start, -1)}`).catch(() => null),
         ]);
         if (alive) { setData(res); setBefore(prev); setError(""); }
+        // Google's count of the same views, for the side-by-side. Slower than our own, so it loads after and never blocks the page.
+        const g = await apiGetJson<GoogleSide>(`/analytics-google?startDate=${start}&endDate=${end}`).catch(() => ({ configured: false, google: null }));
+        if (alive) setGoogle(g);
       } catch (e) {
         if (alive) setError(e instanceof Error ? e.message : "Could not load analytics.");
       }
@@ -120,8 +130,8 @@ export function AnalyticsPage() {
     );
   }
 
-  const count = (key: string) => data?.byType.find((t) => t.key === key)?.count ?? 0;
-  const countBefore = (key: string) => before?.byType.find((t) => t.key === key)?.count ?? 0;
+  const count = (key: string) => (key === "visitors" ? data?.visitors ?? 0 : data?.byType.find((t) => t.key === key)?.count ?? 0);
+  const countBefore = (key: string) => (key === "visitors" ? before?.visitors ?? 0 : before?.byType.find((t) => t.key === key)?.count ?? 0);
   const startFloor = new Date(ANALYTICS_START);
   const clipped = data ? data.range.startDate < dayKey(startFloor) : false;
   const trend = (() => {
@@ -143,7 +153,7 @@ export function AnalyticsPage() {
         title="Analytics."
         description={admin ? "Visits, clicks and enquiries across every listing, live from the site." : "How buyers find and react to your listings."}
         stat={{ label: `Activity, ${describeRange(range).toLowerCase()}`, value: data ? n(data.totalEvents) : "…" }}
-        actions={<RangePicker light value={range} onChange={(next) => { setData(null); setBefore(null); setRange(next); }} />}
+        actions={<RangePicker light value={range} onChange={(next) => { setData(null); setBefore(null); setGoogle(null); setRange(next); }} />}
       />
 
       <div className="d-box">
@@ -177,6 +187,8 @@ export function AnalyticsPage() {
             );
           })()}
         </section>
+
+        <GoogleCompare data={data} google={google} />
 
         <section className="mt-5 border border-line bg-panel p-4">
           <div className="mb-3 flex items-center justify-between"><h2 className="font-semibold">Activity by day</h2><span className="text-xs text-muted">Page views against everything buyers did ({ANALYTICS_TZ_LABEL} days)</span></div>
@@ -290,5 +302,35 @@ export function AnalyticsPage() {
         </section>
       </div>
     </div>
+  );
+}
+
+/** Our count next to Google Analytics' count of the same listing views, with the gap, so the owner and developers can see both agree. */
+function GoogleCompare({ data, google }: { data: Summary | null; google: GoogleSide | null }) {
+  const rows = data?.viewCompare ? buildCompareRows(data.viewCompare, google?.configured ? google.google : null) : [];
+  const notConnected = google !== null && !google.configured;
+  return (
+    <section className="mt-5 border border-line bg-panel" aria-label="Your dashboard and Google Analytics">
+      <div className="border-b border-line px-4 py-3">
+        <h2 className="font-semibold">Your dashboard and Google Analytics</h2>
+        <p className="text-xs text-muted">Both count listing page views with the same rules: one view per person per listing every 30 minutes, no bots, no visits of your own, {ANALYTICS_TZ_LABEL} days. Google usually shows 20–40% fewer, because ad blockers and declined cookies hide visitors from Google but not from this dashboard. Today&apos;s Google numbers can take a few hours to catch up.</p>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[520px] text-sm">
+          <thead><tr className="border-b border-line text-left text-xs font-semibold uppercase tracking-wide text-muted"><th className="px-4 py-2.5"> </th><th className="px-3 py-2.5 text-right">This dashboard</th><th className="px-3 py-2.5 text-right">Google Analytics</th><th className="px-4 py-2.5 text-right">Google missed</th></tr></thead>
+          <tbody>
+            {!data ? <tr><td colSpan={4} className="px-4 py-3"><div className="d-skeleton h-5 w-full" /></td></tr> : rows.map((r, i) => (
+              <tr key={r.key} className={`border-b border-line last:border-0 ${i === 2 ? "border-t-2" : ""}`}>
+                <td className={`px-4 py-2.5 ${i < 2 ? "font-semibold" : "pl-8 text-muted"}`}>{i === 2 ? <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-muted">Page views by source</span> : null}{r.label}</td>
+                <td className="px-3 py-2.5 text-right tabular-nums">{n(r.ours)}</td>
+                <td className="px-3 py-2.5 text-right tabular-nums">{google === null ? <span className="d-skeleton inline-block h-3 w-10" /> : r.google === null ? "—" : n(r.google)}</td>
+                <td className="px-4 py-2.5 text-right tabular-nums text-muted">{r.gapPercent === null ? "—" : r.gapPercent >= 0 ? `${r.gapPercent}%` : `Google ${Math.abs(r.gapPercent)}% more`}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {notConnected ? <p className="border-t border-line px-4 py-3 text-xs text-muted">Google Analytics is not connected to this dashboard yet, so only this dashboard&apos;s numbers are shown. Setup steps are in docs/analytics.md.</p> : null}
+    </section>
   );
 }

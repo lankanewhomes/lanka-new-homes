@@ -4,7 +4,8 @@ import { buildListingAnalyticsReport, type AnalyticsRange } from '@/lib/analytic
 import { buildAnalyticsSummary } from '@/lib/analytics-summary'
 import { buildLeadPipelineSummary } from '@/lib/lead-pipeline'
 import { addDays, dayKey } from '@/lib/analytics-time'
-import { isGa4DataApiConfigured, runGa4Report } from '@/lib/ga4-data-client'
+import { isGa4DataApiConfigured, runGa4Report, type Ga4Filter } from '@/lib/ga4-data-client'
+import { googleChannelBucket, type CompareSide } from '@/lib/analytics-compare'
 import { getSearchConsoleRows } from '@/lib/search-console-client'
 
 function defaultRange(): { startDate: string; endDate: string } {
@@ -111,6 +112,8 @@ export const analyticsSummaryEndpoint: Endpoint = {
         deviceTypes: [],
         byListing: [],
         trend: [],
+        visitors: 0,
+        viewCompare: { views: 0, visitors: 0, sources: {} },
       })
     }
 
@@ -173,5 +176,42 @@ export const siteReportEndpoint: Endpoint = {
     else return Response.json({ error: 'Unknown report.' }, { status: 404 })
 
     return Response.json({ range: { startDate, endDate }, configured: true, rows })
+  },
+}
+
+// GET /payload-api/analytics-google?startDate=&endDate= — Google Analytics' own count of the same thing the dashboard counts:
+// listing page views (view_listing), visitors who viewed a listing, and those views per source, for the side-by-side on the
+// Analytics page. An admin gets the whole site; a developer only the listings they manage (filtered on listing_id, the same
+// listings as their own analytics-summary). Days are Sri Lanka days (GA4 property time zone). Nothing is stored.
+export const analyticsGoogleEndpoint: Endpoint = {
+  path: '/analytics-google',
+  method: 'get',
+  handler: async (req: PayloadRequest) => {
+    if (!req.user) return Response.json({ error: 'Not signed in.' }, { status: 401 })
+    const url = new URL(req.url ?? '', 'http://localhost')
+    const { startDate, endDate } = parseRange(url)
+    if (!isGa4DataApiConfigured()) return Response.json({ range: { startDate, endDate }, configured: false, google: null })
+
+    const filters: Ga4Filter[] = [{ field: 'eventName', value: 'view_listing' }]
+    if (!isAdmin(req)) {
+      const projectIds = await getOwnedProjectIds(req)
+      const slugs = projectIds.length === 0 ? [] : (
+        await req.payload.find({ collection: 'projects', where: { id: { in: projectIds } }, limit: 1000, depth: 0, overrideAccess: true, select: { slug: true }, req })
+      ).docs.map((d) => String((d as { slug?: string }).slug ?? '')).filter(Boolean)
+      if (slugs.length === 0) return Response.json({ range: { startDate, endDate }, configured: true, google: { views: 0, visitors: 0, sources: {} } satisfies CompareSide })
+      filters.push({ field: 'customEvent:listing_id', values: slugs })
+    }
+
+    const [totals, channels] = await Promise.all([
+      runGa4Report({ startDate, endDate, dimensions: [], metrics: ['eventCount', 'totalUsers'], filters }),
+      runGa4Report({ startDate, endDate, dimensions: ['sessionDefaultChannelGroup'], metrics: ['eventCount'], filters, limit: 50 }),
+    ])
+    const sources: CompareSide['sources'] = {}
+    for (const row of channels) {
+      const bucket = googleChannelBucket(row.dimensionValues[0])
+      sources[bucket] = (sources[bucket] ?? 0) + Math.round(row.metricValues[0] ?? 0)
+    }
+    const google: CompareSide = { views: Math.round(totals[0]?.metricValues[0] ?? 0), visitors: Math.round(totals[0]?.metricValues[1] ?? 0), sources }
+    return Response.json({ range: { startDate, endDate }, configured: true, google })
   },
 }
