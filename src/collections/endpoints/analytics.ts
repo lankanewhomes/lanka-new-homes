@@ -135,7 +135,7 @@ export const analyticsSummaryEndpoint: Endpoint = {
 
 // GET /payload-api/site-report/:kind?startDate=&endDate= — the whole-site GA4 reports behind the Analytics sub-pages (events, traffic,
 // pages, keywords). Admin only: GA4 numbers cover every listing, and a developer must only ever see their own. Days are GA4's own days.
-// kind: events | traffic | pages | geo | on-site-search | google-queries | google-pages | bots
+// kind: events | traffic | pages | geo | on-site-search | google-queries | google-pages | keyword-volumes | bots
 export const siteReportEndpoint: Endpoint = {
   path: '/site-report/:kind',
   method: 'get',
@@ -150,6 +150,14 @@ export const siteReportEndpoint: Endpoint = {
     if (kind === 'google-queries' || kind === 'google-pages') {
       const result = await getSearchConsoleRows({ startDate, endDate, dimension: kind === 'google-queries' ? 'query' : 'page', limit: 1000 })
       return Response.json({ range: { startDate, endDate }, ...result })
+    }
+
+    // Monthly searches (Sri Lanka) per keyword, from Ubersuggest, saved in keyword_volumes by a refresh run (the site cannot call Ubersuggest).
+    if (kind === 'keyword-volumes') {
+      const { supabaseAdmin } = await import('@/lib/supabase')
+      const volumes = await supabaseAdmin.from('keyword_volumes').select('keyword, monthly_searches, cpc, seo_difficulty, search_intent, checked_at').limit(5000)
+      if (volumes.error) return Response.json({ error: `Could not read keyword volumes: ${volumes.error.message}` }, { status: 500 })
+      return Response.json({ range: { startDate, endDate }, rows: volumes.data ?? [] })
     }
 
     // Bot visits counted by middleware.ts (table bot_daily_stats, Sri Lanka days) — see src/lib/bots.ts.

@@ -221,3 +221,12 @@ Google, never from our server), so both now count with the **same rules** and th
   put in the same buckets on both sides (`src/lib/analytics-compare.ts`; AI assistants go with referrals, as in GA4). A developer
   sees only their own listings (GA4 filtered on `listing_id`, so that custom dimension must be registered, step 2 above).
   With GA4 not configured the Google column shows "—".
+
+## Keyword search volume from Ubersuggest (2026-11-04)
+
+The Keywords page shows a **Monthly searches (Sri Lanka)** column next to Search Console's numbers. The values are Google monthly search volumes for
+Sri Lanka from Ubersuggest, saved in the Supabase table `keyword_volumes` (`keyword`, `monthly_searches`, `cpc`, `seo_difficulty`,
+`search_intent`, `checked_at`; migration `supabase/migrations/20261104120000_keyword_volumes.sql`, read by `GET /payload-api/site-report/keyword-volumes`).
+The live site cannot call Ubersuggest: a refresh is run from Claude Code with the Ubersuggest connector (`keyword_overview`, location id 2144 = Sri Lanka),
+which upserts rows by keyword. The plan allows 100 lookups a day. A dash in the column means the keyword was not looked up yet; 0 means Ubersuggest
+has no volume for it. First load 2026-11-04: 55 keywords (target keywords from `docs/seo-strategy.md` plus the top Search Console queries).

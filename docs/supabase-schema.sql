@@ -578,3 +578,16 @@ create table if not exists public.bot_daily_stats (
   last_seen timestamptz not null default now(),
   primary key (date, bot_name, action)
 );
+
+-- Monthly search volume per keyword for Sri Lanka, from Ubersuggest (2026-11-04). Shown on the dashboard Keywords page.
+-- See supabase/migrations/20261104120000_keyword_volumes.sql (RLS on, no policies: service role only).
+create table if not exists public.keyword_volumes (
+  keyword text primary key,
+  monthly_searches integer,
+  cpc numeric,
+  seo_difficulty integer,
+  search_intent text,
+  source text not null default 'Ubersuggest',
+  location text not null default 'Sri Lanka',
+  checked_at timestamptz not null default now()
+);

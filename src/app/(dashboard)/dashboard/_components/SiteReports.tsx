@@ -166,9 +166,12 @@ export function KeywordsPage() {
   const queries = useReport<ConsoleReport>("google-queries", range);
   const landing = useReport<ConsoleReport>("google-pages", range);
   const onSite = useReport<Ga4Report>("on-site-search", range);
+  // Monthly searches in Sri Lanka from Ubersuggest, saved in the database by a refresh run (the live site cannot call Ubersuggest itself).
+  const volumes = useReport<{ rows: { keyword: string; monthly_searches: number | null; seo_difficulty: number | null; checked_at: string }[] }>("keyword-volumes", range);
+  const volumeOf = useMemo(() => new Map((volumes.data?.rows ?? []).map((v) => [v.keyword.toLowerCase(), v])), [volumes.data]);
   const [sortBy, setSortBy] = useState<"clicks" | "impressions">("impressions");
 
-  const consoleTable = (report: { data: ConsoleReport | null; error: string }, first: string) => {
+  const consoleTable = (report: { data: ConsoleReport | null; error: string }, first: string, withVolume = false) => {
     if (report.error) return <Message icon>{report.error}</Message>;
     const r = report.data;
     if (!r) return <div className="d-skeleton m-4 h-32" />;
@@ -178,8 +181,8 @@ export function KeywordsPage() {
     const sortBtn = (key: "clicks" | "impressions", text: string) => <button type="button" onClick={() => setSortBy(key)} className={`uppercase tracking-wide ${sortBy === key ? "text-fg underline" : ""}`} title="Sort by this column">{text}{sortBy === key ? " ↓" : ""}</button>;
     return (
       <table className="w-full min-w-[560px] text-sm">
-        <thead><tr className="border-b border-line text-left"><th className={th}>{first}</th><th className={`${th} text-right`}>{sortBtn("clicks", "Clicks")}</th><th className={`${th} text-right`}>{sortBtn("impressions", "Search volume")}</th><th className={`${th} text-right`}>Click rate</th><th className={`${th} text-right`}>Avg. position</th></tr></thead>
-        <tbody>{rows.map((x) => <tr key={x.key} className="border-b border-line last:border-0 hover:bg-subtle/60"><td className={`${td} font-medium`}>{x.key.replace(/^https?:\/\/(www\.)?lankanewhomes\.com/, "") || "/"}</td><td className={`${td} text-right tabular-nums`}>{n(x.clicks)}</td><td className={`${td} text-right tabular-nums`}>{n(x.impressions)}</td><td className={`${td} text-right tabular-nums`}>{(x.ctr * 100).toFixed(1)}%</td><td className={`${td} text-right tabular-nums`}>{x.position.toFixed(1)}</td></tr>)}</tbody>
+        <thead><tr className="border-b border-line text-left"><th className={th}>{first}</th><th className={`${th} text-right`}>{sortBtn("clicks", "Clicks")}</th><th className={`${th} text-right`}>{sortBtn("impressions", "Search volume")}</th>{withVolume ? <th className={`${th} text-right`} title="Monthly Google searches in Sri Lanka, from Ubersuggest. A dash means not looked up yet.">Monthly searches (Sri Lanka)</th> : null}<th className={`${th} text-right`}>Click rate</th><th className={`${th} text-right`}>Avg. position</th></tr></thead>
+        <tbody>{rows.map((x) => <tr key={x.key} className="border-b border-line last:border-0 hover:bg-subtle/60"><td className={`${td} font-medium`}>{x.key.replace(/^https?:\/\/(www\.)?lankanewhomes\.com/, "") || "/"}</td><td className={`${td} text-right tabular-nums`}>{n(x.clicks)}</td><td className={`${td} text-right tabular-nums`}>{n(x.impressions)}</td>{withVolume ? <td className={`${td} text-right tabular-nums`}>{volumeOf.has(x.key.toLowerCase()) ? n(volumeOf.get(x.key.toLowerCase())!.monthly_searches ?? 0) : "—"}</td> : null}<td className={`${td} text-right tabular-nums`}>{(x.ctr * 100).toFixed(1)}%</td><td className={`${td} text-right tabular-nums`}>{x.position.toFixed(1)}</td></tr>)}</tbody>
       </table>
     );
   };
@@ -212,7 +215,7 @@ export function KeywordsPage() {
             );
           })() : null}
           <Card title="Words people searched on Google" note={queries.data?.status === "ready" ? `From Google Search Console for ${queries.data.site} (top ${queries.data.rows.length} words). Search volume is how many times the site appeared in Google results for that word, which is what real people searched. Clicks are visits to the site. Google reports 2 to 3 days late.` : undefined}>
-            {consoleTable(queries, "Search words")}
+            {consoleTable(queries, "Search words", true)}
           </Card>
         </>
       )}
