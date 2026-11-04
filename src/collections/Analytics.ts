@@ -30,7 +30,7 @@ export const Analytics: CollectionConfig = {
   admin: {
     useAsTitle: 'event_type',
     group: 'Business',
-    defaultColumns: ['event_type', 'project', 'traffic_source', 'device_type', 'is_duplicate', 'timestamp'],
+    defaultColumns: ['event_type', 'project', 'land', 'traffic_source', 'device_type', 'is_duplicate', 'timestamp'],
     // Raw per-event rows aren't useful to look at directly — this replaces
     // the default list table with an aggregated dashboard (stat cards,
     // traffic source/device breakdowns, a by-listing table, trend chart —
@@ -55,7 +55,9 @@ export const Analytics: CollectionConfig = {
     afterChange: [recordAnalyticsEvent],
   },
   fields: [
-    { name: 'project', type: 'relationship', relationTo: 'projects', required: true, index: true, label: 'Listing' },
+    // A project OR a land listing: events on a land page set `land` and leave `project` empty (admin-only visibility, see access.ts).
+    { name: 'project', type: 'relationship', relationTo: 'projects', index: true, label: 'Listing' },
+    { name: 'land', type: 'relationship', relationTo: 'lands', index: true, label: 'Land listing', admin: { description: 'Set instead of Listing when the event happened on a land plot page.' } },
     {
       name: 'developer',
       type: 'relationship',

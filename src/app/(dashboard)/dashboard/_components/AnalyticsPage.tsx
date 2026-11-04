@@ -18,7 +18,7 @@ import { buildCompareRows, type CompareSide } from "@/lib/analytics-compare";
 // by the endpoint, and counting starts at ANALYTICS_START (the owner's fresh start).
 
 type Row = { key: string; label: string; count: number; percent: number };
-type Listing = { projectId: number | string; projectName: string; projectSlug: string; total: number; byType: Record<string, number> };
+type Listing = { projectId: number | string; projectName: string; projectSlug: string; kind?: "land"; total: number; byType: Record<string, number> };
 type Dev = { developerId: number | string; developerName: string; total: number; byType: Record<string, number> };
 type Summary = {
   range: { startDate: string; endDate: string };
@@ -250,7 +250,7 @@ export function AnalyticsPage() {
               <tbody>
                 {!data ? Array.from({ length: 5 }, (_, i) => <tr key={i}><td colSpan={8} className="px-4 py-3"><div className="d-skeleton h-5 w-full" /></td></tr>) : listings.length === 0 ? <tr><td colSpan={8} className="px-4 py-10 text-center text-muted">No activity on any listing in this range yet.</td></tr> : listings.map((l) => (
                   <tr key={String(l.projectId)} className="border-b border-line last:border-0 hover:bg-subtle/60">
-                    <td className="px-4 py-2.5 font-medium"><Link href={`/dashboard/projects/${l.projectId}`} className="hover:underline">{l.projectName}</Link></td>
+                    <td className="px-4 py-2.5 font-medium"><Link href={`/dashboard/${l.kind === "land" ? "lands" : "projects"}/${l.projectId}`} className="hover:underline">{l.projectName}</Link></td>
                     {["view", "save", "lead_submitted", "whatsapp_click", "email_click", "brochure_download"].map((k) => <td key={k} className="px-3 py-2.5 text-right tabular-nums">{n(l.byType[k] ?? 0)}</td>)}
                     <td className="px-4 py-2.5 text-right font-medium tabular-nums">{n(l.total)}</td>
                   </tr>

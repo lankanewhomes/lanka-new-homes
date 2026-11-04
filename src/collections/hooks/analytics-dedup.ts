@@ -1,4 +1,4 @@
-import type { CollectionBeforeChangeHook } from 'payload'
+import type { CollectionBeforeChangeHook, Where } from 'payload'
 
 const DEDUP_WINDOW_MS = 30 * 60 * 1000 // 30 minutes — same window Supabase's project_views table already uses
 
@@ -29,14 +29,23 @@ export const enrichAnalyticsEvent: CollectionBeforeChangeHook = async ({ data, o
     data.developer = project ? relatedId(project.developer) : undefined
   }
 
-  if (data.session_id && projectId && data.event_type) {
+  // A land plot page event: the builder is the land's seller when that is a developer. Repeats are flagged per land, like per project.
+  const landId = relatedId(data.land)
+  if (landId && !projectId) {
+    const land = await req.payload.findByID({ collection: 'lands', id: landId, depth: 0, overrideAccess: true, req })
+    const seller = land?.seller as { relationTo?: string; value?: unknown } | null | undefined
+    data.developer = seller?.relationTo === 'developers' ? relatedId(seller.value) : undefined
+  }
+
+  const listingFilter: Where | null = projectId ? { project: { equals: projectId } } : landId ? { land: { equals: landId } } : null
+  if (data.session_id && listingFilter && data.event_type) {
     const since = new Date(Date.now() - DEDUP_WINDOW_MS).toISOString()
     const existing = await req.payload.find({
       collection: 'analytics',
       where: {
         and: [
           { session_id: { equals: data.session_id } },
-          { project: { equals: projectId } },
+          listingFilter,
           { event_type: { equals: data.event_type } },
           { is_duplicate: { equals: false } },
           { timestamp: { greater_than_equal: since } },

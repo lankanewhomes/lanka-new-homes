@@ -45,7 +45,8 @@ export function TodayPanel({ day }: { day?: string } = {}) {
         const res = await apiFind("analytics", { limit: 500, sort: "-timestamp", where: allOf(d.scope("analytics"), { timestamp: { greater_than_equal: start, ...(isToday ? {} : { less_than_equal: dayEndIso(shown) }) }, is_bot: { equals: false }, is_duplicate: { equals: false } }), select: { event_type: true, project: true, timestamp: true, city: true, device_type: true, traffic_source: true } });
         if (!alive) return;
         const real = res.docs.filter((e) => !isDatacenterCity(e.city));
-        d.ensureLabels("projects", real.map((e) => idOf(e.project)));
+        d.ensureLabels("projects", real.map((e) => idOf(e.project)).filter(Boolean));
+        d.ensureLabels("lands", real.map((e) => idOf(e.land)).filter(Boolean));
         setEvents(real); setError("");
         const since = { greater_than_equal: start, ...(isToday ? {} : { less_than_equal: dayEndIso(shown) }) };
         const safe = <T,>(p: Promise<T>, fallback: T) => p.catch(() => fallback);
@@ -108,7 +109,7 @@ export function TodayPanel({ day }: { day?: string } = {}) {
                   {notable.map((e, i) => (
                     <li key={`${String(e.id ?? i)}`} className="flex items-baseline gap-3 px-4 py-2.5 text-sm">
                       <span className="w-20 shrink-0 tabular-nums text-muted">{e.timestamp ? timeOf(String(e.timestamp)) : ""}</span>
-                      <span className="min-w-0 flex-1">A visitor {VERB[String(e.event_type)] ?? "did something on"} <Link href={`/dashboard/projects/${String(idOf(e.project))}`} className="font-medium hover:underline">{d.labelOf("projects", idOf(e.project))}</Link>{e.city ? <span className="text-muted"> ({String(e.city)})</span> : null}</span>
+                      <span className="min-w-0 flex-1">A visitor {VERB[String(e.event_type)] ?? "did something on"} <Link href={`/dashboard/${e.land ? "lands" : "projects"}/${String(idOf(e.land ?? e.project))}`} className="font-medium hover:underline">{d.labelOf(e.land ? "lands" : "projects", idOf(e.land ?? e.project))}</Link>{e.city ? <span className="text-muted"> ({String(e.city)})</span> : null}</span>
                     </li>
                   ))}
                 </ul>
@@ -134,7 +135,7 @@ export function TodayPanel({ day }: { day?: string } = {}) {
                 {viewList.map((e, i) => (
                   <li key={`${String(e.id ?? i)}`} className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5 px-4 py-2 text-sm">
                     <span className="w-20 shrink-0 tabular-nums text-muted">{e.timestamp ? timeOf(String(e.timestamp)) : ""}</span>
-                    <Link href={`/dashboard/projects/${String(idOf(e.project))}`} className="min-w-0 flex-1 truncate font-medium hover:underline">{d.labelOf("projects", idOf(e.project))}</Link>
+                    <Link href={`/dashboard/${e.land ? "lands" : "projects"}/${String(idOf(e.land ?? e.project))}`} className="min-w-0 flex-1 truncate font-medium hover:underline">{d.labelOf(e.land ? "lands" : "projects", idOf(e.land ?? e.project))}</Link>
                     <span className="text-xs text-muted">{[e.city ? String(e.city) : "", e.device_type ? String(e.device_type) : "", e.traffic_source ? String(e.traffic_source).replace(/_/g, " ") : ""].filter(Boolean).join(" · ")}</span>
                   </li>
                 ))}

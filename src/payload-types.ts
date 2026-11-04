@@ -8087,7 +8087,11 @@ export interface Review {
  */
 export interface Analytics {
   id: number;
-  project: number | Project;
+  project?: (number | null) | Project;
+  /**
+   * Set instead of Listing when the event happened on a land plot page.
+   */
+  land?: (number | null) | Land;
   /**
    * Auto-filled from the listing — the builder this event rolls up to.
    */
@@ -10032,6 +10036,7 @@ export interface ReviewsSelect<T extends boolean = true> {
  */
 export interface AnalyticsSelect<T extends boolean = true> {
   project?: T;
+  land?: T;
   developer?: T;
   event_type?: T;
   timestamp?: T;

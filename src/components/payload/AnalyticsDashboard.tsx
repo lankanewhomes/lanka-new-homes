@@ -223,8 +223,8 @@ export function AnalyticsDashboard() {
                   </thead>
                   <tbody>
                     {data.byListing.map((row) => (
-                      <tr key={row.projectId}>
-                        <td>{row.projectSlug ? <Link href={`/cms/collections/projects/${row.projectId}`}>{row.projectName}</Link> : row.projectName}</td>
+                      <tr key={`${row.kind ?? "project"}-${row.projectId}`}>
+                        <td>{row.projectSlug ? <Link href={`/cms/collections/${row.kind === "land" ? "lands" : "projects"}/${row.projectId}`}>{row.projectName}</Link> : row.projectName}</td>
                         <td>{(row.byType.view ?? 0).toLocaleString()}</td>
                         <td>{(row.byType.lead_submitted ?? 0).toLocaleString()}</td>
                         <td>{(row.byType.save ?? 0).toLocaleString()}</td>

@@ -7,7 +7,7 @@ import { isDatacenterCity } from '@/lib/datacenter-traffic'
 import { ourSourceBucket, type CompareSide } from '@/lib/analytics-compare'
 
 export type AnalyticsBreakdownRow = { key: string; label: string; count: number; percent: number }
-export type ListingBreakdownRow = { projectId: string | number; projectName: string; projectSlug: string; total: number; byType: Record<string, number> }
+export type ListingBreakdownRow = { projectId: string | number; projectName: string; projectSlug: string; /** 'land' for a land plot page (projectId is then the land id). */ kind?: 'land'; total: number; byType: Record<string, number> }
 export type DeveloperBreakdownRow = { developerId: string | number; developerName: string; total: number; byType: Record<string, number> }
 export type SocialCampaignRow = { source: string; campaign: string; projectName: string; views: number; contacts: number; total: number }
 export type TrendPoint = { date: string; count: number }
@@ -146,6 +146,23 @@ export async function buildAnalyticsSummary(
 
     const project = doc.project as { id?: string | number; name?: string; slug?: string } | string | number | null
     const projectId = relId(project)
+    const land = doc.land as { id?: string | number; title?: string; slug?: string } | string | number | null
+    const landId = relId(land)
+    if (projectId == null && landId != null) {
+      // Land plot page event (admin summary only: a developer's scoped query filters by project).
+      const key = `land-${landId}`
+      const existing = listingMap.get(key) ?? {
+        projectId: landId,
+        projectName: typeof land === 'object' && land ? (land.title ?? 'Untitled land') : 'Untitled land',
+        projectSlug: typeof land === 'object' && land ? (land.slug ?? '') : '',
+        kind: 'land' as const,
+        total: 0,
+        byType: {},
+      }
+      existing.total += 1
+      existing.byType[eventType] = (existing.byType[eventType] ?? 0) + 1
+      listingMap.set(key, existing)
+    }
     if (projectId != null) {
       const key = String(projectId)
       const existing = listingMap.get(key) ?? {

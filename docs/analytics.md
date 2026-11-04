@@ -230,3 +230,10 @@ Sri Lanka from Ubersuggest, saved in the Supabase table `keyword_volumes` (`keyw
 The live site cannot call Ubersuggest: a refresh is run from Claude Code with the Ubersuggest connector (`keyword_overview`, location id 2144 = Sri Lanka),
 which upserts rows by keyword. The plan allows 100 lookups a day. A dash in the column means the keyword was not looked up yet; 0 means Ubersuggest
 has no volume for it. First load 2026-11-04: 55 keywords (target keywords from `docs/seo-strategy.md` plus the top Search Console queries).
+
+## Land plot events are saved too (2026-11-04)
+
+WhatsApp, email, brochure and enquiry taps on a land plot page used to be dropped by the server (it only looked the page's slug up among projects). The `analytics`
+collection now has an optional `land` link (column `payload.analytics.land_id`, migration `supabase/migrations/20261104130000_analytics_land.sql`) and `project`
+may be empty. Land events appear in the admin's Analytics "By listing" table and the Today panel; they have no per-listing counters, and a developer's own
+scoped views stay project-only.
