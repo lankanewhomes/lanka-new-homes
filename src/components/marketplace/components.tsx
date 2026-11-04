@@ -89,7 +89,6 @@ import {
   Route,
   Briefcase,
   RotateCw,
-  Phone,
   Ruler,
   Search,
   Share2,
@@ -126,7 +125,7 @@ import { planTitleWithFloor } from "@/lib/floor-plan-title";
 import { Amenity, Article, Developer, FloorPlan, Lead, Location, NearbyPlace, Project } from "@/types";
 import { localizedProjectCopy, useListingT } from "@/lib/i18n/use-listing-t";
 import { floorPlanSummarySentence } from "@/lib/i18n/floor-plan-sentence";
-import { formatWhatsAppNumber, listingWhatsAppHref, toWhatsAppNumber, whatsappChatHref } from "@/lib/whatsapp";
+import { listingWhatsAppHref, toWhatsAppNumber, whatsappChatHref } from "@/lib/whatsapp";
 import { buildInternationalPhone, DEFAULT_PHONE_COUNTRY, isPlausiblePhone } from "@/lib/phone";
 import { PhoneField, type PhoneValue } from "@/components/marketplace/phone-field";
 import { groupNearbyPlaces } from "@/lib/nearby-places";
@@ -2050,7 +2049,6 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
   const [requestInfoOpen, setRequestInfoOpen] = useState(false);
   const name = developer?.name ?? project.developerName ?? project.contact.name;
   const email = hasDisplayValue(project.contact?.email) ? project.contact.email : developer?.email;
-  const phone = hasDisplayValue(project.contact?.phone) ? project.contact.phone : developer?.phone;
   const projectSocialEntries = Object.entries(project.socialLinks ?? {}).filter(([, url]) => hasDisplayValue(url)) as [string, string][];
   const developerSocialEntries = Object.entries(developer?.socialLinks ?? {}).filter(([, url]) => hasDisplayValue(url)) as [string, string][];
   // WhatsApp gets its own labelled tap-to-chat row (tracked like phone
@@ -2091,18 +2089,6 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
           </a>
         ) : null}
 
-        {/* A developer can list several numbers separated by "/" — each is its own tap-to-call row. */}
-        {phone && hasDisplayValue(phone) ? phone.split(/\s*\/\s*/).filter(Boolean).map((number) => (
-          <a
-            key={number}
-            href={`tel:${number.replace(/\s+/g, "")}`}
-            className="stats-contact-card-row"
-            onClick={() => logListingEvent("/api/events/phone-click", "call_click", project.slug, project.name, project.developerSlug)}
-          >
-            <Phone className="h-4 w-4" aria-hidden="true" /> {number}
-          </a>
-        )) : null}
-
         {hasDisplayValue(project.contact?.address) ? (
           <span className="stats-contact-card-row">
             <MapPin className="h-4 w-4" aria-hidden="true" /> {project.contact.address}
@@ -2122,7 +2108,7 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
             className="stats-contact-card-row stats-contact-card-row-whatsapp"
             onClick={() => logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project.slug, project.name, project.developerSlug)}
           >
-            <MessageCircle className="h-4 w-4" aria-hidden="true" /> WhatsApp {formatWhatsAppNumber(developer?.socialLinks?.whatsapp)}
+            <MessageCircle className="h-4 w-4" aria-hidden="true" /> Chat on WhatsApp
           </a>
         ) : null}
       </div>
@@ -3526,7 +3512,6 @@ export function ConstructionTimelineSection({ updates, title = "Construction Upd
 export function ListingSidebarCard({ project, developer }: { project: Project; developer?: Developer }) {
   const [requestInfoOpen, setRequestInfoOpen] = useState(false);
   const contactName = developer?.name ?? project.contact.name;
-  const phone = hasDisplayValue(project.contact?.phone) ? project.contact.phone : developer?.phone;
   const address = hasDisplayValue(developer?.location) ? developer!.location : project.location;
   const hoursLines = formatOfficeHours(developer?.officeHours);
   const socialEntries = Object.entries(developer?.socialLinks ?? {}).filter(([, url]) => hasDisplayValue(url)) as [string, string][];
@@ -3574,16 +3559,6 @@ export function ListingSidebarCard({ project, developer }: { project: Project; d
         Request info
       </button>
 
-      {phone ? (
-        <a
-          href={`tel:${phone.replace(/[^+\d]/g, "")}`}
-          className="listing-sidebar-call-line"
-          onClick={() => logListingEvent("/api/events/phone-click", "call_click", project.slug, project.name, project.developerSlug)}
-        >
-          <Phone className="h-4 w-4" aria-hidden="true" /> Call us {phone}
-        </a>
-      ) : null}
-
       {salesWhatsAppHref ? (
         <a
           href={salesWhatsAppHref}
@@ -3607,7 +3582,6 @@ export function SalesCenterSection({ project, developer }: { project: Project; d
 
   const socialEntries = Object.entries(developer?.socialLinks ?? {}).filter(([, url]) => hasDisplayValue(url)) as [string, string][];
   const hoursLines = formatOfficeHours(developer?.officeHours);
-  const phone = hasDisplayValue(project.contact?.phone) ? project.contact.phone : "";
 
   return (
     <section className="sales-center-shell" aria-label="Sales center">
@@ -3622,12 +3596,6 @@ export function SalesCenterSection({ project, developer }: { project: Project; d
               ) : null}
               <p className="sales-alert-center-label">{t("Sales Center")}</p>
               <h2 className="sales-alert-heading">{project.name}</h2>
-              {phone ? (
-                <p className="sales-alert-phone">
-                  <Phone className="h-4 w-4" aria-hidden="true" />
-                  {phone}
-                </p>
-              ) : null}
               <button type="button" className="sales-alert-request" onClick={() => setRequestInfoOpen(true)}>{t("Request info")}</button>
             </div>
 

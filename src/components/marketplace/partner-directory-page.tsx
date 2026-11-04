@@ -107,7 +107,6 @@ export function PartnerDirectoryPage({
                 location={entry.location}
                 description={entry.description}
                 yearsInBusiness={entry.yearsInBusiness}
-                phone={entry.phone}
               />
             ))}
           </div>

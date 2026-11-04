@@ -133,9 +133,7 @@ function trackMetaEvent(name: string, params: Record<string, string | number | b
         fbq("track", "Lead", { ...listing, content_category: params.form_type });
         break;
       case "click_whatsapp":
-      case "call_click":
       case "click_email":
-      case "click_phone_profile":
         fbq("track", "Contact", { ...listing, content_category: name });
         break;
       case "download_brochure":

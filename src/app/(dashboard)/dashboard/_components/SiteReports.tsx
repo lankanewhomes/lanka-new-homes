@@ -28,7 +28,6 @@ const EVENT_LABELS: Record<string, [string, string]> = {
   view_floor_plan: ["Floor plan views", "Someone opened a floor plan"],
   generate_lead: ["Enquiries sent", "Someone sent a contact form"],
   click_whatsapp: ["WhatsApp clicks", "Someone tapped WhatsApp"],
-  call_click: ["Phone taps", "Someone tapped a phone number"],
   click_email: ["Email clicks", "Someone tapped an email address"],
   click_phone_profile: ["Phone taps (profile)", "Someone tapped a developer's number"],
   download_brochure: ["Brochure downloads", "Someone downloaded a brochure"],

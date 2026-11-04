@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { BadgeCheck, CheckCircle2, Eye, FileDown, Heart, Mail, MessageCircle, MessageSquare, Pencil, Phone, PlusCircle, Rocket, Send, Sparkles, UserPlus } from "lucide-react";
+import { BadgeCheck, CheckCircle2, Eye, FileDown, Heart, Mail, MessageCircle, MessageSquare, Pencil, PlusCircle, Rocket, Send, Sparkles, UserPlus } from "lucide-react";
 import { useDash } from "./DashProvider";
 import { allOf } from "../_data/scope";
 import { apiFind, type Doc } from "../_data/api";
@@ -18,7 +18,6 @@ const TYPES: { key: string; label: string; icon: typeof Eye; verb: string }[] = 
   { key: "view", label: "Page views", icon: Eye, verb: "viewed" },
   { key: "lead_submitted", label: "Enquiries", icon: MessageCircle, verb: "sent an enquiry about" },
   { key: "whatsapp_click", label: "WhatsApp clicks", icon: MessageSquare, verb: "tapped WhatsApp on" },
-  { key: "phone_click", label: "Phone clicks", icon: Phone, verb: "tapped the phone number on" },
   { key: "email_click", label: "Email clicks", icon: Mail, verb: "tapped the email on" },
   { key: "brochure_download", label: "Brochures", icon: FileDown, verb: "downloaded the brochure of" },
   { key: "save", label: "Saves", icon: Heart, verb: "saved" },

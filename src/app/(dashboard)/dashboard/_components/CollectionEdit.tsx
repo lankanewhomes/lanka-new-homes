@@ -177,8 +177,8 @@ export function CollectionEdit({ slug, id }: { slug: string; id: string }) {
       apiCount("projects", { and: [{ developer: { equals: Number(id) } }, { isPublished: { equals: true } }] }),
       name ? apiCount("lands", { sellerName: { equals: name } }) : Promise.resolve(0),
     ]).then(([projects, published, lands]) => { if (alive) setDevCounts({ projects, published, lands }); }).catch(() => undefined);
-    apiFind("projects", { limit: 500, where: { developer: { equals: Number(id) } }, select: { view_count: true, save_count: true, lead_count: true, download_count: true, phone_click_count: true, whatsapp_click_count: true, email_click_count: true } })
-      .then((r) => { if (!alive) return; const sum: Record<string, number> = {}; for (const row of r.docs) for (const k of ["view_count", "save_count", "lead_count", "download_count", "phone_click_count", "whatsapp_click_count", "email_click_count"]) sum[k] = (sum[k] ?? 0) + (typeof row[k] === "number" ? (row[k] as number) : 0); setDevEng(sum); }).catch(() => undefined);
+    apiFind("projects", { limit: 500, where: { developer: { equals: Number(id) } }, select: { view_count: true, save_count: true, lead_count: true, download_count: true, whatsapp_click_count: true, email_click_count: true } })
+      .then((r) => { if (!alive) return; const sum: Record<string, number> = {}; for (const row of r.docs) for (const k of ["view_count", "save_count", "lead_count", "download_count", "whatsapp_click_count", "email_click_count"]) sum[k] = (sum[k] ?? 0) + (typeof row[k] === "number" ? (row[k] as number) : 0); setDevEng(sum); }).catch(() => undefined);
     return () => { alive = false; };
   }, [slug, id, isNew, loaded]);
 
@@ -232,7 +232,7 @@ export function CollectionEdit({ slug, id }: { slug: string; id: string }) {
   const engSource = slug === "projects" && !isNew ? (found as Record<string, unknown>) : slug === "developers" ? devEng : null;
   const num = (k: string) => (engSource && typeof engSource[k] === "number" ? (engSource[k] as number) : 0);
   const engagement = engSource ? [
-    { label: "Page views", value: num("view_count") }, { label: "WhatsApp clicks", value: num("whatsapp_click_count") }, { label: "Phone clicks", value: num("phone_click_count") },
+    { label: "Page views", value: num("view_count") }, { label: "WhatsApp clicks", value: num("whatsapp_click_count") },
     { label: "Email clicks", value: num("email_click_count") }, { label: "Contact form enquiries", value: num("lead_count") }, { label: "Brochure downloads", value: num("download_count") }, { label: "Saves", value: num("save_count") },
   ] : undefined;
   const title = schema.useAsTitle ? String(found[schema.useAsTitle] ?? "") : "";
