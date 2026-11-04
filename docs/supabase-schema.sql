@@ -591,3 +591,6 @@ create table if not exists public.keyword_volumes (
   location text not null default 'Sri Lanka',
   checked_at timestamptz not null default now()
 );
+
+-- keyword_volumes is keyed per country (2026-11-04): see supabase/migrations/20261104140000_keyword_volumes_country.sql.
+-- alter table public.keyword_volumes add column if not exists country text not null default 'LK'; primary key becomes (keyword, country).

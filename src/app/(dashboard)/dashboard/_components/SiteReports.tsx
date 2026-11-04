@@ -80,6 +80,8 @@ function Shell({ title, description, range, setRange, children }: { title: strin
   );
 }
 
+type VolumeRow = { keyword: string; country: string; location: string; monthly_searches: number | null; cpc: number | null; seo_difficulty: number | null; search_intent: string | null; checked_at: string };
+
 function Card({ title, note, children }: { title: string; note?: string; children: ReactNode }) {
   return (
     <section className="border border-line bg-panel">
@@ -167,8 +169,16 @@ export function KeywordsPage() {
   const landing = useReport<ConsoleReport>("google-pages", range);
   const onSite = useReport<Ga4Report>("on-site-search", range);
   // Monthly searches in Sri Lanka from Ubersuggest, saved in the database by a refresh run (the live site cannot call Ubersuggest itself).
-  const volumes = useReport<{ rows: { keyword: string; monthly_searches: number | null; seo_difficulty: number | null; checked_at: string }[] }>("keyword-volumes", range);
-  const volumeOf = useMemo(() => new Map((volumes.data?.rows ?? []).map((v) => [v.keyword.toLowerCase(), v])), [volumes.data]);
+  const volumes = useReport<{ rows: VolumeRow[] }>("keyword-volumes", range);
+  const [country, setCountry] = useState("LK");
+  const countries = useMemo(() => {
+    const seen = new Map<string, string>();
+    for (const v of volumes.data?.rows ?? []) if (!seen.has(v.country)) seen.set(v.country, v.location);
+    return [...seen.entries()].sort((a, b) => (a[0] === "LK" ? -1 : b[0] === "LK" ? 1 : a[1].localeCompare(b[1])));
+  }, [volumes.data]);
+  const countryName = countries.find(([code]) => code === country)?.[1] ?? "Sri Lanka";
+  const countryRows = useMemo(() => (volumes.data?.rows ?? []).filter((v) => v.country === country), [volumes.data, country]);
+  const volumeOf = useMemo(() => new Map(countryRows.map((v) => [v.keyword.toLowerCase(), v])), [countryRows]);
   const [sortBy, setSortBy] = useState<"clicks" | "impressions">("impressions");
 
   const consoleTable = (report: { data: ConsoleReport | null; error: string }, first: string, withVolume = false) => {
@@ -181,7 +191,7 @@ export function KeywordsPage() {
     const sortBtn = (key: "clicks" | "impressions", text: string) => <button type="button" onClick={() => setSortBy(key)} className={`uppercase tracking-wide ${sortBy === key ? "text-fg underline" : ""}`} title="Sort by this column">{text}{sortBy === key ? " ↓" : ""}</button>;
     return (
       <table className="w-full min-w-[560px] text-sm">
-        <thead><tr className="border-b border-line text-left"><th className={th}>{first}</th><th className={`${th} text-right`}>{sortBtn("clicks", "Clicks")}</th><th className={`${th} text-right`}>{sortBtn("impressions", "Search volume")}</th>{withVolume ? <th className={`${th} text-right`} title="Monthly Google searches in Sri Lanka, from Ubersuggest. A dash means not looked up yet.">Monthly searches (Sri Lanka)</th> : null}<th className={`${th} text-right`}>Click rate</th><th className={`${th} text-right`}>Avg. position</th></tr></thead>
+        <thead><tr className="border-b border-line text-left"><th className={th}>{first}</th><th className={`${th} text-right`}>{sortBtn("clicks", "Clicks")}</th><th className={`${th} text-right`}>{sortBtn("impressions", "Search volume")}</th>{withVolume ? <th className={`${th} text-right`} title="Monthly Google searches in the chosen country, from Ubersuggest. A dash means not looked up yet for that country.">Monthly searches ({countryName})</th> : null}<th className={`${th} text-right`}>Click rate</th><th className={`${th} text-right`}>Avg. position</th></tr></thead>
         <tbody>{rows.map((x) => <tr key={x.key} className="border-b border-line last:border-0 hover:bg-subtle/60"><td className={`${td} font-medium`}>{x.key.replace(/^https?:\/\/(www\.)?lankanewhomes\.com/, "") || "/"}</td><td className={`${td} text-right tabular-nums`}>{n(x.clicks)}</td><td className={`${td} text-right tabular-nums`}>{n(x.impressions)}</td>{withVolume ? <td className={`${td} text-right tabular-nums`}>{volumeOf.has(x.key.toLowerCase()) ? n(volumeOf.get(x.key.toLowerCase())!.monthly_searches ?? 0) : "—"}</td> : null}<td className={`${td} text-right tabular-nums`}>{(x.ctr * 100).toFixed(1)}%</td><td className={`${td} text-right tabular-nums`}>{x.position.toFixed(1)}</td></tr>)}</tbody>
       </table>
     );
@@ -215,7 +225,23 @@ export function KeywordsPage() {
             );
           })() : null}
           <Card title="Words people searched on Google" note={queries.data?.status === "ready" ? `From Google Search Console for ${queries.data.site} (top ${queries.data.rows.length} words). Search volume is how many times the site appeared in Google results for that word, which is what real people searched. Clicks are visits to the site. Google reports 2 to 3 days late.` : undefined}>
+            {countries.length > 1 ? (
+              <div className="flex flex-wrap items-center gap-2 border-b border-line px-4 py-2.5 text-sm">
+                <label htmlFor="kw-country" className="font-medium">Search volume country</label>
+                <select id="kw-country" value={country} onChange={(e) => setCountry(e.target.value)} className="border border-line bg-panel px-2 py-1">
+                  {countries.map(([code, name]) => <option key={code} value={code}>{name}</option>)}
+                </select>
+              </div>
+            ) : null}
             {consoleTable(queries, "Search words", true)}
+          </Card>
+          <Card title={`Keywords checked for ${countryName}`} note="Monthly Google searches from Ubersuggest for the keywords we looked up. A new country or keyword is added when a refresh is run.">
+            {countryRows.length === 0 ? <Message>No keywords have been looked up for this country yet.</Message> : (
+              <table className="w-full min-w-[560px] text-sm">
+                <thead><tr className="border-b border-line text-left"><th className={th}>Keyword</th><th className={`${th} text-right`}>Monthly searches</th><th className={`${th} text-right`}>SEO difficulty</th><th className={`${th} text-right`}>Cost per click (USD)</th><th className={th}>Intent</th></tr></thead>
+                <tbody>{[...countryRows].sort((a, b) => (b.monthly_searches ?? 0) - (a.monthly_searches ?? 0)).map((v) => <tr key={v.keyword} className="border-b border-line last:border-0 hover:bg-subtle/60"><td className={`${td} font-medium`}>{v.keyword}</td><td className={`${td} text-right tabular-nums`}>{n(v.monthly_searches ?? 0)}</td><td className={`${td} text-right tabular-nums`}>{v.seo_difficulty ?? "—"}</td><td className={`${td} text-right tabular-nums`}>{v.cpc ? v.cpc.toFixed(2) : "—"}</td><td className={td}>{v.search_intent ?? "—"}</td></tr>)}</tbody>
+              </table>
+            )}
           </Card>
         </>
       )}

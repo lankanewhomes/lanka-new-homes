@@ -237,3 +237,7 @@ WhatsApp, email, brochure and enquiry taps on a land plot page used to be droppe
 collection now has an optional `land` link (column `payload.analytics.land_id`, migration `supabase/migrations/20261104130000_analytics_land.sql`) and `project`
 may be empty. Land events appear in the admin's Analytics "By listing" table and the Today panel; they have no per-listing counters, and a developer's own
 scoped views stay project-only.
+
+Country picker (2026-11-04): `keyword_volumes` is keyed by (`keyword`, `country`, ISO alpha-2; migration `20261104140000_keyword_volumes_country.sql`, old rows are `LK`). The Keywords page has a
+"Search volume country" picker (shown once more than one country is stored) that switches the Search words column, plus a "Keywords checked for {country}" table. Refresh a country with
+`keyword_overview` and its Google location id (LK 2144, AU 2036, GB 2826, US 2840, AE 2784, IN 2356, CA 2124). First overseas load: 3 keywords x 6 countries.

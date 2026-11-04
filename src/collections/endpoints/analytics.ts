@@ -155,7 +155,7 @@ export const siteReportEndpoint: Endpoint = {
     // Monthly searches (Sri Lanka) per keyword, from Ubersuggest, saved in keyword_volumes by a refresh run (the site cannot call Ubersuggest).
     if (kind === 'keyword-volumes') {
       const { supabaseAdmin } = await import('@/lib/supabase')
-      const volumes = await supabaseAdmin.from('keyword_volumes').select('keyword, monthly_searches, cpc, seo_difficulty, search_intent, checked_at').limit(5000)
+      const volumes = await supabaseAdmin.from('keyword_volumes').select('keyword, country, location, monthly_searches, cpc, seo_difficulty, search_intent, checked_at').limit(5000)
       if (volumes.error) return Response.json({ error: `Could not read keyword volumes: ${volumes.error.message}` }, { status: 500 })
       return Response.json({ range: { startDate, endDate }, rows: volumes.data ?? [] })
     }
