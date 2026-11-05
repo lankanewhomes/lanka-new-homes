@@ -203,3 +203,41 @@ property (default `sc-domain:lankanewhomes.com`, then the https URLs). Search wo
 
 ## Internal traffic (own visits)
 Open any page with `?internal=1` (or `?no-track=1`) once per browser; `?internal=0` undoes it. This sets the `lnh_internal` cookie (stops our own events being counted) and `localStorage.ga_internal = "1"`. For a flagged browser, `src/components/analytics/internal-traffic-flag.tsx` puts `gtag('set', { traffic_type: 'internal' })` on `dataLayer` before the deferred GA tag loads, so GA's active "Internal Traffic" filter (traffic_type = internal) drops those hits. GA itself still loads exactly once, from `deferred-google-tags.tsx` (`@next/third-parties`).
+
+## Dashboard and Google Analytics side by side (2026-11-03)
+
+Owner: "sync Google Analytics and my dashboard". They cannot match exactly (ad blockers and declined cookies hide visitors from
+Google, never from our server), so both now count with the **same rules** and the Analytics page shows them **next to each other**.
+
+- **Same repeat rule**: the browser sends `view_listing` (GA4) and `ViewContent` (Meta Pixel) once per listing per 30 minutes per
+  browser (`claimBrowserView` in `src/components/marketplace/view-tracker.tsx`, localStorage `lnh-view-sent:<slug>`), the same
+  30-minute rule our own count uses (`src/collections/hooks/analytics-dedup.ts`). Before this, GA4 counted every reload.
+  GA4 data from before 2026-11-03 still has reloads in it, so the gap on older ranges is smaller than it should be.
+- **Visitors**: `visitors` in `/analytics-summary` = distinct browsers (session_id) with a listing view, compared with GA4
+  `totalUsers` on `view_listing`. Shown as a tile on the Analytics page.
+- **Email source**: `utm_medium=email` is now `email` (was `referral`), as GA4 calls it.
+- **Side-by-side table** ("Your dashboard and Google Analytics" on `/dashboard/analytics`): page views, visitors and page views
+  per source, ours from `viewCompare` in `/analytics-summary`, Google's from `GET /payload-api/analytics-google`. Sources are
+  put in the same buckets on both sides (`src/lib/analytics-compare.ts`; AI assistants go with referrals, as in GA4). A developer
+  sees only their own listings (GA4 filtered on `listing_id`, so that custom dimension must be registered, step 2 above).
+  With GA4 not configured the Google column shows "—".
+
+## Keyword search volume from Ubersuggest (2026-11-04)
+
+The Keywords page shows a **Monthly searches (Sri Lanka)** column next to Search Console's numbers. The values are Google monthly search volumes for
+Sri Lanka from Ubersuggest, saved in the Supabase table `keyword_volumes` (`keyword`, `monthly_searches`, `cpc`, `seo_difficulty`,
+`search_intent`, `checked_at`; migration `supabase/migrations/20261104120000_keyword_volumes.sql`, read by `GET /payload-api/site-report/keyword-volumes`).
+The live site cannot call Ubersuggest: a refresh is run from Claude Code with the Ubersuggest connector (`keyword_overview`, location id 2144 = Sri Lanka),
+which upserts rows by keyword. The plan allows 100 lookups a day. A dash in the column means the keyword was not looked up yet; 0 means Ubersuggest
+has no volume for it. First load 2026-11-04: 55 keywords (target keywords from `docs/seo-strategy.md` plus the top Search Console queries).
+
+## Land plot events are saved too (2026-11-04)
+
+WhatsApp, email, brochure and enquiry taps on a land plot page used to be dropped by the server (it only looked the page's slug up among projects). The `analytics`
+collection now has an optional `land` link (column `payload.analytics.land_id`, migration `supabase/migrations/20261104130000_analytics_land.sql`) and `project`
+may be empty. Land events appear in the admin's Analytics "By listing" table and the Today panel; they have no per-listing counters, and a developer's own
+scoped views stay project-only.
+
+Country picker (2026-11-04): `keyword_volumes` is keyed by (`keyword`, `country`, ISO alpha-2; migration `20261104140000_keyword_volumes_country.sql`, old rows are `LK`). The Keywords page has a
+"Search volume country" picker (shown once more than one country is stored) that switches the Search words column, plus a "Keywords checked for {country}" table. Refresh a country with
+`keyword_overview` and its Google location id (LK 2144, AU 2036, GB 2826, US 2840, AE 2784, IN 2356, CA 2124). First overseas load: 3 keywords x 6 countries.

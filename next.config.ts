@@ -116,6 +116,11 @@ const nextConfig: NextConfig = {
     return [
       // Vercel serves the homepage at /index too (breadcrumb showed "Home / Index"); send it to the real URL.
       { source: "/index", destination: "/", permanent: true },
+      // The bare domain served the same site as www with no redirect, so Google listed https://lankanewhomes.com while the site name
+      // markup says www. One address only: send the bare domain to www (owner, 2026-11-05: Google shows "lankanewhomes.com", not "LankaNewHomes").
+      { source: "/:path*", has: [{ type: "host", value: "lankanewhomes.com" }], destination: "https://www.lankanewhomes.com/:path*", permanent: true },
+      // Mistyped link seen in GA (Nov 2026): "ji-adore" instead of "j-adore".
+      { source: "/projects/ji-adore-negombo", destination: "/projects/j-adore-negombo", permanent: true },
       {
         source: "/projects/colombo/luxury",
         destination: "/projects/luxury",

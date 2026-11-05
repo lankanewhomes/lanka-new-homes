@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { isAllowlistedRequest } from "@/lib/bots";
 
 // A small "too many requests from one visitor" guard for the public forms (contact, enquiry, reviews, uploads).
 // It counts per visitor IP inside one running instance. On Cloudflare Workers each busy location can run several instances, so this
@@ -31,6 +32,8 @@ export function allowHit(key: string, limit: number, windowMs: number, now = Dat
 
 /** Route helper: returns a ready 429 response when this visitor is over the limit, otherwise null. */
 export function rateLimited(request: Request, name: string, limit: number, windowMs: number): NextResponse | null {
+  // Search engines, social previews and AI assistants are never limited (src/lib/bots.ts). Any doubt means "not limited".
+  try { if (isAllowlistedRequest(request)) return null; } catch { return null; }
   if (allowHit(`${name}:${clientIp(request)}`, limit, windowMs)) return null;
   return NextResponse.json({ error: "Too many requests. Please wait a few minutes and try again." }, { status: 429, headers: { "Retry-After": String(Math.ceil(windowMs / 1000)) } });
 }

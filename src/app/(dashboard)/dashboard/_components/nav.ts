@@ -1,4 +1,4 @@
-import { Activity, Building, Building2, BarChart3, FileText, Globe2, ListTree, CreditCard, GalleryHorizontal, Handshake, HardHat, Heart, Image as ImageIcon, LayoutDashboard, ListChecks, Mail, MapPin, MapPinned, Megaphone, MessageCircle, Newspaper, Package, Receipt, Ruler, Search, Settings, Share2, Sofa, Star, Tag, UserCog, Users, Inbox, type LucideIcon } from "lucide-react";
+import { Activity, Bot, Building, Building2, BarChart3, FileText, Globe2, ListTree, CreditCard, GalleryHorizontal, Handshake, HardHat, Heart, Image as ImageIcon, LayoutDashboard, ListChecks, Mail, MapPin, MapPinned, Megaphone, MessageCircle, Newspaper, Package, Receipt, Ruler, Search, Settings, Share2, Sofa, Star, Tag, UserCog, Users, Inbox, type LucideIcon } from "lucide-react";
 import { schemaIndex } from "../_mock/schema-index";
 import type { Role } from "../_mock/types";
 
@@ -53,6 +53,7 @@ export function buildSidebar(role: Role, newLeads: number, companyId?: number): 
         { key: "an-traffic", label: "Traffic sources", href: "/dashboard/analytics/traffic", icon: Globe2 },
         { key: "an-pages", label: "Pages & countries", href: "/dashboard/analytics/pages", icon: FileText },
         { key: "an-keywords", label: "Keywords", href: "/dashboard/analytics/keywords", icon: Search },
+        { key: "an-bots", label: "Bots", href: "/dashboard/analytics/bots", icon: Bot },
       );
       pages.push({ key: "an-raw", label: "Raw events", href: "/dashboard/analytics/events", icon: ListTree });
       items.splice(0, items.length, ...pages);

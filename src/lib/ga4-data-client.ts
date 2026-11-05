@@ -1,6 +1,8 @@
 // GA4 Data API over plain HTTPS (service-account JWT signed with Web Crypto + fetch) instead of the gRPC client library
 // (@google-analytics/data). That library builds code at runtime (protobufjs codegen), which Cloudflare Workers forbid, and it
 // crashed the /cms dashboard there. This version runs identically on Node (Vercel) and Workers.
+import { privateKeyDer } from "@/lib/google-key";
+
 let configWarned = false;
 const cachedTokens = new Map<string, { value: string; expiresAt: number }>();
 const ANALYTICS_SCOPE = "https://www.googleapis.com/auth/analytics.readonly";
@@ -27,9 +29,8 @@ export async function getGoogleAccessToken(scope: string = ANALYTICS_SCOPE): Pro
     throw new Error("Missing GA4_SERVICE_ACCOUNT_EMAIL or GA4_SERVICE_ACCOUNT_PRIVATE_KEY — see docs/analytics.md");
   }
 
-  // .env files can't hold real newlines in a value — the key is stored with literal "\n" sequences and unescaped here.
-  const pem = privateKey.replace(/\\n/g, "\n");
-  const der = Uint8Array.from(atob(pem.replace(/-----[A-Z ]+-----/g, "").replace(/\s+/g, "")), (c) => c.charCodeAt(0));
+  // The key can be stored with real line breaks, written-out "\n", quotes, or as the whole JSON file: src/lib/google-key.ts accepts them all.
+  const der = privateKeyDer(privateKey);
   const key = await crypto.subtle.importKey("pkcs8", der, { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" }, false, ["sign"]);
 
   const now = Math.floor(Date.now() / 1000);
@@ -58,10 +59,14 @@ function getPropertyPath(): string {
   return propertyId.startsWith("properties/") ? propertyId : `properties/${propertyId}`;
 }
 
-function buildFilterExpression(filters: { field: string; value: string }[] | undefined) {
+export type Ga4Filter = { field: string; value: string } | { field: string; values: string[] };
+
+function buildFilterExpression(filters: Ga4Filter[] | undefined) {
   if (!filters || filters.length === 0) return undefined;
   const expressions = filters.map((f) => ({
-    filter: { fieldName: f.field, stringFilter: { matchType: "EXACT" as const, value: f.value } },
+    filter: "values" in f
+      ? { fieldName: f.field, inListFilter: { values: f.values, caseSensitive: true } }
+      : { fieldName: f.field, stringFilter: { matchType: "EXACT" as const, value: f.value } },
   }));
   return expressions.length === 1 ? expressions[0] : { andGroup: { expressions } };
 }
@@ -77,7 +82,7 @@ export type RunReportArgs = {
    * event parameter (must be registered as a GA4 custom dimension first — see docs/analytics.md)
    * or a bare GA4 dimension name (eventName, sessionDefaultChannelGroup, city, date, ...).
    */
-  filters?: { field: string; value: string }[];
+  filters?: Ga4Filter[];
   limit?: number;
   orderByMetric?: string;
 };

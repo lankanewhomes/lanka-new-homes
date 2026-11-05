@@ -7,7 +7,7 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { buildConfig } from 'payload'
 
 import { Analytics } from './src/collections/Analytics'
-import { analyticsEndpoint, analyticsSummaryEndpoint, siteReportEndpoint } from './src/collections/endpoints/analytics'
+import { analyticsEndpoint, analyticsGoogleEndpoint, analyticsSummaryEndpoint, siteReportEndpoint } from './src/collections/endpoints/analytics'
 import { importListingEndpoint } from './src/collections/endpoints/import-listing'
 import { listingTodoEndpoint } from './src/collections/endpoints/listing-todo'
 import { leadActivityEndpoint } from './src/collections/endpoints/lead-activity'
@@ -204,7 +204,7 @@ export default buildConfig({
     Media,
   ],
   globals: [SiteSettings, LeadAlertSettings],
-  endpoints: [analyticsEndpoint, analyticsSummaryEndpoint, siteReportEndpoint, importListingEndpoint, listingTodoEndpoint, leadActivityEndpoint, socialStatusEndpoint, socialPostEndpoint, socialPostCustomEndpoint],
+  endpoints: [analyticsEndpoint, analyticsSummaryEndpoint, analyticsGoogleEndpoint, siteReportEndpoint, importListingEndpoint, listingTodoEndpoint, leadActivityEndpoint, socialStatusEndpoint, socialPostEndpoint, socialPostCustomEndpoint],
   editor: lexicalEditor(),
   db: postgresAdapter({
     // Dev-mode schema push is opt-in. It re-reads the whole remote schema on every boot ("Pulling schema from database...",

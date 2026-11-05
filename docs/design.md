@@ -534,9 +534,9 @@ Three columns on desktop, stacked under 980px. Updated 2026-09-25:
 **Hero category chips on phones (owner, 2026-09-25):** the last chip,
 "Lands" (`.hero-quick-link-pill-land`), takes a full-width row of its own.
 
-**Footer on phones (owner, 2026-09-25):** the wordmark sits on the left
-and the social icons on the right of the same top row. Desktop keeps the
-icons above the wordmark.
+**Footer follow buttons (owner, 2026-11-02):** three outline pill buttons (Instagram, TikTok, Facebook; `.footer-follow-button`, same look as
+`.footer-cta`) sit directly under the tagline ("Find new homes, apartments and land for sale…"), with no heading line. They replace the three round
+icon-only buttons that used to sit above the wordmark.
 
 **Listing-page header on phones (owner, 2026-09-25):** the white sticky
 box (`.listing-filter-sticky`: title, count, Filter/Sort) runs edge to edge
@@ -1132,9 +1132,7 @@ bar, but the footer follows this section, so it was just empty space.
 
 ## Header order (owner, 2026-10-21)
 
-Desktop header, left to right: logo, search, New Homes / Land / Company, **Log in, then the EN language dropdown** (the dropdown used
-to sit beside the logo). Its menu opens right-aligned (`.language-dropdown--end`) so it stays on screen. On mobile the language switcher
-is still at the bottom of the menu panel.
+Desktop header, left to right: logo, search, New Homes / Land / Company, **Log in**. The desktop language dropdown was removed (owner, 2026-11-02: "beside the login on nav delete language"). The EN / සිංහල / தமிழ் switcher remains at the bottom of the mobile menu panel; its `.language-dropdown*` CSS is now unused.
 
 
 ## Developer / company page: cards or rows (owner, 2026-10-24)
@@ -2778,6 +2776,14 @@ desktop, 1 under 900px. (Replaced the earlier 4-column photo-card grid.)
 ### Contact Us / Brochure form (2026-10-31)
 
 `RequestInfoDialog` (standard and brochure variants) asks for a name, one phone-or-WhatsApp number and an optional email: no message, contact-method radios or consent checkbox (a note says replies come within 24 hours, no spam, and sending means agreeing to be contacted). A green "Get price on WhatsApp" button sits next to the submit button when the developer has a WhatsApp number. Errors are inline under the field. Fields are 48px / 16px text on phones and the buttons are sticky at the bottom so the keyboard never hides them. The land `inquiry` variant keeps its longer layout. Each field's first tap sends `form_field_focus` (register `field_name` as a GA4 custom dimension to report on it).
+
+## Land overview text spacing (owner, 2026-11-02)
+
+A land listing's description is plain text, often pasted with a blank line between every short line ("4Km to Hanwella town"). It is no
+longer shown with `white-space: pre-line` (that made each short line a widely spaced paragraph). `src/lib/description-blocks.ts` turns it
+into blocks: runs of two or more short lines that do not end a sentence become one tight bulleted list (`.project-description-list`),
+everything else is a normal paragraph (14px between paragraphs, 6px between list items), and runs of spaces are collapsed. Used on
+`/land/[slug]` only; project pages show the description as one paragraph.
 
 ## Social carousels, reels and covers (approved 2026-11-04 and 2026-11-05)
 

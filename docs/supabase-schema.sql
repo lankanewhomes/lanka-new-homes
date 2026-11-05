@@ -565,3 +565,37 @@ create table if not exists project_notification_snapshots (
   updated_at timestamptz not null default now()
 );
 alter table project_notification_snapshots enable row level security;
+
+-- Bot visit counts (2026-11-02). Written by increment_bot_hit() from middleware.ts; read by the dashboard's Bots page.
+-- See supabase/migrations/20261102120000_bot_daily_stats.sql (RLS on, no policies: service role only).
+create table if not exists public.bot_daily_stats (
+  date date not null,
+  bot_name text not null,
+  category text not null,
+  action text not null check (action in ('allowed', 'blocked')),
+  hits bigint not null default 0,
+  last_path text,
+  last_seen timestamptz not null default now(),
+  primary key (date, bot_name, action)
+);
+
+-- Monthly search volume per keyword for Sri Lanka, from Ubersuggest (2026-11-04). Shown on the dashboard Keywords page.
+-- See supabase/migrations/20261104120000_keyword_volumes.sql (RLS on, no policies: service role only).
+create table if not exists public.keyword_volumes (
+  keyword text primary key,
+  monthly_searches integer,
+  cpc numeric,
+  seo_difficulty integer,
+  search_intent text,
+  source text not null default 'Ubersuggest',
+  location text not null default 'Sri Lanka',
+  checked_at timestamptz not null default now()
+);
+
+-- keyword_volumes is keyed per country (2026-11-04): see supabase/migrations/20261104140000_keyword_volumes_country.sql.
+-- alter table public.keyword_volumes add column if not exists country text not null default 'LK'; primary key becomes (keyword, country).
+
+-- Leads can be for a land plot as well as a project (2026-11-04).
+alter table payload.leads add column if not exists land_id integer references payload.lands(id) on delete set null;
+create index if not exists leads_land_idx on payload.leads (land_id);
+alter table payload.leads alter column project_id drop not null;

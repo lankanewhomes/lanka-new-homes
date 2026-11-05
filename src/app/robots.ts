@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getSiteUrl } from "@/lib/seo";
+import { ROBOTS_ALLOWED_BOTS, ROBOTS_DISALLOWED_BOTS } from "@/lib/bots";
 
 // Lives at the app root on purpose: inside the (frontend) route group this
 // file was silently ignored and /robots.txt 404'd on the live site
@@ -19,18 +20,17 @@ export default function robots(): MetadataRoute.Robots {
     "/*?*view=map*",
     "/*?*&*",
   ];
-  // AI assistants' crawlers are welcome (owner, 2026-10-01: "improve my AI search ... ChatGPT, Claude, Grok") —
-  // named explicitly so it's clear they're allowed; each group repeats the private-area disallows because a
-  // crawler follows only its own most specific group. /llms.txt is the site map written for them.
-  const aiCrawlers = [
-    "GPTBot", "OAI-SearchBot", "ChatGPT-User", "ClaudeBot", "Claude-User", "Claude-SearchBot", "anthropic-ai",
-    "PerplexityBot", "Perplexity-User", "Google-Extended", "Applebot-Extended", "CCBot", "cohere-ai", "Bytespider", "meta-externalagent",
-  ];
+  // Search engines, social previews and AI assistants are welcome and named explicitly (owner, 2026-10-01 for AI; 2026-11-02 for the full
+  // allowlist in src/lib/bots.ts); each group repeats the private-area disallows because a crawler follows only its own most specific group.
+  // /llms.txt is the site map written for AI assistants. anthropic-ai and cohere-ai are AI crawlers outside the allowlist: welcome too.
+  // Only the blocklist (AhrefsBot, SemrushBot... also answered with a 403 in middleware.ts) is disallowed.
+  const welcome = [...new Set([...ROBOTS_ALLOWED_BOTS, "anthropic-ai", "cohere-ai"])];
 
   return {
     rules: [
       { userAgent: "*", allow: "/", disallow },
-      { userAgent: aiCrawlers, allow: ["/", "/llms.txt"], disallow },
+      { userAgent: welcome, allow: ["/", "/llms.txt"], disallow },
+      { userAgent: [...ROBOTS_DISALLOWED_BOTS], disallow: "/" },
     ],
     sitemap: `${siteUrl}/sitemap.xml`,
     host: siteUrl,

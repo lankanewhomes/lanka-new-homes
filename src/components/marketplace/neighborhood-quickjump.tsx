@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Building2, Camera, HelpCircle, Home, Landmark, Map as MapIcon } from "lucide-react";
+import { Building2, Camera, HelpCircle, Home, Landmark, Map as MapIcon, MapPin } from "lucide-react";
 
 // A resolved icon *component* can't itself cross the server->client prop boundary (same
 // constraint as NEARBY_CATEGORY_ICON in components.tsx) — the server page passes a plain string
 // key instead, and this "use client" module resolves it to a real icon locally.
-const ICON: Record<string, typeof Home> = { overview: Home, photos: Camera, projects: Building2, landmarks: Landmark, map: MapIcon, faq: HelpCircle };
+const ICON: Record<string, typeof Home> = { overview: Home, photos: Camera, projects: Building2, land: MapPin, landmarks: Landmark, map: MapIcon, faq: HelpCircle };
 
 export type NeighborhoodQuickjumpItem = {
   key: keyof typeof ICON;

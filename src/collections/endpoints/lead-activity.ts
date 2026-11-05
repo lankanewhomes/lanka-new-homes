@@ -75,13 +75,16 @@ export const leadActivityEndpoint: Endpoint = {
 
     const leads: LeadActivityRow[] = docs.map((doc) => {
       const d = doc as unknown as AnyDoc
-      const project = (d.project && typeof d.project === 'object' ? d.project : null) as AnyDoc | null
+      // A lead is for a project or a land plot; a land is shown like a project (title as name, its developer seller as the developer).
+      const land = (d.land && typeof d.land === 'object' ? d.land : null) as AnyDoc | null
+      const landSeller = (land?.seller ?? null) as { relationTo?: string; value?: unknown } | null
+      const project = (d.project && typeof d.project === 'object' ? d.project : land ? { ...land, name: land.title, developer: landSeller?.relationTo === 'developers' ? landSeller.value : undefined } : null) as AnyDoc | null
       const developer = (project?.developer && typeof project.developer === 'object' ? project.developer : null) as AnyDoc | null
       return {
         id: doc.id,
         createdAt: text(d.createdAt),
         buyer: { name: text(d.name), phone: text(d.phone), email: text(d.email), preferred: text(d.preferred_contact_method) },
-        project: { id: project ? (project.id as string | number) : relId(d.project), name: text(project?.name), slug: text(project?.slug) },
+        project: { id: project ? (project.id as string | number) : relId(d.project) ?? relId(d.land), name: text(project?.name), slug: text(project?.slug) },
         developer: { id: developer ? (developer.id as string | number) : relId(project?.developer), name: text(developer?.name), slug: text(developer?.slug) },
         source: text(d.source) || 'request_info',
         floorPlan: text(d.floor_plan),

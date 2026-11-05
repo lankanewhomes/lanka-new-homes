@@ -10,7 +10,7 @@ import { getAllSalesCompanies } from "@/lib/sales-company-store";
 import { getAllConstructionCompanies } from "@/lib/construction-company-store";
 import { toAbsoluteUrl } from "@/lib/seo";
 import { allProjectCategories } from "@/lib/listing-categories";
-import { LAND_SEO_PAGES } from "@/lib/land-seo-pages";
+import { LAND_SEO_PAGES, landDistricts } from "@/lib/land-seo-pages";
 import { guides } from "@/lib/guides";
 import { blogPosts } from "@/lib/blog";
 import { constructionCompanyPages } from "@/lib/construction-company-categories";
@@ -100,6 +100,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: now,
       changeFrequency: "daily",
       priority: 0.8,
+    },
+    {
+      url: toAbsoluteUrl("/neighborhoods"),
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
     },
     {
       url: toAbsoluteUrl("/guides"),
@@ -238,5 +244,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .filter((page) => page.select(allLands).length > 0)
     .map((page) => ({ url: toAbsoluteUrl(page.path), lastModified: now, changeFrequency: "daily" as const, priority: 0.7 }));
 
-  return [...staticRoutes, ...landSeoRoutes, ...projectCategoryRoutes, ...guideRoutes, ...blogRoutes, ...constructionCompanyRoutes, ...projectRoutes, ...developerRoutes, ...landRoutes, ...neighborhoodRoutes, ...partnerDirectoryRoutes];
+  const landDistrictRoutes: MetadataRoute.Sitemap = landDistricts(allLands).map((entry) => ({ url: toAbsoluteUrl(`/land/district/${entry.slug}`), lastModified: now, changeFrequency: "daily" as const, priority: 0.6 }));
+
+  return [...staticRoutes, ...landSeoRoutes, ...landDistrictRoutes, ...projectCategoryRoutes, ...guideRoutes, ...blogRoutes, ...constructionCompanyRoutes, ...projectRoutes, ...developerRoutes, ...landRoutes, ...neighborhoodRoutes, ...partnerDirectoryRoutes];
 }

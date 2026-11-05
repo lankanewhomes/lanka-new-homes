@@ -8,7 +8,7 @@ import { requestOrigin } from "@/lib/request-origin";
 import { rateLimited } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
-  const limited = rateLimited(req, "leads", 8, 15 * 60 * 1000); // each enquiry alerts a developer
+  const limited = rateLimited(req, "leads", 30, 15 * 60 * 1000); // each enquiry alerts a developer. Generous on purpose: phone networks put many real buyers behind one address and a lead must never be lost
   if (limited) return limited;
   try {
     const body = await req.json();
@@ -77,7 +77,12 @@ export async function POST(req: Request) {
           overrideAccess: true,
         });
         const projectDoc = projectRes.docs[0];
-        if (projectDoc) {
+        // A land plot page sends the land's slug: no project matches, so look it up in lands and file the lead against it.
+        const landDoc = projectDoc
+          ? undefined
+          : (await payload.find({ collection: "lands", where: { slug: { equals: body.projectSlug } }, limit: 1, depth: 0, overrideAccess: true })).docs[0];
+        const listingDoc = projectDoc ?? landDoc;
+        if (listingDoc) {
           // Also enriches the Analytics "lead_submitted" event that Leads'
           // own afterChange hook (logLeadSubmitted) auto-creates — see
           // hooks/increment-counts.ts's analyticsEnrichment context read.
@@ -90,7 +95,7 @@ export async function POST(req: Request) {
           await payload.create({
             collection: "leads",
             data: {
-              project: projectDoc.id,
+              ...(projectDoc ? { project: projectDoc.id } : { land: landDoc?.id }),
               name: body.name,
               email: typeof body.email === "string" ? body.email : "",
               phone: body.phone,
@@ -119,16 +124,16 @@ export async function POST(req: Request) {
           // own brochureUrl is looked up server-side here rather than
           // trusted from the request body, so this can't be used to email
           // an arbitrary link through this form.
-          const brochureUrl = typeof projectDoc.brochureUrl === "string" ? projectDoc.brochureUrl : null;
+          const brochureUrl = typeof listingDoc.brochureUrl === "string" ? listingDoc.brochureUrl : null;
           if (body.isBrochureRequest && brochureUrl && typeof body.email === "string" && body.email) {
             const serverURL = payload.config.serverURL || new URL(req.url).origin
             const absoluteBrochureUrl = brochureUrl.startsWith("http") ? brochureUrl : `${serverURL}${brochureUrl}`
             await payload.sendEmail({
               to: body.email,
               from: process.env.EMAIL_FROM,
-              subject: `Your ${projectDoc.name} brochure`,
-              html: renderBrochureEmailHTML({ projectName: String(projectDoc.name), brochureUrl: absoluteBrochureUrl }),
-              text: `Here's your brochure for ${projectDoc.name}: ${absoluteBrochureUrl}`,
+              subject: `Your ${projectDoc?.name ?? landDoc?.title} brochure`,
+              html: renderBrochureEmailHTML({ projectName: String(projectDoc?.name ?? landDoc?.title), brochureUrl: absoluteBrochureUrl }),
+              text: `Here's your brochure for ${projectDoc?.name ?? landDoc?.title}: ${absoluteBrochureUrl}`,
             })
           }
         }

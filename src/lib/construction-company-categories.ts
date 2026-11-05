@@ -24,6 +24,16 @@ export const constructionCompanyPages: Record<string, ConstructionCompanyPageCon
     intro: "Find a construction company in Sri Lanka for your next home build. This directory lists general contractors, specialist builders, and consultants working on residential projects island-wide — separate from the project developers listed under Developers.",
     relatedPaths: ["/construction-companies/colombo", "/construction-companies/swimming-pools", "/construction-companies/consulting"],
   },
+  "custom-home-construction": {
+    path: "/construction-companies/custom-home-construction",
+    category: "general",
+    breadcrumbs: [{ label: "Home", href: "/" }, { label: "Construction Companies", href: "/construction-companies" }, { label: "Custom Home Construction" }],
+    metaTitle: "Custom Home Construction in Sri Lanka | Home Builders",
+    metaDescription: "Custom home construction companies in Sri Lanka: builders for a new house on your own land, with contact details and years in business.",
+    h1: "Custom Home Construction in Sri Lanka",
+    intro: "Planning to build your own house? These construction companies in Sri Lanka build custom homes on your land, from design and approvals through to finishing, in Colombo and across the island.",
+    relatedPaths: ["/construction-companies", "/land", "/architects"],
+  },
   colombo: {
     path: "/construction-companies/colombo",
     category: "colombo",

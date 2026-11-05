@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, MapPin, Phone } from "lucide-react";
+import { ArrowUpRight, MapPin } from "lucide-react";
 
 // Shared by every partner-directory listing page (architects, interior
 // designers, marketing/sales companies, construction companies + its 3
@@ -15,7 +15,6 @@ export function PartnerDirectoryCard({
   location,
   description,
   yearsInBusiness,
-  phone,
 }: {
   slug: string;
   basePath: string;
@@ -24,7 +23,6 @@ export function PartnerDirectoryCard({
   location: string;
   description: string;
   yearsInBusiness?: number;
-  phone?: string;
 }) {
   return (
     <Link key={slug} href={`${basePath}/${slug}`} id={slug} className="partner-directory-card">
@@ -48,15 +46,9 @@ export function PartnerDirectoryCard({
         ) : null}
         {description ? <p className="partner-directory-card-description">{description}</p> : null}
 
-        {yearsInBusiness || phone ? (
+        {yearsInBusiness ? (
           <div className="partner-directory-card-meta">
             {yearsInBusiness ? <span>{yearsInBusiness} years in business</span> : null}
-            {phone ? (
-              <span>
-                <Phone className="h-3 w-3" strokeWidth={1.75} aria-hidden="true" />
-                {phone}
-              </span>
-            ) : null}
           </div>
         ) : null}
       </div>

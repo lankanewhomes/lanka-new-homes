@@ -26,13 +26,13 @@ function awardYear(year: string | null | undefined): number {
   return years.length ? Math.max(...years) : 0;
 }
 
-// Counts a tap on a developer's phone number (owner, 2026-10-24: "make sure you track this number also"): a profile-page click on the
-// developer's first listing (source page "developer-profile") plus a GA4 event. The owner's own clicks are never counted.
-function logProfilePhoneClick(slug: string, entityType: ProfileEntityType) {
+// Counts a tap on the WhatsApp icon of a developer's profile page (owner, 2026-11-04): a profile-page click on the developer's first listing
+// (source page "developer-profile") plus a GA4 event. The owner's own clicks are never counted.
+function logProfileWhatsAppClick(slug: string, entityType: ProfileEntityType) {
   if (isInternalBrowser()) return;
-  trackEvent("click_phone_profile", { profile_slug: slug, profile_type: entityType, ...(entityType === "developer" ? { developer_slug: slug } : {}) });
+  trackEvent("click_whatsapp_profile", { profile_slug: slug, profile_type: entityType, ...(entityType === "developer" ? { developer_slug: slug } : {}) });
   if (entityType !== "developer") return;
-  fetch("/api/events/phone-click", {
+  fetch("/api/events/whatsapp-click", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ developerSlug: slug, sessionId: getSessionId(), trafficSource: getTrafficSource(), utm: getStoredUtmParams() }),
@@ -206,11 +206,9 @@ export function ProfileView({
           {following ? "Following" : followLabel}
         </button>
 
-        {entity.location || entity.phone || websiteLink ? (
+        {entity.location || websiteLink ? (
           <div className="developer-profile-contact">
             {entity.location ? <p>{entity.location}</p> : null}
-            {/* A record can hold several numbers separated by "/" — each gets its own line and tel: link. */}
-            {entity.phone ? entity.phone.split(/\s*\/\s*/).filter(Boolean).map((number) => <p key={number}><a href={`tel:${number.replace(/\s+/g, "")}`} onClick={() => logProfilePhoneClick(entity.slug, entityType)}>{number}</a></p>) : null}
             {websiteLink ? <a href={websiteLink} target="_blank" rel="noopener noreferrer">{websiteLink.replace(/^https?:\/\//, "")}</a> : null}
           </div>
         ) : null}
@@ -221,7 +219,7 @@ export function ProfileView({
               const Icon = SOCIAL_ICON[platform];
               if (!Icon) return null;
               return (
-                <a key={platform} href={url} target="_blank" rel="noreferrer noopener" aria-label={`Visit us on ${platform}`}>
+                <a key={platform} href={url} target="_blank" rel="noreferrer noopener" aria-label={`Visit us on ${platform}`} onClick={platform === "whatsapp" ? () => logProfileWhatsAppClick(entity.slug, entityType) : undefined}>
                   <Icon className="h-4 w-4" />
                 </a>
               );

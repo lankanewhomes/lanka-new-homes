@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { logRawAnalyticsEvent } from "@/lib/analytics-event";
+import { rateLimited } from "@/lib/rate-limit";
 
 // Fire-and-forget from the "Download Brochure" button (RequestInfoDialog) —
 // logs an Analytics "brochure_download" event. The caller never awaits this
@@ -8,6 +9,8 @@ import { logRawAnalyticsEvent } from "@/lib/analytics-event";
 // it would race the dedup check against a second rapid click, since after()
 // callbacks aren't ordered relative to the next incoming request.
 export async function POST(req: Request) {
+  const limited = rateLimited(req, "brochure-download", 60, 10 * 60 * 1000); // light: stops a script inflating the count; allowlisted bots are never limited
+  if (limited) return limited;
   const body = await req.json().catch(() => null);
   const projectSlug = body?.projectSlug;
   if (!projectSlug || typeof projectSlug !== "string") {

@@ -8174,27 +8174,34 @@ a.developer-profile-press-title {
 }
 
 .footer-social-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 24px;
+  margin-top: 18px;
 }
 
-.footer-social-icon {
+.footer-follow-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* Same outline pill as .footer-cta, with the network icon (owner, 2026-11-02: Instagram, TikTok and Facebook follow buttons). */
+.footer-follow-button {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
+  gap: 8px;
+  padding: 9px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
   border-radius: 999px;
-  background: #fff;
-  color: #1c1c20;
-  transition: background-color 0.15s ease;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  text-decoration: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
-.footer-social-icon:hover {
+.footer-follow-button:hover {
   background: #f47b36;
-  color: #fff;
+  border-color: #f47b36;
+  text-decoration: none;
 }
 
 .footer-brand-row {
@@ -8318,30 +8325,6 @@ a.developer-profile-press-title {
 @media (max-width: 760px) {
   .site-footer {
     padding: 44px 0 24px;
-  }
-
-  /* Phones: wordmark on the left and the social icons on the right of the same top row
-     (owner, 2026-09-25). Desktop keeps the icons above the wordmark. */
-  .footer-inner {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    column-gap: 16px;
-  }
-
-  .footer-inner > * {
-    grid-column: 1 / -1;
-  }
-
-  .footer-inner > .footer-brand-row {
-    grid-column: 1;
-    grid-row: 1;
-  }
-
-  .footer-inner > .footer-social-row {
-    grid-column: 2;
-    grid-row: 1;
-    align-self: start;
-    margin-bottom: 0;
   }
 
   .footer-brand-row {
@@ -15354,6 +15337,37 @@ body:has(.compare-bar) {
   margin-top: 14px;
 }
 
+/* Land overview: short distance / "close to" lines are grouped into one tight list (src/lib/description-blocks.ts) instead of one
+   widely spaced paragraph each (owner, 2026-11-02: "too many spaces"). */
+.project-description-paragraphs p + ul.project-description-list,
+.project-description-paragraphs ul.project-description-list + p {
+  margin-top: 14px;
+}
+.project-description-paragraphs ul.project-description-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+}
+.project-description-paragraphs ul.project-description-list:first-child {
+  margin-top: 0;
+}
+.project-description-paragraphs .project-description-list li {
+  position: relative;
+  padding-left: 16px;
+  line-height: 1.6;
+}
+.project-description-paragraphs .project-description-list li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 0.72em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #1f1f1f;
+}
 .project-description-paragraphs {
   margin: 12px 0 0;
   font-size: 14.5px;
@@ -20576,9 +20590,11 @@ body:has(.compare-bar) {
   border-width: 1px;
   border-style: solid;
 }
+/* Owner, 2026-11-04: "About the neighbourhood" uses the same grey dotted box as the Neighborhood block on project pages. */
 .neighborhood-page-content #overview.project-description-shell {
-  background-color: #ecf1ea; border-color: #c9d8c6;
-  background-image: repeating-linear-gradient(0deg, transparent 0 31px, rgba(86, 122, 80, 0.16) 31px 32px), repeating-linear-gradient(90deg, transparent 0 31px, rgba(86, 122, 80, 0.16) 31px 32px);
+  background-color: #f7f7f6; border-color: #e5e5e4;
+  background-image: radial-gradient(rgba(120, 113, 108, 0.3) 1.5px, transparent 0);
+  background-size: 16px 16px;
 }
 .neighborhood-page-content #faq.project-description-shell {
   background-color: #eceff3; border-color: #d3dae2;
@@ -20588,9 +20604,11 @@ body:has(.compare-bar) {
   background-color: #f7f1e6; border-color: #e6dcc6;
   background-image: repeating-linear-gradient(0deg, transparent 0 31px, rgba(150, 125, 80, 0.17) 31px 32px), repeating-linear-gradient(90deg, transparent 0 31px, rgba(150, 125, 80, 0.17) 31px 32px);
 }
+/* New homes box: the soft mint with teal lines of the New listings section on the home page (owner, 2026-11-04). */
 .neighborhood-page-content #projects.developer-projects-section {
-  background-color: #f1ecf3; border-color: #ddd2e3;
-  background-image: repeating-linear-gradient(0deg, transparent 0 31px, rgba(120, 95, 140, 0.15) 31px 32px), repeating-linear-gradient(90deg, transparent 0 31px, rgba(120, 95, 140, 0.15) 31px 32px);
+  background-color: #dfeae8; border-color: #c5d8d5;
+  --nl-cell: calc(min(1244px, 100vw - 36px) / 5);
+  background-image: repeating-linear-gradient(0deg, transparent 0 calc(var(--nl-cell) - 1px), rgba(40, 100, 96, 0.22) calc(var(--nl-cell) - 1px) var(--nl-cell)), repeating-linear-gradient(90deg, transparent 0 calc(var(--nl-cell) - 1px), rgba(40, 100, 96, 0.22) calc(var(--nl-cell) - 1px) var(--nl-cell));
 }
 .neighborhood-page-content #developers.developer-projects-section {
   background-color: #eceff3; border-color: #d3dae2;
@@ -20975,4 +20993,24 @@ body:has(.compare-bar) {
   .request-info-actions { margin: 0 -18px -18px; padding: 10px 18px 18px; }
   .request-info-actions-row { flex-direction: column; align-items: stretch; }
   .request-info-whatsapp-price, .request-info-actions .request-info-submit-big { width: 100%; }
+}
+
+/* Neighborhood pages (owner, 2026-11-04): land section gets its own sage box like the others, and the new-homes and land
+   listings slide sideways as carousels instead of a wrapping grid. */
+.neighborhood-page-content #land.developer-projects-section {
+  /* Same very light green box with soft green lines, 5 squares across, as the Land for sale section on the home page (owner, 2026-11-04). */
+  --nl-cell: calc(min(1244px, 100vw - 36px) / 5);
+  border: 1px solid #d3dcc6; background-color: #e8ede2;
+  background-image: repeating-linear-gradient(0deg, transparent 0 calc(var(--nl-cell) - 1px), rgba(85, 115, 75, 0.2) calc(var(--nl-cell) - 1px) var(--nl-cell)), repeating-linear-gradient(90deg, transparent 0 calc(var(--nl-cell) - 1px), rgba(85, 115, 75, 0.2) calc(var(--nl-cell) - 1px) var(--nl-cell));
+}
+.neighborhood-page-content .developer-projects-grid.listing-carousel {
+  display: flex; grid-template-columns: unset; gap: 20px;
+  overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+  padding-bottom: 8px; scrollbar-width: thin;
+}
+.neighborhood-page-content .developer-projects-grid.listing-carousel .listing-grid-card {
+  flex: 0 0 calc((100% - 60px) / 4); min-width: 240px; scroll-snap-align: start;
+}
+@media (max-width: 900px) {
+  .neighborhood-page-content .developer-projects-grid.listing-carousel .listing-grid-card { flex-basis: 82%; }
 }

@@ -25,6 +25,10 @@ Note: the in-code rate limit counts inside one running Worker instance, so it st
 6. **SSL/TLS → Always Use HTTPS: on; Minimum TLS 1.2.**
 7. Turn on **2-step verification** for the Cloudflare, GitHub, Supabase, Google and Zoho accounts.
 
+## Bots
+
+See [docs/bots.md](bots.md): allowlist (search engines, social previews, AI search) is never blocked or limited; only the SEO-scraper blocklist gets a 403; every bot visit is counted on the Bots page.
+
 ## Honest limits
 
 Anything a visitor can see in a browser can be copied by a determined person; the goal is to make bulk copying slow and expensive, and to stop writes. Public pages and the sitemap must stay readable for Google.

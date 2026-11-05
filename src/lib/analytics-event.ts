@@ -113,14 +113,21 @@ export async function logRawAnalyticsEvent(
     overrideAccess: true,
   });
   const projectDoc = projectRes.docs[0];
-  if (!projectDoc) return;
+  // Not a project: a land plot page uses the land's slug (landToProjectShape), so look it up there. Counters are project-only, so a land
+  // event is only kept in the log (and shown to the admin).
+  let landId: number | undefined;
+  if (!projectDoc) {
+    const landRes = await payload.find({ collection: "lands", where: { slug: { equals: args.projectSlug } }, limit: 1, depth: 0, overrideAccess: true });
+    landId = landRes.docs[0]?.id;
+    if (landId === undefined) return;
+  }
 
   const enrichment = buildEventEnrichment(request, { sessionId: args.sessionId, trafficSource: args.trafficSource, utm: args.utm });
 
   await payload.create({
     collection: "analytics",
     data: {
-      project: projectDoc.id,
+      ...(projectDoc ? { project: projectDoc.id } : { land: landId }),
       event_type: args.eventType,
       source_page: args.sourcePage,
       ...enrichment,

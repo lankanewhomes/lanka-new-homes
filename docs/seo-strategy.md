@@ -11,13 +11,14 @@ Update this file whenever a new keyword group or page is added.
 | `/projects` | All new projects, Sri Lanka wide | existing, rebuilt |
 | `/projects/pre-construction` | Pre-construction / off-plan / upcoming projects | new |
 | `/projects/colombo` | Colombo-specific projects | new |
-| `/projects/luxury` | Luxury apartments/condos across Sri Lanka (was Colombo-only until 2026-09-18) | new |
+| `/projects/luxury` | Luxury apartments/condos across Sri Lanka (was Colombo-only until 2026-09-18); title/H1 "New Luxury Apartments & Condos" and luxury condo keywords added 2026-11-05 (owner request) | new |
 | `/projects/branded-residences` | Branded residences | new |
 | `/projects/villas` | New villa developments | new |
 | `/projects/beachfront` | Beachfront/resort residences | new |
 | `/projects/serviced-apartments` | Serviced apartments | new |
 | `/projects/port-city-colombo` | Port City Colombo specific | new |
 | `/projects/brand-new-houses-for-sale` | "brand new house for sale in Sri Lanka" / new houses / new villas / townhouses — all House, Villas, Luxury Villas and Townhouse listings that are not Completed (added 2026-10-10, owner request) | new |
+| `/projects/gated-community-houses-for-sale` | "gated community house" / gated community houses for sale sri lanka — House, Villas, Luxury Villas and Townhouse listings that mention a gated community (added 2026-11-05, owner request) | new |
 | `/projects/prime-lands-apartments` | "Prime Lands apartments" / Prime Lands homes — every listing whose developer is Prime Lands (apartment drafts appear as they are published) (added 2026-10-11, owner request) | new |
 | `/land/best-land-for-sale-in-colombo` | "best land for sale in Colombo" — all land plots in the Colombo district, about text built from live counts (added 2026-10-11, owner request) | new |
 | `/land/cheap-land-for-sale-in-sri-lanka` | "cheap land for sale sri lanka" — the 60 lowest-priced plots by published price per perch; text from live data (added 2026-10-11, owner request) | new |
@@ -33,13 +34,18 @@ Update this file whenever a new keyword group or page is added.
 | `/blog` | Blog index (list of posts) | rebuilt (was a "check back soon" stub) 2026-09-29, now indexed — real content exists |
 | `/blog/{slug}` | Individual blog post | new 2026-09-29 — config in `src/lib/blog.ts`, same "add a record, add a route" pattern as `guides.ts`. First post: "7 Ways Sri Lankan Developers Can Make Their Project Websites Sell More Units" (targets developers researching web design, not buyer-side keywords) |
 | `/blog/before-buying-land-in-sri-lanka` | "buying land in sri lanka", "how to buy land in sri lanka", "land buying guide sri lanka", "land perch acre sri lanka" — buyer-side guide; title tag "Buying Land in Sri Lanka: A Simple Guide" (+ site suffix), answer-first intro, 10 internal links out into /land pages and 1 in from every /land SEO page (CHECKS text), visible breadcrumb + BreadcrumbList and BlogPosting JSON-LD, descriptive image alt text, 7 illustrations on R2 `blog/before-buying-land-in-sri-lanka/`, listed in /llms.txt; NO FAQ block (owner removed FAQs 2026-10-16) (added 2026-10-23, owner request, trimmed 2026-10-24) | new |
+| `/blog/questions-to-ask-before-buying-a-home-in-sri-lanka` | "questions to ask before buying an apartment sri lanka", "developer deed delay", "payment plan new home sri lanka" — built from what buyers ask on Reddit r/srilanka (deeds not given on time, build quality, show units, late handover). PUBLISHED 2026-11-02 (no FAQ block) (added 2026-11-02) | new |
+| `/blog/land-apartment-or-house-in-sri-lanka` | "land vs apartment vs house sri lanka", "buy land or apartment sri lanka" — comparison from the same Reddit research (apartment vs land plus build vs existing house). PUBLISHED 2026-11-02 (added 2026-11-02) | new |
 | `/construction-companies` | Construction company directory | rebuilt (was a stub) |
+| `/construction-companies/custom-home-construction` | "custom home construction" / home builders sri lanka — house-building companies (general and Colombo categories) (added 2026-11-05, owner request) | new |
 | `/construction-companies/colombo` | Colombo-specific construction companies | new |
 | `/construction-companies/swimming-pools` | Pool construction companies | new |
 | `/construction-companies/consulting` | Construction consultants | new |
 | `/land` | Land parcel listings (separate from projects) | new, no listings yet |
 | `/land/{slug}` | Individual land listing detail page | new, no listings yet |
-| `/neighborhoods/{slug}` | Neighborhood guide (highlights, nearby places, homes in that area). Title is `Property for Sale in {Name}: {n} New Homes & Listings` (real listing count; `{Name}, {City}: Area Guide, Land & New Homes for Sale` when none), description about 160 characters (2026-11-01, from Search Console: meegoda, kiriwaththuduwa, ganemulla, thalawathugoda, raddolugama were shown 600-1,000 times with ~0 clicks) | existing — no `/neighborhoods` index/hub page yet, only detail pages |
+| `/neighborhoods/{slug}` | Neighborhood guide (highlights, nearby places, homes in that area). Title is `Houses & Land for Sale in {Name}: {n} New Homes` (real listing count; `Houses & Land for Sale in {Name}, {City}: Area Guide` when none), with a "Land for sale in {Name}" section of the plots whose city is the area (2026-11-02, was `Property for Sale in {Name}…` from 2026-11-01), description about 160 characters (2026-11-01, from Search Console: meegoda, kiriwaththuduwa, ganemulla, thalawathugoda, raddolugama were shown 600-1,000 times with ~0 clicks) | existing — no `/neighborhoods` index/hub page yet, only detail pages |
+| `/neighborhoods` | Areas hub: every area page grouped by district with live counts of new homes and land plots, plus links to the district land pages (added 2026-11-02, from docs/seo-opportunities-2026-11-02.md) | new |
+| `/land/district/{district}` | "Land for sale in {district} district": one page per district that has land (15 today; Colombo redirects to `/land/best-land-for-sale-in-colombo`); text from live data in `src/lib/land-seo-pages.tsx` (added 2026-11-02) | new |
 | `/architects`, `/architects/{slug}` | Architect directory + profiles | existing |
 | `/interior-designers`, `/interior-designers/{slug}` | Interior designer directory + profiles | existing |
 | `/marketing-companies`, `/marketing-companies/{slug}` | Marketing company directory + profiles | existing |
@@ -382,3 +388,17 @@ Owner: the site now gets real traffic from AI assistants. What is in place:
 - **Server-rendered HTML**: listing facts are in the first HTML response (AI crawlers do not run JavaScript reliably).
 - **AI traffic channel**: visitors referred by chatgpt.com, perplexity.ai, claude.ai, gemini.google.com, copilot.microsoft.com etc. (or `utm_source=chatgpt.com`) are stored as `traffic_source = ai_assistant` (`src/lib/ai-traffic.ts`) and labelled "AI assistants" in the analytics summary. GA4 itself still lists them as referral — create a custom channel group in GA4 Admin to split them there.
 - Not done on purpose: no FAQ blocks (owner removed them 2026-10-16); llms.txt is optional for the big assistants (no evidence they rely on it), kept because it is cheap.
+
+
+## 2026-11-02 additions (from docs/seo-opportunities-2026-11-02.md)
+
+- New area pages (written from Wikipedia facts, one Commons photo each, credited): maharagama, wellawatte, matale, bandarawela, peradeniya, borella, avissawella, padukka, vavuniya, colombo-01 (Fort), colombo-10 (Maradana), colombo-11 (Pettah), colombo-12 (Hulftsdorp), colombo-13 (Kotahena). Colombo 03, 04 and 09 are covered by the Kollupitiya, Bambalapitiya and Dematagoda pages; Colombo 15 (Mutwal/Modara) is not added yet (no usable photo, very little published text). Texts are short (80 to 165 words): add landmarks, photos and sources over time.
+- Developer profile default title: `{Name}: Projects, Prices & Contact`; description starts with the live project and land counts. A title or description set in the CMS SEO tab still wins.
+
+## Site name and one address (2026-11-05)
+
+Google showed `lankanewhomes.com` above the result instead of "LankaNewHomes". The WebSite markup (name LankaNewHomes, alternate "Lanka New Homes",
+url www) was already on the homepage, but the bare domain served the same site with no redirect and the homepage had no canonical, so Google
+indexed the bare domain. Fix: `lankanewhomes.com/*` now 301-redirects to `www.lankanewhomes.com/*` (next.config.ts) and the homepage has
+`rel=canonical` to www. Google refreshes the site name on its own schedule (days to weeks); request indexing of the homepage in Search Console
+to speed it up.

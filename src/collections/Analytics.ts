@@ -30,7 +30,7 @@ export const Analytics: CollectionConfig = {
   admin: {
     useAsTitle: 'event_type',
     group: 'Business',
-    defaultColumns: ['event_type', 'project', 'traffic_source', 'device_type', 'is_duplicate', 'timestamp'],
+    defaultColumns: ['event_type', 'project', 'land', 'traffic_source', 'device_type', 'is_duplicate', 'timestamp'],
     // Raw per-event rows aren't useful to look at directly — this replaces
     // the default list table with an aggregated dashboard (stat cards,
     // traffic source/device breakdowns, a by-listing table, trend chart —
@@ -55,7 +55,9 @@ export const Analytics: CollectionConfig = {
     afterChange: [recordAnalyticsEvent],
   },
   fields: [
-    { name: 'project', type: 'relationship', relationTo: 'projects', required: true, index: true, label: 'Listing' },
+    // A project OR a land listing: events on a land page set `land` and leave `project` empty (admin-only visibility, see access.ts).
+    { name: 'project', type: 'relationship', relationTo: 'projects', index: true, label: 'Listing' },
+    { name: 'land', type: 'relationship', relationTo: 'lands', index: true, label: 'Land listing', admin: { description: 'Set instead of Listing when the event happened on a land plot page.' } },
     {
       name: 'developer',
       type: 'relationship',
@@ -101,7 +103,7 @@ export const Analytics: CollectionConfig = {
     },
 
     // Attribution.
-    { name: 'traffic_source', type: 'text', label: 'Traffic Source', admin: { description: 'organic_search / ai_assistant / organic_social / paid_search / paid_social / referral / direct.' } },
+    { name: 'traffic_source', type: 'text', label: 'Traffic Source', admin: { description: 'organic_search / ai_assistant / organic_social / paid_search / paid_social / referral / email / direct.' } },
     { name: 'referrer', type: 'text', label: 'Referrer URL' },
     { name: 'utm_source', type: 'text', label: 'UTM source', admin: { description: 'From the link the visitor came in on, e.g. instagram or facebook (our social post links).' } },
     { name: 'utm_medium', type: 'text', label: 'UTM medium' },

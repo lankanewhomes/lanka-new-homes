@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { HomeClient } from "@/components/marketplace/home-client";
 import { getAllProjects } from "@/lib/project-store";
 import { getAllLands } from "@/lib/land-store";
@@ -7,6 +8,9 @@ import { newListingsCutoff } from "@/lib/new-listings";
 import { rotationSeed } from "@/lib/daily-rotation";
 import { countFloorPlans, slimForHome } from "@/lib/home-slim";
 import { popularSearchGroups } from "@/lib/popular-searches";
+
+// The homepage's own canonical, so www is the one address Google keeps.
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 // Regenerate at most once a minute so admin edits show up without waiting for the next deploy.
 export const revalidate = 60;

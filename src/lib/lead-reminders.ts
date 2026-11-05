@@ -1,4 +1,5 @@
 import type { Payload } from 'payload'
+import { loadLeadListing } from '@/lib/lead-listing'
 import { resolveLeadAlertRouting } from '@/lib/lead-alerts'
 import { leadReminderSubject, renderLeadReminderEmailHTML } from '@/lib/lead-reminder-email'
 import { leadReplyUrl } from '@/lib/lead-reply-links'
@@ -66,8 +67,8 @@ export async function sendLeadReminders(payload: Payload, opts: { now?: Date; en
     const routing = await resolveLeadAlertRouting(payload, text(lead.email) || null)
     if (routing.mode === 'test') { results.push({ id, reminder: next, status: 'skipped', why: `test lead (${routing.reason})` }); continue }
 
-    const projectId = relId(lead.project)
-    const project = projectId ? ((await payload.findByID({ collection: 'projects', id: projectId, depth: 0, overrideAccess: true }).catch(() => null)) as unknown as AnyDoc | null) : null
+    const listing = await loadLeadListing(payload, lead as { project?: unknown; land?: unknown })
+    const project = listing?.doc ?? null
     if (!project) { results.push({ id, reminder: next, status: 'skipped', why: 'no project' }); continue }
     const developerId = relId(project.developer)
     const developerDoc = developerId ? ((await payload.findByID({ collection: 'developers', id: developerId, depth: 0, overrideAccess: true }).catch(() => null)) as unknown as AnyDoc | null) : null

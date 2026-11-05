@@ -4,9 +4,10 @@ import type { LeadPipelineSummary } from '@/lib/lead-pipeline'
 import { fromAnalyticsStart } from '@/lib/analytics-start'
 import { dayEndIso, dayKey, dayStartIso } from '@/lib/analytics-time'
 import { isDatacenterCity } from '@/lib/datacenter-traffic'
+import { ourSourceBucket, type CompareSide } from '@/lib/analytics-compare'
 
 export type AnalyticsBreakdownRow = { key: string; label: string; count: number; percent: number }
-export type ListingBreakdownRow = { projectId: string | number; projectName: string; projectSlug: string; total: number; byType: Record<string, number> }
+export type ListingBreakdownRow = { projectId: string | number; projectName: string; projectSlug: string; /** 'land' for a land plot page (projectId is then the land id). */ kind?: 'land'; total: number; byType: Record<string, number> }
 export type DeveloperBreakdownRow = { developerId: string | number; developerName: string; total: number; byType: Record<string, number> }
 export type SocialCampaignRow = { source: string; campaign: string; projectName: string; views: number; contacts: number; total: number }
 export type TrendPoint = { date: string; count: number }
@@ -21,6 +22,10 @@ export type AnalyticsSummaryResponse = {
   byListing: ListingBreakdownRow[]
   byDeveloper?: DeveloperBreakdownRow[]
   trend: TrendPoint[]
+  /** Distinct browsers that viewed a listing in the range (same idea as GA4's Users on view_listing). */
+  visitors: number
+  /** Page views, visitors and page views per source, in the buckets used for the Google Analytics side-by-side (src/lib/analytics-compare.ts). */
+  viewCompare: CompareSide
   /** Page views only, per Sri Lanka day. */
   viewsTrend: TrendPoint[]
   /** Visits and contact actions that came in on our Instagram / Facebook post links (utm_medium=social), one row per source and campaign. */
@@ -43,6 +48,7 @@ const TRAFFIC_SOURCE_LABELS: Record<string, string> = {
   paid_search: 'Google Ads',
   paid_social: 'Facebook & Instagram Ads',
   referral: 'Referral',
+  email: 'Email',
   direct: 'Direct',
 }
 
@@ -101,6 +107,9 @@ export async function buildAnalyticsSummary(
   const listingMap = new Map<string, ListingBreakdownRow>()
   const developerMap = new Map<string, DeveloperBreakdownRow>()
   const socialMap = new Map<string, SocialCampaignRow>()
+  const viewers = new Set<string>()
+  const viewSources: CompareSide['sources'] = {}
+  let viewCount = 0
 
   for (const doc of docs) {
     const eventType = String(doc.event_type ?? 'unknown')
@@ -108,6 +117,13 @@ export async function buildAnalyticsSummary(
 
     const source = (doc.traffic_source as string | null) || 'direct'
     trafficSourceCounts.set(source, (trafficSourceCounts.get(source) ?? 0) + 1)
+
+    if (eventType === 'view') {
+      viewCount += 1
+      viewers.add(doc.session_id ? `s:${String(doc.session_id)}` : `e:${String(doc.id)}`) // no browser id: count the view as its own visitor
+      const bucket = ourSourceBucket(source)
+      viewSources[bucket] = (viewSources[bucket] ?? 0) + 1
+    }
 
     if (String(doc.utm_medium ?? '').toLowerCase() === 'social' && doc.utm_source) {
       const proj = doc.project as { name?: string } | string | number | null
@@ -130,6 +146,23 @@ export async function buildAnalyticsSummary(
 
     const project = doc.project as { id?: string | number; name?: string; slug?: string } | string | number | null
     const projectId = relId(project)
+    const land = doc.land as { id?: string | number; title?: string; slug?: string } | string | number | null
+    const landId = relId(land)
+    if (projectId == null && landId != null) {
+      // Land plot page event (admin summary only: a developer's scoped query filters by project).
+      const key = `land-${landId}`
+      const existing = listingMap.get(key) ?? {
+        projectId: landId,
+        projectName: typeof land === 'object' && land ? (land.title ?? 'Untitled land') : 'Untitled land',
+        projectSlug: typeof land === 'object' && land ? (land.slug ?? '') : '',
+        kind: 'land' as const,
+        total: 0,
+        byType: {},
+      }
+      existing.total += 1
+      existing.byType[eventType] = (existing.byType[eventType] ?? 0) + 1
+      listingMap.set(key, existing)
+    }
     if (projectId != null) {
       const key = String(projectId)
       const existing = listingMap.get(key) ?? {
@@ -187,6 +220,8 @@ export async function buildAnalyticsSummary(
     byListing: Array.from(listingMap.values()).sort((a, b) => b.total - a.total),
     byDeveloper: includeByDeveloper ? Array.from(developerMap.values()).sort((a, b) => b.total - a.total) : undefined,
     trend,
+    visitors: viewers.size,
+    viewCompare: { views: viewCount, visitors: viewers.size, sources: viewSources },
     viewsTrend,
     socialCampaigns: Array.from(socialMap.values()).sort((a, b) => b.total - a.total),
   }

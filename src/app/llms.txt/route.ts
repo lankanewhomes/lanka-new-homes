@@ -34,6 +34,8 @@ export async function GET() {
     `- [Neighbourhood guides](${site}/neighborhoods): area guides with landmarks and the projects in each area`,
     `- [Guides](${site}/guides): buying guides for new homes in Sri Lanka`,
     `- [Before buying land in Sri Lanka](${site}/blog/before-buying-land-in-sri-lanka): short guide to perches, deeds, survey plans, title checks and building approvals`,
+    `- [Questions to ask a developer before you buy](${site}/blog/questions-to-ask-before-buying-a-home-in-sri-lanka): deeds, payment schedules, build progress, finishes and late handover`,
+    `- [Land, apartment or house in Sri Lanka](${site}/blog/land-apartment-or-house-in-sri-lanka): cost, work and risk of each choice`,
     `- [For developers](${site}/for-developers): how developers list projects`,
     `- [About](${site}/about)`,
     `- [Contact](${site}/contact)`,

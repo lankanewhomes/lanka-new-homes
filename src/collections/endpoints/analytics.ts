@@ -4,7 +4,8 @@ import { buildListingAnalyticsReport, type AnalyticsRange } from '@/lib/analytic
 import { buildAnalyticsSummary } from '@/lib/analytics-summary'
 import { buildLeadPipelineSummary } from '@/lib/lead-pipeline'
 import { addDays, dayKey } from '@/lib/analytics-time'
-import { isGa4DataApiConfigured, runGa4Report } from '@/lib/ga4-data-client'
+import { isGa4DataApiConfigured, runGa4Report, type Ga4Filter } from '@/lib/ga4-data-client'
+import { googleChannelBucket, type CompareSide } from '@/lib/analytics-compare'
 import { getSearchConsoleRows } from '@/lib/search-console-client'
 
 function defaultRange(): { startDate: string; endDate: string } {
@@ -111,6 +112,8 @@ export const analyticsSummaryEndpoint: Endpoint = {
         deviceTypes: [],
         byListing: [],
         trend: [],
+        visitors: 0,
+        viewCompare: { views: 0, visitors: 0, sources: {} },
       })
     }
 
@@ -132,7 +135,7 @@ export const analyticsSummaryEndpoint: Endpoint = {
 
 // GET /payload-api/site-report/:kind?startDate=&endDate= — the whole-site GA4 reports behind the Analytics sub-pages (events, traffic,
 // pages, keywords). Admin only: GA4 numbers cover every listing, and a developer must only ever see their own. Days are GA4's own days.
-// kind: events | traffic | pages | geo | on-site-search | google-queries | google-pages
+// kind: events | traffic | pages | geo | on-site-search | google-queries | google-pages | keyword-volumes | bots
 export const siteReportEndpoint: Endpoint = {
   path: '/site-report/:kind',
   method: 'get',
@@ -149,6 +152,25 @@ export const siteReportEndpoint: Endpoint = {
       return Response.json({ range: { startDate, endDate }, ...result })
     }
 
+    // Monthly searches (Sri Lanka) per keyword, from Ubersuggest, saved in keyword_volumes by a refresh run (the site cannot call Ubersuggest).
+    if (kind === 'keyword-volumes') {
+      const { supabaseAdmin } = await import('@/lib/supabase')
+      const volumes = await supabaseAdmin.from('keyword_volumes').select('keyword, country, location, monthly_searches, cpc, seo_difficulty, search_intent, checked_at').limit(5000)
+      if (volumes.error) return Response.json({ error: `Could not read keyword volumes: ${volumes.error.message}` }, { status: 500 })
+      return Response.json({ range: { startDate, endDate }, rows: volumes.data ?? [] })
+    }
+
+    // Bot visits counted by middleware.ts (table bot_daily_stats, Sri Lanka days) — see src/lib/bots.ts.
+    if (kind === 'bots') {
+      const { supabaseAdmin } = await import('@/lib/supabase')
+      const [rows, googlebot] = await Promise.all([
+        supabaseAdmin.from('bot_daily_stats').select('date, bot_name, category, action, hits, last_path, last_seen').gte('date', startDate).lte('date', endDate).limit(20000),
+        supabaseAdmin.from('bot_daily_stats').select('last_seen').eq('bot_name', 'Googlebot').order('last_seen', { ascending: false }).limit(1),
+      ])
+      if (rows.error) return Response.json({ error: `Could not read bot visits: ${rows.error.message}` }, { status: 500 })
+      return Response.json({ range: { startDate, endDate }, configured: true, rows: rows.data ?? [], googlebotLastSeen: googlebot.data?.[0]?.last_seen ?? null })
+    }
+
     if (!isGa4DataApiConfigured()) return Response.json({ range: { startDate, endDate }, configured: false, rows: [] })
     const report = (dimensions: string[], metrics: string[], extra: { filters?: { field: string; value: string }[]; limit?: number } = {}) =>
       runGa4Report({ startDate, endDate, dimensions, metrics, orderByMetric: metrics[0], limit: extra.limit ?? 100, filters: extra.filters })
@@ -162,5 +184,42 @@ export const siteReportEndpoint: Endpoint = {
     else return Response.json({ error: 'Unknown report.' }, { status: 404 })
 
     return Response.json({ range: { startDate, endDate }, configured: true, rows })
+  },
+}
+
+// GET /payload-api/analytics-google?startDate=&endDate= — Google Analytics' own count of the same thing the dashboard counts:
+// listing page views (view_listing), visitors who viewed a listing, and those views per source, for the side-by-side on the
+// Analytics page. An admin gets the whole site; a developer only the listings they manage (filtered on listing_id, the same
+// listings as their own analytics-summary). Days are Sri Lanka days (GA4 property time zone). Nothing is stored.
+export const analyticsGoogleEndpoint: Endpoint = {
+  path: '/analytics-google',
+  method: 'get',
+  handler: async (req: PayloadRequest) => {
+    if (!req.user) return Response.json({ error: 'Not signed in.' }, { status: 401 })
+    const url = new URL(req.url ?? '', 'http://localhost')
+    const { startDate, endDate } = parseRange(url)
+    if (!isGa4DataApiConfigured()) return Response.json({ range: { startDate, endDate }, configured: false, google: null })
+
+    const filters: Ga4Filter[] = [{ field: 'eventName', value: 'view_listing' }]
+    if (!isAdmin(req)) {
+      const projectIds = await getOwnedProjectIds(req)
+      const slugs = projectIds.length === 0 ? [] : (
+        await req.payload.find({ collection: 'projects', where: { id: { in: projectIds } }, limit: 1000, depth: 0, overrideAccess: true, select: { slug: true }, req })
+      ).docs.map((d) => String((d as { slug?: string }).slug ?? '')).filter(Boolean)
+      if (slugs.length === 0) return Response.json({ range: { startDate, endDate }, configured: true, google: { views: 0, visitors: 0, sources: {} } satisfies CompareSide })
+      filters.push({ field: 'customEvent:listing_id', values: slugs })
+    }
+
+    const [totals, channels] = await Promise.all([
+      runGa4Report({ startDate, endDate, dimensions: [], metrics: ['eventCount', 'totalUsers'], filters }),
+      runGa4Report({ startDate, endDate, dimensions: ['sessionDefaultChannelGroup'], metrics: ['eventCount'], filters, limit: 50 }),
+    ])
+    const sources: CompareSide['sources'] = {}
+    for (const row of channels) {
+      const bucket = googleChannelBucket(row.dimensionValues[0])
+      sources[bucket] = (sources[bucket] ?? 0) + Math.round(row.metricValues[0] ?? 0)
+    }
+    const google: CompareSide = { views: Math.round(totals[0]?.metricValues[0] ?? 0), visitors: Math.round(totals[0]?.metricValues[1] ?? 0), sources }
+    return Response.json({ range: { startDate, endDate }, configured: true, google })
   },
 }

@@ -2828,6 +2828,7 @@ export interface Project {
         | 'Under Construction'
         | 'Launching Soon'
         | 'Nearly Sold Out'
+        | 'Sold Out'
         | 'Nearly Complete'
         | 'Completed'
       )
@@ -7716,7 +7717,19 @@ export interface Outreach {
 export interface Lead {
   id: number;
   user?: (number | null) | User;
-  project: number | Project;
+  /**
+   * A lead is for a project or for a land plot.
+   */
+  project?: (number | null) | Project;
+  land?: (number | null) | Land;
+  /**
+   * Filled in automatically from the project or land.
+   */
+  listing_name?: string | null;
+  /**
+   * Filled in automatically from the listing.
+   */
+  developer_name?: string | null;
   /**
    * Set automatically when the buyer asked from a floor-plan page (e.g. "Unit A · 3 bed · 1,300 SqFt").
    */
@@ -8087,7 +8100,11 @@ export interface Review {
  */
 export interface Analytics {
   id: number;
-  project: number | Project;
+  project?: (number | null) | Project;
+  /**
+   * Set instead of Listing when the event happened on a land plot page.
+   */
+  land?: (number | null) | Land;
   /**
    * Auto-filled from the listing — the builder this event rolls up to.
    */
@@ -9960,6 +9977,9 @@ export interface SubscriptionsSelect<T extends boolean = true> {
 export interface LeadsSelect<T extends boolean = true> {
   user?: T;
   project?: T;
+  land?: T;
+  listing_name?: T;
+  developer_name?: T;
   floor_plan?: T;
   source?: T;
   name?: T;
@@ -10032,6 +10052,7 @@ export interface ReviewsSelect<T extends boolean = true> {
  */
 export interface AnalyticsSelect<T extends boolean = true> {
   project?: T;
+  land?: T;
   developer?: T;
   event_type?: T;
   timestamp?: T;

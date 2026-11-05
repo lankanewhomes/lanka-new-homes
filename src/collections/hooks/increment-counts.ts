@@ -96,8 +96,9 @@ async function logEvent(
   event_type: 'save' | 'lead_submitted',
   projectId: string | number | undefined,
   userId: string | number | null | undefined,
+  landId?: string | number,
 ) {
-  if (!projectId) return
+  if (!projectId && !landId) return
   if (req.context?.skipAnalytics) return // inquiry sent from the owner's own browser — keep the lead, skip the analytics event
   const enrichment = (req.context?.analyticsEnrichment as AnalyticsEnrichment | undefined) ?? {}
   await req.payload.create({
@@ -107,7 +108,7 @@ async function logEvent(
     // ids are always numeric, but narrowing the shared helper isn't worth
     // it here.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    data: { project: projectId, event_type, user: userId ?? undefined, ...enrichment } as any,
+    data: { ...(projectId ? { project: projectId } : { land: landId }), event_type, user: userId ?? undefined, ...enrichment } as any,
     overrideAccess: true,
     req,
   })
@@ -117,7 +118,7 @@ async function logEvent(
 // event (and its counter bump) happens automatically — no dependency on the
 // future frontend remembering to log it separately.
 export const logLeadSubmitted: CollectionAfterChangeHook = async ({ doc, operation, req }) => {
-  if (operation === 'create') await logEvent(req, 'lead_submitted', relatedId(doc.project), relatedId(doc.user))
+  if (operation === 'create') await logEvent(req, 'lead_submitted', relatedId(doc.project), relatedId(doc.user), relatedId(doc.land))
   return doc
 }
 

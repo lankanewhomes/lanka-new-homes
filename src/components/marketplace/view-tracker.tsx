@@ -3,8 +3,24 @@
 import { useEffect } from "react";
 import { captureUtmParams, getStoredUtmParams, getTrafficSource, trackEvent } from "@/lib/ga4";
 import { isInternalBrowser } from "@/lib/internal-traffic";
+import { shouldSendBrowserView } from "@/lib/analytics-compare";
 
 export const SESSION_KEY = "newhomessrilanka-session-id";
+const BROWSER_VIEW_KEY = "lnh-view-sent:";
+
+/** Google / Meta get a listing view once per 30 minutes per browser, the same rule our own count uses, so the numbers line up. */
+function claimBrowserView(projectSlug: string): boolean {
+  try {
+    const key = BROWSER_VIEW_KEY + projectSlug;
+    const raw = localStorage.getItem(key);
+    const now = Date.now();
+    if (!shouldSendBrowserView(raw ? Number(raw) : null, now)) return false;
+    localStorage.setItem(key, String(now));
+    return true;
+  } catch {
+    return true; // storage blocked: send it, as before
+  }
+}
 
 export function getSessionId() {
   const existing = localStorage.getItem(SESSION_KEY);
@@ -39,6 +55,7 @@ export function ProjectViewTracker({
     // listing_id is passed as a custom event parameter (not GA4's built-in
     // item_id) so it can be filtered on directly in GA4/Looker Studio — see
     // docs/analytics.md for the GA4-side custom dimension setup this needs.
+    if (!claimBrowserView(projectSlug)) return;
     trackEvent("view_listing", { listing_id: projectSlug, listing_name: projectName, ...(developerSlug ? { developer_slug: developerSlug } : {}) });
   }, [projectSlug, projectName, developerSlug]);
 
