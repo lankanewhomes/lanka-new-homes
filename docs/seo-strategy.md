@@ -392,3 +392,11 @@ Owner: the site now gets real traffic from AI assistants. What is in place:
 
 - New area pages (written from Wikipedia facts, one Commons photo each, credited): maharagama, wellawatte, matale, bandarawela, peradeniya, borella, avissawella, padukka, vavuniya, colombo-01 (Fort), colombo-10 (Maradana), colombo-11 (Pettah), colombo-12 (Hulftsdorp), colombo-13 (Kotahena). Colombo 03, 04 and 09 are covered by the Kollupitiya, Bambalapitiya and Dematagoda pages; Colombo 15 (Mutwal/Modara) is not added yet (no usable photo, very little published text). Texts are short (80 to 165 words): add landmarks, photos and sources over time.
 - Developer profile default title: `{Name}: Projects, Prices & Contact`; description starts with the live project and land counts. A title or description set in the CMS SEO tab still wins.
+
+## Site name and one address (2026-11-05)
+
+Google showed `lankanewhomes.com` above the result instead of "LankaNewHomes". The WebSite markup (name LankaNewHomes, alternate "Lanka New Homes",
+url www) was already on the homepage, but the bare domain served the same site with no redirect and the homepage had no canonical, so Google
+indexed the bare domain. Fix: `lankanewhomes.com/*` now 301-redirects to `www.lankanewhomes.com/*` (next.config.ts) and the homepage has
+`rel=canonical` to www. Google refreshes the site name on its own schedule (days to weeks); request indexing of the homepage in Search Console
+to speed it up.
