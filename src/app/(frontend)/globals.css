@@ -20604,9 +20604,10 @@ body:has(.compare-bar) {
   background-color: #f7f1e6; border-color: #e6dcc6;
   background-image: repeating-linear-gradient(0deg, transparent 0 31px, rgba(150, 125, 80, 0.17) 31px 32px), repeating-linear-gradient(90deg, transparent 0 31px, rgba(150, 125, 80, 0.17) 31px 32px);
 }
+/* New homes box: the soft mint with teal lines of the New listings section on the home page (owner, 2026-11-04). */
 .neighborhood-page-content #projects.developer-projects-section {
-  background-color: #f1ecf3; border-color: #ddd2e3;
-  background-image: repeating-linear-gradient(0deg, transparent 0 31px, rgba(120, 95, 140, 0.15) 31px 32px), repeating-linear-gradient(90deg, transparent 0 31px, rgba(120, 95, 140, 0.15) 31px 32px);
+  background-color: #dfeae8; border-color: #c5d8d5;
+  background-image: repeating-linear-gradient(0deg, transparent 0 63px, rgba(40, 100, 96, 0.22) 63px 64px), repeating-linear-gradient(90deg, transparent 0 63px, rgba(40, 100, 96, 0.22) 63px 64px);
 }
 .neighborhood-page-content #developers.developer-projects-section {
   background-color: #eceff3; border-color: #d3dae2;
