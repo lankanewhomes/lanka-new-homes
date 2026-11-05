@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Building2, Compass, Home, Map as MapIcon, MapPin, Route } from "lucide-react";
+import { Building2, Compass, Home, LandPlot, Map as MapIcon, MapPin, Route } from "lucide-react";
 import { getAllNeighborhoods, getNeighborhoodBySlug } from "@/lib/neighborhood-store";
 import { getAllProjects } from "@/lib/project-store";
 import { getAllLands } from "@/lib/land-store";
@@ -154,7 +154,9 @@ export default async function NeighborhoodPage({ params }: NeighborhoodPageProps
     ...(neighborhood.approxLocation ? [{ icon: Compass, label: "Approx. location", value: neighborhood.approxLocation }] : []),
     ...(nearbyAreas.length > 0 ? [{ icon: Route, label: "Nearby major areas", value: nearbyAreas.slice(0, 3).map((areaItem) => areaItem.name).join(", ") }] : []),
     ...(propertyTypes.length > 0 ? [{ icon: Home, label: "Typical property types", value: propertyTypes.join(", ") }] : []),
-    ...(neighborhoodProjects.length > 0 ? [{ icon: Building2, label: "New projects", value: String(neighborhoodProjects.length) }] : []),
+    // Always shown, even at 0, so every area page states how many projects and land plots are listed.
+    { icon: Building2, label: "New projects", value: String(neighborhoodProjects.length) },
+    { icon: LandPlot, label: "Land plots", value: String(areaLands.length) },
   ];
 
   const whatsNearbySection = nearbyGroups.length > 0 ? (
