@@ -2828,6 +2828,7 @@ export interface Project {
         | 'Under Construction'
         | 'Launching Soon'
         | 'Nearly Sold Out'
+        | 'Sold Out'
         | 'Nearly Complete'
         | 'Completed'
       )
@@ -7716,7 +7717,11 @@ export interface Outreach {
 export interface Lead {
   id: number;
   user?: (number | null) | User;
-  project: number | Project;
+  /**
+   * A lead is for a project or for a land plot.
+   */
+  project?: (number | null) | Project;
+  land?: (number | null) | Land;
   /**
    * Set automatically when the buyer asked from a floor-plan page (e.g. "Unit A · 3 bed · 1,300 SqFt").
    */
@@ -9964,6 +9969,7 @@ export interface SubscriptionsSelect<T extends boolean = true> {
 export interface LeadsSelect<T extends boolean = true> {
   user?: T;
   project?: T;
+  land?: T;
   floor_plan?: T;
   source?: T;
   name?: T;

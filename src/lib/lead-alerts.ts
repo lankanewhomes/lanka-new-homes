@@ -27,6 +27,7 @@ import { renderLeadAlertEmailHTML } from '@/lib/lead-alert-email'
 import { leadNoticeSubject, renderLeadNoticeHTML } from '@/lib/lead-notice-email'
 import { renderLeadConfirmationEmailHTML } from '@/lib/lead-confirmation-email'
 import { leadReplyUrl } from '@/lib/lead-reply-links'
+import { loadLeadListing } from '@/lib/lead-listing'
 import { buyerWhatsAppMessage, toWhatsAppNumber, whatsappChatHref } from '@/lib/whatsapp'
 import { isWhatsAppCloudConfigured, sendWhatsAppTemplate } from '@/lib/whatsapp-cloud'
 
@@ -35,6 +36,7 @@ type AnyDoc = Record<string, unknown>
 export type LeadLike = {
   id: string | number
   project?: unknown
+  land?: unknown
   name?: unknown
   email?: unknown
   phone?: unknown
@@ -116,11 +118,10 @@ export async function sendLeadAlerts(payload: Payload, lead: LeadLike, opts: { r
   const routing = await resolveLeadAlertRouting(payload, text(lead.email) || null)
   const outcome: LeadAlertOutcome = { email: 'skipped', whatsapp: 'skipped', buyer: 'skipped', to: { email: null, whatsapp: null }, routing: routing.reason }
 
-  const projectId = relId(lead.project)
-  if (!projectId) return { ...outcome, detail: 'lead has no project' }
-  const project = (await payload.findByID({ collection: 'projects', id: projectId, depth: 0, overrideAccess: true })) as unknown as AnyDoc | null
-  if (!project) return { ...outcome, detail: 'project not found' }
-
+  const listing = await loadLeadListing(payload, lead)
+  if (!listing) return { ...outcome, detail: 'lead has no listing' }
+  const project = listing.doc
+  const projectId = listing.id
   const developerId = relId(project.developer)
   const developerDoc = developerId ? ((await payload.findByID({ collection: 'developers', id: developerId, depth: 0, overrideAccess: true })) as unknown as AnyDoc | null) : null
   if (!developerDoc) return { ...outcome, detail: 'project has no developer' }
@@ -161,7 +162,7 @@ export async function sendLeadAlerts(payload: Payload, lead: LeadLike, opts: { r
   const listingEmail = text((project.contact as AnyDoc | undefined)?.email)
   // Team members who handle this listing (confirmed accounts only, so an unconfirmed address never receives buyer details).
   const teamEmails: string[] =
-    routing.mode === 'test'
+    routing.mode === 'test' || listing.kind === 'land'
       ? []
       : (
           await payload
@@ -193,7 +194,7 @@ export async function sendLeadAlerts(payload: Payload, lead: LeadLike, opts: { r
   const serverURL = payload.config.serverURL || process.env.NEXT_PUBLIC_SITE_URL || 'https://www.lankanewhomes.com'
   const brochureRequest = text(lead.source) === 'brochure_request'
   const brochure = brochureRequest ? { requested: true, sent: Boolean(text(project.brochureUrl)) } : null
-  const projectUrl = `${serverURL}/projects/${text(project.slug)}`
+  const projectUrl = `${serverURL}${listing.basePath}/${text(project.slug)}`
   const dashboardPath = `collections/leads/${lead.id}`
   const dashboardUrl = `${serverURL}/cms/${dashboardPath}`
   // One-tap reply links: tapping marks the lead answered, then forwards
@@ -284,7 +285,7 @@ export async function sendLeadAlerts(payload: Payload, lead: LeadLike, opts: { r
           buyerName,
           projectName,
           planName,
-          projectUrl: `${serverURL}/projects/${text(project.slug)}`,
+          projectUrl: `${serverURL}${listing.basePath}/${text(project.slug)}`,
           developerName: text(developer.name) || 'the developer',
           developerPhone,
           developerEmail,
@@ -302,7 +303,7 @@ export async function sendLeadAlerts(payload: Payload, lead: LeadLike, opts: { r
           developerPhone ? `Phone: ${developerPhone}` : null,
           developerEmail ? `Email: ${developerEmail}` : null,
           '',
-          `View the project: ${serverURL}/projects/${text(project.slug)}`,
+          `View the listing: ${serverURL}${listing.basePath}/${text(project.slug)}`,
           `Your enquiries: ${serverURL}/account/enquiries`,
         ].filter(Boolean).join('\n'),
       })

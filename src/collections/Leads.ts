@@ -54,7 +54,8 @@ export const Leads: CollectionConfig = {
     // `status` — every other field keeps the buyer's original submission
     // locked to admin-only edits via this field-level access.
     { name: 'user', type: 'relationship', relationTo: 'users', index: true, access: { update: adminOnlyField } },
-    { name: 'project', type: 'relationship', relationTo: 'projects', required: true, index: true, access: { update: adminOnlyField } },
+    { name: 'project', type: 'relationship', relationTo: 'projects', index: true, access: { update: adminOnlyField }, admin: { description: 'A lead is for a project or for a land plot.' } },
+    { name: 'land', type: 'relationship', relationTo: 'lands', index: true, access: { update: adminOnlyField } },
     {
       name: 'floor_plan',
       type: 'text',

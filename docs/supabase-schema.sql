@@ -594,3 +594,8 @@ create table if not exists public.keyword_volumes (
 
 -- keyword_volumes is keyed per country (2026-11-04): see supabase/migrations/20261104140000_keyword_volumes_country.sql.
 -- alter table public.keyword_volumes add column if not exists country text not null default 'LK'; primary key becomes (keyword, country).
+
+-- Leads can be for a land plot as well as a project (2026-11-04).
+alter table payload.leads add column if not exists land_id integer references payload.lands(id) on delete set null;
+create index if not exists leads_land_idx on payload.leads (land_id);
+alter table payload.leads alter column project_id drop not null;
