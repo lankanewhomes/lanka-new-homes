@@ -123,6 +123,17 @@ to the text burned into videos, which stays the clean URL):
 
 `?utm_source=<instagram|facebook|tiktok>&utm_medium=social&utm_campaign=<series-or-slug>-<yyyymm>`
 
+Short tracked links for captions (added 2026-11-05, after GA showed no
+Instagram or TikTok sessions and the same listings arriving as Direct):
+`lankanewhomes.com/go/ig/<slug>`, `/go/tt/<slug>`. They redirect to the project
+or land page with the UTM tags above. Use these in Instagram and TikTok captions
+and bios instead of the plain `/projects/<slug>` URL. Facebook keeps plain URLs
+(tagged URLs 403 for its scraper). The `/links` bio pages are hard-tagged `instagram`, so they are not a TikTok bio link yet.
+
+Facebook clicks are reach, not results (owner decision, 2026-11-05): GA showed
+Facebook sessions averaging about 1 second, mostly US, on post days only.
+Judge Facebook posts by likes, comments and inquiries, not sessions.
+
 Check each tracked URL loads before posting. Whether GA4 events and developer
 contact clicks arrive per source is not verified: confirm in GA4 before
 quoting social results (see `docs/analytics.md`).

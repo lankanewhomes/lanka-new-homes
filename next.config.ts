@@ -116,6 +116,8 @@ const nextConfig: NextConfig = {
     return [
       // Vercel serves the homepage at /index too (breadcrumb showed "Home / Index"); send it to the real URL.
       { source: "/index", destination: "/", permanent: true },
+      // Mistyped link seen in GA (Nov 2026): "ji-adore" instead of "j-adore".
+      { source: "/projects/ji-adore-negombo", destination: "/projects/j-adore-negombo", permanent: true },
       {
         source: "/projects/colombo/luxury",
         destination: "/projects/luxury",
