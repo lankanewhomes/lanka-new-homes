@@ -156,7 +156,7 @@ export default async function NeighborhoodPage({ params }: NeighborhoodPageProps
     ...(propertyTypes.length > 0 ? [{ icon: Home, label: "Typical property types", value: propertyTypes.join(", ") }] : []),
     // Always shown, even at 0, so every area page states how many projects and land plots are listed.
     { icon: Building2, label: "New projects", value: String(neighborhoodProjects.length) },
-    { icon: LandPlot, label: "Land plots", value: String(areaLands.length) },
+    { icon: LandPlot, label: "Land listings", value: String(areaLands.length) },
   ];
 
   const whatsNearbySection = nearbyGroups.length > 0 ? (
