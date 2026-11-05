@@ -26,11 +26,11 @@ the user sends additional requests while you're mid-task. Queue new
 requests and work through them in order rather than context-switching
 mid-fix.
 
-Always push finished work straight to the `main` branch (owner,
-2026-09-25). Don't leave it only on a feature branch, and don't open a PR
-unless asked. Before pushing, run lint, type-check and tests. After
-pushing, confirm the GitHub CI run on `main` is green, including Build: a
-red build means Vercel can't deploy anything newer.
+Always push finished work straight to the `cloudflare-migration` branch
+(owner, 2026-11-05: "I don't want to use main anymore"). Do not push to
+`main`, and don't open a PR unless asked. Before pushing, run lint,
+type-check and tests. GitHub CI does not run on this branch, so say so
+instead of claiming a green build; deploys are Cloudflare only.
 
 ## Data / Supabase
 
