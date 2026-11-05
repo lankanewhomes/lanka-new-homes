@@ -20990,3 +20990,21 @@ body:has(.compare-bar) {
   .request-info-actions-row { flex-direction: column; align-items: stretch; }
   .request-info-whatsapp-price, .request-info-actions .request-info-submit-big { width: 100%; }
 }
+
+/* Neighborhood pages (owner, 2026-11-04): land section gets its own sage box like the others, and the new-homes and land
+   listings slide sideways as carousels instead of a wrapping grid. */
+.neighborhood-page-content #land.developer-projects-section {
+  border: 1px solid #d3dcc6; background-color: #e8ede2;
+  background-image: repeating-linear-gradient(0deg, transparent 0 31px, rgba(110, 135, 90, 0.16) 31px 32px), repeating-linear-gradient(90deg, transparent 0 31px, rgba(110, 135, 90, 0.16) 31px 32px);
+}
+.neighborhood-page-content .developer-projects-grid.listing-carousel {
+  display: flex; grid-template-columns: unset; gap: 20px;
+  overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+  padding-bottom: 8px; scrollbar-width: thin;
+}
+.neighborhood-page-content .developer-projects-grid.listing-carousel .listing-grid-card {
+  flex: 0 0 calc((100% - 60px) / 4); min-width: 240px; scroll-snap-align: start;
+}
+@media (max-width: 900px) {
+  .neighborhood-page-content .developer-projects-grid.listing-carousel .listing-grid-card { flex-basis: 82%; }
+}

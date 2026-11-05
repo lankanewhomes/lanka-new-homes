@@ -171,13 +171,48 @@ export default async function NeighborhoodPage({ params }: NeighborhoodPageProps
   // No "Map" entry — the location map only lives inside the hero's popup now (owner,
   // 2026-09-23), not as its own scrollable page section, so there's no anchor for it to jump to.
   const quickjumpItems: NeighborhoodQuickjumpItem[] = [
-    { key: "projects", href: "#projects", label: "New homes", show: neighborhoodProjects.length > 0 },
-    { key: "land", href: "#land", label: "Land", show: areaLands.length > 0 },
+    { key: "projects", href: "#projects", label: `New homes (${neighborhoodProjects.length})`, show: neighborhoodProjects.length > 0 },
+    { key: "land", href: "#land", label: `Land (${areaLands.length})`, show: areaLands.length > 0 },
     { key: "overview", href: "#overview", label: "Overview", show: true },
     { key: "photos", href: "#known-landmarks", label: "Photos", show: totalPhotoCount > 1 },
     { key: "landmarks", href: "#known-landmarks", label: "Landmarks", show: (neighborhood.nearby ?? []).length > 0 },
     { key: "faq", href: "#faq", label: "FAQ", show: faqs.length > 0 },
   ];
+
+  const projectsSection = (
+    <section id="projects" className="developer-projects-section">
+      <h2>Houses and new homes for sale in {neighborhood.name}{neighborhoodProjects.length > 0 ? ` (${neighborhoodProjects.length})` : ""}</h2>
+      {neighborhoodProjects.length === 0 ? (
+        <p className="developer-empty-note">
+          No houses or new homes are listed for sale in {neighborhood.name} yet.{" "}
+          <Link href={`/projects?location=${encodeURIComponent(neighborhood.city)}`}>See new homes in {neighborhood.city}</Link>
+          {" "}or <Link href="/land">browse land for sale</Link>.
+        </p>
+      ) : (
+        <div className="home-card-grid developer-projects-grid listing-carousel">
+          {neighborhoodProjects.map((project) => (
+            <ListingGridCard key={project.slug} project={project} />
+          ))}
+        </div>
+      )}
+    </section>
+  );
+  const landSection = areaLands.length > 0 ? (
+    <section id="land" className="developer-projects-section">
+      <h2>Land for sale in {neighborhood.name} ({areaLands.length})</h2>
+      <div className="home-card-grid developer-projects-grid listing-carousel">
+        {areaLands.map((plot) => (
+          <ListingGridCard key={plot.slug} project={plot} basePath="/land" />
+        ))}
+      </div>
+    </section>
+  ) : null;
+  // Owner, 2026-11-04: the section that has listings goes first (new homes before land); a new-homes section with nothing in it
+  // drops to the bottom of the page instead of leading with an empty box.
+  const listingSections = {
+    top: <>{neighborhoodProjects.length > 0 ? projectsSection : null}{landSection}</>,
+    bottom: neighborhoodProjects.length === 0 ? projectsSection : null,
+  };
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -241,35 +276,7 @@ export default async function NeighborhoodPage({ params }: NeighborhoodPageProps
           </div>
         ) : null}
 
-        {/* What new projects are here? Placed first (owner, 2026-10-30): visitors from Google were leaving without seeing a listing. */}
-        <section id="projects" className="developer-projects-section">
-          <h2>Houses and new homes for sale in {neighborhood.name}</h2>
-          {neighborhoodProjects.length === 0 ? (
-            <p className="developer-empty-note">
-              No houses or new homes are listed for sale in {neighborhood.name} yet.{" "}
-              <Link href={`/projects?location=${encodeURIComponent(neighborhood.city)}`}>See new homes in {neighborhood.city}</Link>
-              {" "}or <Link href="/land">browse land for sale</Link>.
-            </p>
-          ) : (
-            <div className="home-card-grid developer-projects-grid">
-              {neighborhoodProjects.map((project) => (
-                <ListingGridCard key={project.slug} project={project} />
-              ))}
-            </div>
-          )}
-        </section>
-
-        {/* Land plots in this area, so "land for sale in <area>" searches land on something real. Only shown when there are some. */}
-        {areaLands.length > 0 ? (
-          <section id="land" className="developer-projects-section">
-            <h2>Land for sale in {neighborhood.name}</h2>
-            <div className="home-card-grid developer-projects-grid">
-              {areaLands.map((plot) => (
-                <ListingGridCard key={plot.slug} project={plot} basePath="/land" />
-              ))}
-            </div>
-          </section>
-        ) : null}
+        {listingSections.top}
 
         {/* What is this area? */}
         <section id="overview" className="project-description-shell" aria-label="About the neighbourhood">
@@ -383,6 +390,8 @@ export default async function NeighborhoodPage({ params }: NeighborhoodPageProps
             </ul>
           </section>
         ) : null}
+
+        {listingSections.bottom}
       </div>
     </>
   );
