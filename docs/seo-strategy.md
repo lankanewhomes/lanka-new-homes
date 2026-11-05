@@ -11,13 +11,14 @@ Update this file whenever a new keyword group or page is added.
 | `/projects` | All new projects, Sri Lanka wide | existing, rebuilt |
 | `/projects/pre-construction` | Pre-construction / off-plan / upcoming projects | new |
 | `/projects/colombo` | Colombo-specific projects | new |
-| `/projects/luxury` | Luxury apartments/condos across Sri Lanka (was Colombo-only until 2026-09-18) | new |
+| `/projects/luxury` | Luxury apartments/condos across Sri Lanka (was Colombo-only until 2026-09-18); title/H1 "New Luxury Apartments & Condos" and luxury condo keywords added 2026-11-05 (owner request) | new |
 | `/projects/branded-residences` | Branded residences | new |
 | `/projects/villas` | New villa developments | new |
 | `/projects/beachfront` | Beachfront/resort residences | new |
 | `/projects/serviced-apartments` | Serviced apartments | new |
 | `/projects/port-city-colombo` | Port City Colombo specific | new |
 | `/projects/brand-new-houses-for-sale` | "brand new house for sale in Sri Lanka" / new houses / new villas / townhouses — all House, Villas, Luxury Villas and Townhouse listings that are not Completed (added 2026-10-10, owner request) | new |
+| `/projects/gated-community-houses-for-sale` | "gated community house" / gated community houses for sale sri lanka — House, Villas, Luxury Villas and Townhouse listings that mention a gated community (added 2026-11-05, owner request) | new |
 | `/projects/prime-lands-apartments` | "Prime Lands apartments" / Prime Lands homes — every listing whose developer is Prime Lands (apartment drafts appear as they are published) (added 2026-10-11, owner request) | new |
 | `/land/best-land-for-sale-in-colombo` | "best land for sale in Colombo" — all land plots in the Colombo district, about text built from live counts (added 2026-10-11, owner request) | new |
 | `/land/cheap-land-for-sale-in-sri-lanka` | "cheap land for sale sri lanka" — the 60 lowest-priced plots by published price per perch; text from live data (added 2026-10-11, owner request) | new |
@@ -36,6 +37,7 @@ Update this file whenever a new keyword group or page is added.
 | `/blog/questions-to-ask-before-buying-a-home-in-sri-lanka` | "questions to ask before buying an apartment sri lanka", "developer deed delay", "payment plan new home sri lanka" — built from what buyers ask on Reddit r/srilanka (deeds not given on time, build quality, show units, late handover). PUBLISHED 2026-11-02 (no FAQ block) (added 2026-11-02) | new |
 | `/blog/land-apartment-or-house-in-sri-lanka` | "land vs apartment vs house sri lanka", "buy land or apartment sri lanka" — comparison from the same Reddit research (apartment vs land plus build vs existing house). PUBLISHED 2026-11-02 (added 2026-11-02) | new |
 | `/construction-companies` | Construction company directory | rebuilt (was a stub) |
+| `/construction-companies/custom-home-construction` | "custom home construction" / home builders sri lanka — house-building companies (general and Colombo categories) (added 2026-11-05, owner request) | new |
 | `/construction-companies/colombo` | Colombo-specific construction companies | new |
 | `/construction-companies/swimming-pools` | Pool construction companies | new |
 | `/construction-companies/consulting` | Construction consultants | new |
