@@ -114,7 +114,7 @@ const text = (value: unknown): string => (typeof value === 'string' ? value.trim
 // `req` matters when called from the Leads afterChange hook: the lead row is
 // still inside that request's transaction, so the alert-log write below
 // must ride the same request or it can't see the row (Postgres).
-export async function sendLeadAlerts(payload: Payload, lead: LeadLike, opts: { req?: PayloadRequest } = {}): Promise<LeadAlertOutcome> {
+export async function sendLeadAlerts(payload: Payload, lead: LeadLike, opts: { req?: PayloadRequest; skipBuyer?: boolean } = {}): Promise<LeadAlertOutcome> {
   const routing = await resolveLeadAlertRouting(payload, text(lead.email) || null)
   const outcome: LeadAlertOutcome = { email: 'skipped', whatsapp: 'skipped', buyer: 'skipped', to: { email: null, whatsapp: null }, routing: routing.reason }
 
@@ -271,7 +271,7 @@ export async function sendLeadAlerts(payload: Payload, lead: LeadLike, opts: { r
   // test routing only concerns the developer's side. Brochure requests
   // already get the brochure email from /api/leads, so they skip this.
   const brochureHandledByRoute = text(lead.source) === 'brochure_request' && Boolean(text(project.brochureUrl))
-  if (buyerEmail && !brochureHandledByRoute) {
+  if (buyerEmail && !brochureHandledByRoute && !opts.skipBuyer) {
     const developerPhone = text(developer.contact_phone) || text((project.contact as AnyDoc | undefined)?.phone) || null
     const developerEmail = text(developer.contact_email) || text((project.contact as AnyDoc | undefined)?.email) || null
     try {

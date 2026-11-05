@@ -7723,6 +7723,14 @@ export interface Lead {
   project?: (number | null) | Project;
   land?: (number | null) | Land;
   /**
+   * Filled in automatically from the project or land.
+   */
+  listing_name?: string | null;
+  /**
+   * Filled in automatically from the listing.
+   */
+  developer_name?: string | null;
+  /**
    * Set automatically when the buyer asked from a floor-plan page (e.g. "Unit A · 3 bed · 1,300 SqFt").
    */
   floor_plan?: string | null;
@@ -9970,6 +9978,8 @@ export interface LeadsSelect<T extends boolean = true> {
   user?: T;
   project?: T;
   land?: T;
+  listing_name?: T;
+  developer_name?: T;
   floor_plan?: T;
   source?: T;
   name?: T;

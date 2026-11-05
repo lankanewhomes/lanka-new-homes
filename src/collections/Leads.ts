@@ -26,7 +26,7 @@ export const Leads: CollectionConfig = {
   admin: {
     components: { beforeListTable: [{ path: '@/components/payload/CollectionStatusTabs#CollectionStatusTabs', clientProps: { field: 'status', values: [{ label: 'New', value: 'new' }, { label: 'Contacted', value: 'contacted' }, { label: 'Site visit', value: 'site_visit' }, { label: 'Closed', value: 'closed' }] } }] },
     group: 'Leads & Engagement',
-    defaultColumns: ['name', 'project', 'status', 'response_minutes', 'createdAt'],
+    defaultColumns: ['name', 'listing_name', 'developer_name', 'status', 'response_minutes', 'createdAt'],
     listSearchableFields: ['name', 'email', 'phone'],
   },
   access: {
@@ -36,6 +36,28 @@ export const Leads: CollectionConfig = {
     delete: ownerOrAdmin,
   },
   hooks: {
+    beforeChange: [
+      // Names shown in the leads list (Listing, Developer): saved on the lead so the list never shows "Project 86".
+      async ({ data, originalDoc, req }) => {
+        const rel = (v: unknown) => (v && typeof v === 'object' && 'id' in v ? (v as { id: number }).id : (v as number | null | undefined))
+        const projectId = rel(data.project ?? originalDoc?.project)
+        const landId = rel(data.land ?? originalDoc?.land)
+        let listing = ''
+        let developerId: number | null | undefined
+        if (projectId) {
+          const project = await req.payload.findByID({ collection: 'projects', id: projectId, depth: 0, overrideAccess: true, req }).catch(() => null)
+          listing = String(project?.name ?? '')
+          developerId = rel(project?.developer)
+        } else if (landId) {
+          const land = await req.payload.findByID({ collection: 'lands', id: landId, depth: 0, overrideAccess: true, req }).catch(() => null)
+          listing = String(land?.title ?? '')
+          const seller = land?.seller as { relationTo?: string; value?: unknown } | null | undefined
+          developerId = seller?.relationTo === 'developers' ? rel(seller.value) : undefined
+        }
+        const developer = developerId ? await req.payload.findByID({ collection: 'developers', id: developerId, depth: 0, overrideAccess: true, req }).catch(() => null) : null
+        return { ...data, listing_name: listing || data.listing_name, developer_name: String(developer?.name ?? '') || (data.developer_name ?? '') }
+      },
+    ],
     beforeValidate: [
       ({ data, req, operation }) => {
         // Trust only the authenticated requester's own id (or none, for a
@@ -56,6 +78,8 @@ export const Leads: CollectionConfig = {
     { name: 'user', type: 'relationship', relationTo: 'users', index: true, access: { update: adminOnlyField } },
     { name: 'project', type: 'relationship', relationTo: 'projects', index: true, access: { update: adminOnlyField }, admin: { description: 'A lead is for a project or for a land plot.' } },
     { name: 'land', type: 'relationship', relationTo: 'lands', index: true, access: { update: adminOnlyField } },
+    { name: 'listing_name', type: 'text', label: 'Listing', admin: { readOnly: true, description: 'Filled in automatically from the project or land.' } },
+    { name: 'developer_name', type: 'text', label: 'Developer', admin: { readOnly: true, description: 'Filled in automatically from the listing.' } },
     {
       name: 'floor_plan',
       type: 'text',
