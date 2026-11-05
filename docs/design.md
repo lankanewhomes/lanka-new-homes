@@ -2785,3 +2785,14 @@ into blocks: runs of two or more short lines that do not end a sentence become o
 everything else is a normal paragraph (14px between paragraphs, 6px between list items), and runs of spaces are collapsed. Used on
 `/land/[slug]` only; project pages show the description as one paragraph.
 
+## Social carousels (approved 2026-11-04, Bayfonte Marina)
+
+Every carousel follows this exactly (`scripts/social/carousel_project_v2_light.py`, config link `www.lankanewhomes.com/projects/<slug>`):
+
+- Bold 50 px headline, line step `size + 8`; bar label light (weight 400) 18 px on a 34 px bar, uppercase.
+- Link line light (weight 300) on a white strip, no "Listed on", always with `www.`.
+- Original faint 216 px grid under the photo fade (denser grids and black, orange or glass link strips were rejected).
+- Swipe slides: long black arrow, no box. Last slide: black LINK IN BIO box with white light text (18 px on 34 px), plus the FROM tab and price.
+- Land uses the same structure with the land palette: sage background and grid, green `#3D5A35` bars with white text, no orange; link `www.lankanewhomes.com/land/<slug>`.
+- Reels: regular weight (400), uppercase, text scale 0.6, extra gaps between lines; "2 AND 3 BEDROOMS" (uppercase AND) instead of "2 & 3".
+- Reel covers: `scripts/social/reel_cover_light.py` (project or land). Full-bleed photo with a see-through light fade (max alpha 150), logo and content 100 px from the left, light label bar, bold black two-line title, tall FROM and price box (150 px), white link strip with the www URL. Carousel closing slide uses the same taller price box (124 px).
