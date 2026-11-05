@@ -20607,7 +20607,8 @@ body:has(.compare-bar) {
 /* New homes box: the soft mint with teal lines of the New listings section on the home page (owner, 2026-11-04). */
 .neighborhood-page-content #projects.developer-projects-section {
   background-color: #dfeae8; border-color: #c5d8d5;
-  background-image: repeating-linear-gradient(0deg, transparent 0 63px, rgba(40, 100, 96, 0.22) 63px 64px), repeating-linear-gradient(90deg, transparent 0 63px, rgba(40, 100, 96, 0.22) 63px 64px);
+  --nl-cell: calc(min(1244px, 100vw - 36px) / 5);
+  background-image: repeating-linear-gradient(0deg, transparent 0 calc(var(--nl-cell) - 1px), rgba(40, 100, 96, 0.22) calc(var(--nl-cell) - 1px) var(--nl-cell)), repeating-linear-gradient(90deg, transparent 0 calc(var(--nl-cell) - 1px), rgba(40, 100, 96, 0.22) calc(var(--nl-cell) - 1px) var(--nl-cell));
 }
 .neighborhood-page-content #developers.developer-projects-section {
   background-color: #eceff3; border-color: #d3dae2;
@@ -20997,9 +20998,10 @@ body:has(.compare-bar) {
 /* Neighborhood pages (owner, 2026-11-04): land section gets its own sage box like the others, and the new-homes and land
    listings slide sideways as carousels instead of a wrapping grid. */
 .neighborhood-page-content #land.developer-projects-section {
-  /* Same warm greige box with brown 64px lines as the Land for sale section on the home page (owner, 2026-11-04). */
-  border: 1px solid #d6cdbd; background-color: #e4ddd2;
-  background-image: repeating-linear-gradient(0deg, transparent 0 63px, rgba(110, 88, 56, 0.2) 63px 64px), repeating-linear-gradient(90deg, transparent 0 63px, rgba(110, 88, 56, 0.2) 63px 64px);
+  /* Same very light green box with soft green lines, 5 squares across, as the Land for sale section on the home page (owner, 2026-11-04). */
+  --nl-cell: calc(min(1244px, 100vw - 36px) / 5);
+  border: 1px solid #d3dcc6; background-color: #e8ede2;
+  background-image: repeating-linear-gradient(0deg, transparent 0 calc(var(--nl-cell) - 1px), rgba(85, 115, 75, 0.2) calc(var(--nl-cell) - 1px) var(--nl-cell)), repeating-linear-gradient(90deg, transparent 0 calc(var(--nl-cell) - 1px), rgba(85, 115, 75, 0.2) calc(var(--nl-cell) - 1px) var(--nl-cell));
 }
 .neighborhood-page-content .developer-projects-grid.listing-carousel {
   display: flex; grid-template-columns: unset; gap: 20px;
