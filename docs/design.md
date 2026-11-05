@@ -2778,3 +2778,13 @@ desktop, 1 under 900px. (Replaced the earlier 4-column photo-card grid.)
 ### Contact Us / Brochure form (2026-10-31)
 
 `RequestInfoDialog` (standard and brochure variants) asks for a name, one phone-or-WhatsApp number and an optional email: no message, contact-method radios or consent checkbox (a note says replies come within 24 hours, no spam, and sending means agreeing to be contacted). A green "Get price on WhatsApp" button sits next to the submit button when the developer has a WhatsApp number. Errors are inline under the field. Fields are 48px / 16px text on phones and the buttons are sticky at the bottom so the keyboard never hides them. The land `inquiry` variant keeps its longer layout. Each field's first tap sends `form_field_focus` (register `field_name` as a GA4 custom dimension to report on it).
+
+## Social carousels, reels and covers (approved 2026-11-04 and 2026-11-05)
+
+Scripts: `scripts/social/carousel_project_v2_light.py` (projects), `carousel_land_v2_light.py` (land: sage background, green `#3D5A35` bars with white text, no orange), `reel_cover_light.py` (reel covers, project or land). Config link is `www.lankanewhomes.com/projects|land/<slug>`.
+
+- Content (logo, label, title, price box, link) sits 100 px from the left edge on carousels, reels and covers (full-screen mobile crops the edge). The link text starts inside its white strip.
+- Carousel: bold 50 px headline, line step `size + 8`; bar label light (400) 18 px on a 34 px bar, uppercase; link line light (300) on a white strip, no "Listed on", always with `www.`; original faint 216 px grid under the photo fade; swipe slides show a long black arrow; last slide has a black LINK IN BIO box with white light text (18 px on 34 px), the FROM tab and a 124 px tall price box.
+- Reel cover: see-through light fade (max alpha 150), light label bar, bold black two-line title, 150 px tall FROM and price box, white link strip with the link in 25 px light text.
+- Reels: regular weight (400), uppercase, text scale 0.6, white location line, "2 AND 3 BEDROOMS" (uppercase AND) instead of "2 & 3".
+- Facebook captions go out without a URL while the Page's monthly link allowance is used up; TikTok and Instagram captions carry the www link.
