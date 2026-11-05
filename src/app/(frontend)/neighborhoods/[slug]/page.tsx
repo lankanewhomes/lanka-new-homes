@@ -207,11 +207,10 @@ export default async function NeighborhoodPage({ params }: NeighborhoodPageProps
       </div>
     </section>
   ) : null;
-  // Owner, 2026-11-04: the section that has listings goes first (new homes before land); a new-homes section with nothing in it
-  // drops to the bottom of the page instead of leading with an empty box.
+  // Owner, 2026-11-04: the section that has listings goes first (new homes before land); an empty new-homes section sits right
+  // under the land section instead of leading the page.
   const listingSections = {
-    top: <>{neighborhoodProjects.length > 0 ? projectsSection : null}{landSection}</>,
-    bottom: neighborhoodProjects.length === 0 ? projectsSection : null,
+    top: <>{neighborhoodProjects.length > 0 ? projectsSection : null}{landSection}{neighborhoodProjects.length === 0 ? projectsSection : null}</>,
   };
 
   const structuredData = {
@@ -390,8 +389,6 @@ export default async function NeighborhoodPage({ params }: NeighborhoodPageProps
             </ul>
           </section>
         ) : null}
-
-        {listingSections.bottom}
       </div>
     </>
   );
