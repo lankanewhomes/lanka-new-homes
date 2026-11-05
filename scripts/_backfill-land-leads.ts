@@ -2,10 +2,10 @@
 import path from 'node:path'
 import { config as loadEnv } from 'dotenv'
 loadEnv({ path: path.join(process.cwd(), '.env.local') })
-const cfg = ((await import('/Volumes/MyStorage/LNH/lankanewhomes/payload.config')) as any).default
+const cfg = ((await import('../payload.config')) as any).default
 const { getPayload } = await import('payload')
 const payload = await getPayload({ config: cfg })
-const { supabaseAdmin } = await import('/Volumes/MyStorage/LNH/lankanewhomes/src/lib/supabase')
+const { supabaseAdmin } = await import('../src/lib/supabase')
 const { data } = await supabaseAdmin.from('leads').select('*').in('project_slug', ['isuru-vimana-homagama', 'river-side-kaduwela', 'the-sequor-gampaha'])
 for (const l of data ?? []) {
   const exists = await payload.find({ collection: 'leads', where: { supabase_lead_id: { equals: l.id } }, limit: 1, depth: 0, overrideAccess: true })
