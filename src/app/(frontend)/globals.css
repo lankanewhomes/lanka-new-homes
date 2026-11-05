@@ -20590,9 +20590,11 @@ body:has(.compare-bar) {
   border-width: 1px;
   border-style: solid;
 }
+/* Owner, 2026-11-04: "About the neighbourhood" uses the same grey dotted box as the Neighborhood block on project pages. */
 .neighborhood-page-content #overview.project-description-shell {
-  background-color: #ecf1ea; border-color: #c9d8c6;
-  background-image: repeating-linear-gradient(0deg, transparent 0 31px, rgba(86, 122, 80, 0.16) 31px 32px), repeating-linear-gradient(90deg, transparent 0 31px, rgba(86, 122, 80, 0.16) 31px 32px);
+  background-color: #f7f7f6; border-color: #e5e5e4;
+  background-image: radial-gradient(rgba(120, 113, 108, 0.3) 1.5px, transparent 0);
+  background-size: 16px 16px;
 }
 .neighborhood-page-content #faq.project-description-shell {
   background-color: #eceff3; border-color: #d3dae2;
