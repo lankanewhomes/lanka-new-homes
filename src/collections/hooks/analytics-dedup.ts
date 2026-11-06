@@ -48,6 +48,8 @@ export const enrichAnalyticsEvent: CollectionBeforeChangeHook = async ({ data, o
           { session_id: { equals: data.session_id } },
           listingFilter,
           { event_type: { equals: data.event_type } },
+          // Each form field counts on its own (owner, 2026-11-06: "count all the rows"): a repeat is the same field tapped again.
+          ...(data.event_type === 'form_field_focus' && data.source_page ? [{ source_page: { equals: data.source_page } }] : []),
           { is_duplicate: { equals: false } },
           { timestamp: { greater_than_equal: since } },
         ],

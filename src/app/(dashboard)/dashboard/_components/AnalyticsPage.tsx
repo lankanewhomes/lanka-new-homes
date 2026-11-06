@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { AlertCircle, ArrowDownRight, ArrowUpRight, Eye, Heart, Users, Mail, MessageCircle, MessageSquare, FileDown, MousePointerClick } from "lucide-react";
+import { AlertCircle, ArrowDownRight, ArrowUpRight, Eye, Heart, Users, Mail, MessageCircle, MessageSquare, FileDown, MousePointerClick, BookOpen } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useDash } from "./DashProvider";
 import { PageHero } from "./PageHero";
@@ -55,6 +55,7 @@ const TILES = [
   { key: "email_click", label: "Email clicks", icon: Mail },
   { key: "brochure_download", label: "Brochure downloads", icon: FileDown },
   { key: "hero_click", label: "Hero slide clicks", icon: MousePointerClick },
+  { key: "blog_view", label: "Blog views", icon: BookOpen },
 ];
 const n = (v: number) => v.toLocaleString("en-LK");
 const minutes = (m: number | null) => (m === null ? "—" : m < 60 ? `${Math.round(m)} min` : m < 1440 ? `${(m / 60).toFixed(1)} h` : `${(m / 1440).toFixed(1)} days`);
