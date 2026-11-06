@@ -192,6 +192,7 @@ export function AnalyticsDashboard() {
               <div><strong>{n("whatsapp_click")}</strong><span>WhatsApp clicks</span></div>
               <div><strong>{n("email_click")}</strong><span>Email clicks</span></div>
               <div><strong>{n("blog_view")}</strong><span>Blog views</span></div>
+              <div><strong>{n("form_field_focus")}</strong><span>Form field taps</span></div>
             </div>
 
             <section className="ln-an-card">

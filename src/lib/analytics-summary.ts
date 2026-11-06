@@ -76,16 +76,17 @@ function toRows(counts: Map<string, number>, total: number, labels?: Record<stri
 // of one listing at a time.
 export async function buildAnalyticsSummary(
   payload: Payload,
-  opts: { projectIds?: (string | number)[]; startDate: string; endDate: string; includeByDeveloper?: boolean },
+  opts: { projectIds?: (string | number)[]; developerIds?: (string | number)[]; startDate: string; endDate: string; includeByDeveloper?: boolean },
 ): Promise<AnalyticsSummaryResponse> {
-  const { projectIds, startDate, endDate, includeByDeveloper } = opts
+  const { projectIds, developerIds, startDate, endDate, includeByDeveloper } = opts
 
   const where: Where = {
     is_duplicate: { equals: false },
     is_bot: { equals: false },
     timestamp: { greater_than_equal: fromAnalyticsStart(dayStartIso(startDate)), less_than_equal: dayEndIso(endDate) },
   }
-  if (projectIds) where.project = { in: projectIds }
+  // A developer also sees events on their own land plots (those carry the builder but no project).
+  if (projectIds) where.or = developerIds && developerIds.length > 0 ? [{ project: { in: projectIds } }, { developer: { in: developerIds } }] : [{ project: { in: projectIds } }]
 
   const { docs: found } = await payload.find({
     collection: 'analytics',

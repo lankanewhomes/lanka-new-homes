@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { AlertCircle, ArrowDownRight, ArrowUpRight, Eye, Heart, Users, Mail, MessageCircle, MessageSquare, FileDown, MousePointerClick, BookOpen } from "lucide-react";
+import { AlertCircle, ArrowDownRight, ArrowUpRight, Eye, Heart, Users, Mail, MessageCircle, MessageSquare, FileDown, MousePointerClick, BookOpen, TextCursorInput } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useDash } from "./DashProvider";
 import { PageHero } from "./PageHero";
@@ -56,6 +56,7 @@ const TILES = [
   { key: "brochure_download", label: "Brochure downloads", icon: FileDown },
   { key: "hero_click", label: "Hero slide clicks", icon: MousePointerClick },
   { key: "blog_view", label: "Blog views", icon: BookOpen },
+  { key: "form_field_focus", label: "Form field taps", icon: TextCursorInput },
 ];
 const n = (v: number) => v.toLocaleString("en-LK");
 const minutes = (m: number | null) => (m === null ? "—" : m < 60 ? `${Math.round(m)} min` : m < 1440 ? `${(m / 60).toFixed(1)} h` : `${(m / 1440).toFixed(1)} days`);
@@ -164,7 +165,7 @@ export function AnalyticsPage() {
         <div className="mb-5"><TodayPanel day={range.start === range.end ? range.start : undefined} /></div>
 
         <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))" }}>
-          {TILES.map((t) => (
+          {TILES.filter((t) => admin || t.key !== "blog_view").map((t) => (
             <div key={t.key} className="border border-line bg-panel px-5 py-4">
               <div className="flex items-center justify-between text-muted"><span className="d-label">{t.label}</span><t.icon size={15} /></div>
               <p className="mt-2 text-[34px] font-normal leading-none tabular-nums">{data ? n(count(t.key)) : "…"}</p>

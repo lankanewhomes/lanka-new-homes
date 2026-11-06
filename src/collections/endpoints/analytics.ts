@@ -102,6 +102,7 @@ export const analyticsSummaryEndpoint: Endpoint = {
     const admin = isAdmin(req)
 
     const projectIds = admin ? undefined : await getOwnedProjectIds(req)
+    const developerIds = admin ? undefined : await getOwnedDeveloperIds(req)
     if (!admin && (!projectIds || projectIds.length === 0)) {
       return Response.json({
         range: { startDate, endDate },
@@ -120,6 +121,7 @@ export const analyticsSummaryEndpoint: Endpoint = {
     const [summary, leads] = await Promise.all([
       buildAnalyticsSummary(req.payload, {
         projectIds,
+        developerIds,
         startDate,
         endDate,
         includeByDeveloper: admin,
