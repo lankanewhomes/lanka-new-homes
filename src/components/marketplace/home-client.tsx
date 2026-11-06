@@ -49,6 +49,12 @@ const neighborhoods = [
 
 // Price bands for "Search by price". The wording is what the natural-language search understands ("under 30M",
 // "between 30M and 50M", "above 150M"), so each band links to /search?q=… and lands on real filtered results.
+// Fallback hero: 4 slides, taken from the top HERO_POOL_SIZE projects, moving on every HERO_ROTATION_DAYS days.
+const HERO_SLIDE_COUNT = 4;
+const HERO_POOL_SIZE = 24;
+const HERO_ROTATION_DAYS = 3;
+const toHeroSlide = (project: { heroImage: string; slug: string; name: string }) => ({ src: project.heroImage, href: `/projects/${project.slug}`, alt: project.name });
+
 const PRICE_BANDS: { label: string; q: string; min?: number; max?: number }[] = [
   { label: "Under Rs. 30M", q: "under 30M", max: 30_000_000 },
   { label: "Rs. 30M – 50M", q: "between 30M and 50M", min: 30_000_000, max: 50_000_000 },
@@ -96,6 +102,7 @@ export function HomeClient({
   const [maxHeroSlideReached, setMaxHeroSlideReached] = useState(0);
   const [heroPaused, setHeroPaused] = useState(false);
   const [heroAds, setHeroAds] = useState<HeroAd[]>([]);
+  const [rotationWindow] = useState(() => Math.floor(Date.now() / 86_400_000 / HERO_ROTATION_DAYS));
 
   // "Explore by city": cities with the most projects first (owner, 2026-10-14). The count uses the same rule as the search the tile
   // opens (src/lib/city-match.ts: "Colombo" includes Colombo 05, Colombo 08…); cities with no projects keep their old order at the end.
@@ -123,18 +130,28 @@ export function HomeClient({
   }, []);
 
   // Falls back to real listings (their own hero photo, linking to their own
-  // page) whenever there's no paid hero ad slide to show — previously this
-  // was 4 hardcoded generic Unsplash lifestyle photos all pointing at
-  // /search, none of them an actual project on the site.
-  const fallbackProjectSlides = useMemo(
-    () =>
-      [...projects]
-        .filter((project) => project.heroImage)
-        .sort((a, b) => (b.finalScore ?? 0) - (a.finalScore ?? 0))
-        .slice(0, 4)
-        .map((project) => ({ src: project.heroImage, href: `/projects/${project.slug}`, alt: project.name })),
-    [projects]
-  );
+  // page) whenever there's no paid hero ad slide to show. Owner, 2026-10-29:
+  // "it's always the same... every 2 to 3 days keep updating it to new
+  // listings". The 4 slides now move on to the next best-scoring projects every
+  // HERO_ROTATION_DAYS days: the date picks the window, so it is the same on the
+  // server and the client (no hydration mismatch) and needs no cron or database.
+  // One project per developer per window, and sold-out ones are skipped.
+  const fallbackProjectSlides = useMemo(() => {
+    const seenDevelopers = new Set<string>();
+    const pool = [...projects]
+      .filter((project) => project.heroImage && project.status !== "Sold Out")
+      .sort((a, b) => (b.finalScore ?? 0) - (a.finalScore ?? 0))
+      .filter((project) => {
+        const key = project.developerSlug ?? project.developerName ?? project.slug;
+        if (seenDevelopers.has(key)) return false;
+        seenDevelopers.add(key);
+        return true;
+      })
+      .slice(0, HERO_POOL_SIZE);
+    if (pool.length <= HERO_SLIDE_COUNT) return pool.map(toHeroSlide);
+    const start = (rotationWindow * HERO_SLIDE_COUNT) % pool.length;
+    return Array.from({ length: HERO_SLIDE_COUNT }, (_, i) => toHeroSlide(pool[(start + i) % pool.length]));
+  }, [projects, rotationWindow]);
 
   const heroSlides = useMemo(() => (
     heroAds.length > 0

@@ -4,6 +4,7 @@ export type ProjectStatus =
   | "Under Construction"
   | "Launching Soon"
   | "Nearly Sold Out"
+  | "Sold Out"
   | "Nearly Complete";
 
 export type Amenity = {
