@@ -8106,6 +8106,10 @@ export interface Analytics {
    */
   land?: (number | null) | Land;
   /**
+   * Set instead of Listing when the event is a view of a blog article (the slug of the post).
+   */
+  blog_slug?: string | null;
+  /**
    * Auto-filled from the listing — the builder this event rolls up to.
    */
   developer?: (number | null) | Developer;
@@ -8118,7 +8122,11 @@ export interface Analytics {
     | 'phone_click'
     | 'whatsapp_click'
     | 'email_click'
-    | 'map_pin_click';
+    | 'map_pin_click'
+    | 'compare_add'
+    | 'compare_remove'
+    | 'form_field_focus'
+    | 'blog_view';
   timestamp?: string | null;
   /**
    * Anonymous per-browser-session id (localStorage) — same one the internal view/session tracking already uses. Used to detect repeat actions.
@@ -10054,6 +10062,7 @@ export interface ReviewsSelect<T extends boolean = true> {
 export interface AnalyticsSelect<T extends boolean = true> {
   project?: T;
   land?: T;
+  blog_slug?: T;
   developer?: T;
   event_type?: T;
   timestamp?: T;

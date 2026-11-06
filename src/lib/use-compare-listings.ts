@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { MAX_COMPARE } from "@/lib/compare-constants";
 import { trackEvent } from "@/lib/ga4";
+import { logListingInteraction } from "@/lib/log-interaction";
 
 // Compare is a session convenience, not an account feature like Saved
 // listings (which persists server-side per logged-in user via Supabase) —
@@ -79,11 +80,13 @@ export function useCompareListings() {
     if (current.some((e) => e.slug === slug)) {
       writeStorage(current.filter((e) => e.slug !== slug));
       trackEvent("compare_remove", { listing_id: slug, listing_type: type });
+      logListingInteraction("compare_remove", slug);
       return;
     }
     if (current.length >= MAX_COMPARE) return; // caller decides how to surface the cap
     writeStorage([...current, { slug, type, ...(name ? { name } : {}) }]);
     trackEvent("compare_add", { listing_id: slug, listing_type: type });
+    logListingInteraction("compare_add", slug);
   }, []);
 
   const clear = useCallback(() => writeStorage([]), []);

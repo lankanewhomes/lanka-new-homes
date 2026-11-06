@@ -13,6 +13,7 @@ import { getLandingPage, getStoredUtmParams, getTrafficSource, trackEvent } from
 import { hasPremiumStyleBadge, isPaidPackageTier } from "@/lib/packages";
 import { FEATURED_LABEL, FEATURED_TOOLTIP, VERIFIED_DEVELOPER_LABEL, VERIFIED_DEVELOPER_TOOLTIP } from "@/lib/developer-badges";
 import { getSessionId } from "@/components/marketplace/view-tracker";
+import { logListingInteraction } from "@/lib/log-interaction";
 import {
   ApartmentIcon,
   AreaIcon,
@@ -2300,6 +2301,7 @@ export function RequestInfoDialog({
   const onFieldFocus = (field: string, input?: HTMLElement | null) => {
     if (!focusedFields.current.has(field)) {
       focusedFields.current.add(field);
+      logListingInteraction("form_field_focus", project.slug, field);
       trackEvent("form_field_focus", {
         field_name: field,
         form_type: formType,

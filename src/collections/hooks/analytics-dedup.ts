@@ -37,7 +37,8 @@ export const enrichAnalyticsEvent: CollectionBeforeChangeHook = async ({ data, o
     data.developer = seller?.relationTo === 'developers' ? relatedId(seller.value) : undefined
   }
 
-  const listingFilter: Where | null = projectId ? { project: { equals: projectId } } : landId ? { land: { equals: landId } } : null
+  const blogSlug = typeof data.blog_slug === 'string' && data.blog_slug ? data.blog_slug : undefined
+  const listingFilter: Where | null = projectId ? { project: { equals: projectId } } : landId ? { land: { equals: landId } } : blogSlug ? { blog_slug: { equals: blogSlug } } : null
   if (data.session_id && listingFilter && data.event_type) {
     const since = new Date(Date.now() - DEDUP_WINDOW_MS).toISOString()
     const existing = await req.payload.find({

@@ -13,6 +13,10 @@ export const ANALYTICS_EVENT_TYPES = [
   { label: 'WhatsApp Click', value: 'whatsapp_click' },
   { label: 'Email Click', value: 'email_click' },
   { label: 'Map Pin Click', value: 'map_pin_click' },
+  { label: 'Added to Compare', value: 'compare_add' },
+  { label: 'Removed from Compare', value: 'compare_remove' },
+  { label: 'Inquiry Form Field Tap', value: 'form_field_focus' },
+  { label: 'Blog Post View', value: 'blog_view' },
 ]
 
 // System-generated raw event log — the single source of truth that drives
@@ -59,6 +63,7 @@ export const Analytics: CollectionConfig = {
     // A project OR a land listing: events on a land page set `land` and leave `project` empty (admin-only visibility, see access.ts).
     { name: 'project', type: 'relationship', relationTo: 'projects', index: true, label: 'Listing' },
     { name: 'land', type: 'relationship', relationTo: 'lands', index: true, label: 'Land listing', admin: { description: 'Set instead of Listing when the event happened on a land plot page.' } },
+    { name: 'blog_slug', type: 'text', label: 'Blog post', index: true, admin: { description: 'Set instead of Listing when the event is a view of a blog article (the slug of the post).' } },
     {
       name: 'developer',
       type: 'relationship',

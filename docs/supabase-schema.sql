@@ -606,3 +606,13 @@ alter table payload.leads add column if not exists developer_name varchar;
 
 -- Map pin clicks are logged in the analytics list (2026-11-05). See supabase/migrations/20261105120000_analytics_map_pin_click.sql.
 alter type payload.enum_analytics_event_type add value if not exists 'map_pin_click';
+
+-- Compare add/remove and inquiry form field taps are logged in the analytics list (2026-11-06). See supabase/migrations/20261106120000_analytics_interactions.sql.
+alter type payload.enum_analytics_event_type add value if not exists 'compare_add';
+alter type payload.enum_analytics_event_type add value if not exists 'compare_remove';
+alter type payload.enum_analytics_event_type add value if not exists 'form_field_focus';
+
+-- Blog article views are logged in the analytics list (2026-11-06). See supabase/migrations/20261106130000_analytics_blog_view.sql.
+alter table payload.analytics add column if not exists blog_slug varchar;
+create index if not exists analytics_blog_slug_idx on payload.analytics (blog_slug);
+alter type payload.enum_analytics_event_type add value if not exists 'blog_view';

@@ -118,6 +118,7 @@ on developer profiles). The phone event is named `call_click` (was
 | `search` | Home search submitted, or listing search typed (after a 1.5 s pause) | `search_term`, `search_location` |
 | `filter_listings` | A filter is changed | `filter_group`, `filter_value` |
 | `form_field_focus` | A field of the Contact Us / Brochure / inquiry form is tapped (once per field per opening) | `field_name` (name, phone, email, message), `form_type`, `listing_id`, `listing_name`, `developer_slug` |
+| `view_blog_post` | A blog article page is opened (2026-11-06; also saved in the backend analytics list as `blog_view`) | `blog_slug`, `blog_title`, `traffic_source` |
 | `view_map` | Map view opened on a listing page | `page_path` |
 | `map_pin_click` | A pin is tapped on the map | `listing_id`, `developer_slug` |
 | `click_social` | A developer's social link is tapped on a listing | `platform`, `listing_id`, `developer_slug` |

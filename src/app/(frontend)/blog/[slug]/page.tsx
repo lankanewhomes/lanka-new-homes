@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { blogPosts, buildBlogMetadata, formatBlogDate } from "@/lib/blog";
+import { BlogViewTracker } from "@/components/marketplace/blog-view-tracker";
 import { buildBreadcrumbJsonLd, jsonLdScriptProps, toAbsoluteUrl } from "@/lib/seo";
 
 
@@ -68,6 +69,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
   return (
     <article className="fdv-page blog-article">
+      <BlogViewTracker blogSlug={slug} title={post.title} />
       {post.draft ? null : (
         <>
           <script {...jsonLdScriptProps(articleJsonLd)} />

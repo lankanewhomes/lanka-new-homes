@@ -101,7 +101,7 @@ async function getPayloadInstance(): Promise<Payload> {
 // visitor-facing action this is attached to).
 export async function logRawAnalyticsEvent(
   request: Request,
-  args: { projectSlug: string; eventType: "view" | "brochure_download" | "phone_click" | "whatsapp_click" | "email_click" | "map_pin_click"; sourcePage?: string; sessionId?: unknown; trafficSource?: unknown; utm?: unknown },
+  args: { projectSlug: string; eventType: "view" | "brochure_download" | "phone_click" | "whatsapp_click" | "email_click" | "map_pin_click" | "compare_add" | "compare_remove" | "form_field_focus" | "save"; sourcePage?: string; sessionId?: unknown; trafficSource?: unknown; utm?: unknown },
 ): Promise<void> {
   if (isInternalRequest(request)) return; // the owner's own traffic is never counted
   const payload = await getPayloadInstance();
@@ -132,6 +132,21 @@ export async function logRawAnalyticsEvent(
       source_page: args.sourcePage,
       ...enrichment,
     } as never,
+    overrideAccess: true,
+  });
+}
+
+/** A visit to a blog article: saved with the post's slug (no project or land), so the owner can see which articles are read. */
+export async function logBlogViewEvent(
+  request: Request,
+  args: { blogSlug: string; sessionId?: unknown; trafficSource?: unknown; utm?: unknown },
+): Promise<void> {
+  if (isInternalRequest(request)) return;
+  const payload = await getPayloadInstance();
+  const enrichment = buildEventEnrichment(request, { sessionId: args.sessionId, trafficSource: args.trafficSource, utm: args.utm });
+  await payload.create({
+    collection: "analytics",
+    data: { blog_slug: args.blogSlug, event_type: "blog_view", ...enrichment } as never,
     overrideAccess: true,
   });
 }
