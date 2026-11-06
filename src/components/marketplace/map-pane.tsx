@@ -2,7 +2,9 @@
 
 import "maplibre-gl/dist/maplibre-gl.css";
 import { LngLatBounds, setWorkerUrl } from "maplibre-gl";
-import { trackEvent } from "@/lib/ga4";
+import { getStoredUtmParams, getTrafficSource, trackEvent } from "@/lib/ga4";
+import { isInternalBrowser } from "@/lib/internal-traffic";
+import { getSessionId } from "@/components/marketplace/view-tracker";
 import Map, { Layer, Marker, NavigationControl, Popup, Source, type MapRef } from "react-map-gl/maplibre";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Layers } from "lucide-react";
@@ -140,6 +142,14 @@ export function MapPane({ projects, basePath = "/projects", onSelectArea, area, 
   }, [pinnedProjects, mapLoaded]);
 
   const selectProject = (project: Project) => {
+    if (!isInternalBrowser()) {
+      fetch("/api/events/map-pin-click", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ projectSlug: project.slug, sessionId: getSessionId(), trafficSource: getTrafficSource(), utm: getStoredUtmParams() }),
+        keepalive: true,
+      }).catch(() => {});
+    }
     trackEvent("map_pin_click", { listing_id: project.slug, ...(project.developerSlug ? { developer_slug: project.developerSlug } : {}) });
     setActivePlace(null);
     setActiveSlug((current) => {

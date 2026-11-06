@@ -8117,7 +8117,8 @@ export interface Analytics {
     | 'brochure_download'
     | 'phone_click'
     | 'whatsapp_click'
-    | 'email_click';
+    | 'email_click'
+    | 'map_pin_click';
   timestamp?: string | null;
   /**
    * Anonymous per-browser-session id (localStorage) — same one the internal view/session tracking already uses. Used to detect repeat actions.

@@ -34,10 +34,13 @@ export function ProjectViewTracker({
   projectSlug,
   projectName,
   developerSlug,
+  kind = "project",
 }: {
   projectSlug: string;
   projectName: string;
   developerSlug: string;
+  /** "land" for a land plot page: logged in the analytics list only (the project_views table is projects-only). */
+  kind?: "project" | "land";
 }) {
   useEffect(() => {
     if (isInternalBrowser()) return; // the owner's own visits are never counted
@@ -47,7 +50,7 @@ export function ProjectViewTracker({
     fetch("/api/events/view", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ projectSlug, developerSlug, sessionId, trafficSource: getTrafficSource(), utm: getStoredUtmParams() }),
+      body: JSON.stringify({ projectSlug, developerSlug, kind, sessionId, trafficSource: getTrafficSource(), utm: getStoredUtmParams() }),
     }).catch(() => {
       // No-op for UI mode.
     });
@@ -57,7 +60,7 @@ export function ProjectViewTracker({
     // docs/analytics.md for the GA4-side custom dimension setup this needs.
     if (!claimBrowserView(projectSlug)) return;
     trackEvent("view_listing", { listing_id: projectSlug, listing_name: projectName, ...(developerSlug ? { developer_slug: developerSlug } : {}) });
-  }, [projectSlug, projectName, developerSlug]);
+  }, [projectSlug, projectName, developerSlug, kind]);
 
   return null;
 }

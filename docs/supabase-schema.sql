@@ -599,3 +599,10 @@ create table if not exists public.keyword_volumes (
 alter table payload.leads add column if not exists land_id integer references payload.lands(id) on delete set null;
 create index if not exists leads_land_idx on payload.leads (land_id);
 alter table payload.leads alter column project_id drop not null;
+
+-- Leads list shows listing and developer names (2026-11-04). See supabase/migrations/20261104160000_leads_names.sql.
+alter table payload.leads add column if not exists listing_name varchar;
+alter table payload.leads add column if not exists developer_name varchar;
+
+-- Map pin clicks are logged in the analytics list (2026-11-05). See supabase/migrations/20261105120000_analytics_map_pin_click.sql.
+alter type payload.enum_analytics_event_type add value if not exists 'map_pin_click';

@@ -8,15 +8,19 @@ export async function POST(req: Request) {
     if (isInternalRequest(req)) return NextResponse.json({ ok: true, inserted: false }); // the owner's own visits are never counted
     const body = await req.json();
 
-    if (!body?.projectSlug || !body?.developerSlug || !body?.sessionId) {
+    // A land plot page sends kind "land" (no developer needed): it is logged in the analytics list only, never in project_views.
+    const isLand = body?.kind === "land";
+    if (!body?.projectSlug || (!isLand && !body?.developerSlug) || !body?.sessionId) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const result = await trackProjectView({
-      projectSlug: String(body.projectSlug),
-      developerSlug: String(body.developerSlug),
-      sessionId: String(body.sessionId),
-    });
+    const result = isLand
+      ? { inserted: true }
+      : await trackProjectView({
+          projectSlug: String(body.projectSlug),
+          developerSlug: String(body.developerSlug),
+          sessionId: String(body.sessionId),
+        });
 
     // Mirror into Payload's Analytics collection (previously this route only
     // wrote to Supabase's project_views table — Payload's view_count never

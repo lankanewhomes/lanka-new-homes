@@ -28,6 +28,7 @@ import {
 } from "@/components/marketplace/components";
 import type { Developer } from "@/types";
 import { descriptionBlocks } from "@/lib/description-blocks";
+import { ProjectViewTracker } from "@/components/marketplace/view-tracker";
 
 // Regenerate at most once a minute so admin edits (e.g. status changes)
 // show up without waiting for the next deploy.
@@ -178,6 +179,7 @@ export default async function LandDetailPage({ params }: LandPageProps) {
   return (
     <div className="space-y-8">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <ProjectViewTracker projectSlug={land.slug} projectName={land.title} developerSlug={land.sellerSlug ?? ""} kind="land" />
       <ProjectHero
         project={project}
         backHref="/land"
