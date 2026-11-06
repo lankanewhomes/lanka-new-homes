@@ -49,9 +49,8 @@ const neighborhoods = [
 
 // Price bands for "Search by price". The wording is what the natural-language search understands ("under 30M",
 // "between 30M and 50M", "above 150M"), so each band links to /search?q=… and lands on real filtered results.
-// Fallback hero: 4 slides, taken from the top HERO_POOL_SIZE projects, moving on every HERO_ROTATION_DAYS days.
+// Fallback hero: 4 slides that move along every eligible project, 4 places every HERO_ROTATION_DAYS days (no score).
 const HERO_SLIDE_COUNT = 4;
-const HERO_POOL_SIZE = 24;
 const HERO_ROTATION_DAYS = 3;
 const toHeroSlide = (project: { heroImage: string; slug: string; name: string }) => ({ src: project.heroImage, href: `/projects/${project.slug}`, alt: project.name });
 
@@ -132,25 +131,38 @@ export function HomeClient({
   // Falls back to real listings (their own hero photo, linking to their own
   // page) whenever there's no paid hero ad slide to show. Owner, 2026-10-29:
   // "it's always the same... every 2 to 3 days keep updating it to new
-  // listings". The 4 slides now move on to the next best-scoring projects every
-  // HERO_ROTATION_DAYS days: the date picks the window, so it is the same on the
-  // server and the client (no hydration mismatch) and needs no cron or database.
-  // One project per developer per window, and sold-out ones are skipped.
+  // listings", and 2026-11-06: "every 3 days keep rotating the hero slides, it
+  // doesn't have to be a score". So there is no ranking: every published,
+  // not-sold-out project with a hero photo is put in one fixed order (a hash of
+  // its slug, interleaved by developer so 4 neighbours are 4 different developers)
+  // and the 4 slides move 4 places along it every HERO_ROTATION_DAYS days. The date
+  // picks the window, so it is the same on the server and the client (no hydration
+  // mismatch) and needs no cron or database.
   const fallbackProjectSlides = useMemo(() => {
-    const seenDevelopers = new Set<string>();
-    const pool = [...projects]
+    const hash = (text: string) => {
+      let h = 5381;
+      for (let i = 0; i < text.length; i += 1) h = ((h * 33) ^ text.charCodeAt(i)) >>> 0;
+      return h;
+    };
+    const eligible = projects
       .filter((project) => project.heroImage && project.status !== "Sold Out")
-      .sort((a, b) => (b.finalScore ?? 0) - (a.finalScore ?? 0))
-      .filter((project) => {
-        const key = project.developerSlug ?? project.developerName ?? project.slug;
-        if (seenDevelopers.has(key)) return false;
-        seenDevelopers.add(key);
-        return true;
-      })
-      .slice(0, HERO_POOL_SIZE);
-    if (pool.length <= HERO_SLIDE_COUNT) return pool.map(toHeroSlide);
-    const start = (rotationWindow * HERO_SLIDE_COUNT) % pool.length;
-    return Array.from({ length: HERO_SLIDE_COUNT }, (_, i) => toHeroSlide(pool[(start + i) % pool.length]));
+      .sort((a, b) => hash(a.slug) - hash(b.slug) || a.slug.localeCompare(b.slug));
+    const byDeveloper = new Map<string, typeof eligible>();
+    for (const project of eligible) {
+      const key = project.developerSlug ?? project.developerName ?? project.slug;
+      byDeveloper.set(key, [...(byDeveloper.get(key) ?? []), project]);
+    }
+    const developers = [...byDeveloper.keys()].sort((a, b) => hash(a) - hash(b) || a.localeCompare(b));
+    const order: typeof eligible = [];
+    for (let round = 0; order.length < eligible.length; round += 1) {
+      for (const key of developers) {
+        const project = byDeveloper.get(key)?.[round];
+        if (project) order.push(project);
+      }
+    }
+    if (order.length <= HERO_SLIDE_COUNT) return order.map(toHeroSlide);
+    const start = (rotationWindow * HERO_SLIDE_COUNT) % order.length;
+    return Array.from({ length: HERO_SLIDE_COUNT }, (_, i) => toHeroSlide(order[(start + i) % order.length]));
   }, [projects, rotationWindow]);
 
   const heroSlides = useMemo(() => (
