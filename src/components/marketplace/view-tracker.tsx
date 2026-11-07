@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { captureUtmParams, getStoredUtmParams, getTrafficSource, trackEvent } from "@/lib/ga4";
 import { isInternalBrowser } from "@/lib/internal-traffic";
 import { shouldSendBrowserView } from "@/lib/analytics-compare";
+import { logListingInteraction } from "@/lib/log-interaction";
 
 export const SESSION_KEY = "newhomessrilanka-session-id";
 const BROWSER_VIEW_KEY = "lnh-view-sent:";
@@ -68,6 +69,7 @@ export function ProjectViewTracker({
 /** A floor plan page was opened: a strong buying signal on apartment projects. */
 export function FloorPlanViewTracker({ projectSlug, floorPlanId, floorPlanName, developerSlug }: { projectSlug: string; floorPlanId: string; floorPlanName: string; developerSlug: string }) {
   useEffect(() => {
+    logListingInteraction("floor_plan_view", projectSlug, floorPlanName);
     trackEvent("view_floor_plan", { listing_id: projectSlug, floor_plan_id: floorPlanId, floor_plan_name: floorPlanName, ...(developerSlug ? { developer_slug: developerSlug } : {}) });
   }, [projectSlug, floorPlanId, floorPlanName, developerSlug]);
   return null;

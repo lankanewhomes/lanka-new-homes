@@ -17,6 +17,7 @@ export const ANALYTICS_EVENT_TYPES = [
   { label: 'Removed from Compare', value: 'compare_remove' },
   { label: 'Inquiry Form Field Tap', value: 'form_field_focus' },
   { label: 'Blog Post View', value: 'blog_view' },
+  { label: 'Plan / Plot Page View', value: 'floor_plan_view' },
 ]
 
 // System-generated raw event log — the single source of truth that drives

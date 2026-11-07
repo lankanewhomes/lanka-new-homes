@@ -616,3 +616,6 @@ alter type payload.enum_analytics_event_type add value if not exists 'form_field
 alter table payload.analytics add column if not exists blog_slug varchar;
 create index if not exists analytics_blog_slug_idx on payload.analytics (blog_slug);
 alter type payload.enum_analytics_event_type add value if not exists 'blog_view';
+
+-- Floor plan / plot page views are logged in the analytics list (2026-11-07). See supabase/migrations/20261107120000_analytics_floor_plan_view.sql.
+alter type payload.enum_analytics_event_type add value if not exists 'floor_plan_view';

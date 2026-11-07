@@ -23,6 +23,7 @@ const COUNTER_FIELD_BY_EVENT: Record<string, CounterField | undefined> = {
   compare_remove: undefined,
   form_field_focus: undefined,
   blog_view: undefined,
+  floor_plan_view: undefined,
 }
 
 function sleep(ms: number) {

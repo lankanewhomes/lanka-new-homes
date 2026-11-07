@@ -8126,7 +8126,8 @@ export interface Analytics {
     | 'compare_add'
     | 'compare_remove'
     | 'form_field_focus'
-    | 'blog_view';
+    | 'blog_view'
+    | 'floor_plan_view';
   timestamp?: string | null;
   /**
    * Anonymous per-browser-session id (localStorage) — same one the internal view/session tracking already uses. Used to detect repeat actions.

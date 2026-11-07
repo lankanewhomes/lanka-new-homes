@@ -101,7 +101,7 @@ async function getPayloadInstance(): Promise<Payload> {
 // visitor-facing action this is attached to).
 export async function logRawAnalyticsEvent(
   request: Request,
-  args: { projectSlug: string; eventType: "view" | "brochure_download" | "phone_click" | "whatsapp_click" | "email_click" | "map_pin_click" | "compare_add" | "compare_remove" | "form_field_focus" | "save"; sourcePage?: string; sessionId?: unknown; trafficSource?: unknown; utm?: unknown },
+  args: { projectSlug: string; eventType: "view" | "brochure_download" | "phone_click" | "whatsapp_click" | "email_click" | "map_pin_click" | "compare_add" | "compare_remove" | "form_field_focus" | "save" | "floor_plan_view"; sourcePage?: string; sessionId?: unknown; trafficSource?: unknown; utm?: unknown },
 ): Promise<void> {
   if (isInternalRequest(request)) return; // the owner's own traffic is never counted
   const payload = await getPayloadInstance();
