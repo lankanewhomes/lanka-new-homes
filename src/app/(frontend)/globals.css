@@ -21014,3 +21014,91 @@ body:has(.compare-bar) {
 @media (max-width: 900px) {
   .neighborhood-page-content .developer-projects-grid.listing-carousel .listing-grid-card { flex-basis: 82%; }
 }
+
+/* /web-design redesign (owner, 2026-11-07): sample sites sit right under the hero on a cream grid box, then listing-vs-website,
+   what we can build, process, FAQ. Light-surface versions of the sample switcher, the two-card grid, tick lists and the hero facts row. */
+.fdv-box-grid--2 { grid-template-columns: repeat(2, 1fr); }
+@media (max-width: 900px) {
+  .fdv-box-grid--2 { grid-template-columns: 1fr; }
+}
+
+.wdx-tick-list {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+  font-size: 14.5px;
+  color: var(--fdv-ink);
+}
+.wdx-tick-list li::before {
+  content: "✓";
+  color: #f47b36;
+  font-weight: 800;
+  margin-right: 10px;
+}
+
+.wdx-hero-facts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 18px;
+  border-top: 1px solid #e2e1dc;
+}
+.wdx-hero-facts div {
+  padding: 16px 0 4px 20px;
+  border-left: 1px solid #e2e1dc;
+}
+.wdx-hero-facts div:first-child { padding-left: 0; border-left: 0; }
+.wdx-hero-facts small {
+  display: block;
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6b6a66;
+}
+.wdx-hero-facts strong {
+  font-size: 26px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: var(--fdv-ink);
+}
+
+.wdx-sample--light .wdx-sample-tab {
+  border-color: rgba(21, 20, 26, 0.25);
+  background: #fff;
+  color: var(--fdv-ink);
+}
+.wdx-sample--light .wdx-sample-tab:hover { border-color: var(--fdv-ink); }
+.wdx-sample--light .wdx-sample-tab.is-active {
+  background: var(--fdv-ink);
+  border-color: var(--fdv-ink);
+  color: #fff;
+}
+.wdx-sample--light .wdx-sample-foot .fdv-cta-primary {
+  background: var(--fdv-ink);
+  border-color: var(--fdv-ink);
+  color: #fff;
+}
+.wdx-sample--light .wdx-sample-foot .fdv-cta-primary:hover {
+  background: transparent;
+  color: var(--fdv-ink);
+}
+.wdx-sample--light .wdx-sample-foot p { color: #6b6355; }
+
+/* /web-design hero (2026-11-07): brand-orange main button and a two-column checklist, as in the approved redesign example. */
+.wdx-page .fdv-hero-ctas .fdv-cta-final-button {
+  background: #f47b36;
+  border-color: #f47b36;
+  color: #fff;
+}
+.wdx-page .fdv-hero-ctas .fdv-cta-final-button:hover {
+  background: transparent;
+  color: #fff;
+}
+@media (min-width: 701px) {
+  .wdx-hero-checklist ul {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 20px;
+  }
+}

@@ -2794,3 +2794,7 @@ Scripts: `scripts/social/carousel_project_v2_light.py` (projects), `carousel_lan
 - Reel cover: see-through light fade (max alpha 150), light label bar, bold black two-line title, 150 px tall FROM and price box, white link strip with the link in 25 px light text.
 - Reels: regular weight (400), uppercase, text scale 0.6, white location line, "2 AND 3 BEDROOMS" (uppercase AND) instead of "2 & 3".
 - Facebook captions go out without a URL while the Page's monthly link allowance is used up; TikTok and Instagram captions carry the www link.
+
+## /web-design redesign (2026-11-07, local only until the owner says push)
+
+Section order now: split dark hero (orange main button, two-column "Everything we can put on your homepage" card with a Sample sites / Built for / Sign-off facts row) → **See what your site could look like** (`.wdx-sample.wdx-sample--light`, cream grid box; light-surface sample switcher; the real six sample sites stay in the switcher) → "A listing gets you found. A website tells your story." (gray, two cards with tick lists) → "What we can build." (sage, six numbered cards from `BUILD_ITEMS`) → How we work (cream, four "Step N" cards) → FAQ (lilac). No two neighbouring boxes share a background. The old "Built around your project" photo marquee (`HeroMarquee`) is no longer used on the page (component still exists in `web-design-frames.tsx`). No closing CTA band: the owner removed it earlier and the FAQ is the last section above the fixed quickjump bar. No eyebrow labels over headings or cards.
