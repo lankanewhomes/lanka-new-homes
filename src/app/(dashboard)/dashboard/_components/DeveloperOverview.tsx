@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { BadgeCheck, Building2, CheckCircle2, Mail, MapPin, MessageCircle, Pencil, Phone, PlusCircle, Rocket, Settings2, UserPlus } from "lucide-react";
-import { apiFind, apiGet, type Doc } from "../_data/api";
+import { apiCount, apiFind, apiGet, type Doc } from "../_data/api";
 
 // Overview tab of a developer: key numbers and a timeline of everything that happened with this company (owner, 2026-10-15): when
 // they signed up, when they were verified, every email we sent, each listing added or edited, enquiries, finished tasks and the
@@ -18,7 +18,7 @@ const HOUR = 3600_000;
 export function DeveloperOverview({ mode = "tiles" }: { mode?: "tiles" | "timeline" }) {
   const { id } = useParams<{ id: string }>();
   const [events, setEvents] = useState<Event[] | null>(null);
-  const [stats, setStats] = useState<{ projects: number; lands: number; leads: number; emails: number; verified: boolean } | null>(null);
+  const [stats, setStats] = useState<{ projects: number; lands: number; leads: number; whatsapp: number; emails: number; verified: boolean } | null>(null);
   const [error, setError] = useState("");
   const [tick, setTick] = useState(0);
 
@@ -71,6 +71,8 @@ export function DeveloperOverview({ mode = "tiles" }: { mode?: "tiles" | "timeli
           const nameOf = new Map(projects.docs.map((p) => [p.id, String(p.name)]));
           for (const l of leads.docs) add({ at: String(l.createdAt), icon: MessageCircle, tone: "text-brand", title: `Enquiry from ${String(l.name ?? "a buyer")}`, detail: nameOf.get(typeof l.project === "object" ? ((l.project as Doc).id as number) : (l.project as number)), href: `/dashboard/leads/${l.id}` });
         }
+        // WhatsApp clicks are leads too: real visitors only (no bots, no repeats), on this company's listings and land.
+        const whatsapp = await apiCount("analytics", { and: [{ developer: { equals: Number(id) } }, { event_type: { equals: "whatsapp_click" } }, { is_bot: { equals: false } }, { is_duplicate: { equals: false } }] }).catch(() => 0);
         const mine = new Set(projectIds);
         for (const t of todos.docs) {
           const pid = typeof t.project === "object" && t.project ? ((t.project as Doc).id as number) : (t.project as number | undefined);
@@ -79,7 +81,7 @@ export function DeveloperOverview({ mode = "tiles" }: { mode?: "tiles" | "timeli
         ev.sort((a, b) => Date.parse(b.at) - Date.parse(a.at));
         if (!alive) return;
         setEvents(ev);
-        setStats({ projects: projects.totalDocs, lands: lands.totalDocs, leads: leadCount, emails: emails.totalDocs, verified: Boolean(dev.domain_verified) });
+        setStats({ projects: projects.totalDocs, lands: lands.totalDocs, leads: leadCount, whatsapp, emails: emails.totalDocs, verified: Boolean(dev.domain_verified) });
       } catch (e) {
         if (alive) setError(e instanceof Error ? e.message : "Could not load the timeline.");
       }
@@ -102,8 +104,8 @@ export function DeveloperOverview({ mode = "tiles" }: { mode?: "tiles" | "timeli
   const tile = (label: string, value: string) => <div className="border border-line bg-panel p-3"><p className="text-xs text-muted">{label}</p><p className="mt-1 text-xl font-semibold tabular-nums">{value}</p></div>;
   return (
     <div className="space-y-4">
-      {mode === "tiles" ? <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
-        {tile("Projects", String(stats.projects))}{tile("Lands", String(stats.lands))}{tile("Enquiries", String(stats.leads))}{tile("Emails sent", String(stats.emails))}{tile("Verified Developer", stats.verified ? "Yes" : "Not yet")}
+      {mode === "tiles" ? <div className="grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-7">
+        {tile("Projects", String(stats.projects))}{tile("Lands", String(stats.lands))}{tile("Form leads", String(stats.leads))}{tile("WhatsApp leads", String(stats.whatsapp))}{tile("Total leads", String(stats.leads + stats.whatsapp))}{tile("Emails sent", String(stats.emails))}{tile("Verified Developer", stats.verified ? "Yes" : "Not yet")}
       </div> : null}
       {mode === "timeline" ? <section className="border border-line bg-panel">
         <h2 className="border-b border-line px-4 py-3 font-semibold">Timeline</h2>

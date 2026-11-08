@@ -59,17 +59,17 @@ function downloadAnalyticsCsv(data: AnalyticsSummaryResponse) {
   lines.push("");
 
   lines.push("By listing");
-  lines.push("Listing,Views,Inquiries,Saves,Total events");
+  lines.push("Listing,Views,Form leads,WhatsApp leads,Total leads,Saves,Total events");
   for (const row of data.byListing) {
-    lines.push([csvCell(row.projectName), row.byType.view ?? 0, row.byType.lead_submitted ?? 0, row.byType.save ?? 0, row.total].join(","));
+    lines.push([csvCell(row.projectName), row.byType.view ?? 0, row.byType.lead_submitted ?? 0, row.byType.whatsapp_click ?? 0, (row.byType.lead_submitted ?? 0) + (row.byType.whatsapp_click ?? 0), row.byType.save ?? 0, row.total].join(","));
   }
 
   if (data.byDeveloper) {
     lines.push("");
     lines.push("By developer (platform-wide)");
-    lines.push("Developer,Views,Inquiries,Total events");
+    lines.push("Developer,Views,Form leads,WhatsApp leads,Total leads,Total events");
     for (const row of data.byDeveloper) {
-      lines.push([csvCell(row.developerName), row.byType.view ?? 0, row.byType.lead_submitted ?? 0, row.total].join(","));
+      lines.push([csvCell(row.developerName), row.byType.view ?? 0, row.byType.lead_submitted ?? 0, row.byType.whatsapp_click ?? 0, (row.byType.lead_submitted ?? 0) + (row.byType.whatsapp_click ?? 0), row.total].join(","));
     }
   }
 
@@ -182,14 +182,15 @@ export function AnalyticsDashboard() {
           <div className="ln-an-main">
             <div className="ln-devstats-big">
               <div><strong>{n("view")}</strong><span>Page views</span></div>
-              <div><strong>{n("lead_submitted")}</strong><span>Inquiries</span></div>
+              <div><strong>{n("lead_submitted")}</strong><span>Form leads</span></div>
+              <div><strong>{n("whatsapp_click")}</strong><span>WhatsApp leads</span></div>
+              <div><strong>{(data.byType.find((t) => t.key === "lead_submitted")?.count ?? 0) + (data.byType.find((t) => t.key === "whatsapp_click")?.count ?? 0)}</strong><span>Total leads</span></div>
               <div><strong>{data.totalEvents.toLocaleString()}</strong><span>Total events</span></div>
             </div>
 
             <div className="ln-devstats-small">
               <div><strong>{n("save")}</strong><span>Saves</span></div>
               <div><strong>{n("brochure_download")}</strong><span>Brochure downloads</span></div>
-              <div><strong>{n("whatsapp_click")}</strong><span>WhatsApp clicks</span></div>
               <div><strong>{n("email_click")}</strong><span>Email clicks</span></div>
               <div><strong>{n("blog_view")}</strong><span>Blog views</span></div>
               <div><strong>{n("form_field_focus")}</strong><span>Form field taps</span></div>
@@ -222,7 +223,7 @@ export function AnalyticsDashboard() {
               ) : (
                 <table className="ln-table">
                   <thead>
-                    <tr><th>Listing</th><th>Views</th><th>Inquiries</th><th>Saves</th><th>Total events</th></tr>
+                    <tr><th>Listing</th><th>Views</th><th>Form leads</th><th>WhatsApp leads</th><th>Total leads</th><th>Saves</th><th>Total events</th></tr>
                   </thead>
                   <tbody>
                     {data.byListing.map((row) => (
@@ -230,6 +231,8 @@ export function AnalyticsDashboard() {
                         <td>{row.projectSlug ? <Link href={`/cms/collections/${row.kind === "land" ? "lands" : "projects"}/${row.projectId}`}>{row.projectName}</Link> : row.projectName}</td>
                         <td>{(row.byType.view ?? 0).toLocaleString()}</td>
                         <td>{(row.byType.lead_submitted ?? 0).toLocaleString()}</td>
+                        <td>{(row.byType.whatsapp_click ?? 0).toLocaleString()}</td>
+                        <td><strong>{((row.byType.lead_submitted ?? 0) + (row.byType.whatsapp_click ?? 0)).toLocaleString()}</strong></td>
                         <td>{(row.byType.save ?? 0).toLocaleString()}</td>
                         <td><strong>{row.total.toLocaleString()}</strong></td>
                       </tr>
@@ -247,7 +250,7 @@ export function AnalyticsDashboard() {
                 ) : (
                   <table className="ln-table">
                     <thead>
-                      <tr><th>Developer</th><th>Views</th><th>Inquiries</th><th>Total events</th></tr>
+                      <tr><th>Developer</th><th>Views</th><th>Form leads</th><th>WhatsApp leads</th><th>Total leads</th><th>Total events</th></tr>
                     </thead>
                     <tbody>
                       {data.byDeveloper.map((row) => (
@@ -255,6 +258,8 @@ export function AnalyticsDashboard() {
                           <td><Link href={`/cms/collections/developers/${row.developerId}`}>{row.developerName}</Link></td>
                           <td>{(row.byType.view ?? 0).toLocaleString()}</td>
                           <td>{(row.byType.lead_submitted ?? 0).toLocaleString()}</td>
+                          <td>{(row.byType.whatsapp_click ?? 0).toLocaleString()}</td>
+                          <td><strong>{((row.byType.lead_submitted ?? 0) + (row.byType.whatsapp_click ?? 0)).toLocaleString()}</strong></td>
                           <td><strong>{row.total.toLocaleString()}</strong></td>
                         </tr>
                       ))}
