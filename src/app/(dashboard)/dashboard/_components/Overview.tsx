@@ -114,6 +114,8 @@ export function Overview() {
 
   const views = data?.summary?.byType.find((t) => t.key === "view")?.count ?? 0;
   const viewsBefore = data?.before ? (data.before.byType.find((t) => t.key === "view")?.count ?? 0) : null;
+  const whatsappMonth = data?.summary?.byType.find((t) => t.key === "whatsapp_click")?.count ?? 0;
+  const leadsTotal = (data?.leadsMonth ?? 0) + whatsappMonth; // a WhatsApp click counts as a lead, same as a form enquiry
   const now = data?.at ?? 0;
   const trend = (() => {
     const all = new Map((data?.summary?.trend ?? []).map((p) => [p.date, p.count]));
@@ -134,7 +136,7 @@ export function Overview() {
       <PageHero
         title={admin ? "Overview." : "Welcome back."}
         description={admin ? "How LankaNewHomes is doing across every developer, live from Payload." : `${name}: how your listings are performing.`}
-        stat={{ label: "Leads, last 30 days", value: data ? String(data.leadsMonth) : "…" }}
+        stat={{ label: "Leads, last 30 days", value: data ? String(leadsTotal) : "…" }}
         actions={<><Link href="/dashboard/leads" className={heroBtn}>View leads</Link><Link href="/dashboard/projects" className={heroBtn}>Your projects</Link></>}
       />
 
@@ -149,7 +151,7 @@ export function Overview() {
         <div className="mb-5"><TodayPanel /></div>
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <Stat icon={Eye} label="Page views, last 30 days" value={data ? views.toLocaleString("en-LK") : "…"} change={data ? <Change now={views} was={viewsBefore} /> : null} sub={data?.summary ? "Real visits: bots, crawlers and repeats removed" : data ? "No analytics yet" : undefined} />
-          <Stat icon={MessageCircle} label="Leads, last 30 days" value={data ? String(data.leadsMonth) : "…"} sub={data ? `${data.newLeads} still new` : undefined} />
+          <Stat icon={MessageCircle} label="Leads, last 30 days" value={data ? String(leadsTotal) : "…"} sub={data ? `${data.leadsMonth} form + ${whatsappMonth} WhatsApp · ${data.newLeads} form still new` : undefined} />
           <Stat icon={Building2} label="Published listings" value={data ? String(data.active) : "…"} sub={data ? `${data.drafts} ${data.drafts === 1 ? "draft" : "drafts"}` : undefined} />
           <Stat icon={CalendarClock} label={admin ? "Active subscriptions" : "Package days left"} value={!data ? "…" : admin ? String(data.subs) : daysLeft === null ? "—" : String(daysLeft)} sub={admin ? "paying developers" : featuredUntil ? `Ends ${featuredUntil.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}` : "No paid package"} />
         </div>

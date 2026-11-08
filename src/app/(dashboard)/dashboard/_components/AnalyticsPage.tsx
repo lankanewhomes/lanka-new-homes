@@ -50,6 +50,7 @@ const TILES = [
   { key: "view", label: "Page views", icon: Eye },
   { key: "visitors", label: "Visitors", icon: Users },
   { key: "save", label: "Saves", icon: Heart },
+  { key: "leads", label: "Leads (form + WhatsApp)", icon: MessageCircle },
   { key: "lead_submitted", label: "Enquiries sent", icon: MessageCircle },
   { key: "whatsapp_click", label: "WhatsApp clicks", icon: MessageSquare },
   { key: "email_click", label: "Email clicks", icon: Mail },
@@ -132,8 +133,8 @@ export function AnalyticsPage() {
     );
   }
 
-  const count = (key: string) => (key === "visitors" ? data?.visitors ?? 0 : data?.byType.find((t) => t.key === key)?.count ?? 0);
-  const countBefore = (key: string) => (key === "visitors" ? before?.visitors ?? 0 : before?.byType.find((t) => t.key === key)?.count ?? 0);
+  const count = (key: string): number => (key === "visitors" ? data?.visitors ?? 0 : key === "leads" ? count("lead_submitted") + count("whatsapp_click") : data?.byType.find((t) => t.key === key)?.count ?? 0);
+  const countBefore = (key: string): number => (key === "visitors" ? before?.visitors ?? 0 : key === "leads" ? countBefore("lead_submitted") + countBefore("whatsapp_click") : before?.byType.find((t) => t.key === key)?.count ?? 0);
   const startFloor = new Date(ANALYTICS_START);
   const clipped = data ? data.range.startDate < dayKey(startFloor) : false;
   const trend = (() => {
