@@ -55,6 +55,7 @@ One file per listing built from a developer's website — what was captured, whe
 - [The Kingdom Residencies, Sigiriya](the-kingdom-sigiriya.md) — Apartments, Sigiriya; 2 plans, 17 images, brochure, handover — (published)
 - [Lakefront Residencies](lakefront-residencies.md) — Apartments, Nuwara Eliya; 10 plans, 37 images, brochure, handover — (published)
 - [Dynasty Residence](dynasty-residence-kandy.md) — Apartments, Kandy; 10 plans, 11 images, brochure, completed, no prices published (published)
+- [Marina Square - Uptown Colombo](marina-square-colombo-15.md) — Apartments, Colombo 15; 2 plans (4-bed penthouses), 38 images, typical floor plans PDF, no handover date (published)
 - [New drafts 2026-11-01](new-drafts-2026-11-01.md) — Jayasinghe Road, The Residencies Kotte, Oceanfront Marine Drive, The Loft Mirissa; 4 unpublished drafts, no prices published
 - [Span Tower](span-tower-2026-11-02.md) — Apartments, Colombo 06 and Negombo; 2 unpublished drafts (Span Tower 31 and 28), no prices published
 - [Grand Apartments Group](grand-apartments-2026-11-02.md) — Apartments across Colombo 03, 04, 06, 09, 13, 14 and Dehiwala; 9 unpublished drafts, no prices published
