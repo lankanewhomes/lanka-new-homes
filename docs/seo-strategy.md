@@ -119,6 +119,7 @@ what was dropped and why):
 ## Keyword-to-page mapping
 
 ### /land
+(2026-11-09, owner request to rank for "land for sale sri lanka": title now `Land for Sale in Sri Lanka: {n} Plots & Prices` from the live count, description and intro from live data, an about section with price-per-perch range, district list, buying checks and links to the cheap/Colombo/acre/rural pages.)
 Land for sale in Sri Lanka, Land for sale Sri Lanka, Land sale Sri Lanka,
 Lands for sale Sri Lanka, Buy land in Sri Lanka, Buy a land in Sri Lanka,
 Land sales Sri Lanka, Land in Sri Lanka, Land in Colombo, Lands in Colombo,
