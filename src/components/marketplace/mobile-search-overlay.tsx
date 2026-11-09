@@ -6,29 +6,29 @@ import { useRouter } from "next/navigation";
 import { ChevronDown, Search, X } from "lucide-react";
 import { parseNaturalSearch } from "@/lib/natural-search";
 import { trackEvent } from "@/lib/ga4";
+import { SEARCH_QUICK_CHIPS, type QuickChip } from "@/lib/search-chips";
 
-/** Quick links under the Search button (owner, 2026-11-09): the pages and filters people look for most. */
-export const SEARCH_QUICK_CHIPS = [
-  { label: "Gated Community Houses", href: "/projects/gated-community-houses-for-sale" },
-  { label: "Brand New Houses", href: "/projects/brand-new-houses-for-sale" },
-  { label: "Pre-Construction", href: "/projects/pre-construction" },
-  { label: "Colombo", href: "/projects/colombo" },
-  { label: "Luxury", href: "/projects/luxury" },
-  { label: "Branded Residences", href: "/projects/branded-residences" },
-  { label: "Villas", href: "/projects/villas" },
-  { label: "Beachfront", href: "/projects/beachfront" },
-  { label: "Serviced Apartments", href: "/projects/serviced-apartments" },
-  { label: "Port City Colombo", href: "/projects/port-city-colombo" },
-  { label: "Lands", href: "/land" },
-  { label: "Lakefront", href: "/projects/lakefront" },
-  { label: "Apartments", href: "/projects?type=Apartments" },
-  { label: "Condominiums", href: "/projects?type=Condominium" },
-] as const;
+/** Quick links under the Search button and in the desktop search dropdowns (owner, 2026-11-09). Starts with the fixed list, then switches to the
+ *  live order from /api/search/chips: the chips with the most listings first, empty ones hidden. */
+let chipsRequest: Promise<QuickChip[]> | null = null;
+function loadLiveChips(): Promise<QuickChip[]> {
+  chipsRequest ??= fetch("/api/search/chips")
+    .then((response) => response.json())
+    .then((data) => (Array.isArray(data?.chips) && data.chips.length > 0 ? (data.chips as QuickChip[]) : SEARCH_QUICK_CHIPS))
+    .catch(() => SEARCH_QUICK_CHIPS);
+  return chipsRequest;
+}
 
 export function SearchQuickChips({ onPick }: { onPick: () => void }) {
+  const [chips, setChips] = useState<QuickChip[]>(SEARCH_QUICK_CHIPS);
+  useEffect(() => {
+    let alive = true;
+    loadLiveChips().then((live) => { if (alive) setChips(live); });
+    return () => { alive = false; };
+  }, []);
   return (
     <div className="mobile-location-search-chips" aria-label="Popular searches">
-      {SEARCH_QUICK_CHIPS.map((chip) => (
+      {chips.map((chip) => (
         <Link key={chip.label} href={chip.href} onClick={onPick}>{chip.label}</Link>
       ))}
     </div>
