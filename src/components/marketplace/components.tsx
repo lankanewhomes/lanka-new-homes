@@ -2333,13 +2333,13 @@ export function RequestInfoDialog({
   // through under the window (owner, 2026-11-09).
   return createPortal(
     <div className="request-info-overlay" role="dialog" aria-modal="true" aria-label="Contact us" onClick={onClose}>
-      <div className={`request-info-dialog${!isInquiry ? " request-info-dialog-brochure" : ""}`} onClick={(event) => event.stopPropagation()}>
+      <div className="request-info-dialog request-info-dialog-brochure" onClick={(event) => event.stopPropagation()}>
         <div className="request-info-topbar">
-          <p className="request-info-topbar-title">{isBrochure ? "Download Brochure" : isInquiry ? "Send us your inquiry" : "Request information"}</p>
+          <p className="request-info-topbar-title">{isBrochure ? "Download Brochure" : "Request information"}</p>
           <button type="button" className="request-info-close" aria-label="Close" onClick={onClose}><X className="h-5 w-5" /></button>
         </div>
 
-        <div className={`request-info-listing${!isInquiry ? " request-info-listing-brochure" : ""}`}>
+        <div className="request-info-listing request-info-listing-brochure">
           <Image src={project.heroImage} alt={project.name} width={64} height={64} className="request-info-listing-image" />
           {(
             <div className="request-info-listing-text">
