@@ -10,7 +10,7 @@ import { trackEvent } from "@/lib/ga4";
 /** Quick links under the Search button (owner, 2026-11-09): the pages and filters people look for most. */
 export const SEARCH_QUICK_CHIPS = [
   { label: "Beachfront", href: "/projects/beachfront" },
-  { label: "Lakefront", href: "/search?q=lakefront" },
+  { label: "Lakefront", href: "/projects/lakefront" },
   { label: "Apartments", href: "/projects?type=Apartments" },
   { label: "Condominiums", href: "/projects?type=Condominium" },
   { label: "Villas", href: "/projects/villas" },
@@ -76,7 +76,7 @@ export function MobileSearchOverlay({ open, onClose, location }: { open: boolean
       <button type="button" className="mobile-location-search-scrim" aria-label="Close location search" onClick={onClose} />
       <div className="mobile-location-search-panel">
         <div className="mobile-location-search-header">
-          <p>Location search</p>
+          <p>Find your home</p>
           <button type="button" aria-label="Close location search" onClick={onClose}><X size={22} /></button>
         </div>
         <form className="mobile-location-search-form" onSubmit={submit}>

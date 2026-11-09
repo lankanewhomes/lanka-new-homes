@@ -198,6 +198,23 @@ export const projectCategories: Record<string, ProjectCategory> = {
     relatedPaths: ["/projects/villas", "/guides/investment-property", "/guides/foreigners-buying-property"],
     filter: (project) => BEACH_LOCATIONS.some((town) => (project.city ?? "").toLowerCase().includes(town) || (project.location ?? "").toLowerCase().includes(town)) || textIncludes(project, "beach") || textIncludes(project, "resort"),
   },
+  lakefront: {
+    path: "/projects/lakefront",
+    breadcrumbLabel: "Lakefront",
+    breadcrumbs: [{ label: "Home", href: "/" }, { label: "New Projects", href: "/projects" }, { label: "Lakefront" }],
+    metaTitle: "Lakefront Apartments & Homes in Sri Lanka",
+    metaDescription: "Explore new lakefront apartments, residences and villas in Sri Lanka with lake views, from Nuwara Eliya and Kandy to Colombo's Beira Lake, with prices, floor plans and photos.",
+    h1: "Lakefront Homes in Sri Lanka",
+    intro: "New lakefront apartments, residences and villas in Sri Lanka, from hill-country lakes to Colombo's Beira Lake. Each project on this page sits beside, faces or overlooks a lake or reservoir.",
+    about: { title: "Lakefront apartments and villas in Sri Lanka", paragraphs: [
+      "Lakefront living in Sri Lanka ranges from hotel residences on Gregory Lake in Nuwara Eliya to apartments with Beira Lake views in Colombo. [Lakefront Residencies](/projects/lakefront-residencies) overlooks Gregory Lake in Nuwara Eliya, with studio to four-bedroom apartments and duplexes. [Mantra Kandy](/projects/mantra-kandy) offers wellness villas above the Victoria Reservoir in Digana with lake and mountain views, and [Prime Kadawatha](/projects/prime-kadawatha) is set beside a lake and paddy fields on Gonahena Road in Kadawatha.",
+      "In Colombo, [Vauxhall DSTRCT](/projects/vauxhall-dstrct) lists Beira Lake and Lotus Tower among its unit views. Each listing on this page shows the developer, location, status and floor plans where available. You can send an enquiry from any listing and it goes straight to the developer.",
+    ] },
+    relatedPaths: ["/projects/beachfront", "/projects/luxury", "/projects/villas"],
+    extraKeywords: "lake lakeside lake view lake views waterfront reservoir",
+    // Words a listing uses when it really is on or facing a lake. A street named "Lake Road" or "Lake Drive" does not count.
+    filter: (project) => /lake ?front|lakeside|lake views?|lake and mountain views|overlooking (?:a |the )?(?:[a-z]+ )?lake\b|beside (?:a |the )?lake\b|facing (?:[a-z]+ )?lake\b|beira lake/i.test(`${project.name} ${project.summary} ${project.description} ${project.location}`),
+  },
   "serviced-apartments": {
     path: "/projects/serviced-apartments",
     breadcrumbLabel: "Serviced Apartments",
@@ -251,6 +268,7 @@ export type SearchablePage = { label: string; path: string; keywords: string };
 const searchSynonyms: Record<string, string> = {
   "/projects/luxury": "luxury premium high end upscale",
   "/projects/beachfront": "beachfront beach sea ocean seafront coastal",
+  "/projects/lakefront": "lakefront lake lakeside lake view waterfront reservoir",
   "/projects/villas": "villa villas",
   "/projects/pre-construction": "pre construction precon pre con off plan offplan upcoming",
   "/projects/serviced-apartments": "serviced apartment hotel managed",

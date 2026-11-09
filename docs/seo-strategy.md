@@ -15,6 +15,7 @@ Update this file whenever a new keyword group or page is added.
 | `/projects/branded-residences` | Branded residences | new |
 | `/projects/villas` | New villa developments | new |
 | `/projects/beachfront` | Beachfront/resort residences | new |
+| `/projects/lakefront` | Lakefront apartments, residences and villas with lake views (added 2026-11-09, owner request) | new |
 | `/projects/serviced-apartments` | Serviced apartments | new |
 | `/projects/port-city-colombo` | Port City Colombo specific | new |
 | `/projects/brand-new-houses-for-sale` | "brand new house for sale in Sri Lanka" / new houses / new villas / townhouses — all House, Villas, Luxury Villas and Townhouse listings that are not Completed (added 2026-10-10, owner request) | new |

@@ -427,7 +427,7 @@ export function HomeClient({
         <button type="button" className="mobile-location-search-scrim" aria-label="Close location search" onClick={() => setMobileSearchOpen(false)} />
         <div className="mobile-location-search-panel">
           <div className="mobile-location-search-header">
-            <p>Location search</p>
+            <p>Find your home</p>
             <button type="button" aria-label="Close location search" onClick={() => setMobileSearchOpen(false)}><X size={22} /></button>
           </div>
           <form className="mobile-location-search-form" onSubmit={submitSearch}>

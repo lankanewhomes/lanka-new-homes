@@ -2327,7 +2327,7 @@ export function RequestInfoDialog({
     <div className="request-info-overlay" role="dialog" aria-modal="true" aria-label="Contact us" onClick={onClose}>
       <div className={`request-info-dialog${!isInquiry ? " request-info-dialog-brochure" : ""}`} onClick={(event) => event.stopPropagation()}>
         <div className="request-info-topbar">
-          <p className="request-info-topbar-title">{isBrochure ? "Download Brochure" : isInquiry ? "Send us your inquiry" : "Contact Us"}</p>
+          <p className="request-info-topbar-title">{isBrochure ? "Download Brochure" : isInquiry ? "Send us your inquiry" : "Get in touch"}</p>
           <button type="button" className="request-info-close" aria-label="Close" onClick={onClose}><X className="h-5 w-5" /></button>
         </div>
 
