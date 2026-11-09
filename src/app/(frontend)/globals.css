@@ -21151,3 +21151,6 @@ body:has(.compare-bar) {
 @media (max-width: 520px) { .request-info-dialog .request-info-actions { margin-bottom: -18px; padding-bottom: calc(28px + env(safe-area-inset-bottom)); } }
 /* While a contact window is open the page's bottom tab bar (Photos, Videos, Brochure, Map...) is hidden, so it can never show under the window. */
 body:has(.request-info-overlay) .listing-hero-quickjump-bar { display: none; }
+
+/* Phone pop-up chips pack into full-width rows (owner, 2026-11-09: "make the chips masonry"): each chip grows to fill its row, like the hero's chips. */
+.mobile-location-search-panel .mobile-location-search-chips a { flex: 1 1 auto; justify-content: center; text-align: center; white-space: nowrap; }
