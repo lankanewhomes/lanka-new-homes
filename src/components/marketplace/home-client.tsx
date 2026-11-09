@@ -11,6 +11,7 @@ import { ArrowUpRight, Check, ChevronDown, ChevronLeft, ChevronRight, MapPin, Pa
 import { SiteLanguage, useLanguage } from "@/components/layout/language-provider";
 import { ListingGridCard } from "@/components/marketplace/listing-page";
 import { SearchQuickChips } from "@/components/marketplace/mobile-search-overlay";
+import { HERO_CHIP_PATHS } from "@/lib/search-chips";
 import { allProjectCategories } from "@/lib/listing-categories";
 import { trackEvent } from "@/lib/ga4";
 import { getPackage, planRotationWeight } from "@/lib/packages";
@@ -371,7 +372,7 @@ export function HomeClient({
   }, [hasMounted, spotlightEligible]);
   const heroQuickLinks = [
     ...spotlightDevelopers.map((developer) => ({ path: `/developers/${developer.slug}`, breadcrumbLabel: developer.name, isHighlighted: true })),
-    ...allProjectCategories,
+    ...HERO_CHIP_PATHS.flatMap((path) => allProjectCategories.filter((category) => category.path === path)),
     { path: "/land", breadcrumbLabel: "Lands" },
   ];
 
