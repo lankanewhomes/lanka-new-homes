@@ -15,6 +15,7 @@ export default async function BrandNewHousesForSalePage() {
       intro={category.intro}
       projects={projects}
       relatedPaths={category.relatedPaths}
+      about={category.about}
     />
   );
 }

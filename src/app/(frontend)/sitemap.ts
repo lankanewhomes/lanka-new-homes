@@ -10,6 +10,7 @@ import { getAllSalesCompanies } from "@/lib/sales-company-store";
 import { getAllConstructionCompanies } from "@/lib/construction-company-store";
 import { toAbsoluteUrl } from "@/lib/seo";
 import { allProjectCategories } from "@/lib/listing-categories";
+import { colomboPostcodes, postcodePath } from "@/lib/colombo-postcode-pages";
 import { LAND_SEO_PAGES, landDistricts } from "@/lib/land-seo-pages";
 import { guides } from "@/lib/guides";
 import { blogPosts } from "@/lib/blog";
@@ -246,5 +247,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const landDistrictRoutes: MetadataRoute.Sitemap = landDistricts(allLands).map((entry) => ({ url: toAbsoluteUrl(`/land/district/${entry.slug}`), lastModified: now, changeFrequency: "daily" as const, priority: 0.6 }));
 
-  return [...staticRoutes, ...landSeoRoutes, ...landDistrictRoutes, ...projectCategoryRoutes, ...guideRoutes, ...blogRoutes, ...constructionCompanyRoutes, ...projectRoutes, ...developerRoutes, ...landRoutes, ...neighborhoodRoutes, ...partnerDirectoryRoutes];
+  const postcodeRoutes: MetadataRoute.Sitemap = colomboPostcodes(projects).map((n) => ({ url: toAbsoluteUrl(postcodePath(n)), lastModified: now, changeFrequency: "daily" as const, priority: 0.7 }));
+
+  return [...staticRoutes, ...postcodeRoutes, ...landSeoRoutes, ...landDistrictRoutes, ...projectCategoryRoutes, ...guideRoutes, ...blogRoutes, ...constructionCompanyRoutes, ...projectRoutes, ...developerRoutes, ...landRoutes, ...neighborhoodRoutes, ...partnerDirectoryRoutes];
 }
