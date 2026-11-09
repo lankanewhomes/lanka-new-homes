@@ -471,6 +471,7 @@ export const syncNeighborhoodToSupabase: CollectionAfterChangeHook = async ({ do
     const neighborhood: AnyDoc = {
       slug: d.slug,
       name: d.name,
+      isPublished: d.isPublished,
       city: d.city,
       province: d.province,
       population: d.population,

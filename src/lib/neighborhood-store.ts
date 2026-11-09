@@ -37,16 +37,28 @@ function neighborhoodToRow(neighborhood: Neighborhood) {
   };
 }
 
+// A neighborhood is hidden from the public site only when isPublished is explicitly false
+// (missing/undefined counts as published, so every page that existed before the field stays visible).
+function isPublished(neighborhood: Neighborhood): boolean {
+  return neighborhood.isPublished !== false;
+}
+
 export async function getAllNeighborhoods(): Promise<Neighborhood[]> {
   const { data, error } = await supabaseAdmin.from("neighborhoods").select("slug, data");
   if (error) throw new Error(`Failed to load neighborhoods: ${error.message}`);
-  return (data ?? []).map((row) => rowToNeighborhood(row as NeighborhoodRow));
+  return (data ?? []).map((row) => rowToNeighborhood(row as NeighborhoodRow)).filter(isPublished);
 }
 
-export async function getNeighborhoodBySlug(slug: string): Promise<Neighborhood | undefined> {
+/** Includes drafts. Only for the unlinked /neighborhood-preview route and admin tooling. */
+export async function getNeighborhoodBySlugRaw(slug: string): Promise<Neighborhood | undefined> {
   const { data, error } = await supabaseAdmin.from("neighborhoods").select("slug, data").eq("slug", slug).maybeSingle();
   if (error) throw new Error(`Failed to load neighborhood ${slug}: ${error.message}`);
   return data ? rowToNeighborhood(data as NeighborhoodRow) : undefined;
+}
+
+export async function getNeighborhoodBySlug(slug: string): Promise<Neighborhood | undefined> {
+  const neighborhood = await getNeighborhoodBySlugRaw(slug);
+  return neighborhood && isPublished(neighborhood) ? neighborhood : undefined;
 }
 
 export async function createNeighborhood(input: CreateNeighborhoodInput): Promise<Neighborhood> {
@@ -70,7 +82,7 @@ export async function createNeighborhood(input: CreateNeighborhoodInput): Promis
 }
 
 export async function updateNeighborhood(slug: string, changes: Partial<Omit<Neighborhood, "slug">>): Promise<Neighborhood | undefined> {
-  const current = await getNeighborhoodBySlug(slug);
+  const current = await getNeighborhoodBySlugRaw(slug);
   if (!current) return undefined;
 
   const updated: Neighborhood = { ...current, ...changes, slug };

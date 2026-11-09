@@ -782,6 +782,8 @@ export type Location = {
 export type Neighborhood = SeoFields & {
   slug: string;
   name: string;
+  /** Hidden from the live site only when explicitly false; drafts are viewable at /neighborhood-preview/<slug>. */
+  isPublished?: boolean;
   city: string;
   province: string;
   /** Population with its scope and year — first line of the Overview list when set. */
