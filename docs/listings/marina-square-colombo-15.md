@@ -42,5 +42,18 @@ Site pages: home, condo-types, penthouses, compare-apartments, project-progress,
 | Neighborhood | 25 places added with coordinates (Wikipedia article positions, straight-line distances from the pin) by `scripts/add-marina-square-nearby.ts`; the three developer-stated items are kept. |
 | Contact card | Email row removed from the listing contact card for all projects and land (owner request). |
 
-## Update 2026-11-09 (unit-type rows)
-Owner: "there are more floor plans". 29 floor-plan rows added, one per unit code on the "Typical Floor Plans" PDF (3A to 3R, 2A to 2T, 1.5A to 1.5D, 1A to 1E), with `scripts/add-marina-square-unit-type-rows.ts`. Bedrooms come from the code prefix; the developer publishes no sizes, bathrooms or prices for them, so those are 0 and hidden. Each row shows its typical-floor drawing, floors/towers, view (top row sea, bottom row city on the plates) and 1 car park (developer FAQ). Availability is "Limited" because the developer's own unit search lists no 1 to 3 bedroom units (probably sold out). Open question: confirm availability and get sizes and bathrooms per unit type.
+## Update 2026-11-09 (floor plans from the developer's own pages)
+Owner: list every floor plan on the PDF, mark sold-out ones, give each its own detail page. The PDF itself has only unlabelled-size floor plates (vector, no sizes or bathrooms), so the real data came from the developer's own condo-types pages (Wayback snapshot 2022-12-06, still hosting the plan images). `scripts/update-marina-square-floor-plans-from-developer.ts` replaced the 29 placeholder rows with 18 design rows plus the two penthouses (20 floor plans, each with its own `/floor-plans/<slug>` page, all returning 200).
+
+| Design | Size sq ft | Beds / baths | Floors (towers) | Status |
+|---|---|---|---|---|
+| 4 D/E, 4 F/G | 2,104, 2,047 | 4 / 4 | 35-36 (D, J, P) | Available (only ones on the current site) |
+| 3 P-TR/Q-TR duplex | 1,822 | 3 / 3 | 6-7 (D, J, P) | Sold Out |
+| 3 A, 3 B, 3 C, 3 R | 1,292, 1,107, 1,313, 1,197 | 3 / 2 | 5-31 (B, C) | Sold Out |
+| 3 F/G/H/J | 1,074 | 3 / 2 | 11-34 (D, J, P) | Sold Out |
+| 2.5 P-TR/Q-TR, 2 P-TR/Q-TR duplex | 1,824, 1,708 | 2.5 and 2 / 2 | 6-7 (D, J, P) | Sold Out |
+| 2 L/M, 2 F/G, 2 H/J, 2 S, 2 T | 1,074, 961, 904, 846, 885 | 2 / 2 | various | Sold Out |
+| 2 A/B/C/D, 1.5 A/B/C/D | 736, 741 | 2 and 1.5 / 1 | 7-10 (D, J, P) | Sold Out |
+| 1 A/B, 1 C/D, 1 E | 625, 568, 727 | 1 / 1 | various | Sold Out |
+
+Sold-out basis: the current developer site lists only 4 D/E and 4 F/G; 1 A/B to 2 A/B/C/D were explicitly marked SOLD OUT in the 2022 snapshot. The 2022 "price from" figures for the other designs are not entered (outdated). Open question: confirm with the developer that the 3 and 2 bedroom designs are truly sold out.
