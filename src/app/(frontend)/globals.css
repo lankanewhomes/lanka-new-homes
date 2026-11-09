@@ -21154,3 +21154,9 @@ body:has(.request-info-overlay) .listing-hero-quickjump-bar { display: none; }
 
 /* Phone pop-up chips pack into full-width rows (owner, 2026-11-09: "make the chips masonry"): each chip grows to fill its row, like the hero's chips. */
 .mobile-location-search-panel .mobile-location-search-chips a { flex: 1 1 auto; justify-content: center; text-align: center; white-space: nowrap; }
+
+/* Phones: the cream search container on the listing pages runs edge to edge (owner, 2026-11-09: "make the container full width in mobile"); the inputs inside keep their size.
+   The page content is inset by (100vw - --shell-width) / 2 on each side, so the container steps out by that much. */
+@media (max-width: 760px) {
+  .listing-search-bar { margin-left: calc((var(--shell-width, 100vw) - 100vw) / 2); margin-right: calc((var(--shell-width, 100vw) - 100vw) / 2); border-left-width: 0; border-right-width: 0; }
+}
