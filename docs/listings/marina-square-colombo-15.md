@@ -41,3 +41,6 @@ Site pages: home, condo-types, penthouses, compare-apartments, project-progress,
 | Banking partners | New `bankingPartners` field (own row in Pricing): DFCC, Commercial Bank, Sampath Bank (from /en/about-us). Migration `20261109120000_projects_banking_partners.sql`. |
 | Neighborhood | 25 places added with coordinates (Wikipedia article positions, straight-line distances from the pin) by `scripts/add-marina-square-nearby.ts`; the three developer-stated items are kept. |
 | Contact card | Email row removed from the listing contact card for all projects and land (owner request). |
+
+## Update 2026-11-09 (unit-type rows)
+Owner: "there are more floor plans". 29 floor-plan rows added, one per unit code on the "Typical Floor Plans" PDF (3A to 3R, 2A to 2T, 1.5A to 1.5D, 1A to 1E), with `scripts/add-marina-square-unit-type-rows.ts`. Bedrooms come from the code prefix; the developer publishes no sizes, bathrooms or prices for them, so those are 0 and hidden. Each row shows its typical-floor drawing, floors/towers, view (top row sea, bottom row city on the plates) and 1 car park (developer FAQ). Availability is "Limited" because the developer's own unit search lists no 1 to 3 bedroom units (probably sold out). Open question: confirm availability and get sizes and bathrooms per unit type.
