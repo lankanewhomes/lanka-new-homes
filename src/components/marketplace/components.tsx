@@ -4349,6 +4349,7 @@ export function Header() {
 // public/logo-wordmark.svg / logo-wordmark-white.svg (Archivo 700 outlined
 // to paths) for use outside the site.
 export function Footer() {
+  const { language, setLanguage } = useLanguage();
   return (
     <footer className="site-footer">
       <div className="footer-inner">
@@ -4423,6 +4424,11 @@ export function Footer() {
 
         <div className="footer-bottom">
           <p className="copyright">© {new Date().getFullYear()} LankaNewHomes. All rights reserved.</p>
+          <div className="footer-language" role="group" aria-label="Language switcher">
+            <button type="button" className={language === "en" ? "active" : undefined} onClick={() => setLanguage("en")} aria-pressed={language === "en"}>EN</button>
+            <button type="button" className={language === "si" ? "active" : undefined} onClick={() => setLanguage("si")} aria-pressed={language === "si"}>සිංහල</button>
+            <button type="button" className={language === "ta" ? "active" : undefined} onClick={() => setLanguage("ta")} aria-pressed={language === "ta"}>தமிழ்</button>
+          </div>
         </div>
       </div>
     </footer>

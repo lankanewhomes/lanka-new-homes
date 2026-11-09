@@ -21102,3 +21102,21 @@ body:has(.compare-bar) {
     gap: 10px 20px;
   }
 }
+
+
+/* Footer language switcher (owner, 2026-11-09): EN / සිංහල / தமிழ் in the bottom bar, outline pills like the follow buttons. */
+.footer-language { display: inline-flex; gap: 8px; }
+.footer-language button {
+  padding: 6px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+.footer-language button:hover { border-color: #f47b36; }
+.footer-language button.active { background: #f47b36; border-color: #f47b36; }
