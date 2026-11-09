@@ -22,3 +22,13 @@ Site pages: home, condo-types, penthouses, compare-apartments, project-progress,
 - Description shortened to two short paragraphs (owner: "too much").
 - Hero pills added: map pin (6.95226, 79.85592, from the developer's Google Maps embed on /en/contact, so Map and Street View show), YouTube video, Matterport show-apartment tour, and a site plan (page 1 of the "Aerial view" PDF) as the Block Plan. No Road Map pill: the site publishes no road map.
 - Colombo 15 neighbourhood (id 160) set to published. The live page kept serving a cached 404 for a while after publishing (data in Supabase is isPublished true).
+
+## Update 2026-11-09 (second pass)
+| Change | Detail |
+|---|---|
+| Progress | Construction stage 100%, status note, 12 monthly progress photos (Mar 2025 to Feb 2026) from /en/location-living/project-progress. `scripts/update-marina-square-progress-amenities.ts` |
+| Amenities | 25 from /en/indulgence and its social, active and wellness pages (medical center and childcare center are mentioned in the Spa description; they are not in the amenity list). |
+| Payment | Badge "Interest-Free Payment Plans" plus payment plan lines and financing note in the pricing section. |
+| Site plan | "Aerial view" PDF page also added to the Photos gallery (4th photo). |
+| Floor plates | Six typical floor pages of the "Typical Floor Plans" PDF added as Block Plan images (`scripts/add-marina-square-floor-plates.ts`). They label units 1A to 4G with view direction but give no sizes, bathrooms or prices, so no per-unit floor-plan rows were made. |
+| Contact | Sales gallery, 250 Srimath Ramanathan Mawatha, Colombo 15, phone +94 76 305 0000, no email (the agency email was removed). |
