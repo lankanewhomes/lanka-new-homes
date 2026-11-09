@@ -53,3 +53,18 @@ export function rankQuickChips(projects: Project[], lands: Land[]): (QuickChip &
     .sort((a, b) => (a.href === "/land" ? 1 : 0) - (b.href === "/land" ? 1 : 0) || b.count - a.count || a.index - b.index)
     .map(({ label, href, count: total }) => ({ label, href, count: total }));
 }
+
+/** The category chips in the home page hero (owner, 2026-11-09: "you added too many chips"). The hero used to list every category page, so each new
+ *  SEO page added a chip; now only these show, in this order. Other category pages stay on the site, in search and in the search chips. */
+export const HERO_CHIP_PATHS = [
+  "/projects/gated-community-houses-for-sale",
+  "/projects/brand-new-houses-for-sale",
+  "/projects/pre-construction",
+  "/projects/colombo",
+  "/projects/luxury",
+  "/projects/branded-residences",
+  "/projects/villas",
+  "/projects/beachfront",
+  "/projects/serviced-apartments",
+  "/projects/port-city-colombo",
+];
