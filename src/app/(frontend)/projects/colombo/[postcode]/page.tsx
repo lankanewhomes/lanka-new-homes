@@ -3,13 +3,14 @@ import { getAllProjects } from "@/lib/project-store";
 import { ProjectListingShell } from "@/components/marketplace/listing-shell";
 import { colomboPostcodes, parsePostcode, postcodeContent, postcodeMetadata, postcodePath, postcodeProjects } from "@/lib/colombo-postcode-pages";
 
+// Every Colombo postcode 1-15 has a page; one with no listings is noindex and not in the sitemap until it has one.
 // "Apartments for sale in Colombo 7" etc. (owner, 2026-11-09) — see src/lib/colombo-postcode-pages.ts.
 export const revalidate = 60;
 
 type Props = { params: Promise<{ postcode: string }> };
 
 export async function generateStaticParams() {
-  return colomboPostcodes(await getAllProjects()).map((n) => ({ postcode: `colombo-${n}` }));
+  return Array.from({ length: 15 }, (_, i) => ({ postcode: `colombo-${i + 1}` }));
 }
 
 export async function generateMetadata({ params }: Props) {
@@ -23,7 +24,6 @@ export default async function Page({ params }: Props) {
   if (!n) return notFound();
   const all = await getAllProjects();
   const projects = postcodeProjects(all, n);
-  if (!projects.length) return notFound();
   const { paragraphs } = postcodeContent(n, projects);
   const others = colomboPostcodes(all).filter((x) => x !== n).slice(0, 3).map(postcodePath);
 
@@ -33,6 +33,7 @@ export default async function Page({ params }: Props) {
       h1={`Apartments for Sale in Colombo ${n}`}
       intro={`New apartment projects in Colombo ${n}: ${projects.length} ${projects.length === 1 ? "project" : "projects"} with current prices, floor plans and photos.`}
       projects={projects}
+      emptyStateText={`No apartment projects in Colombo ${n} yet. Browse all new apartment projects in Colombo.`}
       relatedPaths={["/projects/colombo", ...others]}
       about={{ title: `About apartments in Colombo ${n}`, paragraphs }}
     />
