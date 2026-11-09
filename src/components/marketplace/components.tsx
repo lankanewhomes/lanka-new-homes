@@ -126,6 +126,7 @@ import { Amenity, Article, Developer, FloorPlan, Lead, Location, NearbyPlace, Pr
 import { localizedProjectCopy, useListingT } from "@/lib/i18n/use-listing-t";
 import { floorPlanSummarySentence } from "@/lib/i18n/floor-plan-sentence";
 import { listingWhatsAppHref, toWhatsAppNumber, whatsappChatHref } from "@/lib/whatsapp";
+import { openWhatsAppCapture } from "@/components/marketplace/whatsapp-capture";
 import { buildInternationalPhone, DEFAULT_PHONE_COUNTRY, isPlausiblePhone } from "@/lib/phone";
 import { PhoneField, type PhoneValue } from "@/components/marketplace/phone-field";
 import { groupNearbyPlaces } from "@/lib/nearby-places";
@@ -379,6 +380,15 @@ function logListingEvent(endpoint: string, ga4EventName: string, projectSlug: st
     keepalive: true,
   }).catch(() => {});
   trackEvent(ga4EventName, { listing_id: projectSlug, listing_name: listingName, ...(developerSlug ? { developer_slug: developerSlug } : {}) });
+}
+
+
+// Every WhatsApp button on a listing asks for the buyer's name and number first (whatsapp-capture.tsx), then opens WhatsApp.
+// The href stays on the link, so a new-tab click, a long press or a browser without scripts still reaches the developer.
+function captureWhatsAppClick(event: { metaKey: boolean; ctrlKey: boolean; shiftKey: boolean; button: number; preventDefault: () => void }, href: string | null, project: Project, planName?: string) {
+  if (!href || event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return;
+  event.preventDefault();
+  openWhatsAppCapture({ href, projectSlug: project.slug, projectName: project.name, developerSlug: project.developerSlug, heroImage: project.heroImage, planName });
 }
 
 export function StatusBadge({ status }: { status: string }) {
@@ -1247,7 +1257,7 @@ export function ProjectHero({
               target="_blank"
               rel="noopener noreferrer"
               className="request-info-btn whatsapp-btn"
-              onClick={() => logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project.slug, project.name, project.developerSlug)}
+              onClick={(event) => captureWhatsAppClick(event, whatsappHref, project)}
             >
               <MessageCircle className="h-4 w-4" aria-hidden="true" />
               WhatsApp
@@ -1772,7 +1782,7 @@ export function ProjectHero({
               rel="noopener noreferrer"
               className="listing-hero-mobile-btn listing-hero-mobile-btn-whatsapp"
               aria-label="Chat on WhatsApp"
-              onClick={() => logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project.slug, project.name, project.developerSlug)}
+              onClick={(event) => captureWhatsAppClick(event, whatsappHref, project)}
             >
               <MessageCircle className="h-4 w-4" aria-hidden="true" />
               WhatsApp
@@ -2100,7 +2110,7 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
             target="_blank"
             rel="noopener noreferrer"
             className="stats-contact-card-row stats-contact-card-row-whatsapp"
-            onClick={() => logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project.slug, project.name, project.developerSlug)}
+            onClick={(event) => captureWhatsAppClick(event, contactWhatsAppHref, project)}
           >
             <MessageCircle className="h-4 w-4" aria-hidden="true" /> Chat on WhatsApp
           </a>
@@ -2128,7 +2138,7 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
             target="_blank"
             rel="noopener noreferrer"
             className="stats-contact-card-btn stats-contact-card-btn-whatsapp"
-            onClick={() => logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project.slug, project.name, project.developerSlug)}
+            onClick={(event) => captureWhatsAppClick(event, contactWhatsAppHref, project)}
           >
             <MessageCircle className="h-4 w-4" aria-hidden="true" /> WhatsApp
           </a>
@@ -2448,7 +2458,7 @@ export function RequestInfoDialog({
                     target="_blank"
                     rel="noopener noreferrer"
                     className="request-info-whatsapp-price"
-                    onClick={() => logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project.slug, project.name, project.developerSlug)}
+                    onClick={(event) => captureWhatsAppClick(event, priceHref, project)}
                   >
                     <WhatsappIcon className="h-4 w-4" /> Get price on WhatsApp
                   </a>
@@ -3561,7 +3571,7 @@ export function ListingSidebarCard({ project, developer }: { project: Project; d
           target="_blank"
           rel="noopener noreferrer"
           className="listing-sidebar-call-line listing-sidebar-whatsapp-line"
-          onClick={() => logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project.slug, project.name, project.developerSlug)}
+          onClick={(event) => captureWhatsAppClick(event, salesWhatsAppHref, project)}
         >
           <MessageCircle className="h-4 w-4" aria-hidden="true" /> Chat on WhatsApp
         </a>

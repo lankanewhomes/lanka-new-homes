@@ -622,7 +622,12 @@ alter type payload.enum_analytics_event_type add value if not exists 'floor_plan
 
 -- 2026-11-08: neighbourhood drafts. Payload column only; the public table stores isPublished inside its `data` jsonb
 -- (missing = published), so nothing changes in public.neighborhoods. Migration: supabase/migrations/20261108120000_neighborhoods_is_published.sql
-alter table payload.neighborhoods add column if not exists is_published boolean default true;
+-- alter table payload.neighborhoods add column if not exists is_published boolean default true;
 
 -- 2026-11-09: projects banking partners (Payload column only; public.projects reads it from `data` jsonb). Migration: supabase/migrations/20261109120000_projects_banking_partners.sql
-alter table payload.projects add column if not exists banking_partners varchar;
+-- alter table payload.projects add column if not exists banking_partners varchar;
+
+-- WhatsApp lead capture (2026-11-09): buyer leaves name + number before WhatsApp opens; source "whatsapp".
+alter table leads add column if not exists whatsapp_continued_at timestamptz;
+-- Payload: alter type payload.enum_leads_source add value if not exists 'whatsapp'; alter table payload.leads add column if not exists whatsapp_continued_at timestamptz;
+-- Payload leads: email is optional (short form and WhatsApp window leave only name + number). alter table payload.leads alter column email drop not null;

@@ -40,7 +40,10 @@ export async function POST(req: Request) {
     // Which floor plan the buyer was looking at, when they asked from a plan
     // page — named in the developer's alert and stored on the lead.
     const floorPlanName = typeof body.floorPlanName === "string" ? body.floorPlanName.trim().slice(0, 120) : "";
-    const source = body.isBrochureRequest ? "brochure_request" : "request_info";
+    // A buyer who tapped WhatsApp first leaves a name and number (whatsapp-capture dialog): stored as source "whatsapp". It is not a
+    // form enquiry, so it does not create the "lead_submitted" analytics event; the WhatsApp lead is counted when they open WhatsApp.
+    const isWhatsApp = body.isWhatsAppCapture === true;
+    const source = isWhatsApp ? "whatsapp" : body.isBrochureRequest ? "brochure_request" : "request_info";
 
     const saved = await insertLead({
       name: body.name,
@@ -97,7 +100,7 @@ export async function POST(req: Request) {
             data: {
               ...(projectDoc ? { project: projectDoc.id } : { land: landDoc?.id }),
               name: body.name,
-              email: typeof body.email === "string" ? body.email : "",
+              email: typeof body.email === "string" && body.email.trim() ? body.email.trim() : undefined, // empty is not a valid email: leave it out
               phone: body.phone,
               message: body.message,
               preferred_contact_method: body.preferredContactMethod,
@@ -113,7 +116,7 @@ export async function POST(req: Request) {
                 referrer: analyticsEnrichment.referrer,
               },
             } as never,
-            context: { skipSupabaseSync: true, analyticsEnrichment, skipAnalytics: isInternalRequest(req) },
+            context: { skipSupabaseSync: true, analyticsEnrichment, skipAnalytics: isInternalRequest(req) || isWhatsApp },
             overrideAccess: true,
           });
 

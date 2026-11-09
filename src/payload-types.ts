@@ -7734,9 +7734,16 @@ export interface Lead {
    * Set automatically when the buyer asked from a floor-plan page (e.g. "Unit A · 3 bed · 1,300 SqFt").
    */
   floor_plan?: string | null;
-  source?: ('request_info' | 'brochure_request' | 'manual') | null;
+  source?: ('request_info' | 'brochure_request' | 'manual' | 'whatsapp') | null;
+  /**
+   * Set when a buyer who left their number went on to WhatsApp (source WhatsApp). Empty means they did not.
+   */
+  whatsapp_continued_at?: string | null;
   name: string;
-  email: string;
+  /**
+   * Optional: buyers who use the short form or the WhatsApp window leave only a name and number.
+   */
+  email?: string | null;
   phone?: string | null;
   preferred_contact_method?: string | null;
   message?: string | null;
@@ -9992,6 +9999,7 @@ export interface LeadsSelect<T extends boolean = true> {
   developer_name?: T;
   floor_plan?: T;
   source?: T;
+  whatsapp_continued_at?: T;
   name?: T;
   email?: T;
   phone?: T;

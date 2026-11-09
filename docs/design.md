@@ -2800,3 +2800,11 @@ Scripts: `scripts/social/carousel_project_v2_light.py` (projects), `carousel_lan
 Section order now: split dark hero (orange main button, two-column "Everything we can put on your homepage" card with a Sample sites / Built for / Sign-off facts row) → **See what your site could look like** (`.wdx-sample.wdx-sample--light`, cream grid box; light-surface sample switcher; the real six sample sites stay in the switcher) → "A listing gets you found. A website tells your story." (gray, two cards with tick lists) → "What we can build." (sage, six numbered cards from `BUILD_ITEMS`) → How we work (cream, four "Step N" cards) → FAQ (lilac). No two neighbouring boxes share a background. The old "Built around your project" photo marquee (`HeroMarquee`) is no longer used on the page (component still exists in `web-design-frames.tsx`). No closing CTA band: the owner removed it earlier and the FAQ is the last section above the fixed quickjump bar. No eyebrow labels over headings or cards.
 
 **Footer language switcher (owner, 2026-11-09):** EN / සිංහල / தமிழ் outline pills (`.footer-language`) in the footer's bottom bar, right of the copyright line (stacked under it, centred, on phones). The active language is filled brand orange. It uses the same `LanguageProvider` as the mobile menu switcher; the header still has no desktop language dropdown.
+
+## WhatsApp button asks for a name and number first (owner, 2026-11-09)
+
+Every WhatsApp button on a listing (hero, mobile bar, contact card, sales center, "Get price on WhatsApp") opens the "Connect with the developer" window
+(`src/components/marketplace/whatsapp-capture.tsx`, mounted once in the frontend layout; it reuses the `request-info-*` dialog styles). The buyer enters a name,
+a WhatsApp number (`PhoneField`) and can edit the prefilled enquiry. "Continue to WhatsApp" saves a lead (`/api/leads`, source `whatsapp`, no email needed),
+then opens the developer's `wa.me` link with the enquiry. If saving fails the buyer still reaches WhatsApp. `/api/leads/whatsapp-continue` stamps
+`whatsapp_continued_at` on the lead and logs the `whatsapp_click` event. The developer's WhatsApp icon on a developer profile page (no listing) still opens WhatsApp directly.

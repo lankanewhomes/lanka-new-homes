@@ -13,7 +13,7 @@ type LeadInput = {
   userId?: string;
   /** "Unit A · 3 bed · 1,300 SqFt" when the buyer asked from a plan page. */
   floorPlan?: string;
-  source?: "request_info" | "brochure_request";
+  source?: "request_info" | "brochure_request" | "whatsapp";
 };
 
 type ViewInput = {

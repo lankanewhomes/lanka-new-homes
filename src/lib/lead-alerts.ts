@@ -101,6 +101,7 @@ export async function resolveLeadAlertRouting(payload: Payload, buyerEmail: stri
 const SOURCE_LABEL: Record<string, string> = {
   request_info: 'New inquiry',
   brochure_request: 'Brochure request',
+  whatsapp: 'New WhatsApp enquiry',
   manual: 'New lead',
 }
 

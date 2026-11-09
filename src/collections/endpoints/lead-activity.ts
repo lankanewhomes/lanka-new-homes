@@ -14,6 +14,8 @@ export type LeadActivityRow = {
   project: { id: string | number | null; name: string; slug: string }
   developer: { id: string | number | null; name: string; slug: string }
   source: string
+  /** WhatsApp leads only: when the buyer went on to WhatsApp (empty if they did not). */
+  whatsappContinuedAt: string
   floorPlan: string
   message: string
   status: string
@@ -87,6 +89,7 @@ export const leadActivityEndpoint: Endpoint = {
         project: { id: project ? (project.id as string | number) : relId(d.project) ?? relId(d.land), name: text(project?.name), slug: text(project?.slug) },
         developer: { id: developer ? (developer.id as string | number) : relId(project?.developer), name: text(developer?.name), slug: text(developer?.slug) },
         source: text(d.source) || 'request_info',
+        whatsappContinuedAt: text(d.whatsapp_continued_at),
         floorPlan: text(d.floor_plan),
         message: text(d.message),
         status: text(d.status) || 'new',

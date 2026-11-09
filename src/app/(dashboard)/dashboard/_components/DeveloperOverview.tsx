@@ -67,9 +67,10 @@ export function DeveloperOverview({ mode = "tiles" }: { mode?: "tiles" | "timeli
         let leadCount = 0;
         if (projectIds.length) {
           const leads = await apiFind("leads", { limit: 100, sort: "-createdAt", where: { project: { in: projectIds } }, select: { name: true, project: true, createdAt: true, source: true } }).catch(() => ({ docs: [] as Doc[], totalDocs: 0 }));
-          leadCount = leads.totalDocs;
+          // Form leads only: WhatsApp-dialog leads are counted as WhatsApp leads below.
+          leadCount = await apiCount("leads", { and: [{ project: { in: projectIds } }, { source: { not_equals: "whatsapp" } }] }).catch(() => leads.totalDocs);
           const nameOf = new Map(projects.docs.map((p) => [p.id, String(p.name)]));
-          for (const l of leads.docs) add({ at: String(l.createdAt), icon: MessageCircle, tone: "text-brand", title: `Enquiry from ${String(l.name ?? "a buyer")}`, detail: nameOf.get(typeof l.project === "object" ? ((l.project as Doc).id as number) : (l.project as number)), href: `/dashboard/leads/${l.id}` });
+          for (const l of leads.docs) add({ at: String(l.createdAt), icon: MessageCircle, tone: "text-brand", title: `${l.source === "whatsapp" ? "WhatsApp lead" : "Enquiry"} from ${String(l.name ?? "a buyer")}`, detail: nameOf.get(typeof l.project === "object" ? ((l.project as Doc).id as number) : (l.project as number)), href: `/dashboard/leads/${l.id}` });
         }
         // WhatsApp clicks are leads too: real visitors only (no bots, no repeats), on this company's listings and land.
         const whatsapp = await apiCount("analytics", { and: [{ developer: { equals: Number(id) } }, { event_type: { equals: "whatsapp_click" } }, { is_bot: { equals: false } }, { is_duplicate: { equals: false } }] }).catch(() => 0);

@@ -6,6 +6,7 @@ import { DeferredMetaPixel } from "@/components/analytics/deferred-meta-pixel";
 import { Footer, Header } from "@/components/marketplace/components";
 import { BreadcrumbBar } from "@/components/layout/breadcrumb-bar";
 import { LanguageProvider } from "@/components/layout/language-provider";
+import { WhatsAppCaptureHost } from "@/components/marketplace/whatsapp-capture";
 import { AuthModalProvider } from "@/components/auth/auth-modal-provider";
 import { UtmCapture } from "@/components/analytics/utm-capture";
 import { InternalTrafficFlag } from "@/components/analytics/internal-traffic-flag";
@@ -65,6 +66,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <main>{children}</main>
             <Footer />
             <CompareBar />
+            <WhatsAppCaptureHost />
           </AuthModalProvider>
         </LanguageProvider>
       </body>

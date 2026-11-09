@@ -242,3 +242,7 @@ scoped views stay project-only.
 Country picker (2026-11-04): `keyword_volumes` is keyed by (`keyword`, `country`, ISO alpha-2; migration `20261104140000_keyword_volumes_country.sql`, old rows are `LK`). The Keywords page has a
 "Search volume country" picker (shown once more than one country is stored) that switches the Search words column, plus a "Keywords checked for {country}" table. Refresh a country with
 `keyword_overview` and its Google location id (LK 2144, AU 2036, GB 2826, US 2840, AE 2784, IN 2356, CA 2124). First overseas load: 3 keywords x 6 countries.
+
+**WhatsApp leads vs form leads (2026-11-09):** a buyer who taps WhatsApp leaves a name and number first. That creates a Leads row with source `whatsapp` (shown in the CMS and
+dashboard Leads lists, with "Opened WhatsApp" when they went on). It does **not** create a `lead_submitted` event. The WhatsApp lead is counted by the `whatsapp_click` event,
+logged when they continue to WhatsApp. Form leads = `lead_submitted` events (and Leads rows whose source is not `whatsapp`); Total leads = form + WhatsApp.

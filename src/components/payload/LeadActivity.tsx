@@ -20,7 +20,7 @@ const RANGES = [
 const STATUS_LABEL: Record<string, string> = { new: "New", contacted: "Contacted", site_visit: "Site visit", closed: "Closed" };
 const STATUS_COLOR: Record<string, string> = { new: "var(--theme-warning-500)", contacted: "#2563eb", site_visit: "var(--theme-success-500)", closed: "var(--theme-elevation-500)" };
 const VIA_LABEL: Record<string, string> = { whatsapp: "WhatsApp tap", call: "Call tap", email: "Email tap", cms: "Status changed in CMS" };
-const SOURCE_LABEL: Record<string, string> = { request_info: "Request info", brochure_request: "Brochure request", manual: "Added manually" };
+const SOURCE_LABEL: Record<string, string> = { request_info: "Request info", brochure_request: "Brochure request", manual: "Added manually", whatsapp: "WhatsApp" };
 
 const when = (iso: string) => (iso ? new Date(iso).toLocaleString("en-GB", { timeZone: "Asia/Colombo", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "—");
 
@@ -79,6 +79,7 @@ function LeadRow({ row }: { row: LeadActivityRow }) {
           {row.project.id ? <Link href={`/cms/collections/projects/${row.project.id}`}>{row.project.name || "Project"}</Link> : "—"}
           {row.floorPlan ? <div style={{ opacity: 0.7, fontSize: 12 }}>{row.floorPlan}</div> : null}
           <div style={{ opacity: 0.7, fontSize: 12 }}>{SOURCE_LABEL[row.source] ?? row.source}</div>
+          {row.source === "whatsapp" ? <div style={{ fontSize: 12, color: row.whatsappContinuedAt ? "var(--theme-success-500)" : "var(--theme-warning-500)" }}>{row.whatsappContinuedAt ? `Opened WhatsApp ${when(row.whatsappContinuedAt)}` : "Did not open WhatsApp"}</div> : null}
         </td>
         <td style={cell}>{row.developer.id ? <Link href={`/cms/collections/developers/${row.developer.id}`}>{row.developer.name}</Link> : "—"}</td>
         <td style={cell}>

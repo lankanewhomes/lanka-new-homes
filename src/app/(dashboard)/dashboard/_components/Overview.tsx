@@ -81,7 +81,8 @@ export function Overview() {
         const [summary, before, leadsMonth, newLeads, active, drafts, subs, company, recent, featured] = await Promise.all([
           apiGetJson<Summary>(`/analytics-summary?startDate=${start}&endDate=${end}`).catch(() => null),
           apiGetJson<Summary>(`/analytics-summary?startDate=${addDays(start, -31)}&endDate=${addDays(start, -1)}`).catch(() => null),
-          apiCount("leads", allOf(leadsScope, { createdAt: { greater_than_equal: since.toISOString() } })),
+          // Form leads only: a lead that came in through the WhatsApp dialog is counted as a WhatsApp lead (the click event), not twice.
+          apiCount("leads", allOf(leadsScope, { createdAt: { greater_than_equal: since.toISOString() }, source: { not_equals: "whatsapp" } })),
           apiCount("leads", allOf(leadsScope, { status: { equals: "new" } })),
           apiCount("projects", allOf(projScope, { isPublished: { equals: true } })),
           apiCount("projects", allOf(projScope, { isPublished: { equals: false } })),
