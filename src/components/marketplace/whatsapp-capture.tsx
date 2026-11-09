@@ -19,6 +19,8 @@ export type WhatsAppCaptureDetail = {
   href: string;
   projectSlug: string;
   projectName: string;
+  /** Location and city, shown under the listing name. */
+  location?: string;
   developerSlug?: string;
   heroImage?: string;
   planName?: string;
@@ -133,16 +135,17 @@ function WhatsAppCaptureDialog({ detail, onClose }: { detail: WhatsAppCaptureDet
   };
 
   return (
-    <div className="request-info-overlay" role="dialog" aria-modal="true" aria-label="Connect with the developer" onClick={onClose}>
+    <div className="request-info-overlay" role="dialog" aria-modal="true" aria-label="Chat on WhatsApp" onClick={onClose}>
       <div className="request-info-dialog request-info-dialog-brochure whatsapp-capture-dialog" onClick={(event) => event.stopPropagation()}>
         <div className="request-info-topbar">
-          <p className="request-info-topbar-title">Connect with the developer</p>
+          <p className="request-info-topbar-title">Chat on WhatsApp</p>
           <button type="button" className="request-info-close" aria-label="Close" onClick={onClose}><X className="h-5 w-5" /></button>
         </div>
         <div className="request-info-listing request-info-listing-brochure">
           {detail.heroImage ? <Image src={detail.heroImage} alt={detail.projectName} width={64} height={64} className="request-info-listing-image" /> : null}
           <div className="request-info-listing-text">
             <p className="request-info-listing-title">{detail.projectName}</p>
+            {detail.location ? <p className="request-info-listing-address">{detail.location}</p> : null}
             {detail.planName ? <p className="request-info-listing-address">{detail.planName}</p> : null}
           </div>
         </div>

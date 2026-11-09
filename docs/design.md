@@ -2803,10 +2803,14 @@ Section order now: split dark hero (orange main button, two-column "Everything w
 
 ## WhatsApp button asks for a name and number first (owner, 2026-11-09)
 
-Every WhatsApp button on a listing (hero, mobile bar, contact card, sales center, "Get price on WhatsApp") opens the "Connect with the developer" window
+Every WhatsApp button on a listing (hero, mobile bar, contact card, sales center, "Get price on WhatsApp") opens the "Chat on WhatsApp" window
 (`src/components/marketplace/whatsapp-capture.tsx`, mounted once in the frontend layout; it reuses the `request-info-*` dialog styles). The buyer enters a name,
 a WhatsApp number (`PhoneField`) and can edit the prefilled enquiry. "Continue to WhatsApp" saves a lead (`/api/leads`, source `whatsapp`, no email needed),
 then opens the developer's `wa.me` link with the enquiry. If saving fails the buyer still reaches WhatsApp. `/api/leads/whatsapp-continue` stamps
 `whatsapp_continued_at` on the lead and logs the `whatsapp_click` event. The developer's WhatsApp icon on a developer profile page (no listing) still opens WhatsApp directly.
 
 **Nav search = hero search (owner, 2026-11-09):** the header search submits exactly like the home-page hero search: land phrases ("plots in Negombo") go to /land, everything else to /search?q=, an empty search opens /search, and a `search` event is logged (`search_location: nav`). On phones the header search icon opens /search.
+
+**Contact windows (owner, 2026-11-09):** the contact / request-info / brochure / inquiry and WhatsApp windows are one family: the title band ("Get in touch", "Chat on WhatsApp", "Download Brochure") has a light grey background with a thin line above and below, the body is plain white with no grid, the listing name is followed by its location and city, and on phones the last button has only a small gap beneath it (plus the iPhone safe area).
+
+**Search chips (owner, 2026-11-09):** `SEARCH_QUICK_CHIPS` (mobile-search-overlay.tsx) lists the hero category links plus Lakefront, Apartments and Condominiums. They show under the Search button of the phone pop-up (nav icon and home hero) and, on desktop, in a dropdown when the nav or hero search box is clicked and empty.

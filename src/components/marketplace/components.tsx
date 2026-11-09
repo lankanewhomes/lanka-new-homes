@@ -10,7 +10,7 @@ import { IconBrandFacebook, IconBrandInstagram, IconBrandTiktok, IconChevronRigh
 import { useSavedListing } from "@/lib/use-saved-listing";
 import { useSavedDeveloper } from "@/lib/use-saved-developer";
 import { parseNaturalSearch } from "@/lib/natural-search";
-import { MobileSearchOverlay } from "@/components/marketplace/mobile-search-overlay";
+import { MobileSearchOverlay, SearchQuickChips } from "@/components/marketplace/mobile-search-overlay";
 import { getLandingPage, getStoredUtmParams, getTrafficSource, trackEvent } from "@/lib/ga4";
 import { hasPremiumStyleBadge, isPaidPackageTier } from "@/lib/packages";
 import { FEATURED_LABEL, FEATURED_TOOLTIP, VERIFIED_DEVELOPER_LABEL, VERIFIED_DEVELOPER_TOOLTIP } from "@/lib/developer-badges";
@@ -387,10 +387,15 @@ function logListingEvent(endpoint: string, ga4EventName: string, projectSlug: st
 
 // Every WhatsApp button on a listing asks for the buyer's name and number first (whatsapp-capture.tsx), then opens WhatsApp.
 // The href stays on the link, so a new-tab click, a long press or a browser without scripts still reaches the developer.
+/** "Location, City" for the contact windows, without repeating the city when the location already names it. */
+function listingAddress(project: Project): string {
+  return project.city && !project.location?.toLowerCase().includes(project.city.toLowerCase()) ? [project.location, project.city].filter(Boolean).join(", ") : (project.location || project.city || "");
+}
+
 function captureWhatsAppClick(event: { metaKey: boolean; ctrlKey: boolean; shiftKey: boolean; button: number; preventDefault: () => void }, href: string | null, project: Project, planName?: string) {
   if (!href || event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return;
   event.preventDefault();
-  openWhatsAppCapture({ href, projectSlug: project.slug, projectName: project.name, developerSlug: project.developerSlug, heroImage: project.heroImage, planName });
+  openWhatsAppCapture({ href, projectSlug: project.slug, projectName: project.name, location: listingAddress(project), developerSlug: project.developerSlug, heroImage: project.heroImage, planName });
 }
 
 export function StatusBadge({ status }: { status: string }) {
@@ -2333,13 +2338,11 @@ export function RequestInfoDialog({
 
         <div className={`request-info-listing${!isInquiry ? " request-info-listing-brochure" : ""}`}>
           <Image src={project.heroImage} alt={project.name} width={64} height={64} className="request-info-listing-image" />
-          {!isInquiry ? (
+          {(
             <div className="request-info-listing-text">
               <p className="request-info-listing-title">{project.name}</p>
-              <p className="request-info-listing-address">{project.city && !project.location?.toLowerCase().includes(project.city.toLowerCase()) ? [project.location, project.city].filter(Boolean).join(", ") : (project.location || project.city)}</p>
+              <p className="request-info-listing-address">{listingAddress(project)}</p>
             </div>
-          ) : (
-            <p className="request-info-listing-title">{project.name}</p>
           )}
         </div>
 
@@ -4232,6 +4235,11 @@ export function Header() {
             <IconSearch size={16} stroke={1.75} aria-hidden="true" />
             <input type="search" name="q" value={navQuery} autoComplete="off" onChange={(event) => { setNavQuery(event.target.value); setNavSearchOpen(true); }} onFocus={() => setNavSearchOpen(true)} placeholder={`Try searching "apartments in Colombo"`} aria-label={text.search} />
             <button type="submit" className="header-search-button" aria-label={text.search}><IconSearch size={18} stroke={1.75} aria-hidden="true" /></button>
+            {navSearchOpen && navQuery.trim().length < 2 ? (
+              <div className="header-search-chips" onMouseDown={(event) => event.preventDefault()}>
+                <SearchQuickChips onPick={() => setNavSearchOpen(false)} />
+              </div>
+            ) : null}
             {navSearchOpen && navQuery.trim().length >= 2 && navSuggestions.length > 0 ? (
               <div className="header-search-suggestions" role="listbox" aria-label="Search suggestions">
                 {navSuggestions.map((suggestion) => (

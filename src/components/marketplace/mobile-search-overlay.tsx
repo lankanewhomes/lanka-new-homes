@@ -9,13 +9,20 @@ import { trackEvent } from "@/lib/ga4";
 
 /** Quick links under the Search button (owner, 2026-11-09): the pages and filters people look for most. */
 export const SEARCH_QUICK_CHIPS = [
+  { label: "Gated Community Houses", href: "/projects/gated-community-houses-for-sale" },
+  { label: "Brand New Houses", href: "/projects/brand-new-houses-for-sale" },
+  { label: "Pre-Construction", href: "/projects/pre-construction" },
+  { label: "Colombo", href: "/projects/colombo" },
+  { label: "Luxury", href: "/projects/luxury" },
+  { label: "Branded Residences", href: "/projects/branded-residences" },
+  { label: "Villas", href: "/projects/villas" },
   { label: "Beachfront", href: "/projects/beachfront" },
+  { label: "Serviced Apartments", href: "/projects/serviced-apartments" },
+  { label: "Port City Colombo", href: "/projects/port-city-colombo" },
+  { label: "Lands", href: "/land" },
   { label: "Lakefront", href: "/projects/lakefront" },
   { label: "Apartments", href: "/projects?type=Apartments" },
   { label: "Condominiums", href: "/projects?type=Condominium" },
-  { label: "Villas", href: "/projects/villas" },
-  { label: "Luxury", href: "/projects/luxury" },
-  { label: "Land for sale", href: "/land" },
 ] as const;
 
 export function SearchQuickChips({ onPick }: { onPick: () => void }) {

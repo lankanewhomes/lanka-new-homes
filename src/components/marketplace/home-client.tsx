@@ -391,12 +391,17 @@ export function HomeClient({
       <div className="luxury-hero-two-panel">
           <h1>{t.heroTitle}</h1>
           <p className="luxury-hero-two-subheading">{t.heroSubtitle}</p>
-          <div className="hero-search-wrap">
+          <div className="hero-search-wrap" onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setDesktopSearchOpen(false); }}>
           <form className="hero-search luxury-hero-two-top-search" onSubmit={submitSearch}>
             <label><input aria-label="Search homes" value={searchTerm} onFocus={() => { setMobileSearchOpen(true); setDesktopSearchOpen(true); }} onChange={(event) => setSearchTerm(event.target.value)} placeholder={t.searchPlaceholder} /></label>
             <button type="button" className="hero-region-picker" aria-label="Select region"><MapPin size={17} /><span>{t.searchRegion}</span><ChevronDown size={16} /></button>
             <button type="submit" aria-label={t.searchButton} className="hero-search-submit"><Search size={19} /></button>
           </form>
+          {desktopSearchOpen && searchTerm.trim().length < 2 ? (
+            <div className="hero-search-suggestions hero-search-chips" onMouseDown={(event) => event.preventDefault()}>
+              <SearchQuickChips onPick={() => setDesktopSearchOpen(false)} />
+            </div>
+          ) : null}
           {desktopSearchOpen && searchSuggestions.length > 0 ? (
             <div className="hero-search-suggestions" role="listbox" aria-label="Search suggestions">
               {searchSuggestions.map((suggestion) => (

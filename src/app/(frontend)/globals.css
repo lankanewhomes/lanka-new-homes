@@ -21134,11 +21134,18 @@ body:has(.compare-bar) {
 /* Contact / request-info / brochure / inquiry and WhatsApp windows (owner, 2026-11-09): plain white, no grid lines, a thin line above and below the title,
    and the same room above and below the title in all of them (side padding keeps it clear of the close button). */
 .request-info-dialog { background-color: #fff; background-image: none; }
-.request-info-dialog .request-info-topbar { background: #fff; border-top: 1px solid #e4e4e0; border-bottom: 1px solid #e4e4e0; padding: 32px 56px; } /* a line above and below the title (owner, 2026-11-09) */
+.request-info-dialog .request-info-topbar { background: #f6f6f4; border-top: 1px solid #e4e4e0; border-bottom: 1px solid #e4e4e0; padding: 32px 56px; } /* a line above and below the title (owner, 2026-11-09) */
 .request-info-dialog .request-info-actions { background: #fff; }
 @media (max-width: 520px) { .request-info-dialog .request-info-topbar { padding: 28px 52px; } }
 
-/* Quick chips under the phone search's Search button (owner, 2026-11-09): Beachfront, Lakefront, Apartments, Condominiums, Villas, Luxury, Land for sale. Square, like the site's other chips. */
+/* Quick chips under the phone search's Search button (owner, 2026-11-09): the hero's category links plus Lakefront, Apartments and Condominiums (SEARCH_QUICK_CHIPS). Square, like the site's other chips. */
 .mobile-location-search-chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .mobile-location-search-chips a { display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border: 1px solid #d8d8d8; border-radius: 0; background: #fff; color: #1f1f1f; font-size: 14px; font-weight: 500; text-decoration: none; }
 .mobile-location-search-chips a:active, .mobile-location-search-chips a:hover { border-color: #f47b36; background: #fff6f0; }
+
+/* Desktop: clicking the nav or hero search box shows the same chips as the phone pop-up under it (owner, 2026-11-09). */
+.header-search-chips { position: absolute; top: calc(100% + 6px); left: 0; z-index: 130; width: min(460px, 90vw); padding: 14px; background: #fff; box-shadow: 0 4px 18px rgba(32, 33, 36, 0.22); }
+.hero-search-suggestions.hero-search-chips { padding: 14px; background: #fff; }
+
+/* Phones: less empty space under the last button of the contact windows; the iPhone safe area is still kept (owner, 2026-11-09). */
+@media (max-width: 520px) { .request-info-dialog .request-info-actions { margin-bottom: -18px; padding-bottom: calc(8px + env(safe-area-inset-bottom)); } }
