@@ -21179,3 +21179,8 @@ body:has(.request-info-overlay) .listing-hero-quickjump-bar { display: none; }
 /* Every listing card is the same height (owner, 2026-11-09): a price line holding the contact-for-price badge is 26px tall and a plain price line was 24px,
    so a row with one badge came out 2px taller than a row without (home page New listings vs Land). All price lines are 26px now. */
 .listing-grid-card-price { min-height: 26px; }
+
+/* Lands chip (owner, 2026-11-09): always last, a full-width row of its own, with a see-through green. */
+.hero-quick-link-pill.hero-quick-link-pill-land, .mobile-location-search-chips a.is-land { background: rgba(126, 168, 98, 0.2); border-color: rgba(126, 168, 98, 0.45); }
+.hero-quick-link-pill.hero-quick-link-pill-land:hover, .mobile-location-search-chips a.is-land:hover { background: rgba(126, 168, 98, 0.32); border-color: rgba(126, 168, 98, 0.65); }
+.mobile-location-search-chips a.is-land, .mobile-location-search-chips-row a.is-land { flex: 1 1 100%; }

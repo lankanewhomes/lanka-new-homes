@@ -17,15 +17,23 @@ export const SEARCH_QUICK_CHIPS: QuickChip[] = [
   { label: "Beachfront", href: "/projects/beachfront" },
   { label: "Serviced Apartments", href: "/projects/serviced-apartments" },
   { label: "Port City Colombo", href: "/projects/port-city-colombo" },
-  { label: "Lands", href: "/land" },
   { label: "Lakefront", href: "/projects/lakefront" },
   { label: "Apartments", href: "/projects?type=Apartments" },
   { label: "Condominiums", href: "/projects?type=Condominium" },
+  { label: "Houses", href: "/projects?type=House" },
+  { label: "Townhouses", href: "/projects?type=Townhouse" },
+  { label: "Luxury Villas", href: "/projects?type=Luxury+Villas" },
+  { label: "Luxury Apartments in Colombo", href: "/projects/luxury-apartments-for-sale-in-colombo" },
+  { label: "Affordable Apartments in Colombo", href: "/projects/cheap-apartments-for-sale-in-colombo" },
+  { label: "Brand New Apartments in Colombo", href: "/projects/brand-new-apartments-for-sale-in-colombo" },
+  { label: "2 Bedroom Apartments in Colombo", href: "/projects/2-bedroom-apartments-for-sale-in-colombo" },
+  { label: "Houses in Colombo", href: "/projects/houses-for-sale-in-colombo" },
+  { label: "Houses in Kandy", href: "/projects/houses-for-sale-in-kandy" },
+  { label: "Lands", href: "/land" },
 ];
 
-const SHOWN = 12;
 
-/** Chips with at least one listing, most listings first (ties keep the fallback order), at most 12. */
+/** Chips with at least one listing, most listings first (ties keep the fallback order). Lands is always the last chip. */
 export function rankQuickChips(projects: Project[], lands: Land[]): (QuickChip & { count: number })[] {
   const live = projects; // counted the same way the chip's own page lists them
   const categoryCount = (path: string) => {
@@ -34,27 +42,14 @@ export function rankQuickChips(projects: Project[], lands: Land[]): (QuickChip &
   };
   const count = (chip: QuickChip): number => {
     if (chip.href === "/land") return lands.length;
-    if (chip.href.startsWith("/projects?type=")) return live.filter((project) => project.type === decodeURIComponent(chip.href.split("type=")[1])).length;
+    if (chip.href.startsWith("/projects?type=")) {
+      const type = new URLSearchParams(chip.href.split("?")[1]).get("type");
+      return live.filter((project) => project.type === type).length;
+    }
     return categoryCount(chip.href);
   };
   return SEARCH_QUICK_CHIPS.map((chip, index) => ({ ...chip, count: count(chip), index }))
     .filter((chip) => chip.count > 0)
-    .sort((a, b) => b.count - a.count || a.index - b.index)
-    .slice(0, SHOWN)
+    .sort((a, b) => (a.href === "/land" ? 1 : 0) - (b.href === "/land" ? 1 : 0) || b.count - a.count || a.index - b.index)
     .map(({ label, href, count: total }) => ({ label, href, count: total }));
 }
-
-/** The category chips in the home page hero (owner, 2026-11-09: "you added too many chips"). The hero used to list every category page, so each new
- *  SEO page added a chip; now only these show, in this order. Other category pages stay on the site, in search and in the search chips. */
-export const HERO_CHIP_PATHS = [
-  "/projects/gated-community-houses-for-sale",
-  "/projects/brand-new-houses-for-sale",
-  "/projects/pre-construction",
-  "/projects/colombo",
-  "/projects/luxury",
-  "/projects/branded-residences",
-  "/projects/villas",
-  "/projects/beachfront",
-  "/projects/serviced-apartments",
-  "/projects/port-city-colombo",
-];

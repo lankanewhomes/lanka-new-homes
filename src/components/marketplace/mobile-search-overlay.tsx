@@ -23,12 +23,13 @@ function loadLiveChips(): Promise<QuickChip[]> {
  *  most listings stay near the top and shorter chips fill the gaps on the right instead of starting new rows (owner, 2026-11-09). */
 function packRows(chips: QuickChip[], widthOf: (chip: QuickChip) => number, available: number, gap: number): QuickChip[][] {
   const rows: { chips: QuickChip[]; used: number }[] = [];
-  for (const chip of chips) {
+  const lands = chips.filter((chip) => chip.href === "/land");
+  for (const chip of chips.filter((item) => item.href !== "/land")) {
     const w = widthOf(chip);
     const row = rows.find((r) => r.used + gap + w <= available);
     if (row) { row.chips.push(chip); row.used += gap + w; } else rows.push({ chips: [chip], used: w });
   }
-  return rows.map((r) => r.chips);
+  return [...rows.map((r) => r.chips), ...lands.map((chip) => [chip])]; // Lands always gets the last row to itself
 }
 
 export function SearchQuickChips({ onPick }: { onPick: () => void }) {
