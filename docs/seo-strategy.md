@@ -26,6 +26,13 @@ Update this file whenever a new keyword group or page is added.
 | `/land/1-acre-land-for-sale-in-sri-lanka` | "1 acre land for sale in sri lanka" / "1 acre land price in sri lanka" — acre-size plots (160 perches+), acre/perch conversion, published per-perch price by district; no invented market price (added 2026-10-11, owner request; only 1 acre-size listing so far) | new |
 | `/land/rural-land-for-sale-in-sri-lanka` | "rural land for sale in sri lanka" — plots outside Colombo/Gampaha/Kalutara (added 2026-10-11, owner request) | new |
 | `/land/farm-land-for-sale-in-sri-lanka` | "farm land for sale in sri lanka" — agricultural/farm plots; **no such listings yet, so the page is noindex and left out of the sitemap until one is added** (added 2026-10-11, owner request) | new |
+| `/projects/colombo/colombo-{n}` | "apartments for sale in colombo 7" etc. (Colombo 1-15; volumes: 7 = 260, 5 = 260, 6 = 210, 4 = 170, 3 = 140, 2 = 110, 15 = 50). One page per postcode that has an apartment listing (today 2-8, 14, 15), others 404; text from live data in `src/lib/colombo-postcode-pages.ts` (added 2026-11-09, owner request) | new |
+| `/projects/luxury-apartments-for-sale-in-colombo` | "luxury apartments for sale in colombo" (110/mo) — Colombo apartments from Rs. 60M or marked luxury (added 2026-11-09, owner request) | new |
+| `/projects/cheap-apartments-for-sale-in-colombo` | "cheap apartments for sale in colombo" (110/mo) — Colombo apartments starting at Rs. 40M or less (added 2026-11-09) | new |
+| `/projects/brand-new-apartments-for-sale-in-colombo` | "brand new apartments for sale in colombo" (90/mo) — Colombo apartments not completed (added 2026-11-09) | new |
+| `/projects/2-bedroom-apartments-for-sale-in-colombo` | "2 bedroom apartments for sale in colombo" (90/mo) — Colombo apartments with a 2-bedroom floor plan (added 2026-11-09) | new |
+| `/projects/houses-for-sale-in-colombo` | "houses for sale sri lanka colombo" (8,100/mo) — house/villa/townhouse listings in Colombo (added 2026-11-09) | new |
+| `/projects/houses-for-sale-in-kandy` | "houses for sale sri lanka kandy" (4,400/mo) — all Kandy listings (added 2026-11-09) | new |
 | `/projects/apartments-for-sale-in-athurugiriya` | "Apartments for sale in Athurugiriya" — apartment/condominium listings whose city or location is Athurugiriya; links to `/neighborhoods/athurugiriya` (added 2026-10-30, owner request) | new |
 | `/projects/keells-homes-for-sale` | "Keells homes for sale" / "John Keells apartments" / "Keels" spelling variant (all John Keells Properties listings; added 2026-10-10, owner request) | new |
 | `/guides` | Guides index (hub page, links the 3 guides below) | new |
@@ -404,3 +411,7 @@ url www) was already on the homepage, but the bare domain served the same site w
 indexed the bare domain. Fix: `lankanewhomes.com/*` now 301-redirects to `www.lankanewhomes.com/*` (next.config.ts) and the homepage has
 `rel=canonical` to www. Google refreshes the site name on its own schedule (days to weeks); request indexing of the homepage in Search Console
 to speed it up.
+
+## 2026-11-09 keyword round (owner request)
+
+`/projects/colombo` retitled "Apartments for Sale in Colombo: New Projects & Prices" with an about section linking the postcode and modifier pages; `/projects/brand-new-houses-for-sale` retitled "New Houses for Sale in Sri Lanka" (targets "houses for sale sri lanka" 5,400 and "new houses for sale sri lanka" 50). Fixed: every `/projects/*` category page now renders its `about` text (the wrappers were not passing it, so it never showed). Ignored on purpose: "ikman lk" variants (people looking for a competitor).
