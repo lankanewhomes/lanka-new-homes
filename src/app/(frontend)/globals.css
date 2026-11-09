@@ -21160,3 +21160,11 @@ body:has(.request-info-overlay) .listing-hero-quickjump-bar { display: none; }
 @media (max-width: 760px) {
   .listing-search-bar { margin-left: calc((var(--shell-width, 100vw) - 100vw) / 2); margin-right: calc((var(--shell-width, 100vw) - 100vw) / 2); border-left-width: 0; border-right-width: 0; }
 }
+
+/* Search chips fit the width (owner, 2026-11-09): SearchQuickChips packs them into rows measured with the real font, so there are as few rows as
+   possible. In the phone pop-up each row's chips share the row's full width; the chips are a little smaller there so more fit per row. */
+.mobile-location-search-chips-row { display: flex; flex: 0 0 100%; flex-wrap: nowrap; gap: 8px; }
+.mobile-location-search-panel .mobile-location-search-chips { gap: 6px 8px; }
+.mobile-location-search-panel .mobile-location-search-chips a { min-height: 36px; padding: 0 11px; font-size: 13px; }
+.mobile-location-search-chips-row a { flex: 0 0 auto; }
+.mobile-location-search-panel .mobile-location-search-chips-row a { flex: 1 1 auto; }

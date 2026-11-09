@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronDown, Search, X } from "lucide-react";
@@ -19,18 +19,49 @@ function loadLiveChips(): Promise<QuickChip[]> {
   return chipsRequest;
 }
 
+/** Rows that fill the width: each chip goes into the first row that still has room for it (measured with the real font), so the chips with the
+ *  most listings stay near the top and shorter chips fill the gaps on the right instead of starting new rows (owner, 2026-11-09). */
+function packRows(chips: QuickChip[], widthOf: (chip: QuickChip) => number, available: number, gap: number): QuickChip[][] {
+  const rows: { chips: QuickChip[]; used: number }[] = [];
+  for (const chip of chips) {
+    const w = widthOf(chip);
+    const row = rows.find((r) => r.used + gap + w <= available);
+    if (row) { row.chips.push(chip); row.used += gap + w; } else rows.push({ chips: [chip], used: w });
+  }
+  return rows.map((r) => r.chips);
+}
+
 export function SearchQuickChips({ onPick }: { onPick: () => void }) {
   const [chips, setChips] = useState<QuickChip[]>(SEARCH_QUICK_CHIPS);
+  const [rows, setRows] = useState<QuickChip[][] | null>(null);
+  const box = useRef<HTMLDivElement>(null);
   useEffect(() => {
     let alive = true;
-    loadLiveChips().then((live) => { if (alive) setChips(live); });
+    loadLiveChips().then((live) => { if (alive) { setChips(live); setRows(null); } });
     return () => { alive = false; };
   }, []);
+  useLayoutEffect(() => {
+    const el = box.current;
+    const sample = el?.querySelector("a");
+    if (!el || !sample || rows) return;
+    const available = el.clientWidth;
+    const context = document.createElement("canvas").getContext("2d");
+    if (!available || !context) return;
+    const style = getComputedStyle(sample);
+    context.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+    const padding = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight) + parseFloat(style.borderLeftWidth) + parseFloat(style.borderRightWidth);
+    const gap = parseFloat(getComputedStyle(el).columnGap) || 8;
+    setRows(packRows(chips, (chip) => Math.ceil(context.measureText(chip.label).width + padding) + 2, available, gap));
+  }, [chips, rows]);
   return (
-    <div className="mobile-location-search-chips" aria-label="Popular searches">
-      {chips.map((chip) => (
-        <Link key={chip.label} href={chip.href} onClick={onPick}>{chip.label}</Link>
-      ))}
+    <div className="mobile-location-search-chips" aria-label="Popular searches" ref={box}>
+      {rows
+        ? rows.map((row, index) => (
+            <div className="mobile-location-search-chips-row" key={index}>
+              {row.map((chip) => <Link key={chip.label} href={chip.href} onClick={onPick}>{chip.label}</Link>)}
+            </div>
+          ))
+        : chips.map((chip) => <Link key={chip.label} href={chip.href} onClick={onPick}>{chip.label}</Link>)}
     </div>
   );
 }
