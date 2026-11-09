@@ -10,6 +10,7 @@ import Link from "next/link";
 import { ArrowUpRight, Check, ChevronDown, ChevronLeft, ChevronRight, MapPin, Pause, Search, X } from "lucide-react";
 import { SiteLanguage, useLanguage } from "@/components/layout/language-provider";
 import { ListingGridCard } from "@/components/marketplace/listing-page";
+import { SearchQuickChips } from "@/components/marketplace/mobile-search-overlay";
 import { allProjectCategories } from "@/lib/listing-categories";
 import { trackEvent } from "@/lib/ga4";
 import { getPackage, planRotationWeight } from "@/lib/packages";
@@ -445,6 +446,7 @@ export function HomeClient({
             ) : null}
             <button type="button" className="mobile-location-search-region"><span>All of Sri Lanka</span><ChevronDown size={18} aria-hidden="true" /></button>
             <button type="submit" className="mobile-location-search-submit"><Search size={19} aria-hidden="true" />Search</button>
+            <SearchQuickChips onPick={() => setMobileSearchOpen(false)} />
           </form>
         </div>
       </div>

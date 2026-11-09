@@ -1,10 +1,32 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronDown, Search, X } from "lucide-react";
 import { parseNaturalSearch } from "@/lib/natural-search";
 import { trackEvent } from "@/lib/ga4";
+
+/** Quick links under the Search button (owner, 2026-11-09): the pages and filters people look for most. */
+export const SEARCH_QUICK_CHIPS = [
+  { label: "Beachfront", href: "/projects/beachfront" },
+  { label: "Lakefront", href: "/search?q=lakefront" },
+  { label: "Apartments", href: "/projects?type=Apartments" },
+  { label: "Condominiums", href: "/projects?type=Condominium" },
+  { label: "Villas", href: "/projects/villas" },
+  { label: "Luxury", href: "/projects/luxury" },
+  { label: "Land for sale", href: "/land" },
+] as const;
+
+export function SearchQuickChips({ onPick }: { onPick: () => void }) {
+  return (
+    <div className="mobile-location-search-chips" aria-label="Popular searches">
+      {SEARCH_QUICK_CHIPS.map((chip) => (
+        <Link key={chip.label} href={chip.href} onClick={onPick}>{chip.label}</Link>
+      ))}
+    </div>
+  );
+}
 
 // The phone search pop-up from the home page hero ("Location search": scrim, panel, input, suggestions, All of Sri Lanka, Search),
 // available from the header search icon on every page (owner, 2026-11-09: "make the nav search the same as the hero search"). Same
@@ -73,6 +95,7 @@ export function MobileSearchOverlay({ open, onClose, location }: { open: boolean
           ) : null}
           <button type="button" className="mobile-location-search-region"><span>All of Sri Lanka</span><ChevronDown size={18} aria-hidden="true" /></button>
           <button type="submit" className="mobile-location-search-submit"><Search size={19} aria-hidden="true" />Search</button>
+          <SearchQuickChips onPick={onClose} />
         </form>
       </div>
     </div>

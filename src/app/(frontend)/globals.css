@@ -21137,3 +21137,8 @@ body:has(.compare-bar) {
 .request-info-dialog .request-info-topbar { background: #fff; border-bottom: 0; padding: 32px 56px; }
 .request-info-dialog .request-info-actions { background: #fff; }
 @media (max-width: 520px) { .request-info-dialog .request-info-topbar { padding: 28px 52px; } }
+
+/* Quick chips under the phone search's Search button (owner, 2026-11-09): Beachfront, Lakefront, Apartments, Condominiums, Villas, Luxury, Land for sale. Square, like the site's other chips. */
+.mobile-location-search-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.mobile-location-search-chips a { display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border: 1px solid #d8d8d8; border-radius: 0; background: #fff; color: #1f1f1f; font-size: 14px; font-weight: 500; text-decoration: none; }
+.mobile-location-search-chips a:active, .mobile-location-search-chips a:hover { border-color: #f47b36; background: #fff6f0; }
