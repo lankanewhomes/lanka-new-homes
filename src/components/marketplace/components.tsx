@@ -10,6 +10,7 @@ import { IconBrandFacebook, IconBrandInstagram, IconBrandTiktok, IconChevronRigh
 import { useSavedListing } from "@/lib/use-saved-listing";
 import { useSavedDeveloper } from "@/lib/use-saved-developer";
 import { parseNaturalSearch } from "@/lib/natural-search";
+import { MobileSearchOverlay } from "@/components/marketplace/mobile-search-overlay";
 import { getLandingPage, getStoredUtmParams, getTrafficSource, trackEvent } from "@/lib/ga4";
 import { hasPremiumStyleBadge, isPaidPackageTier } from "@/lib/packages";
 import { FEATURED_LABEL, FEATURED_TOOLTIP, VERIFIED_DEVELOPER_LABEL, VERIFIED_DEVELOPER_TOOLTIP } from "@/lib/developer-badges";
@@ -4156,6 +4157,7 @@ export function Header() {
     return () => clearTimeout(timer);
   }, [navQuery]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false); // the same pop-up as the home page hero search, on phones
   const [openMobileGroup, setOpenMobileGroup] = useState<"homes" | "land" | "company" | null>(null);
 
   const labels: Record<SiteLanguage, { homes: string; company: string; login: string; signup: string; menu: string; search: string }> = {
@@ -4188,6 +4190,7 @@ export function Header() {
   const text = labels[language];
 
   return (
+    <>
     <header className="site-header">
       <div className="site-header-inner">
         <div className="site-brand-group">
@@ -4265,9 +4268,9 @@ export function Header() {
           <AccountMenu loginLabel={text.login} signupLabel={text.signup} showSignup={false} />
         </div>
         <div className="mobile-header-actions">
-          <Link href="/search" className="mobile-search-trigger" aria-label={text.search}>
+          <button type="button" className="mobile-search-trigger" aria-label={text.search} onClick={() => setMobileSearchOpen(true)}>
             <IconSearch size={20} stroke={1.75} />
-          </Link>
+          </button>
           <button className="mobile-menu" onClick={() => setMobileMenuOpen((v) => !v)} aria-expanded={mobileMenuOpen} aria-label={text.menu}>
             {mobileMenuOpen ? <TablerX size={26} stroke={1} /> : <IconMenu2 size={26} stroke={1} />}
           </button>
@@ -4358,6 +4361,8 @@ export function Header() {
           </div>
         </div>
     </header>
+    <MobileSearchOverlay open={mobileSearchOpen} onClose={() => setMobileSearchOpen(false)} location="nav" />
+    </>
   );
 }
 

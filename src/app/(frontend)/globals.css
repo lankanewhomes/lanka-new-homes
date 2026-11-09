@@ -203,6 +203,8 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
   text-decoration: none;
 }
 
+button.mobile-search-trigger { padding: 0; cursor: pointer; font: inherit; -webkit-tap-highlight-color: transparent; }
+
 .mobile-menu {
   display: none;
   width: 48px;
