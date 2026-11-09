@@ -21147,5 +21147,7 @@ body:has(.compare-bar) {
 .header-search-chips { position: absolute; top: calc(100% + 6px); left: 0; z-index: 130; width: min(460px, 90vw); padding: 14px; background: #fff; box-shadow: 0 4px 18px rgba(32, 33, 36, 0.22); }
 .hero-search-suggestions.hero-search-chips { padding: 14px; background: #fff; }
 
-/* Phones: less empty space under the last button of the contact windows; the iPhone safe area is still kept (owner, 2026-11-09). */
-@media (max-width: 520px) { .request-info-dialog .request-info-actions { margin-bottom: -18px; padding-bottom: calc(8px + env(safe-area-inset-bottom)); } }
+/* Phones: room under the last button of the contact windows, plus the iPhone safe area (owner, 2026-11-09: "add more height in the bottom"). */
+@media (max-width: 520px) { .request-info-dialog .request-info-actions { margin-bottom: -18px; padding-bottom: calc(28px + env(safe-area-inset-bottom)); } }
+/* While a contact window is open the page's bottom tab bar (Photos, Videos, Brochure, Map...) is hidden, so it can never show under the window. */
+body:has(.request-info-overlay) .listing-hero-quickjump-bar { display: none; }

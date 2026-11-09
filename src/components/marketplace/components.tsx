@@ -39,6 +39,7 @@ import {
   StatusHouseIcon,
 } from "@/components/icons/stat-icons";
 import { Fragment, FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   Activity,
   ArrowUpRight,
@@ -2328,7 +2329,9 @@ export function RequestInfoDialog({
   const askAbout = floorPlan ? `${describeFloorPlanForLead(floorPlan)} at ${project.name}` : project.name;
   const priceHref = whatsappChatHref(toWhatsAppNumber(whatsappHref ?? project.socialLinks?.whatsapp), `Hi, could you send me the price and payment plan for ${askAbout} that I saw on LankaNewHomes?`);
 
-  return (
+  // Drawn straight in <body> (a portal): inside the listing page it sat in a layer below the phone's bottom tab bar, which then showed
+  // through under the window (owner, 2026-11-09).
+  return createPortal(
     <div className="request-info-overlay" role="dialog" aria-modal="true" aria-label="Contact us" onClick={onClose}>
       <div className={`request-info-dialog${!isInquiry ? " request-info-dialog-brochure" : ""}`} onClick={(event) => event.stopPropagation()}>
         <div className="request-info-topbar">
@@ -2473,7 +2476,8 @@ export function RequestInfoDialog({
           </form>
         )}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
