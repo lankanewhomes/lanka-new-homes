@@ -58,10 +58,10 @@ export function SearchQuickChips({ onPick }: { onPick: () => void }) {
       {rows
         ? rows.map((row, index) => (
             <div className="mobile-location-search-chips-row" key={index}>
-              {row.map((chip) => <Link key={chip.label} href={chip.href} onClick={onPick}>{chip.label}</Link>)}
+              {row.map((chip) => <Link key={chip.label} href={chip.href} onClick={onPick} className={chip.href === "/land" ? "is-land" : undefined}>{chip.label}</Link>)}
             </div>
           ))
-        : chips.map((chip) => <Link key={chip.label} href={chip.href} onClick={onPick}>{chip.label}</Link>)}
+        : chips.map((chip) => <Link key={chip.label} href={chip.href} onClick={onPick} className={chip.href === "/land" ? "is-land" : undefined}>{chip.label}</Link>)}
     </div>
   );
 }

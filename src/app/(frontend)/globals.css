@@ -21165,6 +21165,13 @@ body:has(.request-info-overlay) .listing-hero-quickjump-bar { display: none; }
    possible. In the phone pop-up each row's chips share the row's full width; the chips are a little smaller there so more fit per row. */
 .mobile-location-search-chips-row { display: flex; flex: 0 0 100%; flex-wrap: nowrap; gap: 8px; }
 .mobile-location-search-panel .mobile-location-search-chips { gap: 6px 8px; }
-.mobile-location-search-panel .mobile-location-search-chips a { min-height: 36px; padding: 0 11px; font-size: 13px; }
 .mobile-location-search-chips-row a { flex: 0 0 auto; }
 .mobile-location-search-panel .mobile-location-search-chips-row a { flex: 1 1 auto; }
+
+/* One chip look everywhere (owner, 2026-11-09: "be consistent with the chips on the nav menu, the search and the hero"): the search chips (phone pop-up,
+   nav and hero dropdowns) match the hero chips: 52px tall, 13px / 500 text, white with a grey square border. */
+.mobile-location-search-chips a { min-height: 52px; padding: 0 10px; border: 1px solid #d8d8d8; border-radius: 0; background: #fff; color: #1f1f1f; font-size: 13px; font-weight: 500; justify-content: center; text-align: center; white-space: nowrap; }
+.mobile-location-search-chips a:hover, .mobile-location-search-chips a:active { border-color: #b8b8b8; background: #fff; }
+/* The Lands chip is slightly green (the site's land sage), in the hero and in the search chips. */
+.hero-quick-link-pill.hero-quick-link-pill-land, .mobile-location-search-chips a.is-land { background: #e8ede2; border-color: #c9d6bd; }
+.hero-quick-link-pill.hero-quick-link-pill-land:hover, .mobile-location-search-chips a.is-land:hover { background: #dde6d3; border-color: #b6c7a7; }

@@ -14,7 +14,7 @@ import { SearchQuickChips } from "@/components/marketplace/mobile-search-overlay
 import { HERO_CHIP_PATHS } from "@/lib/search-chips";
 import { allProjectCategories } from "@/lib/listing-categories";
 import { trackEvent } from "@/lib/ga4";
-import { getPackage, planRotationWeight } from "@/lib/packages";
+import { planRotationWeight } from "@/lib/packages";
 import { weightedTake } from "@/lib/weighted-random";
 import { isInNewListingsWindow } from "@/lib/new-listings";
 import type { PopularGroup } from "@/lib/popular-searches";
@@ -351,27 +351,7 @@ export function HomeClient({
     setMobileSearchOpen(false);
     router.push(suggestion.href);
   };
-  // "Developer Spotlight" chip row (owner's 2026-09-24 build note) —
-  // replaces the old hardcoded "Prime Lands" placeholder chip with the real
-  // entitlement: any developer currently on Developer Pro/Campaign
-  // (getPackage(plan).developerSpotlight — expiry-aware, see
-  // effectivePlanTier) gets a highlighted chip here, linking to their
-  // profile. If Prime Lands isn't actually on one of those plans yet, it
-  // simply won't be highlighted anymore — that's the real feature working
-  // correctly, not a regression. Capped at 3 so the row can't get crowded;
-  // same hasMounted-gated weighted-by-plan pick as the Featured projects
-  // section above once there are more eligible developers than that.
-  const DEVELOPER_SPOTLIGHT_CAP = 3;
-  const spotlightEligible = useMemo(
-    () => developers.filter((developer) => getPackage(developer.plan).developerSpotlight).sort((a, b) => a.name.localeCompare(b.name)),
-    [developers]
-  );
-  const spotlightDevelopers = useMemo(() => {
-    if (!hasMounted || spotlightEligible.length <= DEVELOPER_SPOTLIGHT_CAP) return spotlightEligible.slice(0, DEVELOPER_SPOTLIGHT_CAP);
-    return weightedTake(spotlightEligible, DEVELOPER_SPOTLIGHT_CAP, (developer) => planRotationWeight(developer.plan));
-  }, [hasMounted, spotlightEligible]);
   const heroQuickLinks = [
-    ...spotlightDevelopers.map((developer) => ({ path: `/developers/${developer.slug}`, breadcrumbLabel: developer.name, isHighlighted: true })),
     ...HERO_CHIP_PATHS.flatMap((path) => allProjectCategories.filter((category) => category.path === path)),
     { path: "/land", breadcrumbLabel: "Lands" },
   ];
