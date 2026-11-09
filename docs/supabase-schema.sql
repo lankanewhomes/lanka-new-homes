@@ -623,3 +623,6 @@ alter type payload.enum_analytics_event_type add value if not exists 'floor_plan
 -- 2026-11-08: neighbourhood drafts. Payload column only; the public table stores isPublished inside its `data` jsonb
 -- (missing = published), so nothing changes in public.neighborhoods. Migration: supabase/migrations/20261108120000_neighborhoods_is_published.sql
 alter table payload.neighborhoods add column if not exists is_published boolean default true;
+
+-- 2026-11-09: projects banking partners (Payload column only; public.projects reads it from `data` jsonb). Migration: supabase/migrations/20261109120000_projects_banking_partners.sql
+alter table payload.projects add column if not exists banking_partners varchar;

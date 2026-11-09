@@ -74,7 +74,6 @@ import {
   Hammer,
   HousePlus,
   Landmark,
-  Mail,
   Compass,
   Construction,
   Droplet,
@@ -2049,7 +2048,6 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
   const { t } = useListingT();
   const [requestInfoOpen, setRequestInfoOpen] = useState(false);
   const name = developer?.name ?? project.developerName ?? project.contact.name;
-  const email = hasDisplayValue(project.contact?.email) ? project.contact.email : developer?.email;
   const projectSocialEntries = Object.entries(project.socialLinks ?? {}).filter(([, url]) => hasDisplayValue(url)) as [string, string][];
   const developerSocialEntries = Object.entries(developer?.socialLinks ?? {}).filter(([, url]) => hasDisplayValue(url)) as [string, string][];
   // WhatsApp gets its own labelled tap-to-chat row (tracked like phone
@@ -2084,12 +2082,7 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
           </span>
         ) : null}
 
-        {hasDisplayValue(email) ? (
-          <a href={`mailto:${email}`} className="stats-contact-card-row" onClick={() => logListingEvent("/api/events/email-click", "click_email", project.slug, project.name, project.developerSlug)}>
-            <Mail className="h-4 w-4" aria-hidden="true" /> {email}
-          </a>
-        ) : null}
-
+        {/* Email intentionally not shown here (owner, 2026-11-09): buyers reach the developer through Request info or WhatsApp. */}
         {hasDisplayValue(project.contact?.address) ? (
           <span className="stats-contact-card-row">
             <MapPin className="h-4 w-4" aria-hidden="true" /> {project.contact.address}
@@ -2604,6 +2597,7 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
     { label: "Reservation request", value: project.reservationFee },
     { label: "Payment plan", value: project.paymentPlan && project.paymentPlan.trim() !== (project.depositPaymentStructure ?? "").trim() && project.depositPaymentStructure ? project.paymentPlan : "" },
     { label: "Mortgage / financing", value: project.financingOptions },
+    { label: "Banking partners", value: project.bankingPartners },
     { label: "Legal / transfer fees", value: project.legalFees },
     { label: "Utility / connection fees", value: project.utilityFees },
     { label: "Other applicable fees", value: project.otherFees },

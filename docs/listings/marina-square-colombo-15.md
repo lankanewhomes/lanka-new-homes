@@ -32,3 +32,12 @@ Site pages: home, condo-types, penthouses, compare-apartments, project-progress,
 | Site plan | "Aerial view" PDF page also added to the Photos gallery (4th photo). |
 | Floor plates | Six typical floor pages of the "Typical Floor Plans" PDF added as Block Plan images (`scripts/add-marina-square-floor-plates.ts`). They label units 1A to 4G with view direction but give no sizes, bathrooms or prices, so no per-unit floor-plan rows were made. |
 | Contact | Sales gallery, 250 Srimath Ramanathan Mawatha, Colombo 15, phone +94 76 305 0000, no email (the agency email was removed). |
+
+## Update 2026-11-09 (third pass)
+| Change | Detail |
+|---|---|
+| URL | Slug renamed to `marina-square-uptown-colombo` (owner request). Old `/projects/` and `/listing-preview/` URLs redirect. R2 files stay under the old `projects/marina-square-colombo-15/` folder. The stale old-slug row in `public.projects` was removed after the new row existed. Older scripts here still use the old slug. |
+| Status | Construction status Completed, status Now Selling. |
+| Banking partners | New `bankingPartners` field (own row in Pricing): DFCC, Commercial Bank, Sampath Bank (from /en/about-us). Migration `20261109120000_projects_banking_partners.sql`. |
+| Neighborhood | 25 places added with coordinates (Wikipedia article positions, straight-line distances from the pin) by `scripts/add-marina-square-nearby.ts`; the three developer-stated items are kept. |
+| Contact card | Email row removed from the listing contact card for all projects and land (owner request). |

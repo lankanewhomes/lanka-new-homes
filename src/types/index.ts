@@ -426,6 +426,7 @@ export type Project = SeoFields & {
   utilityFees?: string;
   otherFees?: string;
   financingOptions?: string;
+  bankingPartners?: string;
   legalFees?: string;
   pricingUpdated?: string;
   propertyTax?: string;
