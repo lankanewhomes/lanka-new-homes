@@ -9,6 +9,7 @@ import { AccountMenu } from "@/components/auth/account-menu";
 import { IconBrandFacebook, IconBrandInstagram, IconBrandTiktok, IconChevronRight as TablerChevronRight, IconMenu2, IconSearch, IconX as TablerX } from "@tabler/icons-react";
 import { useSavedListing } from "@/lib/use-saved-listing";
 import { useSavedDeveloper } from "@/lib/use-saved-developer";
+import { parseNaturalSearch } from "@/lib/natural-search";
 import { getLandingPage, getStoredUtmParams, getTrafficSource, trackEvent } from "@/lib/ga4";
 import { hasPremiumStyleBadge, isPaidPackageTier } from "@/lib/packages";
 import { FEATURED_LABEL, FEATURED_TOOLTIP, VERIFIED_DEVELOPER_LABEL, VERIFIED_DEVELOPER_TOOLTIP } from "@/lib/developer-badges";
@@ -4199,7 +4200,15 @@ export function Header() {
             action="/search"
             method="get"
             role="search"
-            onSubmit={(event) => { event.preventDefault(); setNavSearchOpen(false); router.push(`/search?q=${encodeURIComponent(navQuery.trim())}`); }}
+            onSubmit={(event) => {
+              event.preventDefault();
+              setNavSearchOpen(false);
+              // Same as the home page hero search: "plots in Negombo" goes to the land page, everything else to project search, an empty search opens /search.
+              const query = navQuery.trim();
+              const wantsLand = query ? parseNaturalSearch(query).land === true : false;
+              if (query) trackEvent("search", { search_term: query.slice(0, 100), search_location: "nav", wants_land: wantsLand });
+              router.push(query ? `${wantsLand ? "/land" : "/search"}?q=${encodeURIComponent(query)}` : "/search");
+            }}
             onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setNavSearchOpen(false); }}
           >
             <IconSearch size={16} stroke={1.75} aria-hidden="true" />

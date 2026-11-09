@@ -21104,22 +21104,25 @@ body:has(.compare-bar) {
 }
 
 
-/* Footer language switcher (owner, 2026-11-09): EN / සිංහල / தமிழ் in the bottom bar, outline pills like the follow buttons. */
-.footer-language { display: inline-flex; gap: 8px; }
+/* Footer language switcher (owner, 2026-11-09): EN / සිංහල / தமிழ் as one joined row of square buttons (no radius), like the old header dropdown;
+   the current language is brand orange. */
+.footer-language { display: inline-flex; border: 1px solid #d9d9d2; border-radius: 0; overflow: hidden; background: #fff; }
 .footer-language button {
-  padding: 6px 14px;
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  border-radius: 999px;
-  background: transparent;
-  color: #fff;
+  min-height: 34px;
+  padding: 0 16px;
+  border: 0;
+  border-right: 1px solid #d9d9d2;
+  border-radius: 0;
+  background: #fff;
+  color: #1f1f25;
   font-size: 13px;
-  font-weight: 600;
-  line-height: 1.2;
+  font-weight: 400;
+  line-height: 1;
   cursor: pointer;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
 }
-.footer-language button:hover { border-color: #f47b36; }
-.footer-language button.active { background: #f47b36; border-color: #f47b36; }
+.footer-language button:last-child { border-right: 0; }
+.footer-language button:hover { background: #f7f6f2; }
+.footer-language button.active, .footer-language button.active:hover { background: #f47b36; color: #1f1f1f; }
 
 /* "Continue to WhatsApp" / "Open WhatsApp" in the WhatsApp capture window are WhatsApp green, like the other WhatsApp buttons (owner, 2026-11-09). */
 .request-info-submit-big.whatsapp-capture-btn { background: #25d366; border-color: #25d366; color: #0b2e13; text-decoration: none; }

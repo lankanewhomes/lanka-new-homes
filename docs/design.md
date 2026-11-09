@@ -2799,7 +2799,7 @@ Scripts: `scripts/social/carousel_project_v2_light.py` (projects), `carousel_lan
 
 Section order now: split dark hero (orange main button, two-column "Everything we can put on your homepage" card with a Sample sites / Built for / Sign-off facts row) → **See what your site could look like** (`.wdx-sample.wdx-sample--light`, cream grid box; light-surface sample switcher; the real six sample sites stay in the switcher) → "A listing gets you found. A website tells your story." (gray, two cards with tick lists) → "What we can build." (sage, six numbered cards from `BUILD_ITEMS`) → How we work (cream, four "Step N" cards) → FAQ (lilac). No two neighbouring boxes share a background. The old "Built around your project" photo marquee (`HeroMarquee`) is no longer used on the page (component still exists in `web-design-frames.tsx`). No closing CTA band: the owner removed it earlier and the FAQ is the last section above the fixed quickjump bar. No eyebrow labels over headings or cards.
 
-**Footer language switcher (owner, 2026-11-09):** EN / සිංහල / தமிழ் outline pills (`.footer-language`) in the footer's bottom bar, right of the copyright line (stacked under it, centred, on phones). The active language is filled brand orange. It uses the same `LanguageProvider` as the mobile menu switcher; the header still has no desktop language dropdown.
+**Footer language switcher (owner, 2026-11-09):** EN / සිංහල / தமிழ் as one joined row of square buttons with no radius (`.footer-language`, same look as the old header dropdown) in the footer's bottom bar, right of the copyright line (stacked under it, centred, on phones). The current language is filled brand orange. It uses the same `LanguageProvider` as the mobile menu switcher; the header still has no desktop language dropdown.
 
 ## WhatsApp button asks for a name and number first (owner, 2026-11-09)
 
@@ -2808,3 +2808,5 @@ Every WhatsApp button on a listing (hero, mobile bar, contact card, sales center
 a WhatsApp number (`PhoneField`) and can edit the prefilled enquiry. "Continue to WhatsApp" saves a lead (`/api/leads`, source `whatsapp`, no email needed),
 then opens the developer's `wa.me` link with the enquiry. If saving fails the buyer still reaches WhatsApp. `/api/leads/whatsapp-continue` stamps
 `whatsapp_continued_at` on the lead and logs the `whatsapp_click` event. The developer's WhatsApp icon on a developer profile page (no listing) still opens WhatsApp directly.
+
+**Nav search = hero search (owner, 2026-11-09):** the header search submits exactly like the home-page hero search: land phrases ("plots in Negombo") go to /land, everything else to /search?q=, an empty search opens /search, and a `search` event is logged (`search_location: nav`). On phones the header search icon opens /search.
