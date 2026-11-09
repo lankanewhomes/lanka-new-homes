@@ -139,7 +139,7 @@ function WhatsAppCaptureDialog({ detail, onClose }: { detail: WhatsAppCaptureDet
 
   return (
     <div className="request-info-overlay" role="dialog" aria-modal="true" aria-label="Connect with the developer" onClick={onClose}>
-      <div className="request-info-dialog request-info-dialog-brochure" onClick={(event) => event.stopPropagation()}>
+      <div className="request-info-dialog request-info-dialog-brochure whatsapp-capture-dialog" onClick={(event) => event.stopPropagation()}>
         <div className="request-info-topbar">
           <p className="request-info-topbar-title">Connect with the developer</p>
           <button type="button" className="request-info-close" aria-label="Close" onClick={onClose}><X className="h-5 w-5" /></button>
@@ -156,7 +156,7 @@ function WhatsAppCaptureDialog({ detail, onClose }: { detail: WhatsAppCaptureDet
           <div className="request-info-success">
             <h2>WhatsApp is opening</h2>
             <p>Your enquiry is ready in WhatsApp with the developer&apos;s number. Just press send. If nothing opened, use the button below.</p>
-            <a className="request-info-submit-big" href={openHref} target="_blank" rel="noopener noreferrer">
+            <a className="request-info-submit-big whatsapp-capture-btn" href={openHref} target="_blank" rel="noopener noreferrer">
               <span className="request-info-submit-icon" aria-hidden="true"><ArrowRight size={16} strokeWidth={2.5} /></span>
               Open WhatsApp
             </a>
@@ -182,7 +182,7 @@ function WhatsAppCaptureDialog({ detail, onClose }: { detail: WhatsAppCaptureDet
             <div className="request-info-actions">
               <p className="request-info-promise">Your number goes to this developer only, so they can reply. WhatsApp then opens with the developer&apos;s number and your enquiry ready.</p>
               <div className="request-info-actions-row">
-                <button type="submit" className="request-info-submit-big" disabled={submitting}>
+                <button type="submit" className="request-info-submit-big whatsapp-capture-btn" disabled={submitting}>
                   <span className="request-info-submit-icon" aria-hidden="true"><ArrowRight size={16} strokeWidth={2.5} /></span>
                   {submitting ? "Opening..." : "Continue to WhatsApp"}
                 </button>

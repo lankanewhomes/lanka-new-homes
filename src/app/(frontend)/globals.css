@@ -2613,11 +2613,11 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   }
 
   .listing-hero-quickjump-more-right svg {
-    animation: quickjump-more-nudge-right 1.4s ease-in-out infinite;
+    animation: quickjump-more-nudge-right 1.4s ease-in-out 2; /* twice, then still: a looping nudge looked like the bar was shaking (owner, 2026-11-09) */
   }
 
   .listing-hero-quickjump-more-left svg {
-    animation: quickjump-more-nudge-left 1.4s ease-in-out infinite;
+    animation: quickjump-more-nudge-left 1.4s ease-in-out 2;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -21120,3 +21120,12 @@ body:has(.compare-bar) {
 }
 .footer-language button:hover { border-color: #f47b36; }
 .footer-language button.active { background: #f47b36; border-color: #f47b36; }
+
+/* "Continue to WhatsApp" / "Open WhatsApp" in the WhatsApp capture window are WhatsApp green, like the other WhatsApp buttons (owner, 2026-11-09). */
+.request-info-submit-big.whatsapp-capture-btn { background: #25d366; border-color: #25d366; color: #0b2e13; text-decoration: none; }
+.request-info-submit-big.whatsapp-capture-btn:hover { background: #1fb858; border-color: #1fb858; }
+.request-info-submit-big.whatsapp-capture-btn:disabled { background: #25d366; border-color: #25d366; color: #0b2e13; opacity: 0.6; }
+
+/* More room above and below the "Connect with the developer" title (owner, 2026-11-09); side padding keeps the title clear of the close button. */
+.request-info-dialog.whatsapp-capture-dialog .request-info-topbar { padding: 32px 56px; }
+@media (max-width: 520px) { .request-info-dialog.whatsapp-capture-dialog .request-info-topbar { padding: 28px 52px; } }
