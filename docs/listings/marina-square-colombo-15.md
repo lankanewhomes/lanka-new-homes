@@ -17,3 +17,8 @@ Site pages: home, condo-types, penthouses, compare-apartments, project-progress,
 - F/G view is "City / Mountain"; only City View exists in the picker.
 - Contact email `inquiries@01awards.lk` is what the site publishes (looks like an agency address).
 - Progress photos not added (the site's month labels do not map reliably to image batches). Individual brochures are not published; the typical-floor-plans PDF is used as the brochure.
+
+## Update 2026-11-09 (`scripts/update-marina-square-hero-extras.ts`)
+- Description shortened to two short paragraphs (owner: "too much").
+- Hero pills added: map pin (6.95226, 79.85592, from the developer's Google Maps embed on /en/contact, so Map and Street View show), YouTube video, Matterport show-apartment tour, and a site plan (page 1 of the "Aerial view" PDF) as the Block Plan. No Road Map pill: the site publishes no road map.
+- Colombo 15 neighbourhood (id 160) set to published. The live page kept serving a cached 404 for a while after publishing (data in Supabase is isPublished true).
