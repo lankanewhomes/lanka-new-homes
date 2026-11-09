@@ -2609,7 +2609,6 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
     { label: "Reservation request", value: project.reservationFee },
     { label: "Payment plan", value: project.paymentPlan && project.paymentPlan.trim() !== (project.depositPaymentStructure ?? "").trim() && project.depositPaymentStructure ? project.paymentPlan : "" },
     { label: "Mortgage / financing", value: project.financingOptions },
-    { label: "Banking partners", value: project.bankingPartners },
     { label: "Legal / transfer fees", value: project.legalFees },
     { label: "Utility / connection fees", value: project.utilityFees },
     { label: "Other applicable fees", value: project.otherFees },
@@ -2676,6 +2675,9 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
   const hasDepositCard = paymentLines.length > 0 || paymentFields.length > 0 || Boolean(financingField);
   const hasFeesCard = feeFields.length > 0;
   const hasIncentivesCard = incentives.length > 0;
+  // Banks the developer names as partners for buyer loans (comma or semicolon separated in the bankingPartners field).
+  const bankingPartners = (project.bankingPartners ?? "").split(/[;,]/).map((bank) => bank.trim()).filter((bank) => hasDisplayValue(bank));
+  const hasBankingCard = bankingPartners.length > 0;
 
   return (
     <section className="space-y-4">
@@ -2803,6 +2805,19 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
                     </div>
                   </div>
                 ) : null}
+              </div>
+            </article>
+          ) : null}
+
+          {hasBankingCard ? (
+            <article className="border border-[#c9ddf5] bg-white px-6 py-6 text-[#1f2321] shadow-[0_10px_28px_rgba(36,78,54,0.08)]">
+              <h3 className="text-[29px] font-semibold">Banking partners</h3>
+
+              <div className="mt-7 space-y-4 text-[15px] leading-7">
+                <p className="text-[#5d6560]">Banks the developer names as partners for buyer loans.</p>
+                <div className="space-y-1">
+                  {bankingPartners.map((bank) => <p key={bank} className="font-semibold">{bank}</p>)}
+                </div>
               </div>
             </article>
           ) : null}
