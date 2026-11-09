@@ -11,8 +11,8 @@ import { getSessionId } from "@/components/marketplace/view-tracker";
 
 // "Capture their number before opening WhatsApp" (owner, 2026-11-09). Every WhatsApp button on a listing calls openWhatsAppCapture();
 // this host (mounted once in the site layout) shows a small window asking for a name and WhatsApp number, saves a lead for the
-// developer (source "whatsapp", /api/leads), then opens the developer's WhatsApp with the enquiry ready. Whether the buyer went on
-// to WhatsApp is recorded by /api/leads/whatsapp-continue, which also logs the "whatsapp_click" event that counts as a WhatsApp lead.
+// developer (source "whatsapp", /api/leads) and opens the developer's WhatsApp with the enquiry ready. WhatsApp opens first, from the tap; the
+// server stamps the lead as continued and logs the "whatsapp_click" event that counts as a WhatsApp lead.
 
 export type WhatsAppCaptureDetail = {
   /** The developer's wa.me link from listingWhatsAppHref (carries the developer's number and the opening message). */
@@ -55,7 +55,6 @@ function WhatsAppCaptureDialog({ detail, onClose }: { detail: WhatsAppCaptureDet
   const [phoneValue, setPhoneValue] = useState<PhoneValue>({ country: DEFAULT_PHONE_COUNTRY, national: "" });
   const [message, setMessage] = useState(() => openingMessage(detail.href, fallbackMessage));
   const [errors, setErrors] = useState<{ name?: string; phone?: string }>({});
-  const [submitting, setSubmitting] = useState(false);
   const [openHref, setOpenHref] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -68,9 +67,16 @@ function WhatsAppCaptureDialog({ detail, onClose }: { detail: WhatsAppCaptureDet
 
   const developerNumber = toWhatsAppNumber(detail.href);
 
+  // Opened straight from the tap, before any network call: browsers only allow a new tab/app link during the tap itself, and
+  // window.open(..., "noopener") always returns null, so it cannot tell us whether it worked. A real link click is the reliable way.
   const goToWhatsApp = (href: string) => {
-    const opened = window.open(href, "_blank", "noopener,noreferrer");
-    if (!opened) window.location.assign(href); // pop-up blocked: leave this page for WhatsApp instead
+    const link = document.createElement("a");
+    link.href = href;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
   };
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -85,37 +91,36 @@ function WhatsAppCaptureDialog({ detail, onClose }: { detail: WhatsAppCaptureDet
       return;
     }
     setErrors({});
-    setSubmitting(true);
     captureUtmParams();
     const enquiry = message.trim() || fallbackMessage;
+    const href = whatsappChatHref(developerNumber, enquiry) ?? detail.href;
+    // 1. Open WhatsApp right now, from the tap.
+    goToWhatsApp(href);
+    setOpenHref(href);
+    // 2. Then save the lead in the background (keepalive: it finishes even if the page is left for the WhatsApp app). Saving must never
+    //    stop the buyer reaching the developer. The server marks the lead as continued and counts the WhatsApp lead.
     const sessionId = getSessionId();
     const trafficSource = getTrafficSource();
-    const utm = getStoredUtmParams();
-    let leadId: string | undefined;
-    try {
-      // Saving the lead must never stop the buyer reaching the developer: if it fails they still go on to WhatsApp.
-      const response = await fetch("/api/leads", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: name.trim(),
-          email: "",
-          phone,
-          preferredContactMethod: "WhatsApp",
-          message: enquiry,
-          projectSlug: detail.projectSlug,
-          developerSlug: detail.developerSlug || "unknown",
-          isWhatsAppCapture: true,
-          floorPlanName: detail.planName || undefined,
-          sessionId,
-          trafficSource,
-          utm,
-        }),
-      });
-      if (response.ok) leadId = (await response.json().catch(() => null))?.id;
-    } catch {
-      // carry on to WhatsApp
-    }
+    fetch("/api/leads", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: name.trim(),
+        email: "",
+        phone,
+        preferredContactMethod: "WhatsApp",
+        message: enquiry,
+        projectSlug: detail.projectSlug,
+        developerSlug: detail.developerSlug || "unknown",
+        isWhatsAppCapture: true,
+        whatsappOpened: true,
+        floorPlanName: detail.planName || undefined,
+        sessionId,
+        trafficSource,
+        utm: getStoredUtmParams(),
+      }),
+      keepalive: true,
+    }).catch(() => {});
     trackEvent("generate_lead", {
       listing_id: detail.projectSlug,
       listing_name: detail.projectName,
@@ -125,16 +130,6 @@ function WhatsAppCaptureDialog({ detail, onClose }: { detail: WhatsAppCaptureDet
       form_type: "whatsapp",
     });
     trackEvent("click_whatsapp", { listing_id: detail.projectSlug, listing_name: detail.projectName, ...(detail.developerSlug ? { developer_slug: detail.developerSlug } : {}) });
-    fetch("/api/leads/whatsapp-continue", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ leadId, projectSlug: detail.projectSlug, sessionId, trafficSource, utm }),
-      keepalive: true,
-    }).catch(() => {});
-    const href = whatsappChatHref(developerNumber, enquiry) ?? detail.href;
-    setOpenHref(href);
-    setSubmitting(false);
-    goToWhatsApp(href);
   };
 
   return (
@@ -182,9 +177,9 @@ function WhatsAppCaptureDialog({ detail, onClose }: { detail: WhatsAppCaptureDet
             <div className="request-info-actions">
               <p className="request-info-promise">Your number goes to this developer only, so they can reply. WhatsApp then opens with the developer&apos;s number and your enquiry ready.</p>
               <div className="request-info-actions-row">
-                <button type="submit" className="request-info-submit-big whatsapp-capture-btn" disabled={submitting}>
+                <button type="submit" className="request-info-submit-big whatsapp-capture-btn" >
                   <span className="request-info-submit-icon" aria-hidden="true"><ArrowRight size={16} strokeWidth={2.5} /></span>
-                  {submitting ? "Opening..." : "Continue to WhatsApp"}
+                  Continue to WhatsApp
                 </button>
               </div>
             </div>

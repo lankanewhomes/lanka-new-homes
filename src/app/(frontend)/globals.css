@@ -21126,6 +21126,9 @@ body:has(.compare-bar) {
 .request-info-submit-big.whatsapp-capture-btn:hover { background: #1fb858; border-color: #1fb858; }
 .request-info-submit-big.whatsapp-capture-btn:disabled { background: #25d366; border-color: #25d366; color: #0b2e13; opacity: 0.6; }
 
-/* More room above and below the "Connect with the developer" title (owner, 2026-11-09); side padding keeps the title clear of the close button. */
-.request-info-dialog.whatsapp-capture-dialog .request-info-topbar { padding: 32px 56px; }
-@media (max-width: 520px) { .request-info-dialog.whatsapp-capture-dialog .request-info-topbar { padding: 28px 52px; } }
+/* Contact / request-info / brochure / inquiry and WhatsApp windows (owner, 2026-11-09): plain white, no grid lines, no divider under the title,
+   and the same room above and below the title in all of them (side padding keeps it clear of the close button). */
+.request-info-dialog { background-color: #fff; background-image: none; }
+.request-info-dialog .request-info-topbar { background: #fff; border-bottom: 0; padding: 32px 56px; }
+.request-info-dialog .request-info-actions { background: #fff; }
+@media (max-width: 520px) { .request-info-dialog .request-info-topbar { padding: 28px 52px; } }

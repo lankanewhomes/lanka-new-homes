@@ -14,6 +14,8 @@ type LeadInput = {
   /** "Unit A · 3 bed · 1,300 SqFt" when the buyer asked from a plan page. */
   floorPlan?: string;
   source?: "request_info" | "brochure_request" | "whatsapp";
+  /** WhatsApp leads: when the buyer was sent on to WhatsApp. */
+  whatsappContinuedAt?: string;
 };
 
 type ViewInput = {
@@ -42,6 +44,7 @@ export async function insertLead(input: LeadInput) {
     user_id: input.userId ?? null,
     floor_plan: input.floorPlan?.trim() || null,
     source: input.source ?? "request_info",
+    whatsapp_continued_at: input.whatsappContinuedAt ?? null,
     created_at: createdAt,
   });
   if (error) throw new Error(`Failed to save lead: ${error.message}`);

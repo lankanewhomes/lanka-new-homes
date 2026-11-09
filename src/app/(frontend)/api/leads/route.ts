@@ -1,7 +1,7 @@
 import { after, NextResponse } from "next/server";
 import { insertLead } from "@/lib/tracking-db";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
-import { buildEventEnrichment } from "@/lib/analytics-event";
+import { buildEventEnrichment, logRawAnalyticsEvent } from "@/lib/analytics-event";
 import { isInternalRequest } from "@/lib/internal-traffic";
 import { renderBrochureEmailHTML } from "@/lib/brochure-email";
 import { requestOrigin } from "@/lib/request-origin";
@@ -43,6 +43,7 @@ export async function POST(req: Request) {
     // A buyer who tapped WhatsApp first leaves a name and number (whatsapp-capture dialog): stored as source "whatsapp". It is not a
     // form enquiry, so it does not create the "lead_submitted" analytics event; the WhatsApp lead is counted when they open WhatsApp.
     const isWhatsApp = body.isWhatsAppCapture === true;
+    const whatsappContinuedAt = isWhatsApp && body.whatsappOpened === true ? new Date().toISOString() : undefined;
     const source = isWhatsApp ? "whatsapp" : body.isBrochureRequest ? "brochure_request" : "request_info";
 
     const saved = await insertLead({
@@ -57,6 +58,7 @@ export async function POST(req: Request) {
       userId: user?.id,
       floorPlan: floorPlanName || undefined,
       source,
+      whatsappContinuedAt,
     });
 
     // Best-effort mirror into Payload's Leads collection so builders can see
@@ -106,6 +108,7 @@ export async function POST(req: Request) {
               preferred_contact_method: body.preferredContactMethod,
               floor_plan: floorPlanName || undefined,
               source,
+              whatsapp_continued_at: whatsappContinuedAt,
               supabase_lead_id: saved.id,
               origin: {
                 country: origin.country || undefined,
@@ -119,6 +122,11 @@ export async function POST(req: Request) {
             context: { skipSupabaseSync: true, analyticsEnrichment, skipAnalytics: isInternalRequest(req) || isWhatsApp },
             overrideAccess: true,
           });
+
+          // A WhatsApp lead is counted when the buyer is sent on to WhatsApp (the "whatsapp_click" event); it is not a form enquiry.
+          if (whatsappContinuedAt) {
+            await logRawAnalyticsEvent(req, { projectSlug: body.projectSlug, eventType: "whatsapp_click", sourcePage: "whatsapp-capture", sessionId: body.sessionId, trafficSource: body.trafficSource, utm: body.utm }).catch((error) => console.error("Failed to log whatsapp_click analytics event", error));
+          }
 
           // Brochure requests also get emailed a copy — the dialog's
           // "Download Brochure" button still works as a fallback (the
