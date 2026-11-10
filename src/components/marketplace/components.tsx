@@ -2823,7 +2823,7 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
               <div className="mt-7 space-y-4 text-[15px] leading-7">
                 <p className="text-[#5d6560]">Banks the developer names as partners for buyer loans.</p>
                 <div className="space-y-1">
-                  {bankingPartners.map((bank) => <p key={bank} className="font-semibold">{bank}</p>)}
+                  {bankingPartners.map((bank) => <p key={bank}>{bank}</p>)}
                 </div>
               </div>
             </article>
