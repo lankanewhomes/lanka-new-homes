@@ -15,7 +15,6 @@ export const SEARCH_QUICK_CHIPS: QuickChip[] = [
   { label: "Branded Residences", href: "/projects/branded-residences" },
   { label: "Villas", href: "/projects/villas" },
   { label: "Beachfront", href: "/projects/beachfront" },
-  { label: "Serviced Apartments", href: "/projects/serviced-apartments" },
   { label: "Port City Colombo", href: "/projects/port-city-colombo" },
   { label: "Lakefront", href: "/projects/lakefront" },
   { label: "Apartments", href: "/projects?type=Apartments" },
@@ -65,6 +64,8 @@ export const HERO_CHIP_PATHS = [
   "/projects/branded-residences",
   "/projects/villas",
   "/projects/beachfront",
-  "/projects/serviced-apartments",
+  "/projects/lakefront",
   "/projects/port-city-colombo",
+  "/projects?type=House",
+  "/projects?type=Apartments",
 ];

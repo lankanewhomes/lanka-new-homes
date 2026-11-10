@@ -21184,3 +21184,7 @@ body:has(.request-info-overlay) .listing-hero-quickjump-bar { display: none; }
 .hero-quick-link-pill.hero-quick-link-pill-land, .mobile-location-search-chips a.is-land { background: rgba(126, 168, 98, 0.2); border-color: rgba(126, 168, 98, 0.45); }
 .hero-quick-link-pill.hero-quick-link-pill-land:hover, .mobile-location-search-chips a.is-land:hover { background: rgba(126, 168, 98, 0.32); border-color: rgba(126, 168, 98, 0.65); }
 .mobile-location-search-chips a.is-land, .mobile-location-search-chips-row a.is-land { flex: 1 1 100%; }
+
+/* Lands chip (owner, 2026-11-09): orange border only, no background, no green. */
+.hero-quick-link-pill.hero-quick-link-pill-land, .mobile-location-search-chips a.is-land { background: transparent; border-color: #f47b36; }
+.hero-quick-link-pill.hero-quick-link-pill-land:hover, .mobile-location-search-chips a.is-land:hover { background: transparent; border-color: #d9621f; }

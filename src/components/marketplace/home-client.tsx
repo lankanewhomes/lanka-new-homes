@@ -11,7 +11,7 @@ import { ArrowUpRight, Check, ChevronDown, ChevronLeft, ChevronRight, MapPin, Pa
 import { SiteLanguage, useLanguage } from "@/components/layout/language-provider";
 import { ListingGridCard } from "@/components/marketplace/listing-page";
 import { SearchQuickChips } from "@/components/marketplace/mobile-search-overlay";
-import { HERO_CHIP_PATHS } from "@/lib/search-chips";
+import { HERO_CHIP_PATHS, SEARCH_QUICK_CHIPS } from "@/lib/search-chips";
 import { allProjectCategories } from "@/lib/listing-categories";
 import { trackEvent } from "@/lib/ga4";
 import { planRotationWeight } from "@/lib/packages";
@@ -352,7 +352,12 @@ export function HomeClient({
     router.push(suggestion.href);
   };
   const heroQuickLinks = [
-    ...HERO_CHIP_PATHS.flatMap((path) => allProjectCategories.filter((category) => category.path === path)),
+    ...HERO_CHIP_PATHS.flatMap((path) => {
+      const category = allProjectCategories.filter((entry) => entry.path === path);
+      if (category.length) return category;
+      const chip = SEARCH_QUICK_CHIPS.find((entry) => entry.href === path);
+      return chip ? [{ path: chip.href, breadcrumbLabel: chip.label }] : [];
+    }),
     { path: "/land", breadcrumbLabel: "Lands" },
   ];
 
