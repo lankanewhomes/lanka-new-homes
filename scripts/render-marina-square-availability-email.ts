@@ -1,7 +1,7 @@
 // Draft email to the Marina Square developer asking for unit availability and listing details (owner, 2026-11-09). NOT SENT.
 // Renders the branded outreach shell (src/lib/outreach-templates.ts renderPlainReplyEmail) with two tables injected, and writes an HTML + plain-text preview.
 //   OUT_DIR=<folder> npx tsx scripts/render-marina-square-availability-email.ts
-// From / reply-to: developers@lankanewhomes.com (owner rule). To: Marina Square sales email, still needed (the site only publishes +94 76 305 0000).
+// Signed "The LankaNewHomes Team", never a personal name (owner, 2026-11-09). From / reply-to: developers@lankanewhomes.com (owner rule). To: Marina Square sales email, still needed (the site only publishes +94 76 305 0000).
 import fs from 'node:fs'
 import { renderPlainReplyEmail } from '../src/lib/outreach-templates'
 const OUT = process.env.OUT_DIR
@@ -37,7 +37,7 @@ const body = [
   '@@D@@',
   'If any detail on our listing is wrong, please tell us and we will correct it right away. Thank you for your help.',
 ].join('\n\n')
-const { html, text } = renderPlainReplyEmail({ body, signoff: 'Kind regards,', signName: 'Rupan' })
+const { html, text } = renderPlainReplyEmail({ body, signoff: 'Kind regards,', signName: 'The LankaNewHomes Team' })
 const out = html
   .replace(/<p style="[^"]*">@@Q@@<\/p>/, table(['#', 'Question'], questions.map((q, i) => [String(i + 1), q]), ['36px']))
   .replace(/<p style="[^"]*">@@D@@<\/p>/, table(['Design', 'Bedrooms', 'Size (sq ft)', 'Floors / towers', 'Units available'], designs.map((d) => [...d, '&nbsp;'])))
