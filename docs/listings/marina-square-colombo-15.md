@@ -64,3 +64,6 @@ Sold-out basis: the current developer site lists only 4 D/E and 4 F/G; 1 A/B to 
 | Key Features | 3 groups, 13 items (Indoor, Building & Services, Outdoor) from the developer's compare/unit pages, FAQ and progress page. `scripts/add-marina-square-key-features.ts` |
 | Design count | The home page says "21 designs". The developer's condo-types page has listed 20 distinct designs in every archived snapshot since Dec 2021 (the only extras were a "test" page in Jan 2025 and an old name for the 1.5 design). The listing shows 20. Open question: ask the developer what the 21st is. |
 | Brochure | The site has no brochure; its downloads are only the Typical Floor Plans and Aerial view PDFs. |
+
+## Update 2026-11-09 (availability)
+Owner: "I don't know if the other units are sold out, so don't put anything sold out." All 20 floor plans are now "Available" with no unit count. The sold-out evidence is in the 2022 developer snapshot (1 A/B to 2 A/B/C/D marked SOLD OUT; the other designs are not on the current site) and is NOT shown on the listing. Open question: confirm availability with the developer.
