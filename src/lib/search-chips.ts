@@ -3,7 +3,7 @@ import type { Land, Project } from "@/types";
 
 // The quick chips under the search boxes (phone pop-up, desktop dropdowns). The list below is the fallback order; the live order comes from
 // /api/search/chips, which counts the real listings behind each chip so the ones with the most listings come first and empty ones are hidden
-// (owner, 2026-11-09).
+// (owner, 2026-11-09). The nav and phone search chips are the same set as the home page hero (owner, 2026-11-10: "match the hero").
 export type QuickChip = { label: string; href: string };
 
 export const SEARCH_QUICK_CHIPS: QuickChip[] = [
@@ -15,19 +15,10 @@ export const SEARCH_QUICK_CHIPS: QuickChip[] = [
   { label: "Branded Residences", href: "/projects/branded-residences" },
   { label: "Villas", href: "/projects/villas" },
   { label: "Beachfront", href: "/projects/beachfront" },
-  { label: "Port City Colombo", href: "/projects/port-city-colombo" },
   { label: "Lakefront", href: "/projects/lakefront" },
-  { label: "Apartments", href: "/projects?type=Apartments" },
-  { label: "Condominiums", href: "/projects?type=Condominium" },
+  { label: "Port City Colombo", href: "/projects/port-city-colombo" },
   { label: "Houses", href: "/projects?type=House" },
-  { label: "Townhouses", href: "/projects?type=Townhouse" },
-  { label: "Luxury Villas", href: "/projects?type=Luxury+Villas" },
-  { label: "Luxury Apartments in Colombo", href: "/projects/luxury-apartments-for-sale-in-colombo" },
-  { label: "Affordable Apartments in Colombo", href: "/projects/cheap-apartments-for-sale-in-colombo" },
-  { label: "Brand New Apartments in Colombo", href: "/projects/brand-new-apartments-for-sale-in-colombo" },
-  { label: "2 Bedroom Apartments in Colombo", href: "/projects/2-bedroom-apartments-for-sale-in-colombo" },
-  { label: "Houses in Colombo", href: "/projects/houses-for-sale-in-colombo" },
-  { label: "Houses in Kandy", href: "/projects/houses-for-sale-in-kandy" },
+  { label: "Apartments", href: "/projects?type=Apartments" },
   { label: "Lands", href: "/land" },
 ];
 
