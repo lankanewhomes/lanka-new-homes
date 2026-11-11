@@ -33,6 +33,9 @@ Update this file whenever a new keyword group or page is added.
 | `/projects/2-bedroom-apartments-for-sale-in-colombo` | "2 bedroom apartments for sale in colombo" (90/mo) — Colombo apartments with a 2-bedroom floor plan (added 2026-11-09) | new |
 | `/projects/houses-for-sale-in-colombo` | "houses for sale sri lanka colombo" (8,100/mo) — house/villa/townhouse listings in Colombo (added 2026-11-09) | new |
 | `/projects/houses-for-sale-in-kandy` | "houses for sale sri lanka kandy" (4,400/mo) — all Kandy listings (added 2026-11-09) | new |
+| `/projects/houses-for-sale-in-negombo` | "houses for sale in negombo" (1,900/mo) — all Negombo listings (added 2026-11-11, owner request) | new |
+| `/projects/houses-for-sale-in-nugegoda` | "houses for sale in nugegoda" (1,600/mo) — all Nugegoda listings (added 2026-11-11) | new |
+| `/projects/houses-for-sale-in-galle` | "houses for sale in galle" (1,300/mo) + "property for sale sri lanka galle" (90) — all Galle listings (added 2026-11-11) | new |
 | `/projects/apartments-for-sale-in-athurugiriya` | "Apartments for sale in Athurugiriya" — apartment/condominium listings whose city or location is Athurugiriya; links to `/neighborhoods/athurugiriya` (added 2026-10-30, owner request) | new |
 | `/projects/keells-homes-for-sale` | "Keells homes for sale" / "John Keells apartments" / "Keels" spelling variant (all John Keells Properties listings; added 2026-10-10, owner request) | new |
 | `/guides` | Guides index (hub page, links the 3 guides below) | new |
@@ -417,3 +420,7 @@ to speed it up.
 `/projects/colombo` retitled "Apartments for Sale in Colombo: New Projects & Prices" with an about section linking the postcode and modifier pages; `/projects/brand-new-houses-for-sale` retitled "New Houses for Sale in Sri Lanka" (targets "houses for sale sri lanka" 5,400 and "new houses for sale sri lanka" 50). Fixed: every `/projects/*` category page now renders its `about` text (the wrappers were not passing it, so it never showed). Ignored on purpose: "ikman lk" variants (people looking for a competitor).
 
 Area keywords checked 2026-11-09 (maharagama 1,300, wellawatte 390, matale 320, bandarawela 210, peradeniya 170, borella 140, avissawella land 140): all seven already have published `/neighborhoods/{slug}` pages titled "Houses & Land for Sale in {Name}..."; we have no project or land listings in those areas, so no new pages were made. What would lift them is listings there.
+
+## 2026-11-11 keyword round (owner request)
+
+Ubersuggest volumes: land for sale in kandy 1,900; galle 880; negombo 880; gampaha 720; villas for sale sri lanka 590; property for sale sri lanka 1,900; apartments for sale sri lanka 1,300 (the last two not yet worked on: they would go on `/projects` or the homepage). `/land/district/{district}` titles now read `Land for Sale in {District}: {n} Plots` (was `... {District} District`) to match the search, with the top three areas in the description. `/projects/villas` retitled "Villas for Sale in Sri Lanka: New Villa Developments" with an about section. No page for "tea land for sale in galle" (260/mo): no tea-land listings.
