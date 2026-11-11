@@ -424,3 +424,5 @@ Area keywords checked 2026-11-09 (maharagama 1,300, wellawatte 390, matale 320, 
 ## 2026-11-11 keyword round (owner request)
 
 Ubersuggest volumes: land for sale in kandy 1,900; galle 880; negombo 880; gampaha 720; villas for sale sri lanka 590; property for sale sri lanka 1,900; apartments for sale sri lanka 1,300 (the last two not yet worked on: they would go on `/projects` or the homepage). `/land/district/{district}` titles now read `Land for Sale in {District}: {n} Plots` (was `... {District} District`) to match the search, with the top three areas in the description. `/projects/villas` retitled "Villas for Sale in Sri Lanka: New Villa Developments" with an about section. No page for "tea land for sale in galle" (260/mo): no tea-land listings.
+
+`/projects` (2026-11-11): title `Property & Apartments for Sale in Sri Lanka: {n} New Projects` from the live count, plus an about section linking the town, type and land pages (targets "property for sale sri lanka" 1,900 and "apartments for sale sri lanka" 1,300).
