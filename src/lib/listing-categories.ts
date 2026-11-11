@@ -33,7 +33,8 @@ function isInColombo(project: Project) {
 const isApartment = (project: Project) => /apartment|condominium|penthouse/i.test(project.type ?? "");
 const isHouseType = (project: Project) => ["house", "villas", "luxury villas", "townhouse"].includes((project.type ?? "").toLowerCase());
 const isCompleted = (project: Project) => (project.status as string) === "Completed";
-const isInKandy = (project: Project) => /kandy/i.test(`${project.district ?? ""} ${project.city ?? ""} ${project.location ?? ""}`);
+const inTown = (town: string) => (project: Project) => new RegExp(town, "i").test(`${project.district ?? ""} ${project.city ?? ""} ${project.location ?? ""}`);
+const isInKandy = inTown("kandy");
 
 export const projectCategories: Record<string, ProjectCategory> = {
   "keells-homes-for-sale": {
@@ -223,6 +224,57 @@ export const projectCategories: Record<string, ProjectCategory> = {
     extraKeywords: "houses for sale in kandy kandy houses kandy apartments for sale in kandy property kandy",
     filter: isInKandy,
   },
+  "houses-for-sale-in-negombo": {
+    path: "/projects/houses-for-sale-in-negombo",
+    breadcrumbLabel: "Negombo",
+    breadcrumbs: [{ label: "Home", href: "/" }, { label: "New Projects", href: "/projects" }, { label: "Negombo" }],
+    metaTitle: "Houses & Apartments for Sale in Negombo",
+    metaDescription: "Houses and apartments for sale in Negombo, Sri Lanka: new projects near the beach and airport, with prices, floor plans, photos and developer details.",
+    h1: "Houses & Apartments for Sale in Negombo",
+    intro: "New houses, villas and apartments for sale in Negombo, from developers, with current prices, floor plans and photos.",
+    about: { title: "About property for sale in Negombo", paragraphs: [
+      "Negombo is a coastal town in the Gampaha district, about 35 km north of Colombo and close to the international airport. This page lists the new houses, villas and apartment projects in the Negombo area on LankaNewHomes.",
+      "Open a project to see its floor plans, sizes, amenities and status, and to check which units are still available. Use the enquiry form on any listing to ask the developer about prices, a site visit or availability: it goes straight to them, with no agent in between.",
+      "Looking for land? See [land for sale in Gampaha district](/land/district/gampaha), which includes Negombo, or [all land for sale in Sri Lanka](/land).",
+    ] },
+    relatedPaths: ["/land/district/gampaha", "/projects/beachfront", "/projects/brand-new-houses-for-sale"],
+    extraKeywords: "houses for sale in negombo negombo houses negombo apartments for sale in negombo property negombo",
+    filter: inTown("negombo"),
+  },
+  "houses-for-sale-in-nugegoda": {
+    path: "/projects/houses-for-sale-in-nugegoda",
+    breadcrumbLabel: "Nugegoda",
+    breadcrumbs: [{ label: "Home", href: "/" }, { label: "New Projects", href: "/projects" }, { label: "Nugegoda" }],
+    metaTitle: "Houses & Apartments for Sale in Nugegoda",
+    metaDescription: "Houses and apartments for sale in Nugegoda, Sri Lanka: new projects with prices, floor plans, photos and developer details.",
+    h1: "Houses & Apartments for Sale in Nugegoda",
+    intro: "New houses and apartments for sale in Nugegoda, from developers, with current prices, floor plans and photos.",
+    about: { title: "About property for sale in Nugegoda", paragraphs: [
+      "Nugegoda is a busy suburb in the Colombo district, about 10 km south-east of the city centre, with shops, schools and good road links. This page lists the new houses and apartment projects in Nugegoda on LankaNewHomes.",
+      "Open a project to see its floor plans, sizes, amenities and status, and to check which units are still available. Use the enquiry form on any listing to ask the developer about prices, a site visit or availability: it goes straight to them, with no agent in between.",
+      "For the area itself, see the [Nugegoda neighbourhood guide](/neighborhoods/nugegoda), or browse [houses for sale in Colombo](/projects/houses-for-sale-in-colombo).",
+    ] },
+    relatedPaths: ["/neighborhoods/nugegoda", "/projects/houses-for-sale-in-colombo", "/projects/colombo"],
+    extraKeywords: "houses for sale in nugegoda nugegoda houses nugegoda apartments for sale in nugegoda property nugegoda",
+    filter: inTown("nugegoda"),
+  },
+  "houses-for-sale-in-galle": {
+    path: "/projects/houses-for-sale-in-galle",
+    breadcrumbLabel: "Galle",
+    breadcrumbs: [{ label: "Home", href: "/" }, { label: "New Projects", href: "/projects" }, { label: "Galle" }],
+    metaTitle: "Houses, Villas & Apartments for Sale in Galle",
+    metaDescription: "Houses, villas and apartments for sale in Galle, Sri Lanka: new projects near the fort and beaches, with prices, floor plans, photos and developer details.",
+    h1: "Houses, Villas & Apartments for Sale in Galle",
+    intro: "New villas, houses and apartments for sale in Galle, from developers, with current prices, floor plans and photos.",
+    about: { title: "About property for sale in Galle", paragraphs: [
+      "Galle, on the south-west coast, is known for its fort and beaches and is one of the main coastal property markets in Sri Lanka. This page lists the new villas, houses and apartment projects in the Galle area on LankaNewHomes.",
+      "Open a project to see its floor plans, sizes, amenities and status, and to check which units are still available. Use the enquiry form on any listing to ask the developer about prices, a site visit or availability: it goes straight to them, with no agent in between.",
+      "Looking for land? See [land for sale in Galle](/land/district/galle), or browse [beachfront homes](/projects/beachfront) and [new villas](/projects/villas).",
+    ] },
+    relatedPaths: ["/land/district/galle", "/projects/villas", "/projects/beachfront"],
+    extraKeywords: "houses for sale in galle galle houses galle villas for sale in galle property for sale sri lanka galle",
+    filter: inTown("galle"),
+  },
   "pre-construction": {
     path: "/projects/pre-construction",
     breadcrumbLabel: "Pre-Construction",
@@ -288,12 +340,17 @@ export const projectCategories: Record<string, ProjectCategory> = {
     path: "/projects/villas",
     breadcrumbLabel: "Villas",
     breadcrumbs: [{ label: "Home", href: "/" }, { label: "New Projects", href: "/projects" }, { label: "Villas" }],
-    metaTitle: "New Villas in Sri Lanka – Villa Developments",
-    metaDescription: "Browse new villa developments in Sri Lanka, including luxury beach villas for sale. Compare new build homes with private gardens, pools, and modern layouts across the island.",
+    metaTitle: "Villas for Sale in Sri Lanka: New Villa Developments",
+    metaDescription: "Villas for sale in Sri Lanka: browse new villa developments, including luxury beach villas for sale. Compare new build homes with private gardens, pools, and modern layouts across the island.",
     h1: "New Villa Developments in Sri Lanka",
     intro: "Looking for a new build home rather than an apartment? These new villa developments in Sri Lanka offer private gardens, standalone layouts, and often pool access, from coastal towns to Colombo's suburbs. Looking for a luxury beach villa for sale in Sri Lanka? Start with the coastal villas here, then see the beachfront collection.",
-    extraKeywords: "luxury beach villa for sale in sri lanka luxury beach villa beach villa for sale sri lanka beach villas villa near beach",
-    relatedPaths: ["/projects/beachfront", "/projects", "/guides/investment-property"],
+    extraKeywords: "villas for sale sri lanka villa for sale sri lanka luxury villas for sale sri lanka luxury beach villa for sale in sri lanka luxury beach villa beach villa for sale sri lanka beach villas villa near beach",
+    about: { title: "Buying a villa in Sri Lanka", paragraphs: [
+      "A villa here is a standalone or semi-detached new-build home with its own garden, and often a private pool or shared pool access, as opposed to an apartment in a tower. This page gathers the new villa developments on LankaNewHomes, from coastal towns such as Galle to Colombo's suburbs.",
+      "Open a project to see its floor plans, sizes, amenities and status, and to check which villas are still available. Use the enquiry form on any listing to ask the developer about prices, a site visit or availability: it goes straight to them, with no agent in between.",
+      "Also see [houses for sale in Galle](/projects/houses-for-sale-in-galle), [beachfront homes](/projects/beachfront) and our guide for [foreign buyers](/guides/foreigners-buying-property).",
+    ] },
+    relatedPaths: ["/projects/beachfront", "/projects/houses-for-sale-in-galle", "/projects/brand-new-houses-for-sale"],
     filter: (project) => project.type === "Villas",
   },
   beachfront: {

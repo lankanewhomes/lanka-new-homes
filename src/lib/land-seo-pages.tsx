@@ -206,9 +206,9 @@ function districtPageDef(district: string): PageDef {
   const path = `/land/district/${kebab(district)}`;
   return {
     path,
-    title: `Land for Sale in ${district} District`,
-    h1: `Land for Sale in ${district} District`,
-    description: `Land for sale in ${district} district, Sri Lanka: plots from developers and builders with prices, sizes in perches and exact locations on LankaNewHomes.`,
+    title: `Land for Sale in ${district}`,
+    h1: `Land for Sale in ${district}`,
+    description: `Land for sale in ${district}, Sri Lanka (${district} district): plots from developers and builders with prices, sizes in perches and exact locations on LankaNewHomes.`,
     intro: `Land plots for sale in the ${district} district, listed by developers and builders, with prices, sizes in perches and exact locations.`,
     aboutTitle: `About land for sale in ${district} district.`,
     emptyText: `No land listings in ${district} district yet. Browse all land for sale in Sri Lanka.`,
@@ -241,7 +241,11 @@ export async function landDistrictMetadata(slug: string): Promise<Metadata> {
   const match = landDistricts(all).find((entry) => entry.slug === slug);
   if (!match) return { title: "Land Not Found", robots: { index: false, follow: false } };
   const def = districtPageDef(match.name);
-  return withSocial({ title: `${def.title}: ${match.count} ${match.count === 1 ? "Plot" : "Plots"}`, description: def.description, alternates: { canonical: def.path } }, { path: def.path });
+  const cityCounts = new Map<string, number>();
+  for (const land of all) if ((land.district ?? "").trim().toLowerCase() === match.name.toLowerCase() && land.city) cityCounts.set(land.city.trim(), (cityCounts.get(land.city.trim()) ?? 0) + 1);
+  const topCities = [...cityCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3).map(([city]) => city);
+  const description = topCities.length ? `${def.description} Areas include ${topCities.join(", ")}.` : def.description;
+  return withSocial({ title: `${def.title}: ${match.count} ${match.count === 1 ? "Plot" : "Plots"}`, description, alternates: { canonical: def.path } }, { path: def.path });
 }
 
 /** The page body for /land/district/<slug>, or null when no district has that slug (the route then 404s). */
