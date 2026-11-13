@@ -42,6 +42,11 @@ export default function ContactPage() {
             <p className="contact-hero-email">
               Prefer email? <a href="mailto:support@lankanewhomes.com" className="press-contact-email">support@lankanewhomes.com</a>
             </p>
+            {/* Owner, 2026-11-13: phone number added to /contact only (not the
+                footer), on the same line style as the email. */}
+            <p className="contact-hero-email">
+              Prefer to call? <a href="tel:+16477795729" className="press-contact-email">+1 647 779 5729</a>
+            </p>
             <div className="contact-hero-list">
               <h2>List your project.</h2>
               <p>
