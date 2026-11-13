@@ -17901,6 +17901,11 @@ body:has(.compare-bar) {
   color: #e4e2dd;
 }
 
+/* The phone line under the email line (2026-11-13). */
+.contact-hero-email + .contact-hero-email {
+  margin-top: 10px;
+}
+
 .contact-hero-email .press-contact-email {
   margin-left: 6px;
   font-weight: 400; /* owner, 2026-09-30: "no bold please" */

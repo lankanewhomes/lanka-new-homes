@@ -1847,6 +1847,11 @@ gone; `.contact-page-bg`/`.contact-hero`/`.contact-cards`/
   — the Founder's direct email/phone (added earlier the same session) was
   removed from it on the owner's own instruction ("Just put support email
   only"); that contact detail isn't shown anywhere else on the page now.
+- **Phone line added under the email (2026-11-13)** — owner asked for the
+  new number on `/contact` only (not the footer): a second
+  `.contact-hero-email` line, "Prefer to call? `+1 647 779 5729`"
+  (`tel:+16477795729`), same style as the email line. The older
+  `+1 647 716 5155` is retired; don't reuse it.
 
 ### `/web-design`'s bottom bar cut to 2 items; "Contact" opens a popup, not a page (2026-09-28, later still)
 
