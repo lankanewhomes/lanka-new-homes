@@ -17,6 +17,8 @@ export const WhatsAppMessages: CollectionConfig = {
     { name: 'text', type: 'textarea' },
     { name: 'messageType', type: 'text', admin: { description: 'text, image, document, template, ...' } },
     { name: 'templateName', type: 'text' },
+    // Values for the template's {{1}}, {{2}}… (set on outbound template drafts; sent as the template body parameters).
+    { name: 'templateParams', type: 'json' },
     // Outbound messages wait here until the owner approves them (owner rule: nothing is sent without approval).
     { name: 'status', type: 'select', required: true, defaultValue: 'received', index: true, options: [
       { label: 'Received', value: 'received' },
