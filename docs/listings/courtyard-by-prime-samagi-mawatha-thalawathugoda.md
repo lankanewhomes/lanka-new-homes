@@ -46,5 +46,6 @@
 - All 10 types (A–J) confirmed — each is a 3-storey unit; ground+first+second floor areas (printed per floor) summed per drawing. 4BR types (A–D) total 3,414–3,416 sqft; 3BR types (E–G) 2,910 sqft; 3BR (H–I) 2,477 sqft; 3BR (J) 3,249 sqft. All floor images attached as Downloads.
 - Key Features (private elevator, Padel Court, resident lounge, outdoor kitchen) and 3 nearby places (Thalawathugoda Town, bus route, Vidura College) added from the page's bullet list.
 - Payment plan published: 25% down, 1% monthly ×30, 5% at months 12 & 24, 35% at handover.
+- Developer offer added 2026-11-13 (`scripts/update-courtyard-thalawathugoda-offer.ts`): LKR 15M down payment, LKR 850K monthly instalments, balance at handover, prices from LKR 85M, first 15 units only, valid until 31 December 2026 (T&C apply). Shown as the Hot Deal banner, incentives, payment lines and badges (Special Offer, Limited Units, Flexible Payment Plan, Gated Community). Remove after the expiry date (a to-do was added).
 
 _Generated 2026-09-11 from the live Payload record._
