@@ -40,6 +40,9 @@ Update this file whenever a new keyword group or page is added.
 | `/projects/houses-for-sale-in-mount-lavinia` | "houses for sale in mount lavinia" (1,300/mo, difficulty 3) — all Mount Lavinia listings (added 2026-11-13) | new |
 | `/projects/houses-for-sale-in-kottawa` | "houses for sale in kottawa" (720/mo, difficulty 2) — all Kottawa listings (added 2026-11-13) | new |
 | `/projects/apartments-for-sale-in-rajagiriya` | "apartments for sale in rajagiriya" (390/mo, difficulty 31) — Rajagiriya apartments; only 1 listing so far (added 2026-11-13) | new |
+| `/projects/houses-for-sale-in-thalawathugoda` | "houses for sale in thalawathugoda" (590/mo, difficulty 2) — all Thalawathugoda listings (added 2026-11-13, owner request) | new |
+| `/projects/houses-for-sale-in-kadawatha` | "houses for sale in kadawatha" (1,900/mo, difficulty 4) — all Kadawatha listings (added 2026-11-13) | new |
+| `/projects/houses-for-sale-in-piliyandala` | "houses for sale in piliyandala" (2,400/mo, difficulty 5) — all Piliyandala listings (added 2026-11-13) | new |
 | `/projects/apartments-for-sale-in-athurugiriya` | "Apartments for sale in Athurugiriya" — apartment/condominium listings whose city or location is Athurugiriya; links to `/neighborhoods/athurugiriya` (added 2026-10-30, owner request) | new |
 | `/projects/keells-homes-for-sale` | "Keells homes for sale" / "John Keells apartments" / "Keels" spelling variant (all John Keells Properties listings; added 2026-10-10, owner request) | new |
 | `/guides` | Guides index (hub page, links the 3 guides below) | new |
@@ -432,3 +435,5 @@ Ubersuggest volumes: land for sale in kandy 1,900; galle 880; negombo 880; gampa
 `/projects` (2026-11-11): title `Property & Apartments for Sale in Sri Lanka: {n} New Projects` from the live count, plus an about section linking the town, type and land pages (targets "property for sale sri lanka" 1,900 and "apartments for sale sri lanka" 1,300).
 
 2026-11-13 round: also found land for sale in kurunegala 1,000 (page exists), panadura 590 and kalutara 260 (both under `/land/district/kalutara`, whose description lists Horana, Aluthgama, Bandaragama, so "Panadura" is not named), apartments for sale in kandy 260, malabe 110, battaramulla 70 (no pages: 0-1 listings), sri lanka property investment 140 (`/guides/investment-property`).
+
+2026-11-13 later round: houses for sale in homagama 1,600, gampaha 1,300, moratuwa 1,000, panadura 880, ja ela 590, battaramulla 260 and beachfront land for sale sri lanka 140 have no pages because we hold 0 to 2 listings in each; add listings there first. Thalawathugoda, Kadawatha and Piliyandala pages built (9, 4 and 3 listings).
