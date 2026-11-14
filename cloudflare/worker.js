@@ -3,6 +3,7 @@
 // `Authorization: Bearer $CRON_SECRET` header those routes already check.
 import { connect } from "cloudflare:sockets";
 import openNextWorker from "../.open-next/worker.js";
+import { withImageFallback } from "./image-fallback.js";
 
 // Shared with cloudflare/pg-cloudflare-socket.cjs (node-postgres on Workers).
 globalThis.__cfSocketsConnect = connect;
@@ -25,7 +26,8 @@ const useHyperdrive = (env) => {
 export default {
   fetch(request, env, ctx) {
     useHyperdrive(env);
-    return openNextWorker.fetch(request, env, ctx);
+    // /_next/image falls back to the original file when Cloudflare's resizer refuses (see image-fallback.js).
+    return withImageFallback(request, () => openNextWorker.fetch(request, env, ctx));
   },
   async scheduled(controller, env, ctx) {
     useHyperdrive(env);
