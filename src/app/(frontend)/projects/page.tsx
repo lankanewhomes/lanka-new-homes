@@ -9,7 +9,7 @@ export const revalidate = 60;
 // Targets "property for sale sri lanka" (1,900/mo) and "apartments for sale sri lanka" (1,300/mo), 2026-11-11 (owner request); the count is live.
 export async function generateMetadata(): Promise<Metadata> {
   const count = (await getAllProjects()).length;
-  const title = `Property & Apartments for Sale in Sri Lanka: ${count} New Projects`;
+  const title = `Property for Sale in Sri Lanka: ${count} New Projects`;
   const description = `Property for sale in Sri Lanka: ${count} new apartment, condominium, house and villa projects from developers, with prices, floor plans, photos and locations. Enquire direct, no agent.`;
   return withSocial({
     title,
@@ -43,7 +43,7 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
       ? `New projects in ${location}`
       : type
         ? `New ${type} projects in Sri Lanka`
-        : "New projects in Sri Lanka";
+        : "Property & Apartments for Sale in Sri Lanka";
 
   return (
     <ProjectListingShell
