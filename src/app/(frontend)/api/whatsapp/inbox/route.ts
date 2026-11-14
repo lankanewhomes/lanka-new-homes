@@ -41,6 +41,17 @@ export async function GET(request: Request) {
 
   const { docs } = await db.find({ collection: COLLECTION, sort: "-sentAt", limit: 1000, depth: 0, overrideAccess: true });
   const recipients = await loadRecipients(db);
+  const devIdByPhone = new Map<string, number>();
+  for (const m of docs as Msg[]) {
+    const id = typeof m.developer === "object" && m.developer ? m.developer.id : m.developer;
+    if (id && !devIdByPhone.has(m.phone)) devIdByPhone.set(m.phone, Number(id));
+  }
+  const devNames = new Map<number, string>();
+  const linkedIds = [...new Set(devIdByPhone.values())];
+  if (linkedIds.length) {
+    const found = await db.find({ collection: "developers", where: { id: { in: linkedIds } }, limit: linkedIds.length, depth: 0, pagination: false, overrideAccess: true });
+    for (const d of found.docs as { id: number; name?: string | null }[]) if (d.name) devNames.set(d.id, d.name);
+  }
   const byPhone = new Map<string, { phone: string; last: Msg; unanswered: number; drafts: number }>();
   for (const m of docs as Msg[]) {
     const row = byPhone.get(m.phone) ?? { phone: m.phone, last: m, unanswered: 0, drafts: 0 };
@@ -53,7 +64,9 @@ export async function GET(request: Request) {
     const lastOut = sent.find((m) => m.phone === c.phone);
     const unanswered = (docs as Msg[]).filter((m) => m.phone === c.phone && m.direction === "inbound" && (!lastOut || m.sentAt > lastOut.sentAt)).length;
     const who = recipients.find((r) => sameNumber(r.phone, c.phone));
-    return { phone: c.phone, developerId: who?.developerId ?? null, name: who?.name ?? null, lastText: c.last.text ?? (c.last.templateName ? `Template: ${c.last.templateName}` : ""), lastAt: c.last.sentAt, lastDirection: c.last.direction, unanswered, drafts: c.drafts };
+    // A message sent or logged against a developer keeps that link, so the conversation is named even when the number is not saved on their profile.
+    const linkedId = devIdByPhone.get(c.phone) ?? null;
+    return { phone: c.phone, developerId: who?.developerId ?? linkedId, name: who?.name ?? (linkedId ? devNames.get(linkedId) ?? null : null), lastText: c.last.text ?? (c.last.templateName ? `Template: ${c.last.templateName}` : ""), lastAt: c.last.sentAt, lastDirection: c.last.direction, unanswered, drafts: c.drafts };
   });
   return NextResponse.json({ conversations });
 }

@@ -86,6 +86,7 @@ export function WhatsAppApp() {
                   <span className="truncate text-[14px] font-medium">{title(c)}</span>
                   <span className="shrink-0 text-[11px] text-[#6b6355]">{when(c.lastAt)}</span>
                 </span>
+                {c.name ? <span className="block text-[12px] text-[#6b6355]">+{c.phone}</span> : null}
                 <span className="mt-0.5 block truncate text-[13px] text-[#6b6355]">{c.lastDirection === "outbound" ? "You: " : ""}{c.lastText}</span>
                 <span className="mt-1 flex gap-2 text-[11px]">
                   {c.unanswered > 0 ? <span className="bg-[#f47b36] px-1.5 py-0.5 text-white">{c.unanswered} new</span> : null}
