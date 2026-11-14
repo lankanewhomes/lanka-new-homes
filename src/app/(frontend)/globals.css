@@ -2306,6 +2306,13 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   color: #1a6b2f;
 }
 
+/* Sold Out is red, never the green of a live status (owner, 2026-11-14). Same red as the floor-plan "Sold Out" pill. */
+.listing-hero-tags span.listing-hero-tag-status.listing-hero-tag-sold-out {
+  background: #c0392b;
+  border: 1px solid #c0392b;
+  color: #fff;
+}
+
 .listing-hero-tags span.listing-hero-tag-move-in {
   background: #e8f1fd;
   border: 1px solid #bfd9f7;
@@ -10255,6 +10262,11 @@ a.developer-profile-press-title {
   letter-spacing: 0.04em;
   padding: 4px 8px;
   border-radius: 3px;
+}
+
+.listing-grid-card-status.listing-grid-card-status-sold-out,
+.project-popup-status.project-popup-status-sold-out {
+  background: #c0392b;
 }
 
 .listing-grid-card-carousel-arrow {

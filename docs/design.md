@@ -219,6 +219,7 @@ per project and order isn't stable.
 | Pill | Class | Color |
 |---|---|---|
 | Listing status ("Coming Soon", "Now Selling"...) | `.listing-hero-tag-status` | Green |
+| Listing status "Sold Out" | `.listing-hero-tag-status.listing-hero-tag-sold-out` (hero) / `.listing-grid-card-status-sold-out` (listing cards) / `.project-popup-status-sold-out` (map popup) | Solid red `#c0392b`, white text — same red as the floor-plan `.plans-status-pill-sold`. On cards and the map popup "Sold Out" wins over "Move In …" labels (owner, 2026-11-14) |
 | "Move in {year}" | `.listing-hero-tag-move-in` | Blue |
 | Hot deal | `.listing-hero-tag-hot-deal` | Red |
 | Move-In Now / Quick Move-In / Featured | `.listing-badge-pill` (hero) / `.home-card-badge-row span` (cards) / `.plans-home-badge-row span` (floor plan cards) | Purple (Move-In Now) / Gold (`.badge-featured`) |

@@ -7,6 +7,7 @@ import { formatLkr, withSqFt } from "@/lib/format";
 import type { Project } from "@/types";
 
 function statusPillLabel(project: Project) {
+  if (project.status === "Sold Out") return "Sold Out";
   if (project.status === "Coming Soon" || project.status === "Launching Soon") return "Preconstruction";
   if (project.isMoveInNow) return "Move In Now";
   if (project.completionYear) return `Move In ${project.completionYear}`;
@@ -20,7 +21,7 @@ export function ProjectPopup({ project, basePath, onClose }: { project: Project;
     <Link href={`${basePath}/${project.slug}`} className="project-popup">
       <div className="project-popup-media">
         <Image src={project.heroImage} alt={project.name} width={210} height={158} className="project-popup-image" />
-        <span className="project-popup-status">{statusPillLabel(project)}</span>
+        <span className={`project-popup-status${project.status === "Sold Out" ? " project-popup-status-sold-out" : ""}`}>{statusPillLabel(project)}</span>
         <button
           type="button"
           className="project-popup-close"

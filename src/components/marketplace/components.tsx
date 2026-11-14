@@ -1751,7 +1751,7 @@ export function ProjectHero({
 
       {(hasDisplayValue(project.status) || isUpcomingMoveIn(project) || project.isFeatured || project.isMoveInNow || hasQuickMoveIn(project) || Boolean(project.paymentPlanBadge) || extraBadges.length > 0) ? (
         <div className="listing-hero-tags" aria-label="Listing status tags">
-          {hasDisplayValue(project.status) ? <span className="listing-hero-tag-status">{t(statusLabelOverride ?? project.status)}</span> : null}
+          {hasDisplayValue(project.status) ? <span className={`listing-hero-tag-status${(statusLabelOverride ?? project.status) === "Sold Out" ? " listing-hero-tag-sold-out" : ""}`}>{t(statusLabelOverride ?? project.status)}</span> : null}
           {isUpcomingMoveIn(project) ? <span className="listing-hero-tag-move-in">{t("Move in")} {project.completionYear}</span> : null}
           {project.isMoveInNow ? <span className="listing-badge-pill badge-move-in-now">{t("Move-In Now")}</span> : null}
           {hasQuickMoveIn(project) ? <span className="listing-badge-pill badge-quick-move-in">{t("Quick Move-In")}</span> : null}
