@@ -15,7 +15,8 @@
     "social:generate": "NODE_ENV=production tsx --env-file=.env.local scripts/social/generate.ts",
     "cf:build": "node scripts/check-build-env.mjs && CF_BUILD=1 opennextjs-cloudflare build",
     "cf:preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "cf:deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
+    "cf:deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "images:presize": "node --env-file=.env.local scripts/presize-images.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

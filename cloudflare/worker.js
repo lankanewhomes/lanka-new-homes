@@ -26,7 +26,7 @@ const useHyperdrive = (env) => {
 export default {
   fetch(request, env, ctx) {
     useHyperdrive(env);
-    // /_next/image falls back to the original file when Cloudflare's resizer refuses (see image-fallback.js).
+    // /_next/image: ready-shrunk copy from our storage first, then Cloudflare's resizer, then the original file (see image-fallback.js).
     return withImageFallback(request, () => openNextWorker.fetch(request, env, ctx));
   },
   async scheduled(controller, env, ctx) {
