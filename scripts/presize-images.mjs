@@ -23,7 +23,7 @@ const DRY = flag("dry");
 const FORCE = flag("force");
 const SAMPLE = Number(option("sample") || 0);
 const PREFIX = option("prefix") || "";
-const CONCURRENCY = Number(option("concurrency") || 6);
+const CONCURRENCY = Number(option("concurrency") || 12);
 const MANIFEST_KEY = `${SIZED_PREFIX}manifest.json`;
 const VARIANT_CACHE_CONTROL = "public, max-age=86400";
 
@@ -92,19 +92,22 @@ async function processOne(source) {
   if ((meta.pages || 1) > 1) throw new Error("animated image, skipped");
   // EXIF orientation 5-8 means the stored picture is on its side.
   const sourceWidth = (meta.orientation || 1) >= 5 ? meta.height : meta.width;
-  for (const width of SIZED_WIDTHS) {
-    const body = await sharp(input, { failOn: "none" })
-      .rotate()
-      .resize({ width, withoutEnlargement: true })
-      .webp({ quality: SIZED_QUALITY })
-      .toBuffer();
-    stats.bytesByWidth[width] += body.length;
-    if (!DRY) {
-      await s3.send(
-        new PutObjectCommand({ Bucket, Key: sizedKey(source.key, width), Body: body, ContentType: "image/webp", CacheControl: VARIANT_CACHE_CONTROL }),
-      );
-    }
-  }
+  // All widths of one picture at once: the uploads, not the resizing, are the slow part.
+  await Promise.all(
+    SIZED_WIDTHS.map(async (width) => {
+      const body = await sharp(input, { failOn: "none" })
+        .rotate()
+        .resize({ width, withoutEnlargement: true })
+        .webp({ quality: SIZED_QUALITY })
+        .toBuffer();
+      stats.bytesByWidth[width] += body.length;
+      if (!DRY) {
+        await s3.send(
+          new PutObjectCommand({ Bucket, Key: sizedKey(source.key, width), Body: body, ContentType: "image/webp", CacheControl: VARIANT_CACHE_CONTROL }),
+        );
+      }
+    }),
+  );
   stats.sourceBytes += source.size;
   stats.widths.push(sourceWidth);
   manifest[source.key] = source.etag;
