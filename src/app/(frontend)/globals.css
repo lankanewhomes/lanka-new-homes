@@ -5066,7 +5066,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   display: grid;
   align-content: start;
   gap: 2px;
-  padding-bottom: 14px;
+  padding: 14px 0 14px;
 }
 .key-features-block-title {
   display: flex;
