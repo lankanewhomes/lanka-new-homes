@@ -65,7 +65,7 @@ const categories = (v: V) => {
     ] },
     { key: 'building-structure', label: 'Building & Structure', items: [
       ...lines('Doors & Windows', v.doors, true),
-      ...lines('Elevators', 'elevators'),
+      ...lines('Elevators', 'available'),
       ...(PARKING[v.slug ?? ''] ? lines('Parking', PARKING[v.slug ?? '']) : []),
     ] },
     { key: 'finishes', label: 'Finishes', items: [
