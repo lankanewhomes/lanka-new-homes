@@ -5061,6 +5061,40 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   color: #1e1e1e;
 }
 
+/* Key Features nested tabs (owner, 2026-11-15): rooms inside a category (Specifications > Doors) use the same row design, one step smaller. */
+.key-features-sublist {
+  grid-column: 1 / -1;
+  margin: -8px -16px -12px -28px;
+  border-top: 1px solid #e4e0d6;
+}
+.key-features-row.key-features-subrow:not(.open) > .key-features-row-trigger {
+  background: #fff;
+  color: #4a4a4a;
+  box-shadow: none;
+}
+.key-features-row.key-features-subrow:not(.open) > .key-features-row-trigger:hover {
+  background: #f7f6f2;
+}
+.key-features-row.key-features-subrow:not(.open) .key-features-chevron {
+  transform: none;
+}
+.key-features-subrow .key-features-row-trigger {
+  padding: 13px 16px 13px 28px;
+  font-size: 14px;
+}
+.key-features-subrow.open .key-features-row-trigger {
+  box-shadow: inset 3px 0 0 #f2d38a;
+}
+.key-features-row-body.key-features-subbody {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: 14px 16px 18px 56px;
+  background: #fff;
+}
+@media (max-width: 760px) {
+  .key-features-sublist { margin-left: -16px; }
+  .key-features-row-body.key-features-subbody { grid-template-columns: 1fr; padding-left: 40px; }
+}
+
 .amenities-showcase-shell {
   width: 100%;
   margin: 0;

@@ -86,6 +86,7 @@ export interface Config {
     'listing-todos': ListingTodo;
     outreach: Outreach;
     'email-log': EmailLog;
+    'whatsapp-messages': WhatsappMessage;
     'developer-activity': DeveloperActivity;
     'mail-accounts': MailAccount;
     'mail-folders': MailFolder;
@@ -135,6 +136,7 @@ export interface Config {
     'listing-todos': ListingTodosSelect<false> | ListingTodosSelect<true>;
     outreach: OutreachSelect<false> | OutreachSelect<true>;
     'email-log': EmailLogSelect<false> | EmailLogSelect<true>;
+    'whatsapp-messages': WhatsappMessagesSelect<false> | WhatsappMessagesSelect<true>;
     'developer-activity': DeveloperActivitySelect<false> | DeveloperActivitySelect<true>;
     'mail-accounts': MailAccountsSelect<false> | MailAccountsSelect<true>;
     'mail-folders': MailFoldersSelect<false> | MailFoldersSelect<true>;
@@ -2828,7 +2830,6 @@ export interface Project {
         | 'Under Construction'
         | 'Launching Soon'
         | 'Nearly Sold Out'
-        | 'Sold Out'
         | 'Nearly Complete'
         | 'Completed'
       )
@@ -3021,6 +3022,10 @@ export interface Project {
    * Any other fee or charge the developer lists.
    */
   otherFees?: string | null;
+  /**
+   * Banks the developer names as partners for buyer loans, as published, e.g. "DFCC, Commercial Bank, Sampath Bank". Shown as its own row in the Pricing section.
+   */
+  bankingPartners?: string | null;
   /**
    * Bank loan / financing options the developer offers, as published.
    */
@@ -4302,6 +4307,10 @@ export interface Neighborhood {
   id: number;
   slug: string;
   name: string;
+  /**
+   * Turn off to keep this page hidden from the live site (pages, lists, sitemap, llms.txt). A draft stays viewable at /neighborhood-preview/<slug>.
+   */
+  isPublished?: boolean | null;
   city?: string | null;
   province?: string | null;
   /**
@@ -7734,7 +7743,7 @@ export interface Lead {
    * Set automatically when the buyer asked from a floor-plan page (e.g. "Unit A · 3 bed · 1,300 SqFt").
    */
   floor_plan?: string | null;
-  source?: ('request_info' | 'brochure_request' | 'manual' | 'whatsapp') | null;
+  source?: ('request_info' | 'brochure_request' | 'whatsapp' | 'manual') | null;
   /**
    * Set when a buyer who left their number went on to WhatsApp (source WhatsApp). Empty means they did not.
    */
@@ -7832,6 +7841,38 @@ export interface EmailLog {
     | null;
   openCount?: number | null;
   firstOpenedAt?: string | null;
+  sentAt: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "whatsapp-messages".
+ */
+export interface WhatsappMessage {
+  id: number;
+  direction: 'inbound' | 'outbound';
+  phone: string;
+  text?: string | null;
+  /**
+   * text, image, document, template, ...
+   */
+  messageType?: string | null;
+  templateName?: string | null;
+  templateParams?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  status: 'received' | 'draft' | 'sent' | 'delivered' | 'read' | 'failed';
+  error?: string | null;
+  waMessageId?: string | null;
+  developer?: (number | null) | Developer;
+  lead?: (number | null) | Lead;
   sentAt: string;
   updatedAt: string;
   createdAt: string;
@@ -8153,7 +8194,7 @@ export interface Analytics {
    */
   is_bot?: boolean | null;
   /**
-   * organic_search / ai_assistant / organic_social / paid_search / paid_social / referral / direct.
+   * organic_search / ai_assistant / organic_social / paid_search / paid_social / referral / email / direct.
    */
   traffic_source?: string | null;
   referrer?: string | null;
@@ -8402,6 +8443,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'email-log';
         value: number | EmailLog;
+      } | null)
+    | ({
+        relationTo: 'whatsapp-messages';
+        value: number | WhatsappMessage;
       } | null)
     | ({
         relationTo: 'developer-activity';
@@ -8793,6 +8838,7 @@ export interface ProjectsSelect<T extends boolean = true> {
   priceValidUntil?: T;
   utilityFees?: T;
   otherFees?: T;
+  bankingPartners?: T;
   financingOptions?: T;
   legalFees?: T;
   pricingUpdated?: T;
@@ -9623,6 +9669,7 @@ export interface InteriorDesignersSelect<T extends boolean = true> {
 export interface NeighborhoodsSelect<T extends boolean = true> {
   slug?: T;
   name?: T;
+  isPublished?: T;
   city?: T;
   province?: T;
   population?: T;
@@ -9865,6 +9912,26 @@ export interface EmailLogSelect<T extends boolean = true> {
   clicks?: T;
   openCount?: T;
   firstOpenedAt?: T;
+  sentAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "whatsapp-messages_select".
+ */
+export interface WhatsappMessagesSelect<T extends boolean = true> {
+  direction?: T;
+  phone?: T;
+  text?: T;
+  messageType?: T;
+  templateName?: T;
+  templateParams?: T;
+  status?: T;
+  error?: T;
+  waMessageId?: T;
+  developer?: T;
+  lead?: T;
   sentAt?: T;
   updatedAt?: T;
   createdAt?: T;

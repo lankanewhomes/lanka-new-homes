@@ -3171,6 +3171,13 @@ const KEY_FEATURE_ICONS: Record<string, React.ComponentType<{ className?: string
   "additional-spaces": LayoutGrid,
   balcony: Sun,
   view: Eye,
+  flooring: Layers,
+  "walls-ceilings": Paintbrush,
+  "fixtures-fittings": Hammer,
+  "air-conditioning": Snowflake,
+  bedrooms: BedDouble,
+  bathrooms: Bath,
+  "maids-room": BedDouble,
 };
 
 function keyFeatureIcon(group: { key: string; label: string }): React.ComponentType<{ className?: string }> {
@@ -3249,6 +3256,19 @@ function FactLines({ text, linkFirst }: { text: string; linkFirst?: { href: stri
   return <>{text.split("\n").map((line) => line.trim()).filter(Boolean).map((line, index) => <span key={index} className="block">{linkFirst && index === 0 ? <Link href={linkFirst.href} className="overview-link">{line}</Link> : line}</span>)}</>;
 }
 
+// Items that share a `field` (the room: Doors, Bedrooms...) are merged; a value written as "a; b; c" becomes separate lines.
+function groupItemsByField(items: { field: string; value: string }[]): { field: string; values: string[] }[] {
+  const subs: { field: string; values: string[] }[] = [];
+  for (const item of items) {
+    const field = (item.field || "").trim();
+    const values = String(item.value ?? "").split(/;\s+/).map((v) => v.trim()).filter(Boolean).map((v) => v.charAt(0).toUpperCase() + v.slice(1));
+    const sub = subs.find((x) => x.field.toLowerCase() === field.toLowerCase());
+    if (sub) sub.values.push(...values);
+    else subs.push({ field, values });
+  }
+  return subs;
+}
+
 export function KeyFeaturesSection({ unitFeatures, floorPlan, floorPlanLabel = "This floor plan" }: { unitFeatures: unknown; floorPlan?: FloorPlan; floorPlanLabel?: string }) {
   const { t } = useListingT();
   const planGroup = floorPlan ? floorPlanFeatureGroup(floorPlan, floorPlanLabel) : null;
@@ -3257,6 +3277,7 @@ export function KeyFeaturesSection({ unitFeatures, floorPlan, floorPlanLabel = "
   // Every row starts collapsed (owner, 2026-09-11) — the first group used
   // to open by default.
   const [openKey, setOpenKey] = useState<string | null>(null);
+  const [openSub, setOpenSub] = useState<string | null>(null);
 
   if (!groups.length) return null;
 
@@ -3275,7 +3296,7 @@ export function KeyFeaturesSection({ unitFeatures, floorPlan, floorPlanLabel = "
                 type="button"
                 className="key-features-row-trigger"
                 aria-expanded={isOpen}
-                onClick={() => setOpenKey(isOpen ? null : group.key)}
+                onClick={() => { setOpenKey(isOpen ? null : group.key); setOpenSub(null); }}
               >
                 <Icon className="h-6 w-6" aria-hidden="true" />
                 <span>{group.label}</span>
@@ -3283,13 +3304,36 @@ export function KeyFeaturesSection({ unitFeatures, floorPlan, floorPlanLabel = "
               </button>
               {isOpen ? (
                 <div className="key-features-row-body">
-                  {group.items.flatMap((item, index) =>
-                    // A field-less value written as "a; b; c" shows as separate lines (first letter capitalised).
-                    item.field
-                      ? [<span key={`${item.field}-${item.value}-${index}`} className="key-features-item"><span className="key-features-item-label">{item.field}:</span> {item.value}</span>]
-                      : String(item.value ?? "").split(/;\s+/).map((v) => v.trim()).filter(Boolean).map((v, vi) => (
-                          <span key={`${index}-${vi}`} className="key-features-item">{v.charAt(0).toUpperCase() + v.slice(1)}</span>
-                        )),
+                  {group.items.some((item) => item.field) ? (
+                    // Fielded items (rooms inside a category, e.g. Specifications > Doors) open as nested tabs, same design as the rows above.
+                    <div className="key-features-sublist">
+                      {groupItemsByField(group.items).map((sub, si) => {
+                        const subKey = `${group.key}::${sub.field}::${si}`;
+                        const subOpen = openSub === subKey;
+                        const SubIcon = keyFeatureIcon({ key: sub.field, label: sub.field });
+                        return (
+                          <div key={subKey} className={`key-features-row key-features-subrow ${subOpen ? "open" : ""}`}>
+                            <button type="button" className="key-features-row-trigger" aria-expanded={subOpen} onClick={() => setOpenSub(subOpen ? null : subKey)}>
+                              <SubIcon className="h-5 w-5" aria-hidden="true" />
+                              <span>{sub.field || t("Other")}</span>
+                              <ChevronDown className="key-features-chevron h-5 w-5" aria-hidden="true" />
+                            </button>
+                            {subOpen ? (
+                              <div className="key-features-row-body key-features-subbody">
+                                {sub.values.map((v, vi) => <span key={`${v}-${vi}`} className="key-features-item">{v}</span>)}
+                              </div>
+                            ) : null}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    group.items.flatMap((item, index) =>
+                      // A field-less value written as "a; b; c" shows as separate lines (first letter capitalised).
+                      String(item.value ?? "").split(/;\s+/).map((v) => v.trim()).filter(Boolean).map((v, vi) => (
+                        <span key={`${index}-${vi}`} className="key-features-item">{v.charAt(0).toUpperCase() + v.slice(1)}</span>
+                      )),
+                    )
                   )}
                 </div>
               ) : null}
