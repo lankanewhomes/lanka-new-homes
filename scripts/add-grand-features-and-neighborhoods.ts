@@ -54,21 +54,25 @@ const categories = (v: V) => {
   const bathParts = v.bath.replace(/, (?![^()]*\))/g, '; ').split(/;\s+/)
   const hasFans = bedExtras.some((x) => /ceiling fans/i.test(x))
   return [
-    { key: 'specifications', label: 'Specifications', items: [
-      ...lines('Doors', v.doors, true),
+    { key: 'interior', label: 'Interior', items: [
       ...lines('Living Areas', 'ceiling fans and light fittings; TV and telephone points'),
       ...lines('Kitchen', v.pantry),
       ...lines('Bedrooms', [...(hasFans ? [] : ['ceiling fans and light fittings']), ...bedExtras].join('; ')),
-      ...lines('Bathrooms', [bathParts[2] ?? '', v.geyser].filter(Boolean).join('; ')),
-      ...lines('Air Conditioning', 'provision for air conditioning units in the living area and bedrooms'),
+      ...lines('Bathrooms', bathParts[2] ?? ''),
       ...(v.maid ? lines("Maid's Room", "maid's toilet and provision for a washing machine") : []),
     ] },
+    { key: 'building-structure', label: 'Building & Structure', items: lines('Doors & Windows', v.doors, true) },
     { key: 'finishes', label: 'Finishes', items: [
       ...lines('Flooring', `living and dining: ${tile}; bedrooms: ${pl(bedParts[0].replace(/ flooring$/i, '').toLowerCase())}; bathrooms: ${pl((bathParts[0] ?? '').replace(/ flooring$/i, '').toLowerCase())}; balconies: non-slip matte finish tiles`),
       ...lines('Walls & Ceilings', `interior walls and ceilings: plaster skim coat with paint; bathroom walls: ${pl((bathParts[1] ?? '').replace(/ walls$/i, '').toLowerCase())}; balcony walls: rough surface finish with paint`),
     ] },
+    { key: 'building-services', label: 'Building Services', items: [
+      ...lines('Air Conditioning', 'provision for air conditioning units in the living area and bedrooms'),
+      ...lines('Hot Water', v.geyser),
+      ...lines('Backup Power', 'backup generator'),
+      ...lines('Elevators', 'elevators'),
+    ] },
     { key: 'safety-security', label: 'Safety & Security', items: ['24-hour security', 'Surveillance system (CCTV)', 'Firefighting system'].map((value_other) => ({ value_other })) },
-    { key: 'building-services', label: 'Building & Services', items: ['Backup generator', 'Elevators'].map((value_other) => ({ value_other })) },
   ]
 }
 for (const p of (await payload.find({ collection: 'projects', where: { slug: { like: 'grand-' } }, limit: 50, depth: 0, overrideAccess: true })).docs as any[]) {
