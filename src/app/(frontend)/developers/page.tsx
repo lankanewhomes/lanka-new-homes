@@ -155,6 +155,11 @@ export default async function DevelopersPage() {
               enquiry directly to their team. Developers list for free, and buyers contact them directly with no
               agent in between.
             </p>
+            <p>
+              Before you buy, compare a developer&apos;s completed projects with their current ones, check the handover
+              dates and payment plans on each listing, and ask for the approved plans and deed details. Browse by
+              area or by project type to find developers building where you want to live.
+            </p>
           </div>
           <div className="guides-howto-box">
             <h3>Keep exploring</h3>

@@ -10,6 +10,7 @@ export type PopularLink = { label: string; href: string };
 export type PopularGroup = { title: string; links: PopularLink[] };
 
 const has = (value: string | undefined, needle: string) => (value ?? "").toLowerCase().includes(needle.toLowerCase());
+// Links point at the clean keyword pages (not ?type=&location= URLs, which robots.txt blocks: Ubersuggest audit 2026-11-15).
 // Same location rule as /projects?location= and /land?location=.
 const projectIn = (p: Project, place: string) => has(p.location, place) || has(p.city, place) || has(p.district, place);
 const landIn = (l: Land, place: string) => has(l.location, place) || has(l.city, place) || has(l.district, place);
@@ -39,10 +40,10 @@ export function popularSearchGroups(projects: Project[], lands: Land[]): Popular
     {
       title: "Houses",
       links: [
-        { label: "House for sale in Kandy", href: "/projects?type=House&location=Kandy", count: house("Kandy") },
-        { label: "Houses for sale in Wattala", href: "/projects?type=House&location=Wattala", count: house("Wattala") },
-        { label: "Houses for sale in Kottawa", href: "/projects?type=House&location=Kottawa", count: house("Kottawa") },
-        { label: "Houses for sale in Thalawathugoda", href: "/projects?type=House&location=Thalawathugoda", count: house("Thalawathugoda") },
+        { label: "House for sale in Kandy", href: "/projects/houses-for-sale-in-kandy", count: house("Kandy") },
+        { label: "Houses for sale in Wattala", href: "/projects?location=Wattala", count: house("Wattala") },
+        { label: "Houses for sale in Kottawa", href: "/projects/houses-for-sale-in-kottawa", count: house("Kottawa") },
+        { label: "Houses for sale in Thalawathugoda", href: "/projects/houses-for-sale-in-thalawathugoda", count: house("Thalawathugoda") },
       ],
     },
     {
@@ -51,7 +52,7 @@ export function popularSearchGroups(projects: Project[], lands: Land[]): Popular
         { label: "Apartments for sale in Colombo", href: "/projects/colombo", count: categoryCount("colombo", projects) },
         { label: "New luxury apartments in Sri Lanka", href: "/projects/luxury", count: categoryCount("luxury", projects) },
         { label: "Port City Colombo apartments", href: "/projects/port-city-colombo", count: categoryCount("port-city-colombo", projects) },
-        { label: "Apartments for sale in Dehiwala", href: "/projects?type=Apartments&location=Dehiwala", count: apartments("Dehiwala") },
+        { label: "Apartments for sale in Dehiwala", href: "/projects/houses-for-sale-in-dehiwala", count: apartments("Dehiwala") },
         { label: "Serviced apartments in Sri Lanka", href: "/projects/serviced-apartments", count: categoryCount("serviced-apartments", projects) },
       ],
     },

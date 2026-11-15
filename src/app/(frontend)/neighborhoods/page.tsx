@@ -12,7 +12,7 @@ import { buildBreadcrumbJsonLd, jsonLdScriptProps, withSocial } from "@/lib/seo"
 export const revalidate = 60;
 
 const PATH = "/neighborhoods";
-const TITLE = "Houses, Land & New Homes for Sale by Area in Sri Lanka";
+const TITLE = "Houses, Land & New Homes by Area in Sri Lanka";
 const DESCRIPTION = "Find houses, land and new homes for sale by area in Sri Lanka: Colombo 1 to 15, Maharagama, Nugegoda, Kandy, Galle and more, with the live number of listings in each.";
 
 export const metadata: Metadata = withSocial({ title: TITLE, description: DESCRIPTION, alternates: { canonical: PATH } }, { path: PATH });
@@ -83,6 +83,18 @@ export default async function NeighborhoodsHubPage() {
           </div>
         </section>
       ))}
+      <section className="fdv-box fdv-box--cream" aria-label="Choosing an area">
+        <div className="wdx-section-head" data-reveal>
+          <h2>How to choose an area.</h2>
+        </div>
+        <p data-reveal>
+          Colombo 1 to 15 suits buyers who want to be close to offices, schools and the sea, with mostly apartments. The
+          suburbs around Dehiwala, Mount Lavinia, Nugegoda, Rajagiriya and Battaramulla add more space for the money and
+          good road and rail links. Kandy, Galle and Negombo suit buyers who want a quieter city, a holiday home or a
+          rental investment. Open an area to see its new homes, land plots, developers and a short guide to daily life
+          there, then compare prices and handover dates across areas before you decide.
+        </p>
+      </section>
       {districts.length > 0 ? (
         <section className="fdv-box fdv-box--dark" aria-label="Land by district">
           <div className="wdx-section-head" data-reveal>
