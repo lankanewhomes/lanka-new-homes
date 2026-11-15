@@ -32,6 +32,12 @@ Always push finished work straight to the `cloudflare-migration` branch
 type-check and tests. GitHub CI does not run on this branch, so say so
 instead of claiming a green build; deploys are Cloudflare only.
 
+Every session (all chats and worktrees) must write its changes into the
+local folder `/Volumes/MyStorage/LNH/lankanewhomes` first, commit only its
+own files there, then push to `cloudflare-migration` (owner, 2026-11-15:
+"always update the local folder and push it after"). Scripts that change
+Supabase data are saved in that folder's `scripts/` and pushed too.
+
 ## Data / Supabase
 
 This project's live data (projects, developers, neighborhoods, hero ads,
