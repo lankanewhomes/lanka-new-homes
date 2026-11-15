@@ -33,7 +33,9 @@ const SPEC: Record<string, V> = {
 }
 const SO = (await import('../src/collections/shared-fields')) as any
 const mk = (field: string, value: string) => {
-  const it: Record<string, any> = { value_other: value }
+  // Doors and bathrooms read better as separate bullets: split at commas outside brackets.
+  const text = field === 'Doors' || field === 'Bathroom' ? value.replace(/, (?![^()]*\))/g, '; ') : value
+  const it: Record<string, any> = { value_other: text }
   const f = (SO.KEY_FEATURE_FIELD_OPTIONS as string[]).find((o) => o === field)
   if (f) it.field = f; else it.field_other = field
   return it
