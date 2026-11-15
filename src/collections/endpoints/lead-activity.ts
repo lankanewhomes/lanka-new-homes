@@ -40,6 +40,12 @@ export type DeveloperScoreRow = {
   withinHourPercent: number | null
   alertsFailed: number
   badge: boolean
+  /** Lead emails (alerts, brochure requests, reminders) sent to this developer in the period, from the email log's open / click tracking. */
+  emailsSent: number
+  /** How many of those were opened at least once. Mail apps that block images hide opens, so this can undercount. */
+  emailsOpened: number
+  /** Taps on tracked links in those emails. */
+  emailClicks: number
 }
 
 export type LeadActivityResponse = {
@@ -114,7 +120,7 @@ export const leadActivityEndpoint: Endpoint = {
     const byDeveloper = new Map<string, DeveloperScoreRow & { minutes: number[]; docs: AnyDoc[] }>()
     for (const row of leads) {
       const key = String(row.developer.id ?? 'none')
-      const entry = byDeveloper.get(key) ?? { id: row.developer.id ?? 'none', name: row.developer.name || '(no developer)', slug: row.developer.slug, leads: 0, awaiting: 0, answered: 0, avgMinutes: null, withinHourPercent: null, alertsFailed: 0, badge: false, minutes: [], docs: [] }
+      const entry = byDeveloper.get(key) ?? { id: row.developer.id ?? 'none', name: row.developer.name || '(no developer)', slug: row.developer.slug, leads: 0, awaiting: 0, answered: 0, avgMinutes: null, withinHourPercent: null, alertsFailed: 0, badge: false, emailsSent: 0, emailsOpened: 0, emailClicks: 0, minutes: [], docs: [] }
       entry.leads += 1
       if (row.status === 'new') entry.awaiting += 1
       if (row.responseMinutes !== null) {
@@ -129,6 +135,22 @@ export const leadActivityEndpoint: Endpoint = {
       ? (await req.payload.find({ collection: 'developers', where: { id: { in: developerIds } }, limit: 200, depth: 0, overrideAccess: true, req })).docs
       : []
     const badgeById = new Map(developerDocs.map((d) => [String(d.id), Boolean(((d as unknown as AnyDoc).response_stats as AnyDoc | undefined)?.responds_within_hour)]))
+
+    // Did the developer open the lead emails? Counted from the email log (owner, 2026-11-15: "track if the email is opened"). Only tracked
+    // emails about a lead: the alert, a brochure request and the reminders.
+    if (developerIds.length) {
+      const sent = await req.payload
+        .find({ collection: 'email-log' as never, where: { and: [{ sentAt: { greater_than_equal: since } }, { developer: { in: developerIds } }, { trackId: { exists: true } }] } as never, select: { developer: true, subject: true, openCount: true, clickCount: true } as never, limit: 3000, depth: 0, overrideAccess: true, req })
+        .catch(() => ({ docs: [] as unknown[] }))
+      for (const doc of sent.docs as AnyDoc[]) {
+        if (!/enquiry|inquiry|still waiting for a reply|brochure request|new lead/i.test(text(doc.subject))) continue
+        const entry = byDeveloper.get(String(relId(doc.developer)))
+        if (!entry) continue
+        entry.emailsSent += 1
+        if (Number(doc.openCount) > 0) entry.emailsOpened += 1
+        entry.emailClicks += Number(doc.clickCount) || 0
+      }
+    }
 
     const developers: DeveloperScoreRow[] = Array.from(byDeveloper.values())
       .map(({ minutes, docs: _unused, ...entry }) => {

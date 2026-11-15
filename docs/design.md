@@ -738,7 +738,12 @@ what counts; changing the status in the CMS still works too
 lead in the period with its alert trail (`alert_log`: channel, recipient,
 sent/failed, live or test routing), status, first reply channel and
 minutes, and a per-developer scoreboard (leads, awaiting, answered, avg
-response, within-1-hour %, failed alerts, badge). Rows expand to the full
+response, within-1-hour %, failed alerts, badge). The scoreboard also shows
+whether each developer opens the lead emails (2026-11-15): Emails sent,
+Opened ("7 of 16"), Link clicks and an Email reading pill (green "Opens
+every one", amber "Opens some" / "Opens hidden, links clicked", red "Never
+opened"), counted from the email log's open and click tracking for alert,
+brochure-request and reminder emails in the period. Rows expand to the full
 trail. The Leads list also shows `first_reply_via`, `response_minutes` and
 `alert_summary` as columns. **Origin:** `/api/leads` stores where the
 buyer was (`origin`: country / region / city from Vercel's `x-vercel-ip-*`
