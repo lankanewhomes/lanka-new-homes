@@ -20,7 +20,9 @@ const itemsFn = () => [
 ]
 const ROOMS = ['Doors', 'Living Areas', 'Kitchen', 'Bedrooms & Closets', 'Bathroom', 'Heating, Cooling & Systems', 'Additional Spaces', 'Balcony']
 // Apartment specifications read off each project's "Apartment Specifications" images on grandapartments.lk (2026-11-15).
-type V = { doors: string; living: string; pantry: string; bed: string; bath: string; maid: boolean; geyser: string }
+// Parking wording as published on grandapartments.lk (highlights); only where the page says so.
+const PARKING: Record<string, string> = { 'grand-capital-colombo-09': 'ground level plus three parking levels', 'grand-court-colombo-14': 'ground and basement parking' }
+type V = { slug?: string; doors: string; living: string; pantry: string; bed: string; bath: string; maid: boolean; geyser: string }
 const SPEC: Record<string, V> = {
   'grand-legacy-colombo-03': { doors: 'Solid flush doors with quality ironmongery; powder-coated aluminium sliding balcony doors and windows', living: 'Elegant vitrified porcelain tile flooring', pantry: 'Modern pantry cupboards with gas hob, integrated hood and stainless steel sink; provision for electric geyser', bed: 'Elegant vitrified porcelain tile flooring; TV and telephone points in the master bedroom', bath: 'Non-slip matte tile flooring, vitrified porcelain tile walls, reputed-brand fixtures (American Standard or equivalent) with glass shower partition', maid: true, geyser: 'Electric geyser hot water supply in bathrooms' },
   'grand-central-colombo-03': { doors: 'Solid flush doors with quality ironmongery; powder-coated aluminium sliding balcony doors and windows', living: 'Elegant vitrified porcelain tile flooring', pantry: 'Modern pantry cupboards with gas hob, integrated hood and stainless steel sink; provision for electric geyser', bed: 'Elegant vitrified porcelain tile flooring; TV and telephone points in the master bedroom', bath: 'Non-slip matte tile flooring, vitrified porcelain tile walls, reputed-brand fixtures (American Standard or equivalent) with glass shower partition', maid: true, geyser: 'Electric geyser hot water supply in bathrooms' },
@@ -61,7 +63,11 @@ const categories = (v: V) => {
       ...lines('Bathrooms', bathParts[2] ?? ''),
       ...(v.maid ? lines("Maid's Room", "maid's toilet and provision for a washing machine") : []),
     ] },
-    { key: 'building-structure', label: 'Building & Structure', items: lines('Doors & Windows', v.doors, true) },
+    { key: 'building-structure', label: 'Building & Structure', items: [
+      ...lines('Doors & Windows', v.doors, true),
+      ...lines('Elevators', 'elevators'),
+      ...(PARKING[v.slug] ? lines('Parking', PARKING[v.slug]) : []),
+    ] },
     { key: 'finishes', label: 'Finishes', items: [
       ...lines('Flooring', `living and dining: ${tile}; bedrooms: ${pl(bedParts[0].replace(/ flooring$/i, '').toLowerCase())}; bathrooms: ${pl((bathParts[0] ?? '').replace(/ flooring$/i, '').toLowerCase())}; balconies: non-slip matte finish tiles`),
       ...lines('Walls & Ceilings', `interior walls and ceilings: plaster skim coat with paint; bathroom walls: ${pl((bathParts[1] ?? '').replace(/ walls$/i, '').toLowerCase())}; balcony walls: rough surface finish with paint`),
@@ -70,7 +76,6 @@ const categories = (v: V) => {
       ...lines('Air Conditioning', 'provision for air conditioning units in the living area and bedrooms'),
       ...lines('Hot Water', v.geyser),
       ...lines('Backup Power', 'backup generator'),
-      ...lines('Elevators', 'elevators'),
     ] },
     { key: 'safety-security', label: 'Safety & Security', items: ['24-hour security', 'Surveillance system (CCTV)', 'Firefighting system'].map((value_other) => ({ value_other })) },
   ]
@@ -78,7 +83,7 @@ const categories = (v: V) => {
 for (const p of (await payload.find({ collection: 'projects', where: { slug: { like: 'grand-' } }, limit: 50, depth: 0, overrideAccess: true })).docs as any[]) {
   if (!SPEC[p.slug]) continue
   const uf = ((p.unitFeatures ?? []) as any[]).filter((g) => !['specifications', 'finishes', 'safety-security', 'building-services'].includes(g.key) && !ROOMS.includes(g.key_other ?? '')).map((g) => ({ key: g.key, label: g.label, items: (g.items ?? []).map((i: any) => { const { id: _id, ...rest } = i; return rest }) }))
-  if (SPEC[p.slug]) uf.unshift(...categories(SPEC[p.slug]))
+  if (SPEC[p.slug]) uf.unshift(...categories({ ...SPEC[p.slug], slug: p.slug }))
   const data: Record<string, any> = { unitFeatures: uf }
   let nbNote = '-'
   if (NB[p.slug]) {
