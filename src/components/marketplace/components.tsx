@@ -119,6 +119,7 @@ import {
   Scissors,
   Armchair,
   DoorOpen,
+  Globe,
   Trash2,
   Bug,
   WashingMachine,
@@ -3273,6 +3274,14 @@ function FactLines({ text, linkFirst }: { text: string; linkFirst?: { href: stri
 // Icon for a room / topic column inside an open Key Features category (owner, 2026-11-15). Exact tab icons first, then keywords, so every
 // stored field name (Flooring, Plumbing, Fire Protection System, Road, Electricity...) gets a plain line icon instead of a generic one.
 const FEATURE_FIELD_ICON_RULES: [RegExp, React.ComponentType<{ className?: string }>][] = [
+  // Ownership & Services topics
+  [/warrant|guarantee/i, ShieldCheck],
+  [/maintenance|manage|supervis|repair/i, Wrench],
+  [/resident|owner app|privilege|buyer|eligib/i, Users],
+  [/purchase|reservation|rental|return|payment|fee|deposit/i, Wallet],
+  [/handover|handing/i, Gift],
+  [/foreign|overseas|expat|non-resident/i, Globe],
+  [/ownership|freehold|leasehold|title|deed|legal|required doc/i, ScrollText],
   [/fire/i, Flame],
   [/hot water|geyser|heater/i, Flame],
   [/door|window/i, DoorOpen],
@@ -3409,11 +3418,19 @@ export function OwnershipServicesSection({ ownershipServices, title = "Ownership
               </button>
               {isOpen ? (
                 <div className="key-features-row-body">
-                  {group.items.map((item, index) => (
-                    <span key={`${item.field}-${index}`} className="key-features-item">
-                      {item.field ? <><span className="key-features-item-label">{item.field}:</span> {item.value}</> : item.value}
-                    </span>
-                  ))}
+                  {group.items.some((item) => item.field) ? (
+                    groupItemsByField(group.items).map((block, bi) => {
+                      const BlockIcon = featureFieldIcon(block.field);
+                      return (
+                        <div key={`${block.field}-${bi}`} className="key-features-block">
+                          <h3 className="key-features-block-title"><BlockIcon className="h-5 w-5" aria-hidden="true" />{block.field || t("Other")}</h3>
+                          {block.values.map((v, vi) => <span key={`${v}-${vi}`} className="key-features-item">{v}</span>)}
+                        </div>
+                      );
+                    })
+                  ) : (
+                    group.items.map((item, index) => <span key={`${item.field}-${index}`} className="key-features-item">{item.value}</span>)
+                  )}
                 </div>
               ) : null}
             </div>

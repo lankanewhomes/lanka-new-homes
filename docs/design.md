@@ -2837,3 +2837,11 @@ a hairline underline, and the lines beneath, all on a very light grey box (`#faf
 same day). Items with no field (e.g. Safety & Security) show as plain lines. A value written as `a; b; c` shows as separate lines. Styles: `.key-features-block`,
 `.key-features-block-title`. Grand Apartments is set up this way (`scripts/add-grand-features-and-neighborhoods.ts`); the Postgres enum for the category key was extended
 with `interior` and `building-structure` (projects and lands).
+
+## Ownership & Services uses the same room-box design (owner, 2026-11-15)
+
+`OwnershipServicesSection` (project, land "Services", floor-plan and preview pages) keeps its green shell and its two accordion rows (Ownership & Purchase, After-Sales & Services).
+An open row now shows its topics (Purchase Requirements, Maintenance, Buyer Eligibility, Resident Services, Foreign Ownership, Required Documents, Handover Support, Property
+Management, Legal Requirements, Freehold / Leasehold, Title Information, Warranty...) as the same light-grey boxes as Key Features (`.key-features-block`), each with a plain line icon
+from `featureFieldIcon` (Wallet = purchase, Users = buyer / resident, Wrench = maintenance / management, ScrollText = title / legal, Gift = handover, Globe = foreign ownership,
+ShieldCheck = warranty). Rows without topic names keep plain lines.
