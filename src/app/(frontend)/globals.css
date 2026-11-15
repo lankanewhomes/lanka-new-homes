@@ -5061,6 +5061,39 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   color: #1e1e1e;
 }
 
+/* Key Features (owner, 2026-11-15): an open row groups its lines under room / area headings (Doors, Bedrooms, Living Areas…), same look as before otherwise. */
+.key-features-row-body.key-features-grouped {
+  gap: 22px 24px;
+}
+.key-features-block {
+  display: grid;
+  align-content: start;
+  gap: 2px;
+}
+.key-features-block-title {
+  position: relative;
+  margin: 0 0 6px 6px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e4e0d6;
+  font-family: var(--font-ref-sans);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.3;
+  color: #1f1f1f;
+}
+.key-features-block-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 28px;
+  height: 2px;
+  background: #f47b36;
+}
+@media (max-width: 1000px) {
+  .key-features-row-body.key-features-grouped { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
 .amenities-showcase-shell {
   width: 100%;
   margin: 0;

@@ -3235,6 +3235,21 @@ function FactLines({ text, linkFirst }: { text: string; linkFirst?: { href: stri
   return <>{text.split("\n").map((line) => line.trim()).filter(Boolean).map((line, index) => <span key={index} className="block">{linkFirst && index === 0 ? <Link href={linkFirst.href} className="overview-link">{line}</Link> : line}</span>)}</>;
 }
 
+
+// Key Features rows open into one block per room / area (owner, 2026-11-15: "categorize them: doors, bedrooms, living areas"). Items that share a
+// `field` are merged under one heading; a value written as "a; b; c" becomes separate lines. Lists with no field names keep the flat layout.
+function groupItemsByField(items: { field: string; value: string }[]): { field: string; values: string[] }[] {
+  const cards: { field: string; values: string[] }[] = [];
+  for (const item of items) {
+    const field = (item.field || "").trim();
+    const values = String(item.value ?? "").split(/;\s+/).map((v) => v.trim()).filter(Boolean).map((v) => v.charAt(0).toUpperCase() + v.slice(1));
+    const card = cards.find((c) => c.field.toLowerCase() === field.toLowerCase());
+    if (card) card.values.push(...values);
+    else cards.push({ field, values });
+  }
+  return cards;
+}
+
 export function KeyFeaturesSection({ unitFeatures, floorPlan, floorPlanLabel = "This floor plan" }: { unitFeatures: unknown; floorPlan?: FloorPlan; floorPlanLabel?: string }) {
   const { t } = useListingT();
   const planGroup = floorPlan ? floorPlanFeatureGroup(floorPlan, floorPlanLabel) : null;
@@ -3268,13 +3283,22 @@ export function KeyFeaturesSection({ unitFeatures, floorPlan, floorPlanLabel = "
                 <ChevronDown className="key-features-chevron h-6 w-6" aria-hidden="true" />
               </button>
               {isOpen ? (
-                <div className="key-features-row-body">
-                  {group.items.map((item, index) => (
-                    <span key={`${item.field}-${item.value}-${index}`} className="key-features-item">
-                      {item.field ? <><span className="key-features-item-label">{item.field}:</span> {item.value}</> : item.value}
-                    </span>
-                  ))}
-                </div>
+                group.items.some((item) => item.field) ? (
+                  <div className="key-features-row-body key-features-grouped">
+                    {groupItemsByField(group.items).map((block, index) => (
+                      <div key={`${block.field}-${index}`} className="key-features-block">
+                        {block.field ? <h3 className="key-features-block-title">{block.field}</h3> : null}
+                        {block.values.map((value, vi) => <span key={`${value}-${vi}`} className="key-features-item">{value}</span>)}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="key-features-row-body">
+                    {group.items.map((item, index) => (
+                      <span key={`${item.field}-${item.value}-${index}`} className="key-features-item">{item.value}</span>
+                    ))}
+                  </div>
+                )
               ) : null}
             </div>
           );

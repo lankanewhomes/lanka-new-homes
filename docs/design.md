@@ -2820,3 +2820,11 @@ then opens the developer's `wa.me` link with the enquiry. If saving fails the bu
 **Contact windows (owner, 2026-11-09):** the contact / request-info / brochure / inquiry and WhatsApp windows are one family: the title band ("Request information", "Chat on WhatsApp", "Download Brochure") has a light grey background with a thin line above and below, the body is plain white with no grid, the listing name is followed by its location and city, and on phones the last button has only a small gap beneath it (plus the iPhone safe area).
 
 **Search chips (owner, 2026-11-09):** `SEARCH_QUICK_CHIPS` (src/lib/search-chips.ts) lists the hero category links plus Lakefront, Apartments and Condominiums. The live order comes from `/api/search/chips`: chips with the most listings first, chips with no listings hidden, at most 12. They show under the Search button of the phone pop-up (nav icon and home hero) and, on desktop, in a dropdown when the nav or hero search box is clicked and empty.
+
+## Key Features rows grouped by room (owner, 2026-11-15)
+
+On project pages the Key Features accordion (`KeyFeaturesSection`) is unchanged: same shell, dotted pattern, icon rows and open state. What changed is the open
+row's body: items that share a `field` (Doors, Bedrooms & Closets, Living Areas, Kitchen, Bathroom...) are merged under one plain heading, and a value written
+as `a; b; c` becomes separate lines (first letter capitalised). Heading: 16px, weight 400, ink `#1f1f1f`, hairline `#e4e0d6` underline with a short 28px
+brand-orange `#f47b36` bar. No cards, boxes, icons or uppercase (the owner rejected a card-grid version the same day). Lists with no field names (older
+listings) keep the flat layout. Styles: `.key-features-grouped`, `.key-features-block`, `.key-features-block-title` in `globals.css`.
