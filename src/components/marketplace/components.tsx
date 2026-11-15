@@ -3182,7 +3182,8 @@ const KEY_FEATURE_ICONS: Record<string, React.ComponentType<{ className?: string
   "hot-water": Droplet,
   "backup-power": Zap,
   elevators: Building2,
-  utilities: Plug,
+  "doors-windows": DoorOpen,
+  parking: Car,
   bathrooms: Bath,
   "maids-room": BedDouble,
 };
@@ -3284,7 +3285,6 @@ export function KeyFeaturesSection({ unitFeatures, floorPlan, floorPlanLabel = "
   // Every row starts collapsed (owner, 2026-09-11) — the first group used
   // to open by default.
   const [openKey, setOpenKey] = useState<string | null>(null);
-  const [openSub, setOpenSub] = useState<string | null>(null);
 
   if (!groups.length) return null;
 
@@ -3303,7 +3303,7 @@ export function KeyFeaturesSection({ unitFeatures, floorPlan, floorPlanLabel = "
                 type="button"
                 className="key-features-row-trigger"
                 aria-expanded={isOpen}
-                onClick={() => { setOpenKey(isOpen ? null : group.key); setOpenSub(null); }}
+                onClick={() => setOpenKey(isOpen ? null : group.key)}
               >
                 <Icon className="h-6 w-6" aria-hidden="true" />
                 <span>{group.label}</span>
@@ -3312,28 +3312,16 @@ export function KeyFeaturesSection({ unitFeatures, floorPlan, floorPlanLabel = "
               {isOpen ? (
                 <div className="key-features-row-body">
                   {group.items.some((item) => item.field) ? (
-                    // Fielded items (rooms inside a category, e.g. Specifications > Doors) open as nested tabs, same design as the rows above.
-                    <div className="key-features-sublist">
-                      {groupItemsByField(group.items).map((sub, si) => {
-                        const subKey = `${group.key}::${sub.field}::${si}`;
-                        const subOpen = openSub === subKey;
-                        const SubIcon = keyFeatureIcon({ key: sub.field, label: sub.field });
-                        return (
-                          <div key={subKey} className={`key-features-row key-features-subrow ${subOpen ? "open" : ""}`}>
-                            <button type="button" className="key-features-row-trigger" aria-expanded={subOpen} onClick={() => setOpenSub(subOpen ? null : subKey)}>
-                              <SubIcon className="h-5 w-5" aria-hidden="true" />
-                              <span>{sub.field || t("Other")}</span>
-                              <ChevronDown className="key-features-chevron h-5 w-5" aria-hidden="true" />
-                            </button>
-                            {subOpen ? (
-                              <div className="key-features-row-body key-features-subbody">
-                                {sub.values.map((v, vi) => <span key={`${v}-${vi}`} className="key-features-item">{v}</span>)}
-                              </div>
-                            ) : null}
-                          </div>
-                        );
-                      })}
-                    </div>
+                    // Fielded items (rooms inside a category, e.g. Interior > Doors) show as columns under plain headings.
+                    groupItemsByField(group.items).map((block, bi) => (
+                      <div key={`${block.field}-${bi}`} className="key-features-block">
+                        <h3 className="key-features-block-title">
+                          {(() => { const BlockIcon = keyFeatureIcon({ key: block.field, label: block.field }); return <BlockIcon className="h-5 w-5" aria-hidden="true" />; })()}
+                          {block.field || t("Other")}
+                        </h3>
+                        {block.values.map((v, vi) => <span key={`${v}-${vi}`} className="key-features-item">{v}</span>)}
+                      </div>
+                    ))
                   ) : (
                     group.items.flatMap((item, index) =>
                       // A field-less value written as "a; b; c" shows as separate lines (first letter capitalised).

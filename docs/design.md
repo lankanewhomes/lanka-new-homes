@@ -2821,13 +2821,14 @@ then opens the developer's `wa.me` link with the enquiry. If saving fails the bu
 
 **Search chips (owner, 2026-11-09):** `SEARCH_QUICK_CHIPS` (src/lib/search-chips.ts) lists the hero category links plus Lakefront, Apartments and Condominiums. The live order comes from `/api/search/chips`: chips with the most listings first, chips with no listings hidden, at most 12. They show under the Search button of the phone pop-up (nav icon and home hero) and, on desktop, in a dropdown when the nav or hero search box is clicked and empty.
 
-## Key Features: categories with nested room tabs (owner, 2026-11-15)
+## Key Features: category rows, room columns inside (owner, 2026-11-15)
 
-The Key Features accordion keeps its normal look (shell, dotted pattern, icon rows, open state). Rows are categories (`specifications`, `finishes`, `safety-security`,
-`building-services`, ...). When a category's items carry a `field` (the room or topic: Doors, Living Areas, Kitchen, Bedrooms, Bathrooms, Air Conditioning, Maid's Room,
-Flooring, Walls & Ceilings), the open category shows those fields as nested tabs of the same design one step smaller (`.key-features-sublist` / `.key-features-subrow`,
-14px, 20px icons, own open state; closed sub-rows must not inherit the parent's open colour). Items with no field (Safety & Security, Building & Services) show as plain lines.
-Each tab has a plain single-colour Lucide line icon from `KEY_FEATURE_ICONS` (looked up by the label slug: `doors`, `living-areas`, `kitchen`, `bedrooms`, `bathrooms`,
-`air-conditioning`, `flooring`, `walls-ceilings`, `maids-room`...). No cards, colour, emoji or orange rule lines (the owner rejected card and orange-underline versions the same
-day). A value written as `a; b; c` shows as separate lines with a capital first letter. Grand Apartments is the first listing set up this way
-(`scripts/add-grand-features-and-neighborhoods.ts`). Add more categories (e.g. `outdoor`, `recreation-wellness`) whenever a listing needs them.
+The Key Features accordion keeps its normal look (shell, dotted pattern, icon rows, open state). Rows are categories from `KEY_FEATURE_CATEGORY_LABELS`
+(General Features, Building & Structure, Building Services, Indoor Features, Outdoor Features, Interior, Finishes, Utilities & Services, Safety & Security,
+Sustainability, plus older Specifications / Recreation & Wellness / Accessibility / Road & Access). When a category's items carry a `field` (the room or topic:
+Doors & Windows, Living Areas, Kitchen, Bedrooms, Bathrooms, Flooring, Walls & Ceilings, Air Conditioning, Hot Water, Elevators, Parking...), the open row shows
+those fields as columns (3 across, 2 under 1000px): a plain 16px heading with a single-colour Lucide line icon (`KEY_FEATURE_ICONS`, looked up by label slug),
+a hairline `#e4e0d6` underline, and the lines beneath. NO orange rules, cards, colour or emoji (the owner rejected card, orange-underline and nested-tab versions the
+same day). Items with no field (e.g. Safety & Security) show as plain lines. A value written as `a; b; c` shows as separate lines. Styles: `.key-features-block`,
+`.key-features-block-title`. Grand Apartments is set up this way (`scripts/add-grand-features-and-neighborhoods.ts`); the Postgres enum for the category key was extended
+with `interior` and `building-structure` (projects and lands).

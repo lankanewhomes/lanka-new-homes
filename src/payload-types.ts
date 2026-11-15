@@ -3416,17 +3416,19 @@ export interface Project {
     | {
         key?:
           | (
-              | 'specifications'
-              | 'finishes'
               | 'general-features'
-              | 'safety-security'
-              | 'indoor'
+              | 'building-structure'
               | 'building-services'
+              | 'indoor'
               | 'outdoor'
-              | 'recreation-wellness'
-              | 'sustainability'
-              | 'accessibility'
+              | 'interior'
+              | 'finishes'
               | 'utilities'
+              | 'safety-security'
+              | 'sustainability'
+              | 'specifications'
+              | 'recreation-wellness'
+              | 'accessibility'
               | 'road-access'
             )
           | null;
@@ -7050,17 +7052,19 @@ export interface Land {
     | {
         key?:
           | (
-              | 'specifications'
-              | 'finishes'
               | 'general-features'
-              | 'safety-security'
-              | 'indoor'
+              | 'building-structure'
               | 'building-services'
+              | 'indoor'
               | 'outdoor'
-              | 'recreation-wellness'
-              | 'sustainability'
-              | 'accessibility'
+              | 'interior'
+              | 'finishes'
               | 'utilities'
+              | 'safety-security'
+              | 'sustainability'
+              | 'specifications'
+              | 'recreation-wellness'
+              | 'accessibility'
               | 'road-access'
             )
           | null;
