@@ -10,7 +10,7 @@ const apply = process.argv.includes('--apply')
 const cfg = ((await import('../payload.config')) as any).default
 const { getPayload } = await import('payload')
 const payload = await getPayload({ config: cfg })
-const NB: Record<string, string> = { 'grand-oasis-colombo-13': 'colombo-13', 'grand-legacy-colombo-03': 'colombo-03', 'grand-central-colombo-03': 'colombo-03', 'grand-heights-colombo-04': 'colombo-04', 'grand-capital-colombo-09': 'colombo-09' }
+const NB: Record<string, string> = { 'grand-oasis-colombo-13': 'colombo-13', 'grand-legacy-colombo-03': 'kollupitiya', 'grand-central-colombo-03': 'kollupitiya', 'grand-heights-colombo-04': 'bambalapitiya', 'grand-capital-colombo-09': 'dematagoda' }
 const itemsFn = () => [
   mk('Heating, Cooling & Systems', 'Backup generator'),
   mk('Heating, Cooling & Systems', 'Firefighting system'),
