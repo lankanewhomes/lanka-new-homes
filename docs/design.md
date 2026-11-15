@@ -2821,10 +2821,11 @@ then opens the developer's `wa.me` link with the enquiry. If saving fails the bu
 
 **Search chips (owner, 2026-11-09):** `SEARCH_QUICK_CHIPS` (src/lib/search-chips.ts) lists the hero category links plus Lakefront, Apartments and Condominiums. The live order comes from `/api/search/chips`: chips with the most listings first, chips with no listings hidden, at most 12. They show under the Search button of the phone pop-up (nav icon and home hero) and, on desktop, in a dropdown when the nav or hero search box is clicked and empty.
 
-## Key Features rows grouped by room (owner, 2026-11-15)
+## Key Features: one tab per room (owner, 2026-11-15)
 
-On project pages the Key Features accordion (`KeyFeaturesSection`) is unchanged: same shell, dotted pattern, icon rows and open state. What changed is the open
-row's body: items that share a `field` (Doors, Bedrooms & Closets, Living Areas, Kitchen, Bathroom...) are merged under one plain heading, and a value written
-as `a; b; c` becomes separate lines (first letter capitalised). Heading: 16px, weight 400, ink `#1f1f1f`, hairline `#e4e0d6` underline with a short 28px
-brand-orange `#f47b36` bar. No cards, boxes, icons or uppercase (the owner rejected a card-grid version the same day). Lists with no field names (older
-listings) keep the flat layout. Styles: `.key-features-grouped`, `.key-features-block`, `.key-features-block-title` in `globals.css`.
+A project's Key Features accordion keeps its normal look (shell, dotted pattern, icon rows, open state). Room-by-room specifications are stored as one group per room
+(Doors, Living Areas, Kitchen, Bedrooms & Closets, Bathroom, Heating, Cooling & Systems, Additional Spaces, Balcony) so each room is its own tab, followed by
+Building & Services. Each room tab has a plain single-colour Lucide line icon from `KEY_FEATURE_ICONS` (looked up by the group's label slug: `doors`, `living-areas`,
+`kitchen`, `bedrooms-closets`, `bathroom`, `heating-cooling-systems`, `additional-spaces`, `balcony`), same 24px/1.5 stroke as the other rows. No cards, no colour,
+no emoji, no orange rule lines under headings (the owner rejected both a card version and an orange-underlined heading version the same day). A value on a
+field-less item written as `a; b; c` shows as separate lines with a capitalised first letter. Items that carry a `field` keep the "Field: value" line.

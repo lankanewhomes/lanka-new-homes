@@ -18,6 +18,7 @@ const itemsFn = () => [
   mk('Smart Home & Security', '24-hour security'),
   mk('Smart Home & Security', 'Surveillance system (CCTV)'),
 ]
+const ROOMS = ['Doors', 'Living Areas', 'Kitchen', 'Bedrooms & Closets', 'Bathroom', 'Heating, Cooling & Systems', 'Additional Spaces', 'Balcony']
 // Apartment specifications read off each project's "Apartment Specifications" images on grandapartments.lk (2026-11-15).
 type V = { doors: string; living: string; pantry: string; bed: string; bath: string; maid: boolean; geyser: string }
 const SPEC: Record<string, V> = {
@@ -40,24 +41,26 @@ const mk = (field: string, value: string) => {
   if (f) it.field = f; else it.field_other = field
   return it
 }
-const specGroup = (v: V) => ({
-  key: 'specifications', label: 'Apartment Specifications',
-  items: [
-    mk('Doors', v.doors),
-    mk('Living Areas', `${v.living}; ceiling fans and light fittings; TV and telephone points; provision for air conditioning units`),
-    mk('Kitchen', `${v.pantry}`),
-    mk('Bedrooms & Closets', `${v.bed}; ceiling fans and light fittings; provision for air conditioning units`),
-    mk('Bathroom', v.bath),
-    mk('Heating, Cooling & Systems', v.geyser),
-    ...(v.maid ? [mk('Additional Spaces', "Maid's room with maid's toilet and provision for a washing machine")] : []),
-    mk('Balcony', 'Non-slip matte finish tile flooring'),
-  ],
-})
+// One Key Features tab per room (owner, 2026-11-15: "categorize them: doors, bedrooms, living areas ... same tab design").
+const room = (label: string, value: string, split = false) => {
+  const text = split ? value.replace(/, (?![^()]*\))/g, '; ') : value
+  return { key_other: label, label, items: text.split(/;\s+/).map((t) => t.trim()).filter(Boolean).map((t) => ({ value_other: t.charAt(0).toUpperCase() + t.slice(1) })) }
+}
+const specGroups = (v: V) => [
+  room('Doors', v.doors, true),
+  room('Living Areas', `${v.living}; ceiling fans and light fittings; TV and telephone points; provision for air conditioning units`),
+  room('Kitchen', v.pantry),
+  room('Bedrooms & Closets', `${v.bed}; ceiling fans and light fittings; provision for air conditioning units`),
+  room('Bathroom', v.bath, true),
+  room('Heating, Cooling & Systems', v.geyser),
+  ...(v.maid ? [room('Additional Spaces', "Maid's room with maid's toilet and provision for a washing machine")] : []),
+  room('Balcony', 'Non-slip matte finish tile flooring'),
+]
 for (const p of (await payload.find({ collection: 'projects', where: { slug: { like: 'grand-' } }, limit: 50, depth: 0, overrideAccess: true })).docs as any[]) {
   if (!SPEC[p.slug]) continue
-  const uf = ((p.unitFeatures ?? []) as any[]).filter((g) => g.key !== 'building-services' && g.key !== 'specifications').map((g) => ({ key: g.key, label: g.label, items: (g.items ?? []).map((i: any) => { const { id: _id, ...rest } = i; return rest }) }))
-  if (SPEC[p.slug]) uf.unshift(specGroup(SPEC[p.slug]))
-  uf.push({ key: 'building-services', label: 'Building & Services', items: itemsFn() })
+  const uf = ((p.unitFeatures ?? []) as any[]).filter((g) => g.key !== 'building-services' && g.key !== 'specifications' && !ROOMS.includes(g.key_other ?? '')).map((g) => ({ key: g.key, label: g.label, items: (g.items ?? []).map((i: any) => { const { id: _id, ...rest } = i; return rest }) }))
+  if (SPEC[p.slug]) uf.unshift(...specGroups(SPEC[p.slug]))
+  uf.push({ key: 'building-services', label: 'Building & Services', items: ['Backup generator', 'Elevators', 'Firefighting system', '24-hour security', 'Surveillance system (CCTV)'].map((value_other) => ({ value_other })) })
   const data: Record<string, any> = { unitFeatures: uf }
   let nbNote = '-'
   if (NB[p.slug]) {
