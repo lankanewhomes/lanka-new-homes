@@ -82,7 +82,7 @@ const categories = (v: V) => {
 }
 for (const p of (await payload.find({ collection: 'projects', where: { slug: { like: 'grand-' } }, limit: 50, depth: 0, overrideAccess: true })).docs as any[]) {
   if (!SPEC[p.slug]) continue
-  const uf = ((p.unitFeatures ?? []) as any[]).filter((g) => !['specifications', 'finishes', 'safety-security', 'building-services'].includes(g.key) && !ROOMS.includes(g.key_other ?? '')).map((g) => ({ key: g.key, label: g.label, items: (g.items ?? []).map((i: any) => { const { id: _id, ...rest } = i; return rest }) }))
+  const uf = ((p.unitFeatures ?? []) as any[]).filter((g) => !['specifications', 'interior', 'building-structure', 'finishes', 'safety-security', 'building-services'].includes(g.key) && !ROOMS.includes(g.key_other ?? '')).map((g) => ({ key: g.key, label: g.label, items: (g.items ?? []).map((i: any) => { const { id: _id, ...rest } = i; return rest }) }))
   if (SPEC[p.slug]) uf.unshift(...categories({ ...SPEC[p.slug], slug: p.slug }))
   const data: Record<string, any> = { unitFeatures: uf }
   let nbNote = '-'
