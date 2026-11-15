@@ -26,20 +26,28 @@ const colomboHour = (d: Date) => Number(new Intl.DateTimeFormat('en-GB', { timeZ
 
 export type ReminderResult = { id: string | number; reminder: number; to?: string; status: 'sent' | 'would-send' | 'skipped' | 'failed'; why?: string }
 
-export async function sendLeadReminders(payload: Payload, opts: { now?: Date; enabled?: boolean } = {}): Promise<{ enabled: boolean; checked: number; results: ReminderResult[] }> {
+// `onlyIds` is for a one-off manual send asked for by the owner (scripts/_send-lead-reminders-now.ts): it limits the run to those leads and
+// skips the working-hours, 12 h / 48 h and 5-day timing rules. Every other guard still applies (still "New", not answered, at most two
+// reminders ever, never twice within 6 hours, test leads skipped), so a lead cannot be reminded twice by mistake.
+export async function sendLeadReminders(payload: Payload, opts: { now?: Date; enabled?: boolean; onlyIds?: (string | number)[] } = {}): Promise<{ enabled: boolean; checked: number; results: ReminderResult[] }> {
   const now = opts.now ?? new Date()
   const enabled = opts.enabled ?? process.env.LEAD_REMINDERS_ENABLED === 'true'
   const results: ReminderResult[] = []
   const hour = colomboHour(now)
-  if (hour < SEND_FROM_HOUR || hour >= SEND_UNTIL_HOUR || colomboDay(now) === 'Sun') return { enabled, checked: 0, results }
+  const manual = Array.isArray(opts.onlyIds) && opts.onlyIds.length > 0
+  if (!manual && (hour < SEND_FROM_HOUR || hour >= SEND_UNTIL_HOUR || colomboDay(now) === 'Sun')) return { enabled, checked: 0, results }
 
   const found = await payload.find({
     collection: 'leads',
     where: {
       and: [
         { status: { equals: 'new' } },
-        { createdAt: { greater_than: new Date(now.getTime() - 5 * 24 * 3600 * 1000).toISOString() } },
-        { createdAt: { less_than: new Date(now.getTime() - REMINDER_AFTER_HOURS[0] * 3600 * 1000).toISOString() } },
+        ...(manual
+          ? [{ id: { in: opts.onlyIds } }]
+          : [
+              { createdAt: { greater_than: new Date(now.getTime() - 5 * 24 * 3600 * 1000).toISOString() } },
+              { createdAt: { less_than: new Date(now.getTime() - REMINDER_AFTER_HOURS[0] * 3600 * 1000).toISOString() } },
+            ]),
         { alert_summary: { exists: true } },
       ],
     },
@@ -59,7 +67,7 @@ export async function sendLeadReminders(payload: Payload, opts: { now?: Date; en
     if (afterHours === undefined) continue
     const created = new Date(String(lead.createdAt))
     const hoursWaiting = (now.getTime() - created.getTime()) / 3600000
-    if (hoursWaiting < afterHours) continue
+    if (!manual && hoursWaiting < afterHours) continue
     if (lead.first_response_at || (Array.isArray(lead.reply_events) && lead.reply_events.length)) continue
     // A reminder for the same lead is never sent twice within 6 hours (a missed cron run must not double up).
     if (lead.last_reminder_at && now.getTime() - new Date(String(lead.last_reminder_at)).getTime() < 6 * 3600 * 1000) continue
