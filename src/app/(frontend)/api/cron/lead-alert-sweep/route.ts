@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { sendLeadAlerts } from "@/lib/lead-alerts";
+import { findSentLeadAlert, sendLeadAlerts } from "@/lib/lead-alerts";
 import { sendLeadReminders } from "@/lib/lead-reminders";
 
 // Safety net for lead alerts (owner, 2026-10-13). The instant alert runs inside the lead-creation request, and on Cloudflare it can be
@@ -35,6 +35,15 @@ export async function GET(request: Request) {
 
   const results: { id: number | string; email: string }[] = [];
   for (const lead of found.docs) {
+    // Already emailed, just never noted on the lead (the first attempt was cut off after the send): note it now and do not send twice.
+    const prior = await findSentLeadAlert(payload, lead as never);
+    if (prior) {
+      await payload
+        .update({ collection: "leads", id: lead.id, data: { alert_summary: `Email sent → ${prior.to || "the developer"}` } as never, overrideAccess: true, context: { skipLeadHooks: true, skipSupabaseSync: true } })
+        .catch(() => undefined);
+      results.push({ id: lead.id, email: "already-sent" });
+      continue;
+    }
     const outcome = await sendLeadAlerts(payload, lead as never).catch(() => null);
     results.push({ id: lead.id, email: outcome?.email ?? "error" });
   }

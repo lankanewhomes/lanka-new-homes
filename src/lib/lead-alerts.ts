@@ -230,6 +230,11 @@ export async function sendLeadAlerts(payload: Payload, lead: LeadLike, opts: { r
         ].filter(Boolean).join('\n'),
       })
       outcome.email = 'sent'
+      // Note the send on the lead straight away (2026-11-15). The full trail is written at the end of this function, but on Cloudflare the
+      // request was sometimes cut off before reaching it, so the 10-minute sweep saw "no alert recorded" and emailed the developer again.
+      await payload
+        .update({ collection: 'leads', id: lead.id, data: { alert_summary: `Email sent → ${alertEmail}${routing.mode === 'test' ? ` (TEST: ${routing.reason})` : ''}` } as never, overrideAccess: true, context: { skipLeadHooks: true, skipSupabaseSync: true }, req: opts.req })
+        .catch(() => undefined)
     } catch (error) {
       outcome.email = 'failed'
       payload.logger.error({ err: error, leadId: lead.id }, 'Lead alert email failed')
@@ -340,4 +345,20 @@ export async function sendLeadAlerts(payload: Payload, lead: LeadLike, opts: { r
 
   payload.logger.info({ leadId: lead.id, routing: routing.reason, to: outcome.to.email, email: outcome.email, whatsapp: outcome.whatsapp, buyer: outcome.buyer }, 'Lead alert')
   return outcome
+}
+
+// Has the developer already been emailed about this lead? Looks in the email log (written the moment the mail provider accepts a message)
+// for an alert sent since the lead came in whose subject carries this listing and buyer. The sweep asks this before sending, so a lead
+// whose alert went out but was never noted on the lead is not emailed a second time. Reminder subjects never match ("Reminder: …").
+export async function findSentLeadAlert(payload: Payload, lead: LeadLike): Promise<{ to: string } | null> {
+  const listing = await loadLeadListing(payload, lead)
+  if (!listing) return null
+  const projectName = text(listing.doc.name) || 'your project'
+  const buyerName = text(lead.name) || 'A buyer'
+  const since = new Date((typeof lead.createdAt === 'string' ? new Date(lead.createdAt) : new Date()).getTime() - 60_000).toISOString()
+  const found = await payload
+    .find({ collection: 'email-log' as never, where: { and: [{ sentAt: { greater_than: since } }, { subject: { contains: `${projectName} — ${buyerName}` } }] } as never, sort: 'sentAt', limit: 1, depth: 0, overrideAccess: true })
+    .catch(() => null)
+  const row = found?.docs[0] as AnyDoc | undefined
+  return row ? { to: text(row.toEmail) } : null
 }
