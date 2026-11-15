@@ -54,6 +54,16 @@ function Stat({ label, value, tone }: { label: string; value: string; tone?: str
   );
 }
 
+// How a developer treats the lead emails, from open / click tracking. Opens are counted by a tiny image, which some mail apps block, so
+// "never opened" with link clicks means the emails are being read with images off.
+function emailReading(d: { emailsSent: number; emailsOpened: number; emailClicks: number }) {
+  if (!d.emailsSent) return <span style={{ opacity: 0.5 }}>—</span>
+  if (d.emailsOpened === d.emailsSent) return <Pill label="Opens every one" color="#047857" />
+  if (d.emailsOpened > 0) return <Pill label="Opens some" color="#c4560a" />
+  if (d.emailClicks > 0) return <Pill label="Opens hidden, links clicked" color="#c4560a" />
+  return <Pill label="Never opened" color="#b91c1c" />
+}
+
 function Pill({ label, color }: { label: string; color: string }) {
   return <span style={{ display: "inline-block", padding: "2px 9px", borderRadius: 999, border: `1px solid ${color}`, color, fontSize: 11, fontWeight: 700, whiteSpace: "nowrap" }}>{label}</span>;
 }
@@ -181,9 +191,9 @@ export function LeadActivity() {
           <section className="ln-an-card" style={{ overflow: "auto", marginBottom: 16 }}>
             <h3 className="ln-an-h">By developer</h3>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
-              <thead><tr style={{ background: "var(--theme-elevation-50)" }}><th style={th}>Developer</th><th style={th}>Leads</th><th style={th}>Awaiting</th><th style={th}>Answered</th><th style={th}>Avg response</th><th style={th}>Within 24h</th><th style={th}>Alerts failed</th><th style={th}>Badge</th></tr></thead>
+              <thead><tr style={{ background: "var(--theme-elevation-50)" }}><th style={th}>Developer</th><th style={th}>Leads</th><th style={th}>Awaiting</th><th style={th}>Answered</th><th style={th}>Avg response</th><th style={th}>Within 24h</th><th style={th}>Alerts failed</th><th style={th}>Emails sent</th><th style={th}>Opened</th><th style={th}>Link clicks</th><th style={th}>Email reading</th><th style={th}>Badge</th></tr></thead>
               <tbody>
-                {data.developers.length === 0 ? <tr><td colSpan={8} style={{ padding: 12, fontSize: 13, opacity: 0.65 }}>No leads in this period.</td></tr> : data.developers.map((d) => (
+                {data.developers.length === 0 ? <tr><td colSpan={12} style={{ padding: 12, fontSize: 13, opacity: 0.65 }}>No leads in this period.</td></tr> : data.developers.map((d) => (
                   <tr key={String(d.id)} style={{ borderTop: "1px solid var(--theme-elevation-150)", fontSize: 13 }}>
                     <td style={{ padding: "8px 12px" }}>{d.id !== "none" ? <Link href={`/cms/collections/developers/${d.id}`}>{d.name}</Link> : d.name}</td>
                     <td style={{ padding: "8px 12px" }}>{d.leads}</td>
@@ -192,6 +202,10 @@ export function LeadActivity() {
                     <td style={{ padding: "8px 12px" }}>{formatMinutes(d.avgMinutes)}</td>
                     <td style={{ padding: "8px 12px" }}>{d.withinHourPercent === null ? "—" : `${d.withinHourPercent}%`}</td>
                     <td style={{ padding: "8px 12px", color: d.alertsFailed ? "#c4560a" : "inherit" }}>{d.alertsFailed}</td>
+                    <td style={{ padding: "8px 12px" }}>{d.emailsSent}</td>
+                    <td style={{ padding: "8px 12px" }}>{d.emailsSent ? `${d.emailsOpened} of ${d.emailsSent}` : "—"}</td>
+                    <td style={{ padding: "8px 12px" }}>{d.emailClicks}</td>
+                    <td style={{ padding: "8px 12px" }}>{emailReading(d)}</td>
                     <td style={{ padding: "8px 12px" }}>{d.badge ? <Pill label="Responds within 24 hours" color="#047857" /> : <span style={{ opacity: 0.5 }}>—</span>}</td>
                   </tr>
                 ))}
@@ -204,7 +218,7 @@ export function LeadActivity() {
             <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 900 }}>
               <thead><tr style={{ background: "var(--theme-elevation-50)" }}><th style={th}>Received</th><th style={th}>Buyer</th><th style={th}>Project</th><th style={th}>Developer</th><th style={th}>Alert</th><th style={th}>Status</th><th style={th}>Reply</th><th style={th} /></tr></thead>
               <tbody>
-                {data.leads.length === 0 ? <tr><td colSpan={8} style={{ padding: 12, fontSize: 13, opacity: 0.65 }}>No leads in this period.</td></tr> : data.leads.map((row) => <LeadRow key={String(row.id)} row={row} />)}
+                {data.leads.length === 0 ? <tr><td colSpan={12} style={{ padding: 12, fontSize: 13, opacity: 0.65 }}>No leads in this period.</td></tr> : data.leads.map((row) => <LeadRow key={String(row.id)} row={row} />)}
               </tbody>
             </table>
           </section>
