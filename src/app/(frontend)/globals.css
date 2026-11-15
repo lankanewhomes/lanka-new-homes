@@ -5066,15 +5066,16 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   display: grid;
   align-content: start;
   gap: 2px;
-  padding: 6px 0 14px;
+  padding: 18px 18px 14px;
+  background: #f6f6f6;
 }
 .key-features-block-title {
   display: flex;
   align-items: center;
   gap: 9px;
   margin: 0 0 8px;
-  padding: 11px 14px;
-  background: #f7f6f2;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e3e3e3;
   font-family: var(--font-ref-sans);
   font-size: 16px;
   font-weight: 400;
@@ -5085,6 +5086,9 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   flex: none;
   stroke-width: 1.5;
   color: #4a4a4a;
+}
+.key-features-block .key-features-item:hover {
+  background: #fff;
 }
 @media (max-width: 1000px) {
   .key-features-row-body { grid-template-columns: repeat(2, minmax(0, 1fr)); }
