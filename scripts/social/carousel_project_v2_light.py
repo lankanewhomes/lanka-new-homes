@@ -7,7 +7,7 @@ Every line of text comes from the listing record (docs/design.md consistency rul
 import os, sys
 sys.path.insert(0, os.path.dirname(__file__))
 from land_cover_v1 import *  # noqa: font, text_c, cover_fit, fit, width, logo, INK, WHITE
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageChops
 
 SW, SH = 1080, 1350
 LM = 100  # owner 2026-11-04: content sits 100 px from the left (platform UI crops the edge on full-screen mobile)
@@ -119,6 +119,30 @@ def fade_photo(photo, fx=.5, fy=.5, start=430, ramp=330):
     for y in range(230):
         td.line([(0, y), (SW, y)], fill=(6, 12, 6, int(110 * (1 - y / 230))))
     im.alpha_composite(top, (0, 0))
+    return grid_bands(im.convert('RGB'), (120, 134, 144))
+
+
+def grid_bands(im, bottom_rgb):
+    """Owner 2026-11-09: grid lines must show at the TOP and BOTTOM of every carousel slide (like the reels). White lines fade in from the top edge over the dark logo area;
+    darker lines fill the lower light fade (the old 214-on-238 lines were nearly invisible)."""
+    layer = Image.new('RGBA', im.size, (0, 0, 0, 0)); ld = ImageDraw.Draw(layer)
+    step = 72
+    for x in range(0, SW, step):
+        ld.line([(x, 0), (x, SH)], fill=(255, 255, 255, 255), width=2)
+    for y in range(0, SH, step):
+        ld.line([(0, y), (SW, y)], fill=(255, 255, 255, 255), width=2)
+    low = Image.new('RGBA', im.size, (0, 0, 0, 0)); lw = ImageDraw.Draw(low)
+    for x in range(0, SW, step):
+        lw.line([(x, 0), (x, SH)], fill=bottom_rgb + (255,), width=2)
+    for y in range(0, SH, step):
+        lw.line([(0, y), (SW, y)], fill=bottom_rgb + (255,), width=2)
+    mt = Image.new('L', im.size, 0); mb = Image.new('L', im.size, 0)
+    dt, db = ImageDraw.Draw(mt), ImageDraw.Draw(mb)
+    for y in range(SH):
+        if y < 260: dt.line([(0, y), (SW, y)], fill=int(170 * (1 - y / 260)))
+        if y > SH - 470: db.line([(0, y), (SW, y)], fill=int(190 * min(1, (y - (SH - 470)) / 160)))
+    layer.putalpha(ImageChops.multiply(layer.getchannel('A'), mt)); low.putalpha(ImageChops.multiply(low.getchannel('A'), mb))
+    im = im.convert('RGBA'); im.alpha_composite(layer); im.alpha_composite(low)
     return im.convert('RGB')
 
 
