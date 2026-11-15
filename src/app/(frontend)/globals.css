@@ -5067,7 +5067,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   align-content: start;
   gap: 2px;
   padding: 18px 18px 14px;
-  background: #f6f6f6;
+  background: #fafafa;
 }
 .key-features-block-title {
   display: flex;
@@ -5075,7 +5075,7 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   gap: 9px;
   margin: 0 0 8px;
   padding-bottom: 8px;
-  border-bottom: 1px solid #e3e3e3;
+  border-bottom: 1px solid #ececec;
   font-family: var(--font-ref-sans);
   font-size: 16px;
   font-weight: 400;

@@ -2832,8 +2832,8 @@ The Key Features accordion keeps its normal look (shell, dotted pattern, icon ro
 (General Features, Building & Structure, Building Services, Indoor Features, Outdoor Features, Interior, Finishes, Utilities & Services, Safety & Security,
 Sustainability, plus older Specifications / Recreation & Wellness / Accessibility / Road & Access). When a category's items carry a `field` (the room or topic:
 Doors & Windows, Living Areas, Kitchen, Bedrooms, Bathrooms, Flooring, Walls & Ceilings, Air Conditioning, Hot Water, Elevators, Parking...), the open row shows
-those fields as columns (3 across, 2 under 1000px): a plain 16px heading with a single-colour Lucide line icon (`KEY_FEATURE_ICONS`, looked up by label slug),
-a hairline `#e4e0d6` underline, and the lines beneath. NO orange rules, cards, colour or emoji (the owner rejected card, orange-underline and nested-tab versions the
+those fields as columns (3 across, 2 under 1000px): a plain 16px heading with a single-colour Lucide line icon (`featureFieldIcon`: exact tab icon, else keyword rules for every stored field name, else a tick),
+a hairline underline, and the lines beneath, all on a very light grey box (`#fafafa`, owner-approved 2026-11-15). NO orange rules, colour or emoji (the owner rejected card, orange-underline and nested-tab versions the
 same day). Items with no field (e.g. Safety & Security) show as plain lines. A value written as `a; b; c` shows as separate lines. Styles: `.key-features-block`,
 `.key-features-block-title`. Grand Apartments is set up this way (`scripts/add-grand-features-and-neighborhoods.ts`); the Postgres enum for the category key was extended
 with `interior` and `building-structure` (projects and lands).

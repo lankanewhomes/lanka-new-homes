@@ -119,6 +119,11 @@ import {
   Scissors,
   Armchair,
   DoorOpen,
+  Trash2,
+  Bug,
+  WashingMachine,
+  Lightbulb,
+  Phone,
   CookingPot,
   Snowflake,
   Eye,
@@ -3264,6 +3269,44 @@ function FactLines({ text, linkFirst }: { text: string; linkFirst?: { href: stri
   return <>{text.split("\n").map((line) => line.trim()).filter(Boolean).map((line, index) => <span key={index} className="block">{linkFirst && index === 0 ? <Link href={linkFirst.href} className="overview-link">{line}</Link> : line}</span>)}</>;
 }
 
+
+// Icon for a room / topic column inside an open Key Features category (owner, 2026-11-15). Exact tab icons first, then keywords, so every
+// stored field name (Flooring, Plumbing, Fire Protection System, Road, Electricity...) gets a plain line icon instead of a generic one.
+const FEATURE_FIELD_ICON_RULES: [RegExp, React.ComponentType<{ className?: string }>][] = [
+  [/fire/i, Flame],
+  [/hot water|geyser|heater/i, Flame],
+  [/door|window/i, DoorOpen],
+  [/kitchen|pantry|counter|sink|appliance/i, CookingPot],
+  [/bath|toilet|shower|lavatory/i, Bath],
+  [/washing machine|laundry/i, WashingMachine],
+  [/bed|closet|wardrobe/i, BedDouble],
+  [/living|lounge|dining|hall/i, Sofa],
+  [/air con|\bac\b|a\/c|cooling|heating|hvac|ventilat/i, Snowflake],
+  [/security|cctv|guard|alarm|safety|surveillance|access control/i, ShieldCheck],
+  [/lift|elevator/i, Building2],
+  [/telecom|tv|telephone|internet|fibre|fiber|data/i, Phone],
+  [/electric|power|generator|backup|wiring|socket|switch/i, Zap],
+  [/light|fans/i, Lightbulb],
+  [/plumb|water|drain|sewer|sewage|sanit|waterproof|storm/i, Droplet],
+  [/floor|tile|staircase|hand rail|stairs/i, Layers],
+  [/wall|ceiling|roof|paint|colour|color|finish|plaster/i, Paintbrush],
+  [/foundation|structure|slab|beam|column|frame/i, Landmark],
+  [/garbage|waste|refuse|bin/i, Trash2],
+  [/termite|pest/i, Bug],
+  [/park|garage|car /i, Car],
+  [/road|route|transport|highway|interchange|bus|street|access/i, Route],
+  [/document|deed|title|term|legal|approval/i, FileText],
+  [/hospital|school|bank|supermarket|market|nearby|location|distance/i, MapPin],
+  [/area|size|boundar|extent|perch|acre|sq/i, Ruler],
+  [/view|paddy|sea|lake|garden/i, Eye],
+  [/additional|maid|space|study|office|storage|utility/i, LayoutGrid],
+  [/feature|general|amenit|facility|facilities|service/i, Sparkles],
+];
+function featureFieldIcon(field: string): React.ComponentType<{ className?: string }> {
+  const slug = field.toLowerCase().replace(/&/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  return KEY_FEATURE_ICONS[slug] ?? FEATURE_FIELD_ICON_RULES.find(([pattern]) => pattern.test(field))?.[1] ?? Check;
+}
+
 // Items that share a `field` (the room: Doors, Bedrooms...) are merged; a value written as "a; b; c" becomes separate lines.
 function groupItemsByField(items: { field: string; value: string }[]): { field: string; values: string[] }[] {
   const subs: { field: string; values: string[] }[] = [];
@@ -3316,7 +3359,7 @@ export function KeyFeaturesSection({ unitFeatures, floorPlan, floorPlanLabel = "
                     groupItemsByField(group.items).map((block, bi) => (
                       <div key={`${block.field}-${bi}`} className="key-features-block">
                         <h3 className="key-features-block-title">
-                          {(() => { const BlockIcon = keyFeatureIcon({ key: block.field, label: block.field }); return <BlockIcon className="h-5 w-5" aria-hidden="true" />; })()}
+                          {(() => { const BlockIcon = featureFieldIcon(block.field); return <BlockIcon className="h-5 w-5" aria-hidden="true" />; })()}
                           {block.field || t("Other")}
                         </h3>
                         {block.values.map((v, vi) => <span key={`${v}-${vi}`} className="key-features-item">{v}</span>)}
