@@ -753,6 +753,21 @@ country / city / device on its `reply_events` entry, so the page shows
 "from Colombo, Sri Lanka · mobile" on the reply. Blank on localhost and for
 hand-added leads; non-LK buyers are tinted amber.
 
+**Lead activity in the dashboard (2026-11-15).** The owner's backend is
+`/dashboard`, so the same feed also has a page there:
+`/dashboard/lead-activity` (admin only, "Lead activity" in the top menu
+group; `_components/LeadActivityPage.tsx`). Dark page hero with Leads and
+No reply yet, period buttons (7 / 30 / 90 days, 1 year), four tiles (Emails
+to developers, Opened, Reminders sent, Replied), a "By developer" table
+and an "Every lead" table: Received, Buyer, Listing, Email to developer
+(Sent / Not sent / Failed chip and the address), Opened (chip plus "2 of 3
+emails · first 11 Nov"), Reminders ("1 of 2", last time) and Reply. Chips
+use `StatusChip`: green opened / replied, amber "Opens some", red "Never
+opened" / "No reply". The feed gives each lead `reminders`,
+`lastReminderAt` and `emails` (tracked emails matched to the lead by the
+buyer and listing in the subject). New backend screens go in `/dashboard`,
+not `/cms`.
+
 **Pipeline.** `status` on Leads is New → Contacted → Site visit → Closed
 (`new | contacted | site_visit | closed`). The first move off New stamps
 `first_response_at` and `response_minutes` (admin-only fields, written
