@@ -3,7 +3,10 @@ light fade from the middle down (max alpha 150, grid in the faded part), logo an
 label bar (light, 22 px), bold black two-line title, tall FROM tab + price box (150 px), white link strip (light). Land: sage fade/grid,
 green label bar with white text, no orange.
 
-  python3 scripts/social/reel_cover_light.py project|land PHOTO.jpg OUT.png "LABEL" "LINE 1" "LINE 2" "RS. 54M" "www.lankanewhomes.com/projects/<slug>"
+  python3 scripts/social/reel_cover_light.py project|land PHOTO.jpg OUT.png "LABEL" "LINE 1" "LINE 2" "RS. 54M" "www.lankanewhomes.com/projects/<slug>" ["City"]
+
+Owner 2026-11-16: no "Apartments" in the label; the city/area goes UNDER the title (optional 9th argument, regular weight). Pass "-" as LABEL
+to skip the label bar entirely (title then starts where the bar was).
 """
 import os, sys
 sys.path.insert(0, os.path.dirname(__file__))
@@ -11,6 +14,7 @@ from PIL import Image, ImageDraw
 import land_cover_v1 as L
 
 kind, photo, out, label, l1, l2, amount, link = sys.argv[1:9]
+city = sys.argv[9] if len(sys.argv) > 9 else ''
 W, H, M = 1080, 1920, 100
 INK, WHITE = (11, 18, 32), (255, 255, 255)
 land = kind == 'land'
@@ -38,10 +42,14 @@ for y in range(H):
 gl.putalpha(ImageChops.multiply(gl.getchannel('A'), gm)); im.alpha_composite(gl)
 im.alpha_composite(top, (0, 0)); im.alpha_composite(L.logo(True, 200), (M, 300))
 d = ImageDraw.Draw(im)
-lf = L.font(22, 400); lw = L.width(label, lf, 3)
-d.rectangle((M, 1010, M + lw + 36, 1010 + 44), fill=BAR); L.text_c(d, M + (lw + 36) / 2, 1019, label, lf, BARTXT, spacing=3)
-y = 1010 + 44 + 26
+if label != '-':
+    lf = L.font(22, 400); lw = L.width(label, lf, 3)
+    d.rectangle((M, 1010, M + lw + 36, 1010 + 44), fill=BAR); L.text_c(d, M + (lw + 36) / 2, 1019, label, lf, BARTXT, spacing=3)
+    y = 1010 + 44 + 26
+else:
+    y = 1010
 for t in (l1, l2): d.text((M, y), t, font=L.font(72, 800), fill=INK); y += 84
+if city: d.text((M + 2, y + 2), city, font=L.font(46, 400), fill=BAR); y += 62  # owner 2026-11-16: city in the accent colour (orange project, green land)
 ff = L.font(52, 500); fw = L.width('FROM', ff, 4) + 52; pw = L.width(amount, ff) + 52; py = y + 30
 if amount:  # an empty amount (developer publishes no price) leaves the price box out
     d.rectangle((M, py, M + fw, py + 150), fill=INK); L.text_c(d, M + fw / 2, py + 46, 'FROM', ff, WHITE, spacing=4)
