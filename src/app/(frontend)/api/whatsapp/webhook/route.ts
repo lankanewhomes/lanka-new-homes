@@ -27,7 +27,7 @@ function validSignature(raw: string, header: string | null): boolean {
   return given.length === expected.length && crypto.timingSafeEqual(Buffer.from(given), Buffer.from(expected));
 }
 
-type WaMessage = { id?: string; from?: string; timestamp?: string; type?: string; text?: { body?: string } };
+type WaMessage = { id?: string; from?: string; timestamp?: string; type?: string; text?: { body?: string }; button?: { text?: string; payload?: string }; context?: { id?: string } };
 type WaStatus = { id?: string; status?: string; errors?: { title?: string }[] };
 type WaChange = { value?: { messages?: WaMessage[]; statuses?: WaStatus[] } };
 
@@ -48,6 +48,7 @@ export async function POST(request: NextRequest) {
     find: (a: Record<string, unknown>) => Promise<{ docs: { id: number | string }[] }>;
     create: (a: Record<string, unknown>) => Promise<unknown>;
     update: (a: Record<string, unknown>) => Promise<unknown>;
+    findByID: (a: Record<string, unknown>) => Promise<{ status?: string; reply_events?: Record<string, unknown>[] } | null>;
   };
 
   for (const entry of body.entry ?? []) {
@@ -62,13 +63,30 @@ export async function POST(request: NextRequest) {
           data: {
             direction: "inbound",
             phone: message.from.replace(/\D/g, ""),
-            text: message.text?.body ?? null,
+            text: message.text?.body ?? message.button?.text ?? null,
             messageType: message.type ?? "text",
             status: "received",
             waMessageId: message.id,
             sentAt: new Date(Number(message.timestamp ?? 0) * 1000 || Date.now()).toISOString(),
           },
         });
+        // A developer tapped "Contacted" on a lead reminder: move that lead off "New" (times the response) and log the tap.
+        if (message.type === "button" && message.button?.text === "Contacted" && message.context?.id) {
+          const sent = await db.find({ collection: "whatsapp-messages", where: { waMessageId: { equals: message.context.id } }, limit: 1, depth: 0, overrideAccess: true });
+          const row = sent.docs[0] as { lead?: number | { id: number } | null } | undefined;
+          const leadId = typeof row?.lead === "object" && row.lead ? row.lead.id : row?.lead;
+          const lead = leadId ? await db.findByID({ collection: "leads", id: leadId, depth: 0, overrideAccess: true }).catch(() => null) : null;
+          if (leadId && lead) {
+            const events = Array.isArray(lead.reply_events) ? lead.reply_events : [];
+            await db.update({
+              collection: "leads",
+              id: leadId,
+              overrideAccess: true,
+              context: { replyVia: "whatsapp" },
+              data: { ...(lead.status === "new" ? { status: "contacted" } : {}), reply_events: [...events, { via: "whatsapp", source: "whatsapp-template", at: new Date().toISOString() }] },
+            });
+          }
+        }
       }
       for (const status of change.value?.statuses ?? []) {
         if (!status.id || !status.status || !["sent", "delivered", "read", "failed"].includes(status.status)) continue;

@@ -15,8 +15,28 @@ export const WHATSAPP_TEMPLATES = {
     params: ["Developer contact name", "Project"],
     body: "Hi {{1}}, following up on our earlier message about {{2}}. Can your sales team contact the buyers today?",
   },
-} as const;
+  lead_waiting_reminder: {
+    label: "Lead waiting (after 24 hours)",
+    params: ["Developer contact name", "Project", "Buyer name", "Buyer phone", "Time waiting"],
+    body: "Hi {{1}}, a buyer is waiting for a reply about {{2}}.\n\nBuyer: {{3}}\nPhone: {{4}}\nEnquired: {{5}} ago\n\nPlease contact them today. Quick replies keep your \"Responds within 24 hours\" badge on LankaNewHomes. Tap below to tell us where this stands.",
+    leadButton: true,
+  },
+  lead_waiting_final: {
+    label: "Lead still waiting (after 3 days)",
+    params: ["Developer contact name", "Buyer name", "Project", "Time waiting", "Buyer phone"],
+    body: "Hi {{1}}, {{2}} enquired about {{3}} {{4}} ago and still has no reply.\n\nPhone: {{5}}\n\nPlease contact them today.",
+    leadButton: true,
+  },
+  developer_listing_notice: {
+    label: "We have listed your project",
+    params: ["Developer contact name", "Project(s)", "Listing link"],
+    body: "Hi {{1}}, this is LankaNewHomes. We hope you're well.\n\nWe have listed {{2}} on our website, where buyers in Sri Lanka and abroad can find it:\n{{3}}\n\nPlease check that the details are correct. If anything needs changing, reply here and we will update it today.\n\nThank you,\nRupan",
+  },
+} as const satisfies Record<string, { label: string; params: readonly string[]; body: string; leadButton?: boolean }>;
 export type TemplateName = keyof typeof WHATSAPP_TEMPLATES;
+
+/** Templates whose "Open lead" button needs the lead id (the button URL ends with collections/leads/<id>). */
+export const templateNeedsLead = (name: string) => Boolean((WHATSAPP_TEMPLATES as Record<string, { leadButton?: boolean }>)[name]?.leadButton);
 
 export function renderTemplate(name: TemplateName, params: string[]): string {
   return WHATSAPP_TEMPLATES[name].body.replace(/\{\{(\d)\}\}/g, (_, n) => params[Number(n) - 1] ?? "");

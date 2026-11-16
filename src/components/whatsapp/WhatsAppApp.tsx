@@ -8,6 +8,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 type Conversation = { phone: string; developerId: number | null; name: string | null; lastText: string; lastAt: string; lastDirection: "inbound" | "outbound"; unanswered: number; drafts: number };
 type Message = { id: number; direction: "inbound" | "outbound"; phone: string; text?: string | null; templateName?: string | null; status: string; error?: string | null; sentAt: string };
 type Recipient = { developerId: number; name: string; phone: string };
+type Waiting = { leadId: number; buyer: string; project: string; hours: number; developerId: number | null; developerName: string | null; developerPhone: string | null; template: string; params: string[] };
 type Templates = Record<string, { label: string; params: readonly string[]; body: string }>;
 
 const when = (iso: string) => new Date(iso).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
@@ -29,6 +30,7 @@ export function WhatsAppApp() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [text, setText] = useState("");
+  const [waiting, setWaiting] = useState<Waiting[]>([]);
   const threadEnd = useRef<HTMLDivElement>(null);
 
   const loadList = useCallback(async () => {
@@ -44,6 +46,7 @@ export function WhatsAppApp() {
     // First load runs in a timer callback (not in the effect body) so state is only set from a callback.
     const first = setTimeout(() => {
       void loadList();
+      void api<{ leads: Waiting[] }>("/api/whatsapp/inbox?view=unanswered").then((r) => { if (!r.error) setWaiting(r.leads); });
       void api<{ recipients: Recipient[]; templates: Templates }>("/api/whatsapp/inbox?view=recipients").then((r) => { if (!r.error) { setRecipients(r.recipients); setTemplates(r.templates); } });
     }, 0);
     const t = setInterval(() => { void loadList(); }, 20_000);
@@ -77,6 +80,22 @@ export function WhatsAppApp() {
           <h1 className="text-[18px] font-medium">WhatsApp</h1>
           <button type="button" onClick={() => { setComposing(true); setActive(null); setError(null); }} className="bg-[#1f1f1f] px-3 py-1.5 text-[13px] text-white">New message</button>
         </div>
+        {waiting.length > 0 ? (
+          <div className="border-b border-[#e4ddd0] bg-[#fff8ec] p-3">
+            <p className="text-[13px] font-medium">Leads waiting 24+ hours ({waiting.length})</p>
+            <ul className="mt-2 max-h-[220px] space-y-2 overflow-y-auto">
+              {waiting.map((w) => (
+                <li key={w.leadId} className="text-[12px] text-[#4a4338]">
+                  <span className="block">{w.buyer} · {w.project} · {w.hours >= 48 ? `${Math.floor(w.hours / 24)} days` : `${w.hours} h`}</span>
+                  <span className="block text-[#6b6355]">{w.developerName ?? "No developer WhatsApp number"}</span>
+                  {w.developerPhone ? (
+                    <button type="button" disabled={busy} onClick={async () => { const r = await post({ action: "draft", phone: w.developerPhone, developerId: w.developerId, leadId: w.leadId, template: w.template, params: w.params }); if (!r.error) { setActive(w.developerPhone); setComposing(false); } }} className="mt-1 bg-[#1f1f1f] px-2 py-1 text-[11px] text-white">Draft reminder</button>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
         <ul className="max-h-[70vh] overflow-y-auto">
           {conversations.length === 0 ? <li className="p-4 text-[14px] text-[#6b6355]">No messages yet. Replies from developers appear here.</li> : null}
           {conversations.map((c) => (

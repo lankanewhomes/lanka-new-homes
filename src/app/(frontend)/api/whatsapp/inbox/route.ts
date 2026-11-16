@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { sendWhatsAppTemplate } from "@/lib/whatsapp-cloud";
-import { digitsOnly, loadRecipients, renderTemplate, sameNumber, sendWhatsAppText, WHATSAPP_TEMPLATES, WINDOW_MS, type TemplateName } from "@/lib/whatsapp-inbox";
+import { digitsOnly, loadRecipients, renderTemplate, sameNumber, templateNeedsLead, sendWhatsAppText, WHATSAPP_TEMPLATES, WINDOW_MS, type TemplateName } from "@/lib/whatsapp-inbox";
 
 // Admin-only backend for /dashboard/whatsapp. Reads the whatsapp-messages table; writes drafts; sends ONLY a draft the admin approved.
 //   GET  ?view=conversations | thread&phone=… | recipients
@@ -20,6 +20,31 @@ async function admin(request: Request) {
 
 const COLLECTION = "whatsapp-messages";
 
+const hoursText = (h: number) => (h >= 48 ? `${Math.floor(h / 24)} days` : `${h} hours`);
+
+/** Leads still on "New" for 24+ hours, each with the developer to message and the template + fields to use (reminder under 3 days, final after). */
+async function unansweredLeads(db: { find: (a: Record<string, unknown>) => Promise<{ docs: unknown[] }> }) {
+  const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  const { docs } = await db.find({ collection: "leads", where: { and: [{ status: { equals: "new" } }, { createdAt: { less_than: cutoff } }] }, sort: "createdAt", limit: 200, depth: 1, overrideAccess: true });
+  const recipients = await loadRecipients(db);
+  const byDev = new Map(recipients.map((r) => [r.developerId, r]));
+  type L = { id: number; name?: string; phone?: string; listing_name?: string; createdAt: string; project?: { developer?: number | { id: number } | null } | number | null };
+  return (docs as L[]).map((l) => {
+    const dev = typeof l.project === "object" && l.project ? l.project.developer : null;
+    const developerId = typeof dev === "object" && dev ? dev.id : dev ?? null;
+    const r = developerId ? byDev.get(Number(developerId)) : undefined;
+    const hours = Math.floor((Date.now() - new Date(l.createdAt).getTime()) / 3_600_000);
+    const project = l.listing_name || "your project";
+    const contact = r?.name ?? "there";
+    const final = hours >= 72;
+    const template: TemplateName = final ? "lead_waiting_final" : "lead_waiting_reminder";
+    const buyer = l.name || "A buyer";
+    const phone = l.phone || "no phone left";
+    const params = final ? [contact, buyer, project, hoursText(hours), phone] : [contact, project, buyer, phone, hoursText(hours)];
+    return { leadId: l.id, buyer, project, hours, developerId: r?.developerId ?? null, developerName: r?.name ?? null, developerPhone: r?.phone ?? null, template, params };
+  });
+}
+
 export async function GET(request: Request) {
   const payload = await admin(request);
   if (!payload) return NextResponse.json({ error: "Admins only." }, { status: 403 });
@@ -28,6 +53,8 @@ export async function GET(request: Request) {
   const view = url.searchParams.get("view") ?? "conversations";
 
   if (view === "recipients") return NextResponse.json({ recipients: await loadRecipients(db), templates: WHATSAPP_TEMPLATES });
+
+  if (view === "unanswered") return NextResponse.json({ leads: await unansweredLeads(db) });
 
   if (view === "thread") {
     const phone = digitsOnly(url.searchParams.get("phone") ?? "");
@@ -81,16 +108,17 @@ export async function POST(request: Request) {
     update: (a: Record<string, unknown>) => Promise<unknown>;
     delete: (a: Record<string, unknown>) => Promise<unknown>;
   };
-  const body = (await request.json().catch(() => ({}))) as { action?: string; id?: number; phone?: string; developerId?: number; template?: string; params?: string[]; text?: string };
+  const body = (await request.json().catch(() => ({}))) as { action?: string; id?: number; phone?: string; developerId?: number; template?: string; params?: string[]; text?: string; leadId?: number };
 
   if (body.action === "draft") {
     const phone = digitsOnly(body.phone ?? "");
     if (phone.length < 8 || phone.length > 15) return NextResponse.json({ error: "Enter the number with country code, e.g. 94771234567." }, { status: 400 });
-    const developer = body.developerId ? { developer: body.developerId } : {};
+    const developer = { ...(body.developerId ? { developer: body.developerId } : {}), ...(body.leadId ? { lead: body.leadId } : {}) };
     if (body.template) {
       const name = body.template as TemplateName;
       const def = WHATSAPP_TEMPLATES[name];
       if (!def) return NextResponse.json({ error: "Unknown template." }, { status: 400 });
+      if (templateNeedsLead(name) && !body.leadId) return NextResponse.json({ error: "This template needs a lead." }, { status: 400 });
       const params = (body.params ?? []).map((p) => String(p).trim());
       if (params.length !== def.params.length || params.some((p) => !p)) return NextResponse.json({ error: `Fill in all ${def.params.length} fields.` }, { status: 400 });
       const doc = await db.create({ collection: COLLECTION, overrideAccess: true, data: { direction: "outbound", phone, text: renderTemplate(name, params), messageType: "template", templateName: name, templateParams: params, status: "draft", sentAt: new Date().toISOString(), ...developer } });
@@ -106,14 +134,14 @@ export async function POST(request: Request) {
   }
 
   if (body.action === "discard" || body.action === "send") {
-    const m = (await db.findByID({ collection: COLLECTION, id: body.id, depth: 0, overrideAccess: true }).catch(() => null)) as (Msg & { templateParams?: string[] }) | null;
+    const m = (await db.findByID({ collection: COLLECTION, id: body.id, depth: 0, overrideAccess: true }).catch(() => null)) as (Msg & { templateParams?: string[]; lead?: number | { id: number } | null }) | null;
     if (!m || m.direction !== "outbound" || m.status !== "draft") return NextResponse.json({ error: "Only an unsent draft can be sent or discarded." }, { status: 409 });
     if (body.action === "discard") {
       await db.delete({ collection: COLLECTION, id: m.id, overrideAccess: true });
       return NextResponse.json({ ok: true });
     }
     const result = m.templateName
-      ? await sendWhatsAppTemplate({ to: m.phone, bodyParams: m.templateParams ?? [], template: m.templateName, language: "en" })
+      ? await sendWhatsAppTemplate({ to: m.phone, bodyParams: m.templateParams ?? [], template: m.templateName, language: "en", ...(templateNeedsLead(m.templateName) && m.lead ? { buttonUrlSuffix: `collections/leads/${typeof m.lead === "object" ? m.lead.id : m.lead}` } : {}) })
       : await sendWhatsAppText(m.phone, m.text ?? "");
     if (!result.ok) {
       await db.update({ collection: COLLECTION, id: m.id, overrideAccess: true, data: { status: "failed", error: result.error.slice(0, 250) } });
