@@ -35,6 +35,8 @@ function Reading({ sent, opened, clicks }: { sent: number; opened: number; click
   return <StatusChip value="failed" label="Never opened" />;
 }
 
+// A refused WhatsApp alert is shown as "Blocked by Meta" (owner, 2026-11-15): the send is rejected on our side (business number not
+// registered, payment method, business verification), not because of the developer's number. The lead still went by email.
 /** The WhatsApp alert to the developer for one lead: sent, failed, or not attempted (no number on file, or WhatsApp not connected). */
 function whatsappAlert(r: LeadActivityRow): { state: "sent" | "failed" | "skipped" | "none"; to: string; why: string } {
   const e = r.alertLog.find((x) => x.channel === "whatsapp");
@@ -74,7 +76,7 @@ function DeveloperRow({ d, wa }: { d: DeveloperScoreRow; wa: { sent: number; tri
       <td className={`${td} text-right tabular-nums`}>{d.emailsSent ? `${d.emailsOpened} of ${d.emailsSent}` : ""}</td>
       <td className={`${td} text-right tabular-nums`}>{d.emailClicks}</td>
       <td className={td}><Reading sent={d.emailsSent} opened={d.emailsOpened} clicks={d.emailClicks} /></td>
-      <td className={`${td} whitespace-nowrap`}>{wa.tried ? <><StatusChip value={wa.sent === wa.tried ? "ok" : wa.sent ? "pending" : "failed"} label={wa.sent === wa.tried ? "Delivered" : wa.sent ? "Some failed" : "Not delivered"} /><span className="ml-2 text-xs text-muted">{wa.sent} of {wa.tried}</span></> : <span className="text-muted">No number</span>}</td>
+      <td className={`${td} whitespace-nowrap`}>{wa.tried ? <><StatusChip value={wa.sent === wa.tried ? "ok" : wa.sent ? "pending" : "failed"} label={wa.sent === wa.tried ? "Delivered" : wa.sent ? "Some blocked" : "Blocked by Meta"} /><span className="ml-2 text-xs text-muted">{wa.sent} of {wa.tried}</span></> : <span className="text-muted">No number</span>}</td>
       <td className={`${td} text-right tabular-nums`}>{minutes(d.avgMinutes)}</td>
     </tr>
   );
@@ -99,7 +101,7 @@ function LeadRow({ r }: { r: LeadActivityRow }) {
         {emailed?.to ? <span className="mt-1 block max-w-56 truncate text-xs text-muted" title={emailed.to}>{emailed.to}</span> : null}
       </td>
       <td className={td}>
-        {wa.state === "sent" ? <StatusChip value="ok" label="Sent" /> : wa.state === "failed" ? <StatusChip value="failed" label="Failed" /> : wa.state === "skipped" ? <StatusChip value="pending" label="Not sent" /> : <span className="text-muted">No number</span>}
+        {wa.state === "sent" ? <StatusChip value="ok" label="Sent" /> : wa.state === "failed" ? <StatusChip value="failed" label="Blocked by Meta" /> : wa.state === "skipped" ? <StatusChip value="pending" label="Not sent" /> : <span className="text-muted">No number</span>}
         {wa.to ? <span className="mt-1 block text-xs text-muted">{wa.to}{wa.why ? ` · ${wa.why}` : ""}</span> : null}
       </td>
       <td className={td}>
@@ -160,10 +162,11 @@ export function LeadActivityPage() {
         {!data && !error ? <div className="d-skeleton h-64 w-full" /> : null}
         {data ? (
           <>
+            {waTried > waSent ? <p className="border border-line bg-panel px-4 py-3 text-sm text-muted"><b className="font-semibold text-fg">WhatsApp alerts are blocked by Meta.</b> The developers still received every enquiry by email. WhatsApp starts sending once the business number is registered, the payment method is fixed and business verification is submitted in Meta.</p> : null}
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
               <Tile label="Emails to developers" value={String(sent)} note="alerts, brochure requests, reminders" />
               <Tile label="Emails opened" value={sent ? `${opened} of ${sent}` : "0"} note={sent ? `${Math.round((opened / sent) * 100)}% of tracked emails` : undefined} />
-              <Tile label="WhatsApp alerts" value={waTried ? `${waSent} of ${waTried}` : "0"} note={waTried ? (waSent === waTried ? "all delivered" : waSent ? "delivered, the rest failed" : "none delivered yet") : "no developer number on file"} />
+              <Tile label="WhatsApp alerts" value={waTried ? `${waSent} of ${waTried}` : "0"} note={waTried ? (waSent === waTried ? "all delivered" : waSent ? "delivered, the rest blocked by Meta" : "blocked by Meta, none delivered") : "no developer number on file"} />
               <Tile label="Reminders sent" value={String(reminders)} note="up to 2 for each lead" />
               <Tile label="Replied" value={`${data.totals.answered} of ${data.totals.leads}`} note={data.totals.avgMinutes !== null ? `average ${minutes(data.totals.avgMinutes)}` : undefined} />
             </div>
