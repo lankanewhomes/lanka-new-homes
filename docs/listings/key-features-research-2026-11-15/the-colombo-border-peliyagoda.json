@@ -1,0 +1,54 @@
+{
+ "slug": "the-colombo-border-peliyagoda",
+ "sources": [
+  "http://www.primeresidencies.lk/residencies/the-colombo-border/",
+  "https://www.primelands.lk/apartment/THE-COLOMBO-BORDER-PELIYAGODA/en"
+ ],
+ "categories": [
+  {
+   "key": "building-structure",
+   "label": "Building & Structure",
+   "items": [
+    {
+     "field": "Foundation",
+     "value": "Piling work by San Piling"
+    }
+   ]
+  },
+  {
+   "key": "building-services",
+   "label": "Building Services",
+   "items": [
+    {
+     "field": "Gas",
+     "value": "Centralised gas system"
+    },
+    {
+     "field": "Backup Power",
+     "value": "Back-up generators"
+    }
+   ]
+  },
+  {
+   "key": "safety-security",
+   "label": "Safety & Security",
+   "items": [
+    {
+     "field": "Security",
+     "value": "CCTV cameras; 24-hour security"
+    }
+   ]
+  },
+  {
+   "key": "general-features",
+   "label": "General Features",
+   "items": [
+    {
+     "field": "Parking",
+     "value": "Car parking"
+    }
+   ]
+  }
+ ],
+ "notes": "Developer pages list only a short feature set; no detailed finishes published."
+}

@@ -1,0 +1,65 @@
+{
+ "slug": "skyhaus-colombo-07",
+ "sources": [
+  "skyhaus-colombo-07_brochure.pdf (interiors, sustainability, residence pages)"
+ ],
+ "categories": [
+  {
+   "key": "interior",
+   "label": "Interior",
+   "items": [
+    {
+     "field": "Flooring",
+     "value": "Wood flooring through living spaces"
+    },
+    {
+     "field": "Ceilings",
+     "value": "Extra-height ceilings"
+    },
+    {
+     "field": "Kitchen & Bathrooms",
+     "value": "Marble counters"
+    }
+   ]
+  },
+  {
+   "key": "building-services",
+   "label": "Building Services",
+   "items": [
+    {
+     "field": "Elevators",
+     "value": "Private elevator entrance to each residence; separate service elevator"
+    },
+    {
+     "field": "Parking",
+     "value": "Underground parking"
+    }
+   ]
+  },
+  {
+   "key": "sustainability",
+   "label": "Sustainability",
+   "items": [
+    {
+     "field": "Cooling",
+     "value": "Low thermal density cooling materials to reduce heat retention"
+    },
+    {
+     "field": "Design",
+     "value": "Vertical-forest facade, green terraces with central drip irrigation; locally sourced materials; passive design"
+    }
+   ]
+  },
+  {
+   "key": "safety-security",
+   "label": "Safety & Security",
+   "items": [
+    {
+     "field": "Security",
+     "value": "Private reception and on-site security"
+    }
+   ]
+  }
+ ],
+ "notes": "Brochure gives only a short interiors paragraph; no formal specification sheet."
+}

@@ -1,0 +1,47 @@
+{
+ "slug": "crystal-sands-sky-villas",
+ "sources": [
+  "crystal-sands-sky-villas_brochure.pdf"
+ ],
+ "categories": [
+  {
+   "key": "interior",
+   "label": "Interior",
+   "items": [
+    {
+     "field": "Air Conditioning",
+     "value": "Provided in all suites"
+    },
+    {
+     "field": "Smart Home",
+     "value": "Alexa home automation"
+    },
+    {
+     "field": "Furnishing",
+     "value": "Fully furnished"
+    }
+   ]
+  },
+  {
+   "key": "utilities",
+   "label": "Utilities & Services",
+   "items": [
+    {
+     "field": "Telecom",
+     "value": "Wi-Fi connectivity"
+    }
+   ]
+  },
+  {
+   "key": "safety-security",
+   "label": "Safety & Security",
+   "items": [
+    {
+     "field": "Security",
+     "value": "24 hour on-site security"
+    }
+   ]
+  }
+ ],
+ "notes": "Brochure lists only suite feature icons; no construction spec section."
+}
