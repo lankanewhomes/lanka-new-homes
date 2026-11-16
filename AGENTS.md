@@ -43,6 +43,17 @@ own files there, then push to `cloudflare-migration` (owner, 2026-11-15:
 "always update the local folder and push it after"). Scripts that change
 Supabase data are saved in that folder's `scripts/` and pushed too.
 
+## How to reply to the owner
+
+The owner wants every status reply as simple tables with coloured dots
+(owner, 2026-11-15: "I like when you give me with the green dot... can you
+also do that for the other sessions too?"). Use tables, not bulleted lists,
+for status, results, steps and comparisons, with a dot at the start of the
+row or in a Status column: 🟢 done / working / good, 🟡 waiting / partly
+done / needs attention, 🔴 failed / blocked / not done, ⚪ not applicable /
+left alone on purpose. Plain words, short cells, and say clearly what was
+not done or not checked.
+
 ## Data / Supabase
 
 This project's live data (projects, developers, neighborhoods, hero ads,
