@@ -1,0 +1,7 @@
+// Adds 15 new Sri Lanka keyword volumes (Ubersuggest keyword_suggestions, 2026-11-16). Run: set -a; . ./.env.local; set +a; NODE_PATH=$PWD/node_modules node scripts/add-keyword-volumes-2026-11-16.cjs
+const {Client}=require('pg');
+const rows=[["houses for sale in maharagama",1300,11],["houses for sale in homagama",1300,10],["houses for sale in gampaha",1300,12],["houses for sale in moratuwa",880,10],["houses for sale in panadura",480,12],["houses for sale in panadura sri lanka",1000,11],["houses for sale in ja ela",480,10],["houses for sale in kaduwela",320,11],["houses for sale in battaramulla",210,10],["houses for sale in wattala sri lanka",2400,11],["apartments for sale in malabe",140,9],["apartments for sale in kandy",170,9],["apartments for sale in kandy sri lanka",210,8],["apartments for sale in dehiwala",590,10],["apartments for sale in mount lavinia",210,10]];
+(async()=>{const c=new Client({connectionString:process.env.SUPABASE_DB_URL,ssl:{rejectUnauthorized:false}});await c.connect();
+for(const [k,v,d] of rows){await c.query("insert into keyword_volumes(keyword,country,monthly_searches,seo_difficulty,source,location,checked_at) values($1,'LK',$2,$3,'Ubersuggest','Sri Lanka',now()) on conflict (keyword,country) do update set monthly_searches=excluded.monthly_searches,seo_difficulty=excluded.seo_difficulty,checked_at=now()",[k,v,d]);}
+console.log((await c.query("select count(*) from keyword_volumes where country='LK'")).rows[0]);
+await c.end();process.exit(0)})().catch(e=>{console.error(e.message);process.exit(1)});
