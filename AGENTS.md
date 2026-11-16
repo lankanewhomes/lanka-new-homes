@@ -15,6 +15,11 @@ visual conventions (nav patterns, badge/pill colors, listing page layout,
 etc.) so new work stays consistent without re-deriving it each time. Keep
 that file updated when a new convention is set.
 
+"Backend" means `/dashboard` (owner, 2026-11-15: "always work in /dashboard
+backend for any backend work"). Build new backend pages and changes under
+`src/app/(dashboard)/dashboard/` and give `/dashboard/...` links; do not add
+screens to `/cms`, the owner does not use it.
+
 For SEO/keyword/metadata work, check `docs/seo-strategy.md` for the
 keyword-to-page mapping and tactics checklist.
 

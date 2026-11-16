@@ -25,6 +25,11 @@ export type LeadActivityRow = {
   firstResponseAt: string | null
   responseMinutes: number | null
   replyEvents: { via: string; source: string; at: string; country: string; city: string; device: string }[]
+  /** Reminder emails sent to the developer for this lead (0, 1 or 2) and when the last one went. */
+  reminders: number
+  lastReminderAt: string | null
+  /** Tracked emails the developer was sent about this lead (alert, brochure request, reminders) and how many of them were opened. */
+  emails: { sent: number; opened: number; clicks: number; firstOpenedAt: string | null }
   /** Where the buyer was when they asked (Vercel geo + device); blank for hand-added leads. */
   origin: { country: string; region: string; city: string; device: string; trafficSource: string; referrer: string }
 }
@@ -105,6 +110,9 @@ export const leadActivityEndpoint: Endpoint = {
         firstResponseAt: text(d.first_response_at) || null,
         responseMinutes: typeof d.response_minutes === 'number' ? d.response_minutes : null,
         replyEvents: (Array.isArray(d.reply_events) ? (d.reply_events as AnyDoc[]) : []).map((e) => ({ via: text(e.via), source: text(e.source), at: text(e.at), country: text(e.country), city: text(e.city), device: text(e.device) })),
+        reminders: Number(d.reminder_count) || 0,
+        lastReminderAt: text(d.last_reminder_at) || null,
+        emails: { sent: 0, opened: 0, clicks: 0, firstOpenedAt: null },
         origin: {
           country: text((d.origin as AnyDoc | undefined)?.country),
           region: text((d.origin as AnyDoc | undefined)?.region),
@@ -140,7 +148,7 @@ export const leadActivityEndpoint: Endpoint = {
     // emails about a lead: the alert, a brochure request and the reminders.
     if (developerIds.length) {
       const sent = await req.payload
-        .find({ collection: 'email-log' as never, where: { and: [{ sentAt: { greater_than_equal: since } }, { developer: { in: developerIds } }, { trackId: { exists: true } }] } as never, select: { developer: true, subject: true, openCount: true, clickCount: true } as never, limit: 3000, depth: 0, overrideAccess: true, req })
+        .find({ collection: 'email-log' as never, where: { and: [{ sentAt: { greater_than_equal: since } }, { developer: { in: developerIds } }, { trackId: { exists: true } }] } as never, select: { developer: true, subject: true, openCount: true, clickCount: true, sentAt: true, firstOpenedAt: true } as never, limit: 3000, depth: 0, overrideAccess: true, req })
         .catch(() => ({ docs: [] as unknown[] }))
       for (const doc of sent.docs as AnyDoc[]) {
         if (!/enquiry|inquiry|still waiting for a reply|brochure request|new lead/i.test(text(doc.subject))) continue
@@ -149,6 +157,24 @@ export const leadActivityEndpoint: Endpoint = {
         entry.emailsSent += 1
         if (Number(doc.openCount) > 0) entry.emailsOpened += 1
         entry.emailClicks += Number(doc.clickCount) || 0
+        // The same email against its lead: the subject carries the buyer and the listing ("… Listing — Buyer", "Buyer is still waiting … · Listing").
+        const subject = text(doc.subject)
+        const sentAt = Date.parse(text(doc.sentAt)) || 0
+        const matches = leads.filter((l) => String(l.developer.id) === String(relId(doc.developer)) && l.buyer.name && subject.includes(l.buyer.name) && l.project.name && subject.includes(l.project.name) && sentAt >= Date.parse(l.createdAt) - 60_000)
+        // The same buyer can enquire twice about one listing (a brochure request and a WhatsApp enquiry): a brochure email belongs to the
+        // brochure lead, any other alert to the other one, and reminders are shared out evenly.
+        const brochure = /^brochure/i.test(subject)
+        const preferred = /still waiting for a reply/i.test(subject) ? matches : matches.filter((l) => (l.source === 'brochure_request') === brochure)
+        const lead = (preferred.length ? preferred : matches).sort((x, y) => x.emails.sent - y.emails.sent)[0]
+        if (lead) {
+          lead.emails.sent += 1
+          lead.emails.clicks += Number(doc.clickCount) || 0
+          if (Number(doc.openCount) > 0) {
+            lead.emails.opened += 1
+            const opened = text(doc.firstOpenedAt)
+            if (opened && (!lead.emails.firstOpenedAt || opened < lead.emails.firstOpenedAt)) lead.emails.firstOpenedAt = opened
+          }
+        }
       }
     }
 
