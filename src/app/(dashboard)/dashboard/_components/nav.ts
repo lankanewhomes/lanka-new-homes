@@ -59,6 +59,8 @@ export function buildSidebar(role: Role, newLeads: number, companyId?: number): 
       pages.push({ key: "an-raw", label: "Raw events", href: "/dashboard/analytics/events", icon: ListTree });
       items.splice(0, items.length, ...pages);
     }
+    // Lead activity (was the developer emailed / sent a WhatsApp, did they open it, reminders, replies) sits with the lead lists as well as in the top group.
+    if (s.label === "Leads" && role === "admin") items.push({ key: "lead-activity2", label: "Lead activity", href: "/dashboard/lead-activity", icon: Activity });
     if (s.label === "Settings" && role === "developer") items.push({ key: "company", label: "Company profile", href: `/dashboard/developers/${companyId ?? ""}`, icon: Building });
     if (s.label === "Mail" && role === "admin") items.unshift({ key: "inbox2", label: "Inbox", href: "/dashboard/inbox", icon: Mail }, { key: "conn", label: "Connection status", href: "/dashboard/inbox/connection", icon: Settings });
     // The /cms group is called "Developers", the same as its first entry; here it takes the name Payload gives these collections.
