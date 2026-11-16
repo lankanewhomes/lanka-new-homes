@@ -20,6 +20,9 @@ backend for any backend work"). Build new backend pages and changes under
 `src/app/(dashboard)/dashboard/` and give `/dashboard/...` links; do not add
 screens to `/cms`, the owner does not use it.
 
+The owner's standing rules (brand colours, typography, UI, Key Features, data, social, workflow, reply style) are in `docs/owner-rules/`; read
+`docs/owner-rules/README.md` first and only the files that match the task. For any SEO work start at `docs/owner-rules/seo/README.md`.
+
 For SEO/keyword/metadata work, check `docs/seo-strategy.md` for the
 keyword-to-page mapping and tactics checklist.
 
