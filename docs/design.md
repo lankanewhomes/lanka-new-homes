@@ -721,6 +721,32 @@ Button: *Open lead* → `https://www.lankanewhomes.com/cms/{{1}}` (dynamic URL).
 Optional env: `WHATSAPP_LEAD_TEMPLATE` (default `lead_alert`),
 `WHATSAPP_TEMPLATE_LANG` (default `en`), `WHATSAPP_API_VERSION` (`v21.0`).
 
+**Incoming WhatsApp messages (webhook).** The business number
+(+1 647-779-5729, Phone number ID `1502698179583100`, WhatsApp account
+`1432531762069175`, registered on the Cloud API 2026-11-16) has no inbox, so
+Meta posts every message sent to it to `/api/whatsapp/webhook`
+(`src/app/(frontend)/api/whatsapp/webhook/route.ts`, pure parts in
+`src/lib/whatsapp-webhook.ts`). Each new message is emailed to the owner
+(`WHATSAPP_INBOUND_NOTIFY_TO`, else `LEAD_NOTICE_TO`, else
+developers@lankanewhomes.com) as "WhatsApp from <name> (+number): <text>",
+with Reply on WhatsApp (wa.me, opens the owner's own WhatsApp) and Call
+buttons; photos, voice notes, documents, locations, button taps and ad
+referrals are named in one line. Non-production deployments send it to the
+test inbox, like every other email channel. Failed deliveries of our own
+messages (lead alert templates) are logged to the Worker logs. Duplicate
+deliveries of the same message id are dropped per Worker instance.
+Security: the POST is refused unless `X-Hub-Signature-256` is the
+HMAC-SHA256 of the raw body with `WHATSAPP_APP_SECRET` (Meta app →
+App settings → Basic → App secret); with no secret set every call gets a
+503. Setup: (1) set `WHATSAPP_APP_SECRET` and `WHATSAPP_WEBHOOK_VERIFY_TOKEN`
+(any long random string you make up) as Worker secrets in Cloudflare
+(Workers & Pages → lanka-new-homes → Settings → Variables and Secrets),
+(2) Meta app → WhatsApp → Configuration → Webhook: Callback URL
+`https://www.lankanewhomes.com/api/whatsapp/webhook`, Verify token = the same
+string, Verify and save, then subscribe the `messages` field, (3) subscribe
+the app to the WhatsApp account once:
+`POST /1432531762069175/subscribed_apps` (Graph API Explorer).
+
 **One-tap reply links = the answer signal.** The alert's Reply on
 WhatsApp / Call / Email buttons are signed links
 (`src/lib/lead-reply-links.ts`, HMAC of lead id + channel with

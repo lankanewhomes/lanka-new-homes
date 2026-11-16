@@ -62,6 +62,13 @@ been raised but not yet done.
 - [ ] Set up WhatsApp Cloud API + `lead_alert` template (app + number +
   System User token; see `docs/design.md` "Lead alerts"), then set
   `WHATSAPP_ACCESS_TOKEN` / `WHATSAPP_PHONE_NUMBER_ID` on Vercel.
+  (2026-11-16: number +1 647-779-5729 is registered and Connected on the
+  Cloud API; WhatsApp account approved; no payment method yet, so templates
+  can't be sent.)
+- [ ] Connect the incoming-message webhook: set `WHATSAPP_APP_SECRET` and
+  `WHATSAPP_WEBHOOK_VERIFY_TOKEN` as Cloudflare Worker secrets, then add the
+  callback URL in the Meta app (`docs/design.md`, "Incoming WhatsApp
+  messages").
 - [ ] Add a `support@lankanewhomes.com` mailbox (site currently shows the
   Gmail address instead).
 - [ ] Developers need to fill in Social Links → WhatsApp and Lead alerts
