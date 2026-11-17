@@ -50,7 +50,7 @@ else:
     y = 1010
 for t in (l1, l2):
     if t: d.text((M, y), t, font=L.font(72, 800), fill=INK); y += 84  # empty line = single-line title
-if city: d.text((M + 2, y - 8), city, font=L.font(46, 400), fill=BAR if land else (244, 123, 54)); y += 54  # regular weight, close under the title (owner 2026-11-17)  # owner 2026-11-16: city in the accent colour (orange project, green land)
+if city: d.text((M + 2, y + 2), city, font=L.font(46, 400), fill=BAR if land else (244, 123, 54)); y += 64  # regular weight, close under the title (owner 2026-11-17)  # owner 2026-11-16: city in the accent colour (orange project, green land)
 ff = L.font(52, 500); fw = L.width('FROM', ff, 4) + 52; pw = L.width(amount, ff) + 52; py = y + 30
 if amount:  # an empty amount (developer publishes no price) leaves the price box out
     d.rectangle((M, py, M + fw, py + 150), fill=INK); L.text_c(d, M + fw / 2, py + 46, 'FROM', ff, WHITE, spacing=4)

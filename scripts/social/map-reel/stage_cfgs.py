@@ -22,7 +22,7 @@ cfgs={
   'callout_voice':['Thirty-eight homes in two buildings.','Three bedrooms. Three bathrooms.','About eleven hundred square feet.','Landscaped gardens and security.'],
   'end_voice':'The Reflection, Thalawathugoda. From fifty-two million rupees.','routes':routes('refl')},
  'legado':{'id':'legado','kind':'land','geo':f'{J}/geo/legado/mapgeo.json','accent':'#A9C99A','title':['LEGADO'],'city':'Homagama','cardTitle':'Legado','cardCity':'Homagama','photos':lp,'endPhoto':lp[0],'price':'RS. 1.2M PER PERCH','url':'www.lankanewhomes.com/land/legado-homagama',
-  'intro_voice':'Legado, Homagama.','callouts':[['Only 8','Premium Plots'],['10 Perches','Each Plot'],['1st Class','Bimsawiya Title'],['Rs. 1.2M','Per Perch']],
+  'intro_voice':'Legado, Homagama.','callouts':[['Only 8','Premium Plots'],['10 Perches','Each Plot'],['1st Class','Bimsawiya Title']],
   'callout_voice':['Only eight premium plots.','Each plot is ten perches.','First class Bimsawiya title.','One point two million rupees per perch.'],
   'end_voice':'Legado, Homagama. Land from one point two million rupees per perch.','routes':routes('legado')}}
 for k,c in cfgs.items(): json.dump(c,open(f'{J}/w/cfg_{k}.json','w'),indent=1); print(k,[(r['key'],json.load(open(c['geo']))['routes'][r['key']]['min']) for r in c['routes']])
