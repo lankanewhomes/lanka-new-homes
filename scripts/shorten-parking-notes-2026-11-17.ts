@@ -43,7 +43,10 @@ for (const [slug, short] of Object.entries(SHORT)) {
     else note = 'description already has it'
   } else { amen.push({ name: 'Parking', description: original }); note = 'amenity added' }
   console.log(slug, '|', original.length, '->', short.length, '|', note)
-  if (apply) await payload.update({ collection: 'projects', id: p.id, data: { parking: short, amenities: amen } as never, overrideAccess: true })
+  if (apply) {
+    try { await payload.update({ collection: 'projects', id: p.id, data: { parking: short, amenities: amen } as never, overrideAccess: true }) }
+    catch (e: any) { console.log('  FAILED (left unchanged):', slug, String(e?.message ?? e).slice(0, 120)) }
+  }
 }
 console.log(apply ? 'APPLIED' : 'DRY RUN')
 process.exit(0)
