@@ -40,6 +40,8 @@ Update this file whenever a new keyword group or page is added.
 | `/projects/houses-for-sale-in-mount-lavinia` | "houses for sale in mount lavinia" (1,300/mo, difficulty 3) — all Mount Lavinia listings (added 2026-11-13) | new |
 | `/projects/houses-for-sale-in-kottawa` | "houses for sale in kottawa" (720/mo, difficulty 2) — all Kottawa listings (added 2026-11-13) | new |
 | `/projects/apartments-for-sale-in-rajagiriya` | "apartments for sale in rajagiriya" (390/mo, difficulty 31) — Rajagiriya apartments; only 1 listing so far (added 2026-11-13) | new |
+| `/projects/apartments-for-sale-in-dehiwala` | "apartments for sale in dehiwala" (590/mo, difficulty 10) — Dehiwala apartment/condominium listings only; houses page keeps all types (added 2026-11-16, owner request) | new |
+| `/projects/apartments-for-sale-in-mount-lavinia` | "apartments for sale in mount lavinia" (210/mo, difficulty 10) — Mount Lavinia apartments only (added 2026-11-16, owner request) | new |
 | `/projects/houses-for-sale-in-thalawathugoda` | "houses for sale in thalawathugoda" (590/mo, difficulty 2) — all Thalawathugoda listings (added 2026-11-13, owner request) | new |
 | `/projects/houses-for-sale-in-kadawatha` | "houses for sale in kadawatha" (1,900/mo, difficulty 4) — all Kadawatha listings (added 2026-11-13) | new |
 | `/projects/houses-for-sale-in-piliyandala` | "houses for sale in piliyandala" (2,400/mo, difficulty 5) — all Piliyandala listings (added 2026-11-13) | new |
