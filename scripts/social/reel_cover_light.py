@@ -38,8 +38,9 @@ if label != '-':
     y = 1010 + 44 + 26
 else:
     y = 1010
-for t in (l1, l2): d.text((M, y), t, font=L.font(72, 800), fill=INK); y += 84
-if city: d.text((M + 2, y + 2), city, font=L.font(46, 400), fill=BAR); y += 62  # owner 2026-11-16: city in the accent colour (orange project, green land)
+for t in (l1, l2):
+    if t: d.text((M, y), t, font=L.font(72, 800), fill=INK); y += 84  # empty line = single-line title
+if city: d.text((M + 2, y + 2), city, font=L.font(46, 500), fill=BAR if land else (244, 123, 54)); y += 62  # owner 2026-11-16: city in the accent colour (orange project, green land)
 ff = L.font(52, 500); fw = L.width('FROM', ff, 4) + 52; pw = L.width(amount, ff) + 52; py = y + 30
 d.rectangle((M, py, M + fw, py + 150), fill=INK); L.text_c(d, M + fw / 2, py + 46, 'FROM', ff, WHITE, spacing=4)
 d.rectangle((M + fw, py, M + fw + pw, py + 150), fill=WHITE); d.text((M + fw + 26, py + 46), amount, font=ff, fill=INK)
