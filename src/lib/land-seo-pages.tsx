@@ -11,6 +11,7 @@ import type { Land } from "@/types";
 // text from the live data (counts, lowest and highest published prices per perch), so it never goes stale and never states a market
 // price nobody published. A page with no plots yet says so honestly and asks search engines not to index it until it has some.
 
+export const kebab = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 const PERCHES_PER_ACRE = 160;
 const WESTERN = ["colombo", "gampaha", "kalutara"];
 
@@ -150,6 +151,60 @@ export const LAND_SEO_PAGES: Record<string, PageDef> = {
   },
 };
 
+// "Land for sale in <town>" pages (owner, 2026-11-16): one page per town where we hold several plots and people search for it
+// (Ubersuggest, Sri Lanka: Homagama 880, Kadawatha 880, Malabe 720, Piliyandala 720, Athurugiriya 390, Horana 320, Kaduwela 170,
+// Kahathuduwa 140 searches a month, difficulty 8-12). Plots are matched on the town named in the plot's city or location; all text comes
+// from the live plots. An empty page is noindex and left out of the sitemap, like the other land pages.
+export const LAND_TOWNS = [
+  { slug: "homagama", name: "Homagama", district: "Colombo" },
+  { slug: "kadawatha", name: "Kadawatha", district: "Gampaha" },
+  { slug: "malabe", name: "Malabe", district: "Colombo" },
+  { slug: "piliyandala", name: "Piliyandala", district: "Colombo" },
+  { slug: "athurugiriya", name: "Athurugiriya", district: "Colombo" },
+  { slug: "horana", name: "Horana", district: "Kalutara" },
+  { slug: "kaduwela", name: "Kaduwela", district: "Colombo" },
+  { slug: "kahathuduwa", name: "Kahathuduwa", district: "Colombo" },
+];
+
+function townPageDef({ slug, name, district }: (typeof LAND_TOWNS)[number]): PageDef {
+  const inTown = (land: Land) => new RegExp(`\\b${name}\\b`, "i").test(`${land.city ?? ""} ${land.location ?? ""}`);
+  const districtPath = district === "Colombo" ? "/land/best-land-for-sale-in-colombo" : `/land/district/${kebab(district)}`;
+  return {
+    path: `/land/land-for-sale-in-${slug}`,
+    title: `Land for Sale in ${name}`,
+    h1: `Land for Sale in ${name}`,
+    description: `Land for sale in ${name}, Sri Lanka: plots from developers and builders with prices per perch, sizes in perches and exact locations on LankaNewHomes.`,
+    intro: `Land plots for sale in ${name}, listed by developers and builders, with prices, sizes in perches and exact locations.`,
+    aboutTitle: `About land for sale in ${name}.`,
+    emptyText: `No land listings in ${name} yet. Browse land for sale in ${district} district.`,
+    relatedPaths: [`/neighborhoods/${slug}`, districtPath, "/land"],
+    select: (lands) => lands.filter(inTown).sort((a, b) => (perPerchLow(a) || Infinity) - (perPerchLow(b) || Infinity)),
+    paragraphs: (picked) => {
+      const priced = picked.filter((land) => perPerchLow(land) > 0);
+      const low = priced.length ? Math.min(...priced.map(perPerchLow)) : 0;
+      const high = priced.length ? Math.max(...priced.map(perPerchHigh)) : 0;
+      const sizes = picked.map((land) => land.landSizePerches ?? 0).filter((n) => n > 0);
+      const places = new Map<string, number>();
+      for (const land of picked) {
+        const city = (land.city ?? "").trim();
+        if (city && city.toLowerCase() !== name.toLowerCase()) places.set(city, (places.get(city) ?? 0) + 1);
+      }
+      const nearby = [...places.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4).map(([city, count]) => `${city} (${count})`).join(", ");
+      return [
+        picked.length
+          ? `This page lists the ${picked.length} land ${picked.length === 1 ? "plot" : "plots"} for sale in ${name} on LankaNewHomes, from developers, construction companies and independent builders${sizes.length ? `, from ${Math.min(...sizes)} to ${Math.max(...sizes)} perches` : ""}.${nearby ? ` Some are listed under nearby areas: ${nearby}.` : ""}`
+          : `Land plots in ${name} will appear here as developers and builders list them.`,
+        priced.length ? `Published prices per perch in ${name} run from ${formatLkr(low)}${high > low ? ` to ${formatLkr(high)}` : ""} (${priced.length} ${priced.length === 1 ? "plot" : "plots"} with a published per-perch price). Compare plots by price per perch rather than total price, because plot sizes differ.` : "",
+        `${name} is in ${district} district. For the area itself, read the [${name} neighbourhood guide](/neighborhoods/${slug}), or see all [land for sale in ${district} district](${districtPath}).`,
+        CHECKS,
+        ABOUT_FOOT,
+      ].filter(Boolean);
+    },
+  };
+}
+
+for (const town of LAND_TOWNS) LAND_SEO_PAGES[`town-${town.slug}`] = townPageDef(town);
+
 export async function landSeoMetadata(key: string): Promise<Metadata> {
   const def = LAND_SEO_PAGES[key];
   const picked = def.select(await getAllLands());
@@ -189,7 +244,6 @@ export async function landSeoHasListings(key: string) {
 // One page per district that has land ("land for sale in Kandy district"), built from the same data. Owner, 2026-11-02: Prime Lands has a
 // page for each of the 13 districts and we only had Colombo (docs/seo-opportunities-2026-11-02.md). The Colombo district keeps its own
 // page, /land/best-land-for-sale-in-colombo, so it is not repeated here.
-export const kebab = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 
 /** The districts that have at least one land plot, other than Colombo, as { name, slug, count }. */
 export function landDistricts(lands: Land[]): { name: string; slug: string; count: number }[] {
