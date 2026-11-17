@@ -54,7 +54,7 @@ def title_block(d, dy=0):
     size = min(fit(l, 880, 72, 800) for l in C['title']); y = HEAD_Y - 40 + dy
     for l in C['title']:
         d.text((LM, y), l, font=font(size, 800), fill=INK); y += size + 8
-    d.text((LM + 2, y - 8), C['city'], font=font(46, 400), fill=ACC_TXT); return y + 54  # city: regular weight, close under the title (owner 2026-11-17)
+    d.text((LM + 2, y + 2), C['city'], font=font(46, 400), fill=ACC_TXT); return y + 64  # city: regular weight, close under the title (owner 2026-11-17)
 
 
 def inner(d, heading, lines):
@@ -71,7 +71,7 @@ if __name__ == '__main__':
     for n, s in enumerate(SLIDES):
         pi = s[0]; ph = Image.open(MEDIA % pi).convert('RGB')
         im = fade_photo(ph, FY.get(pi, .5), start=740 if n else 780, ramp=220, fx=FX.get(pi, .5)); d = chrome(im, n, total)
-        if n == 0: title_block(d)
+        if n == 0: title_block(d, dy=-36)
         else: inner(d, s[1], s[2])
         im.save(f'{out}/slide-{n + 1:02d}.png')
     im = fade_photo(Image.open(MEDIA % END['photo']).convert('RGB'), FY.get(END['photo'], .5), start=640, ramp=240, fx=FX.get(END['photo'], .5)); d = chrome(im, total - 1, total)

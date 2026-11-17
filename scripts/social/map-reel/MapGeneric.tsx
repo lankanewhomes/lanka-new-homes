@@ -81,19 +81,19 @@ export const MapGeneric: React.FC<MapProps> = (p) => {
         <Label x={540} y={1250 + (p.title.length - 1) * 92 + 56} size={46} weight={400} color={ACC} o={clamp((f - 18) / 8) * (1 - clamp((f - 58) / 10))}>{p.city}</Label>
       </> : null}
       {heroO > 0 ? <>
-        <div style={{ position: 'absolute', left: 90, top: 400, width: 900, background: '#fff', padding: 14, opacity: heroO, transform: `translateY(${(1 - heroO) * 40}px)`, boxShadow: '0 30px 80px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.9)' }}>
-          <div style={{ position: 'relative', width: 872, height: 700, overflow: 'hidden', background: '#ddd' }}>
+        <div style={{ position: 'absolute', left: 150, top: 450, width: 780, background: '#fff', padding: 14, opacity: heroO, transform: `translateY(${(1 - heroO) * 40}px)`, boxShadow: '0 30px 80px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.9)' }}>
+          <div style={{ position: 'relative', width: 752, height: 620, overflow: 'hidden', background: '#ddd' }}>
             {p.photos.map((src, i) => { const st = HERO + 4 + i * PSLIDE; const o = i === 0 ? (f < st + PSLIDE ? 1 : 0) : clamp((f - st) / 3) * (f < st + PSLIDE || i === p.photos.length - 1 ? 1 : 0); return <Img key={i} src={staticFile(src)} style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: o, transform: `scale(${1 + Math.max(0, f - st) * 0.0009})` }} /> })}
           </div>
-          <div style={{ padding: '14px 6px 6px', fontFamily: DISPLAY, color: '#303030' }}>
-            <div style={{ fontWeight: 400, fontSize: 46, lineHeight: '56px', color: '#1a1a1a' }}>{p.cardTitle}</div>
-            <div style={{ fontWeight: 400, fontSize: 34, lineHeight: '50px', marginTop: -6, color: '#303030' }}>{p.cardCity}</div>
+          <div style={{ padding: '30px 8px 12px', fontFamily: DISPLAY, color: '#303030' }}>
+            <div style={{ fontWeight: 400, fontSize: 36, lineHeight: '44px', color: '#1a1a1a' }}>{p.cardTitle}</div>
+            <div style={{ fontWeight: 400, fontSize: 28, lineHeight: '38px', marginTop: 0, color: '#303030' }}>{p.cardCity}</div>
           </div>
         </div>
         <Label x={540} y={1348} size={big(p.callouts[ci][0])} weight={400} o={heroO * clamp(pop * 2)} sc={0.85 + 0.15 * pop}>{p.callouts[ci][0]}</Label>
         <Label x={540} y={1436} size={big(p.callouts[ci][1])} weight={400} color={ACC} o={heroO * clamp(pop * 2)} sc={0.85 + 0.15 * pop}>{p.callouts[ci][1]}</Label>
       </> : null}
-      {f >= T.END ? (() => { const e = f - T.END; const n = p.title.length; const urlTop = 1350, priceTop = urlTop - 30 - 150, cityTop = priceTop - 18 - 56, titleTop = cityTop - 8 - n * 84
+      {f >= T.END ? (() => { const e = f - T.END; const n = p.title.length; const urlTop = 1350, priceTop = urlTop - 30 - 150, cityTop = priceTop - 52 - 56, titleTop = cityTop - 86 - (n - 1) * 84
         const sweep = clamp((e - 4) / 26); const fade = (a: number) => clamp((e - a) / 10)
         return <AbsoluteFill>
         <AbsoluteFill style={{ opacity: clamp(e / 10), overflow: 'hidden' }}>
