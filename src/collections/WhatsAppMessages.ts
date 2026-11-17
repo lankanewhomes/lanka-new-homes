@@ -28,6 +28,8 @@ export const WhatsAppMessages: CollectionConfig = {
       { label: 'Read', value: 'read' },
       { label: 'Failed', value: 'failed' },
     ] },
+    // Archived conversations leave the Inbox tab; a new inbound message arrives un-archived, so the conversation comes back.
+    { name: 'archived', type: 'checkbox', defaultValue: false, index: true },
     { name: 'error', type: 'text' },
     // Meta's message id (wamid...). Unique, so a webhook retry never stores the same message twice.
     { name: 'waMessageId', type: 'text', unique: true, index: true },

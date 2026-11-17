@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 // Admin WhatsApp inbox (/dashboard/whatsapp): every message with developers, grouped by number. Nothing is sent until you press
 // "Approve & send" on a draft. Talks to /api/whatsapp/inbox.
 
-type Conversation = { phone: string; developerId: number | null; name: string | null; lastText: string; lastAt: string; lastDirection: "inbound" | "outbound"; unanswered: number; drafts: number };
+type Conversation = { phone: string; developerId: number | null; name: string | null; lastText: string; lastAt: string; lastDirection: "inbound" | "outbound"; unanswered: number; drafts: number; archived: boolean; hasSent: boolean };
 type Message = { id: number; direction: "inbound" | "outbound"; phone: string; text?: string | null; templateName?: string | null; status: string; error?: string | null; sentAt: string };
 type Recipient = { developerId: number; name: string; phone: string };
 type Waiting = { leadId: number; buyer: string; project: string; hours: number; developerId: number | null; developerName: string | null; developerPhone: string | null; template: string; params: string[] };
@@ -30,6 +30,7 @@ export function WhatsAppApp() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [text, setText] = useState("");
+  const [tab, setTab] = useState<"inbox" | "unread" | "sent" | "drafts" | "archived">("inbox");
   const [waiting, setWaiting] = useState<Waiting[]>([]);
   const threadEnd = useRef<HTMLDivElement>(null);
 
@@ -70,6 +71,14 @@ export function WhatsAppApp() {
     return r;
   };
 
+  const tabs: { key: typeof tab; label: string; match: (c: Conversation) => boolean }[] = [
+    { key: "inbox", label: "Inbox", match: (c) => !c.archived },
+    { key: "unread", label: "Unread", match: (c) => !c.archived && c.unanswered > 0 },
+    { key: "sent", label: "Sent", match: (c) => !c.archived && c.hasSent },
+    { key: "drafts", label: "Drafts", match: (c) => !c.archived && c.drafts > 0 },
+    { key: "archived", label: "Archived", match: (c) => c.archived },
+  ];
+  const shown = conversations.filter(tabs.find((t) => t.key === tab)!.match);
   const activeConv = conversations.find((c) => c.phone === active);
   const title = (c: { name: string | null; phone: string }) => c.name ?? `+${c.phone}`;
 
@@ -96,9 +105,15 @@ export function WhatsAppApp() {
             </ul>
           </div>
         ) : null}
+        <div className="flex flex-wrap gap-1 border-b border-[#e4ddd0] p-2">
+          {tabs.map((t) => {
+            const n = conversations.filter(t.match).length;
+            return <button key={t.key} type="button" onClick={() => setTab(t.key)} className={`px-2 py-1 text-[12px] ${tab === t.key ? "bg-[#1f1f1f] text-white" : "border border-[#e4ddd0]"}`}>{t.label}{n ? ` (${n})` : ""}</button>;
+          })}
+        </div>
         <ul className="max-h-[70vh] overflow-y-auto">
-          {conversations.length === 0 ? <li className="p-4 text-[14px] text-[#6b6355]">No messages yet. Replies from developers appear here.</li> : null}
-          {conversations.map((c) => (
+          {shown.length === 0 ? <li className="p-4 text-[14px] text-[#6b6355]">{conversations.length === 0 ? "No messages yet. Replies from developers appear here." : "Nothing in this tab."}</li> : null}
+          {shown.map((c) => (
             <li key={c.phone}>
               <button type="button" onClick={() => { setActive(c.phone); setComposing(false); setError(null); }} className={`block w-full border-b border-[#f0eadf] p-3 text-left ${active === c.phone ? "bg-[#f6f1e7]" : ""}`}>
                 <span className="flex items-center justify-between gap-2">
@@ -128,7 +143,10 @@ export function WhatsAppApp() {
         ) : active ? (
           <>
             <header className="border-b border-[#e4ddd0] p-3">
-              <p className="text-[16px] font-medium">{activeConv ? title(activeConv) : `+${active}`}</p>
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-[16px] font-medium">{activeConv ? title(activeConv) : `+${active}`}</p>
+                <button type="button" disabled={busy} onClick={() => void post({ action: activeConv?.archived ? "unarchive" : "archive", phone: active })} className="border border-[#1f1f1f] px-3 py-1 text-[12px] disabled:opacity-50">{activeConv?.archived ? "Move to inbox" : "Archive"}</button>
+              </div>
               <p className="text-[12px] text-[#6b6355]">+{active}{windowOpen ? " · they wrote in the last 24 hours, so you can send normal messages" : " · outside 24 hours: only an approved template can be sent"}</p>
             </header>
             <div className="flex-1 space-y-2 overflow-y-auto bg-[#f6f1e7] p-4" style={{ maxHeight: "55vh" }}>

@@ -631,3 +631,5 @@ alter type payload.enum_analytics_event_type add value if not exists 'floor_plan
 alter table leads add column if not exists whatsapp_continued_at timestamptz;
 -- Payload: alter type payload.enum_leads_source add value if not exists 'whatsapp'; alter table payload.leads add column if not exists whatsapp_continued_at timestamptz;
 -- Payload leads: email is optional (short form and WhatsApp window leave only name + number). alter table payload.leads alter column email drop not null;
+
+-- WhatsApp inbox archive (2026-11-16). Payload: alter table payload.whatsapp_messages add column if not exists archived boolean default false;

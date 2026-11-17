@@ -4,11 +4,11 @@ import { digitsOnly, loadRecipients, renderTemplate, sameNumber, templateNeedsLe
 
 // Admin-only backend for /dashboard/whatsapp. Reads the whatsapp-messages table; writes drafts; sends ONLY a draft the admin approved.
 //   GET  ?view=conversations | thread&phone=… | recipients
-//   POST { action: "draft", phone, developerId?, template, params } | { action: "draft", phone, text } | { action: "send", id } | { action: "discard", id }
+//   POST { action: "archive" | "unarchive", phone } | { action: "draft", phone, developerId?, template, params } | { action: "draft", phone, text } | { action: "send", id } | { action: "discard", id }
 // A text draft is refused unless the other person wrote to us in the last 24 hours (WhatsApp's rule); a template draft is always allowed.
 export const dynamic = "force-dynamic";
 
-type Msg = { id: number; direction: "inbound" | "outbound"; phone: string; text?: string | null; templateName?: string | null; status: string; error?: string | null; sentAt: string; developer?: number | { id: number } | null };
+type Msg = { id: number; direction: "inbound" | "outbound"; phone: string; text?: string | null; templateName?: string | null; status: string; error?: string | null; sentAt: string; archived?: boolean | null; developer?: number | { id: number } | null };
 
 async function admin(request: Request) {
   const { getPayload } = await import("payload");
@@ -93,7 +93,7 @@ export async function GET(request: Request) {
     const who = recipients.find((r) => sameNumber(r.phone, c.phone));
     // A message sent or logged against a developer keeps that link, so the conversation is named even when the number is not saved on their profile.
     const linkedId = devIdByPhone.get(c.phone) ?? null;
-    return { phone: c.phone, developerId: who?.developerId ?? linkedId, name: who?.name ?? (linkedId ? devNames.get(linkedId) ?? null : null), lastText: c.last.text ?? (c.last.templateName ? `Template: ${c.last.templateName}` : ""), lastAt: c.last.sentAt, lastDirection: c.last.direction, unanswered, drafts: c.drafts };
+    return { phone: c.phone, developerId: who?.developerId ?? linkedId, name: who?.name ?? (linkedId ? devNames.get(linkedId) ?? null : null), lastText: c.last.text ?? (c.last.templateName ? `Template: ${c.last.templateName}` : ""), lastAt: c.last.sentAt, lastDirection: c.last.direction, unanswered, drafts: c.drafts, archived: Boolean(c.last.archived), hasSent: Boolean(lastOut) };
   });
   return NextResponse.json({ conversations });
 }
@@ -109,6 +109,13 @@ export async function POST(request: Request) {
     delete: (a: Record<string, unknown>) => Promise<unknown>;
   };
   const body = (await request.json().catch(() => ({}))) as { action?: string; id?: number; phone?: string; developerId?: number; template?: string; params?: string[]; text?: string; leadId?: number };
+
+  if (body.action === "archive" || body.action === "unarchive") {
+    const phone = digitsOnly(body.phone ?? "");
+    if (!phone) return NextResponse.json({ error: "phone required" }, { status: 400 });
+    await db.update({ collection: COLLECTION, where: { phone: { equals: phone } }, overrideAccess: true, data: { archived: body.action === "archive" } });
+    return NextResponse.json({ ok: true });
+  }
 
   if (body.action === "draft") {
     const phone = digitsOnly(body.phone ?? "");
