@@ -19,3 +19,4 @@ Long page-by-page detail is in `docs/design.md`. Check it before any UI change a
 | Check before shipping | Look at the page in a browser (hydrated, section opened), not just type-check |
 | Mobile | 390px phone must work; no horizontal scroll |
 | Language | Listing text can be English, Sinhala or Tamil; see "Languages" in `docs/design.md` |
+| Small print (2026-11-17) | Project and land pages end with a very small muted "Last update" date and a short LankaNewHomes source note (`ListingDisclaimer`); rewrite wording, never copy another site's |

@@ -11,6 +11,7 @@ import { hasPremiumStyleBadge, isPaidPackageTier } from "@/lib/packages";
 import { FEATURED_TOOLTIP, VERIFIED_DEVELOPER_TOOLTIP } from "@/lib/developer-badges";
 import { pickSimilarListings } from "@/lib/similar-listings";
 import { SimilarListingsSection } from "@/components/marketplace/similar-listings";
+import { ListingDisclaimer } from "@/components/marketplace/listing-disclaimer";
 import {
   AmenitiesShowcaseSection,
   CommercialAreasSection,
@@ -220,6 +221,8 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
         <StatsContactCard project={project} developer={developer} />
 
         <SimilarListingsSection listings={similarListings} />
+
+        <ListingDisclaimer updatedAt={project.updatedAt ?? project.createdAt} />
       </div>
     </div>
   );

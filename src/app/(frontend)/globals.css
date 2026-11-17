@@ -21238,3 +21238,22 @@ body:has(.request-info-overlay) .listing-hero-quickjump-bar { display: none; }
 /* Lands chip (owner, 2026-11-09): orange border only, no background, no green. */
 .hero-quick-link-pill.hero-quick-link-pill-land, .mobile-location-search-chips a.is-land { background: transparent; border-color: #f47b36; }
 .hero-quick-link-pill.hero-quick-link-pill-land:hover, .mobile-location-search-chips a.is-land:hover { background: transparent; border-color: #d9621f; }
+
+/* Small print at the bottom of project and land pages (owner, 2026-11-17): last update date + a short note on where the information comes from. */
+.listing-disclaimer {
+  width: min(1160px, 100%);
+  margin: 6px auto 0;
+  padding: 0 4px 8px;
+  font-family: var(--font-ref-sans);
+  font-size: 11px;
+  line-height: 1.55;
+  font-weight: 400;
+  color: #8a8478;
+}
+.listing-disclaimer p {
+  margin: 0;
+}
+.listing-disclaimer .listing-disclaimer-date {
+  margin-bottom: 2px;
+  color: #6b6355;
+}

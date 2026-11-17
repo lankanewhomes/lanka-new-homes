@@ -2866,3 +2866,11 @@ ShieldCheck = warranty). Rows without topic names keep plain lines.
 `/dashboard` sidebar (`_components/AppShell.tsx`, items in `_components/nav.ts`): soft grey panel, square corners, small uppercase captions
 ("Work" over the top pages, "Manage" over the collapsible groups, divider between), 18px light-stroke icons, sub-pages hang off a thin
 vertical guide line, and the open page is a white pill with a 3px orange (`bg-brand`) bar on its left edge. Badges stay orange-tinted.
+
+## Listing small print: last update + source note (owner, 2026-11-17)
+
+`ListingDisclaimer` (`src/components/marketplace/listing-disclaimer.tsx`) sits at the very bottom of every project (`/projects/{slug}`) and land (`/land/{slug}`) page, after Similar
+listings: a "Last update: Nov 16, 2026" line (the listing's own `updatedAt`, Asia/Colombo time, falls back to `createdAt`) and a short plain note, rewritten for
+LankaNewHomes, saying details come from developers' websites, brochures, adverts and our own research, can change without notice, and should be confirmed with the
+developer. Style `.listing-disclaimer`: 11px, weight 400, muted `#8a8478` (date line `#6b6355`), no heading, no box, no uppercase. Do not copy another site's wording. Plot,
+floor-plan and preview pages do not carry it yet.

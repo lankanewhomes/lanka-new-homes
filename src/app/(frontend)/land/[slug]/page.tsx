@@ -8,6 +8,7 @@ import { buildLandDetailRows, formatLandSize, landToProjectShape } from "@/lib/l
 import { getNeighborhoodBySlug } from "@/lib/neighborhood-store";
 import { pickSimilarListings } from "@/lib/similar-listings";
 import { SimilarListingsSection } from "@/components/marketplace/similar-listings";
+import { ListingDisclaimer } from "@/components/marketplace/listing-disclaimer";
 import { formatLkr } from "@/lib/format";
 import { getDeveloperBySlug } from "@/lib/developer-store";
 import { LandPlotsGridSection } from "@/components/marketplace/land-plots-grid";
@@ -271,6 +272,8 @@ export default async function LandDetailPage({ params }: LandPageProps) {
         <StatsContactCard project={project} developer={developer} requestInfoVariant="inquiry" />
 
         <SimilarListingsSection listings={similarListings} basePath="/land" />
+
+        <ListingDisclaimer updatedAt={project.updatedAt ?? project.createdAt} />
       </div>
     </div>
   );
