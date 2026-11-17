@@ -148,7 +148,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: true });
     }
     const result = m.templateName
-      ? await sendWhatsAppTemplate({ to: m.phone, bodyParams: m.templateParams ?? [], template: m.templateName, language: "en", ...(templateNeedsLead(m.templateName) && m.lead ? { buttonUrlSuffix: `collections/leads/${typeof m.lead === "object" ? m.lead.id : m.lead}` } : {}) })
+      ? await sendWhatsAppTemplate({ to: m.phone, bodyParams: m.templateParams ?? [], template: m.templateName, language: "en", ...(templateNeedsLead(m.templateName) && m.lead ? { buttonIndex: 1, buttonUrlSuffix: `collections/leads/${typeof m.lead === "object" ? m.lead.id : m.lead}` } : {}) })
       : await sendWhatsAppText(m.phone, m.text ?? "");
     if (!result.ok) {
       await db.update({ collection: COLLECTION, id: m.id, overrideAccess: true, data: { status: "failed", error: result.error.slice(0, 250) } });
