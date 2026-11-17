@@ -19,10 +19,10 @@
   --d-ok: #15803d;
   --d-warn: #b45309;
   --d-bad: #b91c1c;
-  /* Sidebar (owner, 2026-10-18): a soft rounded panel, white pill for the open page. */
-  --d-side: #efeeeb;
-  --d-side-active: #ffffff;
-  --d-side-text: #6f6c66;
+  /* Sidebar (owner, 2026-11-16): dark ink panel, white logo, orange pill on the open page. */
+  --d-side: #14161b;
+  --d-side-active: rgba(255, 255, 255, 0.08);
+  --d-side-text: #a4a9b4;
 }
 .dark {
   --d-bg: #0f0f12;
@@ -40,9 +40,9 @@
   --d-ok: #4ade80;
   --d-warn: #fbbf24;
   --d-bad: #f87171;
-  --d-side: #1b1b20;
-  --d-side-active: #2a2a31;
-  --d-side-text: #a8a196;
+  --d-side: #0a0b0e;
+  --d-side-active: rgba(255, 255, 255, 0.08);
+  --d-side-text: #9ba0ab;
 }
 
 @theme inline {

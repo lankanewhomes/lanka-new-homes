@@ -1340,6 +1340,11 @@ updates both automatically.
   (`grid gap-4 px-4 pt-6 pb-16 lg:grid-cols-[220px_1fr] lg:px-6 lg:pt-8` +
   `DashboardSidebar` + `DashboardHeader`) — keep new admin pages consistent
   with this rather than custom padding per page.
+- `/dashboard` sidebar (`AppShell.tsx`, tokens in `dashboard.css`; owner, 2026-11-16, "different design, make it fast, change the logo"):
+  dark ink panel (`--d-side` #14161b) full height, no outer padding, the lowercase white logo
+  (`/brand/lankanewhomes-logo-white.png`, 42px tall) at the top, open page = solid orange (`bg-brand`) rounded pill,
+  groups as plain rows with their pages on a thin left guide line, white badges. The clicked page lights up at once
+  (`going` state) before the new page arrives, and the leads count refetches at most once a minute.
 - `DashboardSidebar` (in `src/components/dashboard/components.tsx`) renders
   `ADMIN_NAV_LINKS` by default — a single shared list. Add a new admin
   section there once rather than editing every `/admin/*` page's inline
