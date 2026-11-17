@@ -145,7 +145,10 @@ export function WhatsAppApp() {
             <header className="border-b border-[#e4ddd0] p-3">
               <div className="flex items-center justify-between gap-2">
                 <p className="text-[16px] font-medium">{activeConv ? title(activeConv) : `+${active}`}</p>
+                <span className="flex gap-2">
+                <a href={`https://wa.me/${active}`} target="_blank" rel="noopener noreferrer" title="Opens this person's chat in your own WhatsApp (phone, Web or Desktop). Tap the call icon there." className="border border-[#1f1f1f] px-3 py-1 text-[12px]">Call from my WhatsApp</a>
                 <button type="button" disabled={busy} onClick={() => void post({ action: activeConv?.archived ? "unarchive" : "archive", phone: active })} className="border border-[#1f1f1f] px-3 py-1 text-[12px] disabled:opacity-50">{activeConv?.archived ? "Move to inbox" : "Archive"}</button>
+                </span>
               </div>
               <p className="text-[12px] text-[#6b6355]">+{active}{windowOpen ? " · they wrote in the last 24 hours, so you can send normal messages" : " · outside 24 hours: only an approved template can be sent"}</p>
             </header>
