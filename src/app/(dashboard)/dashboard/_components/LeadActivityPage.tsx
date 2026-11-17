@@ -27,7 +27,7 @@ function minutes(m: number | null): string {
 }
 
 /** How a developer treats the lead emails. Opens are counted by a tiny image some mail apps block, so clicks without opens still mean "read". */
-function Reading({ sent, opened, clicks }: { sent: number; opened: number; clicks: number }) {
+export function Reading({ sent, opened, clicks }: { sent: number; opened: number; clicks: number }) {
   if (!sent) return <span className="text-muted">No tracked email</span>;
   if (opened === sent) return <StatusChip value="ok" label={sent === 1 ? "Opened" : "Opens every one"} />;
   if (opened > 0) return <StatusChip value="pending" label="Opens some" />;
@@ -38,7 +38,7 @@ function Reading({ sent, opened, clicks }: { sent: number; opened: number; click
 // A refused WhatsApp alert is shown as "Blocked by Meta" (owner, 2026-11-15): the send is rejected on our side (business number not
 // registered, payment method, business verification), not because of the developer's number. The lead still went by email.
 /** The WhatsApp alert to the developer for one lead: sent, failed, or not attempted (no number on file, or WhatsApp not connected). */
-function whatsappAlert(r: LeadActivityRow): { state: "sent" | "failed" | "skipped" | "none"; to: string; why: string } {
+export function whatsappAlert(r: LeadActivityRow): { state: "sent" | "failed" | "skipped" | "none"; to: string; why: string } {
   const e = r.alertLog.find((x) => x.channel === "whatsapp");
   if (!e) return { state: "none", to: "", why: "" };
   if (e.status === "sent") return { state: "sent", to: e.to, why: "" };

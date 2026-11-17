@@ -9,7 +9,9 @@ import { PageHero, heroBtnSolid } from "./PageHero";
 import { StatusChip } from "./StatusChip";
 import { flatFields, getPath } from "./schema-utils";
 import { allOf } from "../_data/scope";
-import { apiCount, apiCreate, apiDelete, apiFind, apiGet, apiUpdate, type Doc, type Where } from "../_data/api";
+import { apiCount, apiCreate, apiDelete, apiFind, apiGet, apiGetJson, apiUpdate, type Doc, type Where } from "../_data/api";
+import type { LeadActivityResponse, LeadActivityRow } from "@/collections/endpoints/lead-activity";
+import { Reading, whatsappAlert } from "./LeadActivityPage";
 import { TABS, loadTiles, type Tile } from "../_data/list-extras";
 import type { SchemaField } from "../_mock/types";
 
@@ -74,6 +76,19 @@ function ListInner({ slug, initialFilter }: ListProps) {
   const [tabCounts, setTabCounts] = useState<Record<string, number>>({});
 
   useEffect(() => { const t = setTimeout(() => setQDebounced(q.trim()), 300); return () => clearTimeout(t); }, [q]);
+
+  // Leads (admin): how each enquiry reached the developer, from the same feed as Lead activity (owner, 2026-11-17: "on all leads also put
+  // opened, link clicks, email reading, WhatsApp alerts"). Matched to the rows by lead id; leads older than a year show blanks.
+  const [activity, setActivity] = useState<Map<string, LeadActivityRow> | null>(null);
+  const showTracking = slug === "leads" && d.role === "admin";
+  useEffect(() => {
+    if (!showTracking) return;
+    let alive = true;
+    apiGetJson<LeadActivityResponse>("/lead-activity?days=365")
+      .then((res) => { if (alive) setActivity(new Map(res.leads.map((l) => [String(l.id), l]))); })
+      .catch(() => { if (alive) setActivity(new Map()); });
+    return () => { alive = false; };
+  }, [showTracking, reload]);
 
   const fields = useMemo(() => (schema ? flatFields(schema.fields).filter((f) => !f.hidden) : []), [schema]);
   const admin = d.role === "admin";
@@ -290,16 +305,18 @@ function ListInner({ slug, initialFilter }: ListProps) {
                       </button>
                     </th>
                   ))}
+                  {showTracking ? ["Email sent", "Reminder emails", "Opened", "Link clicks", "Email reading", "WhatsApp alert"].map((h) => <th key={h} className="whitespace-nowrap px-3 py-2.5">{h}</th>) : null}
                   <th className="w-28 px-3 py-2.5" />
                 </tr>
               </thead>
               <tbody>
-                {loading ? Array.from({ length: 6 }, (_, i) => <tr key={i} className="border-b border-line last:border-0"><td className="px-3 py-3"><div className="d-skeleton h-4 w-4" /></td>{shown.map((f) => <td key={f.name} className="px-3 py-3"><div className="d-skeleton h-4 w-full max-w-40" /></td>)}<td /></tr>) : list.map((r, i) => (
+                {loading ? Array.from({ length: 6 }, (_, i) => <tr key={i} className="border-b border-line last:border-0"><td className="px-3 py-3"><div className="d-skeleton h-4 w-4" /></td>{shown.map((f) => <td key={f.name} className="px-3 py-3"><div className="d-skeleton h-4 w-full max-w-40" /></td>)}{showTracking ? [0, 1, 2, 3, 4, 5].map((k) => <td key={k} className="px-3 py-3"><div className="d-skeleton h-4 w-full max-w-24" /></td>) : null}<td /></tr>) : list.map((r, i) => (
                   <Fragment key={String(r.id)}>
                   {grouped && (i === 0 || String(list[i - 1].listingName ?? "") !== String(r.listingName ?? "")) ? <tr className="bg-subtle"><td colSpan={shown.length + 2} className="px-3 py-2 text-sm font-semibold">{String(r.listingName || "General")} <span className="ml-1 text-xs font-normal text-muted">{list.filter((x) => String(x.listingName ?? "") === String(r.listingName ?? "")).length} to-do{list.filter((x) => String(x.listingName ?? "") === String(r.listingName ?? "")).length === 1 ? "" : "s"}</span></td></tr> : null}
                   <tr onClick={() => router.push(`/dashboard/${slug}/${r.id}`)} className="group cursor-pointer border-b border-line last:border-0 hover:bg-subtle/60">
                     <td className="px-3 py-2.5" onClick={(e) => e.stopPropagation()}><input type="checkbox" aria-label={`Select row ${r.id}`} checked={picked.has(r.id)} onChange={() => setPicked((p) => { const n = new Set(p); if (n.has(r.id)) n.delete(r.id); else n.add(r.id); return n; })} /></td>
                     {shown.map((f) => <td key={f.name} className={`px-3 py-2.5 ${f.name === titleField ? "min-w-[16rem] font-medium" : ""}`}><Cell field={f} row={r} titleOf={titleOf} /></td>)}
+                    {showTracking ? <TrackingCells row={activity?.get(String(r.id))} loading={activity === null} /> : null}
                     <td className="px-3 py-2.5" onClick={(e) => e.stopPropagation()}>
                       <span className="flex justify-end gap-0.5 opacity-0 transition group-hover:opacity-100 focus-within:opacity-100">
                         <Link href={`/dashboard/${slug}/${r.id}`} aria-label="Edit" className="p-1.5 text-muted hover:bg-subtle hover:text-fg"><Pencil size={14} /></Link>
@@ -357,6 +374,26 @@ function ListInner({ slug, initialFilter }: ListProps) {
         </div>
       ) : null}
     </div>
+  );
+}
+
+/** The tracking columns of the leads list: email sent, reminder emails, emails opened, link clicks, how the developer reads the emails, and the WhatsApp alert. */
+function TrackingCells({ row, loading }: { row: LeadActivityRow | undefined; loading: boolean }) {
+  const td = "whitespace-nowrap px-3 py-2.5";
+  if (!row) return <>{[0, 1, 2, 3, 4, 5].map((k) => <td key={k} className={td}>{loading ? <div className="d-skeleton h-4 w-16" /> : <span className="text-muted">–</span>}</td>)}</>;
+  const wa = whatsappAlert(row);
+  const emailed = row.alertLog.find((e) => e.channel === "email");
+  const sent = emailed ? emailed.status === "sent" : /^Email sent/.test(row.alertSummary);
+  const test = Boolean((emailed?.routing && emailed.routing !== "live") || /TEST/.test(row.alertSummary));
+  return (
+    <>
+      <td className={td}>{emailed?.status === "failed" ? <StatusChip value="failed" label="Failed" /> : sent ? <StatusChip value={test ? "pending" : "ok"} label={test ? "Sent to test inbox" : "Sent"} /> : <StatusChip value="failed" label="Not sent" />}</td>
+      <td className={`${td} tabular-nums`}>{row.reminders ? `${row.reminders} of 2` : <span className="text-muted">None yet</span>}</td>
+      <td className={`${td} tabular-nums`}>{row.emails.sent ? `${row.emails.opened} of ${row.emails.sent}` : <span className="text-muted">–</span>}</td>
+      <td className={`${td} tabular-nums`}>{row.emails.sent ? row.emails.clicks : <span className="text-muted">–</span>}</td>
+      <td className={td}><Reading sent={row.emails.sent} opened={row.emails.opened} clicks={row.emails.clicks} /></td>
+      <td className={td}>{wa.state === "sent" ? <StatusChip value="ok" label="Sent" /> : wa.state === "failed" ? <StatusChip value="failed" label="Blocked by Meta" /> : wa.state === "skipped" ? <StatusChip value="pending" label="Not sent" /> : <span className="text-muted">No number</span>}</td>
+    </>
   );
 }
 
