@@ -10,6 +10,7 @@ export type MapProps = {
   routes: { key: string; label: string }[]; photos: string[]; callouts: [string, string][]; callDur: number[]; endPhoto: string; price: string; url: string
 }
 const HERO = 72, RLEN = 72, TAIL = 200
+const E = 170 // end card: info block sits low in the safe zone (owner 2026-11-17), clear of the platform buttons
 export const timeline = (p: MapProps) => {
   const starts = p.callDur.reduce<number[]>((a, d, i) => [...a, i ? a[i - 1] + p.callDur[i - 1] : HERO + 4], [])
   const callEnd = starts[starts.length - 1] + p.callDur[p.callDur.length - 1]
@@ -93,16 +94,16 @@ export const MapGeneric: React.FC<MapProps> = (p) => {
         <Label x={540} y={1440} size={big(p.callouts[ci][1])} weight={400} color={ACC} o={heroO * clamp(pop * 2)} sc={0.85 + 0.15 * pop}>{p.callouts[ci][1]}</Label>
       </> : null}
       {f >= T.END ? <AbsoluteFill style={{ background: `rgba(10,12,16,${0.8 * endT})` }}>
-        <div style={{ position: 'absolute', left: 290, top: 420, width: 500, background: '#fff', padding: 14, opacity: clamp((f - T.END - 2) / 10), transform: `translateY(${(1 - clamp((f - T.END - 2) / 10)) * 28}px)`, boxShadow: '0 30px 80px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.9)' }}>
+        <div style={{ position: 'absolute', left: 290, top: 420 + E, width: 500, background: '#fff', padding: 14, opacity: clamp((f - T.END - 2) / 10), transform: `translateY(${(1 - clamp((f - T.END - 2) / 10)) * 28}px)`, boxShadow: '0 30px 80px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.9)' }}>
           <Img src={staticFile(p.endPhoto)} style={{ width: 472, height: 300, objectFit: 'cover', display: 'block' }} />
         </div>
-        {p.title.map((t, k) => <div key={t} style={{ position: 'absolute', left: 0, width: 1080, top: 800 + k * 84, textAlign: 'center', fontFamily: DISPLAY, fontWeight: 800, fontSize: 72, lineHeight: '84px', color: '#fff', textTransform: 'uppercase', opacity: clamp((f - T.END - 4 - k * 2) / 8), transform: `scale(${0.88 + 0.12 * clamp((f - T.END - 4 - k * 2) / 8)})`, whiteSpace: 'nowrap' }}>{t}</div>)}
-        <div style={{ position: 'absolute', left: 0, width: 1080, top: 800 + p.title.length * 84 + 8, textAlign: 'center', fontFamily: DISPLAY, fontWeight: 400, fontSize: 46, color: ACC, opacity: clamp((f - T.END - 12) / 10) }}>{p.city}</div>
-        <div style={{ position: 'absolute', left: 0, width: 1080, top: 800 + p.title.length * 84 + 112, display: 'flex', justifyContent: 'center', opacity: clamp((f - T.END - 18) / 12), transform: `translateY(${(1 - clamp((f - T.END - 18) / 12)) * 24}px)` }}>
+        {p.title.map((t, k) => <div key={t} style={{ position: 'absolute', left: 0, width: 1080, top: 800 + E + k * 84, textAlign: 'center', fontFamily: DISPLAY, fontWeight: 800, fontSize: 72, lineHeight: '84px', color: '#fff', textTransform: 'uppercase', opacity: clamp((f - T.END - 4 - k * 2) / 8), transform: `scale(${0.88 + 0.12 * clamp((f - T.END - 4 - k * 2) / 8)})`, whiteSpace: 'nowrap' }}>{t}</div>)}
+        <div style={{ position: 'absolute', left: 0, width: 1080, top: 800 + E + p.title.length * 84 + 8, textAlign: 'center', fontFamily: DISPLAY, fontWeight: 400, fontSize: 46, color: ACC, opacity: clamp((f - T.END - 12) / 10) }}>{p.city}</div>
+        <div style={{ position: 'absolute', left: 0, width: 1080, top: 800 + E + p.title.length * 84 + 112, display: 'flex', justifyContent: 'center', opacity: clamp((f - T.END - 18) / 12), transform: `translateY(${(1 - clamp((f - T.END - 18) / 12)) * 24}px)` }}>
           <div style={{ height: 150, display: 'flex', alignItems: 'center', padding: '0 26px', backgroundColor: '#0b1220', backgroundImage: 'repeating-linear-gradient(0deg, rgba(255,255,255,0.28) 0 2px, transparent 2px 50px), repeating-linear-gradient(90deg, rgba(255,255,255,0.28) 0 2px, transparent 2px 50px)', color: '#fff', fontFamily: DISPLAY, fontSize: 52, fontWeight: 500, letterSpacing: 4 }}>FROM</div>
           <div style={{ height: 150, display: 'flex', alignItems: 'center', padding: '0 26px', background: '#fff', color: '#0b1220', fontFamily: DISPLAY, fontSize: 52, fontWeight: 500, whiteSpace: 'nowrap' }}>{p.price}</div>
         </div>
-        <div style={{ position: 'absolute', left: 0, width: 1080, top: 800 + p.title.length * 84 + 292, textAlign: 'center', opacity: clamp((f - T.END - 28) / 10) }}><span style={{ display: 'inline-block', fontFamily: DISPLAY, background: '#fff', color: '#0b1220', fontSize: 27, fontWeight: 500, padding: '18px 22px' }}>{p.url}</span></div>
+        <div style={{ position: 'absolute', left: 0, width: 1080, top: 800 + E + p.title.length * 84 + 292, textAlign: 'center', opacity: clamp((f - T.END - 28) / 10) }}><span style={{ display: 'inline-block', fontFamily: DISPLAY, background: '#fff', color: '#0b1220', fontSize: 27, fontWeight: 500, padding: '18px 22px' }}>{p.url}</span></div>
       </AbsoluteFill> : null}
       <Img src={staticFile('media/logo-white.png')} style={{ position: 'absolute', left: 100, top: 262, width: 210, filter: 'drop-shadow(0 2px 10px rgba(0,0,0,0.55))' }} />
     </AbsoluteFill>
