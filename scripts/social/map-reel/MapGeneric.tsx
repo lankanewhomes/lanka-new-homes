@@ -57,7 +57,7 @@ export const MapGeneric: React.FC<MapProps> = (p) => {
   const ACC = p.accent
   const ci = Math.max(0, T.starts.filter((s) => f >= s).length - 1)
   const pop = clamp((f - T.starts[ci]) / 5)
-  const big = (t: string) => (t.length > 11 ? 92 : 104)
+  const big = (t: string) => (t.length > 11 ? 80 : 90)
   return (
     <AbsoluteFill style={{ background: '#1b1e24', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', left: 0, top: 0, width: geo.w, height: geo.h, transformOrigin: '0 0', transform: `translate(${540 - c.cx * c.s}px, ${960 - c.cy * c.s}px) scale(${c.s})`, filter: 'brightness(1.5) contrast(1.05)' }}>
@@ -78,33 +78,38 @@ export const MapGeneric: React.FC<MapProps> = (p) => {
         </React.Fragment>) : null })}
       {f < HERO ? <>
         {p.title.map((t, k) => <Label key={t} x={540} y={1250 + k * 92} size={86} o={clamp((f - 12 - k * 2) / 8) * (1 - clamp((f - 58) / 10))}>{t}</Label>)}
-        <Label x={540} y={1250 + p.title.length * 92 + 66} size={46} weight={400} color={ACC} o={clamp((f - 18) / 8) * (1 - clamp((f - 58) / 10))}>{p.city}</Label>
+        <Label x={540} y={1250 + (p.title.length - 1) * 92 + 56} size={46} weight={400} color={ACC} o={clamp((f - 18) / 8) * (1 - clamp((f - 58) / 10))}>{p.city}</Label>
       </> : null}
       {heroO > 0 ? <>
-        <div style={{ position: 'absolute', left: 220, top: 420, width: 640, background: '#fff', padding: 14, opacity: heroO, transform: `translateY(${(1 - heroO) * 40}px)`, boxShadow: '0 30px 80px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.9)' }}>
-          <div style={{ position: 'relative', width: 612, height: 560, overflow: 'hidden', background: '#ddd' }}>
+        <div style={{ position: 'absolute', left: 90, top: 400, width: 900, background: '#fff', padding: 14, opacity: heroO, transform: `translateY(${(1 - heroO) * 40}px)`, boxShadow: '0 30px 80px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.9)' }}>
+          <div style={{ position: 'relative', width: 872, height: 700, overflow: 'hidden', background: '#ddd' }}>
             {p.photos.map((src, i) => { const st = HERO + 4 + i * PSLIDE; const o = i === 0 ? (f < st + PSLIDE ? 1 : 0) : clamp((f - st) / 3) * (f < st + PSLIDE || i === p.photos.length - 1 ? 1 : 0); return <Img key={i} src={staticFile(src)} style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: o, transform: `scale(${1 + Math.max(0, f - st) * 0.0009})` }} /> })}
           </div>
           <div style={{ padding: '14px 6px 6px', fontFamily: DISPLAY, color: '#303030' }}>
-            <div style={{ fontWeight: 400, fontSize: 38, lineHeight: '48px', color: '#1a1a1a' }}>{p.cardTitle}</div>
-            <div style={{ fontWeight: 400, fontSize: 29, lineHeight: '48px', marginTop: -5, color: '#303030' }}>{p.cardCity}</div>
+            <div style={{ fontWeight: 400, fontSize: 46, lineHeight: '56px', color: '#1a1a1a' }}>{p.cardTitle}</div>
+            <div style={{ fontWeight: 400, fontSize: 34, lineHeight: '50px', marginTop: -6, color: '#303030' }}>{p.cardCity}</div>
           </div>
         </div>
-        <Label x={540} y={1330} size={big(p.callouts[ci][0])} weight={400} o={heroO * clamp(pop * 2)} sc={0.85 + 0.15 * pop}>{p.callouts[ci][0]}</Label>
-        <Label x={540} y={1440} size={big(p.callouts[ci][1])} weight={400} color={ACC} o={heroO * clamp(pop * 2)} sc={0.85 + 0.15 * pop}>{p.callouts[ci][1]}</Label>
+        <Label x={540} y={1348} size={big(p.callouts[ci][0])} weight={400} o={heroO * clamp(pop * 2)} sc={0.85 + 0.15 * pop}>{p.callouts[ci][0]}</Label>
+        <Label x={540} y={1436} size={big(p.callouts[ci][1])} weight={400} color={ACC} o={heroO * clamp(pop * 2)} sc={0.85 + 0.15 * pop}>{p.callouts[ci][1]}</Label>
       </> : null}
-      {f >= T.END ? <AbsoluteFill style={{ background: `rgba(10,12,16,${0.8 * endT})` }}>
-        <div style={{ position: 'absolute', left: 290, top: 420 + E, width: 500, background: '#fff', padding: 14, opacity: clamp((f - T.END - 2) / 10), transform: `translateY(${(1 - clamp((f - T.END - 2) / 10)) * 28}px)`, boxShadow: '0 30px 80px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.9)' }}>
-          <Img src={staticFile(p.endPhoto)} style={{ width: 472, height: 300, objectFit: 'cover', display: 'block' }} />
-        </div>
-        {p.title.map((t, k) => <div key={t} style={{ position: 'absolute', left: 0, width: 1080, top: 800 + E + k * 84, textAlign: 'center', fontFamily: DISPLAY, fontWeight: 800, fontSize: 72, lineHeight: '84px', color: '#fff', textTransform: 'uppercase', opacity: clamp((f - T.END - 4 - k * 2) / 8), transform: `scale(${0.88 + 0.12 * clamp((f - T.END - 4 - k * 2) / 8)})`, whiteSpace: 'nowrap' }}>{t}</div>)}
-        <div style={{ position: 'absolute', left: 0, width: 1080, top: 800 + E + p.title.length * 84 + 8, textAlign: 'center', fontFamily: DISPLAY, fontWeight: 400, fontSize: 46, color: ACC, opacity: clamp((f - T.END - 12) / 10) }}>{p.city}</div>
-        <div style={{ position: 'absolute', left: 0, width: 1080, top: 800 + E + p.title.length * 84 + 112, display: 'flex', justifyContent: 'center', opacity: clamp((f - T.END - 18) / 12), transform: `translateY(${(1 - clamp((f - T.END - 18) / 12)) * 24}px)` }}>
+      {f >= T.END ? (() => { const e = f - T.END; const n = p.title.length; const urlTop = 1350, priceTop = urlTop - 30 - 150, cityTop = priceTop - 18 - 56, titleTop = cityTop - 8 - n * 84
+        const sweep = clamp((e - 4) / 26); const fade = (a: number) => clamp((e - a) / 10)
+        return <AbsoluteFill>
+        <AbsoluteFill style={{ opacity: clamp(e / 10), overflow: 'hidden' }}>
+          <Img src={staticFile(p.endPhoto)} style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${1.04 + e * 0.0008})`, filter: `blur(${Math.max(0, 16 - e * 1.3)}px) saturate(1.1) contrast(1.06)` }} />
+        </AbsoluteFill>
+        <AbsoluteFill style={{ background: 'linear-gradient(180deg, rgba(5,8,12,0.55) 0%, rgba(5,8,12,0) 22%, rgba(5,8,12,0) 34%, rgba(5,8,12,0.6) 56%, rgba(5,8,12,0.92) 86%)' }} />
+        <AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 55%, rgba(0,0,0,0.45) 100%)' }} />
+        <div style={{ position: 'absolute', top: 0, bottom: 0, left: -400 + sweep * 1900, width: 260, transform: 'skewX(-18deg)', background: 'linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.22), rgba(255,255,255,0))', opacity: sweep > 0 && sweep < 1 ? 1 : 0 }} />
+        {p.title.map((t, k) => <div key={t} style={{ position: 'absolute', left: 0, width: 1080, top: titleTop + k * 84, textAlign: 'center', fontFamily: DISPLAY, fontWeight: 800, fontSize: 72, lineHeight: '84px', color: '#fff', textTransform: 'uppercase', textShadow: '0 4px 30px rgba(0,0,0,0.7)', opacity: fade(6 + k * 2), transform: `scale(${0.9 + 0.1 * fade(6 + k * 2)})`, whiteSpace: 'nowrap' }}>{t}</div>)}
+        <div style={{ position: 'absolute', left: 0, width: 1080, top: cityTop, textAlign: 'center', fontFamily: DISPLAY, fontWeight: 400, fontSize: 46, lineHeight: '56px', color: ACC, textShadow: '0 3px 20px rgba(0,0,0,0.8)', opacity: fade(12) }}>{p.city}</div>
+        <div style={{ position: 'absolute', left: 0, width: 1080, top: priceTop, display: 'flex', justifyContent: 'center', opacity: fade(18), transform: `translateY(${(1 - fade(18)) * 24}px)` }}>
           <div style={{ height: 150, display: 'flex', alignItems: 'center', padding: '0 26px', backgroundColor: '#0b1220', backgroundImage: 'repeating-linear-gradient(0deg, rgba(255,255,255,0.28) 0 2px, transparent 2px 50px), repeating-linear-gradient(90deg, rgba(255,255,255,0.28) 0 2px, transparent 2px 50px)', color: '#fff', fontFamily: DISPLAY, fontSize: 52, fontWeight: 500, letterSpacing: 4 }}>FROM</div>
           <div style={{ height: 150, display: 'flex', alignItems: 'center', padding: '0 26px', background: '#fff', color: '#0b1220', fontFamily: DISPLAY, fontSize: 52, fontWeight: 500, whiteSpace: 'nowrap' }}>{p.price}</div>
         </div>
-        <div style={{ position: 'absolute', left: 0, width: 1080, top: 800 + E + p.title.length * 84 + 292, textAlign: 'center', opacity: clamp((f - T.END - 28) / 10) }}><span style={{ display: 'inline-block', fontFamily: DISPLAY, background: '#fff', color: '#0b1220', fontSize: 27, fontWeight: 500, padding: '18px 22px' }}>{p.url}</span></div>
-      </AbsoluteFill> : null}
+        <div style={{ position: 'absolute', left: 0, width: 1080, top: urlTop, textAlign: 'center', opacity: fade(28) }}><span style={{ display: 'inline-block', fontFamily: DISPLAY, background: '#fff', color: '#0b1220', fontSize: 27, fontWeight: 500, padding: '18px 22px' }}>{p.url}</span></div>
+      </AbsoluteFill> })() : null}
       <Img src={staticFile('media/logo-white.png')} style={{ position: 'absolute', left: 100, top: 262, width: 210, filter: 'drop-shadow(0 2px 10px rgba(0,0,0,0.55))' }} />
     </AbsoluteFill>
   )

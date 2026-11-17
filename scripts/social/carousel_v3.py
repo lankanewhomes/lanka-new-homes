@@ -54,7 +54,7 @@ def title_block(d, dy=0):
     size = min(fit(l, 880, 72, 800) for l in C['title']); y = HEAD_Y - 40 + dy
     for l in C['title']:
         d.text((LM, y), l, font=font(size, 800), fill=INK); y += size + 8
-    d.text((LM + 2, y + 2), C['city'], font=font(46, 500), fill=ACC_TXT); return y + 62
+    d.text((LM + 2, y - 8), C['city'], font=font(46, 400), fill=ACC_TXT); return y + 54  # city: regular weight, close under the title (owner 2026-11-17)
 
 
 def inner(d, heading, lines):
