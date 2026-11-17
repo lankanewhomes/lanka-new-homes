@@ -33,6 +33,8 @@ import { buildBreadcrumbJsonLd, jsonLdScriptProps, toAbsoluteUrl, withSocial } f
 // show up without waiting for the next deploy.
 export const revalidate = 60;
 
+const DEVELOPER_TITLE_SUFFIX: Record<string, string> = { "home-lands-skyline": "Home Lands Skyline" };
+
 type ProjectPageProps = { params: Promise<{ slug: string }> };
 
 export function generateStaticParams() {
@@ -61,7 +63,12 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
   const area = project.city?.trim();
   const socialTitle = !area || project.name.toLowerCase().includes(area.toLowerCase()) ? shortTitle : `${shortTitle} in ${area}`;
   // An SEO title / description typed in the CMS (SEO tab) wins over the generated ones.
-  const title = project.seoTitle?.trim() || (fullTitle.length <= titleBudget ? fullTitle : shortTitle.length <= titleBudget ? shortTitle : `${project.name.slice(0, titleBudget - 1).trimEnd()}…`);
+  // Home Lands Skyline projects are searched as "<project> by home lands skyline" (Ubersuggest 2026-11-17: Canterbury Golf Resort 8,100
+  // searches a month, Ariyana 4,400, Luxe Highway 1,000; owner: "if it brings traffic I don't mind"), so the developer goes in the title
+  // even though it runs past the usual length. The share card keeps the short socialTitle above.
+  const developerSuffix = DEVELOPER_TITLE_SUFFIX[project.developerSlug];
+  const developerTitle = developerSuffix && !project.name.toLowerCase().includes(developerSuffix.toLowerCase()) ? `${project.name} by ${developerSuffix}` : "";
+  const title = project.seoTitle?.trim() || developerTitle || (fullTitle.length <= titleBudget ? fullTitle : shortTitle.length <= titleBudget ? shortTitle : `${project.name.slice(0, titleBudget - 1).trimEnd()}…`);
   const generatedDescription = `${project.summary} Starting from ${typeof project.priceRange === "string" ? project.priceRange.replace(/^\s*from\s+/i, "") : project.priceRange}. Explore floor plans, amenities, and availability.`;
   const description = project.seoDescription?.trim() || generatedDescription;
   const canonicalPath = `/projects/${project.slug}`;
