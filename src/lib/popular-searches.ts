@@ -52,7 +52,7 @@ export function popularSearchGroups(projects: Project[], lands: Land[]): Popular
         { label: "Apartments for sale in Colombo", href: "/projects/colombo", count: categoryCount("colombo", projects) },
         { label: "New luxury apartments in Sri Lanka", href: "/projects/luxury", count: categoryCount("luxury", projects) },
         { label: "Port City Colombo apartments", href: "/projects/port-city-colombo", count: categoryCount("port-city-colombo", projects) },
-        { label: "Apartments for sale in Dehiwala", href: "/projects/houses-for-sale-in-dehiwala", count: apartments("Dehiwala") },
+        { label: "Apartments for sale in Dehiwala", href: "/projects/apartments-for-sale-in-dehiwala", count: apartments("Dehiwala") },
         { label: "Serviced apartments in Sri Lanka", href: "/projects/serviced-apartments", count: categoryCount("serviced-apartments", projects) },
       ],
     },
