@@ -76,20 +76,24 @@ export function AppShell({ children }: { children: ReactNode }) {
   const isActive = (href: string) => { const base = href.split("?")[0]; return pathname === base || (base !== "/dashboard" && pathname.startsWith(`${base}/`)); };
   const holdsActive = (items: { href: string }[]) => items.some((it) => isActive(it.href));
   const groupOpen = (label: string, items: { href: string }[]) => (label in openGroups ? openGroups[label] : holdsActive(items));
-  const pill = (active: boolean) => `flex items-center gap-3 px-3 py-2 text-[13px] transition ${active ? "bg-side-active font-medium text-fg shadow-[0_1px_3px_rgba(0,0,0,0.08)]" : "text-side-text hover:bg-side-active/60 hover:text-fg"}`;
+  // Active page: white pill plus a 3px orange bar on its left edge (new look, owner request 2026-11-16). Square corners stay.
+  const pill = (active: boolean, bar = "before:left-0") => `relative flex items-center gap-3 px-3 py-2.5 text-[13px] transition ${active ? `bg-side-active font-medium text-fg shadow-[0_1px_3px_rgba(0,0,0,0.08)] before:absolute before:inset-y-1.5 ${bar} before:w-[3px] before:bg-brand` : "text-side-text hover:bg-side-active/60 hover:text-fg"}`;
+  const caption = "px-3 pb-1.5 pt-4 text-[10.5px] font-semibold uppercase tracking-[0.09em] text-side-text/70";
   const badgeCls = "bg-brand/15 px-2 py-0.5 text-[10px] font-semibold text-brand";
   const nav = (
     <nav className="d-scroll flex-1 overflow-y-auto px-3 pb-4">
+      {collapsed ? null : <p className={caption}>Work</p>}
       <ul className="space-y-0.5">
         {side.top.map((it) => (
           <li key={it.key}>
             <Link href={it.href} title={it.label} onClick={() => setDrawer(false)} className={pill(isActive(it.href))}>
-              <it.icon size={17} strokeWidth={1.6} className="shrink-0" />{collapsed ? null : <span className="flex-1 truncate">{it.label}</span>}
+              <it.icon size={18} strokeWidth={1.5} className="shrink-0" />{collapsed ? null : <span className="flex-1 truncate">{it.label}</span>}
             </Link>
           </li>
         ))}
       </ul>
-      <div className="mt-2 space-y-0.5">
+      {collapsed ? <div className="mx-3 my-3 border-t border-fg/10" /> : <p className={`${caption} mt-1 border-t border-fg/10 pt-4`}>Manage</p>}
+      <div className="space-y-0.5">
         {side.sections.map((s) => {
           const GroupIcon = GROUP_ICON[s.label] ?? ListChecks;
           const open = groupOpen(s.label, s.items);
@@ -99,15 +103,15 @@ export function AppShell({ children }: { children: ReactNode }) {
           return (
             <div key={s.label}>
               <button type="button" aria-expanded={open} onClick={() => setOpenGroups({ ...openGroups, [s.label]: !open })} className={`${pill(false)} w-full ${holds && !open ? "text-fg" : ""}`}>
-                <GroupIcon size={17} strokeWidth={1.6} className="shrink-0" /><span className="flex-1 truncate text-left">{s.label}</span>
+                <GroupIcon size={18} strokeWidth={1.5} className="shrink-0" /><span className="flex-1 truncate text-left">{s.label}</span>
                 {!open && groupBadge ? <span className={badgeCls}>{groupBadge}</span> : null}
                 {open ? <ChevronUp size={14} className="shrink-0" /> : <ChevronDown size={14} className="shrink-0" />}
               </button>
               {open ? (
-                <ul className="mb-1 mt-0.5 space-y-0.5">
+                <ul className="mb-1.5 ml-[26px] mt-0.5 space-y-0.5 border-l border-fg/10">
                   {s.items.map((it) => (
                     <li key={it.key}>
-                      <Link href={it.href} title={it.label} onClick={() => setDrawer(false)} className={`${pill((it.exact ? pathname === it.href : isActive(it.href)) && !(it.href.includes("?") && !pathname.includes("?")))} py-1.5 pl-11 text-[12.5px]`}>
+                      <Link href={it.href} title={it.label} onClick={() => setDrawer(false)} className={`${pill((it.exact ? pathname === it.href : isActive(it.href)) && !(it.href.includes("?") && !pathname.includes("?")), "before:-left-px")} !gap-0 !py-1.5 !pl-4 !text-[12.5px]`}>
                         <span className="flex-1 truncate">{it.label}</span>
                         {it.badge ? <span className={badgeCls}>{it.badge}</span> : null}
                       </Link>

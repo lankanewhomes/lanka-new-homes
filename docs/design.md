@@ -2860,3 +2860,9 @@ An open row now shows its topics (Purchase Requirements, Maintenance, Buyer Elig
 Management, Legal Requirements, Freehold / Leasehold, Title Information, Warranty...) as the same light-grey boxes as Key Features (`.key-features-block`), each with a plain line icon
 from `featureFieldIcon` (Wallet = purchase, Users = buyer / resident, Wrench = maintenance / management, ScrollText = title / legal, Gift = handover, Globe = foreign ownership,
 ShieldCheck = warranty). Rows without topic names keep plain lines.
+
+## Dashboard sidebar (new look, 2026-11-16)
+
+`/dashboard` sidebar (`_components/AppShell.tsx`, items in `_components/nav.ts`): soft grey panel, square corners, small uppercase captions
+("Work" over the top pages, "Manage" over the collapsible groups, divider between), 18px light-stroke icons, sub-pages hang off a thin
+vertical guide line, and the open page is a white pill with a 3px orange (`bg-brand`) bar on its left edge. Badges stay orange-tinted.
