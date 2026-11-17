@@ -64,6 +64,13 @@ const PRICE_BANDS: { label: string; q: string; min?: number; max?: number }[] = 
   { label: "Over Rs. 150M", q: "above 150M", min: 150_000_000 },
 ];
 
+// Land price bands (same three as the filter on /land). Land with only a per-perch price has no total, so it is not placed in a band.
+const LAND_PRICE_BANDS: { label: string; q: string; min?: number; max?: number }[] = [
+  { label: "Under Rs. 10M", q: "land under 10M", max: 10_000_000 },
+  { label: "Rs. 10M – 30M", q: "land between 10M and 30M", min: 10_000_000, max: 30_000_000 },
+  { label: "Over Rs. 30M", q: "land above 30M", min: 30_000_000 },
+];
+
 export function HomeClient({
   projects,
   floorPlanCount: floorPlanTotal,
@@ -122,6 +129,15 @@ export function HomeClient({
       count: priced.filter((project) => (band.min === undefined || project.startingPriceLkr >= band.min) && (band.max === undefined || project.startingPriceLkr <= band.max)).length,
     })).filter((band) => band.count > 0);
   }, [projects]);
+
+  // Same for land: plots by total price, in a green box of their own so they stand out from the homes.
+  const landPriceBands = useMemo(() => {
+    const priced = lands.filter((land) => land.startingPriceLkr > 0 && !land.priceRange?.includes("per perch"));
+    return LAND_PRICE_BANDS.map((band) => ({
+      ...band,
+      count: priced.filter((land) => (band.min === undefined || land.startingPriceLkr >= band.min) && (band.max === undefined || land.startingPriceLkr <= band.max)).length,
+    })).filter((band) => band.count > 0);
+  }, [lands]);
 
   useEffect(() => {
     fetch("/api/hero-ads?active=1")
@@ -535,7 +551,7 @@ export function HomeClient({
         </Link>
       </section>
 
-      {priceBands.length > 0 ? (
+      {priceBands.length > 0 || landPriceBands.length > 0 ? (
         <section className="price-search-section" aria-label="Search by price">
           <div className="featured-listings-head">
             <h2>Search by price</h2>
@@ -550,6 +566,20 @@ export function HomeClient({
               </Link>
             ))}
           </div>
+          {landPriceBands.length > 0 ? (
+            <>
+              <h3 className="price-land-title">Land for sale</h3>
+              <div className="price-bands price-bands-land">
+                {landPriceBands.map((band) => (
+                  <Link href={`/search?q=${encodeURIComponent(band.q)}`} className="price-band price-band-land" key={band.label}>
+                    <span className="price-band-range">{band.label}</span>
+                    <span className="price-band-count">{band.count} {band.count === 1 ? "plot" : "plots"}</span>
+                    <span className="price-band-go">View land <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /></span>
+                  </Link>
+                ))}
+              </div>
+            </>
+          ) : null}
         </section>
       ) : null}
 

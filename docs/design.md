@@ -1345,6 +1345,9 @@ updates both automatically.
   (`/brand/lankanewhomes-logo-white.png`, 42px tall) at the top, open page = solid orange (`bg-brand`) rounded pill,
   groups as plain rows with their pages on a thin left guide line, white badges. The clicked page lights up at once
   (`going` state) before the new page arrives, and the leads count refetches at most once a minute.
+- Home "Search by price" (`.price-search-section`, `home-client.tsx`): lilac box with the five home price bands, and since 2026-11-17 a second row
+  "Land for sale" with three sage-green boxes (`.price-band-land`, #e8ede2, the land colour) for under 10M, 10M to 30M and over 30M, linking to
+  `/search?q=land under 10M` etc. Land with only a per-perch price has no total and is left out of the bands; bands with no plots are hidden.
 - `DashboardSidebar` (in `src/components/dashboard/components.tsx`) renders
   `ADMIN_NAV_LINKS` by default — a single shared list. Add a new admin
   section there once rather than editing every `/admin/*` page's inline
