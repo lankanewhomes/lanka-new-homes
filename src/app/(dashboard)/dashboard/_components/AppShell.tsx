@@ -21,6 +21,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [q, setQ] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  // The clicked page (`to`) counts as open only while we are still on the page it was clicked from (`from`), so no effect is needed to clear it.
+  const [going, setGoing] = useState<{ from: string; to: string } | null>(null);
 
   useEffect(() => {
     if (!menu) return;
@@ -32,7 +34,11 @@ export function AppShell({ children }: { children: ReactNode }) {
   // Live numbers from Payload: the "new leads" badge and the bell (latest enquiries), refreshed on every page change.
   const [newLeads, setNewLeads] = useState(0);
   const [recent, setRecent] = useState<{ id: number | string; name: string; project: unknown; at: string }[]>([]);
+  const leadsFetchedAt = useRef(0);
   useEffect(() => {
+    // Refreshed when a page opens, but at most once a minute, so moving around the menu does not fire two requests per click.
+    if (Date.now() - leadsFetchedAt.current < 60_000) return;
+    leadsFetchedAt.current = Date.now();
     let alive = true;
     (async () => {
       try {
@@ -73,23 +79,30 @@ export function AppShell({ children }: { children: ReactNode }) {
   // Sidebar (owner, 2026-10-18): a soft grey panel with square corners (no radius anywhere in the sidebar); every group is a collapsible row with an icon and a chevron, its pages sit under it as
   // plain text, and the open page is a white pill. The group that holds the open page is open by default.
   const GROUP_ICON: Record<string, LucideIcon> = { Listings: Building, "Companies & Professionals": Users, Leads: MessageCircle, Content: Newspaper, Marketing: Megaphone, Mail, Billing: CreditCard, Analytics: BarChart3, Users, Settings, Other: Package };
-  const isActive = (href: string) => { const base = href.split("?")[0]; return pathname === base || (base !== "/dashboard" && pathname.startsWith(`${base}/`)); };
+  // Speed (owner, 2026-11-16, "make it fast"): the clicked page lights up at once (`going`), before the new page has arrived.
+  const here = going && going.from === pathname ? going.to : pathname;
+  const isActive = (href: string) => { const base = href.split("?")[0]; return here === base || (base !== "/dashboard" && here.startsWith(`${base}/`)); };
+  const go = (href: string) => { setDrawer(false); const base = href.split("?")[0]; if (base !== pathname) setGoing({ from: pathname, to: base }); };
   const holdsActive = (items: { href: string }[]) => items.some((it) => isActive(it.href));
   const groupOpen = (label: string, items: { href: string }[]) => (label in openGroups ? openGroups[label] : holdsActive(items));
-  const pill = (active: boolean) => `flex items-center gap-3 px-3 py-2 text-[13px] transition ${active ? "bg-side-active font-medium text-fg shadow-[0_1px_3px_rgba(0,0,0,0.08)]" : "text-side-text hover:bg-side-active/60 hover:text-fg"}`;
-  const badgeCls = "bg-brand/15 px-2 py-0.5 text-[10px] font-semibold text-brand";
+  // Restyle (owner, 2026-11-16, "give me a different design and make it fast. change the logo also"): dark ink panel running full height, the real
+  // lowercase logo in white at the top, the open page as a solid orange rounded pill, groups as plain rows with their pages on a thin guide line.
+  const pill = (active: boolean) => `mx-3 flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] ${active ? "bg-brand font-semibold text-white shadow-[0_4px_14px_rgba(244,123,54,0.35)]" : "text-side-text hover:bg-side-active hover:text-white"}`;
+  const groupCls = (holds: boolean) => `mx-3 flex w-[calc(100%-1.5rem)] items-center gap-3 rounded-lg px-3 py-2 text-[13px] hover:bg-side-active hover:text-white ${holds ? "font-semibold text-white" : "text-side-text"}`;
+  const badgeCls = "rounded-full bg-white px-2 py-0.5 text-[10px] font-bold text-ink";
   const nav = (
-    <nav className="d-scroll flex-1 overflow-y-auto px-3 pb-4">
-      <ul className="space-y-0.5">
+    <nav className="d-scroll flex-1 overflow-y-auto pb-4">
+      <ul className="space-y-0.5 pt-1">
         {side.top.map((it) => (
           <li key={it.key}>
-            <Link href={it.href} title={it.label} onClick={() => setDrawer(false)} className={pill(isActive(it.href))}>
+            <Link href={it.href} title={it.label} onClick={() => go(it.href)} className={pill(isActive(it.href))}>
               <it.icon size={17} strokeWidth={1.6} className="shrink-0" />{collapsed ? null : <span className="flex-1 truncate">{it.label}</span>}
             </Link>
           </li>
         ))}
       </ul>
-      <div className="mt-2 space-y-0.5">
+      <div className="mx-3 mt-3 border-t border-white/10" />
+      <div className="mt-3 space-y-0.5">
         {side.sections.map((s) => {
           const GroupIcon = GROUP_ICON[s.label] ?? ListChecks;
           const open = groupOpen(s.label, s.items);
@@ -98,16 +111,16 @@ export function AppShell({ children }: { children: ReactNode }) {
           const groupBadge = s.items.reduce((sum, it) => sum + (it.badge ?? 0), 0);
           return (
             <div key={s.label}>
-              <button type="button" aria-expanded={open} onClick={() => setOpenGroups({ ...openGroups, [s.label]: !open })} className={`${pill(false)} w-full ${holds && !open ? "text-fg" : ""}`}>
+              <button type="button" aria-expanded={open} onClick={() => setOpenGroups({ ...openGroups, [s.label]: !open })} className={groupCls(holds)}>
                 <GroupIcon size={17} strokeWidth={1.6} className="shrink-0" /><span className="flex-1 truncate text-left">{s.label}</span>
                 {!open && groupBadge ? <span className={badgeCls}>{groupBadge}</span> : null}
                 {open ? <ChevronUp size={14} className="shrink-0" /> : <ChevronDown size={14} className="shrink-0" />}
               </button>
               {open ? (
-                <ul className="mb-1 mt-0.5 space-y-0.5">
+                <ul className="mb-1 ml-[30px] mt-0.5 space-y-0.5 border-l border-white/10">
                   {s.items.map((it) => (
                     <li key={it.key}>
-                      <Link href={it.href} title={it.label} onClick={() => setDrawer(false)} className={`${pill((it.exact ? pathname === it.href : isActive(it.href)) && !(it.href.includes("?") && !pathname.includes("?")))} py-1.5 pl-11 text-[12.5px]`}>
+                      <Link href={it.href} title={it.label} onClick={() => go(it.href)} className={`${pill((it.exact ? here === it.href : isActive(it.href)) && !(it.href.includes("?") && !pathname.includes("?")))} ml-2 py-1.5 text-[12.5px]`}>
                         <span className="flex-1 truncate">{it.label}</span>
                         {it.badge ? <span className={badgeCls}>{it.badge}</span> : null}
                       </Link>
@@ -123,19 +136,24 @@ export function AppShell({ children }: { children: ReactNode }) {
   );
 
   const brand = (
-    <div className="flex h-16 shrink-0 items-center gap-2.5 px-5">
-      <span className="text-[17px] font-bold leading-[1.05] tracking-tight">{collapsed ? "L" : <>Lanka<br />NewHomes</>}</span>
-      {collapsed ? null : <span className="ml-auto bg-side-active px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-side-text">{d.role}</span>}
+    <div className="flex h-[76px] shrink-0 items-center gap-2.5 px-6">
+      <Link href="/dashboard/overview" aria-label="LankaNewHomes dashboard" onClick={() => go("/dashboard/overview")} className="flex items-center">
+        {collapsed
+          ? <span className="grid h-9 w-9 place-items-center rounded-lg bg-brand text-[19px] font-bold lowercase leading-none text-white">l</span>
+          // eslint-disable-next-line @next/next/no-img-element -- a small static PNG from /public; no image optimiser needed (the Cloudflare image quota is tight)
+          : <img src="/brand/lankanewhomes-logo-white.png" alt="LankaNewHomes" width={640} height={287} className="h-[42px] w-auto" />}
+      </Link>
+      {collapsed ? null : <span className="ml-auto rounded-full bg-white/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white/75">{d.role}</span>}
     </div>
   );
 
   return (
     <div className="flex min-h-screen bg-bg text-fg">
-      <aside className={`sticky top-0 hidden h-screen shrink-0 p-3 transition-[width] lg:block ${collapsed ? "w-[88px]" : "w-[296px]"}`}>
-        <div className="flex h-full flex-col overflow-hidden bg-side">
+      <aside className={`sticky top-0 hidden h-screen shrink-0 transition-[width] lg:block ${collapsed ? "w-[84px]" : "w-[272px]"}`}>
+        <div className="flex h-full flex-col overflow-hidden border-r border-white/5 bg-side">
           {brand}
           {nav}
-          <button type="button" onClick={() => setCollapsed(!collapsed)} className="flex items-center gap-2 px-5 py-3 text-xs text-side-text hover:text-fg">
+          <button type="button" onClick={() => setCollapsed(!collapsed)} className="flex items-center gap-2 border-t border-white/10 px-6 py-3 text-xs text-side-text hover:text-white">
             {collapsed ? <PanelLeftOpen size={16} /> : <><PanelLeftClose size={16} /> Collapse</>}
           </button>
         </div>
@@ -145,7 +163,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="fixed inset-0 z-40 lg:hidden">
           <div className="absolute inset-0 bg-black/40" onClick={() => setDrawer(false)} />
           <aside className="absolute inset-y-0 left-0 flex w-72 max-w-[85vw] flex-col bg-side">
-            <div className="flex items-center justify-between pr-3">{brand}<button type="button" aria-label="Close menu" onClick={() => setDrawer(false)}><X size={18} /></button></div>
+            <div className="flex items-center justify-between pr-3">{brand}<button type="button" aria-label="Close menu" onClick={() => setDrawer(false)} className="text-white"><X size={18} /></button></div>
             {nav}
           </aside>
         </div>
