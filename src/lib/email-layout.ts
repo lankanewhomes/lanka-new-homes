@@ -12,7 +12,7 @@ const ORANGE = '#f47b36'
 const SITE = 'https://www.lankanewhomes.com'
 const FONT = "Arial,Helvetica,sans-serif"
 
-export function emailShell(opts: { preheader: string; title: string; body: string; footerNote?: string }): string {
+export function emailShell(opts: { preheader: string; title: string; body: string; footerNote?: string; /** Full table row placed after the footer, i.e. the very last thing in the email (the unsubscribe line of a newsletter). */ lastRow?: string }): string {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>${esc(opts.title)}</title></head>
 <body style="margin:0;background:${PAPER};font-family:${FONT};color:${TEXT};">
 <div style="display:none;max-height:0;overflow:hidden;opacity:0;">${esc(opts.preheader)}</div>
@@ -21,6 +21,7 @@ export function emailShell(opts: { preheader: string; title: string; body: strin
   <tr><td style="background:${INK};border-top:4px solid ${ORANGE};padding:26px 32px;"><a href="${SITE}" style="text-decoration:none;"><img src="${SITE}/brand/lankanewhomes-logo-white.png" width="124" alt="LankaNewHomes" style="display:block;border:0;width:124px;height:auto;font-size:20px;font-weight:700;color:#ffffff;"></a></td></tr>
 ${opts.body}
   <tr><td style="background:${INK};padding:22px 32px;font-size:12px;line-height:1.6;color:#b9b8b2;">${opts.footerNote ?? "You are receiving this because your company or project is listed on LankaNewHomes."}<br><a href="${SITE}" style="color:#ffffff;text-decoration:underline;">lankanewhomes.com</a> &nbsp;·&nbsp; Sri Lanka's new homes marketplace: apartments, houses and land, with prices, floor plans and developer details in one place.<br>Phone: <a href="tel:+16477795729" style="color:#ffffff;text-decoration:underline;">+1 647 779 5729</a></td></tr>
+${opts.lastRow ?? ''}
 </table></td></tr></table></body></html>`
 }
 
