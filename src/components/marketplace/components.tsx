@@ -2226,14 +2226,15 @@ export function RequestInfoDialog({
     // Say exactly what is wrong, next to the field, instead of the browser's generic "fill out this field".
     const errors: { name?: string; phone?: string; email?: string } = {};
     if (!name.trim()) errors.name = "Please enter your name so the team knows who to reply to.";
-    if (!phone) errors.phone = phoneValue.country === "LK" ? "That number does not look right. Type your mobile number without the first 0, for example 77 123 4567." : "That number does not look right. Please check it and the country code.";
-    if (isShort && email.trim() && !/^\S+@\S+\.\S+$/.test(email.trim())) errors.email = "That email does not look right. It should look like name@example.com, or leave it empty.";
+    if (!phone && !isShort) errors.phone = phoneValue.country === "LK" ? "That number does not look right. Type your mobile number without the first 0, for example 77 123 4567." : "That number does not look right. Please check it and the country code.";
+    if (isShort && !email.trim()) errors.email = "Please enter your email so the team can reply to you.";
+    else if (isShort && !/^\S+@\S+\.\S+$/.test(email.trim())) errors.email = "That email does not look right. It should look like name@example.com.";
     if (isInquiry && !agreed) setErrorMessage("Please tick the box to agree to be contacted.");
     if (errors.name || errors.phone || errors.email || (isInquiry && !agreed)) {
       setFieldErrors(errors);
-      if (errors.name) formRef.current?.querySelector<HTMLInputElement>("#request-info-name")?.focus();
+      if (errors.email) formRef.current?.querySelector<HTMLInputElement>("#request-info-email")?.focus();
+      else if (errors.name) formRef.current?.querySelector<HTMLInputElement>("#request-info-name")?.focus();
       else if (errors.phone) formRef.current?.querySelector<HTMLInputElement>(".request-info-phone-row input")?.focus();
-      else if (errors.email) formRef.current?.querySelector<HTMLInputElement>("#request-info-email")?.focus();
       return;
     }
     setFieldErrors({});
@@ -2249,8 +2250,8 @@ export function RequestInfoDialog({
         body: JSON.stringify({
           name: name.trim(),
           email: email.trim(),
-          phone,
-          preferredContactMethod: isShort ? "Phone" : contactMethod,
+          phone: phone ?? "",
+          preferredContactMethod: isShort ? "Email" : contactMethod,
           message: message.trim() || (isBrochure ? `Brochure request for ${subject}` : `Request info for ${subject}`),
           projectSlug: project.slug,
           developerSlug: project.developerSlug,
@@ -2344,7 +2345,7 @@ export function RequestInfoDialog({
                 ? project.brochureUrl
                   ? `Thanks, ${name.split(" ")[0] || "there"} — your download should start automatically.${email ? ` We've also emailed a copy to ${email}.` : ""}`
                   : `Thanks, ${name.split(" ")[0] || "there"} — we don't have a digital brochure for ${project.name} yet, but the sales team will send you the details shortly.`
-                : `Thanks, ${name.split(" ")[0] || "there"} — the ${project.name} sales team will reach out to you by ${contactMethod.toLowerCase()} shortly.`}
+                : `Thanks, ${name.split(" ")[0] || "there"} — the ${project.name} sales team will reach out to you by ${isShort ? "email" : contactMethod.toLowerCase()} shortly.`}
             </p>
             {isBrochure && project.brochureUrl ? (
               <Button
@@ -2362,7 +2363,25 @@ export function RequestInfoDialog({
         ) : (
           <form ref={formRef} onSubmit={onSubmit} noValidate className="request-info-body">
             {isInquiry && <h2>Want to find out more?</h2>}
-            {isInquiry ? <p className="request-info-required-note"><span className="request-info-star">*</span> Indicates a required field</p> : <p className="request-info-lead">Your name and number, and an email if you like. We reply within 24 hours.</p>}
+            {isInquiry ? <p className="request-info-required-note"><span className="request-info-star">*</span> Indicates a required field</p> : <p className="request-info-lead">Your email and name. We reply within 24 hours.</p>}
+
+            {isShort ? (
+              <label className="request-info-field">
+                <span>Email<span className="request-info-star">*</span></span>
+                <input
+                  id="request-info-email"
+                  type="email"
+                  inputMode="email"
+                  value={email}
+                  onChange={(event) => { setEmail(event.target.value); if (fieldErrors.email) setFieldErrors((e) => ({ ...e, email: undefined })); }}
+                  onFocus={(event) => onFieldFocus("email", event.currentTarget)}
+                  autoComplete="email"
+                  aria-invalid={fieldErrors.email ? true : undefined}
+                  placeholder="Enter your email"
+                />
+                {fieldErrors.email ? <span className="request-info-field-error" role="alert">{fieldErrors.email}</span> : null}
+              </label>
+            ) : null}
 
             <label className="request-info-field">
               <span>{isInquiry ? "Your Name" : "Name"}<span className="request-info-star">*</span></span>
@@ -2387,29 +2406,14 @@ export function RequestInfoDialog({
               </label>
             ) : null}
 
+            {!isShort ? (
             <div className="request-info-field" onFocusCapture={(event) => onFieldFocus("phone", event.target as HTMLElement)}>
               <span id="request-info-phone-label" className={isShort ? "request-info-field-visible-label" : undefined}>{isInquiry ? "Contact Number" : "Phone or WhatsApp number"}<span className="request-info-star">*</span></span>
               <PhoneField value={phoneValue} onChange={(next) => { setPhoneValue(next); if (fieldErrors.phone) setFieldErrors((e) => ({ ...e, phone: undefined })); }} labelId="request-info-phone-label" />
               {fieldErrors.phone ? <span className="request-info-field-error" role="alert">{fieldErrors.phone}</span> : null}
             </div>
-
-            {isShort ? (
-              <label className="request-info-field">
-                <span>Email (optional)</span>
-                <input
-                  id="request-info-email"
-                  type="email"
-                  inputMode="email"
-                  value={email}
-                  onChange={(event) => { setEmail(event.target.value); if (fieldErrors.email) setFieldErrors((e) => ({ ...e, email: undefined })); }}
-                  onFocus={(event) => onFieldFocus("email", event.currentTarget)}
-                  autoComplete="email"
-                  aria-invalid={fieldErrors.email ? true : undefined}
-                  placeholder="Email (optional)"
-                />
-                {fieldErrors.email ? <span className="request-info-field-error" role="alert">{fieldErrors.email}</span> : null}
-              </label>
             ) : null}
+
 
             {isInquiry ? (
               <label className="request-info-field">
@@ -2441,7 +2445,7 @@ export function RequestInfoDialog({
             {errorMessage ? <p className="request-info-error" role="alert">{errorMessage}</p> : null}
 
             <div className="request-info-actions">
-              {isShort ? <p className="request-info-promise">We reply within 24 hours and never spam you. By sending, you agree to be contacted by LankaNewHomes agents by WhatsApp, SMS, call or email.</p> : null}
+              {isShort ? <p className="request-info-promise">We reply within 24 hours and never spam you. By sending, you agree to be contacted by LankaNewHomes agents by email.</p> : null}
               <div className="request-info-actions-row">
                 <button type="submit" className="request-info-submit-big" disabled={submitting || (isInquiry && !agreed)}>
                   <span className="request-info-submit-icon" aria-hidden="true"><ArrowRight size={16} strokeWidth={2.5} /></span>
