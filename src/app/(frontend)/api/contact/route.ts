@@ -34,7 +34,9 @@ export async function POST(req: Request) {
     const phone = typeof body?.phone === "string" ? body.phone.trim() : "";
     const audience = typeof body?.audience === "string" ? body.audience.trim() : "";
     const message = typeof body?.message === "string" ? body.message.trim() : "";
-    const updatesOptIn = body?.updatesOptIn === true;
+    const allowed = ["newsletter", "news", "listings", "launches"];
+    const interests = Array.isArray(body?.interests) ? body.interests.filter((v: unknown): v is string => typeof v === "string" && allowed.includes(v)) : [];
+    const updatesOptIn = body?.updatesOptIn === true || interests.length > 0;
 
     if (!name || !email || !audience || !message) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -52,7 +54,7 @@ export async function POST(req: Request) {
       `Reaching: ${audienceLabel}`,
       company ? `Company: ${company}` : null,
       phone ? `Phone: ${phone}` : null,
-      `Updates opt-in: ${updatesOptIn ? "yes" : "no"}`,
+      `Updates opt-in: ${updatesOptIn ? (interests.length ? `yes (${interests.join(", ")})` : "yes") : "no"}`,
     ].filter((line): line is string => Boolean(line));
 
     await transporter.sendMail({
