@@ -22,10 +22,10 @@ const AUDIENCE_OPTIONS = [
  * phone field reuses PhoneField, the same country-code + number picker as
  * the site's other enquiry forms, rather than a one-off plain input. */
 export const UPDATE_CHOICES = [
-  { value: "newsletter", label: "Newsletter", hint: "our regular roundup by email" },
-  { value: "news", label: "Latest news", hint: "Sri Lanka property market news and guides" },
-  { value: "listings", label: "New listings & price drops", hint: "new apartments, houses and land" },
-  { value: "launches", label: "Launch offers & events", hint: "early access, open days, special offers" },
+  { value: "newsletter", label: "Newsletter" },
+  { value: "news", label: "Latest news" },
+  { value: "listings", label: "New listings & price drops" },
+  { value: "launches", label: "Launch offers" },
 ] as const;
 
 export function ContactForm() {
@@ -118,15 +118,15 @@ export function ContactForm() {
       </label>
 
       <fieldset className="contact-form-updates">
-        <legend>Keep me updated (optional, tick any)</legend>
+        <legend>Send me (optional)</legend>
         {UPDATE_CHOICES.map((choice) => (
           <label key={choice.value} className="contact-form-consent">
             <input type="checkbox" checked={interests.includes(choice.value)} onChange={() => toggleInterest(choice.value)} />
-            <span><strong>{choice.label}</strong>, {choice.hint}</span>
+            <span>{choice.label}</span>
           </label>
         ))}
         <p className="contact-form-updates-note">
-          Your information is handled per our <Link href="/privacy">Privacy Policy</Link> and <Link href="/terms">Terms of Service</Link>. You may unsubscribe any time.
+          See our <Link href="/privacy">Privacy Policy</Link>. Unsubscribe any time.
         </p>
       </fieldset>
 
