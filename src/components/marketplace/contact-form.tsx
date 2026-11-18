@@ -95,8 +95,8 @@ export function ContactForm() {
       </label>
 
       <div className="contact-form-field">
-        <span className="sr-only" id="contact-form-phone-label">Phone number (optional)</span>
-        <PhoneField value={phone} onChange={setPhone} labelId="contact-form-phone-label" />
+        <span className="sr-only" id="contact-form-phone-label">WhatsApp number (optional)</span>
+        <PhoneField value={phone} onChange={setPhone} labelId="contact-form-phone-label" placeholder="WhatsApp number" />
       </div>
 
       <label className="contact-form-field">

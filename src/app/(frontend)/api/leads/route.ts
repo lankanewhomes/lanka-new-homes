@@ -15,7 +15,6 @@ export async function POST(req: Request) {
 
     const required = [
       "name",
-      "phone",
       "preferredContactMethod",
       "message",
       "projectSlug",
@@ -31,6 +30,11 @@ export async function POST(req: Request) {
     if (body.email !== undefined && typeof body.email !== "string") {
       return NextResponse.json({ error: "Invalid email" }, { status: 400 });
     }
+    // The request-info form asks for an email only; other forms still send a phone. One of the two is needed so the developer can reply.
+    const hasPhone = typeof body.phone === "string" && body.phone.trim() !== "";
+    const hasEmail = typeof body.email === "string" && /^\S+@\S+\.\S+$/.test(body.email.trim());
+    if (!hasPhone && !hasEmail) return NextResponse.json({ error: "Please give an email or phone number." }, { status: 400 });
+    if (!hasPhone) body.phone = "";
 
     const supabase = await createSupabaseServerClient();
     const {

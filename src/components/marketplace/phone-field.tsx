@@ -18,12 +18,15 @@ export function PhoneField({
   onChange,
   labelId,
   required,
+  placeholder,
 }: {
   value: PhoneValue;
   onChange: (next: PhoneValue) => void;
   /** id of the visible label text, for the accessible name of the number box. */
   labelId: string;
   required?: boolean;
+  /** Replaces the default "Phone number" placeholder (the contact page asks for a WhatsApp number). */
+  placeholder?: string;
 }) {
   const selected = getPhoneCountry(value.country);
   const { common, others } = getPhoneCountries();
@@ -63,7 +66,7 @@ export function PhoneField({
           else onChange({ country: value.country, national: cleanNationalNumber(raw) });
         }}
         required={required}
-        placeholder={selected.iso === "LK" ? "7X XXX XXXX" : "Phone number"}
+        placeholder={selected.iso === "LK" ? "7X XXX XXXX" : placeholder ?? "Phone number"}
       />
     </div>
   );
