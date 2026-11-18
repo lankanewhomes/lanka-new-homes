@@ -64,5 +64,6 @@ Questions, or something to change on your page? Just reply to this email and a p
 Warm regards,
 The LankaNewHomes team
 developers@lankanewhomes.com
++1 647 779 5729
 `
 }
