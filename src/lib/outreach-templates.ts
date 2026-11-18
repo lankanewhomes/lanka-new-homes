@@ -9,6 +9,8 @@ export type OutreachContext = {
   companyName?: string | null
   /** Optional paragraph typed in the CMS, shown right after the greeting. */
   customNote?: string | null
+  /** Name in the sign-off. Only pass a person's name (e.g. Rupan Sinnarajah) when the email goes from that person's own address; otherwise it reads "The LankaNewHomes team". */
+  signName?: string | null
   projects: { name: string; slug: string }[]
   /** For the lead-followup template: the enquiry that is still waiting for a reply. */
   lead?: { name: string; email?: string | null; phone?: string | null; preferred?: string | null; message?: string | null; receivedAt?: string | null; projectName: string; planName?: string | null; place?: string | null } | null
@@ -121,7 +123,7 @@ export function renderOutreachEmail(id: OutreachTemplateId, ctx: OutreachContext
 
   const header = `<tr><td style="padding:22px 32px 18px; border-bottom:3px solid ${ACCENT};"><a href="https://www.lankanewhomes.com" style="text-decoration:none;"><img src="https://www.lankanewhomes.com/brand/logo-email.png" width="130" alt="LankaNewHomes" style="display:block; border:0; width:130px; height:auto; font-size:18px; font-weight:700; color:#1f1f1f;"></a></td></tr>`
   const title = `<tr><td style="padding:26px 32px 4px;"><div style="font-size:22px; line-height:1.3; font-weight:700; color:${INK};">${esc(heading)}</div></td></tr>`
-  const main = `<tr><td style="padding:14px 32px 8px;">${greeting}${body}<p style="${P}">Let me know if you would like any changes.</p><p style="${P} margin-bottom:4px;">Best regards,<br><strong>Rupan</strong><br><span style="color:${MUTED};">LankaNewHomes</span></p></td></tr>`
+  const main = `<tr><td style="padding:14px 32px 8px;">${greeting}${body}<p style="${P}">Let me know if you would like any changes.</p><p style="${P} margin-bottom:4px;">Best regards,<br><strong>${esc(ctx.signName ?? 'The LankaNewHomes team')}</strong></p></td></tr>`
   const footer = `<tr><td style="padding:18px 32px 26px; border-top:1px solid ${LINE}; font-size:12px; line-height:1.6; color:${MUTED};">LankaNewHomes · New homes and land for sale in Sri Lanka<br>Questions? Just reply to this email or write to ${a('mailto:developers@lankanewhomes.com', 'developers@lankanewhomes.com')}.</td></tr>`
   const html = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head><body style="margin:0; padding:24px 12px; background:#f3f1ec; font-family:Arial,Helvetica,sans-serif;"><table role="presentation" align="center" width="100%" cellpadding="0" cellspacing="0" style="max-width:620px; margin:0 auto; background:#ffffff; border:1px solid ${LINE};">${header}${title}${main}${footer}</table></body></html>`
   const text = html
@@ -141,9 +143,9 @@ export function renderOutreachEmail(id: OutreachTemplateId, ctx: OutreachContext
 export function renderPlainReplyEmail(opts: { body: string; signoff?: string; signName?: string; button?: { href: string; text: string } }): { html: string; text: string } {
   const paras = opts.body.trim().split(/\n{2,}/).map((para) => `<p style="${P}">${esc(para).replace(/\n/g, '<br>')}</p>`).join('')
   const header = `<tr><td style="padding:22px 32px 18px; border-bottom:3px solid ${ACCENT};"><a href="https://www.lankanewhomes.com" style="text-decoration:none;"><img src="https://www.lankanewhomes.com/brand/logo-email.png" width="130" alt="LankaNewHomes" style="display:block; border:0; width:130px; height:auto; font-size:18px; font-weight:700; color:#1f1f1f;"></a></td></tr>`
-  const main = `<tr><td style="padding:26px 32px 8px;">${paras}${opts.button ? button(opts.button.href, opts.button.text) : ''}<p style="${P} margin:18px 0 4px;">${esc(opts.signoff ?? 'Best regards,')}<br><strong>${esc(opts.signName ?? 'Rupan')}</strong><br><span style="color:${MUTED};">LankaNewHomes</span></p></td></tr>`
+  const main = `<tr><td style="padding:26px 32px 8px;">${paras}${opts.button ? button(opts.button.href, opts.button.text) : ''}<p style="${P} margin:18px 0 4px;">${esc(opts.signoff ?? 'Best regards,')}<br><strong>${esc(opts.signName ?? 'The LankaNewHomes team')}</strong><br><span style="color:${MUTED};">LankaNewHomes</span></p></td></tr>`
   const footer = `<tr><td style="padding:18px 32px 26px; border-top:1px solid ${LINE}; font-size:12px; line-height:1.6; color:${MUTED};">LankaNewHomes · New homes and land for sale in Sri Lanka<br>Questions? Just reply to this email or write to ${a('mailto:developers@lankanewhomes.com', 'developers@lankanewhomes.com')}.</td></tr>`
   const html = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head><body style="margin:0; padding:24px 12px; background:#f3f1ec; font-family:Arial,Helvetica,sans-serif;"><table role="presentation" align="center" width="100%" cellpadding="0" cellspacing="0" style="max-width:620px; margin:0 auto; background:#ffffff; border:1px solid ${LINE};">${header}${main}${footer}</table></body></html>`
-  const text = `${opts.body.trim()}${opts.button ? `\n\n${opts.button.text}: ${opts.button.href}` : ''}\n\n${opts.signoff ?? 'Best regards,'}\n${opts.signName ?? 'Rupan'}\nLankaNewHomes`
+  const text = `${opts.body.trim()}${opts.button ? `\n\n${opts.button.text}: ${opts.button.href}` : ''}\n\n${opts.signoff ?? 'Best regards,'}\n${opts.signName ?? 'The LankaNewHomes team'}\nLankaNewHomes`
   return { html, text }
 }
