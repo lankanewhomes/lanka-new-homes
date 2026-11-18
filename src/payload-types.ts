@@ -99,6 +99,7 @@ export interface Config {
     payments: Payment;
     'placement-pricing': PlacementPricing;
     'plan-waitlist': PlanWaitlist;
+    subscribers: Subscriber;
     'team-members': TeamMember;
     articles: Article;
     media: Media;
@@ -149,6 +150,7 @@ export interface Config {
     payments: PaymentsSelect<false> | PaymentsSelect<true>;
     'placement-pricing': PlacementPricingSelect<false> | PlacementPricingSelect<true>;
     'plan-waitlist': PlanWaitlistSelect<false> | PlanWaitlistSelect<true>;
+    subscribers: SubscribersSelect<false> | SubscribersSelect<true>;
     'team-members': TeamMembersSelect<false> | TeamMembersSelect<true>;
     articles: ArticlesSelect<false> | ArticlesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
@@ -8289,6 +8291,23 @@ export interface PlanWaitlist {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subscribers".
+ */
+export interface Subscriber {
+  id: number;
+  email: string;
+  name?: string | null;
+  /**
+   * What they ticked: newsletter, news, listings, launches.
+   */
+  interests?: string | null;
+  source?: string | null;
+  status?: ('subscribed' | 'unsubscribed') | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "articles".
  */
 export interface Article {
@@ -8499,6 +8518,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'plan-waitlist';
         value: number | PlanWaitlist;
+      } | null)
+    | ({
+        relationTo: 'subscribers';
+        value: number | Subscriber;
       } | null)
     | ({
         relationTo: 'team-members';
@@ -10207,6 +10230,19 @@ export interface PlanWaitlistSelect<T extends boolean = true> {
   company?: T;
   interested_plan?: T;
   message?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subscribers_select".
+ */
+export interface SubscribersSelect<T extends boolean = true> {
+  email?: T;
+  name?: T;
+  interests?: T;
+  source?: T;
   status?: T;
   updatedAt?: T;
   createdAt?: T;

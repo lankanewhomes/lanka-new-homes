@@ -2887,3 +2887,6 @@ listings: a "Last update: Nov 16, 2026" line (the listing's own `updatedAt`, Asi
 LankaNewHomes, saying details come from developers' websites, brochures, adverts and our own research, can change without notice, and should be confirmed with the
 developer. Style `.listing-disclaimer`: 11px, weight 400, muted `#8a8478` (date line `#6b6355`), no heading, no box, no uppercase. Do not copy another site's wording. Plot,
 floor-plan and preview pages do not carry it yet.
+### Contact form updates and Subscribers (2026-11-18)
+- /contact has an optional "Send me" group of tick boxes (Newsletter, Latest news, New listings & price drops, Launch offers), all off by default, one short line each.
+- Ticked choices go in the notice email and, on the live site only, are saved to the admin-only `subscribers` collection (/dashboard/subscribers). Same email twice merges the choices into one row.

@@ -633,3 +633,10 @@ alter table leads add column if not exists whatsapp_continued_at timestamptz;
 -- Payload leads: email is optional (short form and WhatsApp window leave only name + number). alter table payload.leads alter column email drop not null;
 
 -- WhatsApp inbox archive (2026-11-16). Payload: alter table payload.whatsapp_messages add column if not exists archived boolean default false;
+-- Subscribers: people who ticked "Send me ..." on the /contact form (2026-11-18). Created by the contact route; admin-only in /dashboard.
+create type payload.enum_subscribers_status as enum ('subscribed','unsubscribed');
+create table if not exists payload.subscribers (id serial primary key, email varchar not null, name varchar, interests varchar, source varchar default 'contact-form', status payload.enum_subscribers_status default 'subscribed', updated_at timestamptz not null default now(), created_at timestamptz not null default now());
+create index if not exists subscribers_updated_at_idx on payload.subscribers (updated_at);
+create index if not exists subscribers_created_at_idx on payload.subscribers (created_at);
+alter table payload.payload_locked_documents_rels add column if not exists subscribers_id integer references payload.subscribers(id) on delete cascade;
+create index if not exists payload_locked_documents_rels_subscribers_id_idx on payload.payload_locked_documents_rels (subscribers_id);

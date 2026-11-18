@@ -18,7 +18,7 @@ export type SideSection = { label: string; items: SideItem[] };
 const VIEW_HREF: Record<string, string> = { mail: "/dashboard/inbox", "mail-settings": "/dashboard/inbox/connection", "billing-overview": "/dashboard/billing", "my-billing": "/dashboard/billing" };
 
 /** Collections that exist in Payload but are not in the /cms sidebar map. They get an "Other" group so nothing is missing. */
-const OTHER = ["addon-requests", "plan-waitlist", "outreach", "mail-folders", "mail-messages", "mail-sync-state"];
+const OTHER = ["addon-requests", "plan-waitlist", "subscribers", "outreach", "mail-folders", "mail-messages", "mail-sync-state"];
 
 export function buildSidebar(role: Role, newLeads: number, companyId?: number): { top: SideItem[]; sections: SideSection[] } {
   const vis = new Map(schemaIndex.collections.map((c) => [c.slug, c]));

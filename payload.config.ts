@@ -28,6 +28,7 @@ import { Neighborhoods } from './src/collections/Neighborhoods'
 import { Payments } from './src/collections/Payments'
 import { PlacementPricing } from './src/collections/PlacementPricing'
 import { PlanWaitlist } from './src/collections/PlanWaitlist'
+import { Subscribers } from './src/collections/Subscribers'
 import { Projects } from './src/collections/Projects'
 import { Reviews } from './src/collections/Reviews'
 import { SalesCompanies } from './src/collections/SalesCompanies'
@@ -201,6 +202,7 @@ export default buildConfig({
     Payments,
     PlacementPricing,
     PlanWaitlist,
+    Subscribers,
     TeamMembers,
     Articles,
     Media,

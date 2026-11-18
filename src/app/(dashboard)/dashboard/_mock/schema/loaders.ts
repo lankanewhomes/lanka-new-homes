@@ -31,6 +31,7 @@ export const schemaLoaders: Record<string, () => Promise<{ default: unknown }>> 
   'payments': () => import('./payments.json'),
   'placement-pricing': () => import('./placement-pricing.json'),
   'plan-waitlist': () => import('./plan-waitlist.json'),
+  'subscribers': () => import('./subscribers.json'),
   'team-members': () => import('./team-members.json'),
   'articles': () => import('./articles.json'),
   'media': () => import('./media.json'),

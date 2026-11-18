@@ -1059,6 +1059,31 @@
    ]
   },
   {
+    "slug": "subscribers",
+    "label": "Subscribers",
+    "singular": "Subscriber",
+    "group": "Business",
+    "visible": {
+      "admin": true,
+      "developer": true
+    },
+    "scopedForDeveloper": false,
+    "access": {
+      "read": "Admin only",
+      "create": "Admin only",
+      "update": "Admin only",
+      "delete": "Admin only"
+    },
+    "useAsTitle": "email",
+    "defaultColumns": [
+      "email",
+      "name",
+      "interests",
+      "status",
+      "createdAt"
+    ]
+  },
+  {
    "slug": "team-members",
    "label": "Team members",
    "singular": "Team member",
