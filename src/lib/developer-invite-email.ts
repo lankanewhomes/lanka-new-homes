@@ -75,7 +75,7 @@ ${input.autoVerify
 </td></tr>
 <tr><td style="padding:0 32px 28px;">
 <p style="margin:0; font-size:13px; line-height:1.6; color:#6b6355;">Buyers see that your company identity is confirmed, and you can edit your listings and see enquiries and views.</p>
-<p style="margin:14px 0 0; font-size:13px; line-height:1.6; color:#6b6355;">LankaNewHomes · developers@lankanewhomes.com</p>
+<p style="margin:14px 0 0; font-size:13px; line-height:1.6; color:#6b6355;">LankaNewHomes · developers@lankanewhomes.com · +1 647 779 5729</p>
 </td></tr>
 </table></td></tr></table></body></html>`
 }
