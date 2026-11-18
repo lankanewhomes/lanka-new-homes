@@ -1060,8 +1060,8 @@
   },
   {
     "slug": "subscribers",
-    "label": "Subscribers",
-    "singular": "Subscriber",
+    "label": "Contacts & subscribers",
+    "singular": "Contact",
     "group": "Business",
     "visible": {
       "admin": true,
@@ -1075,13 +1075,7 @@
       "delete": "Admin only"
     },
     "useAsTitle": "email",
-    "defaultColumns": [
-      "email",
-      "name",
-      "interests",
-      "status",
-      "createdAt"
-    ]
+    "defaultColumns": ["email", "name", "status", "interests", "audience", "createdAt"]
   },
   {
    "slug": "team-members",

@@ -2827,4 +2827,4 @@ Scripts: `scripts/social/carousel_project_v2_light.py` (projects), `carousel_lan
 
 ### Contact form updates and Subscribers (2026-11-18)
 - /contact has an optional "Send me" group of tick boxes (Newsletter, Latest news, New listings & price drops, Launch offers), all off by default, one short line each.
-- Ticked choices go in the notice email and, on the live site only, are saved to the admin-only `subscribers` collection (/dashboard/subscribers). Same email twice merges the choices into one row.
+- Every contact form submission is emailed to developers@ and, on the live site only, saved to the admin-only `subscribers` collection, shown as "Contacts & subscribers" (/dashboard/subscribers): name, company, phone, who they wanted to reach, every message (newest first) and what they ticked. Same email twice merges into one row. Status: `subscribed` = ticked a box (the newsletter list), `contact_only` = just wrote to us, `unsubscribed`.
