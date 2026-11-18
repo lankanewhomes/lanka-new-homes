@@ -1,5 +1,6 @@
 import { isMockMode, getMailProvider } from './index'
 import { sendMail } from '../mailer'
+import { senderHeader } from '../sender-names'
 
 // Sends an email that a person wrote (outreach to developers, follow-ups, replies) through the Zoho mailbox it comes from, so it
 // shows in Zoho's Sent folder and in /cms/mail. Automatic site emails (lead alerts, password resets, digests) keep using Resend directly.
@@ -46,7 +47,7 @@ export async function sendHumanEmail(email: HumanEmail): Promise<{ via: 'zoho' |
     }
   }
   const sent = await sendMail({
-    from: email.fromName ? `${email.fromName} <${email.from}>` : email.from,
+    from: senderHeader(email.fromName ? `${email.fromName} <${email.from}>` : email.from),
     to: list(email.to),
     cc: list(email.cc),
     bcc: [...list(email.bcc), ...(email.copyToSender ? [email.from] : [])],

@@ -14,6 +14,7 @@
 //   zohoAccountId = the mailbox address   zohoFolderId = Gmail label id (INBOX, SENT, DRAFT, SPAM, TRASH, or a user label id)
 //   zohoMessageId = Gmail message id      "ARCHIVE" is a virtual folder: mail with no inbox, sent, draft, spam or trash label ("All Mail").
 
+import { senderHeader } from '../sender-names'
 import type {
   ListMessagesPage, ListMessagesParams, MailAddress, MailFolderType, MailProvider, MessageAction, OutgoingMessage, ProviderAccount,
   ProviderAttachmentFile, ProviderAttachmentMeta, ProviderFolder, ProviderMessageFull, ProviderMessageSummary,
@@ -175,7 +176,7 @@ function summary(msg: Json, folderId?: string): ProviderMessageSummary {
 function buildMime(message: OutgoingMessage, extra: { inReplyTo?: string; references?: string } = {}): string {
   const boundary = `lnh_${Math.random().toString(36).slice(2)}${Date.now().toString(36)}`
   const lines = [
-    `From: ${message.from}`,
+    `From: ${senderHeader(message.from)}`,
     `To: ${addressHeader(message.to)}`,
     ...(message.cc?.length ? [`Cc: ${addressHeader(message.cc)}`] : []),
     ...(message.bcc?.length ? [`Bcc: ${addressHeader(message.bcc)}`] : []),

@@ -1,4 +1,5 @@
 import type { EmailAdapter, SendEmailOptions } from 'payload'
+import { senderHeader } from './sender-names'
 
 // All outbound mail goes to Resend over HTTPS. The old path opened a raw SMTP
 // connection (nodemailer), which hangs on Cloudflare Workers — the password
@@ -19,9 +20,8 @@ type MailMessage = {
 
 const list = (value?: string | string[]) => (value === undefined ? undefined : Array.isArray(value) ? value : [value])
 
-function withName(from: string | undefined, fallbackName = 'LankaNewHomes') {
-  const address = from || process.env.EMAIL_FROM || 'no-reply@lankanewhomes.com'
-  return address.includes('<') ? address : `${fallbackName} <${address}>`
+function withName(from: string | undefined) {
+  return senderHeader(from || process.env.EMAIL_FROM)
 }
 
 export async function sendMail(initial: MailMessage): Promise<{ id?: string }> {
@@ -80,8 +80,8 @@ export function createMailTransport() {
 // Payload's email adapter (password reset, verification, sendEmail()).
 export const resendEmailAdapter: EmailAdapter = ({ payload: _payload }) => ({
   name: 'resend-http',
-  defaultFromAddress: process.env.EMAIL_FROM || 'no-reply@lankanewhomes.com',
-  defaultFromName: 'LankaNewHomes',
+  defaultFromAddress: 'no-reply@lankanewhomes.com',
+  defaultFromName: 'Notifications | LankaNewHomes',
   sendEmail: async (message: SendEmailOptions) => {
     const first = (value: unknown) => (typeof value === 'string' ? value : undefined)
     const toArray = (value: unknown): string[] | undefined =>

@@ -55,7 +55,7 @@ export async function sendTeamInviteEmail(opts: { to: string; companyName: strin
   })
   await sendMail({
     to: prod ? opts.to : DEFAULT_TEST_INBOX,
-    from: 'LankaNewHomes <no-reply@lankanewhomes.com>',
+    from: '"Notifications | LankaNewHomes" <no-reply@lankanewhomes.com>',
     replyTo: 'support@lankanewhomes.com',
     subject: `${prod ? '' : `[TEST — not sent to ${opts.to}] `}${opts.companyName} added you to their listings on LankaNewHomes`,
     html,
