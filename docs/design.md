@@ -1348,6 +1348,9 @@ updates both automatically.
 - Home "Search by price" (`.price-search-section`, `home-client.tsx`): lilac box with the five home price bands, and since 2026-11-17 a second row
   "Land for sale" with three sage-green boxes (`.price-band-land`, #e8ede2, the land colour) for under 10M, 10M to 30M and over 30M, linking to
   `/search?q=land under 10M` etc. Land with only a per-perch price has no total and is left out of the bands; bands with no plots are hidden.
+- `/dashboard` developer page, "Emails & contact" tab (`DeveloperEmailLog.tsx`; owner, 2026-11-18): one timeline of everything sent to or heard from the
+  developer, newest first, with filters All / Emails / WhatsApp / Instagram, phone, other. It merges the email log (automatic site emails, with opens and
+  clicks), the Outreach log (emails typed by hand in Zoho or Google, and replies), WhatsApp messages and the manual "Other contact" notes.
 - `DashboardSidebar` (in `src/components/dashboard/components.tsx`) renders
   `ADMIN_NAV_LINKS` by default — a single shared list. Add a new admin
   section there once rather than editing every `/admin/*` page's inline
