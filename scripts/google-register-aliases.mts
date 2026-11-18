@@ -5,7 +5,7 @@
 //   npx tsx scripts/google-register-aliases.mts
 import { config } from 'dotenv'
 config({ path: '.env.local' })
-const { aliasesFor, googlePrimaryMailbox } = await import('../src/lib/mail/index.ts')
+const { aliasesFor, googlePrimaryMailbox } = await import('../src/lib/mail/index')
 const email = process.env.GOOGLE_MAIL_SA_EMAIL ?? ''
 const key = process.env.GOOGLE_MAIL_SA_KEY ?? ''
 const primary = googlePrimaryMailbox()
