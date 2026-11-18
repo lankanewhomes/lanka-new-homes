@@ -2828,3 +2828,7 @@ Scripts: `scripts/social/carousel_project_v2_light.py` (projects), `carousel_lan
 ### Contact form updates and Subscribers (2026-11-18)
 - /contact has an optional "Send me" group of tick boxes (Newsletter, Latest news, New listings & price drops, Launch offers), all off by default, one short line each.
 - Every contact form submission is emailed to developers@ and, on the live site only, saved to the admin-only `subscribers` collection, shown as "Contacts & subscribers" (/dashboard/subscribers): name, company, phone, who they wanted to reach, every message (newest first) and what they ticked. Same email twice merges into one row. Status: `subscribed` = ticked a box (the newsletter list), `contact_only` = just wrote to us, `unsubscribed`.
+
+### Unsubscribe (2026-11-18)
+- Every marketing email (newsletter, news, new listings, launch offers) must end with `unsubscribeFooterHtml(email)` and send `listUnsubscribeHeaders(email)` (src/lib/unsubscribe.ts), so the mail app shows its own Unsubscribe button too. Transactional emails (lead alerts, password reset, verification) do not get it.
+- The link is `/unsubscribe?e=<email>&t=<signed token>` (HMAC of the email with `PAYLOAD_SECRET`, or `UNSUBSCRIBE_SECRET` if set). The page asks for one click, then `/api/unsubscribe` marks the person `unsubscribed` in Contacts & subscribers, creating the row if they were never in it. Unsubscribed means every list: never email them marketing. Ticking a box on /contact again subscribes them.
