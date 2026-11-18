@@ -44,19 +44,23 @@ export async function POST(req: Request) {
 
     const audienceLabel = AUDIENCE_LABELS[audience] ?? audience;
 
-    // Save the signup (live site only; local and preview submissions never write to the real list). Never blocks the message.
-    if (interests.length && isProductionDeployment()) {
+    // Save the contact (live site only; local and preview submissions never write to the real list). Never blocks the message.
+    if (isProductionDeployment()) {
       try {
         const { getPayload } = await import("payload");
         const payloadConfig = (await import("../../../../../payload.config")).default;
         const payload = await getPayload({ config: payloadConfig });
         const found = await payload.find({ collection: "subscribers", where: { email: { equals: email.toLowerCase() } }, limit: 1, depth: 0 });
         const existing = found.docs[0];
+        const stamp = new Date().toISOString().slice(0, 10);
+        const entry = `[${stamp}] ${message}`;
         const merged = Array.from(new Set([...(existing?.interests ? existing.interests.split(", ") : []), ...interests])).join(", ");
-        if (existing) await payload.update({ collection: "subscribers", id: existing.id, data: { interests: merged, name: existing.name || name, status: "subscribed" } });
-        else await payload.create({ collection: "subscribers", data: { email: email.toLowerCase(), name, interests: merged, source: "contact-form", status: "subscribed" } });
+        const status = interests.length ? "subscribed" : existing?.status ?? "contact_only";
+        const data = { name: name || existing?.name, company: company || existing?.company, phone: phone || existing?.phone, audience: audienceLabel, interests: merged, message: existing?.message ? `${entry}\n\n${existing.message}` : entry, status } as const;
+        if (existing) await payload.update({ collection: "subscribers", id: existing.id, data });
+        else await payload.create({ collection: "subscribers", data: { ...data, email: email.toLowerCase(), source: "contact-form" } });
       } catch (error) {
-        console.error("Subscriber save failed:", error instanceof Error ? error.message : error);
+        console.error("Contact save failed:", error instanceof Error ? error.message : error);
       }
     }
 

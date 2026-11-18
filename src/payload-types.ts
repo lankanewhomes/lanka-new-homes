@@ -8301,8 +8301,21 @@ export interface Subscriber {
    * What they ticked: newsletter, news, listings, launches.
    */
   interests?: string | null;
+  company?: string | null;
+  phone?: string | null;
+  /**
+   * Who they wanted to reach on the form.
+   */
+  audience?: string | null;
+  /**
+   * Every message they sent, newest first.
+   */
+  message?: string | null;
   source?: string | null;
-  status?: ('subscribed' | 'unsubscribed') | null;
+  /**
+   * subscribed = ticked a box (send them updates). contact_only = just wrote to us. unsubscribed = asked to stop.
+   */
+  status?: ('subscribed' | 'contact_only' | 'unsubscribed') | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -10242,6 +10255,10 @@ export interface SubscribersSelect<T extends boolean = true> {
   email?: T;
   name?: T;
   interests?: T;
+  company?: T;
+  phone?: T;
+  audience?: T;
+  message?: T;
   source?: T;
   status?: T;
   updatedAt?: T;

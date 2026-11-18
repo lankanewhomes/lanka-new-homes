@@ -640,3 +640,8 @@ create index if not exists subscribers_updated_at_idx on payload.subscribers (up
 create index if not exists subscribers_created_at_idx on payload.subscribers (created_at);
 alter table payload.payload_locked_documents_rels add column if not exists subscribers_id integer references payload.subscribers(id) on delete cascade;
 create index if not exists payload_locked_documents_rels_subscribers_id_idx on payload.payload_locked_documents_rels (subscribers_id);
+
+-- Contacts & subscribers: save every contact form submission, not only ticked ones (2026-11-18).
+alter type payload.enum_subscribers_status add value if not exists 'contact_only';
+alter table payload.subscribers add column if not exists company varchar, add column if not exists phone varchar, add column if not exists audience varchar, add column if not exists message varchar;
+alter table payload.subscribers alter column status set default 'contact_only';
