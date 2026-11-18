@@ -80,7 +80,7 @@ export type MessageAction =
 export type ProviderAttachmentFile = { filename: string; contentType: string; bytes: Uint8Array }
 
 export interface MailProvider {
-  readonly mode: 'mock' | 'zoho'
+  readonly mode: 'mock' | 'zoho' | 'google'
   testConnection(): Promise<{ ok: boolean; message: string; accounts: ProviderAccount[] }>
   listAccounts(): Promise<ProviderAccount[]>
   listFolders(zohoAccountId: string): Promise<ProviderFolder[]>

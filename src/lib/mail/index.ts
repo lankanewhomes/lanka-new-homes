@@ -1,8 +1,8 @@
 import { MockMailProvider } from './mock-client'
 import type { MailProvider } from './types'
 
-// Provider factory. MAIL_MOCK_MODE=true (the default) or missing Zoho credentials gives the mock client; otherwise the real Zoho
-// client. Both implement MailProvider, so the rest of the app never knows which one it is talking to.
+// Provider factory. MAIL_MOCK_MODE=true (the default) or missing credentials gives the mock client; otherwise the real client: Google
+// Workspace (Gmail API) when MAIL_PROVIDER=google (owner, 2026-11-17: moving away from Zoho), else Zoho. Both implement MailProvider, so the rest of the app never knows which one it is talking to.
 
 export const MAILBOX_ENV = [
   { env: 'MAIL_ACCOUNT_NOREPLY', fallback: 'no-reply@lankanewhomes.com', suffix: 'NOREPLY' },
@@ -31,24 +31,37 @@ export function zohoCredentialsPresent(): boolean {
   return configuredMailboxes().some((email) => zohoCredsFor(email) !== null)
 }
 
+/** True when the mail provider is Google Workspace (MAIL_PROVIDER=google). */
+export function isGoogleMail(): boolean {
+  return (process.env.MAIL_PROVIDER ?? '').toLowerCase() === 'google'
+}
+
+export function liveCredentialsPresent(): boolean {
+  return isGoogleMail() ? Boolean(process.env.GOOGLE_MAIL_SA_EMAIL && process.env.GOOGLE_MAIL_SA_KEY) : zohoCredentialsPresent()
+}
+
 export function isMockMode(): boolean {
   const flag = (process.env.MAIL_MOCK_MODE ?? 'true').toLowerCase()
-  return flag !== 'false' || !zohoCredentialsPresent()
+  return flag !== 'false' || !liveCredentialsPresent()
 }
 
 const KEY = Symbol.for('lnh.mail.provider')
 
 export async function getMailProvider(): Promise<MailProvider> {
-  const g = globalThis as unknown as Record<symbol, { mock: boolean; provider: MailProvider } | undefined>
+  const g = globalThis as unknown as Record<symbol, { mock: boolean; google: boolean; provider: MailProvider } | undefined>
   const mock = isMockMode()
-  if (g[KEY]?.mock === mock) return g[KEY]!.provider
+  const google = !mock && isGoogleMail()
+  if (g[KEY]?.mock === mock && g[KEY]?.google === google) return g[KEY]!.provider
   let provider: MailProvider
   if (mock) provider = new MockMailProvider()
-  else {
+  else if (google) {
+    const { GmailMailProvider } = await import('./gmail-client')
+    provider = new GmailMailProvider()
+  } else {
     const { ZohoMailProvider } = await import('./zoho-client')
     provider = new (ZohoMailProvider as unknown as new () => MailProvider)()
   }
-  g[KEY] = { mock, provider }
+  g[KEY] = { mock, google, provider }
   return provider
 }
 
