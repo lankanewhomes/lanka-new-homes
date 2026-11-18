@@ -2824,3 +2824,7 @@ Scripts: `scripts/social/carousel_project_v2_light.py` (projects), `carousel_lan
 - Reel cover: see-through light fade (max alpha 150), light label bar, bold black two-line title, 150 px tall FROM and price box, white link strip with the link in 25 px light text.
 - Reels: regular weight (400), uppercase, text scale 0.6, white location line, "2 AND 3 BEDROOMS" (uppercase AND) instead of "2 & 3".
 - Facebook captions go out without a URL while the Page's monthly link allowance is used up; TikTok and Instagram captions carry the www link.
+
+### Contact form updates and Subscribers (2026-11-18)
+- /contact has an optional "Send me" group of tick boxes (Newsletter, Latest news, New listings & price drops, Launch offers), all off by default, one short line each.
+- Ticked choices go in the notice email and, on the live site only, are saved to the admin-only `subscribers` collection (/dashboard/subscribers). Same email twice merges the choices into one row.

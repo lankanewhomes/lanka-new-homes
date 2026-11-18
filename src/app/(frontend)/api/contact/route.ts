@@ -44,6 +44,22 @@ export async function POST(req: Request) {
 
     const audienceLabel = AUDIENCE_LABELS[audience] ?? audience;
 
+    // Save the signup (live site only; local and preview submissions never write to the real list). Never blocks the message.
+    if (interests.length && isProductionDeployment()) {
+      try {
+        const { getPayload } = await import("payload");
+        const payloadConfig = (await import("../../../../../payload.config")).default;
+        const payload = await getPayload({ config: payloadConfig });
+        const found = await payload.find({ collection: "subscribers", where: { email: { equals: email.toLowerCase() } }, limit: 1, depth: 0 });
+        const existing = found.docs[0];
+        const merged = Array.from(new Set([...(existing?.interests ? existing.interests.split(", ") : []), ...interests])).join(", ");
+        if (existing) await payload.update({ collection: "subscribers", id: existing.id, data: { interests: merged, name: existing.name || name, status: "subscribed" } });
+        else await payload.create({ collection: "subscribers", data: { email: email.toLowerCase(), name, interests: merged, source: "contact-form", status: "subscribed" } });
+      } catch (error) {
+        console.error("Subscriber save failed:", error instanceof Error ? error.message : error);
+      }
+    }
+
     const isTest = !isProductionDeployment();
     const testInbox = process.env.LEAD_ALERTS_OVERRIDE_TO || process.env.LEAD_ALERTS_TEST_INBOX || DEFAULT_TEST_INBOX;
     const to = isTest ? testInbox : "developers@lankanewhomes.com";
