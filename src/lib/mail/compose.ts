@@ -3,6 +3,7 @@ import { after } from 'next/server'
 import type { Payload } from 'payload'
 import { applyAction, providerContext, loadMessageRows } from './server'
 import { quickRefresh } from './sync'
+import { aliasesFor } from './index'
 import type { MailAddress, OutgoingMessage } from './types'
 
 const EMAIL = /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/
@@ -32,7 +33,8 @@ export async function runSendOrDraft(payload: Payload, request: Request, mode: '
   }
 
   const message: OutgoingMessage = {
-    from: account.email,
+    // The sender is the mailbox itself or one of its aliases (support@, developers@, no-reply@ on Google).
+    from: typeof body.from === 'string' && aliasesFor(account.email).includes(body.from.trim().toLowerCase()) ? body.from.trim().toLowerCase() : account.email,
     to, cc, bcc,
     subject: String(body.subject ?? '').slice(0, 998),
     htmlBody: String(body.htmlBody ?? ''),

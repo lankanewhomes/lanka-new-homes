@@ -59,6 +59,10 @@ export async function ensureAccounts(payload: Payload, provider: MailProvider): 
       rows.push({ id: created.id, email, zohoAccountId: remote.zohoAccountId, displayName: created.displayName, color: created.color, signature: '', source: provider.mode })
     }
   }
+  // Mailboxes that are no longer configured (the three old Zoho-style addresses once Google runs one mailbox with aliases) are hidden, not deleted.
+  const wanted = new Set(configuredMailboxes())
+  const stale = (await payload.find({ collection: 'mail-accounts', where: { active: { not_equals: false } }, limit: 50, depth: 0, pagination: false, overrideAccess: true })).docs as any[]
+  for (const old of stale) if (!wanted.has(String(old.email).toLowerCase())) await payload.update({ collection: 'mail-accounts', id: old.id, overrideAccess: true, data: { active: false } as never })
   return { accounts: rows, warnings }
 }
 

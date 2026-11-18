@@ -28,7 +28,8 @@ export async function sendHumanEmail(email: HumanEmail): Promise<{ via: 'zoho' |
   if (!email.forceResend && !isMockMode()) {
     try {
       const provider = await getMailProvider()
-      const account = (await provider.listAccounts()).find((a) => a.email.toLowerCase() === email.from.toLowerCase())
+      const from = email.from.toLowerCase()
+      const account = (await provider.listAccounts()).find((a) => a.email.toLowerCase() === from || (a.aliases ?? []).some((x) => x.toLowerCase() === from))
       if (account) {
         const sent = await provider.sendMessage(account.zohoAccountId, {
           from: email.from,

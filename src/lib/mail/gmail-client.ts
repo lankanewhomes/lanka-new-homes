@@ -7,6 +7,8 @@
 //   GOOGLE_MAIL_SA_EMAIL = service account client_email
 //   GOOGLE_MAIL_SA_KEY   = service account private_key (the PEM; literal "\n" sequences are accepted)
 //   Admin console: Security > API controls > Domain-wide delegation, scope https://mail.google.com/
+//   One real mailbox (GOOGLE_MAIL_PRIMARY, default rupan@lankanewhomes.com); support@, developers@ and no-reply@ are its aliases. To keep an
+//   alias in From, register them once with scripts/google-register-aliases.mts (needs the gmail.settings.sharing scope).
 //
 // Mapping onto the Zoho-shaped interface (the field names keep "zoho" so sync.ts and the collections stay untouched):
 //   zohoAccountId = the mailbox address   zohoFolderId = Gmail label id (INBOX, SENT, DRAFT, SPAM, TRASH, or a user label id)
@@ -16,7 +18,7 @@ import type {
   ListMessagesPage, ListMessagesParams, MailAddress, MailFolderType, MailProvider, MessageAction, OutgoingMessage, ProviderAccount,
   ProviderAttachmentFile, ProviderAttachmentMeta, ProviderFolder, ProviderMessageFull, ProviderMessageSummary,
 } from './types'
-import { configuredMailboxes } from './index'
+import { aliasesFor, configuredMailboxes } from './index'
 
 const SCOPE = 'https://mail.google.com/'
 const API = 'https://gmail.googleapis.com/gmail/v1/users/me'
@@ -206,7 +208,7 @@ export class GmailMailProvider implements MailProvider {
   readonly mode = 'google' as const
 
   async listAccounts(): Promise<ProviderAccount[]> {
-    return configuredMailboxes().map((email) => ({ zohoAccountId: email, email, displayName: email }))
+    return configuredMailboxes().map((email) => ({ zohoAccountId: email, email, displayName: 'LankaNewHomes', aliases: aliasesFor(email) }))
   }
 
   async testConnection() {

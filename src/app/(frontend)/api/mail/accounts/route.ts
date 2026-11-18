@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- Payload docs are loosely typed here */
 import { ensureAccounts, syncFolders } from "@/lib/mail/sync";
+import { aliasesFor, configuredMailboxes } from "@/lib/mail";
 import { folderCounts, providerContext, requireMailAdmin } from "@/lib/mail/server";
 
 export const dynamic = "force-dynamic";
@@ -15,7 +16,7 @@ export async function GET(request: Request) {
   let accounts = (await payload.find({ collection: "mail-accounts", where: { active: { not_equals: false } }, limit: 20, depth: 0, pagination: false, overrideAccess: true })).docs as any[];
   let warnings: string[] = [];
   const refresh = new URL(request.url).searchParams.get("refresh") === "1";
-  if (accounts.length < 3 || refresh) {
+  if (accounts.length < configuredMailboxes().length || refresh) {
     const ensured = await ensureAccounts(payload, provider);
     warnings = ensured.warnings;
     for (const a of ensured.accounts) await syncFolders(payload, provider, a);
@@ -31,7 +32,7 @@ export async function GET(request: Request) {
     pendingImport,
     warnings,
     accounts: accounts.map((a) => ({
-      id: a.id, email: a.email, displayName: a.displayName ?? a.email, color: a.color ?? "#2563eb", signature: a.signature ?? "", zohoAccountId: a.zohoAccountId ?? "",
+      id: a.id, email: a.email, displayName: a.displayName ?? a.email, color: a.color ?? "#2563eb", signature: a.signature ?? "", aliases: aliasesFor(String(a.email)), zohoAccountId: a.zohoAccountId ?? "",
       folders: folders
         .filter((f) => (typeof f.account === "object" ? f.account.id : f.account) === a.id)
         .map((f) => ({ id: f.id, zohoFolderId: f.zohoFolderId, name: f.name, type: f.type, unread: counts.get(f.id)?.unread ?? 0, total: counts.get(f.id)?.total ?? 0 })),

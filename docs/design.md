@@ -1351,6 +1351,8 @@ updates both automatically.
 - `/dashboard` developer page, "Emails & contact" tab (`DeveloperEmailLog.tsx`; owner, 2026-11-18): one timeline of everything sent to or heard from the
   developer, newest first, with filters All / Emails / WhatsApp / Instagram, phone, other. It merges the email log (automatic site emails, with opens and
   clicks), the Outreach log (emails typed by hand in Zoho or Google, and replies), WhatsApp messages and the manual "Other contact" notes.
+- Mail (`/dashboard/inbox`, Google Workspace since 2026-11-18): ONE mailbox (`rupan@`, env `GOOGLE_MAIL_PRIMARY`) with support@, developers@ and no-reply@ as aliases
+  (owner chose the cheapest option). The compose "From" menu lists the mailbox and its aliases; `aliasesFor()` in `src/lib/mail/index.ts` is the list.
 - `DashboardSidebar` (in `src/components/dashboard/components.tsx`) renders
   `ADMIN_NAV_LINKS` by default — a single shared list. Add a new admin
   section there once rather than editing every `/admin/*` page's inline
