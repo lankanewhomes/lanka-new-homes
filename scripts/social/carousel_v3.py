@@ -58,9 +58,11 @@ def title_block(d, dy=0):
 
 
 def inner(d, heading, lines):
-    d.text((LM, BAR_Y + 8), heading, font=font(38, 500), fill=ACC_TXT)
-    y = HEAD_Y + 8
+    """Two Title Case lines, then the accent heading (The Land, Access, Location...) UNDER them, same style as the city under the title (owner 2026-11-17).
+    Owner 2026-11-17: more spacing: lines start higher, a clear gap before the heading and before the URL strip."""
+    y = BAR_Y - 34
     for l in lines: d.text((LM, y), l, font=font(56, 400), fill=INK); y += 64
+    d.text((LM + 2, y + 18), heading, font=font(46, 400), fill=ACC_TXT)
 
 
 def photo(i, fy=.5): return Image.open(C['media'] % i).convert('RGB'), fy

@@ -1,0 +1,231 @@
+import type { BProps, BScene } from '../Bomb'
+// Facts only from the CMS records (scottish-island-digana, broad-city-kadawatha). No developer names, no units sold/left.
+export const bombSi: BProps = {
+  scenes: [
+    { fx: 'bomb', photo: 'media/n2-si-p2.jpg', lines: ['SCOTTISH', 'ISLAND'], sub: 'DIGANA · KANDY' },
+    { fx: 'slide', photo: 'media/n2-si-p4.jpg', lines: ['WATER', 'VILLAS'], sub: '', zoomOut: true },
+    { fx: 'rise', photo: 'media/n2-si-p3.jpg', lines: ['MOUNTAIN', 'VIEWS'], sub: 'VICTORIA RESERVOIR' },
+    { fx: 'zoom', photo: 'media/n2-si-p1.jpg', lines: ['AIR', 'CONDITIONED'], sub: 'ALL BEDROOMS', zoomOut: true },
+    { fx: 'slideR', photo: 'media/n2-si-p0.jpg', lines: ['LIVING', 'AND DINING'], sub: '' },
+    { fx: 'rise', photo: 'media/n2-si-p5.jpg', lines: ['OPEN', 'TERRACE'], sub: 'OPEN TO THE SKY', zoomOut: true },
+    { fx: 'bomb', photo: 'media/n2-si-p2.jpg', lines: ['KANDY', 'LIVING'], sub: '' },
+  ],
+  end: { photo: 'media/n2-si-p3.jpg', label: 'VILLAS FROM', amount: 'RS. 80M', l1: 'SCOTTISH ISLAND', l2: 'DIGANA' },
+  url: 'www.lankanewhomes.com/projects/scottish-island-digana',
+}
+export const bombBc: BProps = {
+  land: true,
+  scenes: [
+    { fx: 'bomb', photo: 'media/n2-bc-p1.jpg', lines: ['BROAD CITY', 'LAND'], sub: 'KADAWATHA' },
+    { fx: 'slide', photo: 'media/n2-bc-p5.jpg', lines: ['1 KM', 'TO TOWN'], sub: 'KADAWATHA TOWN', zoomOut: true },
+    { fx: 'zoom', photo: 'media/n2-bc-p3.jpg', lines: ['300 M', 'BUS ROUTE'], sub: '' },
+    { fx: 'rise', photo: 'media/n2-bc-p2.jpg', lines: ['10', 'PLOTS'], sub: 'AVAILABLE', zoomOut: true },
+    { fx: 'slideR', photo: 'media/n2-bc-p4.jpg', lines: ['WALLED', 'AND GREEN'], sub: '' },
+    { fx: 'bomb', photo: 'media/n2-bc-p5.jpg', lines: ['RS. 1.35M', 'PER PERCH'], sub: 'FROM', zoomOut: true },
+    { fx: 'rise', photo: 'media/n2-bc-p1.jpg', lines: ['GAMPAHA', 'DISTRICT'], sub: 'SRI LANKA' },
+  ],
+  end: { photo: 'media/n2-bc-p1.jpg', label: 'LAND FROM PER PERCH', amount: 'RS. 1.35M', l1: 'BROAD CITY', l2: 'KADAWATHA' },
+  url: 'www.lankanewhomes.com/land/broad-city-kadawatha',
+}
+
+// Facts from the day-12 configs (CMS records). No developer names, no units sold/left.
+export const bombWd: BProps = {
+  scenes: [
+    { fx: 'bomb', photo: 'media/b3-wd-p0.jpg', lines: ['WATERDALE', 'RESIDENCIES'], sub: 'COLOMBO 07' },
+    { fx: 'slide', photo: 'media/b3-wd-p1.jpg', lines: ['BORDERING', 'COLOMBO 07'], sub: 'WATERDALE RESIDENCIES', zoomOut: true },
+    { fx: 'rise', photo: 'media/b3-wd-p7.jpg', lines: ['2 AND 3', 'BEDROOMS'], sub: 'APARTMENTS' },
+    { fx: 'zoom', photo: 'media/b3-wd-p8.jpg', lines: ['PANORAMIC', 'CITY VIEWS'], sub: '', zoomOut: true },
+    { fx: 'slideR', photo: 'media/b3-wd-p5.jpg', lines: ['LIVING', 'SPACES'], sub: '' },
+    { fx: 'rise', photo: 'media/b3-wd-p6.jpg', lines: ['DINING', 'AREA'], sub: '', zoomOut: true },
+    { fx: 'bomb', photo: 'media/b3-wd-p1.jpg', lines: ['APARTMENTS', 'FOR SALE'], sub: '', zoomOut: true },
+  ],
+  end: { photo: 'media/b3-wd-p0.jpg', label: 'APARTMENTS FROM', amount: 'RS. 80M', l1: 'WATERDALE', l2: 'RESIDENCIES' },
+  url: 'www.lankanewhomes.com/projects/waterdale-residencies-colombo-07',
+}
+export const bombAa: BProps = {
+  scenes: [
+    { fx: 'bomb', photo: 'media/n2-aa-p6.jpg', lines: ['AATHAVAN', 'APARTMENTS'], sub: 'DEHIWALA' },
+    { fx: 'slide', photo: 'media/n2-aa-p3.jpg', lines: ['2 AND 3', 'BEDROOM HOMES'], sub: '', zoomOut: true },
+    { fx: 'rise', photo: 'media/n2-aa-p8.jpg', lines: ['LIVING', 'SPACES'], sub: '' },
+    { fx: 'zoom', photo: 'media/n2-aa-p7.jpg', lines: ['ROOFTOP', 'GYM'], sub: 'AND COMMUNITY HALL', zoomOut: true },
+    { fx: 'slideR', photo: 'media/n2-aa-p1.jpg', lines: ['1,045 TO', '1,589'], sub: 'SQ FT' },
+    { fx: 'rise', photo: 'media/n2-aa-p2.jpg', lines: ['DINING', 'AREA'], sub: '', zoomOut: true },
+    { fx: 'bomb', photo: 'media/n2-aa-p4.jpg', lines: ['DEHIWALA', 'LIVING'], sub: 'AATHAVAN APARTMENTS' },
+  ],
+  end: { photo: 'media/n2-aa-p6.jpg', label: 'APARTMENTS FROM', amount: 'RS. 41.8M', l1: 'AATHAVAN', l2: 'APARTMENTS' },
+  url: 'www.lankanewhomes.com/projects/aathavan-apartments-dehiwala',
+}
+export const bombUv: BProps = {
+  land: true,
+  scenes: [
+    { fx: 'bomb', photo: 'media/n2-uv-p1.jpg', lines: ['UNITY', 'VEYANGODA'], sub: 'LAND FOR SALE' },
+    { fx: 'slide', photo: 'media/n2-uv-p2.jpg', lines: ['20 FT', 'WIDE ROAD'], sub: '', zoomOut: true },
+    { fx: 'zoom', photo: 'media/n2-uv-p1.jpg', lines: ['THREE PHASE', 'ELECTRICITY'], sub: 'UTILITIES' },
+    { fx: 'rise', photo: 'media/n2-uv-p2.jpg', lines: ['CLOSE TO', 'RAILWAY STATION'], sub: 'VEYANGODA', zoomOut: true },
+    { fx: 'slideR', photo: 'media/n2-uv-p1.jpg', lines: ['RS. 255,000', 'PER PERCH'], sub: 'FROM' },
+    { fx: 'zoom', photo: 'media/n2-uv-p2.jpg', lines: ['GAMPAHA', 'DISTRICT'], sub: 'SRI LANKA', zoomOut: true },
+    { fx: 'bomb', photo: 'media/n2-uv-p1.jpg', lines: ['LAND', 'FOR SALE'], sub: '' },
+  ],
+  end: { photo: 'media/n2-uv-p2.jpg', label: 'LAND FROM PER PERCH', amount: 'RS. 255,000', l1: 'UNITY', l2: 'VEYANGODA' },
+  url: 'www.lankanewhomes.com/land/unity-veyangoda',
+}
+
+// Sharp-photo layout (photo in its own window over a blurred copy). boxH 600 for the 1200x540 sources so they are not upscaled much.
+export const bombWdFit: BProps = { ...bombWd, fit: true }
+export const bombSiFit: BProps = { ...bombSi, fit: true, boxH: 600 }
+export const bombBcFit: BProps = { ...bombBc, fit: true, boxH: 600 }
+export const bombUvFit: BProps = { ...bombUv, fit: true, boxH: 600 }
+// Aathavan: portrait exteriors are shown whole (contain) so the building is not cropped.
+export const bombAaFit: BProps = {
+  ...bombAa, fit: true,
+  scenes: bombAa.scenes.map((s) => (/aa-p(6|4)\.jpg/.test(s.photo) ? { ...s, contain: true } : s)),
+}
+// Full-bleed HQ: pre-scaled copies (Lanczos, mild sharpen) of the portrait-friendly crops, shown 1:1 so nothing is stretched twice.
+export const bombAaHq: BProps = {
+  ...bombAa, hq: true, endCalm: true,
+  // second-last scene: wipe, last scene: focus pull (owner 2026-11-11: no dropping at the end)
+  scenes: bombAa.scenes.map((s, i) => ({ ...s, photo: s.photo.replace('media/n2-aa-', 'media/hq-aa-'), ...(i === 5 ? { fx: 'wipe' as const } : i === 6 ? { fx: 'focus' as const } : {}) })),
+  end: { ...bombAa.end, photo: bombAa.end.photo.replace('media/n2-aa-', 'media/hq-aa-') },
+}
+
+// Approved full-screen design (owner 2026-11-11) for the other listings: full-bleed photos, text at the bottom, calm last two scenes, price boxes on the end card.
+const hqOf = (p: BProps, from: string, to: string, priceBox?: string): BProps => ({
+  ...p, hq: true, endCalm: true,
+  scenes: p.scenes.map((s, i) => ({ ...s, photo: s.photo.replace(from, to), ...(i === p.scenes.length - 2 ? { fx: 'wipe' as const } : i === p.scenes.length - 1 ? { fx: 'focus' as const } : {}) })),
+  end: { ...p.end, photo: p.end.photo.replace(from, to), ...(priceBox ? { amount: priceBox } : {}) },
+})
+export const bombWdHq = hqOf(bombWd, 'media/b3-wd-', 'media/hq-wd-')
+export const bombSiHq = hqOf(bombSi, 'media/n2-si-', 'media/hq-si-')
+export const bombBcHq = hqOf(bombBc, 'media/n2-bc-', 'media/hq-bc-', 'RS. 1,350,000 PER PERCH')
+export const bombUvHq = hqOf(bombUv, 'media/n2-uv-', 'media/hq-uv-', 'RS. 255,000 PER PERCH')
+
+// Sharp-photo window + approved calm ending (wipe, focus pull, price boxes). Used for listings whose photos are wide or small.
+const calmFit = (p: BProps, priceBox?: string): BProps => ({
+  ...p, endCalm: true,
+  scenes: p.scenes.map((s, i) => ({ ...s, ...(i === p.scenes.length - 2 ? { fx: 'wipe' as const } : i === p.scenes.length - 1 ? { fx: 'focus' as const } : {}) })),
+  end: { ...p.end, ...(priceBox ? { amount: priceBox } : {}) },
+})
+export const bombWdFinal = calmFit(bombWdFit)
+export const bombSiFinal = calmFit(bombSiFit)
+export const bombBcFinal = calmFit(bombBcFit, 'RS. 1,350,000 PER PERCH')
+export const bombUvFinal = calmFit(bombUvFit, 'RS. 255,000 PER PERCH')
+
+// Day 16 reels (full-screen design). Facts from the CMS records; no developer names, no counts of units left.
+const hq16 = (scenes: BScene[], end: BProps['end'], url: string, layout?: BProps['layout']): BProps => ({
+  layout, hq: true, endCalm: true, url,
+  scenes: scenes.map((s, i) => ({ ...s, ...(i === scenes.length - 2 ? { fx: 'wipe' as const } : i === scenes.length - 1 ? { fx: 'focus' as const } : {}) })),
+  end,
+})
+export const bombGv = hq16([
+  { fx: 'bomb', photo: 'media/hq-gv-p0.jpg', lines: ['GOLF', 'VILLAS'], sub: 'PILIYANDALA' },
+  { fx: 'slide', photo: 'media/hq-gv-p2.jpg', lines: ['158 TWO-STOREY', 'VILLAS'], sub: '' },
+  { fx: 'rise', photo: 'media/hq-gv-p4.jpg', lines: ['3 AND 4', 'BEDROOMS'], sub: '' },
+  { fx: 'zoom', photo: 'media/hq-gv-p5.jpg', lines: ['1,825 TO', '3,185 SQ FT'], sub: '' },
+  { fx: 'slideR', photo: 'media/hq-gv-p6.jpg', lines: ['FITTED', 'KITCHEN'], sub: '' },
+  { fx: 'wipe', photo: 'media/hq-gv-p3.jpg', lines: ['GOLF RESORT', 'AMENITIES'], sub: '' },
+  { fx: 'focus', photo: 'media/hq-gv-p1.jpg', lines: ['READY TO', 'MOVE IN'], sub: '' },
+], { photo: 'media/hq-gv-p0.jpg', label: 'VILLAS FROM', amount: 'RS. 55M', l1: 'CANTERBURY', l2: 'GOLF VILLAS' }, 'www.lankanewhomes.com/projects/canterbury-golf-villas')
+export const bombRe = hq16([
+  { fx: 'bomb', photo: 'media/hq-re-p0.jpg', lines: ['ROYAL', 'EDGE'], sub: 'WELLAWATTE' },
+  { fx: 'slide', photo: 'media/hq-re-p4.jpg', lines: ['PANORAMIC', 'OCEAN VIEWS'], sub: '' },
+  { fx: 'rise', photo: 'media/hq-re-p3.jpg', lines: ['ONLY 57', 'RESIDENCES'], sub: '' },
+  { fx: 'zoom', photo: 'media/hq-re-p5.jpg', lines: ['SEA BREEZE', 'AND VENTILATION'], sub: '' },
+  { fx: 'slideR', photo: 'media/hq-re-p6.jpg', lines: ['MODERN', 'KITCHENS'], sub: '' },
+  { fx: 'wipe', photo: 'media/hq-re-p11.jpg', lines: ['COASTAL', 'LIVING'], sub: '' },
+  { fx: 'focus', photo: 'media/hq-re-p1.jpg', lines: ['COLOMBO 06', 'RAMAKRISHNA ROAD'], sub: '' },
+], { photo: 'media/hq-re-p0.jpg', label: '', amount: '', l1: 'ROYAL EDGE', l2: 'COLOMBO 06' }, 'www.lankanewhomes.com/projects/royal-edge-colombo-06')
+export const bombDy = hq16([
+  { fx: 'bomb', photo: 'media/hq-dy-p0.jpg', lines: ['DYNASTY', 'RESIDENCE'], sub: 'KANDY' },
+  { fx: 'slide', photo: 'media/hq-dy-p9.jpg', lines: ['30 METERS FROM', 'THE MAHAWELI'], sub: '' },
+  { fx: 'rise', photo: 'media/hq-dy-p2.jpg', lines: ['1 TO 5', 'BEDROOMS'], sub: '' },
+  { fx: 'zoom', photo: 'media/hq-dy-p4.jpg', lines: ['RIVER AND', 'MOUNTAIN VIEWS'], sub: '' },
+  { fx: 'slideR', photo: 'media/hq-dy-p3.jpg', lines: ['SKY VILLAS AND', 'PENTHOUSES'], sub: '' },
+  { fx: 'wipe', photo: 'media/hq-dy-p8.jpg', lines: ['INFINITY', 'POOL'], sub: '' },
+  { fx: 'focus', photo: 'media/hq-dy-p1.jpg', lines: ['READY TO', 'OCCUPY'], sub: '' },
+], { photo: 'media/hq-dy-p0.jpg', label: '', amount: '', l1: 'DYNASTY', l2: 'RESIDENCE' }, 'www.lankanewhomes.com/projects/dynasty-residence-kandy')
+
+export const bombOc = hq16([
+  { fx: 'bomb', photo: 'media/hq-oc-p69.jpg', lines: ['OCEANA', 'WADDUWA'], sub: 'BEACHFRONT' },
+  { fx: 'slide', photo: 'media/hq-oc-p71.jpg', lines: ['BEACH', 'VILLAS'], sub: '' },
+  { fx: 'rise', photo: 'media/hq-oc-p64.jpg', lines: ['1 BEDROOM', 'APARTMENTS'], sub: '' },
+  { fx: 'zoom', photo: 'media/hq-oc-p68.jpg', lines: ['FITTED', 'KITCHENS'], sub: '' },
+  { fx: 'slideR', photo: 'media/hq-oc-p72.jpg', lines: ['1, 2 AND 3', 'BEDROOM VILLAS'], sub: '' },
+  { fx: 'wipe', photo: 'media/hq-oc-p70.jpg', lines: ['50+ RESORT', 'AMENITIES'], sub: '' },
+  { fx: 'focus', photo: 'media/hq-oc-p65.jpg', lines: ['LIVE BY', 'THE BEACH'], sub: '' },
+], { photo: 'media/hq-oc-p69.jpg', label: 'FROM', amount: 'RS. 36M', l1: 'OCEANA', l2: 'WADDUWA' }, 'www.lankanewhomes.com/projects/oceana-wadduwa')
+
+export const bombRa = hq16([
+  { fx: 'bomb', photo: 'media/hq-ra-p0.jpg', lines: ['RUSH', 'RESIDENCIES'], sub: 'ALLEN' },
+  { fx: 'slide', photo: 'media/hq-ra-p1.jpg', lines: ['18 FLOORS', '56 APARTMENTS'], sub: '' },
+  { fx: 'rise', photo: 'media/hq-ra-p3.jpg', lines: ['2 AND 3', 'BEDROOMS'], sub: '' },
+  { fx: 'zoom', photo: 'media/hq-ra-p4.jpg', lines: ['MODERN', 'KITCHENS'], sub: '' },
+  { fx: 'slideR', photo: 'media/hq-ra-p2.jpg', lines: ['DINING', 'AREA'], sub: '' },
+  { fx: 'wipe', photo: 'media/hq-ra-p5.jpg', lines: ['BALCONY', 'VIEWS'], sub: '' },
+  { fx: 'focus', photo: 'media/hq-ra-p6.jpg', lines: ['HANDOVER', 'EXPECTED 2029'], sub: '' },
+], { photo: 'media/hq-ra-p5.jpg', label: 'APARTMENTS FROM', amount: 'RS. 43.7M', l1: 'RUSH RESIDENCIES', l2: 'DEHIWALA' }, 'www.lankanewhomes.com/projects/rush-residencies-allen-dehiwala')
+export const bombR5 = hq16([
+  { fx: 'bomb', photo: 'media/hq-r5-p5.jpg', lines: ['RUSH', 'COURT 5'], sub: 'COLOMBO 14' },
+  { fx: 'slide', photo: 'media/hq-r5-p0.jpg', lines: ['9 FLOORS', '21 APARTMENTS'], sub: '' },
+  { fx: 'rise', photo: 'media/hq-r5-p2.jpg', lines: ['2 AND 3', 'BEDROOMS'], sub: '' },
+  { fx: 'zoom', photo: 'media/hq-r5-p4.jpg', lines: ['KITCHEN', 'SPACE'], sub: '' },
+  { fx: 'slideR', photo: 'media/hq-r5-p1.jpg', lines: ['DINING', 'AREA'], sub: '' },
+  { fx: 'wipe', photo: 'media/hq-r5-p3.jpg', lines: ['PRIVATE', 'BATHROOMS'], sub: '' },
+  { fx: 'focus', photo: 'media/hq-r5-p6.jpg', lines: ['FREEHOLD', 'APARTMENTS'], sub: '' },
+], { photo: 'media/hq-r5-p5.jpg', label: 'APARTMENTS FROM', amount: 'RS. 30M', l1: 'RUSH COURT 5', l2: 'COLOMBO 14' }, 'www.lankanewhomes.com/projects/rush-court-5-colombo-14')
+
+// YOLO Kiribathgoda (2026-11-15). Facts from the CMS record only: 13 acres, 476+ apartments, 1-3 bedrooms, private terrace in every apartment, bowling alley, from Rs 35M. No developer name, no units left.
+export const bombYolo = calmFit({
+  hq: true, endCalm: true, layout: 'center', url: 'www.lankanewhomes.com/projects/yolo-kiribathgoda',
+  scenes: [
+    { fx: 'bomb', photo: 'media/y0.jpg', lines: ['YOLO', 'APARTMENTS'], sub: 'KIRIBATHGODA' },
+    { fx: 'slide', photo: 'media/y1.jpg', lines: ['13 ACRE', 'APARTMENT CITY'], sub: '', zoomOut: true },
+    { fx: 'rise', photo: 'media/y2.jpg', lines: ['PRIVATE', 'TERRACES'], sub: 'IN EVERY APARTMENT' },
+    { fx: 'zoom', photo: 'media/y3.jpg', lines: ['1, 2 AND', '3 BEDROOMS'], sub: '', zoomOut: true },
+    { fx: 'slideR', photo: 'media/y4.jpg', lines: ['MODERN', 'KITCHENS'], sub: '' },
+    { fx: 'wipe', photo: 'media/y5.jpg', lines: ['BOWLING', 'ALLEY'], sub: 'IN THE CLUBHOUSE', zoomOut: true },
+    { fx: 'focus', photo: 'media/y6.jpg', lines: ['476+', 'APARTMENTS'], sub: '' },
+  ],
+  end: { photo: 'media/y1.jpg', label: 'APARTMENTS FROM', amount: 'RS. 35M', l1: 'YOLO', l2: 'KIRIBATHGODA' },
+})
+
+// Glenhaven, Nuwara Eliya (2026-11-15). Facts from the CMS record only: 12 luxury condominium residences, 5 floors, freehold, private balconies over mist-covered mountains, no price published. No developer name, no units left.
+export const bombGlen: BProps = {
+  hq: true, endCalm: true, layout: 'center', url: 'www.lankanewhomes.com/projects/glenhaven-nuwara-eliya',
+  scenes: [
+    { fx: 'bomb', photo: 'media/g0.jpg', lines: ['GLENHAVEN', 'LUXURY CONDOS'], sub: 'NUWARA ELIYA' },
+    { fx: 'slide', photo: 'media/g1.jpg', lines: ['MOUNTAIN', 'VIEWS'], sub: 'FROM THE LIVING ROOM', zoomOut: true },
+    { fx: 'rise', photo: 'media/g2.jpg', lines: ['MISTY', 'HILL VIEWS'], sub: '' },
+    { fx: 'zoom', photo: 'media/g3.jpg', lines: ['12', 'RESIDENCES'], sub: 'OVER 5 FLOORS', zoomOut: true },
+    { fx: 'slideR', photo: 'media/g4.jpg', lines: ['MODERN', 'KITCHENS'], sub: '' },
+    { fx: 'wipe', photo: 'media/g5.jpg', lines: ['LUXURY', 'BATHROOMS'], sub: '', zoomOut: true },
+    { fx: 'focus', photo: 'media/g0.jpg', lines: ['FREEHOLD', 'OWNERSHIP'], sub: '' },
+  ],
+  end: { photo: 'media/g0.jpg', label: 'LUXURY CONDOMINIUMS', amount: '', l1: 'GLENHAVEN', l2: 'NUWARA ELIYA' },
+}
+
+// Vyan Villas Ella (2026-11-17). Facts from the CMS record + vyanvillas.lk only: 5 acres of forest beside a natural stream, private plunge pool with every villa, 2 and 3 bedrooms (2,388 and 3,928 sq ft), fully furnished and equipped, pool/spa/gym, freehold. No developer name, no units left, no price (the record's USD figure is not on the developer site).
+export const bombVy: BProps = calmFit({
+  fit: true, boxH: 700, endCalm: true, layout: 'center', url: 'www.lankanewhomes.com/projects/vyan-villas-ella',
+  scenes: [
+    { fx: 'bomb', photo: 'media/vy/villa-pool-front.jpg', lines: ['VYAN VILLAS', 'ELLA'], sub: 'LUXURY FOREST VILLAS' },
+    { fx: 'slide', photo: 'media/vy/aerial-view-01.jpg', lines: ['5 ACRES', 'OF FOREST'], sub: 'BESIDE A NATURAL STREAM', zoomOut: true },
+    { fx: 'rise', photo: 'media/vy/type-b-deck-plunge-pool.jpg', lines: ['PRIVATE', 'PLUNGE POOLS'], sub: 'WITH EVERY VILLA' },
+    { fx: 'zoom', photo: 'media/vy/bedroom-01.jpg', lines: ['2 AND 3', 'BEDROOMS'], sub: '2,388 TO 3,928 SQ FT', zoomOut: true },
+    { fx: 'slideR', photo: 'media/vy/living-room.jpg', lines: ['FULLY', 'FURNISHED'], sub: 'AND EQUIPPED' },
+    { fx: 'wipe', photo: 'media/vy/pool-lounge-aerial.jpg', lines: ['POOL, SPA', 'AND GYM'], sub: '', zoomOut: true },
+    { fx: 'focus', photo: 'media/vy/yoga-meditation-deck.jpg', lines: ['FREEHOLD', 'VILLAS'], sub: '' },
+  ],
+  end: { photo: 'media/vy/type-b-exterior-dusk.jpg', label: 'FREEHOLD VILLAS', amount: '', l1: 'VYAN VILLAS', l2: 'ELLA' },
+})
+
+// Havelock Signature, Colombo 05 (2026-11-17), full-screen hq layout. Facts from the record + blueoceangroup.lk: 11 floors, 49 luxury residences, 6 parking levels, rooftop pool, gym, skyline views. No developer name, no price (none published), no units left.
+const mapify = (p: BProps): BProps => ({ ...p, mapStyle: true })
+export const bombHv: BProps = mapify(hq16([
+  { fx: 'bomb', photo: 'media/hv/building-exterior.jpg', lines: ['HAVELOCK', 'SIGNATURE'], sub: 'Colombo 05' },
+  { fx: 'slide', photo: 'media/hv/view-over-colombo.jpg', lines: ['11 FLOORS', '49 RESIDENCES'], sub: '' },
+  { fx: 'rise', photo: 'media/hv/living-room.jpg', lines: ['SKYLINE', 'VIEWS'], sub: '' },
+  { fx: 'zoom', photo: 'media/hv/gym.jpg', lines: ['ROOFTOP POOL', 'AND GYM'], sub: '' },
+  { fx: 'slideR', photo: 'media/hv/building-in-its-surroundings.jpg', lines: ['6 LEVELS', 'OF PARKING'], sub: '' },
+  { fx: 'wipe', photo: 'media/hv/bedroom.jpg', lines: ['LUXURY', 'RESIDENCES'], sub: '' },
+  { fx: 'focus', photo: 'media/hv/building-exterior.jpg', lines: ['SIGNATURE', 'LIVING'], sub: '' },
+], { photo: 'media/hv/building-in-its-surroundings.jpg', label: '', amount: '49 RESIDENCES', tab: '11 FLOORS', l1: 'HAVELOCK', l2: 'SIGNATURE', city: 'Colombo 05' }, 'www.lankanewhomes.com/projects/havelock-signature-colombo-05'))

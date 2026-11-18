@@ -251,22 +251,22 @@ def build_overlay():
     fade = Image.new("L", (W, H), 0)
     fp = fade.load()
     for y in range(BAND_TOP):
-        v = int(120 * (1 - y / BAND_TOP) ** 0.8)
+        v = int(150 * (1 - y / BAND_TOP) ** 0.8)
         for x in range(W):
             fp[x, y] = v
     for y in range(BAND_BOTTOM, H):
-        v = int(120 * ((y - BAND_BOTTOM) / (H - BAND_BOTTOM)) ** 0.8)
+        v = int(150 * ((y - BAND_BOTTOM) / (H - BAND_BOTTOM)) ** 0.8)
         for x in range(W):
             fp[x, y] = v
     alpha = Image.composite(fade, Image.new("L", (W, H), 0), lines)
     ov.paste(Image.new("RGBA", (W, H), (255, 255, 255, 255)), (0, 0), alpha)
     logo = Image.open(LOGO_WHITE).convert("RGBA")
-    logo = logo.resize((230, int(230 * logo.height / logo.width)), Image.LANCZOS)
+    logo = logo.resize((210, int(210 * logo.height / logo.width)), Image.LANCZOS)  # design system: logo x 100, y 262, 210 px wide (same as the map and bomb reels)
     shade = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    ImageDraw.Draw(shade).ellipse([56 - 70, 262 - 50, 56 + 300, 262 + 150], fill=(0, 0, 0, 105))
+    ImageDraw.Draw(shade).ellipse([100 - 70, 262 - 50, 100 + 300, 262 + 150], fill=(0, 0, 0, 105))
     shade = shade.filter(ImageFilter.GaussianBlur(48))
     ov.alpha_composite(shade)
-    ov.alpha_composite(logo, (56, 262))
+    ov.alpha_composite(logo, (100, 262))
     return ov
 
 
