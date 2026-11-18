@@ -1,11 +1,11 @@
-import { getMailProvider, isMockMode, MAILBOX_ENV, zohoCredentialsPresent } from "@/lib/mail";
+import { getMailProvider, isMockMode, MAILBOX_ENV, liveCredentialsPresent } from "@/lib/mail";
 import { requireMailAdmin } from "@/lib/mail/server";
 import { getSyncStatus } from "@/lib/mail/sync";
 
 export const dynamic = "force-dynamic";
 
 const ENV_KEYS = [
-  "MAIL_MOCK_MODE", "ZOHO_CLIENT_ID", "ZOHO_CLIENT_SECRET", "ZOHO_REFRESH_TOKEN", "ZOHO_ACCOUNTS_URL", "ZOHO_MAIL_API_URL", ...MAILBOX_ENV.map((m) => m.env), "MAIL_SYNC_SECRET",
+  "MAIL_MOCK_MODE", "MAIL_PROVIDER", "GOOGLE_MAIL_SA_EMAIL", "GOOGLE_MAIL_SA_KEY", "ZOHO_CLIENT_ID", "ZOHO_CLIENT_SECRET", "ZOHO_REFRESH_TOKEN", "ZOHO_ACCOUNTS_URL", "ZOHO_MAIL_API_URL", ...MAILBOX_ENV.map((m) => m.env), "MAIL_SYNC_SECRET",
   // Optional: separate keys per mailbox when each mailbox is its own Zoho login.
   ...MAILBOX_ENV.flatMap((m) => [`ZOHO_CLIENT_ID_${m.suffix}`, `ZOHO_CLIENT_SECRET_${m.suffix}`, `ZOHO_REFRESH_TOKEN_${m.suffix}`]),
 ];
@@ -26,7 +26,7 @@ export async function GET(request: Request) {
   }
   return Response.json({
     mock: isMockMode(),
-    credentialsPresent: zohoCredentialsPresent(),
+    credentialsPresent: liveCredentialsPresent(),
     env: ENV_KEYS.map((key) => ({ key, set: Boolean(process.env[key]) })),
     connection,
     sync: await getSyncStatus(auth.payload),

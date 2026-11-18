@@ -22,7 +22,7 @@ export type FolderRow = { id: number; zohoFolderId: string; name: string; type: 
 
 export type SyncReport = {
   mode: 'import' | 'incremental' | 'auto'
-  provider: 'mock' | 'zoho'
+  provider: 'mock' | 'zoho' | 'google'
   done: boolean
   startedAt: string
   durationMs: number
