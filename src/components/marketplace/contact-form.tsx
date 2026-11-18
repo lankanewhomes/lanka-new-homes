@@ -21,6 +21,13 @@ const AUDIENCE_OPTIONS = [
  * paired company with a role field; both dropped for this exact list). The
  * phone field reuses PhoneField, the same country-code + number picker as
  * the site's other enquiry forms, rather than a one-off plain input. */
+export const UPDATE_CHOICES = [
+  { value: "newsletter", label: "Newsletter", hint: "our regular roundup by email" },
+  { value: "news", label: "Latest news", hint: "Sri Lanka property market news and guides" },
+  { value: "listings", label: "New listings & price drops", hint: "new apartments, houses and land" },
+  { value: "launches", label: "Launch offers & events", hint: "early access, open days, special offers" },
+] as const;
+
 export function ContactForm() {
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
@@ -28,7 +35,8 @@ export function ContactForm() {
   const [phone, setPhone] = useState<PhoneValue>({ country: DEFAULT_PHONE_COUNTRY, national: "" });
   const [audience, setAudience] = useState("");
   const [message, setMessage] = useState("");
-  const [updatesOptIn, setUpdatesOptIn] = useState(false);
+  const [interests, setInterests] = useState<string[]>([]);
+  const toggleInterest = (value: string) => setInterests((prev) => (prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]));
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
@@ -48,7 +56,8 @@ export function ContactForm() {
           phone: buildInternationalPhone(phone.country, phone.national),
           audience,
           message,
-          updatesOptIn,
+          updatesOptIn: interests.length > 0,
+          interests,
         }),
       });
       if (!response.ok) throw new Error("failed");
@@ -108,13 +117,18 @@ export function ContactForm() {
         <textarea value={message} onChange={(event) => setMessage(event.target.value)} required rows={5} placeholder="Tell us more about your inquiry" />
       </label>
 
-      <label className="contact-form-consent">
-        <input type="checkbox" checked={updatesOptIn} onChange={(event) => setUpdatesOptIn(event.target.checked)} />
-        <span>
-          Yes, I&apos;d like occasional updates from LankaNewHomes. Your information is handled per our{" "}
-          <Link href="/privacy">Privacy Policy</Link> and <Link href="/terms">Terms of Service</Link>. You may unsubscribe any time.
-        </span>
-      </label>
+      <fieldset className="contact-form-updates">
+        <legend>Keep me updated (optional, tick any)</legend>
+        {UPDATE_CHOICES.map((choice) => (
+          <label key={choice.value} className="contact-form-consent">
+            <input type="checkbox" checked={interests.includes(choice.value)} onChange={() => toggleInterest(choice.value)} />
+            <span><strong>{choice.label}</strong>, {choice.hint}</span>
+          </label>
+        ))}
+        <p className="contact-form-updates-note">
+          Your information is handled per our <Link href="/privacy">Privacy Policy</Link> and <Link href="/terms">Terms of Service</Link>. You may unsubscribe any time.
+        </p>
+      </fieldset>
 
       {error ? <p className="contact-form-error">{error}</p> : null}
 
