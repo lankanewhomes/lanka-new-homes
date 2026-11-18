@@ -1,0 +1,189 @@
+import React from 'react'
+import { AbsoluteFill, Easing, Img, Sequence, interpolate, staticFile, useCurrentFrame } from 'remotion'
+import { DISPLAY, useFonts } from './fonts'
+
+// "Bomb drop" reel (owner 2026-11-12): only the key words, huge and bold, fall from the top and slam down with a bounce, screen shake, white flash and a shockwave ring.
+// Logo and grid lines are added afterwards with ffmpeg. Boom sounds are placed at the impact frames (see IMPACT1/IMPACT2, SCENE).
+export const SCENE = 56, IMPACT1 = 10, IMPACT2 = 17, END = 100
+let LAYOUT: 'center' | 'left' | 'top' = 'center'
+let MAP = false // map-reel text style (owner 2026-11-17: same as the map reel): Archivo 400, Title Case, line 2 orange, bottom-anchored at y 1348 / 1436
+const SMALL = /^(of|and|from|in|at|to|the|for)$/
+const tc = (t: string) => t.toLowerCase().replace(/(^|[\s-])([a-z]+)/g, (_m, a, w) => a + (SMALL.test(w) ? w : w[0].toUpperCase() + w.slice(1)))
+export type Fx = 'bomb' | 'slide' | 'slideR' | 'rise' | 'zoom' | 'wipe' | 'focus'
+export type BScene = { contain?: boolean; fx?: Fx; photo: string; lines: [string, string]; sub: string; zoomOut?: boolean }
+export type BProps = { layout?: 'center' | 'left' | 'top'; endCalm?: boolean; land?: boolean; fit?: boolean; hq?: boolean; boxH?: number; scenes: BScene[]; end: { photo: string; label: string; amount: string; l1: string; l2: string; city?: string; tab?: string }; url: string; mapStyle?: boolean }
+const mapSize = (t: string) => (t.length > 11 ? 64 : 72)
+const clamp = (v: number) => Math.min(1, Math.max(0, v))
+const ACC = (land?: boolean) => (land ? '#cfe3b8' : '#F99958')
+
+// y offset (px): falls from -1500 to 0 in `fall` frames (accelerating), then bounces twice.
+const dropY = (f: number, impact: number, fall = 8) => {
+  const s = impact - fall
+  if (f < s) return -1600
+  if (f < impact) { const t = (f - s) / fall; return -1600 * (1 - t * t) }
+  const a = f - impact
+  return -Math.abs(Math.sin(a / 4.2)) * 70 * Math.exp(-a / 5)
+}
+const shake = (f: number, impact: number, amp: number) => {
+  const a = f - impact
+  if (a < 0 || a > 14) return { x: 0, y: 0 }
+  const k = Math.exp(-a / 4) * amp
+  return { x: Math.sin(a * 5.3) * k, y: Math.cos(a * 7.1) * k }
+}
+
+const Ring: React.FC<{ at: number; y: number; land?: boolean }> = ({ at, y, land }) => {
+  const f = useCurrentFrame()
+  const a = f - at
+  if (a < 0 || a > 16) return null
+  const t = a / 16
+  const r = 80 + 700 * Easing.out(Easing.cubic)(t)
+  return <div style={{ position: 'absolute', left: 540 - r, top: y - r * 0.35, width: r * 2, height: r * 0.7, borderRadius: '50%', border: `${10 * (1 - t) + 2}px solid ${ACC(land)}`, opacity: 1 - t }} />
+}
+
+const ease = Easing.bezier(0.16, 1, 0.3, 1)
+const Word: React.FC<{ text: string; impact: number; top: number; size: number; color?: string; fx?: Fx; k?: number }> = ({ text, impact, top, size, color = '#fff', fx = 'bomb', k = 0 }) => {
+  const f = useCurrentFrame()
+  const TT = MAP && k >= 5 && k < 9 // first-slide title: bold caps like the map reel intro
+  const shown = MAP && k !== 9 && !TT ? tc(text) : text
+  const fit = Math.min(size, Math.floor((size < 200 ? 900 : 940) / (text.length * (MAP && k !== 9 ? 0.5 : 0.64))))
+  const base: React.CSSProperties = { position: 'absolute', left: LAYOUT === 'left' && k !== 9 ? 100 : 0, width: LAYOUT === 'left' && k !== 9 ? 880 : 1080, top, textAlign: LAYOUT === 'left' && k !== 9 ? 'left' : 'center', fontFamily: DISPLAY, fontWeight: MAP && k !== 9 && !TT ? 400 : 800, fontSize: fit, lineHeight: 1, letterSpacing: TT ? 1 : MAP && k !== 9 ? 0 : -2, color, textTransform: MAP && k !== 9 && !TT ? 'none' : 'uppercase', whiteSpace: 'nowrap', textShadow: MAP && k !== 9 ? '0 4px 24px rgba(0,0,0,0.9), 0 0 6px rgba(0,0,0,0.6)' : '0 8px 40px rgba(0,0,0,0.55)' }
+  if (fx === 'bomb') {
+    const squash = f >= impact && f < impact + 5 ? 1 - 0.10 * (1 - (f - impact) / 5) : 1
+    return <div style={{ ...base, transform: `translateY(${dropY(f, impact)}px) scaleY(${squash})`, transformOrigin: '50% 100%' }}>{shown}</div>
+  }
+  const p = ease(clamp((f - (impact - 12)) / 14))
+  if (fx === 'slide' || fx === 'slideR') {
+    const dir = (fx === 'slide' ? 1 : -1) * (k % 2 === 0 ? -1 : 1)
+    return <div style={{ ...base, opacity: clamp(p * 3), transform: `translateX(${dir * (1 - p) * 1300}px)` }}>{shown}</div>
+  }
+  if (fx === 'rise') {
+    return <div style={{ ...base, overflow: 'hidden', height: fit * 1.15, textShadow: 'none' }}><div style={{ transform: `translateY(${(1 - p) * 120}%)`, textShadow: '0 8px 40px rgba(0,0,0,0.55)' }}>{shown}</div></div>
+  }
+  if (fx === 'wipe') {
+    // left-to-right reveal with a thin bright edge that sweeps across
+    return (
+      <div style={{ ...base, clipPath: `inset(0 ${(1 - p) * 100}% 0 0)`, textShadow: '0 8px 40px rgba(0,0,0,0.55)' }}>{shown}</div>
+    )
+  }
+  if (fx === 'focus') {
+    // pulls into focus: blurred, wide-spaced and slightly large, then sharpens and settles
+    return <div style={{ ...base, opacity: clamp(p * 1.6), filter: `blur(${(1 - p) * 26}px)`, transform: `scale(${1 + (1 - p) * 0.22})`, letterSpacing: -2 + (1 - p) * 22 }}>{shown}</div>
+  }
+  // zoom: big and transparent to normal
+  return <div style={{ ...base, opacity: clamp(p * 2), transform: `scale(${1 + (1 - p) * 1.8})`, letterSpacing: -2 + (1 - p) * 30 }}>{shown}</div>
+}
+
+
+// HQ layout (owner 2026-11-12): the photo is shown sharp at its natural size in a window (no 3x upscale), over a blurred, darkened copy of itself.
+const PhotoBg: React.FC<{ src: string; t: number; zoomOut?: boolean; boxTop: number; boxH: number; contain?: boolean }> = ({ src, t, zoomOut, boxTop, boxH, contain }) => {
+  const z = zoomOut ? 1.07 - 0.05 * t : 1.0 + 0.05 * t
+  return (
+    <>
+      <Img src={staticFile(src)} style={{ position: 'absolute', left: '50%', top: '50%', height: '100%', width: 'auto', minWidth: '100%', transform: 'translate(-50%, -50%) scale(1.25)', filter: 'blur(38px) brightness(0.55)' }} />
+      <div style={{ position: 'absolute', left: 0, top: boxTop, width: 1080, height: boxH, overflow: 'hidden', boxShadow: contain ? 'none' : '0 20px 80px rgba(0,0,0,0.5)' }}>
+        <Img src={staticFile(src)} style={{ position: 'absolute', left: '50%', top: '50%', width: '100%', height: '100%', objectFit: contain ? 'contain' : 'cover', transform: `translate(-50%, -50%) scale(${z})` }} />
+      </div>
+    </>
+  )
+}
+
+const BScene_: React.FC<{ s: BScene; land?: boolean; fit?: boolean; boxH?: number; hq?: boolean; first?: boolean }> = ({ s, land, fit, boxH, hq, first }) => {
+  return <BSceneInner s={s} land={land} fit={fit} boxH={boxH} hq={hq} first={first} />
+}
+
+const BSceneInner: React.FC<{ s: BScene; land?: boolean; fit?: boolean; boxH?: number; hq?: boolean; first?: boolean }> = ({ s, land, fit, boxH, hq, first }) => {
+  const f = useCurrentFrame()
+  const t = clamp(f / (SCENE + 8))
+  const bomb = (s.fx ?? 'bomb') === 'bomb'
+  const sh1 = bomb ? shake(f, IMPACT1, 22) : { x: 0, y: 0 }, sh2 = bomb ? shake(f, IMPACT2, 30) : { x: 0, y: 0 }
+  const dx = sh1.x + sh2.x, dy = sh1.y + sh2.y
+  const flash = !bomb ? 0 : Math.max(0, 1 - (f - IMPACT1) / 4) * (f >= IMPACT1 ? 1 : 0) * 0.35 + Math.max(0, 1 - (f - IMPACT2) / 5) * (f >= IMPACT2 ? 1 : 0) * 0.5
+  const sub = clamp((f - IMPACT2 - 4) / 8)
+  const z = hq ? (s.zoomOut ? 1.05 - 0.05 * t : 1.0 + 0.05 * t) : s.zoomOut ? 1.28 - 0.14 * t : 1.12 + 0.14 * t
+  return (
+    <AbsoluteFill style={{ background: '#000', overflow: 'hidden' }}>
+      <AbsoluteFill style={{ transform: `translate(${dx}px, ${dy}px)` }}>
+        {fit ? <PhotoBg src={s.photo} t={t} zoomOut={s.zoomOut} boxTop={330} boxH={boxH ?? 790} contain={s.contain} /> : <>
+        <Img src={staticFile(s.photo)} style={{ position: 'absolute', left: '50%', top: '50%', height: '100%', width: 'auto', minWidth: '100%', transform: `translate(-50%, -50%) scale(${z})` }} />
+        <AbsoluteFill style={{ background: hq ? (LAYOUT === 'top' ? 'linear-gradient(0deg, rgba(0,0,0,0) 55%, rgba(0,0,0,0.6) 85%, rgba(0,0,0,0.5) 100%)' : 'linear-gradient(180deg, rgba(0,0,0,0) 36%, rgba(0,0,0,0.62) 60%, rgba(0,0,0,0.8) 80%, rgba(0,0,0,0.72) 100%)') : 'linear-gradient(180deg, rgba(0,0,0,0) 30%, rgba(0,0,0,0.55) 62%, rgba(0,0,0,0.25) 100%)' }} /></>}
+        <Word text={s.lines[0]} impact={IMPACT1} top={MAP ? (first ? 1250 - 86 : 1348 - mapSize(s.lines[0])) : (fit ? 1190 : 1280) + (LAYOUT === 'top' ? -880 : 0)} size={MAP ? (first ? 86 : mapSize(s.lines[0])) : fit ? 96 : 118} fx={s.fx ?? 'bomb'} k={first ? 5 : 0} />
+        <Word text={s.lines[1]} impact={IMPACT2} top={MAP ? (first ? 1342 - 86 : 1424 - mapSize(s.lines[1])) : (fit ? 1300 : 1435) + (LAYOUT === 'top' ? -880 : 0)} size={MAP ? (first ? 86 : mapSize(s.lines[1])) : fit ? 96 : 118} color={first ? '#fff' : ACC(land)} fx={s.fx ?? 'bomb'} k={first ? 6 : 1} />
+        {bomb && <Ring at={IMPACT1} y={MAP ? 1300 : fit ? 1250 : 1380} land={land} />}
+        {bomb && <Ring at={IMPACT2} y={MAP ? 1390 : fit ? 1360 : 1500} land={land} />}
+        {MAP && first && s.sub ? <div style={{ position: 'absolute', left: 0, width: 1080, top: 1352, textAlign: 'center', fontFamily: DISPLAY, fontWeight: 400, fontSize: 46, lineHeight: '56px', color: ACC(land), textShadow: '0 4px 24px rgba(0,0,0,0.9)', opacity: sub, transform: `translateY(${(1 - sub) * 20}px)` }}>{s.sub}</div> : null}
+        <div style={{ position: 'absolute', left: 0, width: 1080, top: (fit ? 1430 : 1610) + (LAYOUT === 'top' ? -880 : 0), textAlign: LAYOUT === 'left' ? 'left' : 'center', paddingLeft: LAYOUT === 'left' ? 100 : 0, boxSizing: 'border-box', fontFamily: DISPLAY, fontSize: 30, fontWeight: 500, letterSpacing: 8, color: '#fff', opacity: MAP ? 0 : sub, transform: `translateY(${(1 - sub) * 20}px)` }}>{s.sub}</div>
+      </AbsoluteFill>
+      <AbsoluteFill style={{ background: '#fff', opacity: flash }} />
+    </AbsoluteFill>
+  )
+}
+
+const EndCardMap: React.FC<{ p: BProps }> = ({ p }) => {
+  const e = useCurrentFrame(); const ACCc = ACC(p.land)
+  const n = 2, urlTop = 1350, priceTop = urlTop - 30 - 150, cityTop = priceTop - 52 - 56, titleTop = cityTop - 86 - (n - 1) * 84
+  const sweep = clamp((e - 4) / 26); const fade = (a: number) => clamp((e - a) / 10)
+  const t = [p.end.l1, p.end.l2]
+  return <AbsoluteFill style={{ background: '#000' }}>
+    <AbsoluteFill style={{ opacity: clamp(e / 10), overflow: 'hidden' }}>
+      <Img src={staticFile(p.end.photo)} style={{ position: 'absolute', left: '50%', top: '50%', height: '100%', width: 'auto', minWidth: '100%', transform: `translate(-50%, -50%) scale(${1.04 + e * 0.0008})`, filter: `blur(${Math.max(0, 16 - e * 1.3)}px) saturate(1.1) contrast(1.06)` }} />
+    </AbsoluteFill>
+    <AbsoluteFill style={{ background: 'linear-gradient(180deg, rgba(5,8,12,0.55) 0%, rgba(5,8,12,0) 22%, rgba(5,8,12,0) 34%, rgba(5,8,12,0.6) 56%, rgba(5,8,12,0.92) 86%)' }} />
+    <AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 55%, rgba(0,0,0,0.45) 100%)' }} />
+    <div style={{ position: 'absolute', top: 0, bottom: 0, left: -400 + sweep * 1900, width: 260, transform: 'skewX(-18deg)', background: 'linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.22), rgba(255,255,255,0))', opacity: sweep > 0 && sweep < 1 ? 1 : 0 }} />
+    {t.map((x, k) => <div key={x} style={{ position: 'absolute', left: 0, width: 1080, top: titleTop + k * 84, textAlign: 'center', fontFamily: DISPLAY, fontWeight: 800, fontSize: 72, lineHeight: '84px', color: '#fff', textTransform: 'uppercase', textShadow: '0 4px 30px rgba(0,0,0,0.7)', opacity: fade(6 + k * 2), transform: `scale(${0.9 + 0.1 * fade(6 + k * 2)})`, whiteSpace: 'nowrap' }}>{x}</div>)}
+    {p.end.city ? <div style={{ position: 'absolute', left: 0, width: 1080, top: cityTop, textAlign: 'center', fontFamily: DISPLAY, fontWeight: 400, fontSize: 46, lineHeight: '56px', color: ACCc, textShadow: '0 3px 20px rgba(0,0,0,0.8)', opacity: fade(12) }}>{p.end.city}</div> : null}
+    {p.end.amount ? <div style={{ position: 'absolute', left: 0, width: 1080, top: priceTop, display: 'flex', justifyContent: 'center', opacity: fade(18), transform: `translateY(${(1 - fade(18)) * 24}px)` }}>
+      <div style={{ height: 150, display: 'flex', alignItems: 'center', padding: '0 26px', backgroundColor: '#0b1220', backgroundImage: 'repeating-linear-gradient(0deg, rgba(255,255,255,0.28) 0 2px, transparent 2px 50px), repeating-linear-gradient(90deg, rgba(255,255,255,0.28) 0 2px, transparent 2px 50px)', color: '#fff', fontFamily: DISPLAY, fontSize: 52, fontWeight: 500, letterSpacing: 4 }}>{p.end.tab ?? 'FROM'}</div>
+      <div style={{ height: 150, display: 'flex', alignItems: 'center', padding: '0 26px', background: '#fff', color: '#0b1220', fontFamily: DISPLAY, fontSize: 52, fontWeight: 500, whiteSpace: 'nowrap' }}>{p.end.amount}</div>
+    </div> : null}
+    <div style={{ position: 'absolute', left: 0, width: 1080, top: urlTop, textAlign: 'center', opacity: fade(28) }}><span style={{ display: 'inline-block', fontFamily: DISPLAY, background: '#fff', color: '#0b1220', fontSize: 27, fontWeight: 500, padding: '18px 22px' }}>{p.url}</span></div>
+  </AbsoluteFill>
+}
+
+const EndCard: React.FC<{ p: BProps }> = ({ p }) => {
+  const f = useCurrentFrame()
+  const e = clamp((f - 20) / 12)
+  const calm = !!p.endCalm
+  const sh = calm ? { x: 0, y: 0 } : shake(f, 14, 26), sh2 = calm ? { x: 0, y: 0 } : shake(f, 22, 34)
+  const flash = calm ? 0 : f >= 14 ? Math.max(0, 1 - (f - 14) / 5) * 0.4 : 0
+  return (
+    <AbsoluteFill style={{ background: '#000', overflow: 'hidden' }}>
+      <AbsoluteFill style={{ transform: `translate(${sh.x + sh2.x}px, ${sh.y + sh2.y}px)` }}>
+        {p.fit ? <PhotoBg src={p.end.photo} t={clamp(f / 100)} boxTop={330} boxH={Math.min(p.boxH ?? 560, 560)} /> : <>
+        <Img src={staticFile(p.end.photo)} style={{ position: 'absolute', left: '50%', top: '50%', height: '100%', width: 'auto', minWidth: '100%', transform: `translate(-50%,-50%) scale(${p.hq ? 1.02 : 1.15})` }} />
+        <AbsoluteFill style={{ background: p.hq ? 'rgba(0,0,0,0.4)' : 'rgba(0,0,0,0.55)' }} /></>}
+        {calm ? (!p.end.amount ? null :
+          // price boxes exactly like the reel cover: black FROM box + white price box, 150 px tall, 52 px text
+          <div style={{ position: 'absolute', left: 0, width: 1080, top: p.fit ? 950 : 1060, display: 'flex', justifyContent: 'center', opacity: clamp((f - 12) / 14), transform: `translateY(${(1 - clamp((f - 12) / 14)) * 24}px)` }}>
+            <div style={{ height: 150, display: 'flex', alignItems: 'center', padding: '0 26px', backgroundColor: '#0b1220', backgroundImage: 'repeating-linear-gradient(0deg, rgba(255,255,255,0.28) 0 2px, transparent 2px 50px), repeating-linear-gradient(90deg, rgba(255,255,255,0.28) 0 2px, transparent 2px 50px)', color: '#fff', fontFamily: DISPLAY, fontSize: 52, fontWeight: 500, letterSpacing: 4 }}>FROM</div>
+            <div style={{ height: 150, display: 'flex', alignItems: 'center', padding: '0 26px', background: '#fff', color: '#0b1220', fontFamily: DISPLAY, fontSize: 52, fontWeight: 500, whiteSpace: 'nowrap' }}>{p.end.amount}</div>
+          </div>
+        ) : (<>
+        <div style={{ position: 'absolute', left: 0, width: 1080, top: p.fit ? 940 : 1075, textAlign: 'center', fontFamily: DISPLAY, fontSize: 28, letterSpacing: 8, color: '#fff', opacity: clamp(f / 8) }}>{p.end.label}</div>
+        <Word text={p.end.amount} k={9} impact={14} top={p.fit ? 990 : 1115} size={p.fit ? 115 : 118} color={ACC(p.land)} fx={calm ? 'focus' : 'bomb'} />
+        </>)}
+        <Word text={p.end.l1} k={9} impact={22} top={p.fit ? (calm ? 1140 : 1150) : (calm ? 1205 : 1265)} size={p.fit ? 62 : 62} fx={calm ? 'wipe' : 'bomb'} />
+        <Word text={p.end.l2} k={9} impact={26} top={p.fit ? (calm ? 1215 : 1260) : (calm ? 1305 : 1340)} size={p.fit ? 62 : 62} fx={calm ? 'wipe' : 'bomb'} />
+        {!calm && <Ring at={14} y={p.fit ? 1060 : 1180} land={p.land} />}
+        <div style={{ position: 'absolute', left: 0, width: 1080, top: p.fit ? (calm ? 1330 : 1340) : (calm ? 1430 : 1450), textAlign: 'center', opacity: e }}><span style={{ display: 'inline-block', fontFamily: DISPLAY, background: '#fff', color: '#0b1220', fontSize: 29, fontWeight: 500, padding: '18px 24px' }}>{p.url}</span></div>
+        <div style={{ position: 'absolute', left: 0, width: 1080, top: p.fit ? (calm ? 1415 : 1420) : (calm ? 1520 : 1535), textAlign: 'center' }}><div style={{ display: 'inline-block', fontFamily: DISPLAY, background: '#000', color: '#fff', fontSize: 25, fontWeight: 600, letterSpacing: 5, padding: '8px 20px', transform: `translateY(${calm ? 0 : dropY(f, 40, 7)}px)`, opacity: calm ? clamp((f - 40) / 12) : 1, border: 'none' }}>LINK IN BIO</div></div>
+      </AbsoluteFill>
+      <AbsoluteFill style={{ background: '#fff', opacity: flash }} />
+    </AbsoluteFill>
+  )
+}
+
+export const bombFrames = (n: number) => n * SCENE + END
+export const BombReel: React.FC<{ project: BProps }> = ({ project: p }) => {
+  LAYOUT = p.layout ?? 'center'
+  MAP = !!p.mapStyle
+  useFonts()
+  return (
+    <AbsoluteFill style={{ background: '#000' }}>
+      {p.scenes.map((s, i) => (
+        <Sequence key={i} from={i * SCENE} durationInFrames={SCENE}><BScene_ s={s} land={p.land} fit={p.fit} boxH={p.boxH} hq={p.hq} first={i === 0} /></Sequence>
+      ))}
+      <Sequence from={p.scenes.length * SCENE} durationInFrames={END}>{p.mapStyle ? <EndCardMap p={p} /> : <EndCard p={p} />}</Sequence>
+    </AbsoluteFill>
+  )
+}

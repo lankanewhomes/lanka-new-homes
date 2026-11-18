@@ -5,6 +5,7 @@
 3 This or that (comment 1 or 2)     The Golf Colombo 08 vs Glenhaven
 4 Countdown 3-2-1 (best for last)   Vyan Villas Ella
 5 Quick quiz (land, green palette)  The Highway, Kottawa
+6 Quick quiz (project, orange)      Blue Ocean Waves, Colombo 03
 Every line of text is a fact from the listing record. No developer names, nothing about units sold or left.
 """
 import sys
@@ -434,8 +435,141 @@ def reel_5():
     ], "fade"
 
 
+# ============================== 6. QUICK QUIZ (PROJECT, orange palette) ==============================
+def reel_6():
+    """Quick quiz for a project: how many homes in the tower? Blue Ocean Waves, Colombo 03. Facts from the record and the developer page."""
+    L = f"{P}/waves/"
+    ext = Photo(L + "building-exterior.jpg", (0.5, 0.42), full=True)
+    liv = Photo(L + "living-room.jpg", (0.5, 0.5), full=True)
+    bed = Photo(L + "master-bedroom.jpg", (0.5, 0.5), full=True)
+    dusk = Photo(L + "rooftop-at-dusk.jpg", (0.5, 0.5), full=True)
+    kit = Photo(L + "building-exterior.jpg", (0.5, 0.85), full=True)
+    OPTIONS = [("A", "36 Homes"), ("B", "66 Homes"), ("C", "96 Homes")]
+
+    def options(f, t, start, answer=None, answer_t=0.0):
+        for i, (letter, text) in enumerate(OPTIONS):
+            y = 1010 + i * 150
+            st = start + i * 0.14
+            if t < st:
+                continue
+            right = answer == letter
+            lit = right and t >= answer_t
+            row = Image.new("RGBA", (820, 122), ((255, 255, 255) if not lit else ORANGE[:3]) + (255,))
+            d = ImageDraw.Draw(row)
+            d.rectangle([0, 0, 122, 122], fill=((11, 18, 32) if not lit else (31, 31, 31)) + (255,))
+            a = text_img(letter, 76, color=WHITE, weight=500, width=100, shadow=False)
+            row.alpha_composite(a, (61 - a.width // 2, 61 - a.height // 2))
+            tx = text_img(text, 64, color=INK, weight=500, width=100, shadow=False)
+            row.alpha_composite(tx, (170 - 40, 61 - tx.height // 2))
+            alpha, dx, dy, _ = anim_state("left", (t - st) / 0.4)
+            if answer and t >= answer_t and not right:
+                alpha *= 0.35
+            if lit:
+                scale = 1 + 0.08 * (1 - ease_out((t - answer_t) / 0.4))
+                row = row.resize((int(820 * scale), int(122 * scale)), Image.BICUBIC)
+            put(f, row, W / 2 - row.width / 2 + dx, y - row.height / 2, alpha)
+
+    def question(t, dur):
+        f = ext.frame(t / dur)
+        dim(f, 0.46)
+        put(f, SHADE, 0, 0)
+        lab(f, "Quick quiz", 470, t, 0.0, "drop")
+        head(f, "How Many Homes", 690, t, 0.1, "pop")
+        head(f, "in This Tower?", 800, t, 0.28, "pop", ORANGE)
+        options(f, t, 0.7)
+        if t > 1.3:
+            bar(f, 130, 1470, 820, 16, 1 - (t - 1.3) / (dur - 1.3))
+            say(f, "Comment A, B or C", W / 2, 1535, 40, t, 1.3, "rise", weight=400, width=100)
+        return f
+
+    def answer(t, dur):
+        f = ext.frame(1.0)
+        dim(f, 0.46)
+        put(f, SHADE, 0, 0)
+        lab(f, "The answer", 470, t, 0.0, "drop")
+        head(f, "66 Homes", 690, t, 0.05, "stamp", WHITE, 110)
+        head(f, "on 11 Floors", 810, t, 0.3, "pop", ORANGE)
+        options(f, t + 5, 0.0, "B", 5.25)
+        say(f, "Did you get it?", W / 2, 1500, 44, t, 0.9, "rise", weight=400, width=100)
+        return f
+
+    def lab(f, text, cy, t, start=0.0, kind="rise", size=42):
+        """Small orange chip, sentence case, regular-ish weight (design system: no all-caps bold labels)."""
+        say(f, text, W / 2, cy, fit(text, size, box=ORANGE, weight=500, width=100), t, start, kind, box=ORANGE, color=INK, weight=500, width=100)
+
+    def head(f, text, cy, t, start=0.0, kind="rise", color=WHITE, size=90):
+        sz = fit(text, size, weight=400, width=100)
+        say(f, text, W / 2, cy, sz, t, start, kind, weight=400, width=100, color=color)
+
+    SHADE = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    _sd = ImageDraw.Draw(SHADE)
+    for yy in range(H):  # dark shade behind the text, same idea as the map reel
+        _sd.line([(0, yy), (W, yy)], fill=(0, 0, 0, int(215 * min(1, max(0.0, (yy - 900) / 520)))))
+
+    def tc(t):
+        return " ".join(w if w in ("of", "and", "from", "in", "at", "on", "to", "the", "for") else w.capitalize() for w in t.lower().split(" "))
+
+    def fact(photo, tag, lines, zoom_in=True):
+        """Map-reel text style: Archivo 400, Title Case, line 1 white, line 2 orange, bottoms at y 1348 / 1436."""
+        def draw(t, dur):
+            f = photo.frame(t / dur, zoom_in)
+            dim(f, 0.12)
+            put(f, SHADE, 0, 0)
+            if tag:
+                lab(f, tag, 470, t, 0.05, "drop", 40)
+            for i, line in enumerate(lines):
+                txt = tc(line)
+                sz = 64 if len(txt) > 11 else 72
+                sz = fit(txt, sz, weight=400, width=100)
+                say(f, txt, W / 2, (1348 if i == 0 else 1424) - sz // 2, sz, t, 0.2 + i * 0.15, "rise", weight=400, width=100, color=WHITE if i == 0 else ORANGE)
+            return f
+        return draw
+
+    def end(photo, title, city, tab, value, url, prompt):
+        """Map-reel end card: full-screen photo, bold caps title (72 px), city regular orange, fact block, plain URL strip; the quiz prompt sits above."""
+        def draw(t, dur):
+            f = photo.frame(clamp(t / dur))
+            dim(f, 0.5)
+            put(f, SHADE, 0, 0)
+            for i, line in enumerate(prompt):
+                sz = fit(line, 80, weight=400, width=100)
+                say(f, line, W / 2, 700 + i * 96, sz, t, 0.05 + i * 0.1, "rise", weight=400, width=100, color=WHITE if i == 0 else ORANGE)
+            url_top, price_top = 1350, 1350 - 30 - 150
+            city_top = price_top - 52 - 56
+            title_top = city_top - 86 - 84
+            for k, line in enumerate(title):
+                say(f, line, W / 2, title_top + k * 84 + 42, 72, t, 0.25 + k * 0.08, "rise", weight=800, width=100)
+            say(f, city, W / 2, city_top + 28, 46, t, 0.45, "rise", weight=400, width=100, color=ORANGE)
+            a = text_img(tab, 52, weight=500, width=100, shadow=False, tracking=4)
+            b = text_img(value, 52, color=INK, weight=500, width=100, shadow=False)
+            wa, wb = a.width - 0 + 52, b.width + 52
+            blk = Image.new("RGBA", (wa + wb, 150), (255, 255, 255, 255))
+            bd = ImageDraw.Draw(blk)
+            bd.rectangle([0, 0, wa, 150], fill=(11, 18, 32, 255))
+            for gx in range(0, wa, 50):
+                bd.line([(gx, 0), (gx, 150)], fill=(71, 78, 90, 255), width=2)
+            for gy in range(0, 150, 50):
+                bd.line([(0, gy), (wa, gy)], fill=(71, 78, 90, 255), width=2)
+            blk.alpha_composite(a, (26, 75 - a.height // 2))
+            blk.alpha_composite(b, (wa + 26, 75 - b.height // 2))
+            place(f, blk, W / 2, price_top + 75, t, 0.6, 0.4, "rise")
+            say(f, url, W / 2, url_top + 30, 27, t, 0.8, "rise", box=WHITE, color=INK, weight=500, box_pad=(22, 18), shadow=False)
+            return f
+        return draw
+
+    return [
+        (4.6, question),
+        (2.6, answer),
+        (2.0, fact(bed, "Now picture yourself here", ["2 and 3", "Bedroom Homes"])),
+        (2.0, fact(dusk, None, ["Rooftop Pool", "And Gym"], False)),
+        (2.0, fact(kit, None, ["5 Levels Of", "Secure Parking"], True)),
+        (2.2, fact(liv, None, ["100m from", "Sheraton Colombo"], False)),
+        (3.4, end(ext, ["BLUE OCEAN", "WAVES"], "Colombo 03", "11 FLOORS", "66 HOMES", "www.lankanewhomes.com/projects/blue-ocean-waves-colombo-03", ["What Was Your Answer?", "Comment A, B or C"])),
+    ], "fade"
+
+
 if __name__ == "__main__":
     which, out = int(sys.argv[1]), sys.argv[2]
-    scenes, transition = [reel_1, reel_2, reel_3, reel_4, reel_5][which - 1]()
+    scenes, transition = [reel_1, reel_2, reel_3, reel_4, reel_5, reel_6][which - 1]()
     still = float(sys.argv[sys.argv.index("--still") + 1]) if "--still" in sys.argv else None
     render(scenes, out, transition, still=still)

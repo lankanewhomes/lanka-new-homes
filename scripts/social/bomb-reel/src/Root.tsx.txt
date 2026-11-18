@@ -1,0 +1,59 @@
+import React from 'react'
+import { Composition } from 'remotion'
+import { BombReel, bombFrames } from './Bomb'
+import { GlassReel } from './Glass'
+import { MapReel, MAP_FRAMES } from './MapReel'
+import { ClockReel, CLOCK_FRAMES } from './ClockReel'
+import { BeatReel, BEAT_FRAMES } from './BeatReel'
+import { BeatListing, LISTING_FRAMES } from './BeatListing'
+import { BeatProject, PROJECT_FRAMES } from './BeatProject'
+import { MapGeneric, timeline } from './MapGeneric'
+import { CineReel } from './Cine'
+import { bombVy, bombHv } from './props/bomb'
+import { bombSi, bombBc, bombWd, bombAa, bombUv, bombWdFit, bombSiFit, bombBcFit, bombUvFit, bombAaFit, bombAaHq, bombWdHq, bombSiHq, bombBcHq, bombUvHq, bombWdFinal, bombSiFinal, bombBcFinal, bombUvFinal, bombGv, bombRe, bombDy, bombOc, bombRa, bombR5, bombYolo, bombGlen } from './props/bomb'
+
+export const RemotionRoot: React.FC = () => (
+  <>
+  <Composition id="BombHv" component={BombReel} width={1080} height={1920} fps={30} durationInFrames={bombFrames(7)} defaultProps={{ project: bombHv }} />
+  <Composition id="BombVy" component={BombReel} width={1080} height={1920} fps={30} durationInFrames={bombFrames(7)} defaultProps={{ project: bombVy }} />
+  <Composition id="BombYolo" component={BombReel} width={1080} height={1920} fps={30} durationInFrames={bombFrames(7)} defaultProps={{ project: bombYolo }} />
+  <Composition id="BombGlen" component={BombReel} width={1080} height={1920} fps={30} durationInFrames={bombFrames(7)} defaultProps={{ project: bombGlen }} />
+  <Composition id="ClockReel" component={ClockReel} width={1080} height={1920} fps={30} durationInFrames={CLOCK_FRAMES} />
+  <Composition id="MapGeneric" component={MapGeneric as any} width={1080} height={1920} fps={30} durationInFrames={900} defaultProps={{ geo: { w: 100, h: 100, project: [50, 50], routes: {} }, base: '', accent: '#F99958', title: ['X'], cardTitle: '', cardCity: '', city: '', routes: [], photos: [], callouts: [['', '']], callDur: [60], endPhoto: '', price: '', url: '' } as any} calculateMetadata={({ props }: any) => ({ durationInFrames: timeline(props).total })} />
+  <Composition id="BeatProject" component={BeatProject} width={1080} height={1920} fps={30} durationInFrames={PROJECT_FRAMES} />
+  <Composition id="BeatListing" component={BeatListing} width={1080} height={1920} fps={30} durationInFrames={LISTING_FRAMES} />
+  <Composition id="BeatReel" component={BeatReel} width={1080} height={1920} fps={30} durationInFrames={BEAT_FRAMES} />
+  <Composition id="MapReel" component={MapReel} width={1080} height={1920} fps={30} durationInFrames={MAP_FRAMES} />
+  <Composition id="BombSi" component={BombReel} width={1080} height={1920} fps={30} durationInFrames={bombFrames(7)} defaultProps={{ project: bombSi }} />
+  <Composition id="BombBc" component={BombReel} width={1080} height={1920} fps={30} durationInFrames={bombFrames(7)} defaultProps={{ project: bombBc }} />
+  <Composition id="BombWd" component={BombReel} width={1080} height={1920} fps={30} durationInFrames={bombFrames(7)} defaultProps={{ project: bombWd }} />
+  <Composition id="BombAa" component={BombReel} width={1080} height={1920} fps={30} durationInFrames={bombFrames(7)} defaultProps={{ project: bombAa }} />
+  <Composition id="BombUv" component={BombReel} width={1080} height={1920} fps={30} durationInFrames={bombFrames(7)} defaultProps={{ project: bombUv }} />
+  <Composition id="BombWdFit" component={BombReel} width={1080} height={1920} fps={30} durationInFrames={bombFrames(7)} defaultProps={{ project: bombWdFit }} />
+  <Composition id="BombSiFit" component={BombReel} width={1080} height={1920} fps={30} durationInFrames={bombFrames(7)} defaultProps={{ project: bombSiFit }} />
+  <Composition id="BombBcFit" component={BombReel} width={1080} height={1920} fps={30} durationInFrames={bombFrames(7)} defaultProps={{ project: bombBcFit }} />
+  <Composition id="BombUvFit" component={BombReel} width={1080} height={1920} fps={30} durationInFrames={bombFrames(7)} defaultProps={{ project: bombUvFit }} />
+  <Composition id="BombAaFit" component={BombReel} width={1080} height={1920} fps={30} durationInFrames={bombFrames(7)} defaultProps={{ project: bombAaFit }} />
+  <Composition id="BombAaHq" component={BombReel} width={1080} height={1920} fps={30} durationInFrames={bombFrames(7)} defaultProps={{ project: bombAaHq }} />
+  <Composition id="BombWdHq" component={BombReel} width={1080} height={1920} fps={30} durationInFrames={bombFrames(7)} defaultProps={{ project: bombWdHq }} />
+  <Composition id="BombSiHq" component={BombReel} width={1080} height={1920} fps={30} durationInFrames={bombFrames(7)} defaultProps={{ project: bombSiHq }} />
+  <Composition id="BombBcHq" component={BombReel} width={1080} height={1920} fps={30} durationInFrames={bombFrames(7)} defaultProps={{ project: bombBcHq }} />
+  <Composition id="BombUvHq" component={BombReel} width={1080} height={1920} fps={30} durationInFrames={bombFrames(7)} defaultProps={{ project: bombUvHq }} />
+  <Composition id="BombWdFinal" component={BombReel} width={1080} height={1920} fps={30} durationInFrames={bombFrames(7)} defaultProps={{ project: bombWdFinal }} />
+  <Composition id="BombSiFinal" component={BombReel} width={1080} height={1920} fps={30} durationInFrames={bombFrames(7)} defaultProps={{ project: bombSiFinal }} />
+  <Composition id="BombBcFinal" component={BombReel} width={1080} height={1920} fps={30} durationInFrames={bombFrames(7)} defaultProps={{ project: bombBcFinal }} />
+  <Composition id="BombUvFinal" component={BombReel} width={1080} height={1920} fps={30} durationInFrames={bombFrames(7)} defaultProps={{ project: bombUvFinal }} />
+  <Composition id="BombGv" component={BombReel} width={1080} height={1920} fps={30} durationInFrames={bombFrames(7)} defaultProps={{ project: bombGv }} />
+  <Composition id="BombRe" component={BombReel} width={1080} height={1920} fps={30} durationInFrames={bombFrames(7)} defaultProps={{ project: bombRe }} />
+  <Composition id="BombDy" component={BombReel} width={1080} height={1920} fps={30} durationInFrames={bombFrames(7)} defaultProps={{ project: bombDy }} />
+  <Composition id="BombOc" component={BombReel} width={1080} height={1920} fps={30} durationInFrames={bombFrames(7)} defaultProps={{ project: bombOc }} />
+  <Composition id="BombRa" component={BombReel} width={1080} height={1920} fps={30} durationInFrames={bombFrames(7)} defaultProps={{ project: bombRa }} />
+  <Composition id="BombR5" component={BombReel} width={1080} height={1920} fps={30} durationInFrames={bombFrames(7)} defaultProps={{ project: bombR5 }} />
+  <Composition id="GlOc" component={GlassReel} width={1080} height={1920} fps={30} durationInFrames={bombFrames(7)} defaultProps={{ project: bombOc }} />
+  <Composition id="GlRa" component={GlassReel} width={1080} height={1920} fps={30} durationInFrames={bombFrames(7)} defaultProps={{ project: bombRa }} />
+  <Composition id="GlR5" component={GlassReel} width={1080} height={1920} fps={30} durationInFrames={bombFrames(7)} defaultProps={{ project: bombR5 }} />
+  <Composition id="V2" component={BombReel} width={1080} height={1920} fps={30} durationInFrames={bombFrames(7)} defaultProps={{ project: { ...bombOc, layout: 'left' as const, scenes: bombOc.scenes.map((s, i) => ({ ...s, fx: ['slide','rise','slideR','rise','slide','wipe','focus'][i] as 'slide' })) } }} />
+  <Composition id="V3" component={BombReel} width={1080} height={1920} fps={30} durationInFrames={bombFrames(7)} defaultProps={{ project: { ...bombOc, layout: 'top' as const, scenes: bombOc.scenes.map((s, i) => ({ ...s, fx: ['zoom','zoom','rise','zoom','slideR','wipe','focus'][i] as 'zoom' })) } }} />
+  <Composition id="V4" component={CineReel} width={1080} height={1920} fps={30} durationInFrames={bombFrames(7)} defaultProps={{ project: bombOc }} />
+  </>
+)
