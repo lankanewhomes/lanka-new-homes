@@ -15,6 +15,10 @@ const PAGE_LABELS: Record<string, string> = {
   "/guides/foreigners-buying-property": "Foreign Buyer Guide",
   "/guides/investment-property": "Investment Property Guide",
   "/guides/golden-visa": "Golden Visa Guide",
+  "/guides/apartment-prices-in-colombo": "Apartment Prices in Colombo",
+  "/projects/cheap-apartments-for-sale-in-colombo": "Cheap Apartments in Colombo",
+  "/projects/luxury-apartments-for-sale-in-colombo": "Luxury Apartments in Colombo",
+  "/projects/cinnamon-life-apartments": "The Residences at Cinnamon Life",
 };
 
 export function GuidePageShell({ guide }: { guide: Guide }) {
