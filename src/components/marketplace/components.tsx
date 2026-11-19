@@ -2235,8 +2235,8 @@ export function RequestInfoDialog({
     event.preventDefault();
     // Say exactly what is wrong, next to the field, instead of the browser's generic "fill out this field".
     const errors: { name?: string; phone?: string; email?: string } = {};
-    if (!name.trim()) errors.name = "Please enter your name so the team knows who to reply to.";
-    if (!email.trim()) errors.email = "Please enter your email so the team can reply to you.";
+    if (!name.trim()) errors.name = "Please enter your name so the developer knows who to reply to.";
+    if (!email.trim()) errors.email = "Please enter your email so the developer can reply to you.";
     else if (!/^\S+@\S+\.\S+$/.test(email.trim())) errors.email = "That email does not look right. It should look like name@example.com.";
     if (errors.name || errors.email) {
       setFieldErrors(errors);
@@ -2352,8 +2352,8 @@ export function RequestInfoDialog({
               {isBrochure
                 ? project.brochureUrl
                   ? `Thanks, ${name.split(" ")[0] || "there"} — your download should start automatically.${email ? ` We've also emailed a copy to ${email}.` : ""}`
-                  : `Thanks, ${name.split(" ")[0] || "there"} — we don't have a digital brochure for ${project.name} yet, but the sales team will send you the details shortly.`
-                : `Thanks, ${name.split(" ")[0] || "there"} — the ${project.name} sales team will reach out to you by email shortly.`}
+                  : `Thanks, ${name.split(" ")[0] || "there"} — we don't have a digital brochure for ${project.name} yet, but the developer will send you the details shortly.`
+                : `Thanks, ${name.split(" ")[0] || "there"} — the developer of ${project.name} will reach out to you by email shortly.`}
             </p>
             {isBrochure && project.brochureUrl ? (
               <Button
@@ -2370,7 +2370,7 @@ export function RequestInfoDialog({
           </div>
         ) : (
           <form ref={formRef} onSubmit={onSubmit} noValidate className="request-info-body">
-            <p className="request-info-lead">Your email and name. We reply within 24 hours.</p>
+            <p className="request-info-lead">Your email and name. The developer will contact you.</p>
 
             <label className="request-info-field">
                 <span>Email<span className="request-info-star">*</span></span>
@@ -2407,7 +2407,7 @@ export function RequestInfoDialog({
             {errorMessage ? <p className="request-info-error" role="alert">{errorMessage}</p> : null}
 
             <div className="request-info-actions">
-              <p className="request-info-promise">We reply within 24 hours and never spam you. By sending, you agree to be contacted by LankaNewHomes agents by email.</p>
+              <p className="request-info-promise">We never spam you. By sending, you agree to be contacted by the developer by email.</p>
               <div className="request-info-actions-row">
                 <button type="submit" className="request-info-submit-big" disabled={submitting}>
                   <span className="request-info-submit-icon" aria-hidden="true"><ArrowRight size={16} strokeWidth={2.5} /></span>
