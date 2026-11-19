@@ -141,8 +141,6 @@ import { localizedProjectCopy, useListingT } from "@/lib/i18n/use-listing-t";
 import { floorPlanSummarySentence } from "@/lib/i18n/floor-plan-sentence";
 import { listingWhatsAppHref, toWhatsAppNumber, whatsappChatHref } from "@/lib/whatsapp";
 import { openWhatsAppCapture } from "@/components/marketplace/whatsapp-capture";
-import { buildInternationalPhone, DEFAULT_PHONE_COUNTRY, isPlausiblePhone } from "@/lib/phone";
-import { PhoneField, type PhoneValue } from "@/components/marketplace/phone-field";
 import { groupNearbyPlaces } from "@/lib/nearby-places";
 import { sortConstructionUpdates } from "@/lib/construction-updates";
 import type { MapArea, MapPlace } from "@/components/marketplace/map-pane";
@@ -2203,26 +2201,16 @@ export function RequestInfoDialog({
 }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  // Buyers can be anywhere in the world: country + local number, stored with
-  // the international prefix (see lib/phone.ts) so reply links work abroad.
-  const [phoneValue, setPhoneValue] = useState<PhoneValue>({ country: DEFAULT_PHONE_COUNTRY, national: "" });
-  const [message, setMessage] = useState(defaultMessage);
-  const [contactMethod] = useState<"Phone" | "Text" | "Email">("Phone"); // the form no longer asks; replies go by phone/WhatsApp
-  const [agreed, setAgreed] = useState(false);
-  const [keepPosted, setKeepPosted] = useState(false);
+  const message = defaultMessage; // pre-filled text (e.g. the plots a buyer selected); the form no longer shows it
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [fieldErrors, setFieldErrors] = useState<{ name?: string; phone?: string; email?: string }>({});
   const formRef = useRef<HTMLFormElement>(null);
   const focusedFields = useRef(new Set<string>());
-  const MESSAGE_MAX = 900;
-  const isInquiry = variant === "inquiry";
   const isBrochure = variant === "brochure";
-  // Contact Us and Brochure ask for a name and one number only (owner, 2026-10-31): long forms made people stop, and many
-  // Sri Lankan buyers will not hand over details before they have seen a price. The land inquiry keeps its own longer layout.
-  const isShort = !isInquiry;
-  const formType = isBrochure ? "brochure" : isInquiry ? "inquiry" : "request_info";
+  // One short form everywhere: project Contact Us, Brochure and the land inquiry all ask email then name, no phone (owner, 2026-11-18).
+  const formType = isBrochure ? "brochure" : variant === "inquiry" ? "inquiry" : "request_info";
 
   useEffect(() => {
     if (!open) return;
@@ -2245,19 +2233,15 @@ export function RequestInfoDialog({
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const phone = isPlausiblePhone(phoneValue.country, phoneValue.national) ? buildInternationalPhone(phoneValue.country, phoneValue.national) : null;
     // Say exactly what is wrong, next to the field, instead of the browser's generic "fill out this field".
     const errors: { name?: string; phone?: string; email?: string } = {};
     if (!name.trim()) errors.name = "Please enter your name so the team knows who to reply to.";
-    if (!phone && !isShort) errors.phone = phoneValue.country === "LK" ? "That number does not look right. Type your mobile number without the first 0, for example 77 123 4567." : "That number does not look right. Please check it and the country code.";
-    if (isShort && !email.trim()) errors.email = "Please enter your email so the team can reply to you.";
-    else if (isShort && !/^\S+@\S+\.\S+$/.test(email.trim())) errors.email = "That email does not look right. It should look like name@example.com.";
-    if (isInquiry && !agreed) setErrorMessage("Please tick the box to agree to be contacted.");
-    if (errors.name || errors.phone || errors.email || (isInquiry && !agreed)) {
+    if (!email.trim()) errors.email = "Please enter your email so the team can reply to you.";
+    else if (!/^\S+@\S+\.\S+$/.test(email.trim())) errors.email = "That email does not look right. It should look like name@example.com.";
+    if (errors.name || errors.email) {
       setFieldErrors(errors);
       if (errors.email) formRef.current?.querySelector<HTMLInputElement>("#request-info-email")?.focus();
       else if (errors.name) formRef.current?.querySelector<HTMLInputElement>("#request-info-name")?.focus();
-      else if (errors.phone) formRef.current?.querySelector<HTMLInputElement>(".request-info-phone-row input")?.focus();
       return;
     }
     setFieldErrors({});
@@ -2273,12 +2257,12 @@ export function RequestInfoDialog({
         body: JSON.stringify({
           name: name.trim(),
           email: email.trim(),
-          phone: phone ?? "",
-          preferredContactMethod: isShort ? "Email" : contactMethod,
+          phone: "",
+          preferredContactMethod: "Email",
           message: message.trim() || (isBrochure ? `Brochure request for ${subject}` : `Request info for ${subject}`),
           projectSlug: project.slug,
           developerSlug: project.developerSlug,
-          marketingOptIn: keepPosted,
+          marketingOptIn: false,
           sessionId: getSessionId(),
           trafficSource: getTrafficSource(),
           utm: getStoredUtmParams(),
@@ -2369,7 +2353,7 @@ export function RequestInfoDialog({
                 ? project.brochureUrl
                   ? `Thanks, ${name.split(" ")[0] || "there"} — your download should start automatically.${email ? ` We've also emailed a copy to ${email}.` : ""}`
                   : `Thanks, ${name.split(" ")[0] || "there"} — we don't have a digital brochure for ${project.name} yet, but the sales team will send you the details shortly.`
-                : `Thanks, ${name.split(" ")[0] || "there"} — the ${project.name} sales team will reach out to you by ${isShort ? "email" : contactMethod.toLowerCase()} shortly.`}
+                : `Thanks, ${name.split(" ")[0] || "there"} — the ${project.name} sales team will reach out to you by email shortly.`}
             </p>
             {isBrochure && project.brochureUrl ? (
               <Button
@@ -2386,11 +2370,9 @@ export function RequestInfoDialog({
           </div>
         ) : (
           <form ref={formRef} onSubmit={onSubmit} noValidate className="request-info-body">
-            {isInquiry && <h2>Want to find out more?</h2>}
-            {isInquiry ? <p className="request-info-required-note"><span className="request-info-star">*</span> Indicates a required field</p> : <p className="request-info-lead">Your email and name. We reply within 24 hours.</p>}
+            <p className="request-info-lead">Your email and name. We reply within 24 hours.</p>
 
-            {isShort ? (
-              <label className="request-info-field">
+            <label className="request-info-field">
                 <span>Email<span className="request-info-star">*</span></span>
                 <input
                   id="request-info-email"
@@ -2405,10 +2387,9 @@ export function RequestInfoDialog({
                 />
                 {fieldErrors.email ? <span className="request-info-field-error" role="alert">{fieldErrors.email}</span> : null}
               </label>
-            ) : null}
 
             <label className="request-info-field">
-              <span>{isInquiry ? "Your Name" : "Name"}<span className="request-info-star">*</span></span>
+              <span>Name<span className="request-info-star">*</span></span>
               <input
                 id="request-info-name"
                 value={name}
@@ -2423,59 +2404,16 @@ export function RequestInfoDialog({
               {fieldErrors.name ? <span id="request-info-name-error" className="request-info-field-error" role="alert">{fieldErrors.name}</span> : null}
             </label>
 
-            {isInquiry ? (
-              <label className="request-info-field">
-                <span>Email Address</span>
-                <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} onFocus={(event) => onFieldFocus("email", event.currentTarget)} autoComplete="email" placeholder="Enter your email" />
-              </label>
-            ) : null}
-
-            {!isShort ? (
-            <div className="request-info-field" onFocusCapture={(event) => onFieldFocus("phone", event.target as HTMLElement)}>
-              <span id="request-info-phone-label" className={isShort ? "request-info-field-visible-label" : undefined}>{isInquiry ? "Contact Number" : "Phone or WhatsApp number"}<span className="request-info-star">*</span></span>
-              <PhoneField value={phoneValue} onChange={(next) => { setPhoneValue(next); if (fieldErrors.phone) setFieldErrors((e) => ({ ...e, phone: undefined })); }} labelId="request-info-phone-label" />
-              {fieldErrors.phone ? <span className="request-info-field-error" role="alert">{fieldErrors.phone}</span> : null}
-            </div>
-            ) : null}
-
-
-            {isInquiry ? (
-              <label className="request-info-field">
-                <span>Message</span>
-                <textarea
-                  value={message}
-                  onChange={(event) => setMessage(event.target.value.slice(0, MESSAGE_MAX))}
-                  onFocus={(event) => onFieldFocus("message", event.currentTarget)}
-                  placeholder="Enter your message"
-                  rows={4}
-                />
-                <span className="request-info-char-count">{MESSAGE_MAX - message.length} characters remaining</span>
-              </label>
-            ) : null}
-
-            {isInquiry ? (
-              <>
-                <label className="request-info-consent">
-                  <input type="checkbox" checked={keepPosted} onChange={(event) => setKeepPosted(event.target.checked)} />
-                  <span>Yes, keep me posted on new launches, property digest and partner offers.</span>
-                </label>
-                <label className="request-info-consent">
-                  <input type="checkbox" checked={agreed} onChange={(event) => setAgreed(event.target.checked)} />
-                  <span>I agree to be contacted by LankaNewHomes agents via WhatsApp, SMS, Call, Email etc.</span>
-                </label>
-              </>
-            ) : null}
-
             {errorMessage ? <p className="request-info-error" role="alert">{errorMessage}</p> : null}
 
             <div className="request-info-actions">
-              {isShort ? <p className="request-info-promise">We reply within 24 hours and never spam you. By sending, you agree to be contacted by LankaNewHomes agents by email.</p> : null}
+              <p className="request-info-promise">We reply within 24 hours and never spam you. By sending, you agree to be contacted by LankaNewHomes agents by email.</p>
               <div className="request-info-actions-row">
-                <button type="submit" className="request-info-submit-big" disabled={submitting || (isInquiry && !agreed)}>
+                <button type="submit" className="request-info-submit-big" disabled={submitting}>
                   <span className="request-info-submit-icon" aria-hidden="true"><ArrowRight size={16} strokeWidth={2.5} /></span>
-                  {submitting ? "Sending..." : isBrochure ? "Download Brochure" : isInquiry ? "Send" : "Submit Form"}
+                  {submitting ? "Sending..." : isBrochure ? "Download Brochure" : "Submit Form"}
                 </button>
-                {isShort && priceHref ? (
+                {priceHref ? (
                   <a
                     href={priceHref}
                     target="_blank"
