@@ -20,7 +20,7 @@ export function emailShell(opts: { preheader: string; title: string; body: strin
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:620px;background:#ffffff;border:1px solid ${LINE};">
   <tr><td style="background:${INK};border-top:4px solid ${ORANGE};padding:26px 32px;"><a href="${SITE}" style="text-decoration:none;"><img src="${SITE}/brand/lankanewhomes-logo-white.png" width="124" alt="LankaNewHomes" style="display:block;border:0;width:124px;height:auto;font-size:20px;font-weight:700;color:#ffffff;"></a></td></tr>
 ${opts.body}
-  <tr><td style="background:${INK};padding:22px 32px;font-size:12px;line-height:1.7;color:#b9b8b2;">${opts.footerNote ?? "You are receiving this because your company or project is listed on LankaNewHomes."}<br><a href="${SITE}" style="color:#ffffff;text-decoration:underline;">lankanewhomes.com</a> &nbsp;·&nbsp; Sri Lanka's new homes marketplace: apartments, houses and land, with prices, floor plans and developer details in one place.<br>535 The East Mall, Unit 203, Etobicoke, Ontario M9B 4A4, Canada<br>Follow us: <a href="https://www.instagram.com/lankanewhomes/" style="color:#ffffff;text-decoration:underline;">Instagram</a> &nbsp;·&nbsp; <a href="https://www.facebook.com/lankanewhomes" style="color:#ffffff;text-decoration:underline;">Facebook</a> &nbsp;·&nbsp; <a href="https://www.tiktok.com/@lankanewhomes" style="color:#ffffff;text-decoration:underline;">TikTok</a></td></tr>
+  <tr><td style="background:${INK};padding:22px 32px;font-size:12px;line-height:1.7;color:#b9b8b2;">${opts.footerNote ?? "You are receiving this because your company or project is listed on LankaNewHomes."}<br>Sri Lanka's new homes marketplace: apartments, houses and land, with prices, floor plans and developer details in one place.<br><a href="${SITE}" style="color:#ffffff;text-decoration:underline;">www.lankanewhomes.com</a><br>Follow us: <a href="https://www.instagram.com/lankanewhomes/" style="color:#ffffff;text-decoration:underline;">Instagram</a> &nbsp;·&nbsp; <a href="https://www.facebook.com/lankanewhomes" style="color:#ffffff;text-decoration:underline;">Facebook</a> &nbsp;·&nbsp; <a href="https://www.tiktok.com/@lankanewhomes" style="color:#ffffff;text-decoration:underline;">TikTok</a></td></tr>
 ${opts.lastRow ?? ''}
 </table></td></tr></table></body></html>`
 }
@@ -86,3 +86,22 @@ export function emailButtonRow(buttons: { label: string; href: string; bg?: stri
   const cells = buttons.map((b) => `<td style="padding:0 6px 8px;"><a href="${esc(b.href)}" style="display:inline-block;background:${b.bg ?? ORANGE};color:${b.fg ?? INK};text-decoration:none;font-size:15px;font-weight:700;padding:13px 22px;">${b.label}</a></td>`).join('')
   return `  <tr><td align="center" style="padding:20px 26px 6px;"><table role="presentation" cellpadding="0" cellspacing="0"><tr>${cells}</tr></table></td></tr>`
 }
+
+/** A section label (orange caps) above a group of listing cards, e.g. the saved search name or the developer name. */
+export const emailSectionLabel = (label: string) =>
+  `  <tr><td style="padding:26px 32px 8px;font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:${ORANGE};">${label}</td></tr>`
+
+/** One listing as a bordered card: bold name, a muted line (city · price, or update lines), and a "View listing" link. `sponsored` tints it and adds a Sponsored tag. */
+export function emailListingCard(opts: { name: string; href: string; meta?: string; lines?: string[]; sponsored?: boolean }): string {
+  const bg = opts.sponsored ? '#fef1e8' : '#ffffff'
+  const tag = opts.sponsored ? `<div style="margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#c65a1e;">Sponsored</div>` : ''
+  const lines = (opts.lines ?? []).map((l) => `<div style="margin:3px 0 0;font-size:13px;line-height:1.55;color:${TEXT};">&bull;&nbsp; ${l}</div>`).join('')
+  return `  <tr><td style="padding:0 32px 10px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid ${LINE};border-left:4px solid ${ORANGE};background:${bg};"><tr>
+    <td style="padding:16px 18px;">${tag}<a href="${esc(opts.href)}" style="font-size:17px;font-weight:700;line-height:1.3;color:${INK};text-decoration:none;">${opts.name}</a>${opts.meta ? `<div style="margin:5px 0 0;font-size:14px;color:${MUTED};">${opts.meta}</div>` : ''}${lines}</td>
+    <td align="right" valign="middle" style="padding:16px 18px 16px 0;white-space:nowrap;"><a href="${esc(opts.href)}" style="font-size:13px;font-weight:700;color:${INK};text-decoration:underline;">View listing &rarr;</a></td>
+  </tr></table></td></tr>`
+}
+
+/** Plain team sign-off for buyer emails (no mailbox shown). */
+export const emailTeamSignoff = () =>
+  `  <tr><td style="padding:18px 32px 30px;font-size:15px;line-height:1.65;color:${TEXT};"><p style="margin:0;">Warm regards,<br><strong>LankaNewHomes Team</strong></p></td></tr>`
