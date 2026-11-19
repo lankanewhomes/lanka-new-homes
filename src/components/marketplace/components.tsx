@@ -140,7 +140,8 @@ import { Amenity, Article, Developer, FloorPlan, Lead, Location, NearbyPlace, Pr
 import { localizedProjectCopy, useListingT } from "@/lib/i18n/use-listing-t";
 import { floorPlanSummarySentence } from "@/lib/i18n/floor-plan-sentence";
 import { listingWhatsAppHref, toWhatsAppNumber, whatsappChatHref } from "@/lib/whatsapp";
-import { UpdatesOptIn } from "@/components/marketplace/updates-optin";
+import { buildInternationalPhone, DEFAULT_PHONE_COUNTRY, isPlausiblePhone } from "@/lib/phone";
+import { PhoneField, type PhoneValue } from "@/components/marketplace/phone-field";
 import { openWhatsAppCapture } from "@/components/marketplace/whatsapp-capture";
 import { groupNearbyPlaces } from "@/lib/nearby-places";
 import { sortConstructionUpdates } from "@/lib/construction-updates";
@@ -2204,7 +2205,7 @@ export function RequestInfoDialog({
   // The message box is pre-filled so a buyer can just send (owner, 2026-11-19: "the box with hi, I'm interested in this"); a plot selection overrides it.
   const askSubject = floorPlan ? `${describeFloorPlanForLead(floorPlan)} at ${project.name}` : project.name;
   const [message, setMessage] = useState(defaultMessage || (variant === "brochure" ? `Hi, I'd like the brochure for ${askSubject}.` : `Hi, I'm interested in ${askSubject}. Please send me more details.`));
-  const [interests, setInterests] = useState<string[]>([]);
+  const [phoneValue, setPhoneValue] = useState<PhoneValue>({ country: DEFAULT_PHONE_COUNTRY, national: "" });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -2241,10 +2242,14 @@ export function RequestInfoDialog({
     if (!name.trim()) errors.name = "Please enter your name so the developer knows who to reply to.";
     if (!email.trim()) errors.email = "Please enter your email so the developer can reply to you.";
     else if (!/^\S+@\S+\.\S+$/.test(email.trim())) errors.email = "That email does not look right. It should look like name@example.com.";
-    if (errors.name || errors.email) {
+    const typedPhone = phoneValue.national.trim().length > 0;
+    const phone = typedPhone && isPlausiblePhone(phoneValue.country, phoneValue.national) ? buildInternationalPhone(phoneValue.country, phoneValue.national) : null;
+    if (typedPhone && !phone) errors.phone = phoneValue.country === "LK" ? "That number does not look right. Type your mobile number without the first 0, for example 77 123 4567." : "That number does not look right. Please check it and the country code.";
+    if (errors.name || errors.email || errors.phone) {
       setFieldErrors(errors);
       if (errors.email) formRef.current?.querySelector<HTMLInputElement>("#request-info-email")?.focus();
       else if (errors.name) formRef.current?.querySelector<HTMLInputElement>("#request-info-name")?.focus();
+      else if (errors.phone) formRef.current?.querySelector<HTMLInputElement>(".request-info-phone-row input")?.focus();
       return;
     }
     setFieldErrors({});
@@ -2260,13 +2265,11 @@ export function RequestInfoDialog({
         body: JSON.stringify({
           name: name.trim(),
           email: email.trim(),
-          phone: "",
+          phone: phone ?? "",
           preferredContactMethod: "Email",
           message: message.trim() || (isBrochure ? `Brochure request for ${subject}` : `Request info for ${subject}`),
           projectSlug: project.slug,
           developerSlug: project.developerSlug,
-          marketingOptIn: interests.length > 0,
-          interests,
           sessionId: getSessionId(),
           trafficSource: getTrafficSource(),
           utm: getStoredUtmParams(),
@@ -2372,7 +2375,7 @@ export function RequestInfoDialog({
           </div>
         ) : (
           <form ref={formRef} onSubmit={onSubmit} noValidate className="request-info-body">
-            <p className="request-info-lead">Your email and name. The developer will contact you.</p>
+            <p className="request-info-lead">The developer will contact you. Phone is optional.</p>
 
             <label className="request-info-field">
                 <span>Email<span className="request-info-star">*</span></span>
@@ -2406,17 +2409,22 @@ export function RequestInfoDialog({
               {fieldErrors.name ? <span id="request-info-name-error" className="request-info-field-error" role="alert">{fieldErrors.name}</span> : null}
             </label>
 
+
+            <div className="request-info-field" onFocusCapture={(event) => onFieldFocus("phone", event.target as HTMLElement)}>
+              <span id="request-info-phone-label" className="sr-only">Phone number (optional)</span>
+              <PhoneField value={phoneValue} onChange={(next) => { setPhoneValue(next); if (fieldErrors.phone) setFieldErrors((e) => ({ ...e, phone: undefined })); }} labelId="request-info-phone-label" placeholder="Phone number (optional)" />
+              {fieldErrors.phone ? <span className="request-info-field-error" role="alert">{fieldErrors.phone}</span> : null}
+            </div>
+
             <label className="request-info-field request-info-message-field">
               <span className="sr-only">Your message</span>
               <textarea value={message} onChange={(event) => setMessage(event.target.value.slice(0, 900))} onFocus={(event) => onFieldFocus("message", event.currentTarget)} rows={4} placeholder="Your message" />
             </label>
 
-            <UpdatesOptIn value={interests} onChange={setInterests} />
-
             {errorMessage ? <p className="request-info-error" role="alert">{errorMessage}</p> : null}
 
             <div className="request-info-actions">
-              <p className="request-info-promise">We never spam you. By sending, you agree to be contacted by the developer by email.</p>
+              <p className="request-info-promise">By clicking Submit, you agree that the developer and LankaNewHomes may contact you by email, call or WhatsApp about this listing. Unsubscribe any time. See our <Link href="/privacy" className="underline">Privacy Policy</Link>.</p>
               <div className="request-info-actions-row">
                 <button type="submit" className="request-info-submit-big" disabled={submitting}>
                   <span className="request-info-submit-icon" aria-hidden="true"><ArrowRight size={16} strokeWidth={2.5} /></span>
