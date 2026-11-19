@@ -21269,6 +21269,7 @@ body:has(.request-info-overlay) .listing-hero-quickjump-bar { display: none; }
 .listing-disclaimer .listing-disclaimer-date {
   margin-bottom: 2px;
   color: #6b6355;
+}
 /* Owner, 2026-11-18: on a phone the Contact Us / Request info / Brochure popup and the site Contact popup open FULL SCREEN, with no dimmed
    gap above them ("there's a lot of space on top"). Desktop keeps the side panel / centred box. */
 @media (max-width: 700px) {
