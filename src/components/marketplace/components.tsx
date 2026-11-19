@@ -2338,7 +2338,7 @@ export function RequestInfoDialog({
         </div>
 
         <div className="request-info-listing request-info-listing-brochure">
-          <Image src={project.heroImage} alt={project.name} width={64} height={64} className="request-info-listing-image" />
+          <Image src={project.heroImage} alt={project.name} width={640} height={360} sizes="(max-width: 700px) 100vw, 64px" className="request-info-listing-image" />
           {(
             <div className="request-info-listing-text">
               <p className="request-info-listing-title">{project.name}</p>

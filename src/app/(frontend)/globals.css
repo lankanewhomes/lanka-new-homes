@@ -21296,14 +21296,22 @@ body:has(.request-info-overlay) .listing-hero-quickjump-bar { display: none; }
   .request-info-dialog .request-info-topbar,
   .request-info-dialog .request-info-listing { flex: 0 0 auto; }
   .request-info-dialog .request-info-body { flex: 1 1 auto; display: flex; flex-direction: column; padding: 28px 22px 0; }
-  .request-info-dialog .request-info-lead { margin: 0 0 clamp(18px, 4svh, 36px); font-size: 15px; }
-  .request-info-dialog .request-info-body .request-info-field { margin-bottom: clamp(20px, 4.5svh, 40px); }
+  .request-info-dialog .request-info-lead { margin: 0 0 clamp(12px, 2.5svh, 20px); font-size: 15px; }
+  .request-info-dialog .request-info-body .request-info-field { margin-bottom: clamp(12px, 2.5svh, 22px); }
   .request-info-dialog .request-info-body .request-info-field input { padding-top: 16px; padding-bottom: 16px; }
-  .request-info-dialog .request-info-body .contact-form-updates { margin-bottom: clamp(16px, 3svh, 28px); }
+  .request-info-dialog .request-info-body .contact-form-updates { margin-bottom: clamp(10px, 2svh, 18px); }
   .request-info-dialog .request-info-body .request-info-actions { margin: auto -22px 0; padding: 16px 22px calc(24px + env(safe-area-inset-bottom)); }
 }
 @media (max-width: 700px) {
   /* the message box takes the spare height between the name and the tick box, so the form fills the screen */
-  .request-info-dialog .request-info-body .request-info-message-field { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 120px; }
-  .request-info-dialog .request-info-body .request-info-message-field textarea { flex: 1 1 auto; min-height: 110px; resize: none; }
+  .request-info-dialog .request-info-body .request-info-message-field { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 84px; }
+  .request-info-dialog .request-info-body .request-info-message-field textarea { flex: 1 1 auto; min-height: 72px; resize: none; }
+}
+
+@media (max-width: 700px) {
+  /* a big photo of the listing across the top of the form (owner, 2026-11-19), instead of the tiny square */
+  .request-info-dialog:not(.whatsapp-capture-dialog) .request-info-listing { flex-direction: column; align-items: stretch; gap: 10px; padding: 0 0 12px; }
+  .request-info-dialog:not(.whatsapp-capture-dialog) .request-info-listing-image { width: 100%; height: clamp(110px, 16svh, 160px); border-radius: 0; }
+  .request-info-dialog:not(.whatsapp-capture-dialog) .request-info-listing-text { padding: 0 22px; }
+  .request-info-dialog:not(.whatsapp-capture-dialog) .request-info-body { padding-top: 18px; }
 }
