@@ -30,8 +30,9 @@ export const emailHero = (title: string, lead?: string) =>
 
 export const emailPara = (html: string, muted = false) => `  <tr><td style="padding:12px 32px 4px;font-size:15px;line-height:1.65;color:${muted ? MUTED : TEXT};">${html}</td></tr>`
 
+// Same look as the site's .badge-verified pill (globals.css): cyan, 3px corners, 11px bold uppercase.
 export const verifiedPill = () =>
-  `<span style="display:inline-block;background:#ecfeff;border:1px solid #67e8f9;color:#0e7490;font-size:13px;font-weight:700;padding:6px 12px;border-radius:3px;">&#10003;&nbsp; Verified Developer</span>`
+  `<span style="display:inline-block;background:#ecfeff;border:1px solid #67e8f9;color:#0e7490;font-size:11px;font-weight:700;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;padding:3px 7px;border-radius:3px;">&#10003; Verified Developer</span>`
 
 /** Numbered cards: a dark number tile on the left, a bold title and a short explanation. */
 export function emailNumbered(items: { title: string; body: string }[]): string {

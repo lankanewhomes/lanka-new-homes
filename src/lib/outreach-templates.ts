@@ -1,4 +1,4 @@
-import { emailHero, emailShell } from './email-layout'
+import { emailHero, emailShell, verifiedPill } from './email-layout'
 // Email templates for the CMS Outreach log (owner, 2026-10-12). Pure rendering: nothing here sends mail.
 // Every link goes through the tracked redirect (/o/<code>?to=/path) so clicks are counted on the Outreach row.
 // Wording rule: no pricing or package talk in these emails.
@@ -53,7 +53,7 @@ function stepCard(n: number, title: string, lines: string[], cta?: { href: strin
 
 function verifyStep(ctx: OutreachContext, n: number) {
   return stepCard(n, 'Get the free Verified Developer badge', [
-    '<span style="display:inline-block; padding:4px 12px; border-radius:999px; background:#e6f4ea; color:#1e7e34; font-size:13px; font-weight:700;">&#10003; Verified Developer</span>',
+    verifiedPill(),
     `Takes about a minute. ${a(ctx.link('/developers/login'), 'Sign in')} (or ${a(ctx.link('/developers/register'), 'create an account')}), open your company profile and confirm an email address on your company domain.`,
     'We email you a one-time link. Click it and the "✓ Verified Developer" badge appears on your profile and on every listing.',
   ], { href: ctx.link('/cms'), text: 'Open my dashboard' })
