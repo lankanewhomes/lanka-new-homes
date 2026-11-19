@@ -11,7 +11,7 @@ export function ListingDisclaimer({ updatedAt }: { updatedAt?: string }) {
     <aside className="listing-disclaimer" aria-label="About this information">
       {date ? <p className="listing-disclaimer-date"><T>Last update:</T> {date}</p> : null}
       <p>
-        <T>LankaNewHomes brings together new homes and land for sale in Sri Lanka. Details come from developers' websites, brochures and adverts, plus our own research, and we check them where we can. Prices, availability and dates can change without notice, so please confirm with the developer before you decide. This page is for reference only.</T>
+        <T>LankaNewHomes brings together new homes and land for sale in Sri Lanka. Details come from developers&apos; websites, brochures and adverts, plus our own research, and we check them where we can. Prices, availability and dates can change without notice, so please confirm with the developer before you decide. This page is for reference only.</T>
       </p>
     </aside>
   );

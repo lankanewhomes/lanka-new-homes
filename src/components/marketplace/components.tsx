@@ -140,6 +140,7 @@ import { Amenity, Article, Developer, FloorPlan, Lead, Location, NearbyPlace, Pr
 import { localizedProjectCopy, useListingT } from "@/lib/i18n/use-listing-t";
 import { floorPlanSummarySentence } from "@/lib/i18n/floor-plan-sentence";
 import { listingWhatsAppHref, toWhatsAppNumber, whatsappChatHref } from "@/lib/whatsapp";
+import { UpdatesOptIn } from "@/components/marketplace/updates-optin";
 import { openWhatsAppCapture } from "@/components/marketplace/whatsapp-capture";
 import { groupNearbyPlaces } from "@/lib/nearby-places";
 import { sortConstructionUpdates } from "@/lib/construction-updates";
@@ -2180,7 +2181,6 @@ export function RequestInfoDialog({
   floorPlan,
   variant = "standard",
   defaultMessage = "",
-  whatsappHref = null,
 }: {
   open: boolean;
   onClose: () => void;
@@ -2196,12 +2196,13 @@ export function RequestInfoDialog({
   variant?: "standard" | "inquiry" | "brochure";
   /** Pre-filled message (e.g. the plots a buyer selected). The parent re-keys the dialog when it changes. */
   defaultMessage?: string;
-  /** The developer's wa.me link (any form; only the number is used) for the "Get price on WhatsApp" button. */
+  /** Unused since 2026-11-18 (the "Get price on WhatsApp" button was removed from this form); callers may still pass it. */
   whatsappHref?: string | null;
 }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const message = defaultMessage; // pre-filled text (e.g. the plots a buyer selected); the form no longer shows it
+  const [interests, setInterests] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -2262,7 +2263,8 @@ export function RequestInfoDialog({
           message: message.trim() || (isBrochure ? `Brochure request for ${subject}` : `Request info for ${subject}`),
           projectSlug: project.slug,
           developerSlug: project.developerSlug,
-          marketingOptIn: false,
+          marketingOptIn: interests.length > 0,
+          interests,
           sessionId: getSessionId(),
           trafficSource: getTrafficSource(),
           utm: getStoredUtmParams(),
@@ -2322,8 +2324,6 @@ export function RequestInfoDialog({
       window.setTimeout(() => input.scrollIntoView({ block: "center", behavior: "smooth" }), 350);
     }
   };
-  const askAbout = floorPlan ? `${describeFloorPlanForLead(floorPlan)} at ${project.name}` : project.name;
-  const priceHref = whatsappChatHref(toWhatsAppNumber(whatsappHref ?? project.socialLinks?.whatsapp), `Hi, could you send me the price and payment plan for ${askAbout} that I saw on LankaNewHomes?`);
 
   // Drawn straight in <body> (a portal): inside the listing page it sat in a layer below the phone's bottom tab bar, which then showed
   // through under the window (owner, 2026-11-09).
@@ -2404,6 +2404,8 @@ export function RequestInfoDialog({
               {fieldErrors.name ? <span id="request-info-name-error" className="request-info-field-error" role="alert">{fieldErrors.name}</span> : null}
             </label>
 
+            <UpdatesOptIn value={interests} onChange={setInterests} />
+
             {errorMessage ? <p className="request-info-error" role="alert">{errorMessage}</p> : null}
 
             <div className="request-info-actions">
@@ -2413,17 +2415,6 @@ export function RequestInfoDialog({
                   <span className="request-info-submit-icon" aria-hidden="true"><ArrowRight size={16} strokeWidth={2.5} /></span>
                   {submitting ? "Sending..." : isBrochure ? "Download Brochure" : "Submit Form"}
                 </button>
-                {priceHref ? (
-                  <a
-                    href={priceHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="request-info-whatsapp-price"
-                    onClick={(event) => captureWhatsAppClick(event, priceHref, project)}
-                  >
-                    <WhatsappIcon className="h-4 w-4" /> Get price on WhatsApp
-                  </a>
-                ) : null}
               </div>
             </div>
           </form>

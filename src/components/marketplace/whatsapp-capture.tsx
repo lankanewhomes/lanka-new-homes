@@ -8,6 +8,7 @@ import { PhoneField, type PhoneValue } from "@/components/marketplace/phone-fiel
 import { toWhatsAppNumber, whatsappChatHref } from "@/lib/whatsapp";
 import { captureUtmParams, getLandingPage, getStoredUtmParams, getTrafficSource, trackEvent } from "@/lib/ga4";
 import { getSessionId } from "@/components/marketplace/view-tracker";
+import { UpdatesOptIn } from "@/components/marketplace/updates-optin";
 
 // "Capture their number before opening WhatsApp" (owner, 2026-11-09). Every WhatsApp button on a listing calls openWhatsAppCapture();
 // this host (mounted once in the site layout) shows a small window asking for a name and WhatsApp number, saves a lead for the
@@ -54,9 +55,11 @@ export function WhatsAppCaptureHost() {
 function WhatsAppCaptureDialog({ detail, onClose }: { detail: WhatsAppCaptureDetail; onClose: () => void }) {
   const fallbackMessage = `Hi, I'm interested in ${detail.projectName} that I saw on LankaNewHomes. Could you send me more details?`;
   const [name, setName] = useState("");
+  const [interests, setInterests] = useState<string[]>([]);
+  const [email, setEmail] = useState("");
   const [phoneValue, setPhoneValue] = useState<PhoneValue>({ country: DEFAULT_PHONE_COUNTRY, national: "" });
   const [message, setMessage] = useState(() => openingMessage(detail.href, fallbackMessage));
-  const [errors, setErrors] = useState<{ name?: string; phone?: string }>({});
+  const [errors, setErrors] = useState<{ name?: string; phone?: string; email?: string }>({});
   const [openHref, setOpenHref] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -84,10 +87,11 @@ function WhatsAppCaptureDialog({ detail, onClose }: { detail: WhatsAppCaptureDet
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const phone = isPlausiblePhone(phoneValue.country, phoneValue.national) ? buildInternationalPhone(phoneValue.country, phoneValue.national) : null;
-    const next: { name?: string; phone?: string } = {};
+    const next: { name?: string; phone?: string; email?: string } = {};
+    if (interests.length && !/^\S+@\S+\.\S+$/.test(email.trim())) next.email = "Please enter your email so we can send you the updates you ticked.";
     if (!name.trim()) next.name = "Please enter your name so the developer knows who you are.";
     if (!phone) next.phone = phoneValue.country === "LK" ? "That number does not look right. Type your WhatsApp number without the first 0, for example 77 123 4567." : "That number does not look right. Please check the country and the number.";
-    if (next.name || next.phone) {
+    if (next.name || next.phone || next.email) {
       setErrors(next);
       if (next.name) formRef.current?.querySelector<HTMLInputElement>("#wa-capture-name")?.focus();
       return;
@@ -108,7 +112,8 @@ function WhatsAppCaptureDialog({ detail, onClose }: { detail: WhatsAppCaptureDet
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name: name.trim(),
-        email: "",
+        email: interests.length ? email.trim() : "",
+        interests,
         phone,
         preferredContactMethod: "WhatsApp",
         message: enquiry,
@@ -177,6 +182,14 @@ function WhatsAppCaptureDialog({ detail, onClose }: { detail: WhatsAppCaptureDet
               <span>Your enquiry</span>
               <textarea value={message} onChange={(event) => setMessage(event.target.value.slice(0, 900))} rows={3} />
             </label>
+            <UpdatesOptIn value={interests} onChange={(next) => { setInterests(next); if (errors.email) setErrors((e) => ({ ...e, email: undefined })); }} />
+            {interests.length ? (
+              <label className="request-info-field">
+                <span>Email<span className="request-info-star">*</span></span>
+                <input type="email" inputMode="email" autoComplete="email" value={email} onChange={(event) => { setEmail(event.target.value); if (errors.email) setErrors((e) => ({ ...e, email: undefined })); }} placeholder="Enter your email" aria-invalid={errors.email ? true : undefined} />
+                {errors.email ? <span className="request-info-field-error" role="alert">{errors.email}</span> : null}
+              </label>
+            ) : null}
             <div className="request-info-actions">
               <p className="request-info-promise">Your number goes to this developer only, so they can reply. WhatsApp then opens with the developer&apos;s number and your enquiry ready.</p>
               <div className="request-info-actions-row">

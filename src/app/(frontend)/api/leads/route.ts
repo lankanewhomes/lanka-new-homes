@@ -6,6 +6,8 @@ import { isInternalRequest } from "@/lib/internal-traffic";
 import { renderBrochureEmailHTML } from "@/lib/brochure-email";
 import { requestOrigin } from "@/lib/request-origin";
 import { rateLimited } from "@/lib/rate-limit";
+import { cleanInterests, saveSubscriber } from "@/lib/save-subscriber";
+import { isProductionDeployment } from "@/lib/lead-alerts";
 
 export async function POST(req: Request) {
   const limited = rateLimited(req, "leads", 30, 15 * 60 * 1000); // each enquiry alerts a developer. Generous on purpose: phone networks put many real buyers behind one address and a lead must never be lost
@@ -50,6 +52,7 @@ export async function POST(req: Request) {
     const whatsappContinuedAt = isWhatsApp && body.whatsappOpened === true ? new Date().toISOString() : undefined;
     const source = isWhatsApp ? "whatsapp" : body.isBrochureRequest ? "brochure_request" : "request_info";
 
+    const updateInterests = cleanInterests(body.interests);
     const saved = await insertLead({
       name: body.name,
       email: typeof body.email === "string" ? body.email : "",
@@ -58,12 +61,27 @@ export async function POST(req: Request) {
       message: body.message,
       projectSlug: body.projectSlug,
       developerSlug: body.developerSlug,
-      marketingOptIn: typeof body.marketingOptIn === "boolean" ? body.marketingOptIn : undefined,
+      marketingOptIn: updateInterests.length > 0 ? true : typeof body.marketingOptIn === "boolean" ? body.marketingOptIn : undefined,
       userId: user?.id,
       floorPlan: floorPlanName || undefined,
       source,
       whatsappContinuedAt,
     });
+
+    // Ticked "send me updates" boxes: add them to Contacts & subscribers (live site only; never blocks the enquiry).
+    const buyerEmail = typeof body.email === "string" ? body.email.trim() : "";
+    if (updateInterests.length && buyerEmail && isProductionDeployment()) {
+      after(async () => {
+        try {
+          const { getPayload } = await import("payload");
+          const payloadConfig = (await import("../../../../../payload.config")).default;
+          const payload = await getPayload({ config: payloadConfig });
+          await saveSubscriber(payload, { email: buyerEmail, name: typeof body.name === "string" ? body.name : undefined, phone: typeof body.phone === "string" ? body.phone : undefined, interests: updateInterests, source: isWhatsApp ? "whatsapp-form" : "listing-form" });
+        } catch (error) {
+          console.error("Subscriber save failed:", error instanceof Error ? error.message : error);
+        }
+      });
+    }
 
     // Best-effort mirror into Payload's Leads collection so builders can see
     // and manage this inquiry (status, analytics) in /cms.
