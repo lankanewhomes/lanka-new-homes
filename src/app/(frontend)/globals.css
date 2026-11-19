@@ -21339,3 +21339,30 @@ body:has(.request-info-overlay) .listing-hero-quickjump-bar { display: none; }
 .pg-card-price { font-weight: 700; color: #d4601f; font-size: 15px; }
 .pg-card-meta { font-size: 13px; color: #5b6659; }
 @media (max-width: 640px) { .pg-tiles { grid-template-columns: 1fr 1fr; } .pg-range-col { display: none; } .pg-table { min-width: 0; } }
+
+/* Owner, 2026-11-19: on a phone the form must fill the REAL visible screen (dvh follows the browser bar hiding; svh left a gap at the bottom where the
+   floating bar showed through) and fit without scrolling. Everything below is tighter so email, name, phone, message, tick box and Submit
+   all show at once; the X stays pinned at the top. */
+@media (max-width: 700px) {
+  .request-info-overlay { height: 100vh; height: 100dvh; background: #fff; }
+  .request-info-dialog,
+  .request-info-dialog.request-info-dialog-brochure { height: 100vh; height: 100dvh; max-height: 100vh; max-height: 100dvh; }
+  .contact-modal-dialog { height: 100vh; height: 100dvh; max-height: 100vh; max-height: 100dvh; }
+  .request-info-dialog .request-info-topbar { position: sticky; top: 0; z-index: 5; padding: 14px 56px; min-height: 0; }
+  .request-info-dialog .request-info-close { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); }
+  .request-info-dialog:not(.whatsapp-capture-dialog) .request-info-listing-image { height: clamp(80px, 12dvh, 130px); }
+  .request-info-dialog:not(.whatsapp-capture-dialog) .request-info-listing { gap: 6px; padding-bottom: 8px; }
+  .request-info-dialog:not(.whatsapp-capture-dialog) .request-info-body { padding-top: 12px; }
+  .request-info-dialog .request-info-lead { margin-bottom: 10px; font-size: 14px; }
+  .request-info-dialog .request-info-body .request-info-field { margin-bottom: 10px; }
+  .request-info-dialog .request-info-body .request-info-field input { padding-top: 12px; padding-bottom: 12px; }
+  .request-info-dialog .request-info-body .contact-form-updates { margin-bottom: 6px; }
+  .request-info-dialog .request-info-body .contact-form-updates-note { margin-top: 2px; }
+  .request-info-dialog .request-info-body .request-info-actions { padding-top: 8px; }
+  .request-info-dialog .request-info-promise { margin-bottom: 8px; }
+}
+@media (max-width: 700px) {
+  .request-info-dialog .request-info-body .request-info-message-field { min-height: 56px; }
+  .request-info-dialog .request-info-body .request-info-message-field textarea { min-height: 56px; }
+  .request-info-dialog .request-info-body .contact-form-updates-note { display: none; }
+}
