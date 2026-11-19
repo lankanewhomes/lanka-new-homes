@@ -1,4 +1,4 @@
-import { emailShell, emailHero, emailPara, emailSignoff } from './email-layout'
+import { emailShell, emailHero, emailPara, emailSignoff, emailListingCard } from './email-layout'
 // "Please confirm your listings" — sent to a developer after their
 // project(s)/land(s) are added or imported on their behalf, asking them to
 // review and confirm the details are accurate. Same visual style as
@@ -26,24 +26,11 @@ function escapeHtml(value: string): string {
 
 export function renderDeveloperListingConfirmationEmailHTML(input: DeveloperListingConfirmationEmailInput): string {
   const greetingName = input.contactName?.trim() || 'there'
-  const rows = input.listings
-    .map(
-      (item) => `
-      <tr>
-        <td style="padding:10px 0; border-bottom:1px solid #eee8db; font-size:14px; color:#1f1f1f;">
-          <a href="${item.url}" style="color:#1f1f1f; font-weight:700; text-decoration:none;">${escapeHtml(item.name)}</a>
-          ${item.note ? `<div style="margin-top:2px; font-size:12px; color:#9a9282;">${escapeHtml(item.note)}</div>` : ''}
-        </td>
-        <td align="right" style="padding:10px 0; border-bottom:1px solid #eee8db;">
-          <a href="${item.url}" style="font-size:12px; font-weight:700; color:#f47b36; text-decoration:none; white-space:nowrap;">View listing &rarr;</a>
-        </td>
-      </tr>`
-    )
-    .join('')
-
+  const cards = input.listings.map((item) => emailListingCard({ name: escapeHtml(item.name), href: item.url, meta: item.note ? escapeHtml(item.note) : undefined })).join('\n')
   const body = [
     emailHero('Please confirm your listings', `Hi ${escapeHtml(greetingName)}, we've added the following ${input.listings.length === 1 ? 'listing' : 'listings'} for <strong>${escapeHtml(input.developerName)}</strong> on LankaNewHomes. Please take a look and confirm the pricing, availability and details are accurate.`),
-    `  <tr><td style="padding:16px 32px 4px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0">${rows}</table></td></tr>`,
+    `  <tr><td style="padding:10px 32px 0;"></td></tr>`,
+    cards,
     emailPara(`If anything needs to be corrected or updated, just reply to this email or reach us at <a href="mailto:${escapeHtml(input.supportEmail)}" style="color:#1c1c20;font-weight:700;">${escapeHtml(input.supportEmail)}</a> and we'll fix it right away. If everything looks good, no action is needed.`, true),
     emailSignoff(),
   ].join('\n')

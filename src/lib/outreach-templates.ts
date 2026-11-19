@@ -1,4 +1,4 @@
-import { emailShell } from './email-layout'
+import { emailHero, emailShell } from './email-layout'
 // Email templates for the CMS Outreach log (owner, 2026-10-12). Pure rendering: nothing here sends mail.
 // Every link goes through the tracked redirect (/o/<code>?to=/path) so clicks are counted on the Outreach row.
 // Wording rule: no pricing or package talk in these emails.
@@ -10,7 +10,7 @@ export type OutreachContext = {
   companyName?: string | null
   /** Optional paragraph typed in the CMS, shown right after the greeting. */
   customNote?: string | null
-  /** Name in the sign-off. Only pass a person's name (e.g. Rupan Sinnarajah) when the email goes from that person's own address; otherwise it reads "The LankaNewHomes team". */
+  /** Name in the sign-off. Only pass a person's name (e.g. Rupan Sinnarajah) when the email goes from that person's own address; otherwise it reads "LankaNewHomes Team". */
   signName?: string | null
   projects: { name: string; slug: string }[]
   /** For the lead-followup template: the enquiry that is still waiting for a reply. */
@@ -122,8 +122,8 @@ export function renderOutreachEmail(id: OutreachTemplateId, ctx: OutreachContext
     body = `${note}<p style="${P}">${company} is listed on LankaNewHomes. A few details are still missing, and filling them in helps your listings show up higher in search.</p>${projectList(ctx)}${completeStep(ctx, 1)}`
   }
 
-  const title = `<tr><td style="padding:26px 32px 4px;"><div style="font-size:22px; line-height:1.3; font-weight:700; color:${INK};">${esc(heading)}</div></td></tr>`
-  const main = `<tr><td style="padding:14px 32px 8px;">${greeting}${body}<p style="${P}">Let me know if you would like any changes.</p><p style="${P} margin-bottom:4px;">Best regards,<br><strong>${esc(ctx.signName ?? 'The LankaNewHomes team')}</strong></p></td></tr>`
+  const title = emailHero(esc(heading))
+  const main = `<tr><td style="padding:14px 32px 30px;">${greeting}${body}<p style="${P}">Let me know if you would like any changes.</p><p style="${P} margin-bottom:4px;">Warm regards,<br><strong>${esc(ctx.signName ?? 'LankaNewHomes Team')}</strong></p></td></tr>`
   const html = emailShell({ preheader: heading, title: heading, body: `${title}${main}`, footerNote: `Questions? Just reply to this email or write to ${a('mailto:developers@lankanewhomes.com', 'developers@lankanewhomes.com')}.` })
   const text = html
     .replace(/<a [^>]*href="([^"]+)"[^>]*>([^<]*)<\/a>/g, '$2 ($1)')
@@ -141,8 +141,8 @@ export function renderOutreachEmail(id: OutreachTemplateId, ctx: OutreachContext
 /** A short personal reply in the same branded shell (logo, rule, signature, footer) with no steps or buttons. Paragraphs are separated by blank lines. */
 export function renderPlainReplyEmail(opts: { body: string; signoff?: string; signName?: string; button?: { href: string; text: string } }): { html: string; text: string } {
   const paras = opts.body.trim().split(/\n{2,}/).map((para) => `<p style="${P}">${esc(para).replace(/\n/g, '<br>')}</p>`).join('')
-  const main = `<tr><td style="padding:26px 32px 8px;">${paras}${opts.button ? button(opts.button.href, opts.button.text) : ''}<p style="${P} margin:18px 0 4px;">${esc(opts.signoff ?? 'Best regards,')}<br><strong>${esc(opts.signName ?? 'The LankaNewHomes team')}</strong><br><span style="color:${MUTED};">LankaNewHomes</span></p></td></tr>`
+  const main = `<tr><td style="padding:26px 32px 30px;">${paras}${opts.button ? button(opts.button.href, opts.button.text) : ''}<p style="${P} margin:18px 0 4px;">${esc(opts.signoff ?? 'Warm regards,')}<br><strong>${esc(opts.signName ?? 'LankaNewHomes Team')}</strong><br><span style="color:${MUTED};">LankaNewHomes</span></p></td></tr>`
   const html = emailShell({ preheader: 'A message from LankaNewHomes', title: 'LankaNewHomes', body: main, footerNote: `Questions? Just reply to this email or write to ${a('mailto:developers@lankanewhomes.com', 'developers@lankanewhomes.com')}.` })
-  const text = `${opts.body.trim()}${opts.button ? `\n\n${opts.button.text}: ${opts.button.href}` : ''}\n\n${opts.signoff ?? 'Best regards,'}\n${opts.signName ?? 'The LankaNewHomes team'}\nLankaNewHomes`
+  const text = `${opts.body.trim()}${opts.button ? `\n\n${opts.button.text}: ${opts.button.href}` : ''}\n\n${opts.signoff ?? 'Warm regards,'}\n${opts.signName ?? 'LankaNewHomes Team'}\nLankaNewHomes`
   return { html, text }
 }

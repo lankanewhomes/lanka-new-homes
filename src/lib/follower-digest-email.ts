@@ -44,5 +44,5 @@ export function renderFollowerDigestEmailHTML(input: FollowerDigestEmailInput): 
     emailButton('Manage what you follow', input.accountUrl),
     emailTeamSignoff(),
   ].join('\n')
-  return emailShell({ preheader: 'Updates from the developers you follow on LankaNewHomes.', title: 'Updates from developers you follow', body, footerNote: `You're getting this because email notifications are on in your account settings. Turn them off any time from ${escapeHtml(input.accountUrl)}.` })
+  return emailShell({ preheader: 'Updates from the developers you follow on LankaNewHomes.', title: 'Updates from developers you follow', body, footerNote: 'LankaNewHomes, new homes and land for sale in Sri Lanka.', lastRow: `  <tr><td align="center" style="padding:10px 32px 18px;font-size:10px;line-height:1.5;color:#9a9892;">You're getting this because email notifications are on in your account settings. Turn them off any time from ${escapeHtml(input.accountUrl)}.</td></tr>` })
 }

@@ -70,7 +70,7 @@ export const emailButton = (label: string, href: string, secondary?: { label: st
   `  <tr><td align="center" style="padding:22px 32px 8px;"><a href="${esc(href)}" style="display:inline-block;background:${color?.bg ?? ORANGE};color:${color?.fg ?? INK};text-decoration:none;font-size:16px;font-weight:700;padding:15px 30px;">${label}</a>${secondary ? `<div style="margin-top:14px;font-size:13px;"><a href="${esc(secondary.href)}" style="color:${INK};">${secondary.label}</a></div>` : ''}</td></tr>`
 
 export const emailSignoff = (extra = '') =>
-  `  <tr><td style="padding:18px 32px 30px;font-size:15px;line-height:1.65;color:${TEXT};">${extra}<p style="margin:${extra ? '14px' : '0'} 0 0;">Warm regards,<br><strong>The LankaNewHomes team</strong><br><span style="color:${MUTED};font-size:13px;">developers@lankanewhomes.com</span></p></td></tr>`
+  `  <tr><td style="padding:18px 32px 30px;font-size:15px;line-height:1.65;color:${TEXT};">${extra}<p style="margin:${extra ? '14px' : '0'} 0 0;">Warm regards,<br><strong>LankaNewHomes Team</strong></p></td></tr>`
 
 /** WhatsApp green, so a "reply on WhatsApp" button stands apart from the orange action buttons (owner, 2026-10-18). */
 export const WHATSAPP_BUTTON = { bg: '#25d366', fg: '#ffffff' }
@@ -92,13 +92,13 @@ export const emailSectionLabel = (label: string) =>
   `  <tr><td style="padding:26px 32px 8px;font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:${ORANGE};">${label}</td></tr>`
 
 /** One listing as a bordered card: bold name, a muted line (city · price, or update lines), and a "View listing" link. `sponsored` tints it and adds a Sponsored tag. */
-export function emailListingCard(opts: { name: string; href: string; meta?: string; lines?: string[]; sponsored?: boolean }): string {
+export function emailListingCard(opts: { name: string; href?: string | null; meta?: string; cta?: string; lines?: string[]; sponsored?: boolean }): string {
   const bg = opts.sponsored ? '#fef1e8' : '#ffffff'
   const tag = opts.sponsored ? `<div style="margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#c65a1e;">Sponsored</div>` : ''
   const lines = (opts.lines ?? []).map((l) => `<div style="margin:3px 0 0;font-size:13px;line-height:1.55;color:${TEXT};">&bull;&nbsp; ${l}</div>`).join('')
   return `  <tr><td style="padding:0 32px 10px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid ${LINE};border-left:4px solid ${ORANGE};background:${bg};"><tr>
-    <td style="padding:16px 18px;">${tag}<a href="${esc(opts.href)}" style="font-size:17px;font-weight:700;line-height:1.3;color:${INK};text-decoration:none;">${opts.name}</a>${opts.meta ? `<div style="margin:5px 0 0;font-size:14px;color:${MUTED};">${opts.meta}</div>` : ''}${lines}</td>
-    <td align="right" valign="middle" style="padding:16px 18px 16px 0;white-space:nowrap;"><a href="${esc(opts.href)}" style="font-size:13px;font-weight:700;color:${INK};text-decoration:underline;">View listing &rarr;</a></td>
+    <td style="padding:16px 18px;">${tag}${opts.href ? `<a href="${esc(opts.href)}" style="font-size:17px;font-weight:700;line-height:1.3;color:${INK};text-decoration:none;">${opts.name}</a>` : `<span style="font-size:17px;font-weight:700;line-height:1.3;color:${INK};">${opts.name}</span>`}${opts.meta ? `<div style="margin:5px 0 0;font-size:14px;color:${MUTED};">${opts.meta}</div>` : ''}${lines}</td>
+    ${opts.href ? `<td align="right" valign="middle" style="padding:16px 18px 16px 0;white-space:nowrap;"><a href="${esc(opts.href)}" style="font-size:13px;font-weight:700;color:${INK};text-decoration:underline;">${opts.cta ?? 'View listing'} &rarr;</a></td>` : ''}
   </tr></table></td></tr>`
 }
 
