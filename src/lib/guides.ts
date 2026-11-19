@@ -104,37 +104,17 @@ export const guides: Record<string, Guide> = {
     path: "/guides/apartment-prices-in-colombo",
     breadcrumbs: [{ label: "Home", href: "/" }, { label: "Guides", href: "/guides" }, { label: "Apartment Prices in Colombo" }],
     metaTitle: "Apartment Prices in Colombo: New Projects 2026",
-    metaDescription: "What new apartments cost in Colombo by area: starting prices for Colombo 2, 5, 7, 8 and Rajagiriya, taken from developer listings on LankaNewHomes.",
+    metaDescription: "What new apartments cost in Colombo by area: lowest, typical and highest starting prices for Colombo 2, 5, 7, 8 and nearby, with listings in each price range.",
     h1: "Apartment Prices in Colombo",
-    intro: "New apartments in Colombo start from about Rs. 30 million in Colombo 14 and rise above Rs. 300 million in Colombo 7. The starting prices below come from developer listings on LankaNewHomes as of November 2026. They are \"from\" prices for the smallest unit, so confirm the current price with the developer before you decide.",
-    sections: [
-      {
-        heading: "Colombo 2: from about Rs. 60 million",
-        body: "Colombo 2 is the city centre by the sea. TRI-ZEN starts from Rs. 60 million and Vauxhall DSTRCT from Rs. 68 million. The Residences at Cinnamon Life starts from Rs. 125 million, with 2-bedroom units listed at USD 500,000 to USD 600,000 and the 4-bedroom unit at about USD 1.8 million.",
-      },
-      {
-        heading: "Colombo 5: from about Rs. 66 million",
-        body: "Colombo 5 (Havelock Town and Narahenpita) has the widest choice of mid-range new projects. Edmonton Bliss Residencies starts from Rs. 66 million, Park Road Residencies from Rs. 68 million, Fairway Latitude from Rs. 75 million, Mon Vie from Rs. 90 million and Pentara Residencies from Rs. 102 million.",
-      },
-      {
-        heading: "Colombo 7 and Colombo 8: from about Rs. 80 million",
-        body: "Waterdale Residencies in Colombo 7 starts from Rs. 80 million, while Skyhaus Colombo 07 starts from Rs. 317.5 million. In Colombo 8, The Golf starts from Rs. 95.7 million and The Seasons from Rs. 132 million. Capitol TwinPeaks starts from Rs. 91.3 million.",
-      },
-      {
-        heading: "Lower-priced areas: Colombo 14 and Rajagiriya",
-        body: "Buyers on a smaller budget can look at Rush Court 5 in Colombo 14, listed at Rs. 30 million to Rs. 33.6 million, and Nova Resort Apartments in Rajagiriya, which starts from Rs. 59 million. Rajagiriya and Battaramulla sit just outside the city and usually cost less per square foot.",
-      },
-      {
-        heading: "What changes the price",
-        body: "Floor level, view, unit size and completion stage all move the price. Ready-to-move-in units usually cost more per square foot than units bought off-plan on a staged payment plan. Ask the developer what is included (parking, fittings, furnishing) and what the legal and registration fees add on top.",
-      },
-    ],
+    intro: "What new apartments cost in Colombo, area by area. The numbers below come straight from developer listings on LankaNewHomes, so they move when prices change. Pick a price range to see the projects in it.",
+    sections: [],
     faqs: [
-      { question: "How much does a new apartment cost in Colombo?", answer: "On LankaNewHomes, new apartments in Colombo start from about Rs. 30 million in Colombo 14 and Rs. 60 million in Colombo 2, and go above Rs. 300 million for the most premium Colombo 7 projects." },
-      { question: "Which Colombo area has the cheapest new apartments?", answer: "Of the projects listed here, Colombo 14 has the lowest starting prices (Rush Court 5 from Rs. 30 million), followed by Rajagiriya (Nova Resort Apartments from Rs. 59 million) and Colombo 2 (TRI-ZEN from Rs. 60 million)." },
-      { question: "Are these final prices?", answer: "No. They are starting prices for the smallest unit, taken from listings in November 2026. Developers change prices, so check the current price on the listing or with the developer." },
+      { question: "How much does a new apartment cost in Colombo?", answer: "On LankaNewHomes, new apartments in Colombo start from about Rs. 30 million in Colombo 14 and Rs. 60 million in Colombo 2, and go above Rs. 300 million for the most premium Colombo 7 projects. See the table above for each area." },
+      { question: "Which Colombo area has the cheapest new apartments?", answer: "Of the projects listed here, Colombo 14 has the lowest starting prices, followed by Rajagiriya and Colombo 2. The table above ranks every area by its lowest starting price." },
+      { question: "Are these final prices?", answer: "No. They are starting prices for the smallest unit that a developer advertises. Developers change prices, so check the current price on the listing or with the developer." },
+      { question: "Can foreigners buy these apartments?", answer: "Yes, foreign buyers can buy condominium units on the 4th floor and above with freehold title. See the foreign buyer guide for the full rules." },
     ],
-    relatedPaths: ["/projects/cheap-apartments-for-sale-in-colombo", "/projects/luxury-apartments-for-sale-in-colombo", "/projects/colombo", "/projects/cinnamon-life-apartments"],
+    relatedPaths: ["/projects/cheap-apartments-for-sale-in-colombo", "/projects/luxury-apartments-for-sale-in-colombo", "/projects/colombo", "/guides/foreigners-buying-property", "/guides/investment-property"],
   },
 };
 
