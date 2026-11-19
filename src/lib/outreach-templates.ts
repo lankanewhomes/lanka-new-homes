@@ -70,7 +70,7 @@ function completeStep(ctx: OutreachContext, n: number) {
 function projectList(ctx: OutreachContext) {
   if (!ctx.projects.length) return ''
   return `<p style="${P} margin-bottom:8px;"><strong>Your listings</strong></p><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 20px; border-top:1px solid ${LINE};">${ctx.projects
-    .map((p) => `<tr><td style="padding:10px 0; border-bottom:1px solid ${LINE}; font-size:15px; color:${INK};">${esc(p.name)}</td><td align="right" style="padding:10px 0; border-bottom:1px solid ${LINE}; font-size:14px;">${a(ctx.link(`/projects/${p.slug}`), 'View listing →')}</td></tr>`)
+    .map((p) => `<tr><td style="padding:10px 0; border-bottom:1px solid ${LINE}; font-size:15px; color:${INK};">${esc(p.name)}<div style="margin-top:4px; font-size:14px;">${a(ctx.link(`/projects/${p.slug}`), 'View listing →')}</div></td></tr>`)
     .join('')}</table>`
 }
 

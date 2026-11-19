@@ -98,8 +98,7 @@ export function emailListingCard(opts: { name: string; href?: string | null; met
   const tag = opts.sponsored ? `<div style="margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#c65a1e;">Sponsored</div>` : ''
   const lines = (opts.lines ?? []).map((l) => `<div style="margin:3px 0 0;font-size:13px;line-height:1.55;color:${TEXT};">&bull;&nbsp; ${l}</div>`).join('')
   return `  <tr><td style="padding:0 32px 10px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid ${LINE};border-left:4px solid ${ORANGE};background:${bg};"><tr>
-    <td style="padding:16px 18px;">${tag}${opts.href ? `<a href="${esc(opts.href)}" style="font-size:17px;font-weight:700;line-height:1.3;color:${INK};text-decoration:none;">${opts.name}</a>` : `<span style="font-size:17px;font-weight:700;line-height:1.3;color:${INK};">${opts.name}</span>`}${opts.meta ? `<div style="margin:5px 0 0;font-size:14px;color:${MUTED};">${opts.meta}</div>` : ''}${lines}</td>
-    ${opts.href ? `<td align="right" valign="middle" style="padding:16px 18px 16px 0;white-space:nowrap;"><a href="${esc(opts.href)}" style="font-size:13px;font-weight:700;color:${INK};text-decoration:underline;">${opts.cta ?? 'View listing'} &rarr;</a></td>` : ''}
+    <td style="padding:16px 18px;">${tag}${opts.href ? `<a href="${esc(opts.href)}" style="font-size:17px;font-weight:700;line-height:1.3;color:${INK};text-decoration:none;">${opts.name}</a>` : `<span style="font-size:17px;font-weight:700;line-height:1.3;color:${INK};">${opts.name}</span>`}${opts.meta ? `<div style="margin:5px 0 0;font-size:14px;color:${MUTED};">${opts.meta}</div>` : ''}${lines}${opts.href ? `<div style="margin:10px 0 0;"><a href="${esc(opts.href)}" style="font-size:13px;font-weight:700;color:${INK};text-decoration:underline;">${opts.cta ?? 'View listing'} &rarr;</a></div>` : ''}</td>
   </tr></table></td></tr>`
 }
 
