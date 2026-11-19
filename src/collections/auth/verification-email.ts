@@ -49,7 +49,7 @@ ${noteLines.map((line) => `<p style="${p}">&bull; ${line}</p>`).join('')}
 ${after ?? ''}
 </td></tr>
 <tr><td style="padding:22px 32px 26px;">
-<p style="margin:0; font-size:13px; line-height:1.6; color:#6b6355;">LankaNewHomes &middot; <a href="mailto:support@lankanewhomes.com" style="color:#6b6355;">support@lankanewhomes.com</a> &middot; <a href="tel:+16477795729" style="color:#6b6355;">+1 647 779 5729</a></p>
+<p style="margin:0; font-size:13px; line-height:1.6; color:#6b6355;">LankaNewHomes &middot; <a href="mailto:support@lankanewhomes.com" style="color:#6b6355;">support@lankanewhomes.com</a></p>
 <p style="margin:6px 0 0; font-size:12px; line-height:1.6; color:#9a9282;">This inbox is not monitored. Reply to a message from us or write to support if you need help.</p>
 </td></tr>
 </table></td></tr></table></body></html>
