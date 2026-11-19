@@ -147,7 +147,7 @@ function WhatsAppCaptureDialog({ detail, onClose }: { detail: WhatsAppCaptureDet
           <button type="button" className="request-info-close" aria-label="Close" onClick={onClose}><X className="h-5 w-5" /></button>
         </div>
         <div className="request-info-listing request-info-listing-brochure">
-          {detail.heroImage ? <Image src={detail.heroImage} alt={detail.projectName} width={64} height={64} className="request-info-listing-image" /> : null}
+          {detail.heroImage ? <Image src={detail.heroImage} alt={detail.projectName} width={640} height={360} sizes="(max-width: 700px) 100vw, 420px" className="request-info-listing-image" /> : null}
           <div className="request-info-listing-text">
             <p className="request-info-listing-title">{detail.projectName}</p>
             {detail.location ? <p className="request-info-listing-address">{detail.location}</p> : null}

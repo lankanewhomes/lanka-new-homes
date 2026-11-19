@@ -21310,10 +21310,10 @@ body:has(.request-info-overlay) .listing-hero-quickjump-bar { display: none; }
 
 @media (max-width: 700px) {
   /* a big photo of the listing across the top of the form (owner, 2026-11-19), instead of the tiny square */
-  .request-info-dialog:not(.whatsapp-capture-dialog) .request-info-listing { flex-direction: column; align-items: stretch; gap: 10px; padding: 0 0 12px; }
-  .request-info-dialog:not(.whatsapp-capture-dialog) .request-info-listing-image { width: 100%; height: clamp(110px, 16svh, 160px); border-radius: 0; }
-  .request-info-dialog:not(.whatsapp-capture-dialog) .request-info-listing-text { padding: 0 22px; }
-  .request-info-dialog:not(.whatsapp-capture-dialog) .request-info-body { padding-top: 18px; }
+  .request-info-dialog .request-info-listing { flex-direction: column; align-items: stretch; gap: 10px; padding: 0 0 12px; }
+  .request-info-dialog .request-info-listing-image { width: 100%; height: clamp(110px, 16svh, 160px); border-radius: 0; }
+  .request-info-dialog .request-info-listing-text { padding: 0 22px; }
+  .request-info-dialog .request-info-body { padding-top: 18px; }
 }
 
 /* Price guide pages (components/marketplace/price-guide-page.tsx) */
@@ -21350,9 +21350,9 @@ body:has(.request-info-overlay) .listing-hero-quickjump-bar { display: none; }
   .contact-modal-dialog { height: 100vh; height: 100dvh; max-height: 100vh; max-height: 100dvh; }
   .request-info-dialog .request-info-topbar { position: sticky; top: 0; z-index: 5; padding: 14px 56px; min-height: 0; }
   .request-info-dialog .request-info-close { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); }
-  .request-info-dialog:not(.whatsapp-capture-dialog) .request-info-listing-image { height: clamp(80px, 12dvh, 130px); }
-  .request-info-dialog:not(.whatsapp-capture-dialog) .request-info-listing { gap: 6px; padding-bottom: 8px; }
-  .request-info-dialog:not(.whatsapp-capture-dialog) .request-info-body { padding-top: 12px; }
+  .request-info-dialog .request-info-listing-image { height: clamp(80px, 12dvh, 130px); }
+  .request-info-dialog .request-info-listing { gap: 6px; padding-bottom: 8px; }
+  .request-info-dialog .request-info-body { padding-top: 12px; }
   .request-info-dialog .request-info-lead { margin-bottom: 10px; font-size: 14px; }
   .request-info-dialog .request-info-body .request-info-field { margin-bottom: 10px; }
   .request-info-dialog .request-info-body .request-info-field input { padding-top: 12px; padding-bottom: 12px; }
@@ -21366,3 +21366,22 @@ body:has(.request-info-overlay) .listing-hero-quickjump-bar { display: none; }
   .request-info-dialog .request-info-body .request-info-message-field textarea { min-height: 56px; }
   .request-info-dialog .request-info-body .contact-form-updates-note { display: none; }
 }
+
+/* Owner, 2026-11-19: on desktop the Request info, Brochure and WhatsApp side panels had empty space at the bottom. The listing photo now runs across the
+   top, tall enough to fill the panel, so the real photo of the listing is easy to see. The success / brochure screen fills the rest. */
+@media (min-width: 701px) {
+  .request-info-dialog { display: flex; flex-direction: column; }
+  .request-info-dialog .request-info-topbar { flex: 0 0 auto; }
+  /* the photo takes whatever height the form leaves, so a tall screen shows a big photo and a short one a smaller photo, never a gap or a scroll */
+  .request-info-dialog .request-info-listing { flex: 1 1 auto; min-height: 0; flex-direction: column; align-items: stretch; gap: 10px; padding: 0 0 14px; }
+  .request-info-dialog .request-info-listing-image { flex: 1 1 auto; width: 100%; height: auto; min-height: 0; max-height: 520px; border-radius: 0; }
+  .request-info-dialog .request-info-listing-text { padding: 0 24px; flex: 0 0 auto; }
+  .request-info-dialog .request-info-listing-image { flex-basis: 0; }
+  .request-info-dialog .request-info-body .contact-form-updates-note { display: none; }
+  .request-info-dialog .request-info-message-field textarea { height: 68px; min-height: 0; resize: none; }
+  .request-info-dialog .request-info-body { flex: 0 0 auto; }
+  .request-info-dialog .request-info-body .request-info-actions { margin-top: auto; }
+}
+.request-info-dialog .request-info-success { flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+.request-info-dialog .request-info-success .request-info-submit-big,
+.request-info-dialog .request-info-success button { width: 100%; max-width: 360px; min-height: 56px; font-size: 16px; }
