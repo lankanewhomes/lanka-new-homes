@@ -15,6 +15,6 @@ export function renderBrochureEmailHTML({ projectName, brochureUrl }: { projectN
     preheader: `Your ${projectName} brochure from LankaNewHomes.`,
     title: `Your ${projectName} brochure`,
     body,
-    footerNote: 'You are receiving this because you asked for a brochure on LankaNewHomes. This inbox is not monitored; for help write to <a href="mailto:support@lankanewhomes.com" style="color:#ffffff;">support@lankanewhomes.com</a>.',
+    footerNote: 'You are receiving this because you asked for a brochure on LankaNewHomes. This inbox is not monitored; for help write to <a href="mailto:support@lankanewhomes.com" style="color:#6b6b6b;text-decoration:underline;">support@lankanewhomes.com</a>.',
   })
 }
