@@ -9,10 +9,11 @@ const guide = guides["apartment-prices-in-colombo"];
 export const metadata = buildGuideMetadata(guide);
 
 const isApartment = (p: Project) => /apartment|condominium|penthouse/i.test(p.type ?? "");
-const place = (p: Project) => `${p.city ?? ""} ${p.location ?? ""}`;
+const place = (p: Project) => `${p.city ?? ""} | ${p.location ?? ""}`;
 
 // "Colombo 02" and "Colombo 2" are the same postcode; projects with no postcode go under "Colombo (general)".
 function areaOf(p: Project): string {
+  if (/port city/i.test(place(p))) return "Port City Colombo";
   const postcode = /colombo\s*0?(\d{1,2})\b/i.exec(place(p));
   if (postcode) return `Colombo ${Number(postcode[1])}`;
   if (/rajagiriya|kotte|battaramulla/i.test(place(p))) return "Rajagiriya and Kotte";
