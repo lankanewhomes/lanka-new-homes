@@ -1,3 +1,4 @@
+import { emailShell, emailHero, emailButton } from "./email-layout"
 // Branded HTML for the weekly saved-search alert email — same visual style
 // as follower-digest-email.ts/lead-alert-email.ts. Content (which listings
 // matched, which are the Featured placements) is decided in
@@ -90,52 +91,10 @@ export function renderSavedSearchAlertEmailHTML(input: SavedSearchAlertEmailInpu
     })
     .join("")
 
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>New listings matching your saved search</title>
-</head>
-<body style="margin:0; padding:0; background-color:#f5f5f0; font-family:Helvetica, Arial, sans-serif;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f5f5f0; padding:32px 16px;">
-    <tr>
-      <td align="center">
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%; max-width:520px; background-color:#ffffff; border-radius:8px; overflow:hidden;">
-
-          <tr>
-            <td align="center" style="padding:32px 32px 8px;">
-              <span style="font-size:20px; font-weight:700; color:#1f1f1f;">Lanka<span style="color:#f47b36;">New</span>Homes</span>
-            </td>
-          </tr>
-
-          <tr>
-            <td align="center" style="padding:8px 32px 0;">
-              <h1 style="margin:0; font-size:20px; line-height:1.3; color:#1f1f1f; font-weight:700;">Hi ${greetingName}, new listings match your search</h1>
-              <p style="margin:8px 0 0; font-size:13px; color:#9a9282;">Based on the saved searches in your account</p>
-            </td>
-          </tr>
-
-          ${searchBlocks}
-
-          <tr>
-            <td align="center" style="padding:28px 32px 8px;">
-              <a href="${input.accountUrl}" style="font-size:14px; font-weight:700; color:#f47b36; text-decoration:none;">Manage your saved searches</a>
-            </td>
-          </tr>
-
-          <tr>
-            <td align="center" style="padding:8px 32px 32px;">
-              <p style="margin:0; font-size:12px; line-height:1.6; color:#9a9282;">
-                You're getting this because email notifications are on for a saved search — turn them off any time from ${input.accountUrl}.
-              </p>
-            </td>
-          </tr>
-
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>`
+  const body = [
+    emailHero(`Hi ${greetingName}, new listings match your search`, 'Based on the saved searches in your account'),
+    searchBlocks,
+    emailButton('Manage your saved searches', input.accountUrl),
+  ].join('\n')
+  return emailShell({ preheader: 'New listings match your saved search on LankaNewHomes.', title: 'New listings matching your saved search', body, footerNote: `You're getting this because email notifications are on for a saved search. Turn them off any time from ${escapeHtml(input.accountUrl)}.` })
 }
