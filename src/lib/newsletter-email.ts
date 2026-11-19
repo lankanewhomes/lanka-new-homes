@@ -16,7 +16,7 @@ export async function renderNewsletter(i: NewsletterInput): Promise<{ subject: s
     emailSignoff(),
   ].join('\n')
   const lastRow = `  <tr><td style="padding:16px 32px 22px;background:#ffffff;font-size:12px;line-height:1.6;color:#8a8a8a;text-align:center;">You are receiving this email because you asked for updates from LankaNewHomes.<br><a href="${url}" style="color:#6b6b6b;text-decoration:underline;">Unsubscribe from all emails</a></td></tr>`
-  const html = emailShell({ preheader: i.intro, title: i.subject, body, footerNote: 'LankaNewHomes, new homes and land for sale in Sri Lanka.', lastRow })
+  const html = emailShell({ preheader: i.intro, title: i.subject, body, footerNote: '', lastRow })
   const text = `${i.subject}\n\n${i.intro}\n\n${i.items.map((it) => `${it.title}\n${it.text}${it.href ? `\n${it.href}` : ''}`).join('\n\n')}\n\nLankaNewHomes Team\n\nYou are receiving this because you asked for updates from LankaNewHomes. Unsubscribe from all emails: ${url}\n`
   return { subject: i.subject, html, text, headers: await listUnsubscribeHeaders(i.email) }
 }
