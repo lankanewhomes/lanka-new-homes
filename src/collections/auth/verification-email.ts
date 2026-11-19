@@ -1,4 +1,4 @@
-import { emailButton, emailHero, emailPanel, emailPara, emailShell } from '../../lib/email-layout'
+import { emailButton, emailHero, emailPanel, emailShell } from '../../lib/email-layout'
 // Branded HTML for the account emails (verify your email, reset your password) — Payload's own auth.verify /
 // auth.forgotPassword send a plain default otherwise. Same visual style as the developer emails
 // (src/lib/developer-invite-email.ts): 600px bordered card, square corners, left-aligned wordmark with the
@@ -30,7 +30,7 @@ function renderAccountEmail({
     emailHero(heading, intro),
     emailButton(buttonLabel, url),
     emailPanel({ heading: noteTitle, bodyHtml: noteLines.map((line) => `&bull; ${line}`).join('<br>') }),
-    emailPara(`Button not working? Paste this link into your browser:<br><a href="${url}" style="color:#6b6a66;word-break:break-all;">${url}</a>${after ?? ''}`, true),
+    `  <tr><td style="padding:18px 32px 32px;font-size:13px;line-height:1.65;color:#6b6a66;">Button not working? Paste this link into your browser:<br><a href="${url}" style="color:#6b6a66;word-break:break-all;">${url}</a>${after ?? ''}</td></tr>`,
   ].join('\n')
   return emailShell({ preheader, title, body, footerNote: 'This inbox is not monitored. Reply to a message from us or write to <a href="mailto:support@lankanewhomes.com" style="color:#ffffff;">support@lankanewhomes.com</a> if you need help.' })
 }
