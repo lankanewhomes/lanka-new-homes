@@ -12,7 +12,7 @@ export function UpdatesOptIn({ value, onChange }: { value: string[]; onChange: (
     <div className="contact-form-updates">
       <label className="contact-form-consent">
         <input type="checkbox" checked={value.length > 0} onChange={(event) => onChange(event.target.checked ? ALL_UPDATES : [])} />
-        <span>Yes, send me news, new listings, price drops and launch offers by email. Unsubscribe any time.</span>
+        <span>Yes, email me the newsletter, price updates and the latest projects. Unsubscribe any time.</span>
       </label>
       <p className="contact-form-updates-note">
         See our <Link href="/privacy">Privacy Policy</Link>.

@@ -142,6 +142,7 @@ import { floorPlanSummarySentence } from "@/lib/i18n/floor-plan-sentence";
 import { listingWhatsAppHref, toWhatsAppNumber, whatsappChatHref } from "@/lib/whatsapp";
 import { buildInternationalPhone, DEFAULT_PHONE_COUNTRY, isPlausiblePhone } from "@/lib/phone";
 import { PhoneField, type PhoneValue } from "@/components/marketplace/phone-field";
+import { UpdatesOptIn } from "@/components/marketplace/updates-optin";
 import { openWhatsAppCapture } from "@/components/marketplace/whatsapp-capture";
 import { groupNearbyPlaces } from "@/lib/nearby-places";
 import { sortConstructionUpdates } from "@/lib/construction-updates";
@@ -2206,6 +2207,7 @@ export function RequestInfoDialog({
   const askSubject = floorPlan ? `${describeFloorPlanForLead(floorPlan)} at ${project.name}` : project.name;
   const [message, setMessage] = useState(defaultMessage || (variant === "brochure" ? `Hi, I'd like the brochure for ${askSubject}.` : `Hi, I'm interested in ${askSubject}. Please send me more details.`));
   const [phoneValue, setPhoneValue] = useState<PhoneValue>({ country: DEFAULT_PHONE_COUNTRY, national: "" });
+  const [interests, setInterests] = useState<string[]>([]); // the unticked-by-default marketing box (Canada's anti-spam law needs an explicit tick)
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -2266,6 +2268,8 @@ export function RequestInfoDialog({
           name: name.trim(),
           email: email.trim(),
           phone: phone ?? "",
+          marketingOptIn: interests.length > 0,
+          interests,
           preferredContactMethod: "Email",
           message: message.trim() || (isBrochure ? `Brochure request for ${subject}` : `Request info for ${subject}`),
           projectSlug: project.slug,
@@ -2421,10 +2425,12 @@ export function RequestInfoDialog({
               <textarea value={message} onChange={(event) => setMessage(event.target.value.slice(0, 900))} onFocus={(event) => onFieldFocus("message", event.currentTarget)} rows={4} placeholder="Your message" />
             </label>
 
+            <UpdatesOptIn value={interests} onChange={setInterests} />
+
             {errorMessage ? <p className="request-info-error" role="alert">{errorMessage}</p> : null}
 
             <div className="request-info-actions">
-              <p className="request-info-promise">By clicking Submit, you agree that the developer and LankaNewHomes may contact you by email, call or WhatsApp about this listing. Unsubscribe any time. See our <Link href="/privacy" className="underline">Privacy Policy</Link>.</p>
+              <p className="request-info-promise">By clicking Submit, you agree that the developer and LankaNewHomes may contact you about this listing. See our <Link href="/privacy" className="underline">Privacy Policy</Link>.</p>
               <div className="request-info-actions-row">
                 <button type="submit" className="request-info-submit-big" disabled={submitting}>
                   <span className="request-info-submit-icon" aria-hidden="true"><ArrowRight size={16} strokeWidth={2.5} /></span>
