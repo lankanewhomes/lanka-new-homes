@@ -2201,7 +2201,9 @@ export function RequestInfoDialog({
 }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const message = defaultMessage; // pre-filled text (e.g. the plots a buyer selected); the form no longer shows it
+  // The message box is pre-filled so a buyer can just send (owner, 2026-11-19: "the box with hi, I'm interested in this"); a plot selection overrides it.
+  const askSubject = floorPlan ? `${describeFloorPlanForLead(floorPlan)} at ${project.name}` : project.name;
+  const [message, setMessage] = useState(defaultMessage || (variant === "brochure" ? `Hi, I'd like the brochure for ${askSubject}.` : `Hi, I'm interested in ${askSubject}. Please send me more details.`));
   const [interests, setInterests] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -2402,6 +2404,11 @@ export function RequestInfoDialog({
                 placeholder="Enter your name"
               />
               {fieldErrors.name ? <span id="request-info-name-error" className="request-info-field-error" role="alert">{fieldErrors.name}</span> : null}
+            </label>
+
+            <label className="request-info-field request-info-message-field">
+              <span className="sr-only">Your message</span>
+              <textarea value={message} onChange={(event) => setMessage(event.target.value.slice(0, 900))} onFocus={(event) => onFieldFocus("message", event.currentTarget)} rows={4} placeholder="Your message" />
             </label>
 
             <UpdatesOptIn value={interests} onChange={setInterests} />

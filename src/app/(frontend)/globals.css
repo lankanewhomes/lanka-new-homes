@@ -21288,3 +21288,22 @@ body:has(.request-info-overlay) .listing-hero-quickjump-bar { display: none; }
   .contact-modal-overlay { align-items: stretch; justify-content: stretch; padding: 0; background: #fff; }
   .contact-modal-dialog { width: 100%; max-width: 100%; height: 100vh; height: 100svh; max-height: 100vh; max-height: 100svh; box-shadow: none; }
 }
+
+/* Owner, 2026-11-18: on a phone the Request info form should fill the whole screen, with more room between the parts. The dialog becomes a
+   column; the form grows to the full height, the fields spread out and the submit button stays at the bottom. */
+@media (max-width: 700px) {
+  .request-info-dialog { display: flex; flex-direction: column; }
+  .request-info-dialog .request-info-topbar,
+  .request-info-dialog .request-info-listing { flex: 0 0 auto; }
+  .request-info-dialog .request-info-body { flex: 1 1 auto; display: flex; flex-direction: column; padding: 28px 22px 0; }
+  .request-info-dialog .request-info-lead { margin: 0 0 clamp(18px, 4svh, 36px); font-size: 15px; }
+  .request-info-dialog .request-info-body .request-info-field { margin-bottom: clamp(20px, 4.5svh, 40px); }
+  .request-info-dialog .request-info-body .request-info-field input { padding-top: 16px; padding-bottom: 16px; }
+  .request-info-dialog .request-info-body .contact-form-updates { margin-bottom: clamp(16px, 3svh, 28px); }
+  .request-info-dialog .request-info-body .request-info-actions { margin: auto -22px 0; padding: 16px 22px calc(24px + env(safe-area-inset-bottom)); }
+}
+@media (max-width: 700px) {
+  /* the message box takes the spare height between the name and the tick box, so the form fills the screen */
+  .request-info-dialog .request-info-body .request-info-message-field { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 120px; }
+  .request-info-dialog .request-info-body .request-info-message-field textarea { flex: 1 1 auto; min-height: 110px; resize: none; }
+}
