@@ -21398,3 +21398,8 @@ body:has(.request-info-overlay) .listing-hero-quickjump-bar { display: none; }
   .request-info-dialog .request-info-message-field textarea { height: 64px; min-height: 0; flex: 0 0 auto; }
 }
 .request-info-dialog .request-info-body .request-info-lead { display: none; }
+
+/* Owner, 2026-11-19: on a phone the listing title gets extra space above it, under the photo. */
+@media (max-width: 700px) {
+  .request-info-dialog .request-info-listing-text { padding-top: 12px; }
+}
