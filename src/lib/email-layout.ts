@@ -20,7 +20,7 @@ export function emailShell(opts: { preheader: string; title: string; body: strin
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:620px;background:#ffffff;border:1px solid ${LINE};">
   <tr><td style="background:${INK};border-top:4px solid ${ORANGE};padding:26px 32px;"><a href="${SITE}" style="text-decoration:none;"><img src="${SITE}/brand/lankanewhomes-logo-white.png" width="124" alt="LankaNewHomes" style="display:block;border:0;width:124px;height:auto;font-size:20px;font-weight:700;color:#ffffff;"></a></td></tr>
 ${opts.body}
-  <tr><td style="background:${INK};padding:22px 32px;font-size:12px;line-height:1.6;color:#b9b8b2;">${opts.footerNote ?? "You are receiving this because your company or project is listed on LankaNewHomes."}<br><a href="${SITE}" style="color:#ffffff;text-decoration:underline;">lankanewhomes.com</a> &nbsp;·&nbsp; Sri Lanka's new homes marketplace: apartments, houses and land, with prices, floor plans and developer details in one place.<br>Phone: <a href="tel:+16477795729" style="color:#ffffff;text-decoration:underline;">+1 647 779 5729</a><br>LankaNewHomes, 535 The East Mall, Unit 203, Etobicoke, Ontario M9B 4A4, Canada</td></tr>
+  <tr><td style="background:${INK};padding:22px 32px;font-size:12px;line-height:1.7;color:#b9b8b2;">${opts.footerNote ?? "You are receiving this because your company or project is listed on LankaNewHomes."}<br><a href="${SITE}" style="color:#ffffff;text-decoration:underline;">lankanewhomes.com</a> &nbsp;·&nbsp; <a href="tel:+16477795729" style="color:#ffffff;text-decoration:underline;">+1 647 779 5729</a><br>535 The East Mall, Unit 203, Etobicoke, Ontario M9B 4A4, Canada</td></tr>
 ${opts.lastRow ?? ''}
 </table></td></tr></table></body></html>`
 }
