@@ -1,7 +1,8 @@
-import Image from "next/image";
 import Link from "next/link";
 import { buildBreadcrumbJsonLd, buildFaqJsonLd, jsonLdScriptProps } from "@/lib/seo";
 import { compactLkr } from "@/lib/format";
+import { ListingGridCard } from "@/components/marketplace/listing-page";
+import { slimForHome } from "@/lib/home-slim";
 import type { Guide } from "@/lib/guides";
 import type { Project } from "@/types";
 
@@ -16,21 +17,6 @@ const median = (values: number[]) => {
   const mid = Math.floor(sorted.length / 2);
   return sorted.length % 2 ? sorted[mid] : Math.round((sorted[mid - 1] + sorted[mid]) / 2);
 };
-
-function PriceCard({ project }: { project: Project }) {
-  return (
-    <Link href={`/projects/${project.slug}`} className="pg-card">
-      {project.heroImage ? (
-        <Image src={project.heroImage} alt={`${project.name}, ${project.city}`} width={640} height={400} className="pg-card-img" />
-      ) : null}
-      <div className="pg-card-body">
-        <span className="pg-card-price">From {compactLkr(project.startingPriceLkr)}</span>
-        <strong>{project.name}</strong>
-        <span className="pg-card-meta">{project.city} · {String(project.status)}</span>
-      </div>
-    </Link>
-  );
-}
 
 export function PriceGuidePage({
   guide,
@@ -141,8 +127,8 @@ export function PriceGuidePage({
               <h2>{band.label}.</h2>
               <p>{inBand.length} {inBand.length === 1 ? "project" : "projects"} starting in this range.</p>
             </div>
-            <div className="pg-cards" data-reveal>
-              {inBand.map((project) => <PriceCard key={project.slug} project={project} />)}
+            <div className="pg-cards listing-page-shell" data-reveal>
+              {inBand.map((project) => <ListingGridCard key={project.slug} project={slimForHome(project)} />)}
             </div>
           </section>
         );

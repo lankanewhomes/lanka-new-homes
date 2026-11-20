@@ -21318,7 +21318,7 @@ body:has(.request-info-overlay) .listing-hero-quickjump-bar { display: none; }
 
 /* Price guide pages (components/marketplace/price-guide-page.tsx) */
 .pg-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 0; }
-.pg-tile { background: #fff; border: 1px solid rgba(0,0,0,.08); border-radius: 14px; padding: 16px; display: flex; flex-direction: column-reverse; gap: 4px; }
+.pg-tile { background: #fff; border: 1px solid rgba(0,0,0,.08); border-radius: 0; padding: 16px; display: flex; flex-direction: column-reverse; gap: 4px; }
 .pg-tile dd { margin: 0; font-size: clamp(22px, 3vw, 30px); font-weight: 700; color: #1f2a1f; }
 .pg-tile dt { font-size: 13px; color: #5b6659; }
 .pg-table-card { overflow-x: auto; }
@@ -21330,14 +21330,11 @@ body:has(.request-info-overlay) .listing-hero-quickjump-bar { display: none; }
 .pg-bar { display: block; position: relative; height: 8px; background: rgba(0,0,0,.07); border-radius: 99px; margin-bottom: 4px; }
 .pg-bar > span { position: absolute; top: 0; bottom: 0; background: #f47b36; border-radius: 99px; }
 .pg-range-text { font-size: 12px; color: #5b6659; }
-.pg-note { font-size: 13px; color: #5b6659; margin: 14px 0 0; white-space: normal; }
-.pg-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
-.pg-card { display: flex; flex-direction: column; background: #fff; border-radius: 14px; overflow: hidden; border: 1px solid rgba(0,0,0,.08); text-decoration: none; color: inherit; transition: transform .15s ease; }
-.pg-card:hover { transform: translateY(-2px); }
-.pg-card-img { width: 100%; height: 160px; object-fit: cover; }
-.pg-card-body { display: flex; flex-direction: column; gap: 4px; padding: 14px; }
-.pg-card-price { font-weight: 700; color: #d4601f; font-size: 15px; }
-.pg-card-meta { font-size: 13px; color: #5b6659; }
+.pg-note { font-size: 13px; color: #5b6659; margin: 0; padding-top: 24px; white-space: normal; }
+.pg-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px 16px; }
+@media (max-width: 1200px) { .pg-cards { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 900px) { .pg-cards { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .pg-cards { grid-template-columns: 1fr; } }
 @media (max-width: 640px) { .pg-tiles { grid-template-columns: 1fr 1fr; } .pg-range-col { display: none; } .pg-table { min-width: 0; } }
 
 /* Owner, 2026-11-19: on a phone the form must fill the REAL visible screen (dvh follows the browser bar hiding; svh left a gap at the bottom where the
