@@ -14,6 +14,10 @@ while true; do
       echo "$(date '+%Y-%m-%d %H:%M:%S') port 3000 is closed, starting npm run dev" >> "$LOG"
       nohup npm run dev >> ~/Library/Logs/lnh-dev-server.log 2>&1 &
       sleep 90
+      # Warm-up: open the main pages once, one at a time, so the first real visit is not the slow compile (owner, 2026-11-20).
+      for path in / /projects /guides/apartment-prices-in-colombo; do
+        curl -s -m 240 -o /dev/null "http://localhost:3000$path" >/dev/null 2>&1
+      done
     fi
   fi
   sleep 30

@@ -21066,6 +21066,21 @@ body:has(.compare-bar) {
 @media (max-width: 560px) { .pg-cards { grid-template-columns: 1fr; } }
 @media (max-width: 640px) { .pg-tiles { grid-template-columns: 1fr 1fr; } .pg-range-col { display: none; } .pg-table { min-width: 0; } }
 .pg-page .new-listings-section .pg-table-card { background: #fff; padding: 8px 20px 20px; overflow-x: auto; }
+
+/* Price by area: cards instead of a table (owner, 2026-11-20) */
+.pg-area-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+@media (max-width: 900px) { .pg-area-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .pg-area-grid { grid-template-columns: 1fr; gap: 12px; } }
+.pg-area-card { background: #fff; border: 1px solid rgba(0,0,0,.08); padding: 18px; display: flex; flex-direction: column; gap: 8px; }
+.pg-area-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.pg-area-top h3 { margin: 0; font-size: 17px; font-weight: 700; color: #1f2a1f; }
+.pg-area-count { font-size: 12px; color: #5b6659; white-space: nowrap; }
+.pg-area-from { margin: 4px 0 0; font-size: clamp(24px, 3vw, 30px); font-weight: 700; color: #1f2a1f; display: flex; flex-direction: column-reverse; line-height: 1.1; }
+.pg-area-from span { font-size: 12px; font-weight: 400; color: #5b6659; text-transform: uppercase; letter-spacing: .04em; margin-top: 2px; }
+.pg-area-card .pg-bar { margin: 6px 0 0; }
+.pg-area-card .pg-range-text { margin: 0; }
+.pg-area-typical { margin: 4px 0 0; padding-top: 10px; border-top: 1px solid rgba(0,0,0,.08); font-size: 13px; color: #5b6659; }
+.pg-area-typical strong { color: #1f2a1f; font-weight: 600; }
 .pg-page .new-listings-section .guide-detail-card { background: #fff; padding: 22px 24px; }
 .pg-page .new-listings-section .guide-detail-card p { margin: 0; }
 /* Price pages: neighbouring sections get different backgrounds (owner, 2026-11-20) */

@@ -94,27 +94,22 @@ export function PriceGuidePage({
           <h2>Price by {areaNoun}</h2>
           <p className="featured-listings-subhead">Starting prices of the projects in each {areaNoun}, lowest first.</p>
         </div>
-        <div className="featured-listings-shell pg-table-card">
-          <table className="pg-table">
-            <thead>
-              <tr><th>{areaNoun[0].toUpperCase() + areaNoun.slice(1)}</th><th>Projects</th><th>Lowest from</th><th>Typical from</th><th className="pg-range-col">Range</th></tr>
-            </thead>
-            <tbody>
-              {areaRows.map((row) => (
-                <tr key={row.name}>
-                  <th scope="row">{row.name}</th>
-                  <td>{row.count}</td>
-                  <td>{compactLkr(row.low)}</td>
-                  <td>{compactLkr(row.mid)}</td>
-                  <td className="pg-range-col">
-                    <span className="pg-bar" aria-hidden="true"><span style={{ left: `${(row.low / maxHigh) * 100}%`, width: `${Math.max(((row.high - row.low) / maxHigh) * 100, 3)}%` }} /></span>
-                    <span className="pg-range-text">{row.low === row.high ? compactLkr(row.low) : `${compactLkr(row.low)} to ${compactLkr(row.high)}`}</span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <p className="pg-note">&quot;Typical from&quot; is the middle starting price of the projects in that {areaNoun}. Every figure is the price of the smallest unit a developer advertises, not the price of every unit.</p>
+        <div className="featured-listings-shell">
+          <ul className="pg-area-grid">
+            {areaRows.map((row) => (
+              <li key={row.name} className="pg-area-card">
+                <div className="pg-area-top">
+                  <h3>{row.name}</h3>
+                  <span className="pg-area-count">{row.count} {row.count === 1 ? "project" : "projects"}</span>
+                </div>
+                <p className="pg-area-from"><span>From</span>{compactLkr(row.low)}</p>
+                <span className="pg-bar" aria-hidden="true"><span style={{ left: `${(row.low / maxHigh) * 100}%`, width: `${Math.max(((row.high - row.low) / maxHigh) * 100, 3)}%` }} /></span>
+                <p className="pg-range-text">{row.low === row.high ? `Single price: ${compactLkr(row.low)}` : `Range ${compactLkr(row.low)} to ${compactLkr(row.high)}`}</p>
+                <p className="pg-area-typical">Typical start <strong>{compactLkr(row.mid)}</strong></p>
+              </li>
+            ))}
+          </ul>
+          <p className="pg-note">&quot;Typical start&quot; is the middle starting price of the projects in that {areaNoun}. Every figure is the price of the smallest unit a developer advertises, not the price of every unit.</p>
         </div>
       </section>
 
