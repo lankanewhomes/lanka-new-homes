@@ -111,7 +111,7 @@ export function buildDemoState(projects: Project[], developers: Developer[], now
   const announce = first("prime-lands");
   if (announce) {
     book("announcement-bar", announce, {
-      creative: { image: announce.heroImage, headline: `Now selling: ${announce.name}, ${announce.location}`, ctaLabel: "See the project", ctaHref: `/projects/${announce.slug}` },
+      creative: { image: announce.heroImage, headline: `${announce.name}, ${announce.city || announce.location}`, subline: "Now selling", ctaLabel: "View project", ctaHref: `/projects/${announce.slug}` },
     }, 21);
   }
 
