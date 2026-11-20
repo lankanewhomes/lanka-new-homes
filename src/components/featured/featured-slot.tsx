@@ -85,7 +85,7 @@ export async function FeaturedSlot({ placement, context = {}, fallbackContexts =
     const text = CARD_HEADINGS[placement]!;
     return (
       <Section tight={placement === "results-top"}>
-        <Head title={heading ?? text.title} sub={subheading ?? text.sub} />
+        {placement === "results-top" ? null : <Head title={heading ?? text.title} sub={subheading ?? text.sub} />}
         <div className={`fp-grid${placement === "results-top" ? " fp-grid--top" : ""}`}>
           {items.map((item) => (
             <FeaturedCard key={item.project.slug} project={item.project} tier={item.tier} placement={placement} developer={developerBySlug.get(item.developerSlug)} basePath={basePath} />
