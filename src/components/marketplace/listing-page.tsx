@@ -256,7 +256,7 @@ export function ListingGridCard({ project, basePath = "/projects", featured }: {
         <span className="listing-grid-card-status">{t(statusPillLabel(project))}</span>
         {featured ? (
           <>
-            <span className="listing-grid-card-featured">&#9733; {featured.label ?? "Featured"}{FEATURED_DEMO ? <i>demo</i> : null}</span>
+            <span className="listing-grid-card-featured fp-badge">{featured.label ?? "Featured"}</span>
                       </>
         ) : null}
         <button

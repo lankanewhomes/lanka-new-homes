@@ -612,7 +612,10 @@ export function ProjectHero({
   videoLinks = [],
   requestInfoVariant = "standard",
   whatsappHref = null,
+  paidFeatured = false,
 }: {
+  /** The project is currently in an active paid Featured package: shows the Featured badge. */
+  paidFeatured?: boolean;
   project: Project;
   titleOverride?: string;
   heroImageOverride?: string;
@@ -1733,12 +1736,13 @@ export function ProjectHero({
         </div>
       </div>
 
-      {(hasDisplayValue(project.status) || isUpcomingMoveIn(project) || project.isFeatured || project.isMoveInNow || hasQuickMoveIn(project) || Boolean(project.paymentPlanBadge) || extraBadges.length > 0) ? (
+      {(hasDisplayValue(project.status) || isUpcomingMoveIn(project) || project.isFeatured || paidFeatured || project.isMoveInNow || hasQuickMoveIn(project) || Boolean(project.paymentPlanBadge) || extraBadges.length > 0) ? (
         <div className="listing-hero-tags" aria-label="Listing status tags">
           {hasDisplayValue(project.status) ? <span className="listing-hero-tag-status">{t(statusLabelOverride ?? project.status)}</span> : null}
           {isUpcomingMoveIn(project) ? <span className="listing-hero-tag-move-in">{t("Move in")} {project.completionYear}</span> : null}
           {project.isMoveInNow ? <span className="listing-badge-pill badge-move-in-now">{t("Move-In Now")}</span> : null}
           {hasQuickMoveIn(project) ? <span className="listing-badge-pill badge-quick-move-in">{t("Quick Move-In")}</span> : null}
+          {paidFeatured ? <span className="listing-badge-pill fp-badge">{t("Featured")}</span> : null}
           {hasPremiumStyleBadge(project.package) ? (
             <span className="listing-badge-pill badge-premium">{t("Premium")}</span>
           ) : project.isFeatured ? (

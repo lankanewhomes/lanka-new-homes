@@ -13,7 +13,7 @@ import { pickSimilarListings } from "@/lib/similar-listings";
 import { SimilarListingsSection } from "@/components/marketplace/similar-listings";
 import { FeaturedSlot } from "@/components/featured/featured-slot";
 import { getFeaturedData } from "@/lib/featured/store";
-import { selectFeatured } from "@/lib/featured/engine";
+import { activeItems, selectFeatured } from "@/lib/featured/engine";
 import {
   AmenitiesShowcaseSection,
   CommercialAreasSection,
@@ -175,6 +175,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
       <ProjectViewTracker projectSlug={project.slug} projectName={project.name} developerSlug={project.developerSlug} />
       <ProjectHero
         project={project}
+        paidFeatured={activeItems(featuredData.state, featuredData.projects, new Date()).some((item) => item.project.slug === project.slug)}
         backHref="/projects"
         backLabel="New Projects"
         whatsappHref={listingWhatsAppHref(project.socialLinks?.whatsapp ?? developer?.socialLinks?.whatsapp, project.name)}
