@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { buildBreadcrumbJsonLd, buildFaqJsonLd, jsonLdScriptProps } from "@/lib/seo";
 import type { Guide } from "@/lib/guides";
+import type { Project } from "@/types";
+import { ListingGridCard } from "@/components/marketplace/listing-page";
 
 const PAGE_LABELS: Record<string, string> = {
   "/projects": "All New Projects",
@@ -25,7 +27,7 @@ const PAGE_LABELS: Record<string, string> = {
   "/projects/cinnamon-life-apartments": "The Residences at Cinnamon Life",
 };
 
-export function GuidePageShell({ guide }: { guide: Guide }) {
+export function GuidePageShell({ guide, lands }: { guide: Guide; lands?: Project[] }) {
   const breadcrumbJsonLd = buildBreadcrumbJsonLd(guide.breadcrumbs);
   const faqJsonLd = buildFaqJsonLd(guide.faqs);
 
@@ -89,6 +91,25 @@ export function GuidePageShell({ guide }: { guide: Guide }) {
           </div>
         </section>
       ))}
+
+      {lands && lands.length > 0 ? (
+        <section className="new-listings-section land-listings-section" id="land-listings" aria-label="Land for sale in Sri Lanka">
+          <div className="featured-listings-head">
+            <h2>Land for Sale in Sri Lanka</h2>
+            <p className="featured-listings-subhead">Plots listed by developers and landowners, with size in perches and price.</p>
+          </div>
+          <div className="featured-listings-shell">
+            <div className="home-card-grid featured-listings-grid">
+              {lands.map((land) => (
+                <ListingGridCard key={`land-${land.slug}`} project={land} basePath="/land" />
+              ))}
+            </div>
+            <div className="featured-listings-footer new-listings-footer">
+              <Link href="/land" className="featured-listings-button">View all land listings</Link>
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       {guide.faqs.length > 0 ? (
         <section className="fdv-box fdv-box--sage" id="faq" aria-label="Frequently asked questions">

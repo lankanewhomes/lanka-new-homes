@@ -89,12 +89,12 @@ export function PriceGuidePage({
         </div>
       </section>
 
-      <section className="fdv-box fdv-box--gray" id="by-area" aria-label="Price by area">
-        <div className="wdx-section-head" data-reveal>
-          <h2>Price by area.</h2>
-          <p>Starting prices of the projects in each {areaNoun}, lowest first.</p>
+      <section className="new-listings-section" id="by-area" aria-label="Price by area">
+        <div className="featured-listings-head">
+          <h2>Price by {areaNoun}</h2>
+          <p className="featured-listings-subhead">Starting prices of the projects in each {areaNoun}, lowest first.</p>
         </div>
-        <div className="fdv-box-card pg-table-card" data-reveal>
+        <div className="featured-listings-shell pg-table-card">
           <table className="pg-table">
             <thead>
               <tr><th>{areaNoun[0].toUpperCase() + areaNoun.slice(1)}</th><th>Projects</th><th>Lowest from</th><th>Typical from</th><th className="pg-range-col">Range</th></tr>
@@ -108,7 +108,7 @@ export function PriceGuidePage({
                   <td>{compactLkr(row.mid)}</td>
                   <td className="pg-range-col">
                     <span className="pg-bar" aria-hidden="true"><span style={{ left: `${(row.low / maxHigh) * 100}%`, width: `${Math.max(((row.high - row.low) / maxHigh) * 100, 3)}%` }} /></span>
-                    <span className="pg-range-text">{compactLkr(row.low)} to {compactLkr(row.high)}</span>
+                    <span className="pg-range-text">{row.low === row.high ? compactLkr(row.low) : `${compactLkr(row.low)} to ${compactLkr(row.high)}`}</span>
                   </td>
                 </tr>
               ))}
@@ -122,23 +122,26 @@ export function PriceGuidePage({
         const inBand = priced.filter((p) => p.startingPriceLkr >= band.min && p.startingPriceLkr < band.max);
         if (!inBand.length) return null;
         return (
-          <section key={band.label} className={`fdv-box fdv-box--${index % 2 ? "cream" : "lilac"}`} id={`band-${index + 1}`} aria-label={band.label}>
-            <div className="wdx-section-head" data-reveal>
-              <h2>{band.label}.</h2>
-              <p>{inBand.length} {inBand.length === 1 ? "project" : "projects"} starting in this range.</p>
+          <section key={band.label} className="new-listings-section" id={`band-${index + 1}`} aria-label={band.label}>
+            <div className="featured-listings-head">
+              <h2>{band.label}</h2>
+              <p className="featured-listings-subhead">{inBand.length} {inBand.length === 1 ? "project" : "projects"} starting in this range.</p>
             </div>
-            <div className="pg-cards listing-page-shell" data-reveal>
-              {inBand.map((project) => <ListingGridCard key={project.slug} project={slimForHome(project)} />)}
+            <div className="featured-listings-shell">
+              <div className="home-card-grid featured-listings-grid">
+                {inBand.map((project) => <ListingGridCard key={project.slug} project={slimForHome(project)} />)}
+              </div>
             </div>
           </section>
         );
       })}
 
-      <section className="fdv-box fdv-box--gray" id="what-changes-price" aria-label="What changes the price">
-        <div className="wdx-section-head" data-reveal>
-          <h2>What changes the price.</h2>
+      <section className="new-listings-section" id="what-changes-price" aria-label="What changes the price">
+        <div className="featured-listings-head">
+          <h2>What changes the price</h2>
+          <p className="featured-listings-subhead">Read these before you compare two projects.</p>
         </div>
-        <div className="fdv-box-card guide-detail-card" data-reveal>
+        <div className="featured-listings-shell guide-detail-card">
           <p>
             Floor level, view, unit size and completion stage move the price most. {ready} of these {priced.length} projects are
             completed and ready to move in; the rest are still being built and can be bought on a staged payment plan.
@@ -148,11 +151,12 @@ export function PriceGuidePage({
       </section>
 
       {guide.faqs.length > 0 ? (
-        <section className="fdv-box fdv-box--sage" id="faq" aria-label="Frequently asked questions">
-          <div className="wdx-section-head" data-reveal>
-            <h2>Frequently asked questions.</h2>
+        <section className="new-listings-section" id="faq" aria-label="Frequently asked questions">
+          <div className="featured-listings-head">
+            <h2>Frequently asked questions</h2>
+            <p className="featured-listings-subhead">Short answers to what buyers ask most.</p>
           </div>
-          <div className="guide-detail-faqs" data-reveal>
+          <div className="featured-listings-shell guide-detail-faqs">
             {guide.faqs.map((faq) => (
               <details key={faq.question} className="fdv-box-card guide-detail-faq">
                 <summary>{faq.question}</summary>
@@ -163,11 +167,12 @@ export function PriceGuidePage({
         </section>
       ) : null}
 
-      <section className="fdv-box fdv-box--gray" id="related" aria-label="Related pages">
-        <div className="wdx-section-head" data-reveal>
-          <h2>Keep exploring.</h2>
+      <section className="new-listings-section" id="related" aria-label="Related pages">
+        <div className="featured-listings-head">
+          <h2>Keep exploring</h2>
+          <p className="featured-listings-subhead">More pages on prices and buying in Sri Lanka.</p>
         </div>
-        <ul className="about-areas" data-reveal>
+        <ul className="about-areas featured-listings-shell">
           {guide.relatedPaths.map((path) => (
             <li key={path}><Link href={path}>{path.split("/").filter(Boolean).pop()!.replace(/-/g, " ")}</Link></li>
           ))}

@@ -12248,7 +12248,7 @@ body:has(.compare-bar) {
   opacity: 1;
 }
 
-/* ===================================================================
+/* ============================================================
    /home-v2 — alternate homepage concept. Fully namespaced under .homev2 so
    none of this touches the real homepage's styles. Editorial/serif design
    direction, distinct from the rest of the site on purpose.
@@ -20751,7 +20751,7 @@ body:has(.compare-bar) {
 @keyframes l360-fade { from { opacity: 0; } to { opacity: 1; } }
 .l360-bubble, .l360-pin { animation: l360-fade 220ms ease-out; }
 
-/* ==============================================================
+/* =======================================================
    MAP ON PHONES (2026-10-09): "the icons are too big". Markers, buttons and
    the popup are scaled down; the Lanka360 map is shorter so the listings
    are reachable with one scroll; the filter row scrolls sideways.
@@ -20786,7 +20786,7 @@ body:has(.compare-bar) {
 .listing-area-heading { font-size: 13px !important; font-weight: 400 !important; color: #3d3d39; margin-bottom: -26px; }
 .listing-area-heading span { font-weight: 400 !important; font-size: 13px; color: #6b6b66; }
 
-/* ==============================================================
+/* =======================================================
    PHONE: map view gets the room (2026-10-10). When "Map" is chosen the search
    bar (search box, "All of Sri Lanka", search button) and the page heading
    are hidden and the map is tall. Choose "List" (or tap the button again) to
@@ -21325,7 +21325,7 @@ body:has(.request-info-overlay) .listing-hero-quickjump-bar { display: none; }
 .pg-table { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 520px; }
 .pg-table th, .pg-table td { text-align: left; padding: 12px 10px; border-bottom: 1px solid rgba(0,0,0,.08); white-space: nowrap; }
 .pg-table thead th { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: #5b6659; }
-.pg-table tbody th { font-weight: 600; }
+.pg-table tbody th { font-weight: 400; }
 .pg-range-col { min-width: 200px; }
 .pg-bar { display: block; position: relative; height: 8px; background: rgba(0,0,0,.07); border-radius: 99px; margin-bottom: 4px; }
 .pg-bar > span { position: absolute; top: 0; bottom: 0; background: #f47b36; border-radius: 99px; }
@@ -21400,3 +21400,7 @@ body:has(.request-info-overlay) .listing-hero-quickjump-bar { display: none; }
 @media (max-width: 700px) {
   .request-info-dialog .request-info-listing-text { padding-top: 12px; }
 }
+
+.pg-page .new-listings-section .pg-table-card { background: #fff; padding: 8px 20px 20px; overflow-x: auto; }
+.pg-page .new-listings-section .guide-detail-card { background: #fff; padding: 22px 24px; }
+.pg-page .new-listings-section .guide-detail-card p { margin: 0; }
