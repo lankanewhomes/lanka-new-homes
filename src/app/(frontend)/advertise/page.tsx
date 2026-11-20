@@ -76,7 +76,7 @@ export default function AdvertisePage() {
         <p className="adv-note">Totals shown are for the whole term, paid up front.</p>
         <div className="adv-founding">
           <h3>{FOUNDING_PARTNER.label} offer: {FOUNDING_PARTNER.percent}% off your first {FOUNDING_PARTNER.months} months</h3>
-          <p>Be one of our first developers and your first {FOUNDING_PARTNER.months} months are half price. Example: Premium for {FOUNDING_PARTNER.months} months costs {rs(priceWithDiscount(TIERS.premium.priceLkrPerMonth, FOUNDING_PARTNER.months).total)} instead of {rs(TIERS.premium.priceLkrPerMonth * FOUNDING_PARTNER.months)}. The offer does not stack with the term discounts above: you get whichever saves you more.</p>
+          <p>Be one of our first developers and your first {FOUNDING_PARTNER.months} months are half price. Example: Premium for {FOUNDING_PARTNER.months} months costs {rs(priceWithDiscount(TIERS.premium.priceLkrPerMonth, FOUNDING_PARTNER.months, true).total)} instead of {rs(TIERS.premium.priceLkrPerMonth * FOUNDING_PARTNER.months)}. The offer does not stack with the term discounts above: you get whichever saves you more.</p>
           <Cta subject="Founding Partner offer" />
         </div>
       </section>

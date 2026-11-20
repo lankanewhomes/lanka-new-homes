@@ -185,14 +185,14 @@ export const PLACEMENT_LABEL: Record<Placement, string> = {
   "saved-recommended": "Recommended for you",
 };
 
-export function priceWithDiscount(monthlyLkr: number, months: number): { total: number; discountPercent: number; saved: number; label: string | null } {
+export function priceWithDiscount(monthlyLkr: number, months: number, foundingPartner = false): { total: number; discountPercent: number; saved: number; label: string | null } {
   const gross = monthlyLkr * months;
   const term = [...TERM_DISCOUNTS].reverse().find((entry) => months >= entry.months)?.percent ?? 0;
-  const founding = FOUNDING_PARTNER.percent * Math.min(months, FOUNDING_PARTNER.months) / months;
-  // The Founding Partner offer does not stack with the term discount: take whichever saves more.
+  // Founding Partner: 50% off the first 6 months only, averaged over the term. It does not stack with the term discount: whichever saves more.
+  const founding = foundingPartner ? (FOUNDING_PARTNER.percent * Math.min(months, FOUNDING_PARTNER.months)) / months : 0;
   const useFounding = founding > term;
   const percent = useFounding ? founding : term;
-  const saved = Math.round(gross * percent / 100);
+  const saved = Math.round((gross * percent) / 100);
   return {
     total: gross - saved,
     discountPercent: Math.round(percent * 10) / 10,
