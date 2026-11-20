@@ -21,8 +21,12 @@ function areaOf(p: Project): string {
 }
 
 export default async function ApartmentPricesInColomboPage() {
+  // City must be Colombo / Port City, or a Colombo-district suburb. A road name like "Negombo-Colombo Main Rd" must not count.
   const projects = (await getAllProjects()).filter(
-    (p) => isApartment(p) && (/colombo/i.test(place(p)) || /rajagiriya|pita kotte|kotte/i.test(place(p))) && String(p.status) !== "Sold Out",
+    (p) =>
+      isApartment(p) &&
+      String(p.status) !== "Sold Out" &&
+      (/colombo|port city/i.test(p.city ?? "") || (/colombo/i.test(p.district ?? "") && /rajagiriya|kotte|battaramulla/i.test(p.city ?? ""))),
   );
   return (
     <PriceGuidePage
