@@ -215,8 +215,8 @@
     repeating-linear-gradient(90deg, transparent 0 calc(var(--nl-cell) - 1px), rgba(98, 70, 190, 0.32) calc(var(--nl-cell) - 1px) var(--nl-cell));
 }
 
-/* The one Featured badge: orange border, orange text, no background, no star (project page tag row and card photos) */
-.fp-badge { background: transparent !important; border: 1.5px solid #f47b36 !important; color: #f47b36 !important; font-weight: 700; }
+/* The one Featured badge: orange background, black text, no star (project page tag row and card photos) */
+.fp-badge { background: #f47b36 !important; border: 1.5px solid #f47b36 !important; color: #000 !important; font-weight: 700; }
 .listing-grid-card-featured.fp-badge { padding: 3px 9px; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; border-radius: 3px; }
 
 /* Featured Projects panel: butter yellow with gold grid lines (New Launches is lavender) */
