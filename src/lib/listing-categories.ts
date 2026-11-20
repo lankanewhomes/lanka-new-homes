@@ -139,6 +139,23 @@ export const projectCategories: Record<string, ProjectCategory> = {
     extraKeywords: "luxury apartments for sale in colombo luxury apartments colombo luxury condo colombo premium apartments colombo",
     filter: (project) => isInColombo(project) && isApartment(project) && !isCompleted(project) && (project.startingPriceLkr >= 60_000_000 || textIncludes(project, "luxury")),
   },
+  "flats-for-sale-in-colombo": {
+    path: "/projects/flats-for-sale-in-colombo",
+    breadcrumbLabel: "Flats in Colombo",
+    breadcrumbs: [{ label: "Home", href: "/" }, { label: "New Projects", href: "/projects" }, { label: "Flats in Colombo" }],
+    metaTitle: "Flats for Sale in Colombo, Sri Lanka",
+    metaDescription: "Flats for sale in Colombo, Sri Lanka: new flat and apartment projects with starting prices, floor plans and developer details. Open to buyers in the UK and overseas.",
+    h1: "Flats for Sale in Colombo",
+    intro: "New flats (apartments) for sale in Colombo, with starting prices, floor plans and photos. Many are open to overseas buyers on the 4th floor and above.",
+    about: { title: "About flats for sale in Colombo", paragraphs: [
+      "In Sri Lanka a flat is usually sold as an apartment or condominium unit. This page lists every new apartment project in Colombo with a published price, from city-centre towers in Colombo 2 and 3 to quieter projects in Colombo 5 and 8.",
+      "Foreign buyers can buy a flat on the 4th floor or above with freehold title. Read the [foreign buyer guide](/guides/foreigners-buying-property) for the rules, and the [apartment price guide](/guides/apartment-prices-in-colombo) to compare starting prices by area.",
+      "Use the enquiry form on any listing to ask the developer about prices, availability or a viewing. It goes straight to them, with no agent in between.",
+    ] },
+    relatedPaths: ["/projects/colombo", "/guides/apartment-prices-in-colombo", "/guides/foreigners-buying-property"],
+    extraKeywords: "flats for sale in colombo flats colombo sri lanka flat for sale colombo buy flat colombo",
+    filter: (project) => isInColombo(project) && isApartment(project) && String(project.status) !== "Sold Out",
+  },
   "cheap-apartments-for-sale-in-colombo": {
     path: "/projects/cheap-apartments-for-sale-in-colombo",
     breadcrumbLabel: "Affordable Apartments in Colombo",

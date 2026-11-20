@@ -51,6 +51,9 @@ Update this file whenever a new keyword group or page is added.
 | `/guides/foreigners-buying-property` | Foreign ownership guide | new |
 | `/guides/investment-property` | Investment-focused guide | new |
 | `/guides/golden-visa` | Golden visa / residency-by-investment guide | new |
+| `/projects/flats-for-sale-in-colombo` | "flats for sale in colombo" (UK 260/mo) | new 2026-11-19 |
+| `/guides/house-prices-in-sri-lanka` | house price page, live data via `PriceGuidePage` | new 2026-11-19 |
+| `/guides/buy-land-in-sri-lanka` | "buy land in sri lanka" (UK 170/mo), overseas buyers | new 2026-11-19 |
 | `/guides/apartment-prices-in-colombo` | "apartment prices in colombo" (170/mo); starting prices by area from live listings, Nov 2026 | new 2026-11-17 |
 | `/land/land-for-sale-in-<town>` (8 towns) | Land by town: homagama, kadawatha, malabe, piliyandala, athurugiriya, horana, kaduwela, kahathuduwa; config `LAND_TOWNS` in `src/lib/land-seo-pages.tsx` | new 2026-11-16 |
 | `/blog` | Blog index (list of posts) | rebuilt (was a "check back soon" stub) 2026-09-29, now indexed — real content exists |

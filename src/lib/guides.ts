@@ -116,6 +116,55 @@ export const guides: Record<string, Guide> = {
     ],
     relatedPaths: ["/projects/cheap-apartments-for-sale-in-colombo", "/projects/luxury-apartments-for-sale-in-colombo", "/projects/colombo", "/guides/foreigners-buying-property", "/guides/investment-property"],
   },
+  "buy-land-in-sri-lanka": {
+    slug: "buy-land-in-sri-lanka",
+    path: "/guides/buy-land-in-sri-lanka",
+    breadcrumbs: [{ label: "Home", href: "/" }, { label: "Guides", href: "/guides" }, { label: "Buy Land in Sri Lanka" }],
+    metaTitle: "Buy Land in Sri Lanka: Guide for Overseas Buyers",
+    metaDescription: "How to buy land in Sri Lanka from overseas: what foreigners can own, the lease and company routes, checks on the deed, and where to find plots for sale.",
+    h1: "Buy Land in Sri Lanka as an Overseas Buyer",
+    intro: "Sri Lankans living abroad and foreign buyers both ask the same thing: can I buy land in Sri Lanka, and how? This guide covers the ownership rules, the usual routes, and the checks to make before you pay.",
+    sections: [
+      {
+        heading: "Who can own freehold land",
+        body: "Sri Lankan citizens can own freehold land. Under the Land (Restrictions on Alienation) Act, a transfer of freehold land to a foreign person, or to a company with majority foreign ownership, is generally taxed at 100 percent of the value, which in practice blocks direct purchase. Rules and exemptions change, so confirm the current position with a Sri Lankan lawyer before you commit.",
+      },
+      {
+        heading: "Routes open to foreign buyers",
+        body: "Foreign buyers usually take a long lease of up to 99 years, buy through a Sri Lankan company, or buy a condominium unit on the 4th floor or above, which can be owned freehold. Sri Lankan citizens living abroad can buy land directly. For a first purchase, many overseas buyers choose an apartment, because the title is simpler.",
+      },
+      {
+        heading: "Checks before you pay",
+        body: "Ask a lawyer to trace the title back at least 30 years, confirm the survey plan matches the plot on the ground, and check for mortgages, road-widening notices and access to a public road. Never pay a full price before the title has been checked. Prices are quoted per perch (1 perch is about 25.3 square metres).",
+      },
+      {
+        heading: "Where to find plots",
+        body: "Browse plots by town on LankaNewHomes, for example land for sale in Homagama, Malabe, Kadawatha, Piliyandala, Horana and Kaduwela. Each listing shows the size in perches, the price per perch and the seller's contact details.",
+      },
+    ],
+    faqs: [
+      { question: "Can a foreigner buy land in Sri Lanka?", answer: "Not freehold, in practice: transfers of freehold land to foreigners are generally taxed at 100 percent. Foreigners can lease land for up to 99 years, buy through a Sri Lankan company, or buy an apartment on the 4th floor or above. Confirm current rules with a lawyer." },
+      { question: "Can Sri Lankans living abroad buy land?", answer: "Yes. Sri Lankan citizens living overseas can buy land the same way as residents, usually by sending money through a bank and appointing a lawyer or power of attorney." },
+      { question: "How is land priced in Sri Lanka?", answer: "Land is priced per perch. A perch is about 25.3 square metres, so a 10-perch plot is about 253 square metres. Price per perch varies widely between Colombo and other towns." },
+    ],
+    relatedPaths: ["/land", "/guides/foreigners-buying-property", "/guides/investment-property", "/projects/colombo"],
+  },
+  "house-prices-in-sri-lanka": {
+    slug: "house-prices-in-sri-lanka",
+    path: "/guides/house-prices-in-sri-lanka",
+    breadcrumbs: [{ label: "Home", href: "/" }, { label: "Guides", href: "/guides" }, { label: "House Prices in Sri Lanka" }],
+    metaTitle: "House Prices in Sri Lanka: New Homes by Town",
+    metaDescription: "What new houses and villas cost in Sri Lanka by town: lowest, typical and highest starting prices for Thalawathugoda, Negombo, Kottawa and more, with listings.",
+    h1: "House Prices in Sri Lanka",
+    intro: "What new houses and villas cost in Sri Lanka, town by town. The numbers come straight from developer listings on LankaNewHomes, so they move when prices change. Pick a price range to see the homes in it.",
+    sections: [],
+    faqs: [
+      { question: "How much does a new house cost in Sri Lanka?", answer: "On LankaNewHomes, new houses and villas start from about Rs. 19.5 million in Kadawatha and Rs. 22 million in Kalutara, and rise above Rs. 100 million for larger homes in Thalawathugoda, Negombo and Digana. See the table above for each town." },
+      { question: "Are these final prices?", answer: "No. They are starting prices for the smallest or first house a developer advertises. Developers change prices, so check the listing or ask the developer." },
+      { question: "Can foreigners buy a house in Sri Lanka?", answer: "Foreigners usually cannot buy freehold land directly, so houses are normally bought through a long lease or a Sri Lankan company. Apartments on the 4th floor and above can be owned freehold. See the buying guides for details." },
+    ],
+    relatedPaths: ["/projects/houses-for-sale-in-colombo", "/projects/villas", "/guides/buy-land-in-sri-lanka", "/guides/foreigners-buying-property", "/guides/apartment-prices-in-colombo"],
+  },
 };
 
 export function buildGuideMetadata(guide: Guide): Metadata {
