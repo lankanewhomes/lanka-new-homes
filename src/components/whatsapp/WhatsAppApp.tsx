@@ -27,6 +27,8 @@ export function WhatsAppApp() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [windowOpen, setWindowOpen] = useState(false);
   const [composing, setComposing] = useState(false);
+  const [logging, setLogging] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [text, setText] = useState("");
@@ -87,7 +89,10 @@ export function WhatsAppApp() {
       <aside className="border-b border-[#e4ddd0] md:border-b-0 md:border-r">
         <div className="flex items-center justify-between border-b border-[#e4ddd0] p-3">
           <h1 className="text-[18px] font-medium">WhatsApp</h1>
-          <button type="button" onClick={() => { setComposing(true); setActive(null); setError(null); }} className="bg-[#1f1f1f] px-3 py-1.5 text-[13px] text-white">New message</button>
+          <span className="flex gap-2">
+            <button type="button" onClick={() => { setLogging(true); setComposing(false); setActive(null); setError(null); setNotice(null); }} className="border border-[#1f1f1f] px-3 py-1.5 text-[13px]">Log from phone</button>
+            <button type="button" onClick={() => { setComposing(true); setLogging(false); setActive(null); setError(null); }} className="bg-[#1f1f1f] px-3 py-1.5 text-[13px] text-white">New message</button>
+          </span>
         </div>
         {waiting.length > 0 ? (
           <div className="border-b border-[#e4ddd0] bg-[#fff8ec] p-3">
@@ -135,7 +140,18 @@ export function WhatsAppApp() {
       <section className="flex min-w-0 flex-col">
         {error ? <p className="border-b border-[#f3c9c9] bg-[#fdecec] p-3 text-[14px] text-[#9b1c1c]">{error}</p> : null}
 
-        {composing ? (
+        {notice ? <p className="border-b border-[#cfe5d2] bg-[#eef8ef] p-3 text-[14px] text-[#1d5e2a]">{notice}</p> : null}
+
+        {logging ? (
+          <LogFromPhone recipients={recipients} busy={busy} onCancel={() => setLogging(false)} onSave={async (body) => {
+            const r = await post({ action: body.chat ? "import" : "log", ...body });
+            if (!r.error) {
+              const x = r as { added?: number; skipped?: number };
+              setNotice(`Saved ${x.added ?? 0} message(s)${x.skipped ? `, ${x.skipped} already there` : ""}. They now show in this inbox.`);
+              setLogging(false); setActive(String(body.phone).replace(/\D/g, ""));
+            }
+          }} />
+        ) : composing ? (
           <NewMessage recipients={recipients} templates={templates} busy={busy} onCancel={() => setComposing(false)} onDraft={async (body) => {
             const r = await post({ action: "draft", ...body });
             if (!r.error) { setComposing(false); setActive(String(body.phone).replace(/\D/g, "")); }
@@ -228,6 +244,85 @@ function NewMessage({ recipients, templates, busy, onCancel, onDraft }: {
       <p className="text-[12px] text-[#6b6355]">This saves a draft. Nothing is sent until you press Approve &amp; send on it.</p>
       <div className="flex gap-2">
         <button type="submit" disabled={busy || !(dev?.phone || phone)} className="bg-[#1f1f1f] px-4 py-2 text-[13px] text-white disabled:opacity-50">Save draft</button>
+        <button type="button" onClick={onCancel} className="border border-[#1f1f1f] px-4 py-2 text-[13px]">Cancel</button>
+      </div>
+    </form>
+  );
+}
+
+function LogFromPhone({ recipients, busy, onCancel, onSave }: {
+  recipients: Recipient[]; busy: boolean; onCancel: () => void;
+  onSave: (body: Record<string, unknown> & { phone: string }) => Promise<void>;
+}) {
+  const [mode, setMode] = useState<"one" | "chat">("one");
+  const [developerId, setDeveloperId] = useState<number | "">("");
+  const [phone, setPhone] = useState("");
+  const [direction, setDirection] = useState<"outbound" | "inbound">("outbound");
+  const [text, setText] = useState("");
+  const [when, setWhen] = useState("");
+  const [chat, setChat] = useState("");
+  const [me, setMe] = useState("");
+  const [dateOrder, setDateOrder] = useState<"mdy" | "dmy">("mdy");
+  const dev = useMemo(() => recipients.find((r) => r.developerId === developerId), [recipients, developerId]);
+  const number = dev?.phone ?? phone;
+  const input = "mt-1 block w-full border border-[#cfc6b4] px-3 py-2 text-[14px]";
+  const ready = Boolean(number) && (mode === "one" ? Boolean(text.trim()) : Boolean(chat.trim() && me.trim()));
+  return (
+    <form className="space-y-3 p-4" onSubmit={(e) => {
+      e.preventDefault();
+      const base = { phone: number, ...(dev ? { developerId: dev.developerId } : {}) };
+      void onSave(mode === "one"
+        ? { ...base, direction, text, ...(when ? { sentAt: new Date(when).toISOString() } : {}) }
+        : { ...base, chat, me, dateOrder, tzOffset: new Date().getTimezoneOffset() });
+    }}>
+      <h2 className="text-[16px] font-medium">Log from phone</h2>
+      <p className="text-[12px] text-[#6b6355]">Records what you sent or received in the WhatsApp app so this inbox and the developer&apos;s contact log match.</p>
+      <div className="flex gap-2">
+        {(["one", "chat"] as const).map((m) => <button key={m} type="button" onClick={() => setMode(m)} className={`px-3 py-1 text-[12px] ${mode === m ? "bg-[#1f1f1f] text-white" : "border border-[#e4ddd0]"}`}>{m === "one" ? "One message" : "Paste exported chat"}</button>)}
+      </div>
+      <label className="block text-[13px]">Developer
+        <select value={developerId} onChange={(e) => setDeveloperId(e.target.value ? Number(e.target.value) : "")} className={input}>
+          <option value="">Type a number instead…</option>
+          {recipients.map((r) => <option key={r.developerId} value={r.developerId}>{r.name} (+{r.phone})</option>)}
+        </select>
+      </label>
+      {!dev ? <label className="block text-[13px]">Number with country code
+        <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="94771234567" className={input} />
+      </label> : null}
+      {mode === "one" ? (
+        <>
+          <label className="block text-[13px]">Who wrote it
+            <select value={direction} onChange={(e) => setDirection(e.target.value as "outbound" | "inbound")} className={input}>
+              <option value="outbound">I sent it</option>
+              <option value="inbound">They sent it</option>
+            </select>
+          </label>
+          <label className="block text-[13px]">Message
+            <textarea value={text} onChange={(e) => setText(e.target.value)} rows={4} className={input} />
+          </label>
+          <label className="block text-[13px]">When (leave empty for now)
+            <input type="datetime-local" value={when} onChange={(e) => setWhen(e.target.value)} className={input} />
+          </label>
+        </>
+      ) : (
+        <>
+          <p className="bg-[#f6f1e7] p-3 text-[12px] text-[#6b6355]">In WhatsApp: open the chat, tap the name, Export chat, Without media. Open the file and paste its text here.</p>
+          <label className="block text-[13px]">Your name as shown in the chat
+            <input value={me} onChange={(e) => setMe(e.target.value)} className={input} />
+          </label>
+          <label className="block text-[13px]">Date order in the file
+            <select value={dateOrder} onChange={(e) => setDateOrder(e.target.value as "mdy" | "dmy")} className={input}>
+              <option value="mdy">Month first (11/19/26)</option>
+              <option value="dmy">Day first (19/11/26)</option>
+            </select>
+          </label>
+          <label className="block text-[13px]">Chat text
+            <textarea value={chat} onChange={(e) => setChat(e.target.value)} rows={8} className={input} />
+          </label>
+        </>
+      )}
+      <div className="flex gap-2">
+        <button type="submit" disabled={busy || !ready} className="bg-[#1f1f1f] px-4 py-2 text-[13px] text-white disabled:opacity-50">Save to inbox</button>
         <button type="button" onClick={onCancel} className="border border-[#1f1f1f] px-4 py-2 text-[13px]">Cancel</button>
       </div>
     </form>

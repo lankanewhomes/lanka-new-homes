@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
+import { parseWhatsAppExport } from "@/lib/whatsapp-export";
 import { sendWhatsAppTemplate } from "@/lib/whatsapp-cloud";
 import { digitsOnly, loadRecipients, renderTemplate, sameNumber, templateNeedsLead, sendWhatsAppText, WHATSAPP_TEMPLATES, WINDOW_MS, type TemplateName } from "@/lib/whatsapp-inbox";
 
 // Admin-only backend for /dashboard/whatsapp. Reads the whatsapp-messages table; writes drafts; sends ONLY a draft the admin approved.
 //   GET  ?view=conversations | thread&phone=… | recipients
 //   POST { action: "archive" | "unarchive", phone } | { action: "draft", phone, developerId?, template, params } | { action: "draft", phone, text } | { action: "send", id } | { action: "discard", id }
+//        | { action: "log", phone, direction, text, sentAt?, developerId? } records a message sent/received in the phone app | { action: "import", phone, chat, me, dateOrder, tzOffset, developerId? } loads an exported phone chat
 // A text draft is refused unless the other person wrote to us in the last 24 hours (WhatsApp's rule); a template draft is always allowed.
 export const dynamic = "force-dynamic";
 
@@ -108,13 +110,51 @@ export async function POST(request: Request) {
     update: (a: Record<string, unknown>) => Promise<unknown>;
     delete: (a: Record<string, unknown>) => Promise<unknown>;
   };
-  const body = (await request.json().catch(() => ({}))) as { action?: string; id?: number; phone?: string; developerId?: number; template?: string; params?: string[]; text?: string; leadId?: number };
+  const body = (await request.json().catch(() => ({}))) as { action?: string; id?: number; phone?: string; developerId?: number; template?: string; params?: string[]; text?: string; leadId?: number; direction?: string; sentAt?: string; chat?: string; me?: string; dateOrder?: string; tzOffset?: number };
 
   if (body.action === "archive" || body.action === "unarchive") {
     const phone = digitsOnly(body.phone ?? "");
     if (!phone) return NextResponse.json({ error: "phone required" }, { status: 400 });
     await db.update({ collection: COLLECTION, where: { phone: { equals: phone } }, overrideAccess: true, data: { archived: body.action === "archive" } });
     return NextResponse.json({ ok: true });
+  }
+
+  if (body.action === "log" || body.action === "import") {
+    const phone = digitsOnly(body.phone ?? "");
+    if (phone.length < 8 || phone.length > 15) return NextResponse.json({ error: "Enter the number with country code, e.g. 94771234567." }, { status: 400 });
+    const developer = body.developerId ? { developer: body.developerId } : {};
+    const rows: { direction: "inbound" | "outbound"; text: string; sentAt: Date }[] = [];
+    if (body.action === "log") {
+      const text = (body.text ?? "").trim();
+      if (!text) return NextResponse.json({ error: "Write or paste the message." }, { status: 400 });
+      const when = body.sentAt ? new Date(body.sentAt) : new Date();
+      if (Number.isNaN(when.getTime())) return NextResponse.json({ error: "That date is not valid." }, { status: 400 });
+      rows.push({ direction: body.direction === "inbound" ? "inbound" : "outbound", text, sentAt: when });
+    } else {
+      const me = (body.me ?? "").trim().toLowerCase();
+      if (!me) return NextResponse.json({ error: "Type your name exactly as it shows in the chat." }, { status: 400 });
+      const parsed = parseWhatsAppExport(body.chat ?? "", body.dateOrder === "dmy" ? "dmy" : "mdy", Number(body.tzOffset) || 0);
+      if (!parsed.length) return NextResponse.json({ error: "No messages found. Paste the text of an exported chat." }, { status: 400 });
+      const senders = new Set(parsed.map((m) => m.sender.toLowerCase()));
+      if (!senders.has(me)) return NextResponse.json({ error: `Your name was not found in the chat. Names seen: ${[...senders].slice(0, 5).join(", ")}.` }, { status: 400 });
+      for (const m of parsed) rows.push({ direction: m.sender.toLowerCase() === me ? "outbound" : "inbound", text: m.text, sentAt: m.sentAt });
+    }
+    const { docs: existing } = await db.find({ collection: COLLECTION, where: { and: [{ phone: { equals: phone } }, { messageType: { equals: "phone-app" } }] }, limit: 5000, depth: 0, overrideAccess: true });
+    const seen = new Set((existing as Msg[]).map((m) => `${m.direction}|${new Date(m.sentAt).getTime()}|${m.text ?? ""}`));
+    let added = 0;
+    for (const r of rows) {
+      if (seen.has(`${r.direction}|${r.sentAt.getTime()}|${r.text}`)) continue;
+      await db.create({ collection: COLLECTION, overrideAccess: true, data: { direction: r.direction, phone, text: r.text, messageType: "phone-app", status: r.direction === "inbound" ? "received" : "sent", sentAt: r.sentAt.toISOString(), ...developer } });
+      added++;
+    }
+    if (added && body.developerId) {
+      const dev = (await db.findByID({ collection: "developers", id: body.developerId, depth: 0, overrideAccess: true }).catch(() => null)) as { contactLog?: { channel: string; date: string; summary: string }[] } | null;
+      if (dev) {
+        const summary = added === 1 ? `WhatsApp (phone app) ${rows[0].direction === "outbound" ? "sent" : "received"}: ${rows[0].text.slice(0, 120)}` : `WhatsApp (phone app): ${added} messages added from the chat`;
+        await db.update({ collection: "developers", id: body.developerId, overrideAccess: true, data: { contactLog: [...(dev.contactLog ?? []), { channel: "whatsapp", date: new Date().toISOString(), summary }] } });
+      }
+    }
+    return NextResponse.json({ ok: true, added, skipped: rows.length - added });
   }
 
   if (body.action === "draft") {
