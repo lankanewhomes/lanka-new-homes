@@ -21054,7 +21054,7 @@ body:has(.compare-bar) {
 .pg-table { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 520px; }
 .pg-table th, .pg-table td { text-align: left; padding: 12px 10px; border-bottom: 1px solid rgba(0,0,0,.08); white-space: nowrap; }
 .pg-table thead th { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: #5b6659; }
-.pg-table tbody th { font-weight: 600; }
+.pg-table tbody th { font-weight: 400; }
 .pg-range-col { min-width: 200px; }
 .pg-bar { display: block; position: relative; height: 8px; background: rgba(0,0,0,.07); border-radius: 99px; margin-bottom: 4px; }
 .pg-bar > span { position: absolute; top: 0; bottom: 0; background: #f47b36; border-radius: 99px; }
@@ -21065,3 +21065,6 @@ body:has(.compare-bar) {
 @media (max-width: 900px) { .pg-cards { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 560px) { .pg-cards { grid-template-columns: 1fr; } }
 @media (max-width: 640px) { .pg-tiles { grid-template-columns: 1fr 1fr; } .pg-range-col { display: none; } .pg-table { min-width: 0; } }
+.pg-page .new-listings-section .pg-table-card { background: #fff; padding: 8px 20px 20px; overflow-x: auto; }
+.pg-page .new-listings-section .guide-detail-card { background: #fff; padding: 22px 24px; }
+.pg-page .new-listings-section .guide-detail-card p { margin: 0; }
