@@ -2898,3 +2898,23 @@ floor-plan and preview pages do not carry it yet.
 ### Newsletter template and preview (2026-11-18)
 - `renderNewsletter()` (src/lib/newsletter-email.ts) builds every marketing email: the unsubscribe line is a row after the footer, so it is always the very last thing, and the mail app's own Unsubscribe header is returned too. Send only to Contacts & subscribers with status `subscribed`.
 - /dashboard/newsletter (admin): subscriber counts, a sample newsletter in a frame with the unsubscribe line at the end, and the list of people who unsubscribed.
+
+## Header mega menu (desktop)
+
+Set 2026-11-20 (owner sent a reference of a full-width shop menu). Hovering
+**New Homes for Sale / Land / Company** opens a full-width white panel under
+the header instead of the old small dropdown.
+
+- Markup and the link lists: `src/components/marketplace/mega-menu.tsx`
+  (`MEGA_MENUS`, `NavMegaPanel`). Styles: `.nav-mega*` at the end of
+  `globals.css`.
+- Left: link columns. Bold 20px heading, 16px regular links, underline on
+  hover, no tinted hover box.
+- Right: a "Featured listings" (or "Featured land") block, 2 x 2 photo tiles,
+  4:5, dark gradient at the bottom, white bold name and small city. Under it
+  an underlined "View all" link.
+- Tiles come from `/api/nav/featured`: listings marked Featured first, topped
+  up with the best-scored listings so the block is never empty. Sold-out
+  listings are never shown.
+- The page behind the open panel is dimmed. Clicking a link closes the panel.
+- Phones keep the slide-down accordion menu, unchanged.

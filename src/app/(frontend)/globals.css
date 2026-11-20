@@ -21425,3 +21425,91 @@ body:has(.request-info-overlay) .listing-hero-quickjump-bar { display: none; }
   .pg-page > section:last-of-type,
   .guide-detail > section:last-of-type { margin-bottom: 0; }
 }
+
+/* Header mega menu (owner, 2026-11-20): hovering New Homes / Land / Company opens a full-width white panel under the
+   header — bold column headings, plain link lists, and a 2 x 2 block of Featured listings photo tiles on the right.
+   The page behind is dimmed. Markup: NavMegaPanel in src/components/marketplace/mega-menu.tsx. Phones keep the
+   slide-down accordion menu. */
+.site-header nav .nav-dropdown { position: static; }
+.site-header nav .nav-dropdown.is-active::after { content: none; }
+.site-header nav .nav-dropdown.is-active { box-shadow: inset 0 -2px 0 #1f1f1f; }
+.nav-mega {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 60;
+  background: #fff;
+  border-top: 1px solid #e4e2db;
+  cursor: default;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, visibility 0.15s;
+}
+/* Dimmed page under the open panel. No pointer events, so moving onto the page closes the menu. */
+.nav-mega::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 100vh;
+  background: rgba(20, 20, 20, 0.28);
+  pointer-events: none;
+}
+.nav-dropdown:hover .nav-mega,
+.nav-dropdown:focus-within .nav-mega { opacity: 1; visibility: visible; }
+.nav-dropdown.is-closed .nav-mega { opacity: 0; visibility: hidden; }
+.nav-mega-inner {
+  width: min(1290px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 40px 0 48px;
+  display: flex;
+  align-items: flex-start;
+  gap: 48px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+}
+.nav-mega-columns { flex: 1; min-width: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 32px 40px; }
+.nav-mega-column { display: flex; flex-direction: column; align-items: flex-start; }
+.nav-mega-heading { margin: 0 0 14px; font-size: 20px; line-height: 26px; font-weight: 700; color: #111; letter-spacing: -0.01em; }
+.site-header .nav-mega-column a {
+  display: block;
+  padding: 5px 0;
+  margin: 0;
+  font-size: 16px;
+  line-height: 22px;
+  font-weight: 400;
+  color: #1f1f1f;
+  background: none;
+}
+.site-header .nav-mega-column a:hover { background: none; color: #1f1f1f; text-decoration: underline; text-underline-offset: 3px; }
+.nav-mega-featured { flex: 0 0 372px; }
+.nav-mega-featured-heading { font-size: 24px; line-height: 30px; margin-bottom: 16px; }
+.nav-mega-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.site-header .nav-mega-tile {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 5;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  background: #ecebe6;
+  color: #fff;
+}
+.nav-mega-tile img { object-fit: cover; transition: transform 0.3s ease; }
+.nav-mega-tile:hover img { transform: scale(1.04); }
+.nav-mega-tile::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.72) 100%); }
+.nav-mega-tile-empty::after { content: none; }
+.nav-mega-tile-text { position: absolute; left: 14px; right: 14px; bottom: 14px; z-index: 1; display: flex; flex-direction: column; gap: 2px; }
+.nav-mega-tile-text strong { font-size: 16px; line-height: 20px; font-weight: 700; color: #fff; }
+.nav-mega-tile-text small { font-size: 13px; line-height: 17px; font-weight: 400; color: rgba(255, 255, 255, 0.88); }
+.site-header .nav-mega-tile:hover { background: #ecebe6; color: #fff; text-decoration: none; }
+.site-header .nav-mega-view-all { display: inline-block; margin: 14px 0 0; padding: 0; font-size: 15px; font-weight: 600; color: #1f1f1f; text-decoration: underline; text-underline-offset: 3px; background: none; }
+.site-header .nav-mega-view-all:hover { background: none; color: #f47b36; }
+@media (max-width: 1100px) {
+  .nav-mega-inner { gap: 32px; }
+  .nav-mega-featured { flex-basis: 300px; }
+  .nav-mega-heading { font-size: 18px; }
+  .site-header .nav-mega-column a { font-size: 15px; }
+}

@@ -11,6 +11,7 @@ import { useSavedListing } from "@/lib/use-saved-listing";
 import { useSavedDeveloper } from "@/lib/use-saved-developer";
 import { parseNaturalSearch } from "@/lib/natural-search";
 import { MobileSearchOverlay, SearchQuickChips } from "@/components/marketplace/mobile-search-overlay";
+import { MEGA_MENUS, NavMegaPanel, type MegaTile } from "@/components/marketplace/mega-menu";
 import { getLandingPage, getStoredUtmParams, getTrafficSource, trackEvent } from "@/lib/ga4";
 import { hasPremiumStyleBadge, isPaidPackageTier } from "@/lib/packages";
 import { FEATURED_LABEL, FEATURED_TOOLTIP, VERIFIED_DEVELOPER_LABEL, VERIFIED_DEVELOPER_TOOLTIP } from "@/lib/developer-badges";
@@ -4249,6 +4250,24 @@ export function Header() {
     return () => clearTimeout(timer);
   }, [navQuery]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  // Desktop mega menu: photo tiles load once, the first time the pointer reaches the nav. A click on any link closes the panel
+  // (it would otherwise stay open under the pointer after the page changes) until the pointer leaves that nav item.
+  const [megaTiles, setMegaTiles] = useState<{ projects: MegaTile[]; lands: MegaTile[] }>({ projects: [], lands: [] });
+  const megaTilesRequested = useRef(false);
+  const loadMegaTiles = () => {
+    if (megaTilesRequested.current) return;
+    megaTilesRequested.current = true;
+    fetch("/api/nav/featured")
+      .then((response) => response.json())
+      .then((data) => setMegaTiles({ projects: Array.isArray(data?.projects) ? data.projects : [], lands: Array.isArray(data?.lands) ? data.lands : [] }))
+      .catch(() => { megaTilesRequested.current = false; });
+  };
+  const [megaClosed, setMegaClosed] = useState(false);
+  const closeMega = () => {
+    setMegaClosed(true);
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+  };
+  const megaHover = { onMouseLeave: () => setMegaClosed(false) };
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false); // the same pop-up as the home page hero search, on phones
   const [openMobileGroup, setOpenMobileGroup] = useState<"homes" | "land" | "company" | null>(null);
 
@@ -4325,39 +4344,18 @@ export function Header() {
             ) : null}
           </form>
         </div>
-        <nav>
-          <div className={`nav-dropdown${navPath.startsWith("/projects") ? " is-active" : ""}`}>
+        <nav onMouseEnter={loadMegaTiles} onMouseMove={loadMegaTiles} onFocus={loadMegaTiles}>
+          <div {...megaHover} className={`nav-dropdown${megaClosed ? " is-closed" : ""}${navPath.startsWith("/projects") ? " is-active" : ""}`}>
             <Link href="/projects"><MobileHomeIcon size={24} /><span>{text.homes}</span></Link>
-            <div className="nav-dropdown-menu">
-              <Link href="/projects?type=Condominium">Condominium</Link>
-              <Link href="/projects?type=Apartments">Apartments</Link>
-              <Link href="/projects?type=Villas">Villas</Link>
-              <Link href="/projects?type=Mixed+Use">Mixed Use</Link>
-              <Link href="/projects?type=Housing">Housing</Link>
-              <Link href="/projects?type=Township+Developments">Township Developments</Link>
-              <Link href="/projects?type=Private+Residence">Private Residence</Link>
-              <Link href="/projects?type=Townhouse">Townhouse</Link>
-              <Link href="/projects">All new homes</Link>
-            </div>
+            <NavMegaPanel menuKey="homes" tiles={megaTiles[MEGA_MENUS.homes.tiles]} onNavigate={closeMega} />
           </div>
-          <div className={`nav-dropdown${navPath.startsWith("/land") ? " is-active" : ""}`}>
+          <div {...megaHover} className={`nav-dropdown${megaClosed ? " is-closed" : ""}${navPath.startsWith("/land") ? " is-active" : ""}`}>
             <Link href="/land"><MobileLandIcon size={24} /><span>Land</span></Link>
-            <div className="nav-dropdown-menu">
-              <Link href="/land?landUse=Residential">Residential</Link>
-              <Link href="/land?landUse=Commercial">Commercial</Link>
-              <Link href="/land?landUse=Agricultural">Agricultural</Link>
-              <Link href="/land?landUse=Mixed+Use">Mixed Use</Link>
-              <Link href="/land">All land</Link>
-            </div>
+            <NavMegaPanel menuKey="land" tiles={megaTiles[MEGA_MENUS.land.tiles]} onNavigate={closeMega} />
           </div>
-          <div className={`nav-dropdown${["/about", "/contact", "/blog", "/press"].some((r) => navPath.startsWith(r)) ? " is-active" : ""}`}>
+          <div {...megaHover} className={`nav-dropdown${megaClosed ? " is-closed" : ""}${["/about", "/contact", "/blog", "/press"].some((r) => navPath.startsWith(r)) ? " is-active" : ""}`}>
             <span className="nav-dropdown-label"><MobileCompanyIcon size={24} /><span>{text.company}</span></span>
-            <div className="nav-dropdown-menu">
-              <Link href="/about">About</Link>
-              <Link href="/contact">Contact</Link>
-              <Link href="/blog">Blog</Link>
-              <Link href="/press">Press</Link>
-            </div>
+            <NavMegaPanel menuKey="company" tiles={megaTiles[MEGA_MENUS.company.tiles]} onNavigate={closeMega} />
           </div>
         </nav>
         <div className="header-actions">
