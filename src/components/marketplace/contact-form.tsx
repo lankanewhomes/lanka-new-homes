@@ -21,13 +21,6 @@ const AUDIENCE_OPTIONS = [
  * paired company with a role field; both dropped for this exact list). The
  * phone field reuses PhoneField, the same country-code + number picker as
  * the site's other enquiry forms, rather than a one-off plain input. */
-export const UPDATE_CHOICES = [
-  { value: "newsletter", label: "Newsletter" },
-  { value: "news", label: "Latest news" },
-  { value: "listings", label: "New listings & price drops" },
-  { value: "launches", label: "Launch offers" },
-] as const;
-
 export function ContactForm() {
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
@@ -36,7 +29,6 @@ export function ContactForm() {
   const [audience, setAudience] = useState("");
   const [message, setMessage] = useState("");
   const [interests, setInterests] = useState<string[]>([]);
-  const toggleInterest = (value: string) => setInterests((prev) => (prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]));
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");

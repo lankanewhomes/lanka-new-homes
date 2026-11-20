@@ -57,15 +57,6 @@ export function liveCredentialsPresent(): boolean {
   return isGoogleMail() ? Boolean(process.env.GOOGLE_MAIL_SA_EMAIL && process.env.GOOGLE_MAIL_SA_KEY) : zohoCredentialsPresent()
 }
 
-/** True when the mail provider is Google Workspace (MAIL_PROVIDER=google). */
-export function isGoogleMail(): boolean {
-  return (process.env.MAIL_PROVIDER ?? '').toLowerCase() === 'google'
-}
-
-export function liveCredentialsPresent(): boolean {
-  return isGoogleMail() ? Boolean(process.env.GOOGLE_MAIL_SA_EMAIL && process.env.GOOGLE_MAIL_SA_KEY) : zohoCredentialsPresent()
-}
-
 export function isMockMode(): boolean {
   const flag = (process.env.MAIL_MOCK_MODE ?? 'true').toLowerCase()
   return flag !== 'false' || !liveCredentialsPresent()

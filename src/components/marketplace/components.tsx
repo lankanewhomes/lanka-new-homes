@@ -2415,7 +2415,6 @@ export function RequestInfoDialog({
             </label>
 
 
-            {!isShort ? (
             <div className="request-info-field" onFocusCapture={(event) => onFieldFocus("phone", event.target as HTMLElement)}>
               <span id="request-info-phone-label" className="sr-only">Phone number (optional)</span>
               <PhoneField value={phoneValue} onChange={(next) => { setPhoneValue(next); if (fieldErrors.phone) setFieldErrors((e) => ({ ...e, phone: undefined })); }} labelId="request-info-phone-label" placeholder="Phone number (optional)" />
