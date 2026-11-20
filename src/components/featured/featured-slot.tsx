@@ -127,7 +127,7 @@ export async function FeaturedSlot({ placement, context = {}, fallbackContexts =
       const bookings = activeBookings(state, now, "new-launch").slice(0, 4);
       if (!bookings.length) return null;
       return (
-        <Section>
+        <Section className="fp-launch">
           <Head title={heading ?? "New Launches"} sub={subheading ?? "Just launched or launching soon."} />
           <div className="home-card-grid featured-listings-grid">
             {bookings.slice(0, 4).map((booking) => {

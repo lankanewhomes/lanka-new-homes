@@ -206,3 +206,11 @@
 /* Badge bottom-right so the photo counter (1/6) on the left stays visible, never wraps */
 .listing-grid-card-featured { left: auto; right: 8px; white-space: nowrap; }
 .listing-grid-card-featured i { display: none; }
+
+/* New Launches: its own colour (lavender with violet grid lines), so it differs from Featured Projects (orange) */
+.new-listings-section.fp-listings.fp-launch:not(.land-listings-section) { background: #e9e3f8; }
+.new-listings-section.fp-listings.fp-launch:not(.land-listings-section)::before {
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 calc(var(--nl-cell) - 1px), rgba(98, 70, 190, 0.32) calc(var(--nl-cell) - 1px) var(--nl-cell)),
+    repeating-linear-gradient(90deg, transparent 0 calc(var(--nl-cell) - 1px), rgba(98, 70, 190, 0.32) calc(var(--nl-cell) - 1px) var(--nl-cell));
+}
