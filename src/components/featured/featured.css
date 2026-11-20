@@ -188,3 +188,21 @@
 /* Featured sections reuse the homepage .new-listings-section styles as they are (nothing overridden except spacing for non-card blocks) */
 .fp-listings .fp-logos, .fp-listings .fp-cities, .fp-listings .fp-dom, .fp-listings .fp-spot { margin-top: 22px; }
 .fp-listings .featured-listings-grid { margin-top: 22px; }
+
+/* Featured panels stand out: warm orange tint with orange grid lines (New listings is blue-green, Land is sage) */
+.new-listings-section.fp-listings:not(.land-listings-section) { background: #fde6d3; }
+.new-listings-section.fp-listings:not(.land-listings-section)::before {
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 calc(var(--nl-cell) - 1px), rgba(244, 123, 54, 0.28) calc(var(--nl-cell) - 1px) var(--nl-cell)),
+    repeating-linear-gradient(90deg, transparent 0 calc(var(--nl-cell) - 1px), rgba(244, 123, 54, 0.28) calc(var(--nl-cell) - 1px) var(--nl-cell));
+}
+
+/* The card wrapper (for tracking) is the grid/flex item, so it takes the card's place in the homepage rules */
+.fp-card > .listing-grid-card { width: 100%; height: 100%; box-sizing: border-box; }
+@media (max-width: 760px) {
+  .new-listings-section .featured-listings-grid > .fp-card { flex: 0 0 82%; scroll-snap-align: start; min-width: 0; }
+}
+
+/* Badge bottom-right so the photo counter (1/6) on the left stays visible, never wraps */
+.listing-grid-card-featured { left: auto; right: 8px; white-space: nowrap; }
+.listing-grid-card-featured i { display: none; }
