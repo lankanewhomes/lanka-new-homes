@@ -1,4 +1,4 @@
-import { emailShell, emailHero, emailButton, emailListingCard, emailSectionLabel, emailTeamSignoff } from './email-layout'
+import { emailShell, emailHero, emailButton, emailListingCard, emailSectionLabel, emailTeamSignoff, emailNoteRow } from './email-layout'
 // Branded HTML for the weekly "what's new" digest sent to buyers who follow
 // a developer — same visual style as the lead-alert email. Content lines
 // (price changes, new floor plans, construction updates) are pre-built as
@@ -44,5 +44,5 @@ export function renderFollowerDigestEmailHTML(input: FollowerDigestEmailInput): 
     emailButton('Manage what you follow', input.accountUrl),
     emailTeamSignoff(),
   ].join('\n')
-  return emailShell({ preheader: 'Updates from the developers you follow on LankaNewHomes.', title: 'Updates from developers you follow', body, footerNote: '', lastRow: `  <tr><td align="center" style="padding:10px 32px 18px;font-size:10px;line-height:1.5;color:#9a9892;">You're getting this because email notifications are on in your account settings. Turn them off any time from ${escapeHtml(input.accountUrl)}.</td></tr>` })
+  return emailShell({ preheader: 'Updates from the developers you follow on LankaNewHomes.', title: 'Updates from developers you follow', body, footerNote: '', lastRow: emailNoteRow(`You're getting this because email notifications are on in your account settings. Turn them off any time from ${escapeHtml(input.accountUrl)}.`) })
 }
