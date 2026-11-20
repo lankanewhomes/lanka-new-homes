@@ -2908,7 +2908,7 @@ the header instead of the old small dropdown.
 - Markup and the link lists: `src/components/marketplace/mega-menu.tsx`
   (`MEGA_MENUS`, `NavMegaPanel`). Styles: `.nav-mega*` at the end of
   `globals.css`.
-- Left: link columns. Bold 20px heading, 16px regular links, underline on
+- Left: link columns. Regular-weight (not bold, owner 2026-11-20) 20px heading, 16px regular links, underline on
   hover, no tinted hover box.
 - Right: a "Featured listings" (or "Featured land") block, 2 x 2 photo tiles,
   4:5, dark gradient at the bottom, white bold name and small city. Under it

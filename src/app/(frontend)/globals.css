@@ -21472,7 +21472,7 @@ body:has(.request-info-overlay) .listing-hero-quickjump-bar { display: none; }
 }
 .nav-mega-columns { flex: 1; min-width: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 32px 40px; }
 .nav-mega-column { display: flex; flex-direction: column; align-items: flex-start; }
-.nav-mega-heading { margin: 0 0 14px; font-size: 20px; line-height: 26px; font-weight: 700; color: #111; letter-spacing: -0.01em; }
+.nav-mega-heading { margin: 0 0 14px; font-size: 20px; line-height: 26px; font-weight: 400; color: #111; letter-spacing: -0.01em; }
 .site-header .nav-mega-column a {
   display: block;
   padding: 5px 0;
