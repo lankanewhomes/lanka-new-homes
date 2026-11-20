@@ -125,7 +125,7 @@ export function renderOutreachEmail(id: OutreachTemplateId, ctx: OutreachContext
 
   const title = emailHero(esc(heading))
   const main = `<tr><td style="padding:14px 32px 30px;">${greeting}${body}<p style="${P}">Let me know if you would like any changes.</p><p style="${P} margin-bottom:4px;">Warm regards,<br><strong>${esc(ctx.signName ?? 'LankaNewHomes Team')}</strong></p></td></tr>`
-  const html = emailShell({ preheader: heading, title: heading, body: `${title}${main}`, footerNote: `Questions? Just reply to this email or write to ${a('mailto:developers@lankanewhomes.com', 'developers@lankanewhomes.com')}.`, receivingNote: 'You are receiving this because your company or project is listed on LankaNewHomes.' })
+  const html = emailShell({ preheader: heading, title: heading, body: `${title}${main}`, helpNote: `Questions? Just reply to this email or write to ${a('mailto:developers@lankanewhomes.com', 'developers@lankanewhomes.com')}.` })
   const text = html
     .replace(/<a [^>]*href="([^"]+)"[^>]*>([^<]*)<\/a>/g, '$2 ($1)')
     .replace(/<\/(p|li|ul|tr|div|table)>/g, '\n')
@@ -143,7 +143,7 @@ export function renderOutreachEmail(id: OutreachTemplateId, ctx: OutreachContext
 export function renderPlainReplyEmail(opts: { body: string; signoff?: string; signName?: string; button?: { href: string; text: string } }): { html: string; text: string } {
   const paras = opts.body.trim().split(/\n{2,}/).map((para) => `<p style="${P}">${esc(para).replace(/\n/g, '<br>')}</p>`).join('')
   const main = `<tr><td style="padding:26px 32px 30px;">${paras}${opts.button ? button(opts.button.href, opts.button.text) : ''}<p style="${P} margin:18px 0 4px;">${esc(opts.signoff ?? 'Warm regards,')}<br><strong>${esc(opts.signName ?? 'LankaNewHomes Team')}</strong><br><span style="color:${MUTED};">LankaNewHomes</span></p></td></tr>`
-  const html = emailShell({ preheader: 'A message from LankaNewHomes', title: 'LankaNewHomes', body: main, footerNote: `Questions? Just reply to this email or write to ${a('mailto:developers@lankanewhomes.com', 'developers@lankanewhomes.com')}.`, receivingNote: 'You are receiving this because your company or project is listed on LankaNewHomes.' })
+  const html = emailShell({ preheader: 'A message from LankaNewHomes', title: 'LankaNewHomes', body: main, helpNote: `Questions? Just reply to this email or write to ${a('mailto:developers@lankanewhomes.com', 'developers@lankanewhomes.com')}.` })
   const text = `${opts.body.trim()}${opts.button ? `\n\n${opts.button.text}: ${opts.button.href}` : ''}\n\n${opts.signoff ?? 'Warm regards,'}\n${opts.signName ?? 'LankaNewHomes Team'}\nLankaNewHomes`
   return { html, text }
 }

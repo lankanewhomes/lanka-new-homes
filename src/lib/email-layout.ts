@@ -15,7 +15,7 @@ const FONT = "Arial,Helvetica,sans-serif"
 /** One style for every note under the dark footer (questions, why you got this, unsubscribe): white, divider line, small grey centred text. */
 export const emailNoteRow = (html: string) => `  <tr><td style="padding:18px 32px;background:#ffffff;border-top:1px solid ${LINE};font-size:12px;line-height:1.6;color:#8a8a8a;text-align:center;">${html}</td></tr>`
 
-export function emailShell(opts: { preheader: string; title: string; body: string; footerNote?: string; /** A second, separate section under the footer note (e.g. why the person got this email). */ receivingNote?: string; /** Full table row placed after the footer, i.e. the very last thing in the email (the unsubscribe line of a newsletter). */ lastRow?: string }): string {
+export function emailShell(opts: { preheader: string; title: string; body: string; footerNote?: string; /** Second section under the footer note: how to get help (always the last note, after "why you got this"). */ helpNote?: string; /** Full table row placed after the footer, i.e. the very last thing in the email (the unsubscribe line of a newsletter). */ lastRow?: string }): string {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>${esc(opts.title)}</title></head>
 <body style="margin:0;background:${PAPER};font-family:${FONT};color:${TEXT};">
 <div style="display:none;max-height:0;overflow:hidden;opacity:0;">${esc(opts.preheader)}</div>
@@ -25,7 +25,7 @@ export function emailShell(opts: { preheader: string; title: string; body: strin
 ${opts.body}
   <tr><td style="background:${INK};padding:22px 32px;font-size:12px;line-height:1.7;color:#b9b8b2;">Sri Lanka's new homes marketplace: apartments, houses and land, with prices, floor plans and developer details in one place.<br><a href="${SITE}" style="color:#ffffff;text-decoration:underline;">www.lankanewhomes.com</a><br>Follow us: <a href="https://www.instagram.com/lankanewhomes/" style="color:#ffffff;text-decoration:underline;">Instagram</a> &nbsp;·&nbsp; <a href="https://www.facebook.com/lankanewhomes" style="color:#ffffff;text-decoration:underline;">Facebook</a> &nbsp;·&nbsp; <a href="https://www.tiktok.com/@lankanewhomes" style="color:#ffffff;text-decoration:underline;">TikTok</a></td></tr>
 ${opts.footerNote === '' ? '' : emailNoteRow(opts.footerNote ?? 'You are receiving this because your company or project is listed on LankaNewHomes.')}
-${opts.receivingNote ? emailNoteRow(opts.receivingNote) : ''}
+${opts.helpNote ? emailNoteRow(opts.helpNote) : ''}
 ${opts.lastRow ?? ''}
 </table></td></tr></table></body></html>`
 }
