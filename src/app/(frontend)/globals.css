@@ -21420,3 +21420,8 @@ body:has(.request-info-overlay) .listing-hero-quickjump-bar { display: none; }
   .pg-page .new-listings-section .guide-detail-card { padding: 18px; }
   .pg-page .fdv-hero { padding-top: 0; }
 }
+/* Phones: no white gap between the last box and the footer (owner, 2026-11-20) */
+@media (max-width: 760px) {
+  .pg-page > section:last-of-type,
+  .guide-detail > section:last-of-type { margin-bottom: 0; }
+}
