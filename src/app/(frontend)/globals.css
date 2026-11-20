@@ -21412,3 +21412,11 @@ body:has(.request-info-overlay) .listing-hero-quickjump-bar { display: none; }
 /* Price pages: sections line up with the hero (same 1244px width, same 34px rhythm); hero sits close under the breadcrumbs (owner, 2026-11-20) */
 .pg-page .new-listings-section { max-width: 1244px; margin: 34px auto; box-sizing: border-box; }
 .pg-page .fdv-hero { padding-top: 12px; }
+/* Price pages on phones: same edge-to-edge box and 18px side padding as the other guide boxes (owner, 2026-11-20) */
+@media (max-width: 760px) {
+  .pg-page .new-listings-section { width: 100%; max-width: none; margin: 0 0 34px; padding: 36px 18px 32px; }
+  .pg-page .new-listings-section .featured-listings-grid { margin: 0 -18px; padding: 0 18px 4px; }
+  .pg-page .new-listings-section .pg-table-card { padding: 4px 14px 16px; }
+  .pg-page .new-listings-section .guide-detail-card { padding: 18px; }
+  .pg-page .fdv-hero { padding-top: 0; }
+}
