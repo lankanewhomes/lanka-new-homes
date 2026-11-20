@@ -21502,7 +21502,7 @@ body:has(.request-info-overlay) .listing-hero-quickjump-bar { display: none; }
 .nav-mega-tile::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.72) 100%); }
 .nav-mega-tile-empty::after { content: none; }
 .nav-mega-tile-text { position: absolute; left: 14px; right: 14px; bottom: 14px; z-index: 1; display: flex; flex-direction: column; gap: 2px; }
-.nav-mega-tile-text strong { font-size: 16px; line-height: 20px; font-weight: 700; color: #fff; }
+.nav-mega-tile-text strong { font-size: 16px; line-height: 20px; font-weight: 400; color: #fff; }
 .nav-mega-tile-text small { font-size: 13px; line-height: 17px; font-weight: 400; color: rgba(255, 255, 255, 0.88); }
 .site-header .nav-mega-tile:hover { background: #ecebe6; color: #fff; text-decoration: none; }
 .site-header .nav-mega-view-all { display: inline-block; margin: 14px 0 0; padding: 0; font-size: 15px; font-weight: 600; color: #1f1f1f; text-decoration: underline; text-underline-offset: 3px; background: none; }
