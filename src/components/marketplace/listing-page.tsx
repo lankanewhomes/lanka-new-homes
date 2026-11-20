@@ -202,7 +202,7 @@ function FilterPill({ label, options, value, onChange }: { label: string; option
   );
 }
 
-export function ListingGridCard({ project, basePath = "/projects", featured }: { project: Project; basePath?: string; /** Paid Featured placement: same card, plus a "Featured" badge on the photo (and the developer logo for Premium and Elite). */ featured?: { tier: FeaturedTier; logo?: string; hasVideo?: boolean } }) {
+export function ListingGridCard({ project, basePath = "/projects", featured }: { project: Project; basePath?: string; /** Paid Featured placement: same card, plus a "Featured" badge on the photo (and the developer logo for Premium and Elite). */ featured?: { tier: FeaturedTier; logo?: string; hasVideo?: boolean; developerName?: string } }) {
   const { saved, toggle } = useSavedListing(project.slug);
   const { t, tPrice } = useListingT();
   const isLand = basePath === "/land";
@@ -257,13 +257,7 @@ export function ListingGridCard({ project, basePath = "/projects", featured }: {
         {featured ? (
           <>
             <span className="listing-grid-card-featured">&#9733; Featured{FEATURED_DEMO ? <i>demo</i> : null}</span>
-            {featured.logo || featured.hasVideo ? (
-              <span className="listing-grid-card-sponsor">
-                {featured.logo ? /* eslint-disable-next-line @next/next/no-img-element -- tiny developer logo */ <img src={featured.logo} alt="" width={22} height={22} /> : null}
-                {featured.hasVideo ? <b>&#9654; Video</b> : null}
-              </span>
-            ) : null}
-          </>
+                      </>
         ) : null}
         <button
           type="button"
@@ -351,17 +345,24 @@ export function ListingGridCard({ project, basePath = "/projects", featured }: {
           )}
         </div>
       </div>
+      {featured && (featured.logo || featured.developerName) ? (
+        <div className="listing-grid-card-builder">
+          {featured.logo ? /* eslint-disable-next-line @next/next/no-img-element -- tiny developer logo */ <img src={featured.logo} alt="" width={28} height={28} /> : null}
+          <span>{featured.developerName}</span>
+          {featured.hasVideo ? <b>&#9654; Video</b> : null}
+        </div>
+      ) : null}
     </article>
   );
 }
 
 /** A paid "Featured" project shown as a sponsored card inside the results (after every 6th result). Same card, orange frame + label. */
-export type SponsoredEntry = { project: Project; tier: FeaturedTier };
+export type SponsoredEntry = { project: Project; tier: FeaturedTier; logo?: string };
 
 function SponsoredInlineCard({ entry, basePath }: { entry: SponsoredEntry; basePath: string }) {
   return (
     <FeaturedTrack placement="results-inline" projectSlug={entry.project.slug} developer={entry.project.developerSlug} demo={FEATURED_DEMO} className="fp-inline-slot">
-      <ListingGridCard project={entry.project} basePath={basePath} featured={{ tier: entry.tier }} />
+      <ListingGridCard project={entry.project} basePath={basePath} featured={{ tier: entry.tier, logo: entry.logo, developerName: entry.project.developerName }} />
     </FeaturedTrack>
   );
 }

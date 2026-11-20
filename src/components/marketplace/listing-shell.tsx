@@ -66,13 +66,13 @@ export async function ProjectListingShell({
   if (basePath === "/projects") {
     const ctx = featuredContext ?? inferListingContext(projects);
     const hasContext = Boolean(ctx.location || ctx.type);
-    const { state, projects: all } = await getFeaturedData();
+    const { state, projects: all, developers } = await getFeaturedData();
     const pinnedItems = selectFeatured(state, all, "results-top", { ...ctx, limit: MAX_PINNED_PER_PAGE });
     const pinnedSlugs = new Set(pinnedItems.map((item) => item.project.slug));
     organic = projects.filter((project) => !pinnedSlugs.has(project.slug)); // organic results keep their normal order
     sponsored = selectFeatured(state, all, "results-inline", { ...ctx, limit: 6 })
       .filter((item) => !pinnedSlugs.has(item.project.slug))
-      .map((item) => ({ project: slimForHome(item.project), tier: item.tier }));
+      .map((item) => ({ project: slimForHome(item.project), tier: item.tier, logo: developers.find((d) => d.slug === item.developerSlug)?.logo }));
     const onPage = new Set(projects.map((project) => project.slug));
     premiumPinSlugs = activeItems(state, all, new Date()).filter((item) => onPage.has(item.project.slug) && TIER_RANK[item.tier] >= TIER_RANK.featured).map((item) => item.project.slug);
     if (hasContext) banner = <FeaturedSlot placement="results-banner" context={ctx} />;

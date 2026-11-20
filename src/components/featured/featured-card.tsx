@@ -15,7 +15,7 @@ export function FeaturedCard({ project, tier, placement, developer, basePath = "
   const premium = TIER_RANK[tier] >= TIER_RANK.premium;
   return (
     <FeaturedTrack placement={placement} projectSlug={project.slug} developer={project.developerSlug} demo={FEATURED_DEMO} className="fp-card">
-      <ListingGridCard project={slimForHome(project)} basePath={basePath} featured={{ tier, logo: premium ? developer?.logo : undefined, hasVideo: premium && (project.videos?.length ?? 0) > 0 }} />
+      <ListingGridCard project={slimForHome(project)} basePath={basePath} featured={{ tier, logo: developer?.logo, developerName: project.developerName, hasVideo: premium && (project.videos?.length ?? 0) > 0 }} />
     </FeaturedTrack>
   );
 }

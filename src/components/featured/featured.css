@@ -21,9 +21,10 @@
 .fp-card { min-width: 0; height: 100%; }
 .listing-grid-card-featured { position: absolute; left: 8px; bottom: 8px; z-index: 2; display: inline-flex; align-items: center; gap: 5px; background: #f47b36; color: #fff; font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 4px 9px; line-height: 1.2; }
 .listing-grid-card-featured i { font-style: normal; opacity: .85; font-weight: 600; padding-left: 5px; border-left: 1px solid rgba(255,255,255,.55); }
-.listing-grid-card-sponsor { position: absolute; right: 8px; bottom: 8px; z-index: 2; display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,.95); padding: 3px 6px; font-size: 10px; font-weight: 700; color: #1a1a1a; }
-.listing-grid-card-sponsor img { width: 22px; height: 22px; object-fit: contain; }
-.listing-grid-card-sponsor b { font-weight: 700; }
+.listing-grid-card-builder { display: flex; align-items: center; gap: 10px; margin: 0 4px; padding: 10px 0 2px; border-top: 1px solid #ece9e4; font-size: 12px; color: #303030; }
+.listing-grid-card-builder img { width: 28px; height: 28px; object-fit: contain; border: 1px solid #ece9e4; border-radius: 4px; background: #fff; flex: none; }
+.listing-grid-card-builder span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.listing-grid-card-builder b { font-weight: 600; font-size: 11px; border: 1px solid #1a1a1a; border-radius: 999px; padding: 2px 8px; flex: none; }
 
 /* Sponsored label (banners, articles, and anything that is an ad rather than a project card) */
 .fp-sponsored { display: inline-block; padding: 2px 7px; border: 1px solid #b9b4ab; border-radius: 3px; background: rgba(255, 255, 255, .92); color: #55514a; font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }

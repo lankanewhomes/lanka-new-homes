@@ -7,7 +7,7 @@ import type { Project } from "@/types";
 
 // "You may also like", shown inside the enquiry / brochure thank-you state (a dialog, so it cannot be server-rendered with the page).
 // Fetches featured projects near the one just enquired about; renders nothing while loading, on error, or when none match.
-type Entry = { project: Project; tier: "featured" | "premium" | "elite"; developer: string };
+type Entry = { logo?: string; project: Project; tier: "featured" | "premium" | "elite"; developer: string };
 
 export function AlsoLike({ slug }: { slug: string }) {
   const [entries, setEntries] = useState<Entry[]>([]);
@@ -33,7 +33,7 @@ export function AlsoLike({ slug }: { slug: string }) {
       <div className="fp-grid">
         {entries.map((entry) => (
           <FeaturedTrack key={entry.project.slug} placement="thankyou-also-like" projectSlug={entry.project.slug} developer={entry.developer} demo={demo} className="fp-card">
-            <ListingGridCard project={entry.project} featured={{ tier: entry.tier }} />
+            <ListingGridCard project={entry.project} featured={{ tier: entry.tier, logo: entry.logo, developerName: entry.project.developerName }} />
           </FeaturedTrack>
         ))}
       </div>
