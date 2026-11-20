@@ -202,7 +202,7 @@ function FilterPill({ label, options, value, onChange }: { label: string; option
   );
 }
 
-export function ListingGridCard({ project, basePath = "/projects", featured }: { project: Project; basePath?: string; /** Paid Featured placement: same card, plus a "Featured" badge on the photo (and the developer logo for Premium and Elite). */ featured?: { tier: FeaturedTier; logo?: string; hasVideo?: boolean; developerName?: string } }) {
+export function ListingGridCard({ project, basePath = "/projects", featured }: { project: Project; basePath?: string; /** Paid Featured placement: same card, plus a "Featured" badge on the photo (and the developer logo for Premium and Elite). */ featured?: { tier: FeaturedTier; logo?: string; hasVideo?: boolean; developerName?: string; label?: string } }) {
   const { saved, toggle } = useSavedListing(project.slug);
   const { t, tPrice } = useListingT();
   const isLand = basePath === "/land";
@@ -256,7 +256,7 @@ export function ListingGridCard({ project, basePath = "/projects", featured }: {
         <span className="listing-grid-card-status">{t(statusPillLabel(project))}</span>
         {featured ? (
           <>
-            <span className="listing-grid-card-featured">&#9733; Featured{FEATURED_DEMO ? <i>demo</i> : null}</span>
+            <span className="listing-grid-card-featured">&#9733; {featured.label ?? "Featured"}{FEATURED_DEMO ? <i>demo</i> : null}</span>
                       </>
         ) : null}
         <button

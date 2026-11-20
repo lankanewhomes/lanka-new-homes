@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { FeaturedCard, DemoFlag } from "@/components/featured/featured-card";
+import { ListingGridCard } from "@/components/marketplace/listing-page";
+import { slimForHome } from "@/lib/home-slim";
 import { FeaturedTrack } from "@/components/featured/featured-track";
 import { MAX_PINNED_PER_PAGE, type Placement } from "@/lib/featured/config";
 import { FEATURED_DEMO } from "@/lib/featured/demo";
@@ -35,18 +37,25 @@ const CARD_HEADINGS: Partial<Record<Placement, { title: string; sub?: string }>>
 const CARD_PLACEMENTS = new Set<Placement>(Object.keys(CARD_HEADINGS) as Placement[]);
 const CITY_PATHS: Record<string, string> = { Colombo: "/projects/colombo", Kandy: "/projects/houses-for-sale-in-kandy", Galle: "/projects/houses-for-sale-in-galle", Negombo: "/projects/houses-for-sale-in-negombo" };
 
-function Section({ children, tight, className = "" }: { children: ReactNode; tight?: boolean; className?: string }) {
-  return <section className={`fp-section${tight ? " fp-section--tight" : ""} ${className}`}>{children}</section>;
+// Same look as the homepage "New listings" section: pale panel, left-aligned heading + one-line subheading, card grid, dark "View all" button.
+function Section({ children, plain, className = "" }: { children: ReactNode; plain?: boolean; className?: string }) {
+  return plain ? <section className={`fp-section fp-section--tight ${className}`}>{children}</section> : <section className={`new-listings-section fp-listings ${className}`}>{children}</section>;
 }
 
-function Head({ title, sub, href, hrefLabel }: { title: string; sub?: string; href?: string; hrefLabel?: string }) {
+function Head({ title, sub }: { title: string; sub?: string }) {
   return (
-    <div className="fp-head">
-      <div>
-        <h2>{title}<DemoFlag /></h2>
-        {sub ? <p>{sub}</p> : null}
-      </div>
-      {href ? <Link href={href}>{hrefLabel ?? "See all"}</Link> : null}
+    <div className="featured-listings-head">
+      <h2>{title}</h2>
+      {sub ? <p className="featured-listings-subhead">{sub}</p> : null}
+    </div>
+  );
+}
+
+function Foot({ href, label }: { href?: string; label?: string }) {
+  if (!href) return null;
+  return (
+    <div className="featured-listings-footer new-listings-footer">
+      <Link href={href} className="featured-listings-button">{label ?? "View all"}<span aria-hidden="true">↗</span></Link>
     </div>
   );
 }
@@ -76,17 +85,17 @@ export async function FeaturedSlot({ placement, context = {}, fallbackContexts =
   if (CARD_PLACEMENTS.has(placement)) {
     let items: ReturnType<typeof selectFeatured> = [];
     for (const candidate of [context, ...fallbackContexts]) {
-      items = selectFeatured(state, projects, placement, { ...candidate, limit: (candidate.limit ?? context.limit ?? (placement === "results-top" ? MAX_PINNED_PER_PAGE : 3)) + exclude.length })
+      items = selectFeatured(state, projects, placement, { ...candidate, limit: (candidate.limit ?? context.limit ?? (placement === "results-top" ? MAX_PINNED_PER_PAGE : 4)) + exclude.length })
         .filter((item) => !exclude.includes(item.project.slug))
-        .slice(0, candidate.limit ?? context.limit ?? (placement === "results-top" ? MAX_PINNED_PER_PAGE : 3));
+        .slice(0, candidate.limit ?? context.limit ?? (placement === "results-top" ? MAX_PINNED_PER_PAGE : 4));
       if (items.length) break;
     }
     if (!items.length) return null;
     const text = CARD_HEADINGS[placement]!;
     return (
-      <Section tight={placement === "results-top"}>
+      <Section plain={placement === "results-top"}>
         {placement === "results-top" ? null : <Head title={heading ?? text.title} sub={subheading ?? text.sub} />}
-        <div className={`fp-grid${placement === "results-top" ? " fp-grid--top" : ""}`}>
+        <div className={placement === "results-top" ? "fp-grid fp-grid--top" : "home-card-grid featured-listings-grid"}>
           {items.map((item) => (
             <FeaturedCard key={item.project.slug} project={item.project} tier={item.tier} placement={placement} developer={developerBySlug.get(item.developerSlug)} basePath={basePath} />
           ))}
@@ -98,43 +107,40 @@ export async function FeaturedSlot({ placement, context = {}, fallbackContexts =
   switch (placement) {
     // ---- Homepage: Featured Projects carousel (Premium and above) ----
     case "home-featured-carousel": {
-      const items = selectFeatured(state, projects, placement, { ...context, limit: context.limit ?? 9 });
+      const items = selectFeatured(state, projects, placement, { ...context, limit: context.limit ?? 4 });
       if (!items.length) return null;
       return (
         <Section>
-          <Head title={heading ?? "Featured Projects"} sub={subheading ?? "Hand-picked new homes from our partner developers"} href="/projects" />
-          <div className="fp-rail">
+          <Head title={heading ?? "Featured Projects"} sub={subheading ?? "Hand-picked new homes from our partner developers."} />
+          <div className="home-card-grid featured-listings-grid">
             {items.map((item) => (
               <FeaturedCard key={item.project.slug} project={item.project} tier={item.tier} placement={placement} developer={developerBySlug.get(item.developerSlug)} />
             ))}
           </div>
+        <Foot href="/projects" label="View all projects" />
         </Section>
       );
     }
 
     // ---- Homepage: New Launches strip (add-on) ----
     case "home-new-launches": {
-      const bookings = activeBookings(state, now, "new-launch").slice(0, 8);
+      const bookings = activeBookings(state, now, "new-launch").slice(0, 4);
       if (!bookings.length) return null;
       return (
         <Section>
-          <Head title={heading ?? "New Launches"} sub={subheading ?? "Just launched or launching soon"} href="/projects?status=new" hrefLabel="All new projects" />
-          <div className="fp-strip">
-            {bookings.map((booking) => {
+          <Head title={heading ?? "New Launches"} sub={subheading ?? "Just launched or launching soon."} />
+          <div className="home-card-grid featured-listings-grid">
+            {bookings.slice(0, 4).map((booking) => {
               const project = booking.projectSlug ? projectBySlug.get(booking.projectSlug) : undefined;
               if (!project) return null;
               return (
-                <FeaturedTrack key={booking.id} placement={placement} projectSlug={project.slug} developer={project.developerSlug} demo={FEATURED_DEMO} as="div">
-                  <Link href={booking.creative?.ctaHref ?? `/projects/${project.slug}`} className="fp-tile">
-                    <Image src={bookingImage(booking, project.heroImage)} alt={`${project.name} in ${project.location}`} width={480} height={360} sizes="(max-width: 640px) 78vw, 25vw" unoptimized />
-                    <span className="fp-new">New launch</span>
-                    <span className="fp-sponsored">Sponsored{FEATURED_DEMO ? " · demo" : ""}</span>
-                    <span className="fp-tile-text"><strong>{project.name}</strong><small>{[project.location, project.status].filter(Boolean).join(" · ")}</small></span>
-                  </Link>
+                <FeaturedTrack key={booking.id} placement={placement} projectSlug={project.slug} developer={project.developerSlug} demo={FEATURED_DEMO} className="fp-card">
+                  <ListingGridCard project={slimForHome(project)} featured={{ tier: "featured", label: "New launch", logo: developerBySlug.get(project.developerSlug)?.logo, developerName: project.developerName }} />
                 </FeaturedTrack>
               );
             })}
           </div>
+          <Foot href="/projects" label="View all new projects" />
         </Section>
       );
     }
@@ -172,8 +178,8 @@ export async function FeaturedSlot({ placement, context = {}, fallbackContexts =
       const logos = active.map((slug) => developerBySlug.get(slug)).filter((developer): developer is Developer => Boolean(developer?.logo));
       if (!logos.length) return null;
       return (
-        <Section tight>
-          <Head title={heading ?? "Featured developers"} sub={subheading ?? "Trusted partners building across Sri Lanka"} href="/developers" hrefLabel="All developers" />
+        <Section>
+          <Head title={heading ?? "Featured developers"} sub={subheading ?? "Trusted partners building across Sri Lanka."} />
           <div className="fp-logos">
             {logos.map((developer) => (
               <FeaturedTrack key={developer.slug} placement={placement} developer={developer.slug} demo={FEATURED_DEMO}>
@@ -220,7 +226,7 @@ export async function FeaturedSlot({ placement, context = {}, fallbackContexts =
       if (!item) return null;
       const { project } = item;
       return (
-        <Section tight>
+        <Section plain>
           <FeaturedTrack placement={placement} projectSlug={project.slug} developer={project.developerSlug} demo={FEATURED_DEMO}>
             <Link href={`/projects/${project.slug}`} className="fp-banner">
               <div className="fp-banner-media">

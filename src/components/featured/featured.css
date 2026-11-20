@@ -186,3 +186,9 @@
 .adv-lead { padding: 20px; border: 1px solid var(--fp-line); background: var(--fp-soft); }
 .adv-lead p { max-width: 760px; font-size: 15px; line-height: 24px; }
 .adv-final { text-align: left; }
+
+/* Featured sections share the homepage "New listings" panel */
+.fp-listings { margin-bottom: 34px; }
+.fp-listings .featured-listings-grid { margin-top: 22px; }
+.fp-listings .fp-logos, .fp-listings .fp-cities, .fp-listings .fp-dom, .fp-listings .fp-spot { margin-top: 22px; }
+@media (max-width: 760px) { .fp-listings { padding: 40px 16px 36px; } }
