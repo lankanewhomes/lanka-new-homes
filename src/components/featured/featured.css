@@ -17,17 +17,13 @@
 @media (min-width: 1000px) { .fp-grid { grid-template-columns: repeat(3, 1fr); gap: 24px; } }
 .fp-grid--top { margin-bottom: 8px; }
 
-/* Featured project card: orange frame + label strip above the ordinary listing card */
-.fp-card { display: flex; flex-direction: column; border: 2px solid var(--fp-orange); background: #fff; min-width: 0; height: 100%; box-shadow: 0 2px 14px rgba(244, 123, 54, .12); }
-.fp-card .listing-grid-card { border: 0; flex: 1; }
-.fp-card-label { display: flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px; background: var(--fp-orange); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
-.fp-card-label svg { width: 12px; height: 12px; }
-.fp-card--elite .fp-card-label { background: #1a1a1a; }
-.fp-card--elite { border-color: #1a1a1a; box-shadow: 0 2px 14px rgba(0, 0, 0, .14); }
-.fp-card-foot { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 6px 10px; border-top: 1px solid var(--fp-line); font-size: 12px; color: var(--fp-grey); }
-.fp-card-foot img { width: 28px; height: 28px; object-fit: contain; border-radius: 4px; background: #fff; border: 1px solid var(--fp-line); flex: none; }
-.fp-card-foot span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.fp-card-video { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 999px; border: 1px solid var(--fp-ink); color: var(--fp-ink); font-size: 11px; font-weight: 600; text-decoration: none; flex: none; }
+/* Featured project card: the ordinary listing card, untouched. Only a badge is added on the photo. */
+.fp-card { min-width: 0; height: 100%; }
+.listing-grid-card-featured { position: absolute; left: 8px; bottom: 8px; z-index: 2; display: inline-flex; align-items: center; gap: 5px; background: #f47b36; color: #fff; font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 4px 9px; line-height: 1.2; }
+.listing-grid-card-featured i { font-style: normal; opacity: .85; font-weight: 600; padding-left: 5px; border-left: 1px solid rgba(255,255,255,.55); }
+.listing-grid-card-sponsor { position: absolute; right: 8px; bottom: 8px; z-index: 2; display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,.95); padding: 3px 6px; font-size: 10px; font-weight: 700; color: #1a1a1a; }
+.listing-grid-card-sponsor img { width: 22px; height: 22px; object-fit: contain; }
+.listing-grid-card-sponsor b { font-weight: 700; }
 
 /* Sponsored label (banners, articles, and anything that is an ad rather than a project card) */
 .fp-sponsored { display: inline-block; padding: 2px 7px; border: 1px solid #b9b4ab; border-radius: 3px; background: rgba(255, 255, 255, .92); color: #55514a; font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }

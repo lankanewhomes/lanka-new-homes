@@ -202,7 +202,7 @@ function FilterPill({ label, options, value, onChange }: { label: string; option
   );
 }
 
-export function ListingGridCard({ project, basePath = "/projects" }: { project: Project; basePath?: string }) {
+export function ListingGridCard({ project, basePath = "/projects", featured }: { project: Project; basePath?: string; /** Paid Featured placement: same card, plus a "Featured" badge on the photo (and the developer logo for Premium and Elite). */ featured?: { tier: FeaturedTier; logo?: string; hasVideo?: boolean } }) {
   const { saved, toggle } = useSavedListing(project.slug);
   const { t, tPrice } = useListingT();
   const isLand = basePath === "/land";
@@ -254,6 +254,17 @@ export function ListingGridCard({ project, basePath = "/projects" }: { project: 
           <div className="listing-grid-card-image listing-grid-card-image-placeholder" aria-hidden="true" />
         )}
         <span className="listing-grid-card-status">{t(statusPillLabel(project))}</span>
+        {featured ? (
+          <>
+            <span className="listing-grid-card-featured">&#9733; Featured{FEATURED_DEMO ? <i>demo</i> : null}</span>
+            {featured.logo || featured.hasVideo ? (
+              <span className="listing-grid-card-sponsor">
+                {featured.logo ? /* eslint-disable-next-line @next/next/no-img-element -- tiny developer logo */ <img src={featured.logo} alt="" width={22} height={22} /> : null}
+                {featured.hasVideo ? <b>&#9654; Video</b> : null}
+              </span>
+            ) : null}
+          </>
+        ) : null}
         <button
           type="button"
           className={`listing-grid-card-save${saved ? " saved" : ""}`}
@@ -349,9 +360,8 @@ export type SponsoredEntry = { project: Project; tier: FeaturedTier };
 
 function SponsoredInlineCard({ entry, basePath }: { entry: SponsoredEntry; basePath: string }) {
   return (
-    <FeaturedTrack placement="results-inline" projectSlug={entry.project.slug} developer={entry.project.developerSlug} demo={FEATURED_DEMO} className={`fp-card fp-card--${entry.tier} fp-inline-slot`}>
-      <div className="fp-card-label">Featured{FEATURED_DEMO ? <span className="fp-demo-flag">DEMO</span> : null}</div>
-      <ListingGridCard project={entry.project} basePath={basePath} />
+    <FeaturedTrack placement="results-inline" projectSlug={entry.project.slug} developer={entry.project.developerSlug} demo={FEATURED_DEMO} className="fp-inline-slot">
+      <ListingGridCard project={entry.project} basePath={basePath} featured={{ tier: entry.tier }} />
     </FeaturedTrack>
   );
 }

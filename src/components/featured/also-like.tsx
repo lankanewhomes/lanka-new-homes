@@ -32,9 +32,8 @@ export function AlsoLike({ slug }: { slug: string }) {
       <h3>You may also like</h3>
       <div className="fp-grid">
         {entries.map((entry) => (
-          <FeaturedTrack key={entry.project.slug} placement="thankyou-also-like" projectSlug={entry.project.slug} developer={entry.developer} demo={demo} className={`fp-card fp-card--${entry.tier}`}>
-            <div className="fp-card-label">Featured{demo ? <span className="fp-demo-flag">DEMO</span> : null}</div>
-            <ListingGridCard project={entry.project} />
+          <FeaturedTrack key={entry.project.slug} placement="thankyou-also-like" projectSlug={entry.project.slug} developer={entry.developer} demo={demo} className="fp-card">
+            <ListingGridCard project={entry.project} featured={{ tier: entry.tier }} />
           </FeaturedTrack>
         ))}
       </div>
