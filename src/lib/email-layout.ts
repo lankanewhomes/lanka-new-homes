@@ -12,7 +12,10 @@ const ORANGE = '#f47b36'
 const SITE = 'https://www.lankanewhomes.com'
 const FONT = "Arial,Helvetica,sans-serif"
 
-export function emailShell(opts: { preheader: string; title: string; body: string; footerNote?: string; /** Full table row placed after the footer, i.e. the very last thing in the email (the unsubscribe line of a newsletter). */ lastRow?: string }): string {
+/** One style for every note under the dark footer (questions, why you got this, unsubscribe): white, divider line, small grey centred text. */
+export const emailNoteRow = (html: string, bg = '#ffffff') => `  <tr><td style="padding:18px 32px;background:${bg};border-top:1px solid ${LINE};font-size:12px;line-height:1.6;color:#8a8a8a;text-align:center;">${html}</td></tr>`
+
+export function emailShell(opts: { preheader: string; title: string; body: string; footerNote?: string; /** Second section under the footer note: how to get help (always the last note, after "why you got this"). */ helpNote?: string; /** Full table row placed after the footer, i.e. the very last thing in the email (the unsubscribe line of a newsletter). */ lastRow?: string }): string {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>${esc(opts.title)}</title></head>
 <body style="margin:0;background:${PAPER};font-family:${FONT};color:${TEXT};">
 <div style="display:none;max-height:0;overflow:hidden;opacity:0;">${esc(opts.preheader)}</div>
@@ -20,7 +23,9 @@ export function emailShell(opts: { preheader: string; title: string; body: strin
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:620px;background:#ffffff;border:1px solid ${LINE};">
   <tr><td style="background:${INK};border-top:4px solid ${ORANGE};padding:26px 32px;"><a href="${SITE}" style="text-decoration:none;"><img src="${SITE}/brand/lankanewhomes-logo-white.png" width="124" alt="LankaNewHomes" style="display:block;border:0;width:124px;height:auto;font-size:20px;font-weight:700;color:#ffffff;"></a></td></tr>
 ${opts.body}
-  <tr><td style="background:${INK};padding:22px 32px;font-size:12px;line-height:1.6;color:#b9b8b2;">${opts.footerNote ?? "You are receiving this because your company or project is listed on LankaNewHomes."}<br><a href="${SITE}" style="color:#ffffff;text-decoration:underline;">lankanewhomes.com</a> &nbsp;·&nbsp; Sri Lanka's new homes marketplace: apartments, houses and land, with prices, floor plans and developer details in one place.</td></tr>
+  <tr><td style="background:${INK};padding:22px 32px;font-size:12px;line-height:1.7;color:#b9b8b2;">Sri Lanka's new homes marketplace: apartments, houses and land, with prices, floor plans and developer details in one place.<br><a href="${SITE}" style="color:#ffffff;text-decoration:underline;">www.lankanewhomes.com</a><br>Follow us: <a href="https://www.instagram.com/lankanewhomes/" style="color:#ffffff;text-decoration:underline;">Instagram</a> &nbsp;·&nbsp; <a href="https://www.facebook.com/lankanewhomes" style="color:#ffffff;text-decoration:underline;">Facebook</a> &nbsp;·&nbsp; <a href="https://www.tiktok.com/@lankanewhomes" style="color:#ffffff;text-decoration:underline;">TikTok</a></td></tr>
+${opts.footerNote === '' ? '' : (opts.footerNote === undefined ? emailNoteRow('You are receiving this because your company or project is listed on LankaNewHomes.', PAPER) : emailNoteRow(opts.footerNote))}
+${opts.helpNote ? emailNoteRow(opts.helpNote) : ''}
 ${opts.lastRow ?? ''}
 </table></td></tr></table></body></html>`
 }
@@ -30,8 +35,9 @@ export const emailHero = (title: string, lead?: string) =>
 
 export const emailPara = (html: string, muted = false) => `  <tr><td style="padding:12px 32px 4px;font-size:15px;line-height:1.65;color:${muted ? MUTED : TEXT};">${html}</td></tr>`
 
+// Same look as the site's .badge-verified pill (globals.css): cyan, 3px corners, 11px bold uppercase.
 export const verifiedPill = () =>
-  `<span style="display:inline-block;background:#ecfeff;border:1px solid #67e8f9;color:#0e7490;font-size:13px;font-weight:700;padding:6px 12px;border-radius:3px;">&#10003;&nbsp; Verified Developer</span>`
+  `<span style="display:inline-block;background:#ecfeff;border:1px solid #67e8f9;color:#0e7490;font-size:11px;font-weight:700;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;padding:3px 7px;border-radius:3px;">&#10003; Verified Developer</span>`
 
 /** Numbered cards: a dark number tile on the left, a bold title and a short explanation. */
 export function emailNumbered(items: { title: string; body: string }[]): string {
@@ -70,7 +76,7 @@ export const emailButton = (label: string, href: string, secondary?: { label: st
   `  <tr><td align="center" style="padding:22px 32px 8px;"><a href="${esc(href)}" style="display:inline-block;background:${color?.bg ?? ORANGE};color:${color?.fg ?? INK};text-decoration:none;font-size:16px;font-weight:700;padding:15px 30px;">${label}</a>${secondary ? `<div style="margin-top:14px;font-size:13px;"><a href="${esc(secondary.href)}" style="color:${INK};">${secondary.label}</a></div>` : ''}</td></tr>`
 
 export const emailSignoff = (extra = '') =>
-  `  <tr><td style="padding:18px 32px 30px;font-size:15px;line-height:1.65;color:${TEXT};">${extra}<p style="margin:${extra ? '14px' : '0'} 0 0;">Warm regards,<br><strong>The LankaNewHomes team</strong><br><span style="color:${MUTED};font-size:13px;">developers@lankanewhomes.com</span></p></td></tr>`
+  `  <tr><td style="padding:18px 32px 30px;font-size:15px;line-height:1.65;color:${TEXT};">${extra}<p style="margin:${extra ? '14px' : '0'} 0 0;">Warm regards,<br><strong>LankaNewHomes Team</strong></p></td></tr>`
 
 /** WhatsApp green, so a "reply on WhatsApp" button stands apart from the orange action buttons (owner, 2026-10-18). */
 export const WHATSAPP_BUTTON = { bg: '#25d366', fg: '#ffffff' }
@@ -86,3 +92,21 @@ export function emailButtonRow(buttons: { label: string; href: string; bg?: stri
   const cells = buttons.map((b) => `<td style="padding:0 6px 8px;"><a href="${esc(b.href)}" style="display:inline-block;background:${b.bg ?? ORANGE};color:${b.fg ?? INK};text-decoration:none;font-size:15px;font-weight:700;padding:13px 22px;">${b.label}</a></td>`).join('')
   return `  <tr><td align="center" style="padding:20px 26px 6px;"><table role="presentation" cellpadding="0" cellspacing="0"><tr>${cells}</tr></table></td></tr>`
 }
+
+/** A section label (orange caps) above a group of listing cards, e.g. the saved search name or the developer name. */
+export const emailSectionLabel = (label: string) =>
+  `  <tr><td style="padding:26px 32px 8px;font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:${ORANGE};">${label}</td></tr>`
+
+/** One listing as a bordered card: bold name, a muted line (city · price, or update lines), and a "View listing" link. `sponsored` tints it and adds a Sponsored tag. */
+export function emailListingCard(opts: { name: string; href?: string | null; meta?: string; cta?: string; lines?: string[]; sponsored?: boolean }): string {
+  const bg = opts.sponsored ? '#fef1e8' : '#ffffff'
+  const tag = opts.sponsored ? `<div style="margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#c65a1e;">Sponsored</div>` : ''
+  const lines = (opts.lines ?? []).map((l) => `<div style="margin:3px 0 0;font-size:13px;line-height:1.55;color:${TEXT};">&bull;&nbsp; ${l}</div>`).join('')
+  return `  <tr><td style="padding:0 32px 10px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid ${LINE};border-left:4px solid ${ORANGE};background:${bg};"><tr>
+    <td style="padding:16px 18px;">${tag}${opts.href ? `<a href="${esc(opts.href)}" style="font-size:17px;font-weight:700;line-height:1.3;color:${INK};text-decoration:none;">${opts.name}</a>` : `<span style="font-size:17px;font-weight:700;line-height:1.3;color:${INK};">${opts.name}</span>`}${opts.meta ? `<div style="margin:5px 0 0;font-size:14px;color:${MUTED};">${opts.meta}</div>` : ''}${lines}${opts.href ? `<div style="margin:10px 0 0;"><a href="${esc(opts.href)}" style="font-size:13px;font-weight:700;color:${INK};text-decoration:underline;">${opts.cta ?? 'View listing'} &rarr;</a></div>` : ''}</td>
+  </tr></table></td></tr>`
+}
+
+/** Plain team sign-off for buyer emails (no mailbox shown). */
+export const emailTeamSignoff = () =>
+  `  <tr><td style="padding:18px 32px 30px;font-size:15px;line-height:1.65;color:${TEXT};"><p style="margin:0;">Warm regards,<br><strong>LankaNewHomes Team</strong></p></td></tr>`

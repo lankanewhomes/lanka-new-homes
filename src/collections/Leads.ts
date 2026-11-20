@@ -18,6 +18,7 @@ export const LEAD_STATUS_OPTIONS = [
 export const LEAD_SOURCE_OPTIONS = [
   { label: 'Request info', value: 'request_info' },
   { label: 'Brochure request', value: 'brochure_request' },
+  { label: 'WhatsApp', value: 'whatsapp' },
   { label: 'Added manually', value: 'manual' },
 ]
 
@@ -26,7 +27,7 @@ export const Leads: CollectionConfig = {
   admin: {
     components: { beforeListTable: [{ path: '@/components/payload/CollectionStatusTabs#CollectionStatusTabs', clientProps: { field: 'status', values: [{ label: 'New', value: 'new' }, { label: 'Contacted', value: 'contacted' }, { label: 'Site visit', value: 'site_visit' }, { label: 'Closed', value: 'closed' }] } }] },
     group: 'Leads & Engagement',
-    defaultColumns: ['name', 'listing_name', 'developer_name', 'status', 'response_minutes', 'createdAt'],
+    defaultColumns: ['name', 'listing_name', 'developer_name', 'source', 'status', 'response_minutes', 'createdAt'],
     listSearchableFields: ['name', 'email', 'phone'],
   },
   access: {
@@ -94,10 +95,11 @@ export const Leads: CollectionConfig = {
       options: LEAD_SOURCE_OPTIONS,
       access: { update: adminOnlyField },
     },
+    { name: 'whatsapp_continued_at', type: 'date', label: 'Opened WhatsApp', access: { update: adminOnlyField }, admin: { readOnly: true, position: 'sidebar', date: { pickerAppearance: 'dayAndTime' }, description: 'Set when a buyer who left their number went on to WhatsApp (source WhatsApp). Empty means they did not.' } },
     { name: 'name', type: 'text', required: true, access: { update: adminOnlyField }, admin: { components: { Cell: '@/components/payload/ListingCells#PersonCell' } } },
-    { name: 'email', type: 'email', required: true, access: { update: adminOnlyField } },
+    { name: 'email', type: 'email', access: { update: adminOnlyField }, admin: { description: 'Optional: buyers who use the short form or the WhatsApp window leave only a name and number.' } },
     { name: 'phone', type: 'text', access: { update: adminOnlyField } },
-    { name: 'preferred_contact_method', type: 'text', label: 'Preferred contact', access: { update: adminOnlyField }, admin: { components: { Field: textDropdown(['Email', 'Phone', 'Text']) } } },
+    { name: 'preferred_contact_method', type: 'text', label: 'Preferred contact', access: { update: adminOnlyField }, admin: { components: { Field: textDropdown(['Email', 'Phone', 'Text', 'WhatsApp']) } } },
     { name: 'message', type: 'textarea', access: { update: adminOnlyField } },
     {
       name: 'status',

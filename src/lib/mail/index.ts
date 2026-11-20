@@ -23,12 +23,38 @@ export function zohoCredsFor(email: string): ZohoCreds | null {
   return creds.clientId && creds.clientSecret && creds.refreshToken ? creds : null
 }
 
-export function configuredMailboxes(): string[] {
+/** The three public addresses (support, developers, no-reply). */
+export function publicAddresses(): string[] {
   return MAILBOX_ENV.map((m) => (process.env[m.env] || m.fallback).trim().toLowerCase())
 }
 
+/** Google Workspace keeps one real mailbox; the public addresses are aliases of it (owner, 2026-11-18, "option A, cheapest"). */
+export function googlePrimaryMailbox(): string {
+  return (process.env.GOOGLE_MAIL_PRIMARY || 'rupan@lankanewhomes.com').trim().toLowerCase()
+}
+
+/** Mailboxes the app syncs: Zoho and the mock keep three; Google is one mailbox with aliases. */
+export function configuredMailboxes(): string[] {
+  return !isMockMode() && isGoogleMail() ? [googlePrimaryMailbox()] : publicAddresses()
+}
+
+/** Addresses mail can be sent as from a mailbox: its aliases (Google only). */
+export function aliasesFor(email: string): string[] {
+  if (isMockMode() || !isGoogleMail() || email.toLowerCase() !== googlePrimaryMailbox()) return []
+  return publicAddresses().filter((a) => a !== googlePrimaryMailbox())
+}
+
 export function zohoCredentialsPresent(): boolean {
-  return configuredMailboxes().some((email) => zohoCredsFor(email) !== null)
+  return publicAddresses().some((email) => zohoCredsFor(email) !== null)
+}
+
+/** True when the mail provider is Google Workspace (MAIL_PROVIDER=google). */
+export function isGoogleMail(): boolean {
+  return (process.env.MAIL_PROVIDER ?? '').toLowerCase() === 'google'
+}
+
+export function liveCredentialsPresent(): boolean {
+  return isGoogleMail() ? Boolean(process.env.GOOGLE_MAIL_SA_EMAIL && process.env.GOOGLE_MAIL_SA_KEY) : zohoCredentialsPresent()
 }
 
 /** True when the mail provider is Google Workspace (MAIL_PROVIDER=google). */

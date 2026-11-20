@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowRight, ChevronDown } from "lucide-react";
-import Link from "next/link";
+import { UpdatesOptIn } from "@/components/marketplace/updates-optin";
 import { FormEvent, useState } from "react";
 import { PhoneField, type PhoneValue } from "./phone-field";
 import { buildInternationalPhone, DEFAULT_PHONE_COUNTRY } from "@/lib/phone";
@@ -117,18 +117,7 @@ export function ContactForm() {
         <textarea value={message} onChange={(event) => setMessage(event.target.value)} required rows={5} placeholder="Tell us more about your inquiry" />
       </label>
 
-      <fieldset className="contact-form-updates">
-        <legend>Send me (optional)</legend>
-        {UPDATE_CHOICES.map((choice) => (
-          <label key={choice.value} className="contact-form-consent">
-            <input type="checkbox" checked={interests.includes(choice.value)} onChange={() => toggleInterest(choice.value)} />
-            <span>{choice.label}</span>
-          </label>
-        ))}
-        <p className="contact-form-updates-note">
-          See our <Link href="/privacy">Privacy Policy</Link>. Unsubscribe any time.
-        </p>
-      </fieldset>
+      <UpdatesOptIn value={interests} onChange={setInterests} />
 
       {error ? <p className="contact-form-error">{error}</p> : null}
 

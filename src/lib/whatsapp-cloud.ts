@@ -31,6 +31,8 @@ export type WhatsAppTemplateSend = {
   bodyParams: string[];
   /** Dynamic suffix for a URL button on the template (button index 0). */
   buttonUrlSuffix?: string;
+  /** Position of that URL button among the template's buttons (0 = first). Lead reminders have "Contacted" first, so their URL button is 1. */
+  buttonIndex?: number;
   template?: string;
   language?: string;
 };
@@ -50,7 +52,7 @@ export async function sendWhatsAppTemplate(input: WhatsAppTemplateSend): Promise
     { type: "body", parameters: input.bodyParams.map((text) => ({ type: "text", text: templateParam(text) })) },
   ];
   if (input.buttonUrlSuffix) {
-    components.push({ type: "button", sub_type: "url", index: "0", parameters: [{ type: "text", text: input.buttonUrlSuffix }] });
+    components.push({ type: "button", sub_type: "url", index: String(input.buttonIndex ?? 0), parameters: [{ type: "text", text: input.buttonUrlSuffix }] });
   }
 
   try {

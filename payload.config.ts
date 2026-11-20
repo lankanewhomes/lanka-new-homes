@@ -37,6 +37,7 @@ import { SeoKeywords } from './src/collections/SeoKeywords'
 import { ListingTodos } from './src/collections/ListingTodos'
 import { Outreach } from './src/collections/Outreach'
 import { EmailLog } from './src/collections/EmailLog'
+import { WhatsAppMessages } from './src/collections/WhatsAppMessages'
 import { DeveloperActivity } from './src/collections/DeveloperActivity'
 import { MailAccounts } from './src/collections/MailAccounts'
 import { MailFolders } from './src/collections/MailFolders'
@@ -188,6 +189,7 @@ export default buildConfig({
     ListingTodos,
     Outreach,
     EmailLog,
+    WhatsAppMessages,
     DeveloperActivity,
     MailAccounts,
     MailFolders,

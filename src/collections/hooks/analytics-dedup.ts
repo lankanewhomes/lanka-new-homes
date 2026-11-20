@@ -37,7 +37,8 @@ export const enrichAnalyticsEvent: CollectionBeforeChangeHook = async ({ data, o
     data.developer = seller?.relationTo === 'developers' ? relatedId(seller.value) : undefined
   }
 
-  const listingFilter: Where | null = projectId ? { project: { equals: projectId } } : landId ? { land: { equals: landId } } : null
+  const blogSlug = typeof data.blog_slug === 'string' && data.blog_slug ? data.blog_slug : undefined
+  const listingFilter: Where | null = projectId ? { project: { equals: projectId } } : landId ? { land: { equals: landId } } : blogSlug ? { blog_slug: { equals: blogSlug } } : null
   if (data.session_id && listingFilter && data.event_type) {
     const since = new Date(Date.now() - DEDUP_WINDOW_MS).toISOString()
     const existing = await req.payload.find({
@@ -47,6 +48,8 @@ export const enrichAnalyticsEvent: CollectionBeforeChangeHook = async ({ data, o
           { session_id: { equals: data.session_id } },
           listingFilter,
           { event_type: { equals: data.event_type } },
+          // Each form field counts on its own (owner, 2026-11-06: "count all the rows"): a repeat is the same field tapped again.
+          ...((data.event_type === 'form_field_focus' || data.event_type === 'floor_plan_view') && data.source_page ? [{ source_page: { equals: data.source_page } }] : []),
           { is_duplicate: { equals: false } },
           { timestamp: { greater_than_equal: since } },
         ],

@@ -1,0 +1,95 @@
+{
+ "slug": "imaarat-bambalapitiya",
+ "sources": [
+  "imaarat-brochure.pdf (media.lankanewhomes.com), specification page read from image"
+ ],
+ "categories": [
+  {
+   "key": "interior",
+   "label": "Interior",
+   "items": [
+    {
+     "field": "Doors & Windows",
+     "value": "Corrosion-resistant powder-coated aluminium windows"
+    },
+    {
+     "field": "Kitchen",
+     "value": "Imported tiles on pantry wall"
+    },
+    {
+     "field": "Bathrooms",
+     "value": "High-end imported sanitary ware"
+    },
+    {
+     "field": "Balconies",
+     "value": "Landscaped terraces within balcony; privacy screens for balconies"
+    },
+    {
+     "field": "Ceilings",
+     "value": "Modern ceiling design"
+    },
+    {
+     "field": "Smart Provisions",
+     "value": "Electrical provision for automatic blinds"
+    }
+   ]
+  },
+  {
+   "key": "finishes",
+   "label": "Finishes",
+   "items": [
+    {
+     "field": "Flooring",
+     "value": "Imported floor tiles in living area and bathrooms"
+    }
+   ]
+  },
+  {
+   "key": "building-services",
+   "label": "Building Services",
+   "items": [
+    {
+     "field": "Air Conditioning",
+     "value": "Efficient AC system"
+    },
+    {
+     "field": "Elevators",
+     "value": "Two high-speed elevators serving all floors"
+    },
+    {
+     "field": "Backup Power",
+     "value": "Backup power for common areas and apartments incl. lighting, elevators, water pumps and fire pumps (excludes air conditioning)"
+    },
+    {
+     "field": "EV Charging",
+     "value": "EV charging provision (conditions apply)"
+    }
+   ]
+  },
+  {
+   "key": "building-structure",
+   "label": "Building & Structure",
+   "items": [
+    {
+     "field": "Roof",
+     "value": "Heat and water-resistant rooftop"
+    },
+    {
+     "field": "Parking",
+     "value": "Large parking bays"
+    }
+   ]
+  },
+  {
+   "key": "safety-security",
+   "label": "Safety & Security",
+   "items": [
+    {
+     "field": "Fire Protection",
+     "value": "Fire extinguishers; hose reels; wet riser to fire department standards"
+    }
+   ]
+  }
+ ],
+ "notes": "Brochure specification page, read visually; tile placement wording per diagram labels."
+}

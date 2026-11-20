@@ -4,6 +4,7 @@ export type ProjectStatus =
   | "Under Construction"
   | "Launching Soon"
   | "Nearly Sold Out"
+  | "Sold Out"
   | "Nearly Complete";
 
 export type Amenity = {
@@ -316,6 +317,8 @@ export type Project = SeoFields & {
    * public listing page, used only to sort "new listings" shelves by real
    * recency instead of the developer's own (often-unset) launchDate. */
   createdAt?: string;
+  /** Last time the listing was edited (Payload's own `updatedAt`, kept in the row data). Shown as "Last update" in the small print at the bottom of the page. */
+  updatedAt?: string;
   /** When the listing FIRST went live (stamped by the Payload→Supabase sync
    * the first time it syncs as published; never reset). Starts the 30-day
    * "New listings" homepage window — see lib/new-listings.ts. Absent on
@@ -425,6 +428,7 @@ export type Project = SeoFields & {
   utilityFees?: string;
   otherFees?: string;
   financingOptions?: string;
+  bankingPartners?: string;
   legalFees?: string;
   pricingUpdated?: string;
   propertyTax?: string;
@@ -567,6 +571,8 @@ export type Land = SeoFields & {
   /** When this row was actually created in the database — used only to sort
    * "new land listings" shelves by real recency. */
   createdAt?: string;
+  /** Last time the listing was edited (Payload's `updatedAt`); shown as "Last update" in the small print at the bottom of the page. */
+  updatedAt?: string;
   sellerType: LandSellerType;
   /** developers.slug or construction_companies.slug when sellerType links to
    * a real profile page; omitted when sellerType is "builder" with no
@@ -781,6 +787,8 @@ export type Location = {
 export type Neighborhood = SeoFields & {
   slug: string;
   name: string;
+  /** Hidden from the live site only when explicitly false; drafts are viewable at /neighborhood-preview/<slug>. */
+  isPublished?: boolean;
   city: string;
   province: string;
   /** Population with its scope and year — first line of the Overview list when set. */

@@ -62,7 +62,7 @@ Log in to your dashboard: ${i.loginUrl}
 Questions, or something to change on your page? Just reply to this email and a person will answer.
 
 Warm regards,
-The LankaNewHomes team
+LankaNewHomes Team
 developers@lankanewhomes.com
 `
 }

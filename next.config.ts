@@ -120,6 +120,9 @@ const nextConfig: NextConfig = {
       // site down), so it was removed. Do the lankanewhomes.com -> www.lankanewhomes.com redirect as a Cloudflare Redirect Rule instead.
       // Mistyped link seen in GA (Nov 2026): "ji-adore" instead of "j-adore".
       { source: "/projects/ji-adore-negombo", destination: "/projects/j-adore-negombo", permanent: true },
+      // Marina Square listing renamed 2026-11-09 (owner request).
+      { source: "/projects/marina-square-colombo-15", destination: "/projects/marina-square-uptown-colombo", permanent: true },
+      { source: "/listing-preview/marina-square-colombo-15", destination: "/listing-preview/marina-square-uptown-colombo", permanent: true },
       {
         source: "/projects/colombo/luxury",
         destination: "/projects/luxury",

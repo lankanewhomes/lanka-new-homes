@@ -1,11 +1,13 @@
 import { after, NextResponse } from "next/server";
 import { insertLead } from "@/lib/tracking-db";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
-import { buildEventEnrichment } from "@/lib/analytics-event";
+import { buildEventEnrichment, logRawAnalyticsEvent } from "@/lib/analytics-event";
 import { isInternalRequest } from "@/lib/internal-traffic";
 import { renderBrochureEmailHTML } from "@/lib/brochure-email";
 import { requestOrigin } from "@/lib/request-origin";
 import { rateLimited } from "@/lib/rate-limit";
+import { cleanInterests, saveSubscriber } from "@/lib/save-subscriber";
+import { isProductionDeployment } from "@/lib/lead-alerts";
 
 export async function POST(req: Request) {
   const limited = rateLimited(req, "leads", 30, 15 * 60 * 1000); // each enquiry alerts a developer. Generous on purpose: phone networks put many real buyers behind one address and a lead must never be lost
@@ -44,8 +46,13 @@ export async function POST(req: Request) {
     // Which floor plan the buyer was looking at, when they asked from a plan
     // page — named in the developer's alert and stored on the lead.
     const floorPlanName = typeof body.floorPlanName === "string" ? body.floorPlanName.trim().slice(0, 120) : "";
-    const source = body.isBrochureRequest ? "brochure_request" : "request_info";
+    // A buyer who tapped WhatsApp first leaves a name and number (whatsapp-capture dialog): stored as source "whatsapp". It is not a
+    // form enquiry, so it does not create the "lead_submitted" analytics event; the WhatsApp lead is counted when they open WhatsApp.
+    const isWhatsApp = body.isWhatsAppCapture === true;
+    const whatsappContinuedAt = isWhatsApp && body.whatsappOpened === true ? new Date().toISOString() : undefined;
+    const source = isWhatsApp ? "whatsapp" : body.isBrochureRequest ? "brochure_request" : "request_info";
 
+    const updateInterests = cleanInterests(body.interests);
     const saved = await insertLead({
       name: body.name,
       email: typeof body.email === "string" ? body.email : "",
@@ -54,11 +61,27 @@ export async function POST(req: Request) {
       message: body.message,
       projectSlug: body.projectSlug,
       developerSlug: body.developerSlug,
-      marketingOptIn: typeof body.marketingOptIn === "boolean" ? body.marketingOptIn : undefined,
+      marketingOptIn: updateInterests.length > 0 ? true : typeof body.marketingOptIn === "boolean" ? body.marketingOptIn : undefined,
       userId: user?.id,
       floorPlan: floorPlanName || undefined,
       source,
+      whatsappContinuedAt,
     });
+
+    // Ticked "send me updates" boxes: add them to Contacts & subscribers (live site only; never blocks the enquiry).
+    const buyerEmail = typeof body.email === "string" ? body.email.trim() : "";
+    if (updateInterests.length && buyerEmail && isProductionDeployment()) {
+      after(async () => {
+        try {
+          const { getPayload } = await import("payload");
+          const payloadConfig = (await import("../../../../../payload.config")).default;
+          const payload = await getPayload({ config: payloadConfig });
+          await saveSubscriber(payload, { email: buyerEmail, name: typeof body.name === "string" ? body.name : undefined, phone: typeof body.phone === "string" ? body.phone : undefined, interests: updateInterests, source: isWhatsApp ? "whatsapp-form" : "listing-form" });
+        } catch (error) {
+          console.error("Subscriber save failed:", error instanceof Error ? error.message : error);
+        }
+      });
+    }
 
     // Best-effort mirror into Payload's Leads collection so builders can see
     // and manage this inquiry (status, analytics) in /cms.
@@ -101,12 +124,13 @@ export async function POST(req: Request) {
             data: {
               ...(projectDoc ? { project: projectDoc.id } : { land: landDoc?.id }),
               name: body.name,
-              email: typeof body.email === "string" ? body.email : "",
+              email: typeof body.email === "string" && body.email.trim() ? body.email.trim() : undefined, // empty is not a valid email: leave it out
               phone: body.phone,
               message: body.message,
               preferred_contact_method: body.preferredContactMethod,
               floor_plan: floorPlanName || undefined,
               source,
+              whatsapp_continued_at: whatsappContinuedAt,
               supabase_lead_id: saved.id,
               origin: {
                 country: origin.country || undefined,
@@ -117,9 +141,14 @@ export async function POST(req: Request) {
                 referrer: analyticsEnrichment.referrer,
               },
             } as never,
-            context: { skipSupabaseSync: true, analyticsEnrichment, skipAnalytics: isInternalRequest(req) },
+            context: { skipSupabaseSync: true, analyticsEnrichment, skipAnalytics: isInternalRequest(req) || isWhatsApp },
             overrideAccess: true,
           });
+
+          // A WhatsApp lead is counted when the buyer is sent on to WhatsApp (the "whatsapp_click" event); it is not a form enquiry.
+          if (whatsappContinuedAt) {
+            await logRawAnalyticsEvent(req, { projectSlug: body.projectSlug, eventType: "whatsapp_click", sourcePage: "whatsapp-capture", sessionId: body.sessionId, trafficSource: body.trafficSource, utm: body.utm }).catch((error) => console.error("Failed to log whatsapp_click analytics event", error));
+          }
 
           // Brochure requests also get emailed a copy — the dialog's
           // "Download Brochure" button still works as a fallback (the

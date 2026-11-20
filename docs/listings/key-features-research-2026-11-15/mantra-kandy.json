@@ -1,0 +1,28 @@
+{
+ "slug": "mantra-kandy",
+ "sources": [
+  "mantra-kandy_brochure.pdf",
+  "https://cpg.lk"
+ ],
+ "categories": [
+  {
+   "key": "interior",
+   "label": "Interior",
+   "items": [
+    {
+     "field": "Doors & Windows",
+     "value": "Floor-to-ceiling glass doors"
+    },
+    {
+     "field": "Smart Home",
+     "value": "Smart home integration"
+    },
+    {
+     "field": "Furnishing",
+     "value": "Fully furnished"
+    }
+   ]
+  }
+ ],
+ "notes": "Brochure has no spec section; only these interior statements. Brochure villa is Adya (Digana)."
+}

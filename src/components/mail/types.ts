@@ -2,7 +2,7 @@ export type MailAddress = { name?: string; email: string }
 export type FolderType = 'inbox' | 'sent' | 'drafts' | 'spam' | 'trash' | 'archive' | 'custom'
 
 export type Folder = { id: number; zohoFolderId: string; name: string; type: FolderType; unread: number; total: number }
-export type Account = { id: number; email: string; displayName: string; color: string; signature: string; zohoAccountId: string; folders: Folder[] }
+export type Account = { id: number; email: string; displayName: string; color: string; signature: string; zohoAccountId: string; aliases?: string[]; folders: Folder[] }
 
 export type Attachment = { id: string; filename: string; contentType: string; size: number }
 

@@ -29,6 +29,7 @@ export function buildSidebar(role: Role, newLeads: number, companyId?: number): 
     { key: "social", label: "Social content", href: "/dashboard/social", icon: Share2 },
     ...(role === "admin" ? [{ key: "inbox", label: "Inbox", href: "/dashboard/inbox", icon: Inbox }] : []),
     ...(role === "admin" ? [{ key: "lead-activity", label: "Lead activity", href: "/dashboard/lead-activity", icon: Activity }] : []),
+    ...(role === "admin" ? [{ key: "whatsapp", label: "WhatsApp", href: "/dashboard/whatsapp", icon: MessageCircle }] : []),
     ...(role === "admin" ? [{ key: "newsletter", label: "Newsletter", href: "/dashboard/newsletter", icon: Mail }] : []),
   ];
   const sections: SideSection[] = [];

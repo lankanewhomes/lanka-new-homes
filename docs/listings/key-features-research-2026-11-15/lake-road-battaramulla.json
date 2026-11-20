@@ -1,0 +1,77 @@
+{
+ "slug": "lake-road-battaramulla",
+ "sources": [
+  "lake-road-battaramulla_brochure.pdf (specifications page)"
+ ],
+ "categories": [
+  {
+   "key": "building-structure",
+   "label": "Building & Structure",
+   "items": [
+    {
+     "field": "Walls",
+     "value": "Red brick; SLS-certified cement (SLS 107 / SLS 1247) and steel (SLS 375); river sand"
+    },
+    {
+     "field": "Roof",
+     "value": "Corrugated roofing sheet over a Lunumidella wood ceiling"
+    },
+    {
+     "field": "Doors & Windows",
+     "value": "Teak doors; Swisstek aluminium windows"
+    },
+    {
+     "field": "Staircase",
+     "value": "Wood"
+    }
+   ]
+  },
+  {
+   "key": "finishes",
+   "label": "Finishes",
+   "items": [
+    {
+     "field": "Paint",
+     "value": "Nippon / Causeway"
+    },
+    {
+     "field": "Tiles",
+     "value": "Rocell tiles: 2x4 floor, 2x2 balcony and bathroom; Tokyo Super tile adhesive"
+    }
+   ]
+  },
+  {
+   "key": "interior",
+   "label": "Interior",
+   "items": [
+    {
+     "field": "Kitchen",
+     "value": "Beko cooker and hob; Hafele oven"
+    },
+    {
+     "field": "Bathrooms",
+     "value": "Rocell commode, washbasin and mixer shower kit"
+    }
+   ]
+  },
+  {
+   "key": "building-services",
+   "label": "Building Services",
+   "items": [
+    {
+     "field": "Electrical",
+     "value": "Kevilton switches; Kelani wiring; KDK fans; generic down, spot, mirror, pendant, surface, step and outdoor lights"
+    },
+    {
+     "field": "Plumbing & Water",
+     "value": "Zlon pipes; Arpico water tank; JAT water base; Solar Therm solar hot water"
+    },
+    {
+     "field": "Gate",
+     "value": "Elcardo roller gate"
+    }
+   ]
+  }
+ ],
+ "notes": "Brochure has a brand/material spec table; a single house, not an apartment."
+}

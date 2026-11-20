@@ -14,7 +14,7 @@ export const metadata: Metadata = withSocial({
 // Owner, 2026-10-20: Instagram only lets the bio link be edited in the phone app, so the bio points at /links (which redirects here) once and this
 // page keeps itself current from the `social-posts` collection (every Instagram post is logged there). Newest first,
 // one card per listing, each linking to the listing with the same Instagram UTM tags the captions use.
-export const revalidate = 300;
+export const revalidate = 60; // owner 2026-11-13: new Instagram posts should reach the bio link quickly; same 60 s as the other ISR pages (was 300)
 
 const INSTAGRAM_URL = "https://www.instagram.com/lankanewhomes/";
 

@@ -16,6 +16,13 @@ export const Neighborhoods: CollectionConfig = {
   fields: [
     { name: 'slug', type: 'text', required: true, unique: true, index: true },
     { name: 'name', type: 'text', required: true, admin: { components: { Cell: '@/components/payload/ListingCells#NeighborhoodCell' } } },
+    {
+      name: 'isPublished',
+      type: 'checkbox',
+      label: 'Published (visible on live site)',
+      defaultValue: true,
+      admin: { description: 'Turn off to keep this page hidden from the live site (pages, lists, sitemap, llms.txt). A draft stays viewable at /neighborhood-preview/<slug>.' },
+    },
     { name: 'city', type: 'text' },
     { name: 'province', type: 'text', admin: { components: { Field: textDropdown(PROVINCE_OPTIONS) } } },
     { name: 'population', type: 'text', admin: { description: 'Population with its scope and year, e.g. "17,588 in the Grandpass South division (2012 census)". Shown as the first line of the Overview list.' } },

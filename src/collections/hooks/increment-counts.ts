@@ -18,6 +18,12 @@ const COUNTER_FIELD_BY_EVENT: Record<string, CounterField | undefined> = {
   phone_click: 'phone_click_count',
   whatsapp_click: 'whatsapp_click_count',
   email_click: 'email_click_count',
+  map_pin_click: undefined, // logged for the analytics list, no Project counter
+  compare_add: undefined,
+  compare_remove: undefined,
+  form_field_focus: undefined,
+  blog_view: undefined,
+  floor_plan_view: undefined,
 }
 
 function sleep(ms: number) {

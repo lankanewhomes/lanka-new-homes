@@ -14,7 +14,7 @@ const DETAIL_ONLY = new Set([
   "streetViewUrl", "view360Url", "interactiveMapUrl", "installmentSchedule", "social", "additional_builders", "additional_developers",
   "additionalBuilderSlugs", "additionalDeveloperSlugs", "architect", "contractor", "seoTitle", "seoDescription", "ogImage", "canonicalUrl",
   "updatedAt", "statusHistory", "completionDateHistory", "availabilityHistory", "pricingHistory", "constructionUpdates", "legalFees", "utilityFees",
-  "otherFees", "financingOptions", "incentives", "pricingAddOns", "pricingNotes", "reservationFee", "reservationDeposit", "downPayment",
+  "otherFees", "financingOptions", "bankingPartners", "incentives", "pricingAddOns", "pricingNotes", "reservationFee", "reservationDeposit", "downPayment",
   "depositPaymentStructure", "coopFeeRealtors", "parkingCost", "storageCost", "propertyTax", "rentalIncome", "includedUtilities", "paidUtilities",
   "mobileVisibleStats", "desktopVisibleStats", "floorPlanVisibleStats", "commercialAreas", "interior_designer", "landscapeArchitect",
   "structuralEngineer", "mepConsultant", "quantitySurveyor", "projectManagementCompany", "superstructureContractor", "finishingContractor",

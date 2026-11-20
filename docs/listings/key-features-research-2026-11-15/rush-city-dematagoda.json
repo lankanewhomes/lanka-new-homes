@@ -1,0 +1,57 @@
+{
+ "slug": "rush-city-dematagoda",
+ "sources": [
+  "south-city-tower-brochure.pdf (media.lankanewhomes.com)"
+ ],
+ "categories": [
+  {
+   "key": "interior",
+   "label": "Interior",
+   "items": [
+    {
+     "field": "Kitchen",
+     "value": "Modern pantry; sink with cold water tap; provision for washing machine; imported tiles on pantry wall"
+    },
+    {
+     "field": "Doors & Windows",
+     "value": "Engineered entrance door; wooden doors for rooms; WPC doors for bathrooms; rust-proof powder-coated aluminium windows"
+    }
+   ]
+  },
+  {
+   "key": "finishes",
+   "label": "Finishes",
+   "items": [
+    {
+     "field": "Flooring",
+     "value": "Imported porcelain tiles for rooms and hall; imported tiles for bathroom and kitchen; imported tile flooring for staircase and lobby"
+    }
+   ]
+  },
+  {
+   "key": "building-services",
+   "label": "Building Services",
+   "items": [
+    {
+     "field": "Electrical",
+     "value": "High-quality switches and fixtures with safety panels and high-grade trip switch; single-phase electricity meters"
+    },
+    {
+     "field": "Plumbing",
+     "value": "Imported fittings; hot water geyser for master and common bathrooms; connected to main municipal sewer system"
+    }
+   ]
+  },
+  {
+   "key": "safety-security",
+   "label": "Safety & Security",
+   "items": [
+    {
+     "field": "Fire Protection",
+     "value": "Fire extinguishers; hose reels; wet riser installed to fire department standards"
+    }
+   ]
+  }
+ ],
+ "notes": "Brochure specification page; two-column text read carefully, general features list unreadable (garbled glyphs) so omitted."
+}

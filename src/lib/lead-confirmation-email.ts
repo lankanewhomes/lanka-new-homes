@@ -1,4 +1,4 @@
-import { WHATSAPP_BUTTON, emailButtonRow, emailFacts, emailHero, emailPara, emailShell, esc } from './email-layout'
+import { WHATSAPP_BUTTON, emailButtonRow, emailFacts, emailHero, emailPara, emailShell, emailTeamSignoff, esc } from './email-layout'
 
 // "We've sent your request to <developer>" — the buyer's copy, sent the
 // moment a lead is created (src/lib/lead-alerts.ts). Same visual style as
@@ -50,6 +50,7 @@ export function renderLeadConfirmationEmailHTML(input: LeadConfirmationEmailInpu
     emailFacts(facts),
     emailButtonRow(buttons),
     `  <tr><td align="center" style="padding:14px 32px 26px;font-size:13px;line-height:1.6;color:#6b6a66;">You can follow this and every request you have made under <a href="${esc(input.enquiriesUrl)}" style="color:${INK};font-weight:700;">My enquiries</a>. Replying to this email reaches ${developer} directly.</td></tr>`,
+    emailTeamSignoff(),
   ].join('\n')
   return emailShell({ preheader: `Your request about ${input.projectName} was sent to ${input.developerName}.`, title: 'Your request was sent', body, footerNote: 'You are receiving this because you sent an enquiry on LankaNewHomes.' })
 }

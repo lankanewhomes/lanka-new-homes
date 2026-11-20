@@ -423,6 +423,7 @@ export const Projects: CollectionConfig = {
             { name: 'priceValidUntil', type: 'text', admin: { description: 'Date until the published price/offer is valid, if the developer says so.' } },
             { name: 'utilityFees', type: 'text', label: 'Utility / Connection Fees', admin: { description: 'Water, electricity or other connection charges, as published.' } },
             { name: 'otherFees', type: 'text', label: 'Other Applicable Fees', admin: { description: 'Any other fee or charge the developer lists.' } },
+            { name: 'bankingPartners', type: 'text', label: 'Banking Partners', admin: { description: 'Banks the developer names as partners for buyer loans, as published, e.g. "DFCC, Commercial Bank, Sampath Bank". Shown as its own row in the Pricing section.' } },
             { name: 'financingOptions', type: 'text', label: 'Mortgage / Financing Options', admin: { description: 'Bank loan / financing options the developer offers, as published.' } },
             { name: 'legalFees', type: 'text', label: 'Legal / Transfer Fees', admin: { description: 'Stamp duty, legal or transfer fees as the developer states them.' } },
             { name: 'pricingUpdated', type: 'text', label: 'Pricing last updated', admin: { description: 'Date the pricing above was last checked against the developer, e.g. 2026-10-03.' } },

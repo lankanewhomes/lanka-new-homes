@@ -8,6 +8,7 @@ import { buildLandDetailRows, formatLandSize, landToProjectShape } from "@/lib/l
 import { getNeighborhoodBySlug } from "@/lib/neighborhood-store";
 import { pickSimilarListings } from "@/lib/similar-listings";
 import { SimilarListingsSection } from "@/components/marketplace/similar-listings";
+import { ListingDisclaimer } from "@/components/marketplace/listing-disclaimer";
 import { formatLkr } from "@/lib/format";
 import { getDeveloperBySlug } from "@/lib/developer-store";
 import { LandPlotsGridSection } from "@/components/marketplace/land-plots-grid";
@@ -28,6 +29,7 @@ import {
 } from "@/components/marketplace/components";
 import type { Developer } from "@/types";
 import { descriptionBlocks } from "@/lib/description-blocks";
+import { ProjectViewTracker } from "@/components/marketplace/view-tracker";
 
 // Regenerate at most once a minute so admin edits (e.g. status changes)
 // show up without waiting for the next deploy.
@@ -178,6 +180,7 @@ export default async function LandDetailPage({ params }: LandPageProps) {
   return (
     <div className="space-y-8">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <ProjectViewTracker projectSlug={land.slug} projectName={land.title} developerSlug={land.sellerSlug ?? ""} kind="land" />
       <ProjectHero
         project={project}
         backHref="/land"
@@ -269,6 +272,8 @@ export default async function LandDetailPage({ params }: LandPageProps) {
         <StatsContactCard project={project} developer={developer} requestInfoVariant="inquiry" />
 
         <SimilarListingsSection listings={similarListings} basePath="/land" />
+
+        <ListingDisclaimer updatedAt={project.updatedAt ?? project.createdAt} />
       </div>
     </div>
   );

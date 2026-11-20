@@ -89,9 +89,11 @@ export function AppShell({ children }: { children: ReactNode }) {
   // lowercase logo in white at the top, the open page as a solid orange rounded pill, groups as plain rows with their pages on a thin guide line.
   const pill = (active: boolean) => `mx-3 flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] ${active ? "bg-brand font-semibold text-white shadow-[0_4px_14px_rgba(244,123,54,0.35)]" : "text-side-text hover:bg-side-active hover:text-white"}`;
   const groupCls = (holds: boolean) => `mx-3 flex w-[calc(100%-1.5rem)] items-center gap-3 rounded-lg px-3 py-2 text-[13px] hover:bg-side-active hover:text-white ${holds ? "font-semibold text-white" : "text-side-text"}`;
+  const caption = "px-6 pb-1.5 pt-3 text-[10.5px] font-semibold uppercase tracking-[0.09em] text-side-text/60";
   const badgeCls = "rounded-full bg-white px-2 py-0.5 text-[10px] font-bold text-ink";
   const nav = (
     <nav className="d-scroll flex-1 overflow-y-auto pb-4">
+      {collapsed ? null : <p className={caption}>Work</p>}
       <ul className="space-y-0.5 pt-1">
         {side.top.map((it) => (
           <li key={it.key}>
@@ -101,8 +103,8 @@ export function AppShell({ children }: { children: ReactNode }) {
           </li>
         ))}
       </ul>
-      <div className="mx-3 mt-3 border-t border-white/10" />
-      <div className="mt-3 space-y-0.5">
+      {collapsed ? <div className="mx-3 mt-3 border-t border-white/10" /> : <p className={`${caption} mt-2`}>Manage</p>}
+      <div className="mt-1 space-y-0.5">
         {side.sections.map((s) => {
           const GroupIcon = GROUP_ICON[s.label] ?? ListChecks;
           const open = groupOpen(s.label, s.items);

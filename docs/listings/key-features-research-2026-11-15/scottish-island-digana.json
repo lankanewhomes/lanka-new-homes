@@ -1,0 +1,106 @@
+{
+ "slug": "scottish-island-digana",
+ "sources": [
+  "scottish-island-digana_brochure.pdf (specifications page)",
+  "https://www.primelands.lk/house/SCOTTISH-ISLAND-DIGANA/en"
+ ],
+ "categories": [
+  {
+   "key": "building-structure",
+   "label": "Building & Structure",
+   "items": [
+    {
+     "field": "Foundation",
+     "value": "Random rubble masonry, RCC columns and RCC plinth beam"
+    },
+    {
+     "field": "Superstructure",
+     "value": "RCC columns, beams and slabs; 9-inch brick load-bearing walls; 4.5-inch brick partition walls"
+    },
+    {
+     "field": "Roof & Ceiling",
+     "value": "Zinc-alum roofing sheets; lunumidella timber ceiling with exposed rafters"
+    }
+   ]
+  },
+  {
+   "key": "interior",
+   "label": "Interior",
+   "items": [
+    {
+     "field": "Doors & Windows",
+     "value": "Front door teak sash with teak or similar frame; internal doors engineered timber; windows powder-coated aluminium with 5 mm glass; mortise lock (Union or equivalent) on front door, knob locks on others"
+    },
+    {
+     "field": "Kitchen",
+     "value": "Fitted pantry cupboard with granite top, refrigerator, burner, built-in oven, hood and stainless steel sink"
+    },
+    {
+     "field": "Bathrooms",
+     "value": "European-standard fittings, water closet and wash basin with four-piece accessories and European-standard faucets; walls tiled to ceiling; ceramic or porcelain floor tiles, waterproofed"
+    },
+    {
+     "field": "Staircase",
+     "value": "Timber planks (teak or similar); steel and timber mixed handrail"
+    }
+   ]
+  },
+  {
+   "key": "finishes",
+   "label": "Finishes",
+   "items": [
+    {
+     "field": "Flooring",
+     "value": "Porcelain tiles (24x24 in and 12x12 in) on ground floor, terrace, balcony and veranda; 10 mm Merbau timber flooring in bedrooms"
+    },
+    {
+     "field": "Walls",
+     "value": "Internal: smooth plaster, two coats wall putty, filler and two coats emulsion (Dulux or equivalent); external: semi-rough plaster, filler and two coats weather-shield paint"
+    },
+    {
+     "field": "Colour Scheme",
+     "value": "As directed by the architect"
+    }
+   ]
+  },
+  {
+   "key": "building-services",
+   "label": "Building Services",
+   "items": [
+    {
+     "field": "Air Conditioning",
+     "value": "12,000 Btu air conditioners in all bedrooms"
+    },
+    {
+     "field": "Plumbing",
+     "value": "UPVC cold water pipe network from a 1,000-litre overhead tank; hot water to bathrooms and pantry from independent 15-litre geysers"
+    },
+    {
+     "field": "Storm Drainage",
+     "value": "Zinc-alum gutters and down pipes with manholes and gullies, connected to main drain"
+    }
+   ]
+  },
+  {
+   "key": "utilities",
+   "label": "Utilities & Services",
+   "items": [
+    {
+     "field": "Connections",
+     "value": "Independent electricity and piped water connection for each house"
+    }
+   ]
+  },
+  {
+   "key": "outdoor",
+   "label": "Outdoor Features",
+   "items": [
+    {
+     "field": "Garden",
+     "value": "Garden area turfed to the contour with interlocked pathways"
+    }
+   ]
+  }
+ ],
+ "notes": "Brochure specification page used; Prime Lands web page gave a shorter summary (teak front door, mahogany internal doors) that differs slightly, brochure wording kept."
+}

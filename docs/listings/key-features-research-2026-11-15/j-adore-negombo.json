@@ -1,0 +1,73 @@
+{
+ "slug": "j-adore-negombo",
+ "sources": [
+  "https://www.primeresidencies.lk/residencies/jadore/",
+  "https://www.primelands.lk/apartment/J-ADORE-NEGOMBO/en",
+  "j-adore-negombo_brochure.pdf (floor plans only)"
+ ],
+ "categories": [
+  {
+   "key": "building-structure",
+   "label": "Building & Structure",
+   "items": [
+    {
+     "field": "Foundation",
+     "value": "Piling work completed"
+    }
+   ]
+  },
+  {
+   "key": "interior",
+   "label": "Interior",
+   "items": [
+    {
+     "field": "Appliances",
+     "value": "Refrigerator and washing machine in all units"
+    },
+    {
+     "field": "Air Conditioning",
+     "value": "Fully air-conditioned units"
+    }
+   ]
+  },
+  {
+   "key": "building-services",
+   "label": "Building Services",
+   "items": [
+    {
+     "field": "Elevators",
+     "value": "Access control lifts"
+    },
+    {
+     "field": "Backup Power",
+     "value": "Back-up generators"
+    },
+    {
+     "field": "Telecom",
+     "value": "Fibre optic facilities"
+    }
+   ]
+  },
+  {
+   "key": "safety-security",
+   "label": "Safety & Security",
+   "items": [
+    {
+     "field": "Security",
+     "value": "CCTV cameras; 24-hour security"
+    }
+   ]
+  },
+  {
+   "key": "general-features",
+   "label": "General Features",
+   "items": [
+    {
+     "field": "Parking",
+     "value": "Car parking"
+    }
+   ]
+  }
+ ],
+ "notes": "Developer pages give only a short feature list; brochure is floor plans with no spec section. Presidential suite timber flooring/smart lock details on primelands.lk apply to one suite type only so omitted."
+}

@@ -6,7 +6,7 @@ export type MailFolderType = 'inbox' | 'sent' | 'drafts' | 'spam' | 'trash' | 'a
 
 export type MailAddress = { name?: string; email: string }
 
-export type ProviderAccount = { zohoAccountId: string; email: string; displayName: string }
+export type ProviderAccount = { zohoAccountId: string; email: string; displayName: string; /** Other addresses that deliver to this mailbox and can be used as the sender (Google aliases). */ aliases?: string[] }
 
 export type ProviderFolder = {
   zohoFolderId: string

@@ -1,3 +1,4 @@
+import { emailHero, emailShell, verifiedPill } from './email-layout'
 // Email templates for the CMS Outreach log (owner, 2026-10-12). Pure rendering: nothing here sends mail.
 // Every link goes through the tracked redirect (/o/<code>?to=/path) so clicks are counted on the Outreach row.
 // Wording rule: no pricing or package talk in these emails.
@@ -9,7 +10,7 @@ export type OutreachContext = {
   companyName?: string | null
   /** Optional paragraph typed in the CMS, shown right after the greeting. */
   customNote?: string | null
-  /** Name in the sign-off. Only pass a person's name (e.g. Rupan Sinnarajah) when the email goes from that person's own address; otherwise it reads "The LankaNewHomes team". */
+  /** Name in the sign-off. Only pass a person's name (e.g. Rupan Sinnarajah) when the email goes from that person's own address; otherwise it reads "LankaNewHomes Team". */
   signName?: string | null
   projects: { name: string; slug: string }[]
   /** For the lead-followup template: the enquiry that is still waiting for a reply. */
@@ -52,6 +53,7 @@ function stepCard(n: number, title: string, lines: string[], cta?: { href: strin
 
 function verifyStep(ctx: OutreachContext, n: number) {
   return stepCard(n, 'Get the free Verified Developer badge', [
+    verifiedPill(),
     `Takes about a minute. ${a(ctx.link('/developers/login'), 'Sign in')} (or ${a(ctx.link('/developers/register'), 'create an account')}), open your company profile and confirm an email address on your company domain.`,
     'We email you a one-time link. Click it and the "✓ Verified Developer" badge appears on your profile and on every listing.',
   ], { href: ctx.link('/cms'), text: 'Open my dashboard' })
@@ -68,7 +70,7 @@ function completeStep(ctx: OutreachContext, n: number) {
 function projectList(ctx: OutreachContext) {
   if (!ctx.projects.length) return ''
   return `<p style="${P} margin-bottom:8px;"><strong>Your listings</strong></p><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 20px; border-top:1px solid ${LINE};">${ctx.projects
-    .map((p) => `<tr><td style="padding:10px 0; border-bottom:1px solid ${LINE}; font-size:15px; color:${INK};">${esc(p.name)}</td><td align="right" style="padding:10px 0; border-bottom:1px solid ${LINE}; font-size:14px;">${a(ctx.link(`/projects/${p.slug}`), 'View listing →')}</td></tr>`)
+    .map((p) => `<tr><td style="padding:10px 0; border-bottom:1px solid ${LINE}; font-size:15px; color:${INK};">${esc(p.name)}<div style="margin-top:4px; font-size:14px;">${a(ctx.link(`/projects/${p.slug}`), 'View listing →')}</div></td></tr>`)
     .join('')}</table>`
 }
 
@@ -121,11 +123,9 @@ export function renderOutreachEmail(id: OutreachTemplateId, ctx: OutreachContext
     body = `${note}<p style="${P}">${company} is listed on LankaNewHomes. A few details are still missing, and filling them in helps your listings show up higher in search.</p>${projectList(ctx)}${completeStep(ctx, 1)}`
   }
 
-  const header = `<tr><td style="padding:22px 32px 18px; border-bottom:3px solid ${ACCENT};"><a href="https://www.lankanewhomes.com" style="text-decoration:none;"><img src="https://www.lankanewhomes.com/brand/logo-email.png" width="130" alt="LankaNewHomes" style="display:block; border:0; width:130px; height:auto; font-size:18px; font-weight:700; color:#1f1f1f;"></a></td></tr>`
-  const title = `<tr><td style="padding:26px 32px 4px;"><div style="font-size:22px; line-height:1.3; font-weight:700; color:${INK};">${esc(heading)}</div></td></tr>`
-  const main = `<tr><td style="padding:14px 32px 8px;">${greeting}${body}<p style="${P}">Let me know if you would like any changes.</p><p style="${P} margin-bottom:4px;">Best regards,<br><strong>${esc(ctx.signName ?? 'The LankaNewHomes team')}</strong></p></td></tr>`
-  const footer = `<tr><td style="padding:18px 32px 26px; border-top:1px solid ${LINE}; font-size:12px; line-height:1.6; color:${MUTED};">LankaNewHomes · New homes and land for sale in Sri Lanka<br>Questions? Just reply to this email or write to ${a('mailto:developers@lankanewhomes.com', 'developers@lankanewhomes.com')}.</td></tr>`
-  const html = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head><body style="margin:0; padding:24px 12px; background:#f3f1ec; font-family:Arial,Helvetica,sans-serif;"><table role="presentation" align="center" width="100%" cellpadding="0" cellspacing="0" style="max-width:620px; margin:0 auto; background:#ffffff; border:1px solid ${LINE};">${header}${title}${main}${footer}</table></body></html>`
+  const title = emailHero(esc(heading))
+  const main = `<tr><td style="padding:14px 32px 30px;">${greeting}${body}<p style="${P}">Let me know if you would like any changes.</p><p style="${P} margin-bottom:4px;">Warm regards,<br><strong>${esc(ctx.signName ?? 'LankaNewHomes Team')}</strong></p></td></tr>`
+  const html = emailShell({ preheader: heading, title: heading, body: `${title}${main}`, helpNote: `Questions? Just reply to this email or write to ${a('mailto:developers@lankanewhomes.com', 'developers@lankanewhomes.com')}.` })
   const text = html
     .replace(/<a [^>]*href="([^"]+)"[^>]*>([^<]*)<\/a>/g, '$2 ($1)')
     .replace(/<\/(p|li|ul|tr|div|table)>/g, '\n')
@@ -142,10 +142,8 @@ export function renderOutreachEmail(id: OutreachTemplateId, ctx: OutreachContext
 /** A short personal reply in the same branded shell (logo, rule, signature, footer) with no steps or buttons. Paragraphs are separated by blank lines. */
 export function renderPlainReplyEmail(opts: { body: string; signoff?: string; signName?: string; button?: { href: string; text: string } }): { html: string; text: string } {
   const paras = opts.body.trim().split(/\n{2,}/).map((para) => `<p style="${P}">${esc(para).replace(/\n/g, '<br>')}</p>`).join('')
-  const header = `<tr><td style="padding:22px 32px 18px; border-bottom:3px solid ${ACCENT};"><a href="https://www.lankanewhomes.com" style="text-decoration:none;"><img src="https://www.lankanewhomes.com/brand/logo-email.png" width="130" alt="LankaNewHomes" style="display:block; border:0; width:130px; height:auto; font-size:18px; font-weight:700; color:#1f1f1f;"></a></td></tr>`
-  const main = `<tr><td style="padding:26px 32px 8px;">${paras}${opts.button ? button(opts.button.href, opts.button.text) : ''}<p style="${P} margin:18px 0 4px;">${esc(opts.signoff ?? 'Best regards,')}<br><strong>${esc(opts.signName ?? 'The LankaNewHomes team')}</strong><br><span style="color:${MUTED};">LankaNewHomes</span></p></td></tr>`
-  const footer = `<tr><td style="padding:18px 32px 26px; border-top:1px solid ${LINE}; font-size:12px; line-height:1.6; color:${MUTED};">LankaNewHomes · New homes and land for sale in Sri Lanka<br>Questions? Just reply to this email or write to ${a('mailto:developers@lankanewhomes.com', 'developers@lankanewhomes.com')}.</td></tr>`
-  const html = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head><body style="margin:0; padding:24px 12px; background:#f3f1ec; font-family:Arial,Helvetica,sans-serif;"><table role="presentation" align="center" width="100%" cellpadding="0" cellspacing="0" style="max-width:620px; margin:0 auto; background:#ffffff; border:1px solid ${LINE};">${header}${main}${footer}</table></body></html>`
-  const text = `${opts.body.trim()}${opts.button ? `\n\n${opts.button.text}: ${opts.button.href}` : ''}\n\n${opts.signoff ?? 'Best regards,'}\n${opts.signName ?? 'The LankaNewHomes team'}\nLankaNewHomes`
+  const main = `<tr><td style="padding:26px 32px 30px;">${paras}${opts.button ? button(opts.button.href, opts.button.text) : ''}<p style="${P} margin:18px 0 4px;">${esc(opts.signoff ?? 'Warm regards,')}<br><strong>${esc(opts.signName ?? 'LankaNewHomes Team')}</strong><br><span style="color:${MUTED};">LankaNewHomes</span></p></td></tr>`
+  const html = emailShell({ preheader: 'A message from LankaNewHomes', title: 'LankaNewHomes', body: main, helpNote: `Questions? Just reply to this email or write to ${a('mailto:developers@lankanewhomes.com', 'developers@lankanewhomes.com')}.` })
+  const text = `${opts.body.trim()}${opts.button ? `\n\n${opts.button.text}: ${opts.button.href}` : ''}\n\n${opts.signoff ?? 'Warm regards,'}\n${opts.signName ?? 'LankaNewHomes Team'}\nLankaNewHomes`
   return { html, text }
 }
