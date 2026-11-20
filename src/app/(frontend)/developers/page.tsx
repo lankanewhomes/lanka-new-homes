@@ -4,6 +4,7 @@ import { getAllDevelopers } from "@/lib/developer-store";
 import { getPackage, planRotationWeight } from "@/lib/packages";
 import type { Developer } from "@/types";
 import { withSocial } from "@/lib/seo";
+import { FeaturedSlot } from "@/components/featured/featured-slot";
 
 // Regenerate at most once a minute so admin edits show up without waiting for the next deploy.
 export const revalidate = 60;
@@ -105,6 +106,9 @@ export default async function DevelopersPage() {
           </div>
         </div>
       </section>
+
+      {/* Paid placement: featured developers' projects pinned at the top of the directory (Premium and Elite). */}
+      <FeaturedSlot placement="directory-developers" context={{ limit: 3 }} />
 
       {pinnedDevelopers.length > 0 ? (
         <section className="fdv-box fdv-box--sage" id="developer-pro" aria-label="Developer Pro">

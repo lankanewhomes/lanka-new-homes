@@ -6,6 +6,7 @@ import type { Land } from "@/types";
 import { withSocial } from "@/lib/seo";
 import { formatLkr } from "@/lib/format";
 import { landDistricts } from "@/lib/land-seo-pages";
+import { FeaturedSlot } from "@/components/featured/featured-slot";
 
 // Regenerate at most once a minute so admin edits show up without waiting for the next deploy.
 export const revalidate = 60;
@@ -68,6 +69,9 @@ export default async function LandListingPage({ searchParams }: LandListingPageP
   const h1 = location ? `Land for Sale in ${location}` : landUse ? `${landUse} land for sale in Sri Lanka` : "Land for Sale in Sri Lanka";
 
   return (
+    <>
+    {/* Paid placement: featured projects pinned at the top of the land page (Premium and Elite). */}
+    <FeaturedSlot placement="directory-land" heading="Featured projects with land and homes" subheading="Sponsored picks for buyers planning to build or invest" context={{ limit: 3 }} />
     <ProjectListingShell
       breadcrumbs={[{ label: "Home", href: "/" }, { label: "Land" }]}
       h1={h1}
@@ -81,5 +85,6 @@ export default async function LandListingPage({ searchParams }: LandListingPageP
       filterGroups={LAND_FILTER_GROUPS}
       emptyStateText={location ? `No land listings in ${location} yet — browse all land for sale in Sri Lanka below.` : "No land listings yet — check back soon."}
     />
+    </>
   );
 }

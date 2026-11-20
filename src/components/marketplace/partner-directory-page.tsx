@@ -27,6 +27,7 @@ export function PartnerDirectoryPage({
   related,
   layout = "cards",
   children,
+  featuredSlot,
 }: {
   title: string;
   intro: string;
@@ -39,6 +40,8 @@ export function PartnerDirectoryPage({
   /** "columns" lists names as buttons in A-F / G-L / M-R / S-Z columns, like /developers. */
   layout?: "cards" | "columns";
   children?: React.ReactNode;
+  /** Paid Featured block pinned right under the hero (server-rendered by the page). */
+  featuredSlot?: React.ReactNode;
 }) {
   const LETTER_GROUPS = [
     { label: "A – F", test: (l: string) => l >= "A" && l <= "F" },
@@ -74,6 +77,7 @@ export function PartnerDirectoryPage({
           </div>
         </div>
       </section>
+      {featuredSlot}
 
       <section className="fdv-box fdv-box--gray" id="directory" aria-label={title}>
         <div className="wdx-section-head" data-reveal>

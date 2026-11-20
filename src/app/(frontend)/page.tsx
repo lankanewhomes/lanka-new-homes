@@ -8,6 +8,8 @@ import { newListingsCutoff } from "@/lib/new-listings";
 import { rotationSeed } from "@/lib/daily-rotation";
 import { countFloorPlans, slimForHome } from "@/lib/home-slim";
 import { popularSearchGroups } from "@/lib/popular-searches";
+import { FeaturedSlot } from "@/components/featured/featured-slot";
+import { getHeroSlides } from "@/lib/featured/hero";
 
 // The homepage's own canonical, so www is the one address Google keeps.
 export const metadata: Metadata = { alternates: { canonical: "/" } };
@@ -16,12 +18,39 @@ export const metadata: Metadata = { alternates: { canonical: "/" } };
 export const revalidate = 60;
 
 export default async function Home() {
-  const [projects, lands, developers] = await Promise.all([getAllProjects(), getAllLands(), getAllDevelopers()]);
+  const [projects, lands, developers, heroSlides] = await Promise.all([getAllProjects(), getAllLands(), getAllDevelopers(), getHeroSlides()]);
 
   // Computed here, on the server, so the cached HTML and the client's hydration
   // pass share one cutoff for the 30-day New listings window (see lib/new-listings.ts).
   // Every land plot we know of: plots listed one by one, plus the developer-published plot count of lands that have no rows.
   const landPlotTotal = lands.reduce((total, land) => total + ((land.plots ?? []).length || land.plotCount || 0), 0);
 
-  return <HomeClient projects={projects.map(slimForHome)} floorPlanCount={countFloorPlans(projects)} lands={lands.map(landToProjectShape).map(slimForHome)} landPlotTotal={landPlotTotal} developers={developers} newListingsSince={newListingsCutoff()} rotationSeed={rotationSeed()} popularSearches={popularSearchGroups(projects, lands)} />;
+  return (
+    <HomeClient
+      projects={projects.map(slimForHome)}
+      floorPlanCount={countFloorPlans(projects)}
+      lands={lands.map(landToProjectShape).map(slimForHome)}
+      landPlotTotal={landPlotTotal}
+      developers={developers}
+      newListingsSince={newListingsCutoff()}
+      rotationSeed={rotationSeed()}
+      popularSearches={popularSearchGroups(projects, lands)}
+      initialHeroAds={heroSlides.length > 0 ? heroSlides : undefined}
+      featuredSlots={{
+        afterStats: (
+          <>
+            <FeaturedSlot placement="home-featured-carousel" />
+            <FeaturedSlot placement="home-new-launches" />
+          </>
+        ),
+        afterNewListings: (
+          <>
+            <FeaturedSlot placement="home-developer-of-month" />
+            <FeaturedSlot placement="home-logo-bar" />
+          </>
+        ),
+        beforeCities: <FeaturedSlot placement="home-city-tiles" heading="Featured in your city" subheading="One sponsored project in each popular city" />,
+      }}
+    />
+  );
 }

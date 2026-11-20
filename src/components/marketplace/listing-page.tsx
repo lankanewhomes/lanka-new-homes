@@ -20,6 +20,10 @@ import type { MapAreaSelection } from "@/components/marketplace/map-pane";
 import type { MapView } from "@/components/marketplace/explorer-map";
 import { ProjectPopup } from "@/components/map/ProjectPopup";
 import { tileCityMatches } from "@/lib/city-match";
+import { FeaturedTrack } from "@/components/featured/featured-track";
+import { INLINE_EVERY } from "@/lib/featured/config";
+import { FEATURED_DEMO } from "@/lib/featured/demo";
+import type { FeaturedTier } from "@/lib/featured/config";
 
 // The listing map: city bubbles that zoom in when clicked, price pins, 3D / normal switch (shared with /lanka360).
 const LazyExplorerMap = dynamic(() => import("@/components/marketplace/explorer-map").then((mod) => mod.ExplorerMap), {
@@ -340,6 +344,18 @@ export function ListingGridCard({ project, basePath = "/projects" }: { project: 
   );
 }
 
+/** A paid "Featured" project shown as a sponsored card inside the results (after every 6th result). Same card, orange frame + label. */
+export type SponsoredEntry = { project: Project; tier: FeaturedTier };
+
+function SponsoredInlineCard({ entry, basePath }: { entry: SponsoredEntry; basePath: string }) {
+  return (
+    <FeaturedTrack placement="results-inline" projectSlug={entry.project.slug} developer={entry.project.developerSlug} demo={FEATURED_DEMO} className={`fp-card fp-card--${entry.tier} fp-inline-slot`}>
+      <div className="fp-card-label">Featured{FEATURED_DEMO ? <span className="fp-demo-flag">DEMO</span> : null}</div>
+      <ListingGridCard project={entry.project} basePath={basePath} />
+    </FeaturedTrack>
+  );
+}
+
 export function ListingPageBody({
   projects,
   h1,
@@ -350,7 +366,16 @@ export function ListingPageBody({
   filterGroups = FILTER_GROUPS,
   emptyStateText = "No projects match this page yet — check back soon, or browse all new projects in Sri Lanka.",
   citySectionHeading,
+  sponsored = [],
+  premiumPinSlugs = [],
+  topSlot,
 }: {
+  /** Server-rendered Featured block shown above the results (the pinned top 3). */
+  topSlot?: React.ReactNode;
+  /** Featured projects for the sponsored card after every 6th result (already matched to this page by the server). */
+  sponsored?: SponsoredEntry[];
+  /** Slugs drawn on the map as a bigger, branded, always-visible pin. */
+  premiumPinSlugs?: string[];
   projects: Project[];
   h1: string;
   eyebrow: string;
@@ -561,10 +586,25 @@ export function ListingPageBody({
     () =>
       regionFilteredProjects
         .filter((project) => Number.isFinite(project.coordinates?.lat) && Number.isFinite(project.coordinates?.lng) && !(project.coordinates.lat === 0 && project.coordinates.lng === 0))
-        .map((project) => ({ slug: project.slug, name: project.name, city: project.city || project.location || "Sri Lanka", lat: project.coordinates.lat, lng: project.coordinates.lng, price: project.startingPriceLkr > 0 ? project.startingPriceLkr : 0 })),
-    [regionFilteredProjects],
+        .map((project) => ({ slug: project.slug, name: project.name, city: project.city || project.location || "Sri Lanka", lat: project.coordinates.lat, lng: project.coordinates.lng, price: project.startingPriceLkr > 0 ? project.startingPriceLkr : 0, premium: premiumPinSlugs.includes(project.slug) })),
+    [regionFilteredProjects, premiumPinSlugs],
   );
   const mapFitKey = useMemo(() => mapItems.map((item) => item.slug).join("|"), [mapItems]);
+
+  // One sponsored (Featured) card after every INLINE_EVERY-th organic result; organic results keep their normal order.
+  const withSponsored = (list: Project[], keyPrefix: string) => {
+    const nodes: React.ReactNode[] = [];
+    let used = 0;
+    list.forEach((project, index) => {
+      nodes.push(<ListingGridCard key={project.slug} project={project} basePath={basePath} />);
+      if ((index + 1) % INLINE_EVERY === 0 && sponsored.length > 0) {
+        const entry = sponsored[used % sponsored.length];
+        used += 1;
+        nodes.push(<SponsoredInlineCard key={`${keyPrefix}-sponsored-${index}`} entry={entry} basePath={basePath} />);
+      }
+    });
+    return nodes;
+  };
 
   const sortLabel = SORT_OPTIONS.find((option) => option.value === sortBy)?.label ?? SORT_OPTIONS[0].label;
 
@@ -756,21 +796,18 @@ export function ListingPageBody({
               </div>
 
 
+              {topSlot ? <div className="fp-top-slot">{topSlot}</div> : null}
               {sortedProjects.length > 0 ? (
                 <div className="listing-grid">
                   {areaSplit && areaSplit.here.length > 0 && areaSplit.rest.length > 0 ? (
                     <>
                       <h2 className="listing-area-heading">In this map area<span>{areaSplit.here.length}</span></h2>
-                      {areaSplit.here.map((project) => (
-                        <ListingGridCard key={project.slug} project={project} basePath={basePath} />
-                      ))}
+                      {withSponsored(areaSplit.here, "here")}
                       <h2 className="listing-area-heading">More listings<span>{areaSplit.rest.length}</span></h2>
-                      {areaSplit.rest.map((project) => (
-                        <ListingGridCard key={project.slug} project={project} basePath={basePath} />
-                      ))}
+                      {withSponsored(areaSplit.rest, "rest")}
                     </>
                   ) : (
-                    sortedProjects.map((project) => <ListingGridCard key={project.slug} project={project} basePath={basePath} />)
+                    withSponsored(sortedProjects, "all")
                   )}
                 </div>
               ) : (

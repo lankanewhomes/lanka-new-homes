@@ -1,6 +1,7 @@
 import { NextResponse, type NextFetchEvent, type NextRequest } from "next/server";
 import { classifyBot } from "@/lib/bots";
 import { logBotHit } from "@/lib/bot-log";
+import { FEATURED_DEMO } from "@/lib/featured/demo";
 
 // Bot handling (owner, 2026-11-02; every rule lives in src/lib/bots.ts):
 //   - search engines, social previews and AI assistants (the allowlist) always pass, untouched: no block, no limit;
@@ -24,7 +25,10 @@ export function middleware(request: NextRequest, event: NextFetchEvent) {
   } catch {
     /* fail open: carry on as a normal visitor */
   }
-  return NextResponse.next();
+  const response = NextResponse.next();
+  // Featured-placements preview: tell every crawler not to index or follow anything (removed with the demo flag, see lib/featured/demo.ts).
+  if (FEATURED_DEMO) response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
+  return response;
 }
 
 // Not run for static files, images, favicon, robots.txt or sitemap.xml: those are never blocked and never logged.

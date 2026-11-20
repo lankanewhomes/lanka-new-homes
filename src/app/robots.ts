@@ -1,12 +1,15 @@
 import type { MetadataRoute } from "next";
 import { getSiteUrl } from "@/lib/seo";
 import { ROBOTS_ALLOWED_BOTS, ROBOTS_DISALLOWED_BOTS } from "@/lib/bots";
+import { FEATURED_DEMO } from "@/lib/featured/demo";
 
 // Lives at the app root on purpose: inside the (frontend) route group this
 // file was silently ignored and /robots.txt 404'd on the live site
 // (found 2026-09-08). sitemap.ts is fine in the group; robots.ts is not.
 
 export default function robots(): MetadataRoute.Robots {
+  // The Featured-placements preview must never be indexed (see lib/featured/demo.ts).
+  if (FEATURED_DEMO) return { rules: [{ userAgent: "*", disallow: "/" }] };
   const siteUrl = getSiteUrl();
   const disallow = [
     "/admin/",

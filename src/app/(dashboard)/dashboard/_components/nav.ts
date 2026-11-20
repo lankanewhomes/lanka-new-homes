@@ -1,4 +1,4 @@
-import { Activity, Bot, Building, Building2, BarChart3, FileText, Globe2, ListTree, CreditCard, GalleryHorizontal, Handshake, HardHat, Heart, Image as ImageIcon, LayoutDashboard, ListChecks, Mail, MapPin, MapPinned, Megaphone, MessageCircle, Newspaper, Package, Receipt, Ruler, Search, Settings, Share2, Sofa, Star, Tag, UserCog, Users, Inbox, type LucideIcon } from "lucide-react";
+import { Activity, Sparkles, Bot, Building, Building2, BarChart3, FileText, Globe2, ListTree, CreditCard, GalleryHorizontal, Handshake, HardHat, Heart, Image as ImageIcon, LayoutDashboard, ListChecks, Mail, MapPin, MapPinned, Megaphone, MessageCircle, Newspaper, Package, Receipt, Ruler, Search, Settings, Share2, Sofa, Star, Tag, UserCog, Users, Inbox, type LucideIcon } from "lucide-react";
 import { schemaIndex } from "../_mock/schema-index";
 import type { Role } from "../_mock/types";
 
@@ -26,6 +26,7 @@ export function buildSidebar(role: Role, newLeads: number, companyId?: number): 
   const top: SideItem[] = [
     { key: "overview", label: "Overview", href: "/dashboard/overview", icon: LayoutDashboard },
     { key: "package", label: role === "admin" ? "Packages" : "My package", href: "/dashboard/package", icon: Package },
+    { key: "featured", label: role === "admin" ? "Featured placements" : "My featured placements", href: "/dashboard/featured", icon: Sparkles },
     { key: "social", label: "Social content", href: "/dashboard/social", icon: Share2 },
     ...(role === "admin" ? [{ key: "inbox", label: "Inbox", href: "/dashboard/inbox", icon: Inbox }] : []),
     ...(role === "admin" ? [{ key: "lead-activity", label: "Lead activity", href: "/dashboard/lead-activity", icon: Activity }] : []),

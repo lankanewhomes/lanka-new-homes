@@ -3,6 +3,7 @@ import { PartnerDirectoryPage } from "@/components/marketplace/partner-directory
 import { getAllConstructionCompanies } from "@/lib/construction-company-store";
 import type { ConstructionCompany } from "@/types";
 import { withSocial } from "@/lib/seo";
+import { FeaturedSlot } from "@/components/featured/featured-slot";
 
 export const revalidate = 60;
 
@@ -50,6 +51,7 @@ export default async function ConstructionCompaniesPage() {
       nounPlural="construction companies"
       basePath="/construction-companies"
       entries={companies}
+      featuredSlot={<FeaturedSlot placement="directory-construction" heading="Featured projects to build near" subheading="Sponsored new-home projects" context={{ limit: 3 }} />}
       about={{
         title: "About the construction company directory.",
         paragraphs: [

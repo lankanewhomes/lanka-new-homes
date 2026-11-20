@@ -3,7 +3,7 @@
 import { dailyPick } from "@/lib/daily-rotation";
 import { parseNaturalSearch } from "@/lib/natural-search";
 import { tileCityMatches } from "@/lib/city-match";
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -17,6 +17,7 @@ import { weightedTake } from "@/lib/weighted-random";
 import { isInNewListingsWindow } from "@/lib/new-listings";
 import type { PopularGroup } from "@/lib/popular-searches";
 import type { Developer, HeroAd, Project } from "@/types";
+import { trackFeatured } from "@/components/featured/featured-track";
 
 // Real photos of each city (Wikimedia Commons), replacing generic Unsplash
 // stock photos that weren't actually of these places. Kandy's original
@@ -66,7 +67,13 @@ export function HomeClient({
   newListingsSince,
   rotationSeed,
   popularSearches = [],
+  initialHeroAds,
+  featuredSlots,
 }: {
+  /** Paid hero slides (max 3), chosen on the server so the first slide is in the page HTML. Omitted = fetched in the browser as before. */
+  initialHeroAds?: (HeroAd & { sponsored?: boolean })[];
+  /** Server-rendered Featured blocks (see components/featured/featured-slot.tsx) placed between the homepage sections. */
+  featuredSlots?: { afterStats?: React.ReactNode; afterNewListings?: React.ReactNode; beforeCities?: React.ReactNode };
   landPlotTotal?: number;
   projects: Project[];
   /** Counted on the server — the slimmed projects above carry no floor plans. */
@@ -95,7 +102,7 @@ export function HomeClient({
   // carousel moves backward past it.
   const [maxHeroSlideReached, setMaxHeroSlideReached] = useState(0);
   const [heroPaused, setHeroPaused] = useState(false);
-  const [heroAds, setHeroAds] = useState<HeroAd[]>([]);
+  const [heroAds, setHeroAds] = useState<(HeroAd & { sponsored?: boolean })[]>(initialHeroAds ?? []);
 
   // "Explore by city": cities with the most projects first (owner, 2026-10-14). The count uses the same rule as the search the tile
   // opens (src/lib/city-match.ts: "Colombo" includes Colombo 05, Colombo 08…); cities with no projects keep their old order at the end.
@@ -116,6 +123,7 @@ export function HomeClient({
   }, [projects]);
 
   useEffect(() => {
+    if (initialHeroAds) return;
     fetch("/api/hero-ads?active=1")
       .then((response) => response.json())
       .then((data) => setHeroAds(Array.isArray(data?.ads) ? data.ads : []))
@@ -132,13 +140,13 @@ export function HomeClient({
         .filter((project) => project.heroImage)
         .sort((a, b) => (b.finalScore ?? 0) - (a.finalScore ?? 0))
         .slice(0, 4)
-        .map((project) => ({ src: project.heroImage, href: `/projects/${project.slug}`, alt: project.name })),
+        .map((project) => ({ src: project.heroImage, href: `/projects/${project.slug}`, alt: project.name, sponsored: false, slug: undefined as string | undefined, developer: undefined as string | undefined })),
     [projects]
   );
 
   const heroSlides = useMemo(() => (
     heroAds.length > 0
-      ? heroAds.map((ad) => ({ src: ad.image, href: ad.linkUrl, alt: ad.headline }))
+      ? heroAds.map((ad) => ({ src: ad.image, href: ad.linkUrl, alt: ad.headline, sponsored: Boolean(ad.sponsored), slug: ad.projectSlug, developer: ad.developerSlug }))
       : fallbackProjectSlides
   ), [heroAds, fallbackProjectSlides]);
 
@@ -151,6 +159,15 @@ export function HomeClient({
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMaxHeroSlideReached((max) => Math.max(max, heroSlide));
   }, [heroSlide]);
+
+  // Paid hero slides: one featured_impression the first time each slide is actually shown.
+  const heroSeen = useRef(new Set<number>());
+  useEffect(() => {
+    const slide = heroSlides[heroSlide];
+    if (!slide?.sponsored || heroSeen.current.has(heroSlide)) return;
+    heroSeen.current.add(heroSlide);
+    trackFeatured("impression", { placement: "home-hero", projectSlug: slide.slug, developer: slide.developer });
+  }, [heroSlide, heroSlides]);
 
   useEffect(() => {
     if (heroPaused) return;
@@ -350,7 +367,7 @@ export function HomeClient({
     <section className="luxury-hero-two" aria-label="Luxury listing search hero">
       <div className="luxury-hero-two-media">
         <div className="luxury-hero-two-track" style={{ transform: `translateX(-${heroSlide * 100}%)` }}>
-          {heroSlides.map((slide, index) => <div className="luxury-hero-two-slide" key={`${slide.src}-${index}`}><Link href={slide.href} className="luxury-hero-two-slide-link" aria-hidden={index !== heroSlide} tabIndex={index === heroSlide ? 0 : -1}>{index <= maxHeroSlideReached ? <Image src={slide.src} alt={index === heroSlide ? slide.alt : ""} fill priority={index === 0} sizes="100vw" /> : null}<span className="luxury-hero-two-view-project"><ArrowUpRight className="luxury-hero-two-view-project-icon" size={16} strokeWidth={1.5} aria-hidden="true" />View project</span></Link></div>)}
+          {heroSlides.map((slide, index) => <div className="luxury-hero-two-slide" key={`${slide.src}-${index}`}><Link href={slide.href} className="luxury-hero-two-slide-link" aria-hidden={index !== heroSlide} tabIndex={index === heroSlide ? 0 : -1} onClick={slide.sponsored ? () => trackFeatured("click", { placement: "home-hero", projectSlug: slide.slug, developer: slide.developer }) : undefined}>{index <= maxHeroSlideReached ? <Image src={slide.src} alt={index === heroSlide ? slide.alt : ""} fill priority={index === 0} sizes="100vw" /> : null}{slide.sponsored ? <span className="fp-sponsored" style={{ position: "absolute", top: 16, left: 16, zIndex: 3 }}>Sponsored</span> : null}<span className="luxury-hero-two-view-project"><ArrowUpRight className="luxury-hero-two-view-project-icon" size={16} strokeWidth={1.5} aria-hidden="true" />View project</span></Link></div>)}
         </div>
         <div className="luxury-hero-two-overlay" />
         <button type="button" className="luxury-hero-two-arrow" aria-label="Previous slide" onClick={showPreviousHeroSlide}><ChevronLeft size={18} /></button>
@@ -433,6 +450,8 @@ export function HomeClient({
         </div>
       </section>
 
+      {featuredSlots?.afterStats}
+
       {featuredProjects.length > 0 ? (
         <section className="featured-projects-section" aria-label="Featured projects">
           <div className="featured-listings-head">
@@ -492,6 +511,9 @@ export function HomeClient({
           </div>
         </section>
       ) : null}
+
+      {featuredSlots?.afterNewListings}
+      {featuredSlots?.beforeCities}
 
       <section className="neighborhoods-section" aria-label="Find the city for you">
         <div className="featured-listings-head">

@@ -1,8 +1,11 @@
 import Link from "next/link";
+import { Fragment } from "react";
 import { buildBreadcrumbJsonLd, buildFaqJsonLd, jsonLdScriptProps } from "@/lib/seo";
 import type { Guide } from "@/lib/guides";
 import type { Project } from "@/types";
 import { ListingGridCard } from "@/components/marketplace/listing-page";
+import { FeaturedSlot } from "@/components/featured/featured-slot";
+import { GUIDE_TOPICS } from "@/lib/featured/guide-topics";
 
 const PAGE_LABELS: Record<string, string> = {
   "/projects": "All New Projects",
@@ -27,7 +30,8 @@ const PAGE_LABELS: Record<string, string> = {
   "/projects/cinnamon-life-apartments": "The Residences at Cinnamon Life",
 };
 
-export function GuidePageShell({ guide, lands }: { guide: Guide; lands?: Project[] }) {
+export async function GuidePageShell({ guide, lands }: { guide: Guide; lands?: Project[] }) {
+  const topic = GUIDE_TOPICS[guide.slug] ?? { context: {} };
   const breadcrumbJsonLd = buildBreadcrumbJsonLd(guide.breadcrumbs);
   const faqJsonLd = buildFaqJsonLd(guide.faqs);
 
@@ -77,8 +81,10 @@ export function GuidePageShell({ guide, lands }: { guide: Guide; lands?: Project
       </section>
 
       {guide.sections.map((section, index) => (
+        <Fragment key={section.heading}>
+        {/* Paid placement: featured projects matched to the guide's topic, after the second section. */}
+        {index === 2 ? <FeaturedSlot placement="guide-inline" context={{ ...topic.context, limit: 3 }} fallbackContexts={(topic.fallbacks ?? []).map((fallback) => ({ ...fallback, limit: 3 }))} /> : null}
         <section
-          key={section.heading}
           className={`fdv-box fdv-box--${TINTS[index % TINTS.length]}`}
           id={`section-${index + 1}`}
           aria-label={section.heading}
@@ -90,7 +96,9 @@ export function GuidePageShell({ guide, lands }: { guide: Guide; lands?: Project
             <p>{section.body}</p>
           </div>
         </section>
+        </Fragment>
       ))}
+      {guide.sections.length <= 2 ? <FeaturedSlot placement="guide-inline" context={{ ...topic.context, limit: 3 }} fallbackContexts={(topic.fallbacks ?? []).map((fallback) => ({ ...fallback, limit: 3 }))} /> : null}
 
       {lands && lands.length > 0 ? (
         <section className="new-listings-section land-listings-section" id="land-listings" aria-label="Land for sale in Sri Lanka">
@@ -142,6 +150,8 @@ export function GuidePageShell({ guide, lands }: { guide: Guide; lands?: Project
           </ul>
         </section>
       ) : null}
+
+      <FeaturedSlot placement="guide-end" context={{ ...topic.context, limit: 3 }} fallbackContexts={(topic.fallbacks ?? []).map((fallback) => ({ ...fallback, limit: 3 }))} />
 
       <section className="fdv-box fdv-box--dark guide-detail-note" aria-label="Before you decide">
         <h2>Before you decide.</h2>

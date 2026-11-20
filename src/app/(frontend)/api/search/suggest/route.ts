@@ -3,10 +3,12 @@ import { getAllProjects } from "@/lib/project-store";
 import { getAllLands } from "@/lib/land-store";
 import { getAllDevelopers } from "@/lib/developer-store";
 import { searchablePages } from "@/lib/listing-categories";
+import { getFeaturedData } from "@/lib/featured/store";
+import { selectFeatured } from "@/lib/featured/engine";
 
 // Header search dropdown: projects, land, developers and cities matching what was typed. A small in-memory index
 // (refreshed every minute) keeps keystrokes from hitting Supabase each time.
-type Suggestion = { label: string; detail: string; href: string };
+type Suggestion = { label: string; detail: string; href: string; sponsored?: boolean; developer?: string };
 // Collection pages (Luxury, Beachfront, Villas, Pre-construction, Apartments...) found by their words, not their exact title.
 const extraCollections: { label: string; href: string; keywords: string }[] = [
   { label: "Apartments for sale", href: "/projects?type=Apartments", keywords: "apartment apartments condo condominium flat flats" },
@@ -64,5 +66,19 @@ export async function GET(request: Request) {
   const collections = matchCollections(q).slice(0, 4);
   const seen = new Set(collections.map((c) => c.href));
   const rest = [...starts, ...contains].filter((item) => !seen.has(item.href));
-  return NextResponse.json({ suggestions: [...collections, ...rest].slice(0, 8) });
+  const organic = [...collections, ...rest].slice(0, 7);
+
+  // Paid placement: one sponsored suggestion (Premium and Elite) whose name, place or type matches what was typed. Always labelled.
+  let sponsored: Suggestion | undefined;
+  try {
+    const { state, projects } = await getFeaturedData();
+    const [hit] = selectFeatured(state, projects, "search-autocomplete", { limit: 40 }).filter((item) => {
+      const hay = `${item.project.name} ${item.project.location} ${item.project.city} ${item.project.type} ${item.project.developerName}`.toLowerCase();
+      return hay.includes(q) || wordsOf(q).every((word) => hay.includes(word));
+    });
+    if (hit) sponsored = { label: hit.project.name, detail: "Sponsored", href: `/projects/${hit.project.slug}`, sponsored: true, developer: hit.developerSlug };
+  } catch {
+    // never let an ad lookup break search
+  }
+  return NextResponse.json({ suggestions: sponsored ? [sponsored, ...organic.filter((item) => item.href !== sponsored.href)] : organic });
 }

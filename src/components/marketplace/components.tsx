@@ -1,6 +1,8 @@
 "use client";
 
 import Image from "next/image";
+import { AlsoLike } from "@/components/featured/also-like";
+import { recordFeaturedLead, trackFeatured } from "@/components/featured/featured-track";
 import { isInternalBrowser } from "@/lib/internal-traffic";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -2271,6 +2273,7 @@ export function RequestInfoDialog({
       }
 
       setSubmitted(true);
+      recordFeaturedLead(); // credits the lead to the Featured placement the visitor clicked, if any
       const { utm_campaign } = getStoredUtmParams();
       trackEvent("generate_lead", {
         listing_id: project.slug,
@@ -2359,6 +2362,7 @@ export function RequestInfoDialog({
               </Button>
             ) : null}
             <Button type="button" onClick={onClose}>Close</Button>
+            <AlsoLike slug={project.slug} />
           </div>
         ) : (
           <form ref={formRef} onSubmit={onSubmit} noValidate className="request-info-body">
@@ -4134,12 +4138,12 @@ function MobileLandIcon({ size = 22 }: { size?: number }) {
   );
 }
 
-export function Header() {
+export function Header({ menuCard }: { menuCard?: React.ReactNode } = {}) {
   const { language, setLanguage } = useLanguage();
   const navPath = usePathname() ?? "";
   const router = useRouter();
   const [navQuery, setNavQuery] = useState("");
-  const [navSuggestions, setNavSuggestions] = useState<{ label: string; detail: string; href: string }[]>([]);
+  const [navSuggestions, setNavSuggestions] = useState<{ label: string; detail: string; href: string; sponsored?: boolean; developer?: string }[]>([]);
   const [navSearchOpen, setNavSearchOpen] = useState(false);
   useEffect(() => {
     const q = navQuery.trim();
@@ -4206,8 +4210,8 @@ export function Header() {
             {navSearchOpen && navQuery.trim().length >= 2 && navSuggestions.length > 0 ? (
               <div className="header-search-suggestions" role="listbox" aria-label="Search suggestions">
                 {navSuggestions.map((suggestion) => (
-                  <button key={`${suggestion.detail}-${suggestion.label}`} type="button" role="option" aria-selected={false} onMouseDown={(event) => event.preventDefault()} onClick={() => { setNavSearchOpen(false); setNavQuery(suggestion.label); router.push(suggestion.href); }}>
-                    <IconSearch size={16} aria-hidden="true" /><span>{suggestion.label}</span><small>{suggestion.detail}</small>
+                  <button key={`${suggestion.detail}-${suggestion.label}`} type="button" role="option" aria-selected={false} onMouseDown={(event) => event.preventDefault()} onClick={() => { if (suggestion.sponsored) trackFeatured("click", { placement: "search-autocomplete", projectSlug: suggestion.href.split("/").pop(), developer: suggestion.developer }); setNavSearchOpen(false); setNavQuery(suggestion.label); router.push(suggestion.href); }}>
+                    <IconSearch size={16} aria-hidden="true" /><span>{suggestion.label}</span><small>{suggestion.sponsored ? <em className="fp-sponsored" style={{ fontStyle: "normal" }}>Sponsored</em> : suggestion.detail}</small>
                   </button>
                 ))}
               </div>
@@ -4227,6 +4231,7 @@ export function Header() {
               <Link href="/projects?type=Private+Residence">Private Residence</Link>
               <Link href="/projects?type=Townhouse">Townhouse</Link>
               <Link href="/projects">All new homes</Link>
+              {menuCard}
             </div>
           </div>
           <div className={`nav-dropdown${navPath.startsWith("/land") ? " is-active" : ""}`}>

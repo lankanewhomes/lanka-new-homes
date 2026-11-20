@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { guides } from "@/lib/guides";
 import { withSocial } from "@/lib/seo";
+import { FeaturedSlot } from "@/components/featured/featured-slot";
 
 export const metadata: Metadata = withSocial({
   title: "Buying Guides for Sri Lanka Real Estate",
@@ -93,6 +94,9 @@ export default function GuidesIndexPage() {
           ))}
         </div>
       </section>
+
+      {/* Paid placement: sponsored "Developer Spotlight" articles (add-on). */}
+      <FeaturedSlot placement="guide-spotlight" />
 
       <section className="fdv-box fdv-box--lilac" id="process" aria-label="The buying process">
         <div className="wdx-section-head" data-reveal>

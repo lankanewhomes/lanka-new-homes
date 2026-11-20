@@ -6,6 +6,8 @@ import { AccountShell, AccountPageHero } from "@/components/account/account-shel
 import { SavedPropertiesList } from "@/components/account/saved-properties-list";
 import type { Project } from "@/types";
 import { withSocial } from "@/lib/seo";
+import { FeaturedSlot } from "@/components/featured/featured-slot";
+import { inferListingContext } from "@/components/marketplace/listing-shell";
 
 export const metadata: Metadata = withSocial({
   title: "Saved Properties",
@@ -38,6 +40,13 @@ export default async function SavedListingsPage() {
       <section className="fdv-box fdv-box--gray" id="saved" aria-label="Saved properties">
         <SavedPropertiesList userId={profile.id} initialProjects={projects} />
       </section>
+      {/* Paid placement: featured projects like the ones this person saved (never one they already saved). */}
+      <FeaturedSlot
+        placement="saved-recommended"
+        context={{ ...inferListingContext(projects.length >= 2 ? projects : [...projects, ...projects]), limit: 3 }}
+        fallbackContexts={[{ limit: 3 }]}
+        exclude={projects.map((project) => project.slug)}
+      />
     </AccountShell>
   );
 }

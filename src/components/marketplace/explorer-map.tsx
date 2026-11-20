@@ -18,7 +18,9 @@ const MAP_STYLE = "https://tiles.openfreemap.org/styles/liberty";
 const PIN_ZOOM = 13.2;
 const TILT = 58;
 
-export type ExplorerItem = { slug: string; name: string; city: string; lat: number; lng: number; price: number };
+export type ExplorerItem = { slug: string; name: string; city: string; lat: number; lng: number; price: number;
+  /** Paid Featured project: drawn as a bigger, branded pin that stays visible at every zoom level. */
+  premium?: boolean };
 /** What the map is showing right now. `zoomed` is false while it is still the whole-country overview (zoom below 8). */
 export type MapView = { west: number; south: number; east: number; north: number; zoom: number; zoomed: boolean };
 
@@ -226,7 +228,7 @@ export function ExplorerMap({
                 </Marker>
               );
             })
-          : items.map((item) => (
+          : items.filter((item) => !item.premium).map((item) => (
               <Marker key={item.slug} longitude={item.lng} latitude={item.lat} anchor="bottom">
                 <button
                   type="button"
@@ -241,6 +243,23 @@ export function ExplorerMap({
                 </button>
               </Marker>
             ))}
+
+        {items.filter((item) => item.premium).map((item) => (
+          <Marker key={`premium-${item.slug}`} longitude={item.lng} latitude={item.lat} anchor="bottom" style={{ zIndex: 5 }}>
+            <button
+              type="button"
+              className={`l360-pin l360-pin--premium${selectedSlug === item.slug ? " is-selected" : ""}`}
+              aria-label={`Featured: ${item.name}`}
+              onClick={(event) => {
+                event.stopPropagation();
+                onSelect?.(item.slug);
+              }}
+            >
+              <span className="l360-pin-star" aria-hidden="true">★</span>
+              <span>{item.name.length > 22 ? `${item.name.slice(0, 21)}…` : item.name}</span>
+            </button>
+          </Marker>
+        ))}
 
         {selected && renderPopup ? (
           <Popup longitude={selected.lng} latitude={selected.lat} anchor="bottom" offset={34} closeButton={false} closeOnClick={false} maxWidth="260px" className="xmap-popup">

@@ -11,6 +11,9 @@ import { UtmCapture } from "@/components/analytics/utm-capture";
 import { InternalTrafficFlag } from "@/components/analytics/internal-traffic-flag";
 import { CompareBar } from "@/components/marketplace/compare-bar";
 import { buildOrganizationJsonLd, buildWebsiteJsonLd, getSiteUrl, jsonLdScriptProps, withSocial } from "@/lib/seo";
+import { FeaturedSlot } from "@/components/featured/featured-slot";
+import { FEATURED_DEMO } from "@/lib/featured/demo";
+import "@/components/featured/featured.css";
 import "./globals.css";
 
 const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
@@ -37,17 +40,15 @@ export const metadata: Metadata = withSocial({
     template: "%s | LankaNewHomes",
   },
   description: "Discover new homes and apartment communities across Sri Lanka.",
-  robots: {
-    index: true,
-    follow: true,
-  },
+  // The Featured-placements preview (FEATURED_DEMO, see lib/featured/demo.ts) is never indexed.
+  robots: FEATURED_DEMO ? { index: false, follow: false, nocache: true } : { index: true, follow: true },
   // Set once the user has a verification code from Google Search Console —
   // renders <meta name="google-site-verification"> automatically when
   // present, omitted entirely otherwise (no fabricated placeholder value).
   verification: process.env.GOOGLE_SITE_VERIFICATION ? { google: process.env.GOOGLE_SITE_VERIFICATION } : undefined,
 }, { path: "/", socialTitle: "LankaNewHomes | New Homes in Sri Lanka" });
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`h-full antialiased ${bodyFont.variable}`}>
       <body className="min-h-full" suppressHydrationWarning>
@@ -60,7 +61,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <UtmCapture />
         <LanguageProvider>
           <AuthModalProvider>
-            <Header />
+            {/* Paid placements: announcement bar at the very top, and a featured project card inside the Projects menu. */}
+            <FeaturedSlot placement="site-announcement" />
+            <Header menuCard={<FeaturedSlot placement="site-menu-card" />} />
             <BreadcrumbBar />
             <main>{children}</main>
             <Footer />

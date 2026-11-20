@@ -11,6 +11,9 @@ import { hasPremiumStyleBadge, isPaidPackageTier } from "@/lib/packages";
 import { FEATURED_TOOLTIP, VERIFIED_DEVELOPER_TOOLTIP } from "@/lib/developer-badges";
 import { pickSimilarListings } from "@/lib/similar-listings";
 import { SimilarListingsSection } from "@/components/marketplace/similar-listings";
+import { FeaturedSlot } from "@/components/featured/featured-slot";
+import { getFeaturedData } from "@/lib/featured/store";
+import { selectFeatured } from "@/lib/featured/engine";
 import {
   AmenitiesShowcaseSection,
   CommercialAreasSection,
@@ -112,6 +115,9 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
     getAllProjects(),
   ]);
   const similarListings = pickSimilarListings(project, allProjects, 4);
+  // Nearby must not repeat what the Similar block above it already shows.
+  const featuredData = await getFeaturedData();
+  const nearbyExclude = selectFeatured(featuredData.state, featuredData.projects, "project-similar", { location: project.district || project.city, type: project.type, projectSlug: project.slug, developerSlug: project.developerSlug, limit: 3 }).map((item) => item.project.slug);
 
   // Google's Product rich result needs a real offer (offers/review/aggregateRating): a listing with no published
   // price is a plain RealEstateListing instead of a Product with a price of 0.
@@ -226,6 +232,18 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
 
         <StatsContactCard project={project} developer={developer} />
 
+        {/* Paid placements: featured projects first in Similar and Nearby. An Elite developer's own pages show no other developer's featured projects. */}
+        <FeaturedSlot
+          placement="project-similar"
+          context={{ location: project.district || project.city, type: project.type, projectSlug: project.slug, developerSlug: project.developerSlug, limit: 3 }}
+          fallbackContexts={[{ type: project.type, projectSlug: project.slug, developerSlug: project.developerSlug, limit: 3 }]}
+        />
+        <FeaturedSlot
+          placement="project-nearby"
+          context={{ location: project.city || project.location, projectSlug: project.slug, developerSlug: project.developerSlug, limit: 3 }}
+          fallbackContexts={[{ location: project.district, projectSlug: project.slug, developerSlug: project.developerSlug, limit: 3 }]}
+          exclude={nearbyExclude}
+        />
         <SimilarListingsSection listings={similarListings} />
       </div>
     </div>
