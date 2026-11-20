@@ -21513,3 +21513,7 @@ body:has(.request-info-overlay) .listing-hero-quickjump-bar { display: none; }
   .nav-mega-heading { font-size: 18px; }
   .site-header .nav-mega-column a { font-size: 15px; }
 }
+
+/* Price guide pages, "Keep exploring" (owner, 2026-11-20): the link chips sat right against the subheading. Same 22px gap
+   under the heading block as every other section on the page. */
+.featured-listings-head + .about-areas { margin-top: 22px; }
