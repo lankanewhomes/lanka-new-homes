@@ -22,7 +22,7 @@ export function emailShell(opts: { preheader: string; title: string; body: strin
 ${opts.body}
   <tr><td style="background:${INK};padding:22px 32px;font-size:12px;line-height:1.7;color:#b9b8b2;">Sri Lanka's new homes marketplace: apartments, houses and land, with prices, floor plans and developer details in one place.<br><a href="${SITE}" style="color:#ffffff;text-decoration:underline;">www.lankanewhomes.com</a><br>Follow us: <a href="https://www.instagram.com/lankanewhomes/" style="color:#ffffff;text-decoration:underline;">Instagram</a> &nbsp;·&nbsp; <a href="https://www.facebook.com/lankanewhomes" style="color:#ffffff;text-decoration:underline;">Facebook</a> &nbsp;·&nbsp; <a href="https://www.tiktok.com/@lankanewhomes" style="color:#ffffff;text-decoration:underline;">TikTok</a></td></tr>
 ${opts.footerNote === '' ? '' : `  <tr><td style="padding:18px 32px;background:#ffffff;border-top:1px solid ${LINE};font-size:13px;line-height:1.6;color:#6b6b6b;text-align:center;">${opts.footerNote ?? 'You are receiving this because your company or project is listed on LankaNewHomes.'}</td></tr>`}
-${opts.receivingNote ? `  <tr><td style="padding:18px 32px 20px;background:#f7f6f3;border-top:1px solid ${LINE};font-size:12px;line-height:1.6;color:#8a8a8a;text-align:center;">${opts.receivingNote}</td></tr>` : ''}
+${opts.receivingNote ? `  <tr><td style="padding:18px 32px 20px;background:#ffffff;border-top:1px solid ${LINE};font-size:12px;line-height:1.6;color:#8a8a8a;text-align:center;">${opts.receivingNote}</td></tr>` : ''}
 ${opts.lastRow ?? ''}
 </table></td></tr></table></body></html>`
 }
