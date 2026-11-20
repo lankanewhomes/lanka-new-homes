@@ -89,15 +89,13 @@
 .fp-banner .fp-cta { background: var(--fp-orange); margin-top: 6px; }
 @media (min-width: 760px) { .fp-banner { grid-template-columns: 340px 1fr; min-height: 150px; } .fp-banner-media { height: auto; } .fp-banner-body { padding: 20px 28px; } .fp-banner-body strong { font-size: 24px; line-height: 30px; } }
 
-/* Announcement bar at the very top of the site: slim, light, one line */
-.fp-announce { position: relative; display: flex; align-items: center; justify-content: center; height: 40px; padding: 0 16px; background: #fdf3ea; border-bottom: 1px solid #f3dcc8; color: #1a1a1a; font-size: 13px; }
+/* Announcement bar at the very top of the site: black, white text, no borders or lines */
+.fp-announce { position: relative; display: flex; align-items: center; justify-content: center; height: 40px; padding: 0 16px; background: #000; color: #fff; font-size: 13px; }
 .fp-announce-link { display: flex; align-items: center; gap: 10px; min-width: 0; max-width: 100%; color: inherit; text-decoration: none; }
-.fp-announce-tag { flex: none; background: #f47b36; color: #fff; font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 3px 8px; }
 .fp-announce-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
 .fp-announce-cta { flex: none; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
-.fp-announce-ad { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 9px; letter-spacing: .08em; text-transform: uppercase; color: #8a7f72; display: none; }
-@media (min-width: 900px) { .fp-announce-ad { display: block; } }
-@media (max-width: 520px) { .fp-announce-cta { display: none; } }
+.fp-announce-ad { position: absolute; left: 16px; bottom: 2px; font-size: 9px; line-height: 1; color: rgba(255,255,255,.75); }
+@media (max-width: 520px) { .fp-announce-cta { display: none; } .fp-announce-ad { left: 50%; transform: translateX(-50%); } }
 
 /* Card inside the Projects menu */
 .fp-menucard { display: flex; gap: 10px; align-items: center; margin: 8px; padding: 8px; border: 1px solid var(--fp-line); background: var(--fp-soft); text-decoration: none; color: var(--fp-ink); width: 270px; }
@@ -187,8 +185,6 @@
 .adv-lead p { max-width: 760px; font-size: 15px; line-height: 24px; }
 .adv-final { text-align: left; }
 
-/* Featured sections share the homepage "New listings" panel */
-.fp-listings { margin-bottom: 34px; }
-.fp-listings .featured-listings-grid { margin-top: 22px; }
+/* Featured sections reuse the homepage .new-listings-section styles as they are (nothing overridden except spacing for non-card blocks) */
 .fp-listings .fp-logos, .fp-listings .fp-cities, .fp-listings .fp-dom, .fp-listings .fp-spot { margin-top: 22px; }
-@media (max-width: 760px) { .fp-listings { padding: 40px 16px 36px; } }
+.fp-listings .featured-listings-grid { margin-top: 22px; }

@@ -252,11 +252,10 @@ export async function FeaturedSlot({ placement, context = {}, fallbackContexts =
       return (
         <FeaturedTrack placement={placement} projectSlug={booking.projectSlug} developer={booking.developerSlug} demo={FEATURED_DEMO} className="fp-announce">
           <Link href={booking.creative.ctaHref} className="fp-announce-link">
-            {booking.creative.subline ? <span className="fp-announce-tag">{booking.creative.subline}</span> : null}
             <span className="fp-announce-text">{booking.creative.headline}</span>
             <span className="fp-announce-cta">{booking.creative.ctaLabel ?? "Learn more"} <span aria-hidden="true">→</span></span>
           </Link>
-          <span className="fp-announce-ad">Sponsored{FEATURED_DEMO ? " · demo" : ""}</span>
+          <span className="fp-announce-ad">Sponsored Now</span>
         </FeaturedTrack>
       );
     }
