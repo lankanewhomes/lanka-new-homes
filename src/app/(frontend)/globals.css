@@ -21068,3 +21068,8 @@ body:has(.compare-bar) {
 .pg-page .new-listings-section .pg-table-card { background: #fff; padding: 8px 20px 20px; overflow-x: auto; }
 .pg-page .new-listings-section .guide-detail-card { background: #fff; padding: 22px 24px; }
 .pg-page .new-listings-section .guide-detail-card p { margin: 0; }
+/* Price pages: neighbouring sections get different backgrounds (owner, 2026-11-20) */
+.pg-page .new-listings-section.pg-tint-0 { background: #dfeae8; }
+.pg-page .new-listings-section.pg-tint-1 { background: #e8ede2; }
+.pg-page .new-listings-section.pg-tint-2 { background: #f7f1e6; }
+.pg-page .new-listings-section.pg-tint-3 { background: #ebe8f3; }

@@ -89,7 +89,7 @@ export function PriceGuidePage({
         </div>
       </section>
 
-      <section className="new-listings-section" id="by-area" aria-label="Price by area">
+      <section className="new-listings-section pg-tint-0" id="by-area" aria-label="Price by area">
         <div className="featured-listings-head">
           <h2>Price by {areaNoun}</h2>
           <p className="featured-listings-subhead">Starting prices of the projects in each {areaNoun}, lowest first.</p>
@@ -122,7 +122,7 @@ export function PriceGuidePage({
         const inBand = priced.filter((p) => p.startingPriceLkr >= band.min && p.startingPriceLkr < band.max);
         if (!inBand.length) return null;
         return (
-          <section key={band.label} className="new-listings-section" id={`band-${index + 1}`} aria-label={band.label}>
+          <section key={band.label} className={`new-listings-section pg-tint-${(index + 1) % 4}`} id={`band-${index + 1}`} aria-label={band.label}>
             <div className="featured-listings-head">
               <h2>{band.label}</h2>
               <p className="featured-listings-subhead">{inBand.length} {inBand.length === 1 ? "project" : "projects"} starting in this range.</p>
@@ -136,7 +136,7 @@ export function PriceGuidePage({
         );
       })}
 
-      <section className="new-listings-section" id="what-changes-price" aria-label="What changes the price">
+      <section className={`new-listings-section pg-tint-${(bands.length + 1) % 4}`} id="what-changes-price" aria-label="What changes the price">
         <div className="featured-listings-head">
           <h2>What changes the price</h2>
           <p className="featured-listings-subhead">Read these before you compare two projects.</p>
@@ -151,7 +151,7 @@ export function PriceGuidePage({
       </section>
 
       {guide.faqs.length > 0 ? (
-        <section className="new-listings-section" id="faq" aria-label="Frequently asked questions">
+        <section className={`new-listings-section pg-tint-${(bands.length + 2) % 4}`} id="faq" aria-label="Frequently asked questions">
           <div className="featured-listings-head">
             <h2>Frequently asked questions</h2>
             <p className="featured-listings-subhead">Short answers to what buyers ask most.</p>
@@ -167,7 +167,7 @@ export function PriceGuidePage({
         </section>
       ) : null}
 
-      <section className="new-listings-section" id="related" aria-label="Related pages">
+      <section className={`new-listings-section pg-tint-${(bands.length + 3) % 4}`} id="related" aria-label="Related pages">
         <div className="featured-listings-head">
           <h2>Keep exploring</h2>
           <p className="featured-listings-subhead">More pages on prices and buying in Sri Lanka.</p>
