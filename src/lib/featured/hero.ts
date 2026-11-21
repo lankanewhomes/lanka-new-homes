@@ -3,13 +3,14 @@
 import { getActiveHeroAds } from "@/lib/hero-ad-store";
 import type { HeroAd } from "@/types";
 import { MAX_HERO_SLIDES } from "./config";
-import { FEATURED_DEMO } from "./demo";
+import { FEATURED_DEMO, FEATURED_ENABLED } from "./demo";
 import { activeBookings, eliteHeroPackages } from "./engine";
 import { getFeaturedData } from "./store";
 
 export type HeroSlide = HeroAd & { sponsored?: boolean };
 
 export async function getHeroSlides(now = new Date()): Promise<HeroSlide[]> {
+  if (!FEATURED_ENABLED) return []; // switched off: the homepage keeps loading its hero ads exactly as before
   const { state, projects } = await getFeaturedData();
   const bySlug = new Map(projects.map((project) => [project.slug, project]));
   const day = now.toISOString().slice(0, 10);
