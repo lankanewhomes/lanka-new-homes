@@ -2,11 +2,11 @@ import { NextResponse } from "next/server";
 import { getAllProjects } from "@/lib/project-store";
 import { getAllLands } from "@/lib/land-store";
 
-// Photo tiles on the right of the header mega menu ("Featured listings"). Up to four projects and four lands:
+// Photo tiles on the right of the header mega menu ("Featured listings"). Up to two projects and two lands:
 // the ones marked Featured first, topped up with the best-scored listings so the block is never empty.
 // Sold-out listings are never shown. Loaded once when the menu first opens; cached for five minutes.
 export type NavTile = { name: string; place: string; href: string; image: string; featured: boolean };
-const TILES = 4;
+const TILES = 2;
 
 let cache: { at: number; body: { projects: NavTile[]; lands: NavTile[] } } | null = null;
 

@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 // Desktop header mega menu (owner, 2026-11-20): a full-width white panel under the header with bold column
-// headings, plain link lists, and a 2 x 2 block of "Featured listings" photo tiles on the right.
+// headings, plain link lists, and a row of two of "Featured listings" photo tiles on the right.
 // The link lists live here so the phone menu and the desktop panel read from one place.
 export type MegaLink = { label: string; href: string };
 export type MegaColumn = { heading: string; links: MegaLink[] };
