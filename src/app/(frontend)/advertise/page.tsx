@@ -89,19 +89,27 @@ export default function AdvertisePage() {
           <h2>Pay for more months, pay less.</h2>
           <p>Totals shown are for the whole term, paid up front.</p>
         </div>
-        <div className="adv-table-wrap">
-          <table className="adv-table">
-            <thead><tr><th>Package</th><th>1 month</th>{TERM_DISCOUNTS.map((term) => <th key={term.months}>{term.months} months<small>{term.percent}% off</small></th>)}</tr></thead>
-            <tbody>
-              {TIERS_ASC.map((tier) => (
-                <tr key={tier}>
-                  <th scope="row">{TIERS[tier].name}</th>
-                  <td>{rs(TIERS[tier].priceLkrPerMonth)}</td>
-                  {TERM_DISCOUNTS.map((term) => <td key={term.months}>{rs(priceWithDiscount(TIERS[tier].priceLkrPerMonth, term.months).total)}</td>)}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="fdv-box-grid fdv-box-grid--4 adv-terms">
+          {[{ months: 1, percent: 0 }, ...TERM_DISCOUNTS].map((term) => (
+            <article key={term.months} className={`fdv-box-card adv-term${term.months === 12 ? " adv-term--best" : ""}`}>
+              <h3>{term.months} {term.months === 1 ? "month" : "months"}</h3>
+              <p className="adv-term-off">{term.percent ? `${term.percent}% off` : "Standard price"}{term.months === 12 ? <span className="adv-popular">Best value</span> : null}</p>
+              <dl>
+                {TIERS_ASC.map((tier) => {
+                  const price = priceWithDiscount(TIERS[tier].priceLkrPerMonth, term.months);
+                  return (
+                    <div key={tier} className="adv-term-row">
+                      <dt>{TIERS[tier].name}</dt>
+                      <dd>
+                        <span className="adv-term-total">{rs(price.total)}</span>
+                        <span className="adv-term-note">{price.saved > 0 ? `${rs(Math.round(price.total / term.months))} / month · save ${rs(price.saved)}` : "per month"}</span>
+                      </dd>
+                    </div>
+                  );
+                })}
+              </dl>
+            </article>
+          ))}
         </div>
         <div className="fdv-box-card adv-founding">
           <h3>{FOUNDING_PARTNER.label} offer: {FOUNDING_PARTNER.percent}% off your first {FOUNDING_PARTNER.months} months</h3>

@@ -1,6 +1,6 @@
 /* Thank-you page. It uses the site's contained-box page system (.fdv-page / .fdv-hero / .fdv-box, globals.css), so only its own
    two details live here. Brand rules (docs/owner-rules): ink #1f1f1f, weight 400, no uppercase, plain single-colour line icon. */
-.thank-you-page .thank-you-tick { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin-bottom: 18px; border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 999px; color: #fff; }
+.thank-you-page .thank-you-tick { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin-bottom: 18px; border: 1px solid #1a6b2f; border-radius: 999px; background: #1a6b2f; color: #fff; } /* green tick (owner, 2026-11-21): the site's pill green */
 .thank-you-page .thank-you-tick svg { width: 22px; height: 22px; }
 .thank-you-page .thank-you-more { margin-top: 28px; }
 .thank-you-page .thank-you-more a { display: inline-flex; align-items: center; gap: 8px; }
