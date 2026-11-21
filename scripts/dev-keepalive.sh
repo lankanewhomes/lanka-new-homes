@@ -15,8 +15,8 @@ while true; do
       nohup npm run dev >> ~/Library/Logs/lnh-dev-server.log 2>&1 &
       sleep 90
       # Warm-up: open the main pages once, one at a time, so the first real visit is not the slow compile (owner, 2026-11-20).
-      for path in / /projects /guides/apartment-prices-in-colombo; do
-        curl -s -m 240 -o /dev/null "http://localhost:3000$path" >/dev/null 2>&1
+      for page in / /projects /guides/apartment-prices-in-colombo; do
+        curl -s -m 240 -o /dev/null "http://localhost:3000$page" >/dev/null 2>&1
       done
     fi
   fi
