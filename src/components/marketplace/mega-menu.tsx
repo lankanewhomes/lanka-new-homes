@@ -166,7 +166,7 @@ export function NavMegaPanel({ menuKey, tiles, onNavigate }: { menuKey: MegaKey;
               {tiles.map((tile) => (
                 <Link key={tile.href} href={tile.href} className="nav-mega-tile" onClick={onNavigate}>
                   <Image src={tile.image} alt="" fill sizes="190px" />
-                  {tile.paid ? <span className="fp-badge nav-mega-tile-badge">Featured</span> : null}
+                  {tile.paid || tile.featured ? <span className="fp-badge nav-mega-tile-badge">Featured</span> : null}
                   <span className="nav-mega-tile-text">
                     <strong>{tile.name}</strong>
                     {tile.place ? <small>{tile.place}</small> : null}
