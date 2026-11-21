@@ -51,7 +51,7 @@ export default async function ConstructionCompaniesPage() {
       nounPlural="construction companies"
       basePath="/construction-companies"
       entries={companies}
-      featuredSlot={<FeaturedSlot placement="directory-construction" heading="Featured projects to build near" subheading="Sponsored new-home projects" context={{ limit: 3 }} />}
+      featuredSlot={<FeaturedSlot placement="directory-construction" heading="Featured projects." subheading="Sponsored new-home projects." context={{ limit: 4 }} />}
       about={{
         title: "About the construction company directory.",
         paragraphs: [

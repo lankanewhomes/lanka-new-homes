@@ -70,9 +70,8 @@ export default async function LandListingPage({ searchParams }: LandListingPageP
 
   return (
     <>
-    {/* Paid placement: featured projects pinned at the top of the land page (Premium and Elite). */}
-    <FeaturedSlot placement="directory-land" heading="Featured projects with land and homes" subheading="Sponsored picks for buyers planning to build or invest" context={{ limit: 3 }} />
     <ProjectListingShell
+      topSlot={<FeaturedSlot placement="directory-land" context={{ limit: 3 }} />}
       breadcrumbs={[{ label: "Home", href: "/" }, { label: "Land" }]}
       h1={h1}
       intro={`Land for sale in Sri Lanka: ${lands.length} plots from developers, construction companies and independent builders, with price per perch, size and exact location.`}

@@ -130,60 +130,39 @@
 @media (min-width: 640px) { .fp-alsolike .fp-grid { grid-template-columns: repeat(3, 1fr); } }
 
 /* Premium map pin: bigger, branded, always visible (drawn above the cluster bubbles at every zoom level) */
-.l360-pin--premium { padding: 8px 14px 8px 10px !important; gap: 7px !important; background: #f47b36 !important; border: 2px solid #fff !important; color: #fff !important; font-size: 13.5px !important; border-radius: 999px !important; box-shadow: 0 6px 18px rgba(244, 123, 54, .55), 0 0 0 2px #f47b36 !important; transform: scale(1.1); }
+.l360-pin--premium { padding: 4px 9px 4px 7px !important; gap: 4px !important; background: #f47b36 !important; border: 2px solid #fff !important; color: #fff !important; font-size: 11.5px !important; border-radius: 999px !important; border-width: 1.5px !important; box-shadow: 0 2px 6px rgba(0, 0, 0, .25) !important; max-width: 150px; }
 .l360-pin--premium.is-selected { background: #1a1a1a !important; box-shadow: 0 6px 18px rgba(0,0,0,.5), 0 0 0 2px #1a1a1a !important; }
-.l360-pin-star { font-size: 15px; line-height: 1; }
+.l360-pin-star { font-size: 11px; line-height: 1; }
 
 /* Pinned top results sit inside the results column (next to the map), so they use narrower cards there */
 .fp-top-slot .fp-section { padding: 0 0 16px; max-width: none; }
-.fp-top-slot .fp-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+/* The pinned cards use the page's own .listing-grid, so they line up with the listings below (same columns and card width) */
+.fp-top-slot .listing-grid.fp-grid--top { margin-bottom: 20px; }
 .fp-top-slot .fp-head h2 { font-size: 18px; line-height: 24px; }
 
-/* /advertise */
-.adv { max-width: 1120px; margin: 0 auto; padding: 24px 16px 56px; color: var(--fp-ink); }
-.adv h2 { font-size: 26px; line-height: 32px; font-weight: 600; margin: 40px 0 14px; }
-.adv-hero { padding: 20px 0 8px; }
-.adv-eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--fp-orange); margin: 0 0 8px; }
-.adv-hero h1 { font-size: 32px; line-height: 40px; font-weight: 600; margin: 0 0 12px; max-width: 760px; }
-.adv-hero p { font-size: 16px; line-height: 25px; max-width: 720px; color: #3b3b3b; }
-.adv-cta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
-.adv-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 46px; padding: 0 18px; border: 1px solid var(--fp-ink); color: var(--fp-ink); background: #fff; font-size: 14px; font-weight: 600; text-decoration: none; }
-.adv-btn--wa { background: #1f9d55; border-color: #1f9d55; color: #fff; }
-.adv-tiers { display: grid; grid-template-columns: 1fr; gap: 16px; }
-@media (min-width: 900px) { .adv-tiers { grid-template-columns: repeat(3, 1fr); } .adv-hero h1 { font-size: 40px; line-height: 48px; } }
-.adv-tier { position: relative; display: flex; flex-direction: column; padding: 22px 20px; border: 1px solid var(--fp-line); background: #fff; }
-.adv-tier--premium { border: 2px solid var(--fp-orange); }
-.adv-tier--elite { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
-.adv-tier--elite .adv-tagline, .adv-tier--elite li { color: #ddd; }
-.adv-tier--elite .adv-btn { background: transparent; color: #fff; border-color: #fff; }
-.adv-tier--elite .adv-btn--wa { background: #1f9d55; border-color: #1f9d55; }
-.adv-ribbon { position: absolute; top: -12px; left: 20px; background: var(--fp-orange); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 3px 10px; }
-.adv-tier h3 { font-size: 22px; font-weight: 600; margin: 0; }
-.adv-price { margin: 6px 0 0; font-size: 14px; }
-.adv-price strong { font-size: 26px; font-weight: 600; }
-.adv-slots { margin: 2px 0 0; font-size: 13px; font-weight: 600; color: var(--fp-orange); }
-.adv-tagline { font-size: 14px; color: #555; margin: 10px 0; }
-.adv-tier ul { margin: 0 0 8px; padding: 0 0 0 18px; flex: 1; }
-.adv-tier li { font-size: 14px; line-height: 21px; margin: 5px 0; color: #333; }
-.adv-note { font-size: 13px; line-height: 20px; color: var(--fp-grey); margin: 12px 0 0; max-width: 860px; }
-.adv-table-wrap { overflow-x: auto; }
-.adv-table { width: 100%; min-width: 560px; border-collapse: collapse; font-size: 14px; }
-.adv-table th, .adv-table td { padding: 12px 10px; border-bottom: 1px solid var(--fp-line); text-align: left; }
-.adv-table th small { display: block; font-weight: 600; color: var(--fp-orange); }
-.adv-founding { margin-top: 24px; padding: 20px; background: #fff4ec; border: 1px solid #f7c9a8; }
-.adv-founding h3 { font-size: 18px; font-weight: 600; margin: 0 0 6px; }
-.adv-founding p { font-size: 14px; line-height: 22px; margin: 0; max-width: 760px; }
-.adv-addons { display: grid; grid-template-columns: 1fr; gap: 12px; }
-@media (min-width: 640px) { .adv-addons { grid-template-columns: repeat(2, 1fr); } }
-@media (min-width: 960px) { .adv-addons { grid-template-columns: repeat(3, 1fr); } }
-.adv-addon { padding: 16px; border: 1px solid var(--fp-line); background: #fff; }
-.adv-addon h3 { font-size: 17px; font-weight: 600; margin: 0; }
-.adv-addon p { font-size: 14px; line-height: 21px; margin: 6px 0 0; }
-.adv-addon .adv-price strong { font-size: 20px; }
-.adv-max { color: var(--fp-grey); font-size: 12px !important; }
-.adv-lead { padding: 20px; border: 1px solid var(--fp-line); background: var(--fp-soft); }
-.adv-lead p { max-width: 760px; font-size: 15px; line-height: 24px; }
-.adv-final { text-align: left; }
+/* /advertise: uses the site's contained-box page system (.fdv-page / .fdv-box, globals.css). Only the page's own details are here. */
+.adv-page .adv-cta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.adv-page .adv-tier { display: flex; flex-direction: column; }
+.adv-page .adv-tier--popular { border-color: #f47b36; }
+.adv-page .adv-tier h3 { display: flex; align-items: center; gap: 10px; font-size: 22px; }
+.adv-page .adv-popular { font-size: 12px; line-height: 1; padding: 5px 8px; background: #f47b36; color: #000; }
+.adv-page .adv-price { margin: 0 0 4px; font-size: 14px; color: #1f1f1f; }
+.adv-page .adv-price span { font-size: 26px; line-height: 1.2; }
+.adv-page .adv-addon .adv-price span { font-size: 20px; }
+.adv-page .adv-slots { margin: 0 0 12px; font-size: 14px; color: #1f1f1f; }
+.adv-page .adv-tier ul { margin: 12px 0 0; padding: 0 0 0 18px; flex: 1; }
+.adv-page .adv-tier li { margin: 6px 0; font-size: 14px; line-height: 1.5; color: #1f1f1f; }
+.adv-page .adv-note { margin: 20px 0 0; max-width: 820px; font-size: 13px; line-height: 1.6; color: #6b6355; }
+.adv-page .adv-note a { color: #1f1f1f; text-decoration: underline; }
+.adv-page .adv-table-wrap { overflow-x: auto; background: #fff; border: 1px solid #e3e1da; }
+.adv-page .adv-table { width: 100%; min-width: 560px; border-collapse: collapse; font-size: 14px; }
+.adv-page .adv-table th, .adv-page .adv-table td { padding: 14px 16px; border-bottom: 1px solid #ececea; text-align: left; font-weight: 400; color: #1f1f1f; }
+.adv-page .adv-table tbody tr:last-child th, .adv-page .adv-table tbody tr:last-child td { border-bottom: 0; }
+.adv-page .adv-table thead th { color: #6b6355; }
+.adv-page .adv-table th small { display: block; font-size: 12px; color: #6b6355; }
+.adv-page .adv-founding { margin-top: 20px; }
+.adv-page .adv-founding p, .adv-page .adv-lead p { max-width: 820px; }
+.adv-page .adv-max { margin-top: 8px; font-size: 12px; }
 
 /* Featured sections reuse the homepage .new-listings-section styles as they are (nothing overridden except spacing for non-card blocks) */
 .fp-listings .fp-logos, .fp-listings .fp-cities, .fp-listings .fp-dom, .fp-listings .fp-spot { margin-top: 22px; }
@@ -229,3 +208,9 @@
 
 /* Paid Featured tile in the header mega menu: same orange badge as the cards, top-left of the photo. */
 .nav-mega-tile-badge{position:absolute;top:8px;left:8px;z-index:2;font-size:11px;line-height:1;padding:4px 8px;border-radius:4px}
+
+/* Featured box on the directory pages (developers, construction companies): a normal contained box with the site's 4-up card grid */
+.fp-box-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px 16px; }
+.fp-box-grid .listing-grid-card { background: #fff; border: 0; border-radius: 0; padding: 10px; box-sizing: border-box; }
+@media (max-width: 1100px) { .fp-box-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px) { .fp-box-grid { grid-template-columns: 1fr; } }

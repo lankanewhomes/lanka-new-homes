@@ -37,6 +37,7 @@ export async function ProjectListingShell({
   citySectionHeading,
   about,
   featuredContext,
+  topSlot,
 }: {
   breadcrumbs: BreadcrumbEntry[];
   h1: string;
@@ -52,6 +53,8 @@ export async function ProjectListingShell({
   about?: { title: string; paragraphs: string[] };
   /** Overrides the place/type read from the listed projects. */
   featuredContext?: SlotContext;
+  /** Featured cards pinned above the results on a non-project listing (land). Project listings work theirs out below. */
+  topSlot?: React.ReactNode;
 }) {
   const itemListJsonLd = buildItemListJsonLd(projects.map((project) => ({ name: project.name, url: `${basePath}/${project.slug}` })));
   const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbs);
@@ -85,7 +88,7 @@ export async function ProjectListingShell({
       <script {...jsonLdScriptProps(itemListJsonLd)} />
       <script {...jsonLdScriptProps(breadcrumbJsonLd)} />
       {banner}
-      <ListingPageBody projects={organic.map(slimForHome)} h1={h1} eyebrow={eyebrow} singularEyebrow={singularEyebrow} intro={intro} basePath={basePath} filterGroups={filterGroups} emptyStateText={emptyStateText} citySectionHeading={citySectionHeading} sponsored={sponsored} premiumPinSlugs={premiumPinSlugs} topSlot={pinned} />
+      <ListingPageBody projects={organic.map(slimForHome)} h1={h1} eyebrow={eyebrow} singularEyebrow={singularEyebrow} intro={intro} basePath={basePath} filterGroups={filterGroups} emptyStateText={emptyStateText} citySectionHeading={citySectionHeading} sponsored={sponsored} premiumPinSlugs={premiumPinSlugs} topSlot={pinned ?? topSlot} />
       {empty}
       {about ? <SeoAboutBlock title={about.title} paragraphs={about.paragraphs} /> : null}
     </div>

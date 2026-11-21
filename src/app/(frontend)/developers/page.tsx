@@ -108,7 +108,7 @@ export default async function DevelopersPage() {
       </section>
 
       {/* Paid placement: featured developers' projects pinned at the top of the directory (Premium and Elite). */}
-      <FeaturedSlot placement="directory-developers" context={{ limit: 3 }} />
+      <FeaturedSlot placement="directory-developers" context={{ limit: 4 }} />
 
       {pinnedDevelopers.length > 0 ? (
         <section className="fdv-box fdv-box--sage" id="developer-pro" aria-label="Developer Pro">

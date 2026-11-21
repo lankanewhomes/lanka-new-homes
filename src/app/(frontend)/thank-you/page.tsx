@@ -8,6 +8,7 @@ import { slimForHome } from "@/lib/home-slim";
 import { ListingGridCard } from "@/components/marketplace/listing-page";
 import { FeaturedSlot } from "@/components/featured/featured-slot";
 import type { Project } from "@/types";
+import "@/components/featured/featured.css";
 import "./thank-you.css";
 
 // The thank-you page a buyer lands on after Request Info, Download Brochure, a land inquiry or a WhatsApp enquiry (owner, 2026-11-21).
@@ -56,45 +57,49 @@ export default async function ThankYouPage({ searchParams }: { searchParams: Pro
         ? `WhatsApp opened with your message ready to send. ${who} will reply to you there.`
         : `${who} will get back to you by email shortly.`;
 
+  // Same page system as /for-developers and /about (docs/design.md "Page section style: contained boxes"): dark hero box with a
+  // left-aligned heading, then contained boxes, each with its own soft background.
   return (
-    <div className="thank-you-page">
-      <section className="thank-you-hero">
-        <span className="thank-you-tick" aria-hidden="true"><Check strokeWidth={1.5} /></span>
-        <h1>{title}</h1>
-        <p>{line} You can keep browsing while you wait.</p>
-        <div className="thank-you-actions">
-          {requestKind === "brochure" && listing?.brochureUrl ? <a className="thank-you-button thank-you-button-primary" href={listing.brochureUrl} target="_blank" rel="noopener noreferrer">Download brochure</a> : null}
-          {listing ? <Link className="thank-you-button" href={`${basePath}/${listing.slug}`}>Back to {listing.name}</Link> : null}
-          <Link className="thank-you-button" href={land ? "/land" : "/projects"}>{land ? "Browse all land" : "Browse all new projects"}</Link>
+    <div className="fdv-page thank-you-page">
+      <section className="fdv-hero fdv-hero--split" aria-label={title}>
+        <div className="fdv-hero-split-inner">
+          <div className="fdv-hero-content">
+            <span className="thank-you-tick" aria-hidden="true"><Check strokeWidth={1.5} /></span>
+            <h1 className="fdv-hero-headline">{title}</h1>
+            <p className="fdv-hero-sub">{line} You can keep browsing while you wait.</p>
+            <div className="fdv-hero-ctas">
+              {requestKind === "brochure" && listing?.brochureUrl ? <a className="fdv-cta-final-button" href={listing.brochureUrl} target="_blank" rel="noopener noreferrer">Download brochure</a> : null}
+              {listing ? <Link className={requestKind === "brochure" && listing.brochureUrl ? "fdv-cta-secondary fdv-hero-explore-link" : "fdv-cta-final-button"} href={`${basePath}/${listing.slug}`}>Back to {listing.name}</Link> : null}
+              <Link className="fdv-cta-secondary fdv-hero-explore-link" href={land ? "/land" : "/projects"}>{land ? "Browse all land" : "Browse all new projects"}</Link>
+            </div>
+          </div>
         </div>
       </section>
 
       {land ? null : project ? (
         <FeaturedSlot
           placement="thankyou-also-like"
-          context={{ location: project.city || project.location, type: project.type, projectSlug: project.slug, developerSlug: project.developerSlug, limit: 3 }}
-          fallbackContexts={[{ location: project.district, projectSlug: project.slug, developerSlug: project.developerSlug, limit: 3 }, { type: project.type, projectSlug: project.slug, developerSlug: project.developerSlug, limit: 3 }]}
+          context={{ location: project.city || project.location, type: project.type, projectSlug: project.slug, developerSlug: project.developerSlug, limit: 4 }}
+          fallbackContexts={[{ location: project.district, projectSlug: project.slug, developerSlug: project.developerSlug, limit: 4 }, { type: project.type, projectSlug: project.slug, developerSlug: project.developerSlug, limit: 4 }]}
         />
       ) : (
-        <FeaturedSlot placement="thankyou-also-like" context={{ limit: 3 }} />
+        <FeaturedSlot placement="thankyou-also-like" context={{ limit: 4 }} />
       )}
 
       {more.length > 0 ? (
-        <section className={`new-listings-section${land ? " land-listings-section" : ""}`} aria-label="More listings">
-          <div className="featured-listings-head">
-            <h2>{listing ? (land ? "More land nearby" : "More listings like this") : "New listings"}</h2>
-            <p className="featured-listings-subhead">{listing ? `Other ${land ? "land" : "new developments"} buyers look at alongside ${listing.name}.` : "The latest developments on Lanka New Homes."}</p>
+        <section className={`fdv-box ${land ? "fdv-box--sage" : "fdv-box--gray"}`} aria-label="More listings">
+          <div className="wdx-section-head">
+            <h2>{listing ? (land ? "More land nearby." : "More listings like this.") : "New listings."}</h2>
+            <p>{listing ? `Other ${land ? "land" : "new developments"} buyers look at alongside ${listing.name}.` : "The latest developments on Lanka New Homes."}</p>
           </div>
-          <div className="featured-listings-shell">
-            <div className="home-card-grid featured-listings-grid">
-              {more.map((item) => <ListingGridCard key={item.slug} project={land ? item : slimForHome(item)} basePath={basePath} />)}
-            </div>
-            <div className="featured-listings-footer new-listings-footer">
-              <Link href={land ? "/land" : "/search"} className="featured-listings-button">
-                {land ? "View all land listings" : "View all listings"}
-                <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
-              </Link>
-            </div>
+          <div className="fp-box-grid">
+            {more.map((item) => <ListingGridCard key={item.slug} project={land ? item : slimForHome(item)} basePath={basePath} />)}
+          </div>
+          <div className="thank-you-more">
+            <Link href={land ? "/land" : "/search"} className="fdv-cta-primary">
+              {land ? "View all land listings" : "View all listings"}
+              <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+            </Link>
           </div>
         </section>
       ) : null}

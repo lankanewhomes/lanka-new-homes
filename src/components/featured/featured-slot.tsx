@@ -24,12 +24,12 @@ const CARD_HEADINGS: Partial<Record<Placement, { title: string; sub?: string }>>
   "results-top": { title: "Featured projects", sub: "Sponsored picks that match this page" },
   "project-similar": { title: "Featured projects like this one" },
   "project-nearby": { title: "Featured projects nearby" },
-  "thankyou-also-like": { title: "You may also like" },
+  "thankyou-also-like": { title: "You may also like.", sub: "Featured projects that match what you asked about." },
   "saved-recommended": { title: "Recommended for you" },
   "guide-inline": { title: "Featured projects for this topic" },
   "guide-end": { title: "Featured projects to explore next" },
   "results-empty": { title: "No exact matches, but these featured projects may suit you" },
-  "directory-developers": { title: "Featured developers' projects", sub: "Pinned at the top of the directory" },
+  "directory-developers": { title: "Featured projects.", sub: "From developers on a Featured package." },
   "directory-construction": { title: "Featured projects", sub: "Sponsored picks" },
   "directory-land": { title: "Featured projects", sub: "Sponsored picks" },
 };
@@ -38,8 +38,8 @@ const CARD_PLACEMENTS = new Set<Placement>(Object.keys(CARD_HEADINGS) as Placeme
 const CITY_PATHS: Record<string, string> = { Colombo: "/projects/colombo", Kandy: "/projects/houses-for-sale-in-kandy", Galle: "/projects/houses-for-sale-in-galle", Negombo: "/projects/houses-for-sale-in-negombo" };
 
 // Same look as the homepage "New listings" section: pale panel, left-aligned heading + one-line subheading, card grid, dark "View all" button.
-function Section({ children, plain, className = "" }: { children: ReactNode; plain?: boolean; className?: string }) {
-  return plain ? <section className={`fp-section fp-section--tight ${className}`}>{children}</section> : <section className={`new-listings-section fp-listings ${className}`}>{children}</section>;
+function Section({ children, className = "" }: { children: ReactNode; className?: string }) {
+  return <section className={`new-listings-section fp-listings ${className}`}>{children}</section>;
 }
 
 function Head({ title, sub }: { title: string; sub?: string }) {
@@ -92,14 +92,29 @@ export async function FeaturedSlot({ placement, context = {}, fallbackContexts =
     }
     if (!items.length) return null;
     const text = CARD_HEADINGS[placement]!;
+    const cards = items.map((item) => (
+      <FeaturedCard key={item.project.slug} project={item.project} tier={item.tier} placement={placement} developer={developerBySlug.get(item.developerSlug)} basePath={basePath} />
+    ));
+    // Pinned inside a results list (projects, land): no heading, the page's own .listing-grid, so the cards line up with the listings below.
+    if (placement === "results-top" || placement === "directory-land") {
+      return <section className="fp-section fp-section--tight"><div className="listing-grid fp-grid--top">{cards}</div></section>;
+    }
+    // Directory pages (developers, construction companies) are built from the site's contained boxes, so the slot is one of those boxes.
+    if (placement === "directory-developers" || placement === "directory-construction" || placement === "thankyou-also-like") {
+      return (
+        <section className="fdv-box fdv-box--cream fp-box" aria-label={heading ?? text.title}>
+          <div className="wdx-section-head">
+            <h2>{heading ?? text.title}</h2>
+            {subheading ?? text.sub ? <p>{subheading ?? text.sub}</p> : null}
+          </div>
+          <div className="fp-box-grid">{cards}</div>
+        </section>
+      );
+    }
     return (
-      <Section plain={placement === "results-top"}>
-        {placement === "results-top" ? null : <Head title={heading ?? text.title} sub={subheading ?? text.sub} />}
-        <div className={placement === "results-top" ? "fp-grid fp-grid--top" : "home-card-grid featured-listings-grid"}>
-          {items.map((item) => (
-            <FeaturedCard key={item.project.slug} project={item.project} tier={item.tier} placement={placement} developer={developerBySlug.get(item.developerSlug)} basePath={basePath} />
-          ))}
-        </div>
+      <Section>
+        <Head title={heading ?? text.title} sub={subheading ?? text.sub} />
+        <div className="home-card-grid featured-listings-grid">{cards}</div>
       </Section>
     );
   }
@@ -226,7 +241,7 @@ export async function FeaturedSlot({ placement, context = {}, fallbackContexts =
       if (!item) return null;
       const { project } = item;
       return (
-        <Section plain>
+        <section className="fp-section fp-section--tight">
           <FeaturedTrack placement={placement} projectSlug={project.slug} developer={project.developerSlug} demo={FEATURED_DEMO}>
             <Link href={`/projects/${project.slug}`} className="fp-banner">
               <div className="fp-banner-media">
@@ -241,7 +256,7 @@ export async function FeaturedSlot({ placement, context = {}, fallbackContexts =
               </div>
             </Link>
           </FeaturedTrack>
-        </Section>
+        </section>
       );
     }
 
