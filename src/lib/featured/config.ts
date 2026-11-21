@@ -80,7 +80,7 @@ export const ADD_ONS: Record<
   "developer-of-month": { name: "Developer of the Month", priceLkr: 40_000, unit: "per month", description: "Your company profile on the homepage.", max: "One developer per month", durationDays: 30 },
   "new-launch": { name: "New launch spotlight", priceLkr: 25_000, unit: "for 30 days", description: "Your new project in the homepage New Launches strip.", durationDays: 30 },
   "city-tile": { name: "City tile", priceLkr: 20_000, unit: "per month", description: "Your project as the sponsored pick on a homepage city tile.", durationDays: 30 },
-  "sponsored-article": { name: "Sponsored article", priceLkr: 35_000, unit: "one-time", description: "A Developer Spotlight article in /guides." },
+  "sponsored-article": { name: "Sponsored article", priceLkr: 35_000, unit: "one-time", description: "A Developer Spotlight article in our guides. We also post it on our Instagram, TikTok and Facebook." }, // owner, 2026-11-21: the article is shared on social too
   "social-post": { name: "Social post", priceLkr: 10_000, unit: "each", description: "A post about your project on our Instagram, TikTok and Facebook." },
   reel: { name: "Reel", priceLkr: 20_000, unit: "each", description: "A short video reel about your project." },
   newsletter: { name: "Newsletter slot", priceLkr: 7_500, unit: "each", description: "A feature in our email newsletter." },
