@@ -228,4 +228,5 @@
 }
 
 /* Paid Featured tile in the header mega menu: same orange badge as the cards, top-left of the photo. */
-.nav-mega-tile-badge{position:absolute;top:8px;left:8px;z-index:2;font-size:11px;line-height:1;padding:4px 8px;border-radius:4px}
+/* Same look as the Featured badge on listing cards (.listing-grid-card-featured.fp-badge); owner, 2026-11-21. Shown on featured project and featured land tiles. */
+.nav-mega-tile-badge{position:absolute;top:8px;left:8px;z-index:2;display:inline-flex;align-items:center;padding:3px 9px;font-size:10px;line-height:1.2;letter-spacing:.06em;text-transform:uppercase;border-radius:3px;white-space:nowrap}
