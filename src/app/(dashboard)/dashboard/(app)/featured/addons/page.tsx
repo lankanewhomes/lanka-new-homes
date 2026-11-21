@@ -7,6 +7,8 @@ import { ADD_ONS, type AddOnType } from "@/lib/featured/config";
 import { FEATURED_DEMO } from "@/lib/featured/demo";
 import { getFeaturedData } from "@/lib/featured/store";
 import { bookAddonAction } from "../actions";
+import { FEATURED_ENABLED } from "@/lib/featured/demo";
+import { notFound } from "next/navigation";
 
 export const metadata: Metadata = { title: "Featured add-ons" };
 export const dynamic = "force-dynamic";
@@ -16,6 +18,7 @@ const rs = (n: number) => `Rs. ${n.toLocaleString("en-US")}`;
 const CITIES = ["Colombo", "Kandy", "Galle", "Negombo", "Nuwara Eliya"];
 
 export default async function AddonsPage({ searchParams }: { searchParams: Promise<{ notice?: string; ok?: string }> }) {
+  if (!FEATURED_ENABLED) notFound();
   const session = await getSession();
   if (!session) redirect("/developers/login");
   if (session.role !== "admin") redirect("/dashboard/featured");

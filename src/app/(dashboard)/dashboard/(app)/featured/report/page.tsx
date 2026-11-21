@@ -7,11 +7,14 @@ import { manageableDeveloperSlugs } from "@/lib/featured/admin";
 import { FEATURED_DEMO } from "@/lib/featured/demo";
 import { getMonthlyReport } from "@/lib/featured/report";
 import { getFeaturedData } from "@/lib/featured/store";
+import { FEATURED_ENABLED } from "@/lib/featured/demo";
+import { notFound } from "next/navigation";
 
 export const metadata: Metadata = { title: "Featured monthly report" };
 export const dynamic = "force-dynamic";
 
 export default async function ReportPage({ searchParams }: { searchParams: Promise<{ developer?: string; month?: string }> }) {
+  if (!FEATURED_ENABLED) notFound();
   const session = await getSession();
   if (!session) redirect("/developers/login");
   const query = await searchParams;

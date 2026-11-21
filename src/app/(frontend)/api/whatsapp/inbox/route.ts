@@ -1,0 +1,202 @@
+import { NextResponse } from "next/server";
+import { parseWhatsAppExport } from "@/lib/whatsapp-export";
+import { sendWhatsAppTemplate } from "@/lib/whatsapp-cloud";
+import { digitsOnly, loadRecipients, renderTemplate, sameNumber, templateNeedsLead, sendWhatsAppText, WHATSAPP_TEMPLATES, WINDOW_MS, type TemplateName } from "@/lib/whatsapp-inbox";
+
+// Admin-only backend for /dashboard/whatsapp. Reads the whatsapp-messages table; writes drafts; sends ONLY a draft the admin approved.
+//   GET  ?view=conversations | thread&phone=… | recipients
+//   POST { action: "archive" | "unarchive", phone } | { action: "draft", phone, developerId?, template, params } | { action: "draft", phone, text } | { action: "send", id } | { action: "discard", id }
+//        | { action: "log", phone, direction, text, sentAt?, developerId? } records a message sent/received in the phone app | { action: "import", phone, chat, me, dateOrder, tzOffset, developerId? } loads an exported phone chat
+// A text draft is refused unless the other person wrote to us in the last 24 hours (WhatsApp's rule); a template draft is always allowed.
+export const dynamic = "force-dynamic";
+
+type Msg = { id: number; direction: "inbound" | "outbound"; phone: string; text?: string | null; templateName?: string | null; status: string; error?: string | null; sentAt: string; archived?: boolean | null; developer?: number | { id: number } | null };
+
+async function admin(request: Request) {
+  const { getPayload } = await import("payload");
+  const payload = await getPayload({ config: (await import("../../../../../../payload.config")).default });
+  const { user } = await payload.auth({ headers: request.headers });
+  if ((user as { role?: string } | null)?.role !== "admin") return null;
+  return payload;
+}
+
+const COLLECTION = "whatsapp-messages";
+
+const hoursText = (h: number) => (h >= 48 ? `${Math.floor(h / 24)} days` : `${h} hours`);
+
+/** Leads still on "New" for 24+ hours, each with the developer to message and the template + fields to use (reminder under 3 days, final after). */
+async function unansweredLeads(db: { find: (a: Record<string, unknown>) => Promise<{ docs: unknown[] }> }) {
+  const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  const { docs } = await db.find({ collection: "leads", where: { and: [{ status: { equals: "new" } }, { createdAt: { less_than: cutoff } }] }, sort: "createdAt", limit: 200, depth: 1, overrideAccess: true });
+  const recipients = await loadRecipients(db);
+  const byDev = new Map(recipients.map((r) => [r.developerId, r]));
+  type L = { id: number; name?: string; phone?: string; listing_name?: string; createdAt: string; project?: { developer?: number | { id: number } | null } | number | null };
+  return (docs as L[]).map((l) => {
+    const dev = typeof l.project === "object" && l.project ? l.project.developer : null;
+    const developerId = typeof dev === "object" && dev ? dev.id : dev ?? null;
+    const r = developerId ? byDev.get(Number(developerId)) : undefined;
+    const hours = Math.floor((Date.now() - new Date(l.createdAt).getTime()) / 3_600_000);
+    const project = l.listing_name || "your project";
+    const contact = r?.name ?? "there";
+    const final = hours >= 72;
+    const template: TemplateName = final ? "lead_waiting_final" : "lead_waiting_reminder";
+    const buyer = l.name || "A buyer";
+    const phone = l.phone || "no phone left";
+    const params = final ? [contact, buyer, project, hoursText(hours), phone] : [contact, project, buyer, phone, hoursText(hours)];
+    return { leadId: l.id, buyer, project, hours, developerId: r?.developerId ?? null, developerName: r?.name ?? null, developerPhone: r?.phone ?? null, template, params };
+  });
+}
+
+export async function GET(request: Request) {
+  const payload = await admin(request);
+  if (!payload) return NextResponse.json({ error: "Admins only." }, { status: 403 });
+  const db = payload as unknown as { find: (a: Record<string, unknown>) => Promise<{ docs: unknown[] }> };
+  const url = new URL(request.url);
+  const view = url.searchParams.get("view") ?? "conversations";
+
+  if (view === "recipients") return NextResponse.json({ recipients: await loadRecipients(db), templates: WHATSAPP_TEMPLATES });
+
+  if (view === "unanswered") return NextResponse.json({ leads: await unansweredLeads(db) });
+
+  if (view === "thread") {
+    const phone = digitsOnly(url.searchParams.get("phone") ?? "");
+    if (!phone) return NextResponse.json({ error: "phone required" }, { status: 400 });
+    const { docs } = await db.find({ collection: COLLECTION, where: { phone: { equals: phone } }, sort: "sentAt", limit: 500, depth: 0, overrideAccess: true });
+    const messages = docs as Msg[];
+    const lastInbound = [...messages].reverse().find((m) => m.direction === "inbound");
+    const windowOpen = Boolean(lastInbound && Date.now() - new Date(lastInbound.sentAt).getTime() < WINDOW_MS);
+    return NextResponse.json({ messages, windowOpen });
+  }
+
+  const { docs } = await db.find({ collection: COLLECTION, sort: "-sentAt", limit: 1000, depth: 0, overrideAccess: true });
+  const recipients = await loadRecipients(db);
+  const devIdByPhone = new Map<string, number>();
+  for (const m of docs as Msg[]) {
+    const id = typeof m.developer === "object" && m.developer ? m.developer.id : m.developer;
+    if (id && !devIdByPhone.has(m.phone)) devIdByPhone.set(m.phone, Number(id));
+  }
+  const devNames = new Map<number, string>();
+  const linkedIds = [...new Set(devIdByPhone.values())];
+  if (linkedIds.length) {
+    const found = await db.find({ collection: "developers", where: { id: { in: linkedIds } }, limit: linkedIds.length, depth: 0, pagination: false, overrideAccess: true });
+    for (const d of found.docs as { id: number; name?: string | null }[]) if (d.name) devNames.set(d.id, d.name);
+  }
+  const byPhone = new Map<string, { phone: string; last: Msg; unanswered: number; drafts: number }>();
+  for (const m of docs as Msg[]) {
+    const row = byPhone.get(m.phone) ?? { phone: m.phone, last: m, unanswered: 0, drafts: 0 };
+    if (m.status === "draft") row.drafts += 1;
+    byPhone.set(m.phone, row);
+  }
+  // "Unanswered" = inbound messages newer than our last outbound one in that conversation.
+  const sent = (docs as Msg[]).filter((m) => m.direction === "outbound" && m.status !== "draft");
+  const conversations = [...byPhone.values()].map((c) => {
+    const lastOut = sent.find((m) => m.phone === c.phone);
+    const unanswered = (docs as Msg[]).filter((m) => m.phone === c.phone && m.direction === "inbound" && (!lastOut || m.sentAt > lastOut.sentAt)).length;
+    const who = recipients.find((r) => sameNumber(r.phone, c.phone));
+    // A message sent or logged against a developer keeps that link, so the conversation is named even when the number is not saved on their profile.
+    const linkedId = devIdByPhone.get(c.phone) ?? null;
+    return { phone: c.phone, developerId: who?.developerId ?? linkedId, name: who?.name ?? (linkedId ? devNames.get(linkedId) ?? null : null), lastText: c.last.text ?? (c.last.templateName ? `Template: ${c.last.templateName}` : ""), lastAt: c.last.sentAt, lastDirection: c.last.direction, unanswered, drafts: c.drafts, archived: Boolean(c.last.archived), hasSent: Boolean(lastOut) };
+  });
+  return NextResponse.json({ conversations });
+}
+
+export async function POST(request: Request) {
+  const payload = await admin(request);
+  if (!payload) return NextResponse.json({ error: "Admins only." }, { status: 403 });
+  const db = payload as unknown as {
+    find: (a: Record<string, unknown>) => Promise<{ docs: unknown[] }>;
+    findByID: (a: Record<string, unknown>) => Promise<unknown>;
+    create: (a: Record<string, unknown>) => Promise<{ id: number }>;
+    update: (a: Record<string, unknown>) => Promise<unknown>;
+    delete: (a: Record<string, unknown>) => Promise<unknown>;
+  };
+  const body = (await request.json().catch(() => ({}))) as { action?: string; id?: number; phone?: string; developerId?: number; template?: string; params?: string[]; text?: string; leadId?: number; direction?: string; sentAt?: string; chat?: string; me?: string; dateOrder?: string; tzOffset?: number };
+
+  if (body.action === "archive" || body.action === "unarchive") {
+    const phone = digitsOnly(body.phone ?? "");
+    if (!phone) return NextResponse.json({ error: "phone required" }, { status: 400 });
+    await db.update({ collection: COLLECTION, where: { phone: { equals: phone } }, overrideAccess: true, data: { archived: body.action === "archive" } });
+    return NextResponse.json({ ok: true });
+  }
+
+  if (body.action === "log" || body.action === "import") {
+    const phone = digitsOnly(body.phone ?? "");
+    if (phone.length < 8 || phone.length > 15) return NextResponse.json({ error: "Enter the number with country code, e.g. 94771234567." }, { status: 400 });
+    const developer = body.developerId ? { developer: body.developerId } : {};
+    const rows: { direction: "inbound" | "outbound"; text: string; sentAt: Date }[] = [];
+    if (body.action === "log") {
+      const text = (body.text ?? "").trim();
+      if (!text) return NextResponse.json({ error: "Write or paste the message." }, { status: 400 });
+      const when = body.sentAt ? new Date(body.sentAt) : new Date();
+      if (Number.isNaN(when.getTime())) return NextResponse.json({ error: "That date is not valid." }, { status: 400 });
+      rows.push({ direction: body.direction === "inbound" ? "inbound" : "outbound", text, sentAt: when });
+    } else {
+      const me = (body.me ?? "").trim().toLowerCase();
+      if (!me) return NextResponse.json({ error: "Type your name exactly as it shows in the chat." }, { status: 400 });
+      const parsed = parseWhatsAppExport(body.chat ?? "", body.dateOrder === "dmy" ? "dmy" : "mdy", Number(body.tzOffset) || 0);
+      if (!parsed.length) return NextResponse.json({ error: "No messages found. Paste the text of an exported chat." }, { status: 400 });
+      const senders = new Set(parsed.map((m) => m.sender.toLowerCase()));
+      if (!senders.has(me)) return NextResponse.json({ error: `Your name was not found in the chat. Names seen: ${[...senders].slice(0, 5).join(", ")}.` }, { status: 400 });
+      for (const m of parsed) rows.push({ direction: m.sender.toLowerCase() === me ? "outbound" : "inbound", text: m.text, sentAt: m.sentAt });
+    }
+    const { docs: existing } = await db.find({ collection: COLLECTION, where: { and: [{ phone: { equals: phone } }, { messageType: { equals: "phone-app" } }] }, limit: 5000, depth: 0, overrideAccess: true });
+    const seen = new Set((existing as Msg[]).map((m) => `${m.direction}|${new Date(m.sentAt).getTime()}|${m.text ?? ""}`));
+    let added = 0;
+    for (const r of rows) {
+      if (seen.has(`${r.direction}|${r.sentAt.getTime()}|${r.text}`)) continue;
+      await db.create({ collection: COLLECTION, overrideAccess: true, data: { direction: r.direction, phone, text: r.text, messageType: "phone-app", status: r.direction === "inbound" ? "received" : "sent", sentAt: r.sentAt.toISOString(), ...developer } });
+      added++;
+    }
+    if (added && body.developerId) {
+      const dev = (await db.findByID({ collection: "developers", id: body.developerId, depth: 0, overrideAccess: true }).catch(() => null)) as { contactLog?: { channel: string; date: string; summary: string }[] } | null;
+      if (dev) {
+        const summary = added === 1 ? `WhatsApp (phone app) ${rows[0].direction === "outbound" ? "sent" : "received"}: ${rows[0].text.slice(0, 120)}` : `WhatsApp (phone app): ${added} messages added from the chat`;
+        await db.update({ collection: "developers", id: body.developerId, overrideAccess: true, data: { contactLog: [...(dev.contactLog ?? []), { channel: "whatsapp", date: new Date().toISOString(), summary }] } });
+      }
+    }
+    return NextResponse.json({ ok: true, added, skipped: rows.length - added });
+  }
+
+  if (body.action === "draft") {
+    const phone = digitsOnly(body.phone ?? "");
+    if (phone.length < 8 || phone.length > 15) return NextResponse.json({ error: "Enter the number with country code, e.g. 94771234567." }, { status: 400 });
+    const developer = { ...(body.developerId ? { developer: body.developerId } : {}), ...(body.leadId ? { lead: body.leadId } : {}) };
+    if (body.template) {
+      const name = body.template as TemplateName;
+      const def = WHATSAPP_TEMPLATES[name];
+      if (!def) return NextResponse.json({ error: "Unknown template." }, { status: 400 });
+      if (templateNeedsLead(name) && !body.leadId) return NextResponse.json({ error: "This template needs a lead." }, { status: 400 });
+      const params = (body.params ?? []).map((p) => String(p).trim());
+      if (params.length !== def.params.length || params.some((p) => !p)) return NextResponse.json({ error: `Fill in all ${def.params.length} fields.` }, { status: 400 });
+      const doc = await db.create({ collection: COLLECTION, overrideAccess: true, data: { direction: "outbound", phone, text: renderTemplate(name, params), messageType: "template", templateName: name, templateParams: params, status: "draft", sentAt: new Date().toISOString(), ...developer } });
+      return NextResponse.json({ ok: true, id: doc.id });
+    }
+    const text = (body.text ?? "").trim();
+    if (!text) return NextResponse.json({ error: "Write a message." }, { status: 400 });
+    const { docs } = await db.find({ collection: COLLECTION, where: { and: [{ phone: { equals: phone } }, { direction: { equals: "inbound" } }] }, sort: "-sentAt", limit: 1, depth: 0, overrideAccess: true });
+    const last = docs[0] as Msg | undefined;
+    if (!last || Date.now() - new Date(last.sentAt).getTime() >= WINDOW_MS) return NextResponse.json({ error: "They have not written in the last 24 hours, so WhatsApp only allows an approved template." }, { status: 409 });
+    const doc = await db.create({ collection: COLLECTION, overrideAccess: true, data: { direction: "outbound", phone, text, messageType: "text", status: "draft", sentAt: new Date().toISOString(), ...developer } });
+    return NextResponse.json({ ok: true, id: doc.id });
+  }
+
+  if (body.action === "discard" || body.action === "send") {
+    const m = (await db.findByID({ collection: COLLECTION, id: body.id, depth: 0, overrideAccess: true }).catch(() => null)) as (Msg & { templateParams?: string[]; lead?: number | { id: number } | null }) | null;
+    if (!m || m.direction !== "outbound" || m.status !== "draft") return NextResponse.json({ error: "Only an unsent draft can be sent or discarded." }, { status: 409 });
+    if (body.action === "discard") {
+      await db.delete({ collection: COLLECTION, id: m.id, overrideAccess: true });
+      return NextResponse.json({ ok: true });
+    }
+    const result = m.templateName
+      ? await sendWhatsAppTemplate({ to: m.phone, bodyParams: m.templateParams ?? [], template: m.templateName, language: "en", ...(templateNeedsLead(m.templateName) && m.lead ? { buttonIndex: 1, buttonUrlSuffix: `collections/leads/${typeof m.lead === "object" ? m.lead.id : m.lead}` } : {}) })
+      : await sendWhatsAppText(m.phone, m.text ?? "");
+    if (!result.ok) {
+      await db.update({ collection: COLLECTION, id: m.id, overrideAccess: true, data: { status: "failed", error: result.error.slice(0, 250) } });
+      return NextResponse.json({ ok: false, error: result.error }, { status: 502 });
+    }
+    await db.update({ collection: COLLECTION, id: m.id, overrideAccess: true, data: { status: "sent", waMessageId: result.messageId, sentAt: new Date().toISOString() } });
+    return NextResponse.json({ ok: true });
+  }
+
+  return NextResponse.json({ error: "Unknown action." }, { status: 400 });
+}

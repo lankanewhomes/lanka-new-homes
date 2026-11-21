@@ -1,0 +1,81 @@
+{
+ "slug": "dynasty-residence-kandy",
+ "sources": [
+  "dynasty-residence-e-brochure.pdf (Finishes of Typical Units)"
+ ],
+ "categories": [
+  {
+   "key": "interior",
+   "label": "Interior",
+   "items": [
+    {
+     "field": "Doors & Windows",
+     "value": "Engineered timber doors; glazed aluminium windows"
+    },
+    {
+     "field": "Walls & Ceilings",
+     "value": "Plastered and painted walls; painted slab soffits and/or ceilings"
+    },
+    {
+     "field": "Flooring",
+     "value": "Porcelain tiled floors"
+    },
+    {
+     "field": "Kitchen",
+     "value": "Wet kitchen unit with hob, hood, sink and oven in all units; dry kitchen with hob, hood and sink in 3 and 4 bedroom units, Sky Villas and Penthouses"
+    },
+    {
+     "field": "Bathrooms",
+     "value": "Tiled walls and floors; porcelain sanitary ware; chrome-plated taps and accessories; vanity tables with granite counter tops"
+    }
+   ]
+  },
+  {
+   "key": "building-services",
+   "label": "Building Services",
+   "items": [
+    {
+     "field": "Air Conditioning",
+     "value": "Split A/C units offered as an optional extra: living, dining and master bedroom (2, 3, 4 bedroom apartments); living, dining and all bedrooms (Sky Villas, Penthouses, 1 bedroom)"
+    },
+    {
+     "field": "Backup Power",
+     "value": "Standby electricity generator"
+    }
+   ]
+  },
+  {
+   "key": "utilities",
+   "label": "Utilities & Services",
+   "items": [
+    {
+     "field": "Electrical",
+     "value": "3 phase electricity supply"
+    },
+    {
+     "field": "Water",
+     "value": "Hot and cold water supply"
+    },
+    {
+     "field": "Gas",
+     "value": "Central LP gas distribution system"
+    },
+    {
+     "field": "Telecom",
+     "value": "Broadband phone connection; MATV system"
+    }
+   ]
+  },
+  {
+   "key": "safety-security",
+   "label": "Safety & Security",
+   "items": [
+    {
+     "field": "Security",
+     "value": "24x7 CCTV security camera system"
+    }
+   ]
+  }
+ ],
+ "notes": "Brochure notes finishes are subject to change and non-binding."
+}

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase-browser";
 import { trackEvent } from "@/lib/ga4";
+import { logListingInteraction } from "@/lib/log-interaction";
 
 export function useSavedListing(projectSlug: string) {
   const [saved, setSaved] = useState(false);
@@ -51,6 +52,7 @@ export function useSavedListing(projectSlug: string) {
     } else {
       await supabase.from("saved_listings").insert({ user_id: userId, project_slug: projectSlug });
       setSaved(true);
+      logListingInteraction("save", projectSlug); // the backend analytics list counts real saves only (a tap that sends the visitor to log in is in Google Analytics)
     }
   };
 

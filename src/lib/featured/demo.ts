@@ -13,7 +13,11 @@ import type { Developer, Project } from "@/types";
 import { TIERS, type AddOnType, type FeaturedTier } from "./config";
 import type { AddOnBooking, FeaturedPackage, FeaturedState } from "./types";
 
-export const FEATURED_DEMO = true;
+// Master switches, both set at BUILD time (NEXT_PUBLIC_ values are inlined). Both are OFF on a normal build, so the live site is
+// untouched: no slots, no demo data, no /advertise page, no database reads, no noindex. The preview build sets NEXT_PUBLIC_FEATURED_DEMO=1.
+export const FEATURED_DEMO = process.env.NEXT_PUBLIC_FEATURED_DEMO === "1";
+// Set NEXT_PUBLIC_FEATURED_ENABLED=1 at launch (after running the migration) to switch on real, paid placements.
+export const FEATURED_ENABLED = FEATURED_DEMO || process.env.NEXT_PUBLIC_FEATURED_ENABLED === "1";
 
 type DemoPlan = { developerSlug: string; tier: FeaturedTier; foundingPartner?: boolean };
 

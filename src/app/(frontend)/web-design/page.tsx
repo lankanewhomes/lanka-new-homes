@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Check } from "lucide-react";
 import { ScrollReveal } from "@/components/marketplace/scroll-reveal";
-import { HeroMarquee } from "@/components/marketplace/web-design-frames";
 import { SampleSiteSwitcher } from "@/components/marketplace/web-design-sample-switcher";
 import { WebDesignQuickjump } from "@/components/marketplace/web-design-quickjump";
 import { withSocial } from "@/lib/seo";
@@ -41,6 +40,15 @@ const HOMEPAGE_SECTIONS = [
   "Enquiry form and WhatsApp",
   "Brochure download",
   "Buyers from any country",
+] as const;
+
+const BUILD_ITEMS = [
+  { title: "Hero and key facts", body: "Your best render first, with the facts buyers look for." },
+  { title: "Plans and pricing", body: "Every plan, size and price in one clear table." },
+  { title: "Photo gallery", body: "Renders and site photos in a fast gallery." },
+  { title: "Location and nearby places", body: "A map and real travel times." },
+  { title: "Construction progress", body: "Show the build as it happens." },
+  { title: "Enquiry form and WhatsApp", body: "Leads go straight to your team." },
 ] as const;
 
 const FAQS = [
@@ -87,26 +95,23 @@ export default function WebDesignPage() {
                 </li>
               ))}
             </ul>
+            <div className="wdx-hero-facts" aria-label="At a glance">
+              <div><small>Sample sites</small><strong>6</strong></div>
+              <div><small>Built for</small><strong>Mobile</strong></div>
+              <div><small>Sign-off</small><strong>Yours</strong></div>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="fdv-box fdv-box--cream" id="built" aria-label="Built around your project">
-        <div className="wdx-section-head" data-reveal>
-          <h2>Built around your project.</h2>
-          <p>Your renders, floor plans and brand — not a generic template.</p>
-        </div>
-        <HeroMarquee />
-      </section>
-
-      {/* 3 — LIVE SAMPLE — dark box: the switcher/device frames are styled
-          for a dark surface. */}
-      <section className="fdv-box fdv-box--dark wdx-sample" id="sample" aria-label="Sample homepage">
+      {/* Redesign 2026-11-07 (owner): sample sites now come right after the hero, on a cream box with the site's grid lines;
+          then listing-vs-website, what we can build, process (cream), FAQ (lilac). No two neighbours share a background. */}
+      <section className="fdv-box fdv-box--cream wdx-sample wdx-sample--light" id="sample" aria-label="Sample homepage">
         <div className="wdx-section-head" data-reveal>
           <h2>See what your site could look like.</h2>
           <p>
-            We built six complete sample homepages for six fictional developments, each with its own look — pick
-            one below. Every section is something we can build for your project — watch it scroll, or open the full page.
+            We built six complete sample homepages for six fictional developments, each with its own look. Pick one,
+            then open the full page.
           </p>
         </div>
         <div data-reveal>
@@ -114,24 +119,73 @@ export default function WebDesignPage() {
         </div>
       </section>
 
+      <section className="fdv-box fdv-box--gray" id="why-a-website" aria-label="Listing and website">
+        <div className="wdx-section-head" data-reveal>
+          <h2>A listing gets you found. A website tells your story.</h2>
+          <p>Most developers end up with both, and each does a different job.</p>
+        </div>
+        <div className="fdv-box-grid fdv-box-grid--2" data-reveal>
+          <div className="fdv-box-card">
+            <h3>LankaNewHomes listing</h3>
+            <ul className="wdx-tick-list">
+              <li>Reaches buyers already searching</li>
+              <li>Plans, prices and enquiries in one place</li>
+              <li>Live in days, no build needed</li>
+            </ul>
+          </div>
+          <div className="fdv-box-card">
+            <h3>Your own website</h3>
+            <ul className="wdx-tick-list">
+              <li>Where Facebook ads, QR codes and referrals land</li>
+              <li>Your brand, your look, your domain</li>
+              <li>Room to tell the whole project story</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section className="fdv-box fdv-box--sage" id="built" aria-label="What we can build">
+        <div className="wdx-section-head" data-reveal>
+          <h2>What we can build.</h2>
+          <p>Pick what your project needs. Nothing is forced on you.</p>
+        </div>
+        <div className="fdv-box-grid fdv-box-grid--3" data-reveal>
+          {BUILD_ITEMS.map((item, index) => (
+            <div className="fdv-box-card" key={item.title}>
+              <span className="fdv-box-card-num">{String(index + 1).padStart(2, "0")}</span>
+              <h3>{item.title}</h3>
+              <p>{item.body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Owner, 2026-09-30: "any section you need to add" — grounded in the
           FAQ's own answers (you review the design first; quoted per
           project). */}
-      <section className="fdv-box fdv-box--gray" id="process" aria-label="How we work">
+      <section className="fdv-box fdv-box--cream" id="process" aria-label="How we work">
         <div className="wdx-section-head" data-reveal>
           <h2>How we work.</h2>
           <p>A simple process, with your sign-off before anything is built.</p>
         </div>
-        <div className="fdv-box-grid fdv-box-grid--3" data-reveal>
+        <div className="fdv-box-grid fdv-box-grid--4" data-reveal>
           <div className="fdv-box-card">
+            <span className="fdv-box-card-num">Step 1</span>
             <h3>Tell us about your project</h3>
             <p>Share the size of the project and what you need. We quote for each one.</p>
           </div>
           <div className="fdv-box-card">
+            <span className="fdv-box-card-num">Step 2</span>
             <h3>Review the design</h3>
             <p>You see the design before it&apos;s built, and changes at that stage are quick.</p>
           </div>
           <div className="fdv-box-card">
+            <span className="fdv-box-card-num">Step 3</span>
+            <h3>We build it</h3>
+            <p>Mobile-first, around your renders, floor plans and brand.</p>
+          </div>
+          <div className="fdv-box-card">
+            <span className="fdv-box-card-num">Step 4</span>
             <h3>Launch with enquiries wired in</h3>
             <p>Enquiry form, WhatsApp click-to-chat and brochure downloads, so every lead reaches your team.</p>
           </div>

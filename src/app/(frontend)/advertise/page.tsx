@@ -3,6 +3,8 @@ import Link from "next/link";
 import { ADD_ONS, CONTACT, FOUNDING_PARTNER, LEAD_NOTE, LEAD_PRICE_USD, LEAD_TYPES, TERM_DISCOUNTS, TIERS, TIER_ORDER, priceWithDiscount, type AddOnType, type FeaturedTier } from "@/lib/featured/config";
 import { FEATURED_DEMO } from "@/lib/featured/demo";
 import "@/components/featured/featured.css";
+import { FEATURED_ENABLED } from "@/lib/featured/demo";
+import { notFound } from "next/navigation";
 
 // Developer pricing page for the paid Featured placements. Not in the nav and not indexed for now (owner). All prices come from
 // src/lib/featured/config.ts: edit them there.
@@ -27,6 +29,7 @@ function Cta({ subject }: { subject: string }) {
 }
 
 export default function AdvertisePage() {
+  if (!FEATURED_ENABLED) notFound();
   return (
     <div className="adv">
       <header className="adv-hero">

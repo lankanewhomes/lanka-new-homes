@@ -203,6 +203,8 @@ body { background: #fff; color: #222; font-family: var(--font-ref-sans); font-si
   text-decoration: none;
 }
 
+button.mobile-search-trigger { padding: 0; cursor: pointer; font: inherit; -webkit-tap-highlight-color: transparent; }
+
 .mobile-menu {
   display: none;
   width: 48px;
@@ -2304,6 +2306,13 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   color: #1a6b2f;
 }
 
+/* Sold Out is red, never the green of a live status (owner, 2026-11-14). Same red as the floor-plan "Sold Out" pill. */
+.listing-hero-tags span.listing-hero-tag-status.listing-hero-tag-sold-out {
+  background: #c0392b;
+  border: 1px solid #c0392b;
+  color: #fff;
+}
+
 .listing-hero-tags span.listing-hero-tag-move-in {
   background: #e8f1fd;
   border: 1px solid #bfd9f7;
@@ -2613,11 +2622,11 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
   }
 
   .listing-hero-quickjump-more-right svg {
-    animation: quickjump-more-nudge-right 1.4s ease-in-out infinite;
+    animation: quickjump-more-nudge-right 1.4s ease-in-out 2; /* twice, then still: a looping nudge looked like the bar was shaking (owner, 2026-11-09) */
   }
 
   .listing-hero-quickjump-more-left svg {
-    animation: quickjump-more-nudge-left 1.4s ease-in-out infinite;
+    animation: quickjump-more-nudge-left 1.4s ease-in-out 2;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -5050,6 +5059,39 @@ h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
 .key-features-item:hover {
   background: #f7f6f2;
   color: #1e1e1e;
+}
+
+/* Key Features (owner, 2026-11-15): an open category shows its rooms / topics (Doors, Living Areas, Kitchen...) as columns under plain headings. No orange rules. */
+.key-features-block {
+  display: grid;
+  align-content: start;
+  gap: 2px;
+  padding: 18px 18px 14px;
+  background: #fafafa;
+}
+.key-features-block-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #ececec;
+  font-family: var(--font-ref-sans);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.3;
+  color: #1f1f1f;
+}
+.key-features-block-title svg {
+  flex: none;
+  stroke-width: 1.5;
+  color: #4a4a4a;
+}
+.key-features-block .key-features-item:hover {
+  background: #fff;
+}
+@media (max-width: 1000px) {
+  .key-features-row-body { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 .amenities-showcase-shell {
@@ -10255,6 +10297,11 @@ a.developer-profile-press-title {
   border-radius: 3px;
 }
 
+.listing-grid-card-status.listing-grid-card-status-sold-out,
+.project-popup-status.project-popup-status-sold-out {
+  background: #c0392b;
+}
+
 .listing-grid-card-carousel-arrow {
   position: absolute;
   top: 50%;
@@ -12201,7 +12248,7 @@ body:has(.compare-bar) {
   opacity: 1;
 }
 
-/* ==========================================================================
+/* ============================================================
    /home-v2 — alternate homepage concept. Fully namespaced under .homev2 so
    none of this touches the real homepage's styles. Editorial/serif design
    direction, distinct from the rest of the site on purpose.
@@ -20704,7 +20751,7 @@ body:has(.compare-bar) {
 @keyframes l360-fade { from { opacity: 0; } to { opacity: 1; } }
 .l360-bubble, .l360-pin { animation: l360-fade 220ms ease-out; }
 
-/* =====================================================================
+/* =======================================================
    MAP ON PHONES (2026-10-09): "the icons are too big". Markers, buttons and
    the popup are scaled down; the Lanka360 map is shorter so the listings
    are reachable with one scroll; the filter row scrolls sideways.
@@ -20739,7 +20786,7 @@ body:has(.compare-bar) {
 .listing-area-heading { font-size: 13px !important; font-weight: 400 !important; color: #3d3d39; margin-bottom: -26px; }
 .listing-area-heading span { font-weight: 400 !important; font-size: 13px; color: #6b6b66; }
 
-/* =====================================================================
+/* =======================================================
    PHONE: map view gets the room (2026-10-10). When "Map" is chosen the search
    bar (search box, "All of Sri Lanka", search button) and the page heading
    are hidden and the map is tall. Choose "List" (or tap the button again) to
@@ -20886,6 +20933,12 @@ body:has(.compare-bar) {
 .price-band-range { font-family: var(--font-ref-sans); font-size: 22px; line-height: 1.2; font-weight: 400; }
 .price-band-count { font-size: 14px; color: #6b5b7a; }
 .price-band-go { margin-top: 10px; display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 600; }
+/* Land row (owner, 2026-11-17): same boxes in the sage green used for land elsewhere, so land stands out from the homes. */
+.price-land-title { margin: 30px 0 0; font-family: var(--font-ref-sans); font-size: 20px; font-weight: 500; color: #1f1f1f; }
+.price-bands-land { margin-top: 14px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.price-band-land { background: #e8ede2; border-color: #c3cfb7; }
+.price-band-land .price-band-count { color: #4f6340; }
+.price-band-land:hover { border-color: #3f5a2d; }
 @media (max-width: 1100px) {
   .price-bands { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
@@ -20893,6 +20946,7 @@ body:has(.compare-bar) {
   .price-search-section { margin: 0 -8px 34px; padding: 28px 14px 30px; }
   .lnh-home .price-search-section { padding-left: calc(50vw - 50% + 0px); padding-right: calc(50vw - 50% + 0px); margin-top: 0; margin-bottom: 34px; }
   .price-bands { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .price-bands-land { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .price-band { padding: 16px 14px; }
   .price-band-range { font-size: 18px; }
 }
@@ -21026,6 +21080,196 @@ body:has(.compare-bar) {
   .neighborhood-page-content .developer-projects-grid.listing-carousel .listing-grid-card { flex-basis: 82%; }
 }
 
+/* /web-design redesign (owner, 2026-11-07): sample sites sit right under the hero on a cream grid box, then listing-vs-website,
+   what we can build, process, FAQ. Light-surface versions of the sample switcher, the two-card grid, tick lists and the hero facts row. */
+.fdv-box-grid--2 { grid-template-columns: repeat(2, 1fr); }
+@media (max-width: 900px) {
+  .fdv-box-grid--2 { grid-template-columns: 1fr; }
+}
+
+.wdx-tick-list {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+  font-size: 14.5px;
+  color: var(--fdv-ink);
+}
+.wdx-tick-list li::before {
+  content: "✓";
+  color: #f47b36;
+  font-weight: 800;
+  margin-right: 10px;
+}
+
+.wdx-hero-facts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 18px;
+  border-top: 1px solid #e2e1dc;
+}
+.wdx-hero-facts div {
+  padding: 16px 0 4px 20px;
+  border-left: 1px solid #e2e1dc;
+}
+.wdx-hero-facts div:first-child { padding-left: 0; border-left: 0; }
+.wdx-hero-facts small {
+  display: block;
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6b6a66;
+}
+.wdx-hero-facts strong {
+  font-size: 26px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: var(--fdv-ink);
+}
+
+.wdx-sample--light .wdx-sample-tab {
+  border-color: rgba(21, 20, 26, 0.25);
+  background: #fff;
+  color: var(--fdv-ink);
+}
+.wdx-sample--light .wdx-sample-tab:hover { border-color: var(--fdv-ink); }
+.wdx-sample--light .wdx-sample-tab.is-active {
+  background: var(--fdv-ink);
+  border-color: var(--fdv-ink);
+  color: #fff;
+}
+.wdx-sample--light .wdx-sample-foot .fdv-cta-primary {
+  background: var(--fdv-ink);
+  border-color: var(--fdv-ink);
+  color: #fff;
+}
+.wdx-sample--light .wdx-sample-foot .fdv-cta-primary:hover {
+  background: transparent;
+  color: var(--fdv-ink);
+}
+.wdx-sample--light .wdx-sample-foot p { color: #6b6355; }
+
+/* /web-design hero (2026-11-07): brand-orange main button and a two-column checklist, as in the approved redesign example. */
+.wdx-page .fdv-hero-ctas .fdv-cta-final-button {
+  background: #f47b36;
+  border-color: #f47b36;
+  color: #fff;
+}
+.wdx-page .fdv-hero-ctas .fdv-cta-final-button:hover {
+  background: transparent;
+  color: #fff;
+}
+@media (min-width: 701px) {
+  .wdx-hero-checklist ul {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 20px;
+  }
+}
+
+
+/* Footer language switcher (owner, 2026-11-09): EN / සිංහල / தமிழ் as one joined row of square buttons (no radius), like the old header dropdown;
+   the current language is brand orange. */
+.footer-language { display: inline-flex; border: 1px solid #d9d9d2; border-radius: 0; overflow: hidden; background: #fff; }
+.footer-language button {
+  min-height: 34px;
+  padding: 0 16px;
+  border: 0;
+  border-right: 1px solid #d9d9d2;
+  border-radius: 0;
+  background: #fff;
+  color: #1f1f25;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1;
+  cursor: pointer;
+}
+.footer-language button:last-child { border-right: 0; }
+.footer-language button:hover { background: #f7f6f2; }
+.footer-language button.active, .footer-language button.active:hover { background: #f47b36; color: #1f1f1f; }
+
+/* "Continue to WhatsApp" / "Open WhatsApp" in the WhatsApp capture window are WhatsApp green, like the other WhatsApp buttons (owner, 2026-11-09). */
+.request-info-submit-big.whatsapp-capture-btn { background: #25d366; border-color: #25d366; color: #0b2e13; text-decoration: none; }
+.request-info-submit-big.whatsapp-capture-btn:hover { background: #1fb858; border-color: #1fb858; }
+.request-info-submit-big.whatsapp-capture-btn:disabled { background: #25d366; border-color: #25d366; color: #0b2e13; opacity: 0.6; }
+
+/* Contact / request-info / brochure / inquiry and WhatsApp windows (owner, 2026-11-09): plain white, no grid lines, a thin line above and below the title,
+   and the same room above and below the title in all of them (side padding keeps it clear of the close button). */
+.request-info-dialog { background-color: #fff; background-image: none; }
+.request-info-dialog .request-info-topbar { background: #f6f6f4; border-top: 1px solid #e4e4e0; border-bottom: 1px solid #e4e4e0; padding: 32px 56px; } /* a line above and below the title (owner, 2026-11-09) */
+.request-info-dialog .request-info-actions { background: #fff; }
+@media (max-width: 520px) { .request-info-dialog .request-info-topbar { padding: 28px 52px; } }
+
+/* Quick chips under the phone search's Search button (owner, 2026-11-09): the hero's category links plus Lakefront, Apartments and Condominiums (SEARCH_QUICK_CHIPS). Square, like the site's other chips. */
+.mobile-location-search-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.mobile-location-search-chips a { display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border: 1px solid #d8d8d8; border-radius: 0; background: #fff; color: #1f1f1f; font-size: 14px; font-weight: 500; text-decoration: none; }
+.mobile-location-search-chips a:active, .mobile-location-search-chips a:hover { border-color: #f47b36; background: #fff6f0; }
+
+/* Desktop: clicking the nav or hero search box shows the same chips as the phone pop-up under it (owner, 2026-11-09). */
+.header-search-chips { position: absolute; top: calc(100% + 6px); left: 0; z-index: 130; width: min(460px, 90vw); padding: 14px; background: #fff; box-shadow: 0 4px 18px rgba(32, 33, 36, 0.22); }
+.hero-search-suggestions.hero-search-chips { padding: 14px; background: #fff; }
+
+/* Phones: room under the last button of the contact windows, plus the iPhone safe area (owner, 2026-11-09: "add more height in the bottom"). */
+@media (max-width: 520px) { .request-info-dialog .request-info-actions { margin-bottom: -18px; padding-bottom: calc(28px + env(safe-area-inset-bottom)); } }
+/* While a contact window is open the page's bottom tab bar (Photos, Videos, Brochure, Map...) is hidden, so it can never show under the window. */
+body:has(.request-info-overlay) .listing-hero-quickjump-bar { display: none; }
+
+/* Phone pop-up chips pack into full-width rows (owner, 2026-11-09: "make the chips masonry"): each chip grows to fill its row, like the hero's chips. */
+.mobile-location-search-panel .mobile-location-search-chips a { flex: 1 1 auto; justify-content: center; text-align: center; white-space: nowrap; }
+
+/* Phones: the cream search container on the listing pages runs edge to edge (owner, 2026-11-09: "make the container full width in mobile"); the inputs inside keep their size.
+   The page content is inset by (100vw - --shell-width) / 2 on each side, so the container steps out by that much. */
+@media (max-width: 760px) {
+  .listing-search-bar { margin-left: calc((var(--shell-width, 100vw) - 100vw) / 2); margin-right: calc((var(--shell-width, 100vw) - 100vw) / 2); border-left-width: 0; border-right-width: 0; }
+}
+
+/* Search chips fit the width (owner, 2026-11-09): SearchQuickChips packs them into rows measured with the real font, so there are as few rows as
+   possible. In the phone pop-up each row's chips share the row's full width; the chips are a little smaller there so more fit per row. */
+.mobile-location-search-chips-row { display: flex; flex: 0 0 100%; flex-wrap: nowrap; gap: 8px; }
+.mobile-location-search-panel .mobile-location-search-chips { gap: 6px 8px; }
+.mobile-location-search-chips-row a { flex: 0 0 auto; }
+.mobile-location-search-panel .mobile-location-search-chips-row a { flex: 1 1 auto; }
+
+/* One chip look everywhere (owner, 2026-11-09: "be consistent with the chips on the nav menu, the search and the hero"): the search chips (phone pop-up,
+   nav and hero dropdowns) match the hero chips: 52px tall, 13px / 500 text, white with a grey square border. */
+.mobile-location-search-chips a { min-height: 52px; padding: 0 10px; border: 1px solid #d8d8d8; border-radius: 0; background: #fff; color: #1f1f1f; font-size: 13px; font-weight: 500; justify-content: center; text-align: center; white-space: nowrap; }
+.mobile-location-search-chips a:hover, .mobile-location-search-chips a:active { border-color: #b8b8b8; background: #fff; }
+/* The Lands chip is slightly green (the site's land sage), in the hero and in the search chips. */
+.hero-quick-link-pill.hero-quick-link-pill-land, .mobile-location-search-chips a.is-land { background: #e8ede2; border-color: #c9d6bd; }
+.hero-quick-link-pill.hero-quick-link-pill-land:hover, .mobile-location-search-chips a.is-land:hover { background: #dde6d3; border-color: #b6c7a7; }
+
+/* Every listing card is the same height (owner, 2026-11-09): a price line holding the contact-for-price badge is 26px tall and a plain price line was 24px,
+   so a row with one badge came out 2px taller than a row without (home page New listings vs Land). All price lines are 26px now. */
+.listing-grid-card-price { min-height: 26px; }
+
+/* Lands chip (owner, 2026-11-09): always last, a full-width row of its own, with a see-through green. */
+.hero-quick-link-pill.hero-quick-link-pill-land, .mobile-location-search-chips a.is-land { background: rgba(126, 168, 98, 0.2); border-color: rgba(126, 168, 98, 0.45); }
+.hero-quick-link-pill.hero-quick-link-pill-land:hover, .mobile-location-search-chips a.is-land:hover { background: rgba(126, 168, 98, 0.32); border-color: rgba(126, 168, 98, 0.65); }
+.mobile-location-search-chips a.is-land, .mobile-location-search-chips-row a.is-land { flex: 1 1 100%; }
+
+/* Lands chip (owner, 2026-11-09): orange border only, no background, no green. */
+.hero-quick-link-pill.hero-quick-link-pill-land, .mobile-location-search-chips a.is-land { background: transparent; border-color: #f47b36; }
+.hero-quick-link-pill.hero-quick-link-pill-land:hover, .mobile-location-search-chips a.is-land:hover { background: transparent; border-color: #d9621f; }
+
+/* Small print at the bottom of project and land pages (owner, 2026-11-17): last update date + a short note on where the information comes from. */
+.listing-disclaimer {
+  width: min(1160px, 100%);
+  margin: 6px auto 0;
+  padding: 0 4px 8px;
+  font-family: var(--font-ref-sans);
+  font-size: 11px;
+  line-height: 1.55;
+  font-weight: 400;
+  color: #8a8478;
+}
+.listing-disclaimer p {
+  margin: 0;
+}
+.listing-disclaimer .listing-disclaimer-date {
+  margin-bottom: 2px;
+  color: #6b6355;
+}
 /* Owner, 2026-11-18: on a phone the Contact Us / Request info / Brochure popup and the site Contact popup open FULL SCREEN, with no dimmed
    gap above them ("there's a lot of space on top"). Desktop keeps the side panel / centred box. */
 @media (max-width: 700px) {
@@ -21043,6 +21287,33 @@ body:has(.compare-bar) {
   }
   .contact-modal-overlay { align-items: stretch; justify-content: stretch; padding: 0; background: #fff; }
   .contact-modal-dialog { width: 100%; max-width: 100%; height: 100vh; height: 100svh; max-height: 100vh; max-height: 100svh; box-shadow: none; }
+}
+
+/* Owner, 2026-11-18: on a phone the Request info form should fill the whole screen, with more room between the parts. The dialog becomes a
+   column; the form grows to the full height, the fields spread out and the submit button stays at the bottom. */
+@media (max-width: 700px) {
+  .request-info-dialog { display: flex; flex-direction: column; }
+  .request-info-dialog .request-info-topbar,
+  .request-info-dialog .request-info-listing { flex: 0 0 auto; }
+  .request-info-dialog .request-info-body { flex: 1 1 auto; display: flex; flex-direction: column; padding: 28px 22px 0; }
+  .request-info-dialog .request-info-lead { margin: 0 0 clamp(12px, 2.5svh, 20px); font-size: 15px; }
+  .request-info-dialog .request-info-body .request-info-field { margin-bottom: clamp(12px, 2.5svh, 22px); }
+  .request-info-dialog .request-info-body .request-info-field input { padding-top: 16px; padding-bottom: 16px; }
+  .request-info-dialog .request-info-body .contact-form-updates { margin-bottom: clamp(10px, 2svh, 18px); }
+  .request-info-dialog .request-info-body .request-info-actions { margin: auto -22px 0; padding: 16px 22px calc(24px + env(safe-area-inset-bottom)); }
+}
+@media (max-width: 700px) {
+  /* the message box takes the spare height between the name and the tick box, so the form fills the screen */
+  .request-info-dialog .request-info-body .request-info-message-field { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 84px; }
+  .request-info-dialog .request-info-body .request-info-message-field textarea { flex: 1 1 auto; min-height: 72px; resize: none; }
+}
+
+@media (max-width: 700px) {
+  /* a big photo of the listing across the top of the form (owner, 2026-11-19), instead of the tiny square */
+  .request-info-dialog .request-info-listing { flex-direction: column; align-items: stretch; gap: 10px; padding: 0 0 12px; }
+  .request-info-dialog .request-info-listing-image { width: 100%; height: clamp(110px, 16svh, 160px); border-radius: 0; }
+  .request-info-dialog .request-info-listing-text { padding: 0 22px; }
+  .request-info-dialog .request-info-body { padding-top: 18px; }
 }
 
 /* Price guide pages (components/marketplace/price-guide-page.tsx) */
@@ -21081,6 +21352,72 @@ body:has(.compare-bar) {
 .pg-area-card .pg-range-text { margin: 0; }
 .pg-area-typical { margin: 4px 0 0; padding-top: 10px; border-top: 1px solid rgba(0,0,0,.08); font-size: 13px; color: #5b6659; }
 .pg-area-typical strong { color: #1f2a1f; font-weight: 600; }
+
+/* Owner, 2026-11-19: on a phone the form must fill the REAL visible screen (dvh follows the browser bar hiding; svh left a gap at the bottom where the
+   floating bar showed through) and fit without scrolling. Everything below is tighter so email, name, phone, message, tick box and Submit
+   all show at once; the X stays pinned at the top. */
+@media (max-width: 700px) {
+  .request-info-overlay { height: 100vh; height: 100dvh; background: #fff; }
+  .request-info-dialog,
+  .request-info-dialog.request-info-dialog-brochure { height: 100vh; height: 100dvh; max-height: 100vh; max-height: 100dvh; }
+  .contact-modal-dialog { height: 100vh; height: 100dvh; max-height: 100vh; max-height: 100dvh; }
+  .request-info-dialog .request-info-topbar { position: sticky; top: 0; z-index: 5; padding: 14px 56px; min-height: 0; }
+  .request-info-dialog .request-info-close { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); }
+  .request-info-dialog .request-info-listing-image { height: clamp(80px, 12dvh, 130px); }
+  .request-info-dialog .request-info-listing { gap: 6px; padding-bottom: 8px; }
+  .request-info-dialog .request-info-body { padding-top: 12px; }
+  .request-info-dialog .request-info-lead { margin-bottom: 10px; font-size: 14px; }
+  .request-info-dialog .request-info-body .request-info-field { margin-bottom: 10px; }
+  .request-info-dialog .request-info-body .request-info-field input { padding-top: 12px; padding-bottom: 12px; }
+  .request-info-dialog .request-info-body .contact-form-updates { margin-bottom: 6px; }
+  .request-info-dialog .request-info-body .contact-form-updates-note { margin-top: 2px; }
+  .request-info-dialog .request-info-body .request-info-actions { padding-top: 8px; }
+  .request-info-dialog .request-info-promise { margin-bottom: 8px; }
+}
+@media (max-width: 700px) {
+  .request-info-dialog .request-info-body .request-info-message-field { min-height: 56px; }
+  .request-info-dialog .request-info-body .request-info-message-field textarea { min-height: 56px; }
+  .request-info-dialog .request-info-body .contact-form-updates-note { display: none; }
+}
+
+/* Owner, 2026-11-19: on desktop the Request info, Brochure and WhatsApp side panels had empty space at the bottom. The listing photo now runs across the
+   top, tall enough to fill the panel, so the real photo of the listing is easy to see. The success / brochure screen fills the rest. */
+@media (min-width: 701px) {
+  .request-info-dialog { display: flex; flex-direction: column; }
+  .request-info-dialog .request-info-topbar { flex: 0 0 auto; }
+  /* the photo takes whatever height the form leaves, so a tall screen shows a big photo and a short one a smaller photo, never a gap or a scroll */
+  .request-info-dialog .request-info-listing { flex: 1 1 auto; min-height: 0; flex-direction: column; align-items: stretch; gap: 10px; padding: 0 0 14px; }
+  .request-info-dialog .request-info-listing-image { flex: 1 1 auto; width: 100%; height: auto; min-height: 0; max-height: 520px; border-radius: 0; }
+  .request-info-dialog .request-info-listing-text { padding: 0 24px; flex: 0 0 auto; }
+  .request-info-dialog .request-info-listing-image { flex-basis: 0; }
+  .request-info-dialog .request-info-body .contact-form-updates-note { display: none; }
+  .request-info-dialog .request-info-message-field textarea { height: 68px; min-height: 0; resize: none; }
+  .request-info-dialog .request-info-body { flex: 0 0 auto; }
+  .request-info-dialog .request-info-body .request-info-actions { margin-top: auto; }
+}
+.request-info-dialog .request-info-success { flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+.request-info-dialog .request-info-success .request-info-submit-big,
+.request-info-dialog .request-info-success button { width: 100%; max-width: 360px; min-height: 56px; font-size: 16px; }
+
+/* Owner, 2026-11-19: show the WHOLE photo of the listing in the form (object-fit contain, not a cropped strip). The photo box takes the height the form
+   leaves, on phone and desktop alike, so nothing scrolls; the intro line is dropped on desktop to give the photo room. */
+.request-info-dialog .request-info-listing-image { object-fit: contain; background: #f2f2ef; }
+@media (max-width: 700px) {
+  .request-info-dialog .request-info-listing { flex: 1 1 auto; min-height: 0; }
+  .request-info-dialog .request-info-listing-image { flex: 1 1 0; height: auto; min-height: 0; max-height: 260px; }
+  .request-info-dialog .request-info-listing-text { flex: 0 0 auto; }
+  .request-info-dialog .request-info-body { flex: 0 0 auto; }
+  .request-info-dialog .request-info-message-field { flex: 0 0 auto; min-height: 0; }
+  .request-info-dialog .request-info-message-field textarea { height: 64px; min-height: 0; flex: 0 0 auto; }
+}
+.request-info-dialog .request-info-body .request-info-lead { display: none; }
+
+/* Owner, 2026-11-19: on a phone the listing title gets extra space above it, under the photo. */
+@media (max-width: 700px) {
+  .request-info-dialog .request-info-listing-text { padding-top: 12px; }
+}
+
+.pg-page .new-listings-section .pg-table-card { background: #fff; padding: 8px 20px 20px; overflow-x: auto; }
 .pg-page .new-listings-section .guide-detail-card { background: #fff; padding: 22px 24px; }
 .pg-page .new-listings-section .guide-detail-card p { margin: 0; }
 /* Price pages: neighbouring sections get different backgrounds (owner, 2026-11-20) */
@@ -21104,3 +21441,95 @@ body:has(.compare-bar) {
   .pg-page > section:last-of-type,
   .guide-detail > section:last-of-type { margin-bottom: 0; }
 }
+
+/* Header mega menu (owner, 2026-11-20): hovering New Homes / Land / Company opens a full-width white panel under the
+   header — bold column headings, plain link lists, and a 2 x 2 block of Featured listings photo tiles on the right.
+   The page behind is dimmed. Markup: NavMegaPanel in src/components/marketplace/mega-menu.tsx. Phones keep the
+   slide-down accordion menu. */
+.site-header nav .nav-dropdown { position: static; }
+.site-header nav .nav-dropdown.is-active::after { content: none; }
+.site-header nav .nav-dropdown.is-active { box-shadow: inset 0 -2px 0 #1f1f1f; }
+.nav-mega {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 60;
+  background: #fff;
+  border-top: 1px solid #e4e2db;
+  cursor: default;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, visibility 0.15s;
+}
+/* Dimmed page under the open panel. No pointer events, so moving onto the page closes the menu. */
+.nav-mega::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 100vh;
+  background: rgba(20, 20, 20, 0.28);
+  pointer-events: none;
+}
+.nav-dropdown:hover .nav-mega,
+.nav-dropdown:focus-within .nav-mega { opacity: 1; visibility: visible; }
+.nav-dropdown.is-closed .nav-mega { opacity: 0; visibility: hidden; }
+.nav-mega-inner {
+  width: min(1290px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 40px 0 48px;
+  display: flex;
+  align-items: flex-start;
+  gap: 48px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+}
+.nav-mega-columns { flex: 1; min-width: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 32px 40px; }
+.nav-mega-column { display: flex; flex-direction: column; align-items: flex-start; }
+.nav-mega-heading { margin: 0 0 14px; font-size: 20px; line-height: 26px; font-weight: 400; color: #111; letter-spacing: -0.01em; }
+.site-header .nav-mega-column a {
+  display: block;
+  padding: 5px 0;
+  margin: 0;
+  font-size: 16px;
+  line-height: 22px;
+  font-weight: 400;
+  color: #1f1f1f;
+  background: none;
+}
+.site-header .nav-mega-column a:hover { background: none; color: #1f1f1f; text-decoration: underline; text-underline-offset: 3px; }
+.nav-mega-featured { flex: 0 0 372px; }
+.nav-mega-featured-heading { font-size: 24px; line-height: 30px; margin-bottom: 16px; }
+.nav-mega-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.site-header .nav-mega-tile {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 5;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  background: #ecebe6;
+  color: #fff;
+}
+.nav-mega-tile img { object-fit: cover; transition: transform 0.3s ease; }
+.nav-mega-tile:hover img { transform: scale(1.04); }
+.nav-mega-tile::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.72) 100%); }
+.nav-mega-tile-empty::after { content: none; }
+.nav-mega-tile-text { position: absolute; left: 14px; right: 14px; bottom: 14px; z-index: 1; display: flex; flex-direction: column; gap: 2px; }
+.nav-mega-tile-text strong { font-size: 16px; line-height: 20px; font-weight: 400; color: #fff; }
+.nav-mega-tile-text small { font-size: 13px; line-height: 17px; font-weight: 400; color: rgba(255, 255, 255, 0.88); }
+.site-header .nav-mega-tile:hover { background: #ecebe6; color: #fff; text-decoration: none; }
+.site-header .nav-mega-view-all { display: inline-block; margin: 14px 0 0; padding: 0; font-size: 15px; font-weight: 600; color: #1f1f1f; text-decoration: underline; text-underline-offset: 3px; background: none; }
+.site-header .nav-mega-view-all:hover { background: none; color: #f47b36; }
+@media (max-width: 1100px) {
+  .nav-mega-inner { gap: 32px; }
+  .nav-mega-featured { flex-basis: 300px; }
+  .nav-mega-heading { font-size: 18px; }
+  .site-header .nav-mega-column a { font-size: 15px; }
+}
+
+/* Price guide pages, "Keep exploring" (owner, 2026-11-20): the link chips sat right against the subheading. Same 22px gap
+   under the heading block as every other section on the page. */
+.featured-listings-head + .about-areas { margin-top: 22px; }

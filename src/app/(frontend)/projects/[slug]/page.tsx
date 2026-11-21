@@ -14,6 +14,7 @@ import { SimilarListingsSection } from "@/components/marketplace/similar-listing
 import { FeaturedSlot } from "@/components/featured/featured-slot";
 import { getFeaturedData } from "@/lib/featured/store";
 import { activeItems, selectFeatured } from "@/lib/featured/engine";
+import { ListingDisclaimer } from "@/components/marketplace/listing-disclaimer";
 import {
   AmenitiesShowcaseSection,
   CommercialAreasSection,
@@ -246,6 +247,8 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
           exclude={nearbyExclude}
         />
         <SimilarListingsSection listings={similarListings} />
+
+        <ListingDisclaimer updatedAt={project.updatedAt ?? project.createdAt} />
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+import { emailButton, emailHero, emailPanel, emailShell } from '../../lib/email-layout'
 // Branded HTML for the account emails (verify your email, reset your password) — Payload's own auth.verify /
 // auth.forgotPassword send a plain default otherwise. Same visual style as the developer emails
 // (src/lib/developer-invite-email.ts): 600px bordered card, square corners, left-aligned wordmark with the
@@ -25,35 +26,13 @@ function renderAccountEmail({
   noteLines: string[]
   after?: string
 }): string {
-  const p = 'margin:0 0 4px; font-size:14px; line-height:1.6; color:#3a3a38;'
-  return `<!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${esc(title)}</title></head>
-<body style="margin:0; padding:0; background-color:#f5f5f0; font-family:Helvetica, Arial, sans-serif;">
-<div style="display:none; max-height:0; overflow:hidden; mso-hide:all;">${esc(preheader)}</div>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f5f5f0; padding:32px 16px;"><tr><td align="center">
-<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px; width:100%; background:#ffffff; border:1px solid #e4e2db;">
-<tr><td style="padding:24px 32px 18px; border-bottom:1px solid #e4e2db;">
-<a href="https://www.lankanewhomes.com" style="text-decoration:none;"><img src="https://www.lankanewhomes.com/brand/logo-email.png" width="130" alt="LankaNewHomes" style="display:block; border:0; width:130px; height:auto; font-size:18px; font-weight:700; color:#1f1f1f;"></a>
-</td></tr>
-<tr><td style="padding:26px 32px 0;">
-<p style="margin:0 0 12px; font-size:22px; color:#1f1f1f; font-weight:400;">${heading}</p>
-<p style="margin:0 0 22px; font-size:15px; line-height:1.6; color:#3a3a38;">${intro}</p>
-<p style="margin:0 0 22px;"><a href="${url}" style="display:inline-block; background:#f47b36; color:#1f1f1f; text-decoration:none; padding:12px 24px; border-radius:999px; font-size:15px;">${esc(buttonLabel)}</a></p>
-</td></tr>
-<tr><td style="padding:0 32px 8px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#faf7f2; border:1px solid #e4e2db;"><tr><td style="padding:16px 20px;">
-<p style="margin:0 0 8px; font-size:16px; color:#1f1f1f;">${esc(noteTitle)}</p>
-${noteLines.map((line) => `<p style="${p}">&bull; ${line}</p>`).join('')}
-</td></tr></table></td></tr>
-<tr><td style="padding:14px 32px 0;">
-<p style="margin:0; font-size:12px; line-height:1.5; color:#6b6355; word-break:break-all;">Button not working? Paste this link into your browser:<br><a href="${url}" style="color:#6b6355;">${url}</a></p>
-${after ?? ''}
-</td></tr>
-<tr><td style="padding:22px 32px 26px;">
-<p style="margin:0; font-size:13px; line-height:1.6; color:#6b6355;">LankaNewHomes &middot; <a href="mailto:support@lankanewhomes.com" style="color:#6b6355;">support@lankanewhomes.com</a></p>
-<p style="margin:6px 0 0; font-size:12px; line-height:1.6; color:#9a9282;">This inbox is not monitored. Reply to a message from us or write to support if you need help.</p>
-</td></tr>
-</table></td></tr></table></body></html>
-`
+  const body = [
+    emailHero(heading, intro),
+    emailButton(buttonLabel, url),
+    emailPanel({ heading: noteTitle, bodyHtml: noteLines.map((line) => `&bull; ${line}`).join('<br>') }),
+    `  <tr><td style="padding:18px 32px 32px;font-size:13px;line-height:1.65;color:#6b6a66;">Button not working? Paste this link into your browser:<br><a href="${url}" style="color:#6b6a66;word-break:break-all;">${url}</a>${after ?? ''}</td></tr>`,
+  ].join('\n')
+  return emailShell({ preheader, title, body, footerNote: 'This inbox is not monitored. Reply to a message from us or write to <a href="mailto:support@lankanewhomes.com" style="color:#ffffff;">support@lankanewhomes.com</a> if you need help.' })
 }
 
 export function renderVerificationEmailHTML({

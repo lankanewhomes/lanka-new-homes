@@ -105,3 +105,15 @@ Excello's archive has 7 projects; only these 3 are "In Progress" — completed o
   - [ ] Rush's location data is unreliable: the JSON-LD location on every project page is a placeholder 1–7 km off (same for Rush City); Watarappala's Google Maps link duplicates the Dehiwala project's, so it uses an area-level point (Watarappala Road, Ratmalana, Street View off) — ask Rush for the real address.
   - [ ] "Luxury Villas" type for Rush Villa / Palm Grove / Park is inferred from Rush's history page ("ultra-luxury villa projects").
 - Skipped on purpose: **Rush Courts** (`rush-courts-colombo-14`, a duplicate of Rush Court 5), **AL Kareem Tower** (a 6-storey commercial office building) and the hidden **Rush Tower 3** (14 apartments, 2030, an empty page).
+
+## Marina Square - Uptown Colombo (`marina-square-uptown-colombo`, project 189) - added 2026-11-09
+- [ ] **Availability email drafted, NOT SENT** (from developers@lankanewhomes.com, branded outreach template; `scripts/render-marina-square-availability-email.ts`, preview in the owner's Desktop folder "Marina Square email draft"). Needs the **sales email address** (the site only publishes +94 76 305 0000) and the owner's go-ahead. Log it as sent in the developer's Emails tab once it goes.
+- [ ] **Which units are sold out is unknown.** All 20 floor plans show "Available" with no unit counts (owner: do not mark anything sold out until confirmed). In the 2022 developer snapshot 1 A/B to 2 A/B/C/D were marked SOLD OUT; the other designs are not on the current site.
+- [ ] **Design count**: the site says 21 designs, its unit pages list 20 (all archived snapshots since Dec 2021). Ask what the 21st is.
+- [ ] 2022 prices for the 3, 2 and 1 bedroom designs are not entered (outdated); only 4 D/E and 4 F/G have current prices.
+- [ ] **WhatsApp**: the button uses +94 76 305 0000, the site's only phone number, not confirmed as WhatsApp.
+- [ ] No sales email on the listing (the agency email 01awards.lk was removed).
+- [ ] No handover date, unit counts or payment-plan terms published ("interest free payment plans", customised). Banking partners (7) are listed in the Pricing section.
+- [ ] No brochure on the developer's site; the Typical Floor Plans PDF is used as the brochure.
+- [ ] Colombo 15 neighbourhood page is thin (no population, history, transport); hero is a Marina Square render as a placeholder. Add real area photos when available.
+- [ ] 12 monthly progress photos (Mar 2025 to Feb 2026) are the latest on the developer's page; add newer ones when published.

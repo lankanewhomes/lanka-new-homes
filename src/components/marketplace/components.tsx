@@ -11,10 +11,14 @@ import { AccountMenu } from "@/components/auth/account-menu";
 import { IconBrandFacebook, IconBrandInstagram, IconBrandTiktok, IconChevronRight as TablerChevronRight, IconMenu2, IconSearch, IconX as TablerX } from "@tabler/icons-react";
 import { useSavedListing } from "@/lib/use-saved-listing";
 import { useSavedDeveloper } from "@/lib/use-saved-developer";
+import { parseNaturalSearch } from "@/lib/natural-search";
+import { MobileSearchOverlay, SearchQuickChips } from "@/components/marketplace/mobile-search-overlay";
+import { MEGA_MENUS, NavMegaPanel, type MegaTile } from "@/components/marketplace/mega-menu";
 import { getLandingPage, getStoredUtmParams, getTrafficSource, trackEvent } from "@/lib/ga4";
 import { hasPremiumStyleBadge, isPaidPackageTier } from "@/lib/packages";
 import { FEATURED_LABEL, FEATURED_TOOLTIP, VERIFIED_DEVELOPER_LABEL, VERIFIED_DEVELOPER_TOOLTIP } from "@/lib/developer-badges";
 import { getSessionId } from "@/components/marketplace/view-tracker";
+import { logListingInteraction } from "@/lib/log-interaction";
 import {
   ApartmentIcon,
   AreaIcon,
@@ -38,6 +42,7 @@ import {
   StatusHouseIcon,
 } from "@/components/icons/stat-icons";
 import { Fragment, FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   Activity,
   ArrowUpRight,
@@ -75,7 +80,6 @@ import {
   Hammer,
   HousePlus,
   Landmark,
-  Mail,
   Compass,
   Construction,
   Droplet,
@@ -116,6 +120,17 @@ import {
   House,
   Umbrella,
   Scissors,
+  Armchair,
+  DoorOpen,
+  Globe,
+  Trash2,
+  Bug,
+  WashingMachine,
+  Lightbulb,
+  Phone,
+  CookingPot,
+  Snowflake,
+  Eye,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteLanguage, useLanguage } from "@/components/layout/language-provider";
@@ -130,6 +145,8 @@ import { floorPlanSummarySentence } from "@/lib/i18n/floor-plan-sentence";
 import { listingWhatsAppHref, toWhatsAppNumber, whatsappChatHref } from "@/lib/whatsapp";
 import { buildInternationalPhone, DEFAULT_PHONE_COUNTRY, isPlausiblePhone } from "@/lib/phone";
 import { PhoneField, type PhoneValue } from "@/components/marketplace/phone-field";
+import { UpdatesOptIn } from "@/components/marketplace/updates-optin";
+import { openWhatsAppCapture } from "@/components/marketplace/whatsapp-capture";
 import { groupNearbyPlaces } from "@/lib/nearby-places";
 import { sortConstructionUpdates } from "@/lib/construction-updates";
 import type { MapArea, MapPlace } from "@/components/marketplace/map-pane";
@@ -381,6 +398,20 @@ function logListingEvent(endpoint: string, ga4EventName: string, projectSlug: st
     keepalive: true,
   }).catch(() => {});
   trackEvent(ga4EventName, { listing_id: projectSlug, listing_name: listingName, ...(developerSlug ? { developer_slug: developerSlug } : {}) });
+}
+
+
+// Every WhatsApp button on a listing asks for the buyer's name and number first (whatsapp-capture.tsx), then opens WhatsApp.
+// The href stays on the link, so a new-tab click, a long press or a browser without scripts still reaches the developer.
+/** "Location, City" for the contact windows, without repeating the city when the location already names it. */
+function listingAddress(project: Project): string {
+  return project.city && !project.location?.toLowerCase().includes(project.city.toLowerCase()) ? [project.location, project.city].filter(Boolean).join(", ") : (project.location || project.city || "");
+}
+
+function captureWhatsAppClick(event: { metaKey: boolean; ctrlKey: boolean; shiftKey: boolean; button: number; preventDefault: () => void }, href: string | null, project: Project, planName?: string) {
+  if (!href || event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return;
+  event.preventDefault();
+  openWhatsAppCapture({ href, projectSlug: project.slug, projectName: project.name, location: listingAddress(project), developerSlug: project.developerSlug, heroImage: project.heroImage, planName });
 }
 
 export function StatusBadge({ status }: { status: string }) {
@@ -1252,7 +1283,7 @@ export function ProjectHero({
               target="_blank"
               rel="noopener noreferrer"
               className="request-info-btn whatsapp-btn"
-              onClick={() => logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project.slug, project.name, project.developerSlug)}
+              onClick={(event) => captureWhatsAppClick(event, whatsappHref, project)}
             >
               <MessageCircle className="h-4 w-4" aria-hidden="true" />
               WhatsApp
@@ -1738,7 +1769,7 @@ export function ProjectHero({
 
       {(hasDisplayValue(project.status) || isUpcomingMoveIn(project) || project.isFeatured || paidFeatured || project.isMoveInNow || hasQuickMoveIn(project) || Boolean(project.paymentPlanBadge) || extraBadges.length > 0) ? (
         <div className="listing-hero-tags" aria-label="Listing status tags">
-          {hasDisplayValue(project.status) ? <span className="listing-hero-tag-status">{t(statusLabelOverride ?? project.status)}</span> : null}
+          {hasDisplayValue(project.status) ? <span className={`listing-hero-tag-status${(statusLabelOverride ?? project.status) === "Sold Out" ? " listing-hero-tag-sold-out" : ""}`}>{t(statusLabelOverride ?? project.status)}</span> : null}
           {isUpcomingMoveIn(project) ? <span className="listing-hero-tag-move-in">{t("Move in")} {project.completionYear}</span> : null}
           {project.isMoveInNow ? <span className="listing-badge-pill badge-move-in-now">{t("Move-In Now")}</span> : null}
           {hasQuickMoveIn(project) ? <span className="listing-badge-pill badge-quick-move-in">{t("Quick Move-In")}</span> : null}
@@ -1778,7 +1809,7 @@ export function ProjectHero({
               rel="noopener noreferrer"
               className="listing-hero-mobile-btn listing-hero-mobile-btn-whatsapp"
               aria-label="Chat on WhatsApp"
-              onClick={() => logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project.slug, project.name, project.developerSlug)}
+              onClick={(event) => captureWhatsAppClick(event, whatsappHref, project)}
             >
               <MessageCircle className="h-4 w-4" aria-hidden="true" />
               WhatsApp
@@ -2054,7 +2085,6 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
   const { t } = useListingT();
   const [requestInfoOpen, setRequestInfoOpen] = useState(false);
   const name = developer?.name ?? project.developerName ?? project.contact.name;
-  const email = hasDisplayValue(project.contact?.email) ? project.contact.email : developer?.email;
   const projectSocialEntries = Object.entries(project.socialLinks ?? {}).filter(([, url]) => hasDisplayValue(url)) as [string, string][];
   const developerSocialEntries = Object.entries(developer?.socialLinks ?? {}).filter(([, url]) => hasDisplayValue(url)) as [string, string][];
   // WhatsApp gets its own labelled tap-to-chat row (tracked like phone
@@ -2089,12 +2119,7 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
           </span>
         ) : null}
 
-        {hasDisplayValue(email) ? (
-          <a href={`mailto:${email}`} className="stats-contact-card-row" onClick={() => logListingEvent("/api/events/email-click", "click_email", project.slug, project.name, project.developerSlug)}>
-            <Mail className="h-4 w-4" aria-hidden="true" /> {email}
-          </a>
-        ) : null}
-
+        {/* Email intentionally not shown here (owner, 2026-11-09): buyers reach the developer through Request info or WhatsApp. */}
         {hasDisplayValue(project.contact?.address) ? (
           <span className="stats-contact-card-row">
             <MapPin className="h-4 w-4" aria-hidden="true" /> {project.contact.address}
@@ -2112,7 +2137,7 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
             target="_blank"
             rel="noopener noreferrer"
             className="stats-contact-card-row stats-contact-card-row-whatsapp"
-            onClick={() => logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project.slug, project.name, project.developerSlug)}
+            onClick={(event) => captureWhatsAppClick(event, contactWhatsAppHref, project)}
           >
             <MessageCircle className="h-4 w-4" aria-hidden="true" /> Chat on WhatsApp
           </a>
@@ -2140,7 +2165,7 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
             target="_blank"
             rel="noopener noreferrer"
             className="stats-contact-card-btn stats-contact-card-btn-whatsapp"
-            onClick={() => logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project.slug, project.name, project.developerSlug)}
+            onClick={(event) => captureWhatsAppClick(event, contactWhatsAppHref, project)}
           >
             <MessageCircle className="h-4 w-4" aria-hidden="true" /> WhatsApp
           </a>
@@ -2165,7 +2190,6 @@ export function RequestInfoDialog({
   floorPlan,
   variant = "standard",
   defaultMessage = "",
-  whatsappHref = null,
 }: {
   open: boolean;
   onClose: () => void;
@@ -2181,31 +2205,25 @@ export function RequestInfoDialog({
   variant?: "standard" | "inquiry" | "brochure";
   /** Pre-filled message (e.g. the plots a buyer selected). The parent re-keys the dialog when it changes. */
   defaultMessage?: string;
-  /** The developer's wa.me link (any form; only the number is used) for the "Get price on WhatsApp" button. */
+  /** Unused since 2026-11-18 (the "Get price on WhatsApp" button was removed from this form); callers may still pass it. */
   whatsappHref?: string | null;
 }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  // Buyers can be anywhere in the world: country + local number, stored with
-  // the international prefix (see lib/phone.ts) so reply links work abroad.
+  // The message box is pre-filled so a buyer can just send (owner, 2026-11-19: "the box with hi, I'm interested in this"); a plot selection overrides it.
+  const askSubject = floorPlan ? `${describeFloorPlanForLead(floorPlan)} at ${project.name}` : project.name;
+  const [message, setMessage] = useState(defaultMessage || (variant === "brochure" ? `Hi, I'd like the brochure for ${askSubject}.` : `Hi, I'm interested in ${askSubject}. Please send me more details.`));
   const [phoneValue, setPhoneValue] = useState<PhoneValue>({ country: DEFAULT_PHONE_COUNTRY, national: "" });
-  const [message, setMessage] = useState(defaultMessage);
-  const [contactMethod] = useState<"Phone" | "Text" | "Email">("Phone"); // the form no longer asks; replies go by phone/WhatsApp
-  const [agreed, setAgreed] = useState(false);
-  const [keepPosted, setKeepPosted] = useState(false);
+  const [interests, setInterests] = useState<string[]>([]); // the unticked-by-default marketing box (Canada's anti-spam law needs an explicit tick)
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [fieldErrors, setFieldErrors] = useState<{ name?: string; phone?: string; email?: string }>({});
   const formRef = useRef<HTMLFormElement>(null);
   const focusedFields = useRef(new Set<string>());
-  const MESSAGE_MAX = 900;
-  const isInquiry = variant === "inquiry";
   const isBrochure = variant === "brochure";
-  // Contact Us and Brochure ask for a name and one number only (owner, 2026-10-31): long forms made people stop, and many
-  // Sri Lankan buyers will not hand over details before they have seen a price. The land inquiry keeps its own longer layout.
-  const isShort = !isInquiry;
-  const formType = isBrochure ? "brochure" : isInquiry ? "inquiry" : "request_info";
+  // One short form everywhere: project Contact Us, Brochure and the land inquiry all ask email then name, no phone (owner, 2026-11-18).
+  const formType = isBrochure ? "brochure" : variant === "inquiry" ? "inquiry" : "request_info";
 
   useEffect(() => {
     if (!open) return;
@@ -2228,15 +2246,15 @@ export function RequestInfoDialog({
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const phone = isPlausiblePhone(phoneValue.country, phoneValue.national) ? buildInternationalPhone(phoneValue.country, phoneValue.national) : null;
     // Say exactly what is wrong, next to the field, instead of the browser's generic "fill out this field".
     const errors: { name?: string; phone?: string; email?: string } = {};
-    if (!name.trim()) errors.name = "Please enter your name so the team knows who to reply to.";
-    if (!phone && !isShort) errors.phone = phoneValue.country === "LK" ? "That number does not look right. Type your mobile number without the first 0, for example 77 123 4567." : "That number does not look right. Please check it and the country code.";
-    if (isShort && !email.trim()) errors.email = "Please enter your email so the team can reply to you.";
-    else if (isShort && !/^\S+@\S+\.\S+$/.test(email.trim())) errors.email = "That email does not look right. It should look like name@example.com.";
-    if (isInquiry && !agreed) setErrorMessage("Please tick the box to agree to be contacted.");
-    if (errors.name || errors.phone || errors.email || (isInquiry && !agreed)) {
+    if (!name.trim()) errors.name = "Please enter your name so the developer knows who to reply to.";
+    if (!email.trim()) errors.email = "Please enter your email so the developer can reply to you.";
+    else if (!/^\S+@\S+\.\S+$/.test(email.trim())) errors.email = "That email does not look right. It should look like name@example.com.";
+    const typedPhone = phoneValue.national.trim().length > 0;
+    const phone = typedPhone && isPlausiblePhone(phoneValue.country, phoneValue.national) ? buildInternationalPhone(phoneValue.country, phoneValue.national) : null;
+    if (typedPhone && !phone) errors.phone = phoneValue.country === "LK" ? "That number does not look right. Type your mobile number without the first 0, for example 77 123 4567." : "That number does not look right. Please check it and the country code.";
+    if (errors.name || errors.email || errors.phone) {
       setFieldErrors(errors);
       if (errors.email) formRef.current?.querySelector<HTMLInputElement>("#request-info-email")?.focus();
       else if (errors.name) formRef.current?.querySelector<HTMLInputElement>("#request-info-name")?.focus();
@@ -2257,11 +2275,12 @@ export function RequestInfoDialog({
           name: name.trim(),
           email: email.trim(),
           phone: phone ?? "",
-          preferredContactMethod: isShort ? "Email" : contactMethod,
+          marketingOptIn: interests.length > 0,
+          interests,
+          preferredContactMethod: "Email",
           message: message.trim() || (isBrochure ? `Brochure request for ${subject}` : `Request info for ${subject}`),
           projectSlug: project.slug,
           developerSlug: project.developerSlug,
-          marketingOptIn: keepPosted,
           sessionId: getSessionId(),
           trafficSource: getTrafficSource(),
           utm: getStoredUtmParams(),
@@ -2308,6 +2327,7 @@ export function RequestInfoDialog({
   const onFieldFocus = (field: string, input?: HTMLElement | null) => {
     if (!focusedFields.current.has(field)) {
       focusedFields.current.add(field);
+      logListingInteraction("form_field_focus", project.slug, field);
       trackEvent("form_field_focus", {
         field_name: field,
         form_type: formType,
@@ -2321,26 +2341,24 @@ export function RequestInfoDialog({
       window.setTimeout(() => input.scrollIntoView({ block: "center", behavior: "smooth" }), 350);
     }
   };
-  const askAbout = floorPlan ? `${describeFloorPlanForLead(floorPlan)} at ${project.name}` : project.name;
-  const priceHref = whatsappChatHref(toWhatsAppNumber(whatsappHref ?? project.socialLinks?.whatsapp), `Hi, could you send me the price and payment plan for ${askAbout} that I saw on LankaNewHomes?`);
 
-  return (
+  // Drawn straight in <body> (a portal): inside the listing page it sat in a layer below the phone's bottom tab bar, which then showed
+  // through under the window (owner, 2026-11-09).
+  return createPortal(
     <div className="request-info-overlay" role="dialog" aria-modal="true" aria-label="Contact us" onClick={onClose}>
-      <div className={`request-info-dialog${!isInquiry ? " request-info-dialog-brochure" : ""}`} onClick={(event) => event.stopPropagation()}>
+      <div className="request-info-dialog request-info-dialog-brochure" onClick={(event) => event.stopPropagation()}>
         <div className="request-info-topbar">
-          <p className="request-info-topbar-title">{isBrochure ? "Download Brochure" : isInquiry ? "Send us your inquiry" : "Contact Us"}</p>
+          <p className="request-info-topbar-title">{isBrochure ? "Download Brochure" : "Request information"}</p>
           <button type="button" className="request-info-close" aria-label="Close" onClick={onClose}><X className="h-5 w-5" /></button>
         </div>
 
-        <div className={`request-info-listing${!isInquiry ? " request-info-listing-brochure" : ""}`}>
-          <Image src={project.heroImage} alt={project.name} width={64} height={64} className="request-info-listing-image" />
-          {!isInquiry ? (
+        <div className="request-info-listing request-info-listing-brochure">
+          <Image src={project.heroImage} alt={project.name} width={640} height={360} sizes="(max-width: 700px) 100vw, 64px" className="request-info-listing-image" />
+          {(
             <div className="request-info-listing-text">
               <p className="request-info-listing-title">{project.name}</p>
-              <p className="request-info-listing-address">{project.city && !project.location?.toLowerCase().includes(project.city.toLowerCase()) ? [project.location, project.city].filter(Boolean).join(", ") : (project.location || project.city)}</p>
+              <p className="request-info-listing-address">{listingAddress(project)}</p>
             </div>
-          ) : (
-            <p className="request-info-listing-title">{project.name}</p>
           )}
         </div>
 
@@ -2351,8 +2369,8 @@ export function RequestInfoDialog({
               {isBrochure
                 ? project.brochureUrl
                   ? `Thanks, ${name.split(" ")[0] || "there"} — your download should start automatically.${email ? ` We've also emailed a copy to ${email}.` : ""}`
-                  : `Thanks, ${name.split(" ")[0] || "there"} — we don't have a digital brochure for ${project.name} yet, but the sales team will send you the details shortly.`
-                : `Thanks, ${name.split(" ")[0] || "there"} — the ${project.name} sales team will reach out to you by ${isShort ? "email" : contactMethod.toLowerCase()} shortly.`}
+                  : `Thanks, ${name.split(" ")[0] || "there"} — we don't have a digital brochure for ${project.name} yet, but the developer will send you the details shortly.`
+                : `Thanks, ${name.split(" ")[0] || "there"} — the developer of ${project.name} will reach out to you by email shortly.`}
             </p>
             {isBrochure && project.brochureUrl ? (
               <Button
@@ -2370,11 +2388,9 @@ export function RequestInfoDialog({
           </div>
         ) : (
           <form ref={formRef} onSubmit={onSubmit} noValidate className="request-info-body">
-            {isInquiry && <h2>Want to find out more?</h2>}
-            {isInquiry ? <p className="request-info-required-note"><span className="request-info-star">*</span> Indicates a required field</p> : <p className="request-info-lead">Your email and name. We reply within 24 hours.</p>}
+            <p className="request-info-lead">The developer will contact you. Phone is optional.</p>
 
-            {isShort ? (
-              <label className="request-info-field">
+            <label className="request-info-field">
                 <span>Email<span className="request-info-star">*</span></span>
                 <input
                   id="request-info-email"
@@ -2389,10 +2405,9 @@ export function RequestInfoDialog({
                 />
                 {fieldErrors.email ? <span className="request-info-field-error" role="alert">{fieldErrors.email}</span> : null}
               </label>
-            ) : null}
 
             <label className="request-info-field">
-              <span>{isInquiry ? "Your Name" : "Name"}<span className="request-info-star">*</span></span>
+              <span>Name<span className="request-info-star">*</span></span>
               <input
                 id="request-info-name"
                 value={name}
@@ -2407,75 +2422,36 @@ export function RequestInfoDialog({
               {fieldErrors.name ? <span id="request-info-name-error" className="request-info-field-error" role="alert">{fieldErrors.name}</span> : null}
             </label>
 
-            {isInquiry ? (
-              <label className="request-info-field">
-                <span>Email Address</span>
-                <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} onFocus={(event) => onFieldFocus("email", event.currentTarget)} autoComplete="email" placeholder="Enter your email" />
-              </label>
-            ) : null}
 
-            {!isShort ? (
             <div className="request-info-field" onFocusCapture={(event) => onFieldFocus("phone", event.target as HTMLElement)}>
-              <span id="request-info-phone-label" className={isShort ? "request-info-field-visible-label" : undefined}>{isInquiry ? "Contact Number" : "Phone or WhatsApp number"}<span className="request-info-star">*</span></span>
-              <PhoneField value={phoneValue} onChange={(next) => { setPhoneValue(next); if (fieldErrors.phone) setFieldErrors((e) => ({ ...e, phone: undefined })); }} labelId="request-info-phone-label" />
+              <span id="request-info-phone-label" className="sr-only">Phone number (optional)</span>
+              <PhoneField value={phoneValue} onChange={(next) => { setPhoneValue(next); if (fieldErrors.phone) setFieldErrors((e) => ({ ...e, phone: undefined })); }} labelId="request-info-phone-label" placeholder="Phone number (optional)" />
               {fieldErrors.phone ? <span className="request-info-field-error" role="alert">{fieldErrors.phone}</span> : null}
             </div>
-            ) : null}
 
+            <label className="request-info-field request-info-message-field">
+              <span className="sr-only">Your message</span>
+              <textarea value={message} onChange={(event) => setMessage(event.target.value.slice(0, 900))} onFocus={(event) => onFieldFocus("message", event.currentTarget)} rows={4} placeholder="Your message" />
+            </label>
 
-            {isInquiry ? (
-              <label className="request-info-field">
-                <span>Message</span>
-                <textarea
-                  value={message}
-                  onChange={(event) => setMessage(event.target.value.slice(0, MESSAGE_MAX))}
-                  onFocus={(event) => onFieldFocus("message", event.currentTarget)}
-                  placeholder="Enter your message"
-                  rows={4}
-                />
-                <span className="request-info-char-count">{MESSAGE_MAX - message.length} characters remaining</span>
-              </label>
-            ) : null}
-
-            {isInquiry ? (
-              <>
-                <label className="request-info-consent">
-                  <input type="checkbox" checked={keepPosted} onChange={(event) => setKeepPosted(event.target.checked)} />
-                  <span>Yes, keep me posted on new launches, property digest and partner offers.</span>
-                </label>
-                <label className="request-info-consent">
-                  <input type="checkbox" checked={agreed} onChange={(event) => setAgreed(event.target.checked)} />
-                  <span>I agree to be contacted by LankaNewHomes agents via WhatsApp, SMS, Call, Email etc.</span>
-                </label>
-              </>
-            ) : null}
+            <UpdatesOptIn value={interests} onChange={setInterests} />
 
             {errorMessage ? <p className="request-info-error" role="alert">{errorMessage}</p> : null}
 
             <div className="request-info-actions">
-              {isShort ? <p className="request-info-promise">We reply within 24 hours and never spam you. By sending, you agree to be contacted by LankaNewHomes agents by email.</p> : null}
+              <p className="request-info-promise">By clicking Submit, you agree that the developer and LankaNewHomes may contact you about this listing. See our <Link href="/privacy" className="underline">Privacy Policy</Link>.</p>
               <div className="request-info-actions-row">
-                <button type="submit" className="request-info-submit-big" disabled={submitting || (isInquiry && !agreed)}>
+                <button type="submit" className="request-info-submit-big" disabled={submitting}>
                   <span className="request-info-submit-icon" aria-hidden="true"><ArrowRight size={16} strokeWidth={2.5} /></span>
-                  {submitting ? "Sending..." : isBrochure ? "Download Brochure" : isInquiry ? "Send" : "Submit Form"}
+                  {submitting ? "Sending..." : isBrochure ? "Download Brochure" : "Submit Form"}
                 </button>
-                {isShort && priceHref ? (
-                  <a
-                    href={priceHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="request-info-whatsapp-price"
-                    onClick={() => logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project.slug, project.name, project.developerSlug)}
-                  >
-                    <WhatsappIcon className="h-4 w-4" /> Get price on WhatsApp
-                  </a>
-                ) : null}
               </div>
             </div>
           </form>
         )}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
@@ -2680,6 +2656,9 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
   const hasDepositCard = paymentLines.length > 0 || paymentFields.length > 0 || Boolean(financingField);
   const hasFeesCard = feeFields.length > 0;
   const hasIncentivesCard = incentives.length > 0;
+  // Banks the developer names as partners for buyer loans (comma or semicolon separated in the bankingPartners field).
+  const bankingPartners = (project.bankingPartners ?? "").split(/[;,]/).map((bank) => bank.trim()).filter((bank) => hasDisplayValue(bank));
+  const hasBankingCard = bankingPartners.length > 0;
 
   return (
     <section className="space-y-4">
@@ -2807,6 +2786,19 @@ export function PricingInformationLayout({ project, floorPlan }: { project: Proj
                     </div>
                   </div>
                 ) : null}
+              </div>
+            </article>
+          ) : null}
+
+          {hasBankingCard ? (
+            <article className="border border-[#c9ddf5] bg-white px-6 py-6 text-[#1f2321] shadow-[0_10px_28px_rgba(36,78,54,0.08)]">
+              <h3 className="text-[29px] font-semibold">Banking partners</h3>
+
+              <div className="mt-7 space-y-4 text-[15px] leading-7">
+                <p className="text-[#5d6560]">Banks the developer names as partners for buyer loans.</p>
+                <div className="space-y-1">
+                  {bankingPartners.map((bank) => <p key={bank}>{bank}</p>)}
+                </div>
               </div>
             </article>
           ) : null}
@@ -3126,6 +3118,8 @@ const KEY_FEATURE_ICONS: Record<string, React.ComponentType<{ className?: string
   "safety-security": ShieldCheck,
   indoor: Sofa,
   "building-services": Building2,
+  "building-structure": Landmark,
+  interior: Armchair,
   outdoor: Trees,
   "recreation-wellness": Dumbbell,
   sustainability: Leaf,
@@ -3139,6 +3133,28 @@ const KEY_FEATURE_ICONS: Record<string, React.ComponentType<{ className?: string
   community: Users,
   plots: LayoutPanelLeft,
   title: ScrollText,
+  // Room tabs of a project's Specifications (owner, 2026-11-15: one tab per room: Doors, Living Areas, Bedrooms...)
+  doors: DoorOpen,
+  "living-areas": Sofa,
+  kitchen: CookingPot,
+  "bedrooms-closets": BedDouble,
+  bathroom: Bath,
+  "heating-cooling-systems": Snowflake,
+  "additional-spaces": LayoutGrid,
+  balcony: Sun,
+  view: Eye,
+  flooring: Layers,
+  "walls-ceilings": Paintbrush,
+  "fixtures-fittings": Hammer,
+  "air-conditioning": Snowflake,
+  bedrooms: BedDouble,
+  "hot-water": Droplet,
+  "backup-power": Zap,
+  elevators: Building2,
+  "doors-windows": DoorOpen,
+  parking: Car,
+  bathrooms: Bath,
+  "maids-room": BedDouble,
 };
 
 function keyFeatureIcon(group: { key: string; label: string }): React.ComponentType<{ className?: string }> {
@@ -3217,6 +3233,65 @@ function FactLines({ text, linkFirst }: { text: string; linkFirst?: { href: stri
   return <>{text.split("\n").map((line) => line.trim()).filter(Boolean).map((line, index) => <span key={index} className="block">{linkFirst && index === 0 ? <Link href={linkFirst.href} className="overview-link">{line}</Link> : line}</span>)}</>;
 }
 
+
+// Icon for a room / topic column inside an open Key Features category (owner, 2026-11-15). Exact tab icons first, then keywords, so every
+// stored field name (Flooring, Plumbing, Fire Protection System, Road, Electricity...) gets a plain line icon instead of a generic one.
+const FEATURE_FIELD_ICON_RULES: [RegExp, React.ComponentType<{ className?: string }>][] = [
+  // Ownership & Services topics
+  [/warrant|guarantee/i, ShieldCheck],
+  [/maintenance|manage|supervis|repair/i, Wrench],
+  [/resident|owner app|privilege|buyer|eligib/i, Users],
+  [/purchase|reservation|rental|return|payment|fee|deposit/i, Wallet],
+  [/handover|handing/i, Gift],
+  [/foreign|overseas|expat|non-resident/i, Globe],
+  [/ownership|freehold|leasehold|title|deed|legal|required doc/i, ScrollText],
+  [/fire/i, Flame],
+  [/hot water|geyser|heater/i, Flame],
+  [/door|window/i, DoorOpen],
+  [/kitchen|pantry|counter|sink|appliance/i, CookingPot],
+  [/bath|toilet|shower|lavatory/i, Bath],
+  [/washing machine|laundry/i, WashingMachine],
+  [/bed|closet|wardrobe/i, BedDouble],
+  [/living|lounge|dining|hall/i, Sofa],
+  [/air con|\bac\b|a\/c|cooling|heating|hvac|ventilat/i, Snowflake],
+  [/security|cctv|guard|alarm|safety|surveillance|access control/i, ShieldCheck],
+  [/lift|elevator/i, Building2],
+  [/telecom|tv|telephone|internet|fibre|fiber|data/i, Phone],
+  [/electric|power|generator|backup|wiring|socket|switch/i, Zap],
+  [/light|fans/i, Lightbulb],
+  [/plumb|water|drain|sewer|sewage|sanit|waterproof|storm/i, Droplet],
+  [/floor|tile|staircase|hand rail|stairs/i, Layers],
+  [/wall|ceiling|roof|paint|colour|color|finish|plaster/i, Paintbrush],
+  [/foundation|structure|slab|beam|column|frame/i, Landmark],
+  [/garbage|waste|refuse|bin/i, Trash2],
+  [/termite|pest/i, Bug],
+  [/park|garage|car /i, Car],
+  [/road|route|transport|highway|interchange|bus|street|access/i, Route],
+  [/document|deed|title|term|legal|approval/i, FileText],
+  [/hospital|school|bank|supermarket|market|nearby|location|distance/i, MapPin],
+  [/area|size|boundar|extent|perch|acre|sq/i, Ruler],
+  [/view|paddy|sea|lake|garden/i, Eye],
+  [/additional|maid|space|study|office|storage|utility/i, LayoutGrid],
+  [/feature|general|amenit|facility|facilities|service/i, Sparkles],
+];
+function featureFieldIcon(field: string): React.ComponentType<{ className?: string }> {
+  const slug = field.toLowerCase().replace(/&/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  return KEY_FEATURE_ICONS[slug] ?? FEATURE_FIELD_ICON_RULES.find(([pattern]) => pattern.test(field))?.[1] ?? Check;
+}
+
+// Items that share a `field` (the room: Doors, Bedrooms...) are merged; a value written as "a; b; c" becomes separate lines.
+function groupItemsByField(items: { field: string; value: string }[]): { field: string; values: string[] }[] {
+  const subs: { field: string; values: string[] }[] = [];
+  for (const item of items) {
+    const field = (item.field || "").trim();
+    const values = String(item.value ?? "").split(/;\s+/).map((v) => v.trim()).filter(Boolean).map((v) => v.charAt(0).toUpperCase() + v.slice(1));
+    const sub = subs.find((x) => x.field.toLowerCase() === field.toLowerCase());
+    if (sub) sub.values.push(...values);
+    else subs.push({ field, values });
+  }
+  return subs;
+}
+
 export function KeyFeaturesSection({ unitFeatures, floorPlan, floorPlanLabel = "This floor plan" }: { unitFeatures: unknown; floorPlan?: FloorPlan; floorPlanLabel?: string }) {
   const { t } = useListingT();
   const planGroup = floorPlan ? floorPlanFeatureGroup(floorPlan, floorPlanLabel) : null;
@@ -3251,11 +3326,25 @@ export function KeyFeaturesSection({ unitFeatures, floorPlan, floorPlanLabel = "
               </button>
               {isOpen ? (
                 <div className="key-features-row-body">
-                  {group.items.map((item, index) => (
-                    <span key={`${item.field}-${item.value}-${index}`} className="key-features-item">
-                      {item.field ? <><span className="key-features-item-label">{item.field}:</span> {item.value}</> : item.value}
-                    </span>
-                  ))}
+                  {group.items.some((item) => item.field) ? (
+                    // Fielded items (rooms inside a category, e.g. Interior > Doors) show as columns under plain headings.
+                    groupItemsByField(group.items).map((block, bi) => (
+                      <div key={`${block.field}-${bi}`} className="key-features-block">
+                        <h3 className="key-features-block-title">
+                          {(() => { const BlockIcon = featureFieldIcon(block.field); return <BlockIcon className="h-5 w-5" aria-hidden="true" />; })()}
+                          {block.field || t("Other")}
+                        </h3>
+                        {block.values.map((v, vi) => <span key={`${v}-${vi}`} className="key-features-item">{v}</span>)}
+                      </div>
+                    ))
+                  ) : (
+                    group.items.flatMap((item, index) =>
+                      // A field-less value written as "a; b; c" shows as separate lines (first letter capitalised).
+                      String(item.value ?? "").split(/;\s+/).map((v) => v.trim()).filter(Boolean).map((v, vi) => (
+                        <span key={`${index}-${vi}`} className="key-features-item">{v.charAt(0).toUpperCase() + v.slice(1)}</span>
+                      )),
+                    )
+                  )}
                 </div>
               ) : null}
             </div>
@@ -3292,11 +3381,19 @@ export function OwnershipServicesSection({ ownershipServices, title = "Ownership
               </button>
               {isOpen ? (
                 <div className="key-features-row-body">
-                  {group.items.map((item, index) => (
-                    <span key={`${item.field}-${index}`} className="key-features-item">
-                      {item.field ? <><span className="key-features-item-label">{item.field}:</span> {item.value}</> : item.value}
-                    </span>
-                  ))}
+                  {group.items.some((item) => item.field) ? (
+                    groupItemsByField(group.items).map((block, bi) => {
+                      const BlockIcon = featureFieldIcon(block.field);
+                      return (
+                        <div key={`${block.field}-${bi}`} className="key-features-block">
+                          <h3 className="key-features-block-title"><BlockIcon className="h-5 w-5" aria-hidden="true" />{block.field || t("Other")}</h3>
+                          {block.values.map((v, vi) => <span key={`${v}-${vi}`} className="key-features-item">{v}</span>)}
+                        </div>
+                      );
+                    })
+                  ) : (
+                    group.items.map((item, index) => <span key={`${item.field}-${index}`} className="key-features-item">{item.value}</span>)
+                  )}
                 </div>
               ) : null}
             </div>
@@ -3577,7 +3674,7 @@ export function ListingSidebarCard({ project, developer }: { project: Project; d
           target="_blank"
           rel="noopener noreferrer"
           className="listing-sidebar-call-line listing-sidebar-whatsapp-line"
-          onClick={() => logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project.slug, project.name, project.developerSlug)}
+          onClick={(event) => captureWhatsAppClick(event, salesWhatsAppHref, project)}
         >
           <MessageCircle className="h-4 w-4" aria-hidden="true" /> Chat on WhatsApp
         </a>
@@ -4161,6 +4258,25 @@ export function Header({ menuCard }: { menuCard?: React.ReactNode } = {}) {
     return () => clearTimeout(timer);
   }, [navQuery]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  // Desktop mega menu: photo tiles load once, the first time the pointer reaches the nav. A click on any link closes the panel
+  // (it would otherwise stay open under the pointer after the page changes) until the pointer leaves that nav item.
+  const [megaTiles, setMegaTiles] = useState<{ projects: MegaTile[]; lands: MegaTile[] }>({ projects: [], lands: [] });
+  const megaTilesRequested = useRef(false);
+  const loadMegaTiles = () => {
+    if (megaTilesRequested.current) return;
+    megaTilesRequested.current = true;
+    fetch("/api/nav/featured")
+      .then((response) => response.json())
+      .then((data) => setMegaTiles({ projects: Array.isArray(data?.projects) ? data.projects : [], lands: Array.isArray(data?.lands) ? data.lands : [] }))
+      .catch(() => { megaTilesRequested.current = false; });
+  };
+  const [megaClosed, setMegaClosed] = useState(false);
+  const closeMega = () => {
+    setMegaClosed(true);
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+  };
+  const megaHover = { onMouseLeave: () => setMegaClosed(false) };
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false); // the same pop-up as the home page hero search, on phones
   const [openMobileGroup, setOpenMobileGroup] = useState<"homes" | "land" | "company" | null>(null);
 
   const labels: Record<SiteLanguage, { homes: string; company: string; login: string; signup: string; menu: string; search: string }> = {
@@ -4193,6 +4309,7 @@ export function Header({ menuCard }: { menuCard?: React.ReactNode } = {}) {
   const text = labels[language];
 
   return (
+    <>
     <header className="site-header">
       <div className="site-header-inner">
         <div className="site-brand-group">
@@ -4205,12 +4322,25 @@ export function Header({ menuCard }: { menuCard?: React.ReactNode } = {}) {
             action="/search"
             method="get"
             role="search"
-            onSubmit={(event) => { event.preventDefault(); setNavSearchOpen(false); router.push(`/search?q=${encodeURIComponent(navQuery.trim())}`); }}
+            onSubmit={(event) => {
+              event.preventDefault();
+              setNavSearchOpen(false);
+              // Same as the home page hero search: "plots in Negombo" goes to the land page, everything else to project search, an empty search opens /search.
+              const query = navQuery.trim();
+              const wantsLand = query ? parseNaturalSearch(query).land === true : false;
+              if (query) trackEvent("search", { search_term: query.slice(0, 100), search_location: "nav", wants_land: wantsLand });
+              router.push(query ? `${wantsLand ? "/land" : "/search"}?q=${encodeURIComponent(query)}` : "/search");
+            }}
             onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setNavSearchOpen(false); }}
           >
             <IconSearch size={16} stroke={1.75} aria-hidden="true" />
             <input type="search" name="q" value={navQuery} autoComplete="off" onChange={(event) => { setNavQuery(event.target.value); setNavSearchOpen(true); }} onFocus={() => setNavSearchOpen(true)} placeholder={`Try searching "apartments in Colombo"`} aria-label={text.search} />
             <button type="submit" className="header-search-button" aria-label={text.search}><IconSearch size={18} stroke={1.75} aria-hidden="true" /></button>
+            {navSearchOpen && navQuery.trim().length < 2 ? (
+              <div className="header-search-chips" onMouseDown={(event) => event.preventDefault()}>
+                <SearchQuickChips onPick={() => setNavSearchOpen(false)} />
+              </div>
+            ) : null}
             {navSearchOpen && navQuery.trim().length >= 2 && navSuggestions.length > 0 ? (
               <div className="header-search-suggestions" role="listbox" aria-label="Search suggestions">
                 {navSuggestions.map((suggestion) => (
@@ -4222,40 +4352,18 @@ export function Header({ menuCard }: { menuCard?: React.ReactNode } = {}) {
             ) : null}
           </form>
         </div>
-        <nav>
-          <div className={`nav-dropdown${navPath.startsWith("/projects") ? " is-active" : ""}`}>
+        <nav onMouseEnter={loadMegaTiles} onMouseMove={loadMegaTiles} onFocus={loadMegaTiles}>
+          <div {...megaHover} className={`nav-dropdown${megaClosed ? " is-closed" : ""}${navPath.startsWith("/projects") ? " is-active" : ""}`}>
             <Link href="/projects"><MobileHomeIcon size={24} /><span>{text.homes}</span></Link>
-            <div className="nav-dropdown-menu">
-              <Link href="/projects?type=Condominium">Condominium</Link>
-              <Link href="/projects?type=Apartments">Apartments</Link>
-              <Link href="/projects?type=Villas">Villas</Link>
-              <Link href="/projects?type=Mixed+Use">Mixed Use</Link>
-              <Link href="/projects?type=Housing">Housing</Link>
-              <Link href="/projects?type=Township+Developments">Township Developments</Link>
-              <Link href="/projects?type=Private+Residence">Private Residence</Link>
-              <Link href="/projects?type=Townhouse">Townhouse</Link>
-              <Link href="/projects">All new homes</Link>
-              {menuCard}
-            </div>
+            <NavMegaPanel menuKey="homes" tiles={megaTiles[MEGA_MENUS.homes.tiles]} onNavigate={closeMega} />
           </div>
-          <div className={`nav-dropdown${navPath.startsWith("/land") ? " is-active" : ""}`}>
+          <div {...megaHover} className={`nav-dropdown${megaClosed ? " is-closed" : ""}${navPath.startsWith("/land") ? " is-active" : ""}`}>
             <Link href="/land"><MobileLandIcon size={24} /><span>Land</span></Link>
-            <div className="nav-dropdown-menu">
-              <Link href="/land?landUse=Residential">Residential</Link>
-              <Link href="/land?landUse=Commercial">Commercial</Link>
-              <Link href="/land?landUse=Agricultural">Agricultural</Link>
-              <Link href="/land?landUse=Mixed+Use">Mixed Use</Link>
-              <Link href="/land">All land</Link>
-            </div>
+            <NavMegaPanel menuKey="land" tiles={megaTiles[MEGA_MENUS.land.tiles]} onNavigate={closeMega} />
           </div>
-          <div className={`nav-dropdown${["/about", "/contact", "/blog", "/press"].some((r) => navPath.startsWith(r)) ? " is-active" : ""}`}>
+          <div {...megaHover} className={`nav-dropdown${megaClosed ? " is-closed" : ""}${["/about", "/contact", "/blog", "/press"].some((r) => navPath.startsWith(r)) ? " is-active" : ""}`}>
             <span className="nav-dropdown-label"><MobileCompanyIcon size={24} /><span>{text.company}</span></span>
-            <div className="nav-dropdown-menu">
-              <Link href="/about">About</Link>
-              <Link href="/contact">Contact</Link>
-              <Link href="/blog">Blog</Link>
-              <Link href="/press">Press</Link>
-            </div>
+            <NavMegaPanel menuKey="company" tiles={megaTiles[MEGA_MENUS.company.tiles]} onNavigate={closeMega} />
           </div>
         </nav>
         <div className="header-actions">
@@ -4263,9 +4371,9 @@ export function Header({ menuCard }: { menuCard?: React.ReactNode } = {}) {
           <AccountMenu loginLabel={text.login} signupLabel={text.signup} showSignup={false} />
         </div>
         <div className="mobile-header-actions">
-          <Link href="/search" className="mobile-search-trigger" aria-label={text.search}>
+          <button type="button" className="mobile-search-trigger" aria-label={text.search} onClick={() => setMobileSearchOpen(true)}>
             <IconSearch size={20} stroke={1.75} />
-          </Link>
+          </button>
           <button className="mobile-menu" onClick={() => setMobileMenuOpen((v) => !v)} aria-expanded={mobileMenuOpen} aria-label={text.menu}>
             {mobileMenuOpen ? <TablerX size={26} stroke={1} /> : <IconMenu2 size={26} stroke={1} />}
           </button>
@@ -4356,6 +4464,8 @@ export function Header({ menuCard }: { menuCard?: React.ReactNode } = {}) {
           </div>
         </div>
     </header>
+    <MobileSearchOverlay open={mobileSearchOpen} onClose={() => setMobileSearchOpen(false)} location="nav" />
+    </>
   );
 }
 
@@ -4366,6 +4476,7 @@ export function Header({ menuCard }: { menuCard?: React.ReactNode } = {}) {
 // public/logo-wordmark.svg / logo-wordmark-white.svg (Archivo 700 outlined
 // to paths) for use outside the site.
 export function Footer() {
+  const { language, setLanguage } = useLanguage();
   return (
     <footer className="site-footer">
       <div className="footer-inner">
@@ -4440,6 +4551,11 @@ export function Footer() {
 
         <div className="footer-bottom">
           <p className="copyright">© {new Date().getFullYear()} LankaNewHomes. All rights reserved.</p>
+          <div className="footer-language" role="group" aria-label="Language switcher">
+            <button type="button" className={language === "en" ? "active" : undefined} onClick={() => setLanguage("en")} aria-pressed={language === "en"}>EN</button>
+            <button type="button" className={language === "si" ? "active" : undefined} onClick={() => setLanguage("si")} aria-pressed={language === "si"}>සිංහල</button>
+            <button type="button" className={language === "ta" ? "active" : undefined} onClick={() => setLanguage("ta")} aria-pressed={language === "ta"}>தமிழ்</button>
+          </div>
         </div>
       </div>
     </footer>

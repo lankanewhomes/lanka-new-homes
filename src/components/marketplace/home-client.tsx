@@ -10,9 +10,11 @@ import Link from "next/link";
 import { ArrowUpRight, Check, ChevronDown, ChevronLeft, ChevronRight, MapPin, Pause, Search, X } from "lucide-react";
 import { SiteLanguage, useLanguage } from "@/components/layout/language-provider";
 import { ListingGridCard } from "@/components/marketplace/listing-page";
+import { SearchQuickChips } from "@/components/marketplace/mobile-search-overlay";
+import { HERO_CHIP_PATHS, SEARCH_QUICK_CHIPS } from "@/lib/search-chips";
 import { allProjectCategories } from "@/lib/listing-categories";
 import { trackEvent } from "@/lib/ga4";
-import { getPackage, planRotationWeight } from "@/lib/packages";
+import { planRotationWeight } from "@/lib/packages";
 import { weightedTake } from "@/lib/weighted-random";
 import { isInNewListingsWindow } from "@/lib/new-listings";
 import type { PopularGroup } from "@/lib/popular-searches";
@@ -50,12 +52,24 @@ const neighborhoods = [
 
 // Price bands for "Search by price". The wording is what the natural-language search understands ("under 30M",
 // "between 30M and 50M", "above 150M"), so each band links to /search?q=… and lands on real filtered results.
+// Fallback hero: 4 slides that move along every eligible project, 4 places every HERO_ROTATION_DAYS days (no score).
+const HERO_SLIDE_COUNT = 4;
+const HERO_ROTATION_DAYS = 3;
+const toHeroSlide = (project: { heroImage: string; slug: string; name: string }) => ({ src: project.heroImage, href: `/projects/${project.slug}`, alt: project.name, sponsored: false, slug: undefined as string | undefined, developer: undefined as string | undefined });
+
 const PRICE_BANDS: { label: string; q: string; min?: number; max?: number }[] = [
   { label: "Under Rs. 30M", q: "under 30M", max: 30_000_000 },
   { label: "Rs. 30M – 50M", q: "between 30M and 50M", min: 30_000_000, max: 50_000_000 },
   { label: "Rs. 50M – 80M", q: "between 50M and 80M", min: 50_000_000, max: 80_000_000 },
   { label: "Rs. 80M – 150M", q: "between 80M and 150M", min: 80_000_000, max: 150_000_000 },
   { label: "Over Rs. 150M", q: "above 150M", min: 150_000_000 },
+];
+
+// Land price bands (same three as the filter on /land). Land with only a per-perch price has no total, so it is not placed in a band.
+const LAND_PRICE_BANDS: { label: string; q: string; min?: number; max?: number }[] = [
+  { label: "Under Rs. 10M", q: "land under 10M", max: 10_000_000 },
+  { label: "Rs. 10M – 30M", q: "land between 10M and 30M", min: 10_000_000, max: 30_000_000 },
+  { label: "Over Rs. 30M", q: "land above 30M", min: 30_000_000 },
 ];
 
 export function HomeClient({
@@ -103,6 +117,7 @@ export function HomeClient({
   const [maxHeroSlideReached, setMaxHeroSlideReached] = useState(0);
   const [heroPaused, setHeroPaused] = useState(false);
   const [heroAds, setHeroAds] = useState<(HeroAd & { sponsored?: boolean })[]>(initialHeroAds ?? []);
+  const [rotationWindow] = useState(() => Math.floor(Date.now() / 86_400_000 / HERO_ROTATION_DAYS));
 
   // "Explore by city": cities with the most projects first (owner, 2026-10-14). The count uses the same rule as the search the tile
   // opens (src/lib/city-match.ts: "Colombo" includes Colombo 05, Colombo 08…); cities with no projects keep their old order at the end.
@@ -122,6 +137,15 @@ export function HomeClient({
     })).filter((band) => band.count > 0);
   }, [projects]);
 
+  // Same for land: plots by total price, in a green box of their own so they stand out from the homes.
+  const landPriceBands = useMemo(() => {
+    const priced = lands.filter((land) => land.startingPriceLkr > 0 && !land.priceRange?.includes("per perch"));
+    return LAND_PRICE_BANDS.map((band) => ({
+      ...band,
+      count: priced.filter((land) => (band.min === undefined || land.startingPriceLkr >= band.min) && (band.max === undefined || land.startingPriceLkr <= band.max)).length,
+    })).filter((band) => band.count > 0);
+  }, [lands]);
+
   useEffect(() => {
     if (initialHeroAds) return;
     fetch("/api/hero-ads?active=1")
@@ -131,18 +155,41 @@ export function HomeClient({
   }, []);
 
   // Falls back to real listings (their own hero photo, linking to their own
-  // page) whenever there's no paid hero ad slide to show — previously this
-  // was 4 hardcoded generic Unsplash lifestyle photos all pointing at
-  // /search, none of them an actual project on the site.
-  const fallbackProjectSlides = useMemo(
-    () =>
-      [...projects]
-        .filter((project) => project.heroImage)
-        .sort((a, b) => (b.finalScore ?? 0) - (a.finalScore ?? 0))
-        .slice(0, 4)
-        .map((project) => ({ src: project.heroImage, href: `/projects/${project.slug}`, alt: project.name, sponsored: false, slug: undefined as string | undefined, developer: undefined as string | undefined })),
-    [projects]
-  );
+  // page) whenever there's no paid hero ad slide to show. Owner, 2026-10-29:
+  // "it's always the same... every 2 to 3 days keep updating it to new
+  // listings", and 2026-11-06: "every 3 days keep rotating the hero slides, it
+  // doesn't have to be a score". So there is no ranking: every published,
+  // not-sold-out project with a hero photo is put in one fixed order (a hash of
+  // its slug, interleaved by developer so 4 neighbours are 4 different developers)
+  // and the 4 slides move 4 places along it every HERO_ROTATION_DAYS days. The date
+  // picks the window, so it is the same on the server and the client (no hydration
+  // mismatch) and needs no cron or database.
+  const fallbackProjectSlides = useMemo(() => {
+    const hash = (text: string) => {
+      let h = 5381;
+      for (let i = 0; i < text.length; i += 1) h = ((h * 33) ^ text.charCodeAt(i)) >>> 0;
+      return h;
+    };
+    const eligible = projects
+      .filter((project) => project.heroImage && project.status !== "Sold Out")
+      .sort((a, b) => hash(a.slug) - hash(b.slug) || a.slug.localeCompare(b.slug));
+    const byDeveloper = new Map<string, typeof eligible>();
+    for (const project of eligible) {
+      const key = project.developerSlug ?? project.developerName ?? project.slug;
+      byDeveloper.set(key, [...(byDeveloper.get(key) ?? []), project]);
+    }
+    const developers = [...byDeveloper.keys()].sort((a, b) => hash(a) - hash(b) || a.localeCompare(b));
+    const order: typeof eligible = [];
+    for (let round = 0; order.length < eligible.length; round += 1) {
+      for (const key of developers) {
+        const project = byDeveloper.get(key)?.[round];
+        if (project) order.push(project);
+      }
+    }
+    if (order.length <= HERO_SLIDE_COUNT) return order.map(toHeroSlide);
+    const start = (rotationWindow * HERO_SLIDE_COUNT) % order.length;
+    return Array.from({ length: HERO_SLIDE_COUNT }, (_, i) => toHeroSlide(order[(start + i) % order.length]));
+  }, [projects, rotationWindow]);
 
   const heroSlides = useMemo(() => (
     heroAds.length > 0
@@ -337,28 +384,13 @@ export function HomeClient({
     setMobileSearchOpen(false);
     router.push(suggestion.href);
   };
-  // "Developer Spotlight" chip row (owner's 2026-09-24 build note) —
-  // replaces the old hardcoded "Prime Lands" placeholder chip with the real
-  // entitlement: any developer currently on Developer Pro/Campaign
-  // (getPackage(plan).developerSpotlight — expiry-aware, see
-  // effectivePlanTier) gets a highlighted chip here, linking to their
-  // profile. If Prime Lands isn't actually on one of those plans yet, it
-  // simply won't be highlighted anymore — that's the real feature working
-  // correctly, not a regression. Capped at 3 so the row can't get crowded;
-  // same hasMounted-gated weighted-by-plan pick as the Featured projects
-  // section above once there are more eligible developers than that.
-  const DEVELOPER_SPOTLIGHT_CAP = 3;
-  const spotlightEligible = useMemo(
-    () => developers.filter((developer) => getPackage(developer.plan).developerSpotlight).sort((a, b) => a.name.localeCompare(b.name)),
-    [developers]
-  );
-  const spotlightDevelopers = useMemo(() => {
-    if (!hasMounted || spotlightEligible.length <= DEVELOPER_SPOTLIGHT_CAP) return spotlightEligible.slice(0, DEVELOPER_SPOTLIGHT_CAP);
-    return weightedTake(spotlightEligible, DEVELOPER_SPOTLIGHT_CAP, (developer) => planRotationWeight(developer.plan));
-  }, [hasMounted, spotlightEligible]);
   const heroQuickLinks = [
-    ...spotlightDevelopers.map((developer) => ({ path: `/developers/${developer.slug}`, breadcrumbLabel: developer.name, isHighlighted: true })),
-    ...allProjectCategories,
+    ...HERO_CHIP_PATHS.flatMap((path) => {
+      const category = allProjectCategories.filter((entry) => entry.path === path);
+      if (category.length) return category;
+      const chip = SEARCH_QUICK_CHIPS.find((entry) => entry.href === path);
+      return chip ? [{ path: chip.href, breadcrumbLabel: chip.label }] : [];
+    }),
     { path: "/land", breadcrumbLabel: "Lands" },
   ];
 
@@ -378,12 +410,17 @@ export function HomeClient({
       <div className="luxury-hero-two-panel">
           <h1>{t.heroTitle}</h1>
           <p className="luxury-hero-two-subheading">{t.heroSubtitle}</p>
-          <div className="hero-search-wrap">
+          <div className="hero-search-wrap" onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setDesktopSearchOpen(false); }}>
           <form className="hero-search luxury-hero-two-top-search" onSubmit={submitSearch}>
             <label><input aria-label="Search homes" value={searchTerm} onFocus={() => { setMobileSearchOpen(true); setDesktopSearchOpen(true); }} onChange={(event) => setSearchTerm(event.target.value)} placeholder={t.searchPlaceholder} /></label>
             <button type="button" className="hero-region-picker" aria-label="Select region"><MapPin size={17} /><span>{t.searchRegion}</span><ChevronDown size={16} /></button>
             <button type="submit" aria-label={t.searchButton} className="hero-search-submit"><Search size={19} /></button>
           </form>
+          {desktopSearchOpen && searchTerm.trim().length < 2 ? (
+            <div className="hero-search-suggestions hero-search-chips" onMouseDown={(event) => event.preventDefault()}>
+              <SearchQuickChips onPick={() => setDesktopSearchOpen(false)} />
+            </div>
+          ) : null}
           {desktopSearchOpen && searchSuggestions.length > 0 ? (
             <div className="hero-search-suggestions" role="listbox" aria-label="Search suggestions">
               {searchSuggestions.map((suggestion) => (
@@ -414,7 +451,7 @@ export function HomeClient({
         <button type="button" className="mobile-location-search-scrim" aria-label="Close location search" onClick={() => setMobileSearchOpen(false)} />
         <div className="mobile-location-search-panel">
           <div className="mobile-location-search-header">
-            <p>Location search</p>
+            <p>Find your home</p>
             <button type="button" aria-label="Close location search" onClick={() => setMobileSearchOpen(false)}><X size={22} /></button>
           </div>
           <form className="mobile-location-search-form" onSubmit={submitSearch}>
@@ -433,6 +470,7 @@ export function HomeClient({
             ) : null}
             <button type="button" className="mobile-location-search-region"><span>All of Sri Lanka</span><ChevronDown size={18} aria-hidden="true" /></button>
             <button type="submit" className="mobile-location-search-submit"><Search size={19} aria-hidden="true" />Search</button>
+            <SearchQuickChips onPick={() => setMobileSearchOpen(false)} />
           </form>
         </div>
       </div>
@@ -535,7 +573,7 @@ export function HomeClient({
         </Link>
       </section>
 
-      {priceBands.length > 0 ? (
+      {priceBands.length > 0 || landPriceBands.length > 0 ? (
         <section className="price-search-section" aria-label="Search by price">
           <div className="featured-listings-head">
             <h2>Search by price</h2>
@@ -550,6 +588,20 @@ export function HomeClient({
               </Link>
             ))}
           </div>
+          {landPriceBands.length > 0 ? (
+            <>
+              <h3 className="price-land-title">Land for sale</h3>
+              <div className="price-bands price-bands-land">
+                {landPriceBands.map((band) => (
+                  <Link href={`/search?q=${encodeURIComponent(band.q)}`} className="price-band price-band-land" key={band.label}>
+                    <span className="price-band-range">{band.label}</span>
+                    <span className="price-band-count">{band.count} {band.count === 1 ? "plot" : "plots"}</span>
+                    <span className="price-band-go">View land <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /></span>
+                  </Link>
+                ))}
+              </div>
+            </>
+          ) : null}
         </section>
       ) : null}
 

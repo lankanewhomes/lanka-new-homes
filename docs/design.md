@@ -219,6 +219,7 @@ per project and order isn't stable.
 | Pill | Class | Color |
 |---|---|---|
 | Listing status ("Coming Soon", "Now Selling"...) | `.listing-hero-tag-status` | Green |
+| Listing status "Sold Out" | `.listing-hero-tag-status.listing-hero-tag-sold-out` (hero) / `.listing-grid-card-status-sold-out` (listing cards) / `.project-popup-status-sold-out` (map popup) | Solid red `#c0392b`, white text — same red as the floor-plan `.plans-status-pill-sold`. On cards and the map popup "Sold Out" wins over "Move In …" labels (owner, 2026-11-14) |
 | "Move in {year}" | `.listing-hero-tag-move-in` | Blue |
 | Hot deal | `.listing-hero-tag-hot-deal` | Red |
 | Move-In Now / Quick Move-In / Featured | `.listing-badge-pill` (hero) / `.home-card-badge-row span` (cards) / `.plans-home-badge-row span` (floor plan cards) | Purple (Move-In Now) / Gold (`.badge-featured`) |
@@ -1344,6 +1345,14 @@ updates both automatically.
   (`/brand/lankanewhomes-logo-white.png`, 42px tall) at the top, open page = solid orange (`bg-brand`) rounded pill,
   groups as plain rows with their pages on a thin left guide line, white badges. The clicked page lights up at once
   (`going` state) before the new page arrives, and the leads count refetches at most once a minute.
+- Home "Search by price" (`.price-search-section`, `home-client.tsx`): lilac box with the five home price bands, and since 2026-11-17 a second row
+  "Land for sale" with three sage-green boxes (`.price-band-land`, #e8ede2, the land colour) for under 10M, 10M to 30M and over 30M, linking to
+  `/search?q=land under 10M` etc. Land with only a per-perch price has no total and is left out of the bands; bands with no plots are hidden.
+- `/dashboard` developer page, "Emails & contact" tab (`DeveloperEmailLog.tsx`; owner, 2026-11-18): one timeline of everything sent to or heard from the
+  developer, newest first, with filters All / Emails / WhatsApp / Instagram, phone, other. It merges the email log (automatic site emails, with opens and
+  clicks), the Outreach log (emails typed by hand in Zoho or Google, and replies), WhatsApp messages and the manual "Other contact" notes.
+- Mail (`/dashboard/inbox`, Google Workspace since 2026-11-18): ONE mailbox (`rupan@`, env `GOOGLE_MAIL_PRIMARY`) with support@, developers@ and no-reply@ as aliases
+  (owner chose the cheapest option). The compose "From" menu lists the mailbox and its aliases; `aliasesFor()` in `src/lib/mail/index.ts` is the list.
 - `DashboardSidebar` (in `src/components/dashboard/components.tsx`) renders
   `ADMIN_NAV_LINKS` by default — a single shared list. Add a new admin
   section there once rather than editing every `/admin/*` page's inline
@@ -2825,6 +2834,59 @@ Scripts: `scripts/social/carousel_project_v2_light.py` (projects), `carousel_lan
 - Reels: regular weight (400), uppercase, text scale 0.6, white location line, "2 AND 3 BEDROOMS" (uppercase AND) instead of "2 & 3".
 - Facebook captions go out without a URL while the Page's monthly link allowance is used up; TikTok and Instagram captions carry the www link.
 
+## /web-design redesign (2026-11-07, local only until the owner says push)
+
+Section order now: split dark hero (orange main button, two-column "Everything we can put on your homepage" card with a Sample sites / Built for / Sign-off facts row) → **See what your site could look like** (`.wdx-sample.wdx-sample--light`, cream grid box; light-surface sample switcher; the real six sample sites stay in the switcher) → "A listing gets you found. A website tells your story." (gray, two cards with tick lists) → "What we can build." (sage, six numbered cards from `BUILD_ITEMS`) → How we work (cream, four "Step N" cards) → FAQ (lilac). No two neighbouring boxes share a background. The old "Built around your project" photo marquee (`HeroMarquee`) is no longer used on the page (component still exists in `web-design-frames.tsx`). No closing CTA band: the owner removed it earlier and the FAQ is the last section above the fixed quickjump bar. No eyebrow labels over headings or cards.
+
+**Footer language switcher (owner, 2026-11-09):** EN / සිංහල / தமிழ் as one joined row of square buttons with no radius (`.footer-language`, same look as the old header dropdown) in the footer's bottom bar, right of the copyright line (stacked under it, centred, on phones). The current language is filled brand orange. It uses the same `LanguageProvider` as the mobile menu switcher; the header still has no desktop language dropdown.
+
+## WhatsApp button asks for a name and number first (owner, 2026-11-09)
+
+Every WhatsApp button on a listing (hero, mobile bar, contact card, sales center, "Get price on WhatsApp") opens the "Chat on WhatsApp" window
+(`src/components/marketplace/whatsapp-capture.tsx`, mounted once in the frontend layout; it reuses the `request-info-*` dialog styles). The buyer enters a name,
+a WhatsApp number (`PhoneField`) and can edit the prefilled enquiry. "Continue to WhatsApp" saves a lead (`/api/leads`, source `whatsapp`, no email needed),
+then opens the developer's `wa.me` link with the enquiry. If saving fails the buyer still reaches WhatsApp. `/api/leads/whatsapp-continue` stamps
+`whatsapp_continued_at` on the lead and logs the `whatsapp_click` event. The developer's WhatsApp icon on a developer profile page (no listing) still opens WhatsApp directly.
+
+**Nav search = hero search (owner, 2026-11-09):** the header search submits exactly like the home-page hero search: land phrases ("plots in Negombo") go to /land, everything else to /search?q=, an empty search opens /search, and a `search` event is logged (`search_location: nav`). On phones the header search icon opens /search.
+
+**Contact windows (owner, 2026-11-09):** the contact / request-info / brochure / inquiry and WhatsApp windows are one family: the title band ("Request information", "Chat on WhatsApp", "Download Brochure") has a light grey background with a thin line above and below, the body is plain white with no grid, the listing name is followed by its location and city, and on phones the last button has only a small gap beneath it (plus the iPhone safe area).
+
+**Search chips (owner, 2026-11-09):** `SEARCH_QUICK_CHIPS` (src/lib/search-chips.ts) lists the hero category links plus Lakefront, Apartments and Condominiums. The live order comes from `/api/search/chips`: chips with the most listings first, chips with no listings hidden, at most 12. They show under the Search button of the phone pop-up (nav icon and home hero) and, on desktop, in a dropdown when the nav or hero search box is clicked and empty.
+
+## Key Features: category rows, room columns inside (owner, 2026-11-15)
+
+The Key Features accordion keeps its normal look (shell, dotted pattern, icon rows, open state). Rows are categories from `KEY_FEATURE_CATEGORY_LABELS`
+(General Features, Building & Structure, Building Services, Indoor Features, Outdoor Features, Interior, Finishes, Utilities & Services, Safety & Security,
+Sustainability, plus older Specifications / Recreation & Wellness / Accessibility / Road & Access). When a category's items carry a `field` (the room or topic:
+Doors & Windows, Living Areas, Kitchen, Bedrooms, Bathrooms, Flooring, Walls & Ceilings, Air Conditioning, Hot Water, Elevators, Parking...), the open row shows
+those fields as columns (3 across, 2 under 1000px): a plain 16px heading with a single-colour Lucide line icon (`featureFieldIcon`: exact tab icon, else keyword rules for every stored field name, else a tick),
+a hairline underline, and the lines beneath, all on a very light grey box (`#fafafa`, owner-approved 2026-11-15). NO orange rules, colour or emoji (the owner rejected card, orange-underline and nested-tab versions the
+same day). Items with no field (e.g. Safety & Security) show as plain lines. A value written as `a; b; c` shows as separate lines. Styles: `.key-features-block`,
+`.key-features-block-title`. Grand Apartments is set up this way (`scripts/add-grand-features-and-neighborhoods.ts`); the Postgres enum for the category key was extended
+with `interior` and `building-structure` (projects and lands).
+
+## Ownership & Services uses the same room-box design (owner, 2026-11-15)
+
+`OwnershipServicesSection` (project, land "Services", floor-plan and preview pages) keeps its green shell and its two accordion rows (Ownership & Purchase, After-Sales & Services).
+An open row now shows its topics (Purchase Requirements, Maintenance, Buyer Eligibility, Resident Services, Foreign Ownership, Required Documents, Handover Support, Property
+Management, Legal Requirements, Freehold / Leasehold, Title Information, Warranty...) as the same light-grey boxes as Key Features (`.key-features-block`), each with a plain line icon
+from `featureFieldIcon` (Wallet = purchase, Users = buyer / resident, Wrench = maintenance / management, ScrollText = title / legal, Gift = handover, Globe = foreign ownership,
+ShieldCheck = warranty). Rows without topic names keep plain lines.
+
+## Dashboard sidebar (new look, 2026-11-16)
+
+`/dashboard` sidebar (`_components/AppShell.tsx`, items in `_components/nav.ts`): soft grey panel, square corners, small uppercase captions
+("Work" over the top pages, "Manage" over the collapsible groups, divider between), 18px light-stroke icons, sub-pages hang off a thin
+vertical guide line, and the open page is a white pill with a 3px orange (`bg-brand`) bar on its left edge. Badges stay orange-tinted.
+
+## Listing small print: last update + source note (owner, 2026-11-17)
+
+`ListingDisclaimer` (`src/components/marketplace/listing-disclaimer.tsx`) sits at the very bottom of every project (`/projects/{slug}`) and land (`/land/{slug}`) page, after Similar
+listings: a "Last update: Nov 16, 2026" line (the listing's own `updatedAt`, Asia/Colombo time, falls back to `createdAt`) and a short plain note, rewritten for
+LankaNewHomes, saying details come from developers' websites, brochures, adverts and our own research, can change without notice, and should be confirmed with the
+developer. Style `.listing-disclaimer`: 11px, weight 400, muted `#8a8478` (date line `#6b6355`), no heading, no box, no uppercase. Do not copy another site's wording. Plot,
+floor-plan and preview pages do not carry it yet.
 ### Contact form updates and Subscribers (2026-11-18)
 - /contact has an optional "Send me" group of tick boxes (Newsletter, Latest news, New listings & price drops, Launch offers), all off by default, one short line each.
 - Every contact form submission is emailed to developers@ and, on the live site only, saved to the admin-only `subscribers` collection, shown as "Contacts & subscribers" (/dashboard/subscribers): name, company, phone, who they wanted to reach, every message (newest first) and what they ticked. Same email twice merges into one row. Status: `subscribed` = ticked a box (the newsletter list), `contact_only` = just wrote to us, `unsubscribed`.
@@ -2836,3 +2898,23 @@ Scripts: `scripts/social/carousel_project_v2_light.py` (projects), `carousel_lan
 ### Newsletter template and preview (2026-11-18)
 - `renderNewsletter()` (src/lib/newsletter-email.ts) builds every marketing email: the unsubscribe line is a row after the footer, so it is always the very last thing, and the mail app's own Unsubscribe header is returned too. Send only to Contacts & subscribers with status `subscribed`.
 - /dashboard/newsletter (admin): subscriber counts, a sample newsletter in a frame with the unsubscribe line at the end, and the list of people who unsubscribed.
+
+## Header mega menu (desktop)
+
+Set 2026-11-20 (owner sent a reference of a full-width shop menu). Hovering
+**New Homes for Sale / Land / Company** opens a full-width white panel under
+the header instead of the old small dropdown.
+
+- Markup and the link lists: `src/components/marketplace/mega-menu.tsx`
+  (`MEGA_MENUS`, `NavMegaPanel`). Styles: `.nav-mega*` at the end of
+  `globals.css`.
+- Left: link columns. Regular-weight (not bold, owner 2026-11-20) 20px heading, 16px regular links, underline on
+  hover, no tinted hover box.
+- Right: a "Featured listings" (or "Featured land") block, 2 x 2 photo tiles,
+  4:5, dark gradient at the bottom, white regular-weight name (not bold, owner 2026-11-20) and small city. Under it
+  an underlined "View all" link.
+- Tiles come from `/api/nav/featured`: listings marked Featured first, topped
+  up with the best-scored listings so the block is never empty. Sold-out
+  listings are never shown.
+- The page behind the open panel is dimmed. Clicking a link closes the panel.
+- Phones keep the slide-down accordion menu, unchanged.

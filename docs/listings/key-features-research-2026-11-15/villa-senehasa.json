@@ -1,0 +1,51 @@
+{
+ "slug": "villa-senehasa",
+ "sources": [
+  "https://www.maisonceylon.com/villas/off-plan-2-bedroom-villa-sri-lanka"
+ ],
+ "categories": [
+  {
+   "key": "building-structure",
+   "label": "Building & Structure",
+   "items": [
+    {
+     "field": "Structure",
+     "value": "Concrete and steel foundations; walls, slabs and roof structure made watertight"
+    },
+    {
+     "field": "Supervision",
+     "value": "Site supervision checks standards and materials at each stage"
+    }
+   ]
+  },
+  {
+   "key": "interior",
+   "label": "Interior",
+   "items": [
+    {
+     "field": "Doors & Windows",
+     "value": "Floor-to-ceiling sliding doors from master bedroom to pool terrace; full-height glazing in living room to timber deck"
+    },
+    {
+     "field": "Kitchen",
+     "value": "Fitted kitchen with appliances"
+    },
+    {
+     "field": "Bathrooms",
+     "value": "En-suite to each bedroom; microcement finish, cast-stone vanity, walk-in rain shower"
+    }
+   ]
+  },
+  {
+   "key": "building-services",
+   "label": "Building Services",
+   "items": [
+    {
+     "field": "Air Conditioning & Hot Water",
+     "value": "Included"
+    }
+   ]
+  }
+ ],
+ "notes": "Villa page gives only general fit-out points; electrical, plumbing and flooring not specified."
+}

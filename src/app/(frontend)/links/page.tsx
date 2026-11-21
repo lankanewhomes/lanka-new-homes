@@ -13,7 +13,7 @@ export const metadata: Metadata = withSocial({
 
 // Owner, 2026-10-23: the Instagram bio points at /links, one page with both lists, homes first and land second.
 // /links/projects and /links/land stay as the single-list versions. All three are built from the `social-posts` collection.
-export const revalidate = 300;
+export const revalidate = 60; // owner 2026-11-13: new Instagram posts should reach the bio link quickly; same 60 s as the other ISR pages (was 300)
 
 const INSTAGRAM_URL = "https://www.instagram.com/lankanewhomes/";
 

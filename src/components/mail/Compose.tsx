@@ -23,6 +23,7 @@ export function ComposeWindow({ init, accounts, onClose, onSent, onDraftSaved, t
   toast: (message: string, kind?: "ok" | "err") => void;
 }) {
   const [accountId, setAccountId] = useState(init.accountId);
+  const [fromAddress, setFromAddress] = useState("");
   const [to, setTo] = useState<MailAddress[]>(init.to);
   const [cc, setCc] = useState<MailAddress[]>(init.cc);
   const [bcc, setBcc] = useState<MailAddress[]>(init.bcc);
@@ -44,7 +45,7 @@ export function ComposeWindow({ init, accounts, onClose, onSent, onDraftSaved, t
   const initialHtml = init.draftHtml ?? `<div><br></div><div data-lnh-signature>${account?.signature ?? ""}</div>${init.quoteHtml ?? ""}`;
   const markDirty = () => setDirty(true);
 
-  const payload = () => ({ accountId, to, cc, bcc, subject, htmlBody: editor.current?.getHtml() ?? "", attachments: files.map(({ filename, contentType, contentBase64 }) => ({ filename, contentType, contentBase64 })), inReplyToId: init.inReplyToId, replyMode: init.replyMode });
+  const payload = () => ({ accountId, from: fromAddress, to, cc, bcc, subject, htmlBody: editor.current?.getHtml() ?? "", attachments: files.map(({ filename, contentType, contentBase64 }) => ({ filename, contentType, contentBase64 })), inReplyToId: init.inReplyToId, replyMode: init.replyMode });
   const hasContent = () => Boolean(to.length || subject.trim() || (editor.current?.getText() ?? "").replace(init.draftHtml ? "" : (account?.signature ?? "").replace(/<[^>]+>/g, ""), "").trim());
 
   // Saves are queued one after another and always reuse the latest draft id, so a fast close can never create a second draft.
@@ -135,8 +136,8 @@ export function ComposeWindow({ init, accounts, onClose, onSent, onDraftSaved, t
         <>
           <div className="lnh-compose-field">
             <span>From</span>
-            <select value={accountId} onChange={(e) => { const id = Number(e.target.value); setAccountId(id); editor.current?.setSignature(accounts.find((a) => a.id === id)?.signature ?? ""); markDirty(); }} aria-label="From">
-              {accounts.map((a) => <option key={a.id} value={a.id}>{a.displayName} &lt;{a.email}&gt;</option>)}
+            <select value={`${accountId}|${fromAddress || account?.email}`} onChange={(e) => { const [idText, address] = e.target.value.split("|"); const id = Number(idText); setAccountId(id); setFromAddress(address); editor.current?.setSignature(accounts.find((a) => a.id === id)?.signature ?? ""); markDirty(); }} aria-label="From">
+              {accounts.flatMap((a) => [a.email, ...(a.aliases ?? [])].map((address) => <option key={`${a.id}|${address}`} value={`${a.id}|${address}`}>{a.displayName} &lt;{address}&gt;</option>))}
             </select>
           </div>
           <div className="lnh-compose-field">

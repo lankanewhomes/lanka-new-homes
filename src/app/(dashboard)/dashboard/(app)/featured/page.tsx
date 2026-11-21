@@ -9,6 +9,8 @@ import { isActive } from "@/lib/featured/engine";
 import { manageableDeveloperSlugs } from "@/lib/featured/admin";
 import { getFeaturedData } from "@/lib/featured/store";
 import { assignPackageAction, saveProjectsAction } from "./actions";
+import { FEATURED_ENABLED } from "@/lib/featured/demo";
+import { notFound } from "next/navigation";
 
 export const metadata: Metadata = { title: "Featured placements" };
 export const dynamic = "force-dynamic";
@@ -18,6 +20,7 @@ const button = "inline-flex items-center rounded-full bg-[#17171b] px-5 py-2 tex
 const rs = (n: number) => `Rs. ${n.toLocaleString("en-US")}`;
 
 export default async function FeaturedAdminPage({ searchParams }: { searchParams: Promise<{ notice?: string; ok?: string }> }) {
+  if (!FEATURED_ENABLED) notFound();
   const session = await getSession();
   if (!session) redirect("/developers/login");
   const { notice, ok } = await searchParams;

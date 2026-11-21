@@ -139,6 +139,8 @@ export function matchesFilters(project: Project, selections: Record<string, stri
 }
 
 function statusPillLabel(project: Project) {
+  // Owner, 2026-11-14: a sold-out project always says so (in red), ahead of any move-in label.
+  if (project.status === "Sold Out") return "Sold Out";
   if (project.status === "Coming Soon" || project.status === "Launching Soon") return "Preconstruction";
   if (project.isMoveInNow) return "Move In Now";
   // Only a move-in date a buyer can still plan around (this year onward) —
@@ -253,11 +255,9 @@ export function ListingGridCard({ project, basePath = "/projects", featured }: {
         ) : (
           <div className="listing-grid-card-image listing-grid-card-image-placeholder" aria-hidden="true" />
         )}
-        <span className="listing-grid-card-status">{t(statusPillLabel(project))}</span>
+        <span className={`listing-grid-card-status${project.status === "Sold Out" ? " listing-grid-card-status-sold-out" : ""}`}>{t(statusPillLabel(project))}</span>
         {featured ? (
-          <>
-            <span className="listing-grid-card-featured fp-badge">{featured.label ?? "Featured"}</span>
-                      </>
+          <span className="listing-grid-card-featured fp-badge">{featured.label ?? "Featured"}</span>
         ) : null}
         <button
           type="button"

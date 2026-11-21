@@ -7,7 +7,7 @@ import { getAllProjects } from "@/lib/project-store";
 import { getAllDevelopers } from "@/lib/developer-store";
 import type { Developer, Project } from "@/types";
 import type { AddOnType, Placement } from "./config";
-import { buildDemoState, FEATURED_DEMO } from "./demo";
+import { buildDemoState, FEATURED_DEMO, FEATURED_ENABLED } from "./demo";
 import { activeBookings, featuredDevelopers, selectFeatured } from "./engine";
 import type { AddOnBooking, FeaturedItem, FeaturedPackage, FeaturedState, SlotContext } from "./types";
 
@@ -40,6 +40,7 @@ async function loadFromDatabase(): Promise<FeaturedState> {
 
 /** Everything a slot needs, loaded once per request. */
 export const getFeaturedData = cache(async (): Promise<{ state: FeaturedState; projects: Project[]; developers: Developer[] }> => {
+  if (!FEATURED_ENABLED) return { state: { packages: [], bookings: [], demo: false }, projects: [], developers: [] }; // switched off: no reads at all
   const [projects, developers] = await Promise.all([getAllProjects(), getAllDevelopers()]);
   const state = FEATURED_DEMO ? buildDemoState(projects, developers) : await loadFromDatabase();
   return { state, projects, developers };

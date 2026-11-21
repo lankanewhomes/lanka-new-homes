@@ -65,8 +65,8 @@ const categories = (v: V) => {
     ] },
     { key: 'building-structure', label: 'Building & Structure', items: [
       ...lines('Doors & Windows', v.doors, true),
-      ...lines('Elevators', 'elevators'),
-      ...(PARKING[v.slug] ? lines('Parking', PARKING[v.slug]) : []),
+      ...lines('Elevators', 'available'),
+      ...(PARKING[v.slug ?? ''] ? lines('Parking', PARKING[v.slug ?? '']) : []),
     ] },
     { key: 'finishes', label: 'Finishes', items: [
       ...lines('Flooring', `living and dining: ${tile}; bedrooms: ${pl(bedParts[0].replace(/ flooring$/i, '').toLowerCase())}; bathrooms: ${pl((bathParts[0] ?? '').replace(/ flooring$/i, '').toLowerCase())}; balconies: non-slip matte finish tiles`),

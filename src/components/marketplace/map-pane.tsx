@@ -3,6 +3,7 @@
 import "maplibre-gl/dist/maplibre-gl.css";
 import { LngLatBounds, setWorkerUrl } from "maplibre-gl";
 import { trackEvent } from "@/lib/ga4";
+import { logListingInteraction } from "@/lib/log-interaction";
 import Map, { Layer, Marker, NavigationControl, Popup, Source, type MapRef } from "react-map-gl/maplibre";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Layers } from "lucide-react";
@@ -140,6 +141,7 @@ export function MapPane({ projects, basePath = "/projects", onSelectArea, area, 
   }, [pinnedProjects, mapLoaded]);
 
   const selectProject = (project: Project) => {
+    logListingInteraction("map_pin_click", project.slug);
     trackEvent("map_pin_click", { listing_id: project.slug, ...(project.developerSlug ? { developer_slug: project.developerSlug } : {}) });
     setActivePlace(null);
     setActiveSlug((current) => {

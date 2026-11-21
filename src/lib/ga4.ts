@@ -126,6 +126,9 @@ function trackMetaEvent(name: string, params: Record<string, string | number | b
       case "view_listing":
         fbq("track", "ViewContent", listing);
         break;
+      case "view_blog_post":
+        fbq("track", "ViewContent", { content_ids: [params.blog_slug], content_name: params.blog_title, content_type: "article" });
+        break;
       case "view_floor_plan":
         fbq("track", "ViewContent", { ...listing, content_category: "floor_plan", content_name: params.floor_plan_name });
         break;

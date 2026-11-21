@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
-import { FEATURED_DEMO } from "@/lib/featured/demo";
+import { FEATURED_DEMO, FEATURED_ENABLED } from "@/lib/featured/demo";
 
 // Records one Featured impression / click / lead for the monthly developer report. Best effort: it never fails the page.
 // Writes nothing while the demo is on (and quietly does nothing until the featured_events table exists).
 export async function POST(request: Request) {
-  if (FEATURED_DEMO) return NextResponse.json({ ok: true, demo: true });
+  if (!FEATURED_ENABLED || FEATURED_DEMO) return NextResponse.json({ ok: true, demo: FEATURED_DEMO });
   try {
     const body = (await request.json()) as { event?: string; placement?: string; projectSlug?: string; developer?: string; path?: string };
     if (!["impression", "click", "lead"].includes(body.event ?? "") || !body.placement) return NextResponse.json({ ok: false }, { status: 400 });

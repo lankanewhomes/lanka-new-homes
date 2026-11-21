@@ -600,6 +600,39 @@ alter table payload.leads add column if not exists land_id integer references pa
 create index if not exists leads_land_idx on payload.leads (land_id);
 alter table payload.leads alter column project_id drop not null;
 
+-- Leads list shows listing and developer names (2026-11-04). See supabase/migrations/20261104160000_leads_names.sql.
+alter table payload.leads add column if not exists listing_name varchar;
+alter table payload.leads add column if not exists developer_name varchar;
+
+-- Map pin clicks are logged in the analytics list (2026-11-05). See supabase/migrations/20261105120000_analytics_map_pin_click.sql.
+alter type payload.enum_analytics_event_type add value if not exists 'map_pin_click';
+
+-- Compare add/remove and inquiry form field taps are logged in the analytics list (2026-11-06). See supabase/migrations/20261106120000_analytics_interactions.sql.
+alter type payload.enum_analytics_event_type add value if not exists 'compare_add';
+alter type payload.enum_analytics_event_type add value if not exists 'compare_remove';
+alter type payload.enum_analytics_event_type add value if not exists 'form_field_focus';
+
+-- Blog article views are logged in the analytics list (2026-11-06). See supabase/migrations/20261106130000_analytics_blog_view.sql.
+alter table payload.analytics add column if not exists blog_slug varchar;
+create index if not exists analytics_blog_slug_idx on payload.analytics (blog_slug);
+alter type payload.enum_analytics_event_type add value if not exists 'blog_view';
+
+-- Floor plan / plot page views are logged in the analytics list (2026-11-07). See supabase/migrations/20261107120000_analytics_floor_plan_view.sql.
+alter type payload.enum_analytics_event_type add value if not exists 'floor_plan_view';
+
+-- 2026-11-08: neighbourhood drafts. Payload column only; the public table stores isPublished inside its `data` jsonb
+-- (missing = published), so nothing changes in public.neighborhoods. Migration: supabase/migrations/20261108120000_neighborhoods_is_published.sql
+-- alter table payload.neighborhoods add column if not exists is_published boolean default true;
+
+-- 2026-11-09: projects banking partners (Payload column only; public.projects reads it from `data` jsonb). Migration: supabase/migrations/20261109120000_projects_banking_partners.sql
+-- alter table payload.projects add column if not exists banking_partners varchar;
+
+-- WhatsApp lead capture (2026-11-09): buyer leaves name + number before WhatsApp opens; source "whatsapp".
+alter table leads add column if not exists whatsapp_continued_at timestamptz;
+-- Payload: alter type payload.enum_leads_source add value if not exists 'whatsapp'; alter table payload.leads add column if not exists whatsapp_continued_at timestamptz;
+-- Payload leads: email is optional (short form and WhatsApp window leave only name + number). alter table payload.leads alter column email drop not null;
+
+-- WhatsApp inbox archive (2026-11-16). Payload: alter table payload.whatsapp_messages add column if not exists archived boolean default false;
 -- Subscribers: people who ticked "Send me ..." on the /contact form (2026-11-18). Created by the contact route; admin-only in /dashboard.
 create type payload.enum_subscribers_status as enum ('subscribed','unsubscribed');
 create table if not exists payload.subscribers (id serial primary key, email varchar not null, name varchar, interests varchar, source varchar default 'contact-form', status payload.enum_subscribers_status default 'subscribed', updated_at timestamptz not null default now(), created_at timestamptz not null default now());

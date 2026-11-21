@@ -6,6 +6,7 @@ import { DeferredMetaPixel } from "@/components/analytics/deferred-meta-pixel";
 import { Footer, Header } from "@/components/marketplace/components";
 import { BreadcrumbBar } from "@/components/layout/breadcrumb-bar";
 import { LanguageProvider } from "@/components/layout/language-provider";
+import { WhatsAppCaptureHost } from "@/components/marketplace/whatsapp-capture";
 import { AuthModalProvider } from "@/components/auth/auth-modal-provider";
 import { UtmCapture } from "@/components/analytics/utm-capture";
 import { InternalTrafficFlag } from "@/components/analytics/internal-traffic-flag";
@@ -63,11 +64,12 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           <AuthModalProvider>
             {/* Paid placements: announcement bar at the very top, and a featured project card inside the Projects menu. */}
             <FeaturedSlot placement="site-announcement" />
-            <Header menuCard={<FeaturedSlot placement="site-menu-card" />} />
+            <Header />
             <BreadcrumbBar />
             <main>{children}</main>
             <Footer />
             <CompareBar />
+            <WhatsAppCaptureHost />
           </AuthModalProvider>
         </LanguageProvider>
       </body>

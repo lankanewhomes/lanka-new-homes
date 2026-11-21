@@ -332,17 +332,20 @@ export const KEY_FEATURE_VALUE_OPTIONS = [
 // sit in Amenities (communal pool, gym, clubhouse, playground) do NOT belong in Key Features. Recreation & Wellness stays for rows that have
 // no matching amenity; Road & Access is for land developments. There is no "Highlights" tab: marketing lines go to the project's Highlights.
 const KEY_FEATURE_CATEGORY_LABELS: Record<string, string> = {
-  specifications: 'Specifications',
-  finishes: 'Finishes',
   'general-features': 'General Features',
-  'safety-security': 'Safety & Security',
+  'building-structure': 'Building & Structure',
+  'building-services': 'Building Services',
   indoor: 'Indoor Features',
-  'building-services': 'Building & Services',
   outdoor: 'Outdoor Features',
-  'recreation-wellness': 'Recreation & Wellness',
+  interior: 'Interior',
+  finishes: 'Finishes',
+  utilities: 'Utilities & Services',
+  'safety-security': 'Safety & Security',
   sustainability: 'Sustainability',
+  // Older / specialised categories, kept so existing listings still show their tab name.
+  specifications: 'Specifications',
+  'recreation-wellness': 'Recreation & Wellness',
   accessibility: 'Accessibility',
-  utilities: 'Utilities',
   'road-access': 'Road & Access',
 }
 

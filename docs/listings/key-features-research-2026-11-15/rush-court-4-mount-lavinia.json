@@ -1,0 +1,88 @@
+{
+ "slug": "rush-court-4-mount-lavinia",
+ "sources": [
+  "https://propertyguide.lk/en/new-projects/rush-court-4-mount-lavinia (third-party listing)",
+  "https://www.rushlankagroup.com/projects/rush-court-4-mount-lavinia (headings only, no details)"
+ ],
+ "categories": [
+  {
+   "key": "interior",
+   "label": "Interior",
+   "items": [
+    {
+     "field": "Doors & Windows",
+     "value": "Wooden doors; rust-proof powder-coated aluminium windows, also for bathrooms"
+    },
+    {
+     "field": "Kitchen",
+     "value": "Pantries included"
+    },
+    {
+     "field": "Bedrooms",
+     "value": "Maid's room with toilet"
+    }
+   ]
+  },
+  {
+   "key": "finishes",
+   "label": "Finishes",
+   "items": [
+    {
+     "field": "Flooring",
+     "value": "Imported tiles"
+    }
+   ]
+  },
+  {
+   "key": "building-services",
+   "label": "Building Services",
+   "items": [
+    {
+     "field": "Plumbing",
+     "value": "International sanitary fittings; hot water system"
+    },
+    {
+     "field": "Elevators",
+     "value": "Elevators provided"
+    },
+    {
+     "field": "Air Conditioning",
+     "value": "Air conditioning listed"
+    },
+    {
+     "field": "Backup Power",
+     "value": "Power backup listed"
+    },
+    {
+     "field": "Telecom",
+     "value": "Intercom"
+    }
+   ]
+  },
+  {
+   "key": "safety-security",
+   "label": "Safety & Security",
+   "items": [
+    {
+     "field": "Fire Protection",
+     "value": "Fire detection and safety systems"
+    },
+    {
+     "field": "Security",
+     "value": "CCTV; 24/7 security"
+    }
+   ]
+  },
+  {
+   "key": "building-structure",
+   "label": "Building & Structure",
+   "items": [
+    {
+     "field": "Parking",
+     "value": "Two parking floors"
+    }
+   ]
+  }
+ ],
+ "notes": "No brochure; developer page lists spec headings (Foundation, Kitchen, Electrical, Flooring, Doors, Plumbing) without text, so values come from a third-party listing (PropertyGuide); verify."
+}

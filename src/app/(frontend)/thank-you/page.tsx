@@ -2,12 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getProjectBySlug } from "@/lib/project-store";
 import { FeaturedSlot } from "@/components/featured/featured-slot";
+import { FEATURED_ENABLED } from "@/lib/featured/demo";
+import { notFound } from "next/navigation";
 
 // The thank-you page after an enquiry or brochure download. Never indexed. The "You may also like" block is the paid Featured placement
 // "thankyou-also-like": featured projects near the one the visitor just asked about.
 export const metadata: Metadata = { title: "Thank you", robots: { index: false, follow: false } };
 
 export default async function ThankYouPage({ searchParams }: { searchParams: Promise<{ project?: string; type?: string }> }) {
+  if (!FEATURED_ENABLED) notFound();
   const { project: slug, type } = await searchParams;
   const project = slug ? await getProjectBySlug(slug) : undefined;
   const brochure = type === "brochure";

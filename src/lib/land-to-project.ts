@@ -61,6 +61,8 @@ export function landToProjectShape(land: Land): Project {
   return {
     slug: land.slug,
     name: land.title,
+    createdAt: land.createdAt,
+    updatedAt: land.updatedAt,
     isLand: true,
     developerSlug: land.sellerSlug ?? "",
     developerName: land.sellerName,

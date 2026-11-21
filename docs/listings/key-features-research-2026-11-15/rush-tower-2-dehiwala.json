@@ -1,0 +1,109 @@
+{
+ "slug": "rush-tower-2-dehiwala",
+ "sources": [
+  "rush-tower-2-dehiwala_brochure.pdf (media.lankanewhomes.com), specifications page read from image"
+ ],
+ "categories": [
+  {
+   "key": "building-structure",
+   "label": "Building & Structure",
+   "items": [
+    {
+     "field": "Foundation",
+     "value": "Raft foundation or piling as per engineer's specification"
+    },
+    {
+     "field": "Roof",
+     "value": "Fully secured parapet wall all round; lightning conductor with surge protection"
+    },
+    {
+     "field": "Parking",
+     "value": "Dedicated parking slots for residents"
+    }
+   ]
+  },
+  {
+   "key": "interior",
+   "label": "Interior",
+   "items": [
+    {
+     "field": "Kitchen",
+     "value": "Wooden pantry with cooker hood and hob; sink with cold water tap; provision for washing machine; imported tiles on pantry wall"
+    },
+    {
+     "field": "Doors & Windows",
+     "value": "Designed engineered wooden entrance doors; engineered wooden doors for rooms; rust-proof powder-coated aluminium for windows and bathrooms"
+    },
+    {
+     "field": "Bedrooms",
+     "value": "Hall and bedrooms fitted with ceiling fans and lights; maid's room and maid's toilet"
+    }
+   ]
+  },
+  {
+   "key": "finishes",
+   "label": "Finishes",
+   "items": [
+    {
+     "field": "Flooring",
+     "value": "Imported porcelain tiles for hall; imported tiles for bathroom walls, staircase and lobby; artificial wooden flooring for bedrooms"
+    }
+   ]
+  },
+  {
+   "key": "building-services",
+   "label": "Building Services",
+   "items": [
+    {
+     "field": "Electrical",
+     "value": "Individually metered electricity from national grid; high-quality switches and fixtures with safety panels and high-grade trip switch"
+    },
+    {
+     "field": "Plumbing",
+     "value": "Imported sanitary fittings; hot water geyser for master and common bathrooms; hand bidet spray; shower mixer; wash basin with mixer tap; connected to municipal sewer lines/treatment plant"
+    },
+    {
+     "field": "Air Conditioning",
+     "value": "A/C provided for master bedroom; provision for other rooms"
+    },
+    {
+     "field": "Elevators",
+     "value": "Two high-speed passenger elevators serving all levels"
+    },
+    {
+     "field": "Backup Power",
+     "value": "Standby generator for common lighting, elevator, water pump, fire pumps and apartments (limited points)"
+    },
+    {
+     "field": "Telecom",
+     "value": "TV outlets in hall and master bedroom; telephone outlets in hall and master bedroom; intercom from apartment to security"
+    },
+    {
+     "field": "Waste",
+     "value": "Door-to-door garbage collection"
+    }
+   ]
+  },
+  {
+   "key": "safety-security",
+   "label": "Safety & Security",
+   "items": [
+    {
+     "field": "Fire Protection",
+     "value": "Fire protection system"
+    }
+   ]
+  },
+  {
+   "key": "utilities",
+   "label": "Utilities & Services",
+   "items": [
+    {
+     "field": "Water Supply",
+     "value": "Main line metered individually; ground storage sump and rooftop overhead tank with pressure system"
+    }
+   ]
+  }
+ ],
+ "notes": "Spec page in brochure is an image; read visually. Floor-to-floor height omitted per rules."
+}

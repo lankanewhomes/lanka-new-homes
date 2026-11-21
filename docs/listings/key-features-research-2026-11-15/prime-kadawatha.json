@@ -1,0 +1,19 @@
+{
+ "slug": "prime-kadawatha",
+ "sources": [
+  "https://www.primelands.lk/apartment/PRIME-KADAWATHA/en"
+ ],
+ "categories": [
+  {
+   "key": "utilities",
+   "label": "Utilities & Services",
+   "items": [
+    {
+     "field": "Utilities",
+     "value": "Electricity; tap water"
+    }
+   ]
+  }
+ ],
+ "notes": "Project page lists only electricity and tap water as services; no finishes published."
+}

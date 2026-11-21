@@ -226,3 +226,6 @@
     repeating-linear-gradient(0deg, transparent 0 calc(var(--nl-cell) - 1px), rgba(176, 130, 15, 0.34) calc(var(--nl-cell) - 1px) var(--nl-cell)),
     repeating-linear-gradient(90deg, transparent 0 calc(var(--nl-cell) - 1px), rgba(176, 130, 15, 0.34) calc(var(--nl-cell) - 1px) var(--nl-cell));
 }
+
+/* Paid Featured tile in the header mega menu: same orange badge as the cards, top-left of the photo. */
+.nav-mega-tile-badge{position:absolute;top:8px;left:8px;z-index:2;font-size:11px;line-height:1;padding:4px 8px;border-radius:4px}

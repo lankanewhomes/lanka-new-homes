@@ -1,0 +1,77 @@
+{
+ "slug": "fairway-latitude",
+ "sources": [
+  "fairway-latitude_brochure.pdf (Key specifications)"
+ ],
+ "categories": [
+  {
+   "key": "interior",
+   "label": "Interior",
+   "items": [
+    {
+     "field": "Doors & Flooring",
+     "value": "Engineered timber doors and floors"
+    },
+    {
+     "field": "Windows",
+     "value": "Double glazed uPVC windows"
+    },
+    {
+     "field": "Lighting",
+     "value": "LED lighting throughout"
+    },
+    {
+     "field": "Finishes",
+     "value": "Low maintenance, durable finishes"
+    }
+   ]
+  },
+  {
+   "key": "building-services",
+   "label": "Building Services",
+   "items": [
+    {
+     "field": "Air Conditioning",
+     "value": "Efficient air conditioning systems"
+    },
+    {
+     "field": "Elevators",
+     "value": "High-speed elevators with access control and smart entry systems"
+    },
+    {
+     "field": "Backup Power",
+     "value": "Prime rated backup power for homes and common areas"
+    }
+   ]
+  },
+  {
+   "key": "safety-security",
+   "label": "Safety & Security",
+   "items": [
+    {
+     "field": "Security",
+     "value": "24/7 manned security with CCTV coverage"
+    }
+   ]
+  },
+  {
+   "key": "sustainability",
+   "label": "Sustainability",
+   "items": [
+    {
+     "field": "Smart Home",
+     "value": "Smart home enabled"
+    },
+    {
+     "field": "EV Charging",
+     "value": "EV charging provision across parking"
+    },
+    {
+     "field": "Materials",
+     "value": "Systems and materials selected to reduce energy use and noise"
+    }
+   ]
+  }
+ ],
+ "notes": "Brochure gives a short key-specifications list only; no detailed spec sheet."
+}

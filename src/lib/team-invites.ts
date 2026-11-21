@@ -50,7 +50,7 @@ export async function sendTeamInviteEmail(opts: { to: string; companyName: strin
   const { html, text } = renderPlainReplyEmail({
     body: `Hi,\n\n${opts.companyName} added you as a team member on LankaNewHomes.${lines}\n\nYou can edit these listings and see the buyer enquiries about them. ${action}`,
     signoff: 'Thank you,',
-    signName: 'The LankaNewHomes team',
+    signName: 'LankaNewHomes Team',
     button: { href: `${SITE}/developers/${opts.accountExists ? 'login' : 'register'}`, text: opts.accountExists ? 'Sign in' : 'Create my account' },
   })
   await sendMail({
