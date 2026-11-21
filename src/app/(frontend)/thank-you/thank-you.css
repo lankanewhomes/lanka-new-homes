@@ -1,0 +1,19 @@
+/* Thank-you page. Brand rules (docs/owner-rules): Archivo via the body font, ink #1f1f1f, orange #f47b36 primary button,
+   weight 400 headings, no uppercase, no orange underlines, plain single-colour line icon. */
+.thank-you-page { width: 100%; }
+.thank-you-hero { max-width: 720px; margin: 0 auto; padding: 56px 16px 44px; text-align: center; }
+.thank-you-tick { display: inline-flex; align-items: center; justify-content: center; width: 52px; height: 52px; border-radius: 999px; background: #e8f4e8; color: #1a6b2f; }
+.thank-you-tick svg { width: 26px; height: 26px; }
+.thank-you-hero h1 { margin: 18px 0 0; font-size: 32px; font-weight: 400; line-height: 1.15; color: #1f1f1f; }
+.thank-you-hero p { margin: 12px auto 0; max-width: 560px; font-size: 14px; line-height: 20px; color: #6b6355; }
+.thank-you-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 24px; }
+.thank-you-button { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 18px; border: 1px solid #e4e0d6; border-radius: 999px; background: #fff; color: #1f1f1f; font-size: 14px; font-weight: 400; text-decoration: none; }
+.thank-you-button:hover { background: #f7f6f2; }
+.thank-you-button-primary { border-color: #f47b36; background: #f47b36; color: #1f1f1f; }
+.thank-you-button-primary:hover { background: #f99958; }
+@media (max-width: 760px) {
+  .thank-you-hero { padding: 36px 16px 32px; }
+  .thank-you-hero h1 { font-size: 26px; }
+  .thank-you-actions { flex-direction: column; }
+  .thank-you-button { width: 100%; }
+}

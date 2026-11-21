@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { ArrowRight, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { buildInternationalPhone, DEFAULT_PHONE_COUNTRY, isPlausiblePhone } from "@/lib/phone";
 import { PhoneField, type PhoneValue } from "@/components/marketplace/phone-field";
 import { toWhatsAppNumber, whatsappChatHref } from "@/lib/whatsapp";
@@ -62,6 +63,7 @@ function WhatsAppCaptureDialog({ detail, onClose }: { detail: WhatsAppCaptureDet
   const [errors, setErrors] = useState<{ name?: string; phone?: string; email?: string }>({});
   const [openHref, setOpenHref] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
+  const router = useRouter();
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -137,6 +139,9 @@ function WhatsAppCaptureDialog({ detail, onClose }: { detail: WhatsAppCaptureDet
       form_type: "whatsapp",
     });
     trackEvent("click_whatsapp", { listing_id: detail.projectSlug, listing_name: detail.projectName, ...(detail.developerSlug ? { developer_slug: detail.developerSlug } : {}) });
+    // 3. A moment later this tab moves on to the thank-you page (owner, 2026-11-21); WhatsApp has already opened in its own tab/app.
+    const thanksKind = window.location.pathname.startsWith("/land") ? "&kind=land" : "";
+    window.setTimeout(() => { onClose(); router.push(`/thank-you?project=${encodeURIComponent(detail.projectSlug)}&type=whatsapp${thanksKind}`); }, 1500);
   };
 
   return (

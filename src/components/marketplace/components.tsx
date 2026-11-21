@@ -2222,6 +2222,7 @@ export function RequestInfoDialog({
   const formRef = useRef<HTMLFormElement>(null);
   const focusedFields = useRef(new Set<string>());
   const isBrochure = variant === "brochure";
+  const thankYouRouter = useRouter();
   // One short form everywhere: project Contact Us, Brochure and the land inquiry all ask email then name, no phone (owner, 2026-11-18).
   const formType = isBrochure ? "brochure" : variant === "inquiry" ? "inquiry" : "request_info";
 
@@ -2316,6 +2317,9 @@ export function RequestInfoDialog({
         logListingEvent("/api/events/brochure-download", "download_brochure", project.slug, project.name, project.developerSlug);
         window.open(project.brochureUrl, "_blank", "noopener,noreferrer");
       }
+      // Then on to the thank-you page (owner, 2026-11-21): confirmation, the brochure button again, featured and similar listings.
+      const thanksKind = window.location.pathname.startsWith("/land") ? "&kind=land" : "";
+      thankYouRouter.push(`/thank-you?project=${encodeURIComponent(project.slug)}&type=${isBrochure ? "brochure" : variant === "inquiry" ? "inquiry" : "request"}${thanksKind}`);
     } catch {
       setErrorMessage("Unable to send your request. Please try again.");
     } finally {
