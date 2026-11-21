@@ -30,3 +30,16 @@ Homepage: hero (3), Featured Projects carousel, New Launches, Developer of the M
 
 ## Rules implemented
 Only projects matching the page's place/type; order elite → premium → featured, fair rotation inside a tier (hourly); max 3 pinned per page; organic order untouched; "Featured" label on project cards, "Sponsored" on banners/articles; empty slot renders nothing; server-rendered with fixed sizes.
+
+## Switches (2026-11-20: code merged into cloudflare-migration, switched OFF)
+
+The code is in `cloudflare-migration` but does nothing on the live site until a build-time variable is set
+(`src/lib/featured/demo.ts`):
+
+| Variable (build time) | Effect |
+|---|---|
+| none (live today) | Everything off: no slots, no demo data, `/advertise` and `/thank-you` return 404, no dashboard menu item, no reads of the `featured_*` tables, hero and indexing unchanged. |
+| `NEXT_PUBLIC_FEATURED_DEMO=1` | Preview only: demo data in every slot, whole site noindex, saving disabled. Build with this, then `wrangler versions upload --preview-alias featured-placements`. Never set it on the live build. |
+| `NEXT_PUBLIC_FEATURED_ENABLED=1` | Launch: real paid placements. Run the migration first, then add this under Cloudflare build variables. |
+
+The header mega menu shows at most 2 paid Featured project tiles (orange Featured badge), then tops up with the normal tiles.
