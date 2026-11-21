@@ -8,10 +8,15 @@ import { PageHero } from "./PageHero";
 import { StatusChip } from "./StatusChip";
 import { ApiError, apiFind, apiGet, apiUpdate, type Doc } from "../_data/api";
 import { allOf } from "../_data/scope";
-import { PACKAGE_LIST, formatPackagePrice, getPackage, maxFeaturedProjects } from "@/lib/packages";
+import { formatPackagePrice, getPackage, maxFeaturedProjects } from "@/lib/packages";
+import { ADD_ONS, FOUNDING_PARTNER, TERM_DISCOUNTS, TIERS, type FeaturedTier } from "@/lib/featured/config";
+
+// The packages on sale (owner, 2026-11-21): Featured, Premium, Elite and the add-ons, all read from src/lib/featured/config.ts.
+// The "Current package" box above them still shows the plan saved on the developer record.
+const NEW_TIERS: FeaturedTier[] = ["featured", "premium", "elite"];
 
 // "My package": the developer's real plan (Developers.plan / featuredUntil / extra_featured_slots), which of their published projects
-// fill the featured spots, the upgrade options from src/lib/packages.ts, and their latest payments. Nothing here charges anything.
+// fill the featured spots, the packages and add-ons on sale from src/lib/featured/config.ts, and their latest payments. Nothing here charges anything.
 
 const idStr = (v: unknown): string => String(v && typeof v === "object" ? (v as { id?: unknown }).id : v);
 const idList = (v: unknown): string[] => (Array.isArray(v) ? v.map(idStr) : []);
@@ -230,24 +235,46 @@ export function PackagePage() {
           </section>
         </div>
 
-        <h2 className="mb-3 mt-7 font-semibold">Upgrade options</h2>
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-          {PACKAGE_LIST.map((t) => {
-            const isCurrent = t.tier === pkg.tier;
+        <h2 className="mt-7 font-semibold">Packages</h2>
+        <p className="mb-3 text-sm text-muted">Monthly price per developer. You choose which of your projects fill the spots and can swap them any time.</p>
+        <div className="grid gap-4 md:grid-cols-3">
+          {NEW_TIERS.map((key) => {
+            const t = TIERS[key];
             return (
-              <div key={t.tier} className={`flex flex-col border p-4 ${isCurrent ? "border-ink bg-subtle" : "border-line bg-panel"}`}>
-                <div className="flex items-center justify-between"><p className="font-semibold">{t.name}</p>{isCurrent ? <span className="bg-ink px-2 py-0.5 text-[10px] font-semibold text-white">Current</span> : t.tier === "developer-pro" ? <Sparkles size={14} className="text-brand" /> : null}</div>
-                <p className="mt-1 text-lg font-semibold tabular-nums">{formatPackagePrice(t)}</p>
-                <p className="text-xs text-muted">{t.featuredProjectLimit === "custom" ? "Custom featured spots" : `${t.featuredProjectLimit} featured spot${t.featuredProjectLimit === 1 ? "" : "s"}`}</p>
-                <ul className="my-3 flex-1 space-y-1 text-sm">{t.features.map((p) => <li key={p} className="flex items-start gap-1.5"><Check size={13} className="mt-1 shrink-0 text-ok" /><span>{p}</span></li>)}</ul>
+              <div key={key} className="flex flex-col border border-line bg-panel p-4">
+                <div className="flex items-center justify-between"><p className="font-semibold">{t.name}</p>{key === "elite" ? <Sparkles size={14} className="text-brand" /> : null}</div>
+                <p className="mt-1 text-lg font-semibold tabular-nums">Rs. {t.priceLkrPerMonth.toLocaleString("en-US")}<span className="text-sm font-normal text-muted"> / month</span></p>
+                <p className="text-xs text-muted">{t.projectSlots} project spot{t.projectSlots === 1 ? "" : "s"}</p>
+                <p className="mt-2 text-sm text-muted">{t.tagline}</p>
+                <ul className="my-3 flex-1 space-y-1 text-sm">{t.includes.map((p) => <li key={p} className="flex items-start gap-1.5"><Check size={13} className="mt-1 shrink-0 text-ok" /><span>{p}</span></li>)}</ul>
                 {isAdmin ? (
-                  <Link href="/dashboard/billing" aria-disabled={isCurrent} className={`inline-flex items-center justify-center gap-1 border border-line bg-panel px-3 py-1.5 text-sm font-medium hover:border-ink ${isCurrent ? "pointer-events-none opacity-40" : ""}`}>{isCurrent ? "Your plan" : <>Manage in Billing <ArrowRight size={13} /></>}</Link>
+                  <Link href="/dashboard/billing" className="inline-flex items-center justify-center gap-1 border border-line bg-panel px-3 py-1.5 text-sm font-medium hover:border-ink">Manage in Billing <ArrowRight size={13} /></Link>
                 ) : (
-                  <button type="button" disabled={isCurrent} onClick={() => upgrade(t.name)} className="inline-flex items-center justify-center gap-1 border border-line bg-panel px-3 py-1.5 text-sm font-medium hover:border-ink disabled:opacity-40">{isCurrent ? "Your plan" : <>Choose <ArrowRight size={13} /></>}</button>
+                  <button type="button" onClick={() => upgrade(t.name)} className="inline-flex items-center justify-center gap-1 border border-line bg-panel px-3 py-1.5 text-sm font-medium hover:border-ink">Choose <ArrowRight size={13} /></button>
                 )}
               </div>
             );
           })}
+        </div>
+        <p className="mt-3 text-sm text-muted">
+          Pay for several months at once: {TERM_DISCOUNTS.map((x) => `${x.months}+ months ${x.percent}% off`).join(", ")}. {FOUNDING_PARTNER.label}: {FOUNDING_PARTNER.percent}% off the first {FOUNDING_PARTNER.months} months (the larger saving applies, they do not add up).
+        </p>
+
+        <h2 className="mt-7 font-semibold">Add-ons</h2>
+        <p className="mb-3 text-sm text-muted">Booked separately, with or without a package.</p>
+        <div className="overflow-x-auto border border-line bg-panel">
+          <table className="w-full min-w-[560px] text-sm">
+            <thead><tr className="border-b border-line text-left text-xs font-semibold uppercase tracking-wide text-muted"><th className="px-4 py-2.5">Add-on</th><th className="px-4 py-2.5">What you get</th><th className="px-4 py-2.5 text-right">Price</th></tr></thead>
+            <tbody>
+              {Object.entries(ADD_ONS).map(([key, a]) => (
+                <tr key={key} className="border-b border-line last:border-0">
+                  <td className="px-4 py-2.5 font-medium">{a.name}</td>
+                  <td className="px-4 py-2.5 text-muted">{a.description}{a.max ? ` ${a.max}.` : ""}</td>
+                  <td className="whitespace-nowrap px-4 py-2.5 text-right tabular-nums">Rs. {a.priceLkr.toLocaleString("en-US")} <span className="text-muted">{a.unit}</span></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
 
         <h2 className="mb-3 mt-7 font-semibold">Recent payments</h2>
