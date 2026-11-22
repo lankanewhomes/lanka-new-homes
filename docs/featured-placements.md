@@ -47,3 +47,10 @@ First live package: Maison Ceylon, Elite (upgraded from Premium on 2026-11-22), 
 Results: `/dashboard/featured/report`.
 
 The header mega menu shows at most 2 paid Featured project tiles (orange Featured badge), then tops up with the normal tiles.
+
+## /advertise layout (redesign 2026-11-22)
+
+Dark split hero, then contained boxes in this order: packages (months switch 1/3/6/12 and a Founding Partner tick box that re-price the
+three cards; `src/components/featured/advertise-packages.tsx`), compare table "Where your project appears" (built from
+`PLACEMENT_MIN_TIER`), add-ons as two price lists ("On the site", "Content and social"), pay per lead, three numbered steps, FAQ, dark
+closing contact box. All numbers still come from `src/lib/featured/config.ts`. Styles: `.adv-*` in `featured.css`.
