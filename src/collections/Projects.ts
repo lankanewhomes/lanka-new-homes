@@ -93,6 +93,8 @@ const MARKETING_BADGE_OPTIONS = [
   'Rent Out or Hotel-Managed',
   // Added 2026-10-24: the developer offers hotel management but does not say owners can let the unit themselves (Lakefront, Negombo Phase 2, Edmonton, Park Road, Springfield).
   'Hotel Management Option',
+  // Added 2026-11-22 for Maison Ceylon's Villa Senehasa (owner: "if you need to add a badge please do"): the villa is also sold in shares.
+  'Fractional Ownership',
 ]
 
 const LOCATION_BADGE_OPTIONS = ['Beachfront', 'Ocean View', 'City View', 'Mountain View', 'Nature View', 'Prime Location', 'Gated Community']

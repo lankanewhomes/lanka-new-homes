@@ -2898,6 +2898,7 @@ export interface Project {
         | 'Profit-Share Model'
         | 'Rent Out or Hotel-Managed'
         | 'Hotel Management Option'
+        | 'Fractional Ownership'
       )[]
     | null;
   /**
