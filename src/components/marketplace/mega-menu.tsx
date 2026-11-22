@@ -144,6 +144,8 @@ export const MEGA_MENUS: Record<MegaKey, { columns: MegaColumn[]; tilesHeading: 
   },
 };
 
+// prefetch={false} on every link here: the panel is in the page on every visit, and letting Next pre-load its ~40 links hit the
+// listing pages (/projects, /land) with dozens of extra requests per visitor and made them time out (2026-11-21).
 export function NavMegaPanel({ menuKey, tiles, onNavigate }: { menuKey: MegaKey; tiles: MegaTile[]; onNavigate: () => void }) {
   const menu = MEGA_MENUS[menuKey];
   return (
@@ -154,7 +156,7 @@ export function NavMegaPanel({ menuKey, tiles, onNavigate }: { menuKey: MegaKey;
             <div key={column.heading} className="nav-mega-column">
               <p className="nav-mega-heading">{column.heading}</p>
               {column.links.map((link) => (
-                <Link key={link.href} href={link.href} onClick={onNavigate}>{link.label}</Link>
+                <Link key={link.href} href={link.href} prefetch={false} onClick={onNavigate}>{link.label}</Link>
               ))}
             </div>
           ))}
@@ -164,7 +166,7 @@ export function NavMegaPanel({ menuKey, tiles, onNavigate }: { menuKey: MegaKey;
           {tiles.length > 0 ? (
             <div className="nav-mega-tiles">
               {tiles.map((tile) => (
-                <Link key={tile.href} href={tile.href} className="nav-mega-tile" onClick={onNavigate}>
+                <Link key={tile.href} href={tile.href} prefetch={false} className="nav-mega-tile" onClick={onNavigate}>
                   <Image src={tile.image} alt="" fill sizes="190px" />
                   {tile.paid || tile.featured ? <span className="fp-badge nav-mega-tile-badge">Featured</span> : null}
                   <span className="nav-mega-tile-text">
@@ -180,7 +182,7 @@ export function NavMegaPanel({ menuKey, tiles, onNavigate }: { menuKey: MegaKey;
               <span className="nav-mega-tile nav-mega-tile-empty" /><span className="nav-mega-tile nav-mega-tile-empty" />
             </div>
           )}
-          <Link href={menu.viewAll.href} className="nav-mega-view-all" onClick={onNavigate}>{menu.viewAll.label}</Link>
+          <Link href={menu.viewAll.href} prefetch={false} className="nav-mega-view-all" onClick={onNavigate}>{menu.viewAll.label}</Link>
         </div>
       </div>
     </div>
