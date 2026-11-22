@@ -240,3 +240,75 @@
 @media (min-width: 1101px) { .fp-box-grid--3 { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 1100px) { .fp-box-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 640px) { .fp-box-grid { grid-template-columns: 1fr; } }
+
+/* /advertise redesign (owner, 2026-11-22): months switch on the package cards, compare table, grouped add-on price lists,
+   pay-per-lead split card, numbered steps, FAQ, dark closing box. Site rules apply: Archivo, weight 400, square corners, no eyebrow labels. */
+.adv-page .adv-switches { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 24px; margin-bottom: 22px; }
+.adv-page .adv-term-switch { display: inline-flex; flex-wrap: wrap; background: #fff; border: 1px solid #e4e0d6; }
+.adv-page .adv-term-switch button { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-width: 104px; padding: 10px 16px; background: #fff; border: 0; border-right: 1px solid #e4e0d6; color: #1f1f1f; font: inherit; font-size: 15px; line-height: 1.3; text-align: left; cursor: pointer; }
+.adv-page .adv-term-switch button:last-child { border-right: 0; }
+.adv-page .adv-term-switch button small { font-size: 12px; color: #6b6355; }
+.adv-page .adv-term-switch button:hover { background: #f7f6f2; }
+.adv-page .adv-term-switch button.active { background: #1f1f1f; color: #fff; }
+.adv-page .adv-term-switch button.active small { color: rgba(255,255,255,.75); }
+.adv-page .adv-founding-switch { display: inline-flex; align-items: center; gap: 10px; font-size: 14px; color: #1f1f1f; cursor: pointer; }
+.adv-page .adv-founding-switch input { width: 18px; height: 18px; accent-color: #f47b36; }
+.adv-page .adv-tier h3 { margin-bottom: 4px; }
+.adv-page .adv-tagline { margin: 0 0 16px; color: #6b6355; }
+.adv-page .adv-tier .adv-price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; margin: 0; }
+.adv-page .adv-tier .adv-price span { font-size: 30px; }
+.adv-page .adv-price s { font-size: 14px; color: #8a8478; }
+.adv-page .adv-total { display: flex; flex-wrap: wrap; gap: 2px 10px; margin: 4px 0 0; font-size: 13px; color: #6b6355; }
+.adv-page .adv-total em { font-style: normal; color: #1a6b2f; }
+.adv-page .adv-tier .adv-slots { margin: 16px 0 0; padding: 12px 0; border-top: 1px solid #e6e2d8; border-bottom: 1px solid #e6e2d8; }
+.adv-page .adv-tier ul { list-style: none; padding: 0; margin: 14px 0 20px; }
+.adv-page .adv-tier li { display: flex; align-items: flex-start; gap: 10px; margin: 8px 0; }
+.adv-page .adv-tier li svg, .adv-page .adv-lead-types li svg { flex: 0 0 auto; margin-top: 3px; color: #1f1f1f; }
+.adv-page .adv-choose { display: flex; justify-content: center; width: 100%; text-align: center; }
+.adv-page .adv-choose--outline { border: 1px solid #1f1f1f; padding: 14px 20px; text-decoration: none; }
+.adv-page .adv-choose--outline:hover { background: #1f1f1f; color: #fff; }
+
+.adv-page .adv-compare-card { padding: 0; overflow-x: auto; }
+.adv-page .adv-compare { width: 100%; border-collapse: collapse; font-size: 14px; }
+.adv-page .adv-compare th, .adv-page .adv-compare td { padding: 13px 16px; border-bottom: 1px solid #ececec; font-weight: 400; color: #1f1f1f; }
+.adv-page .adv-compare tbody tr:last-child th, .adv-page .adv-compare tbody tr:last-child td { border-bottom: 0; }
+.adv-page .adv-compare thead th { font-size: 15px; background: #fafafa; }
+.adv-page .adv-compare th:first-child { text-align: left; }
+.adv-page .adv-compare td, .adv-page .adv-compare thead th:not(:first-child) { width: 16%; text-align: center; }
+.adv-page .adv-compare td svg { display: inline-block; vertical-align: middle; }
+.adv-page .adv-dash { color: #b9b4a8; }
+.adv-page .adv-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.adv-page .adv-addon-group ul { list-style: none; margin: 6px 0 0; padding: 0; }
+.adv-page .adv-addon-group li { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; padding: 14px 0; border-top: 1px solid #ececec; }
+.adv-page .adv-addon-group li p { margin: 0; }
+.adv-page .adv-addon-name { font-size: 16px; color: #1f1f1f; }
+.adv-page .adv-addon-text { margin-top: 2px !important; font-size: 13px; line-height: 1.5; color: #6b6355; }
+.adv-page .adv-addon-price { display: flex; flex-direction: column; align-items: flex-end; flex: 0 0 auto; font-size: 12px; color: #6b6355; white-space: nowrap; }
+.adv-page .adv-addon-price span { font-size: 18px; line-height: 1.3; color: #1f1f1f; }
+
+.adv-page .adv-lead { display: grid; grid-template-columns: minmax(200px, 280px) 1fr; gap: 20px 48px; }
+.adv-page .adv-lead .adv-price span { font-size: 40px; }
+.adv-page .adv-lead-types > p { margin: 0 0 8px; color: #1f1f1f; }
+.adv-page .adv-lead-types ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; }
+.adv-page .adv-lead-types li { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: #1f1f1f; }
+.adv-page .adv-lead p.adv-lead-report { grid-column: 1 / -1; margin: 0; padding-top: 16px; border-top: 1px solid #ececec; max-width: none; }
+
+.adv-page .adv-final h2 { margin: 0 0 8px; }
+.adv-page .adv-final > p { max-width: 640px; }
+.adv-page .adv-final .adv-cta { margin-top: 22px; }
+.adv-page .adv-final-free { margin-top: 18px; font-size: 14px; }
+.adv-page .adv-final-free a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+
+@media (max-width: 820px) {
+  .adv-page .adv-term-switch { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
+  .adv-page .adv-term-switch button { min-width: 0; border-bottom: 1px solid #e4e0d6; }
+  .adv-page .adv-term-switch button:nth-child(2n) { border-right: 0; }
+  .adv-page .adv-term-switch button:nth-last-child(-n+2) { border-bottom: 0; }
+  .adv-page .adv-compare th, .adv-page .adv-compare td { padding: 11px 8px; font-size: 13px; }
+  .adv-page .adv-compare th:first-child { padding-left: 14px; }
+  .adv-page .adv-compare thead th { font-size: 13px; }
+  .adv-page .adv-lead { grid-template-columns: 1fr; }
+  .adv-page .adv-lead-types ul { grid-template-columns: 1fr; }
+  .adv-page .adv-final .adv-cta a { width: 100%; text-align: center; justify-content: center; }
+}
