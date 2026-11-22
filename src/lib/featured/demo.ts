@@ -19,9 +19,10 @@ import type { AddOnBooking, FeaturedPackage, FeaturedState } from "./types";
 // Kill switch: build with NEXT_PUBLIC_FEATURED_ENABLED=0 to turn every slot off again.
 export const FEATURED_DEMO = process.env.NEXT_PUBLIC_FEATURED_DEMO === "1"; // preview build only: demo data + noindex. Never on the live build.
 export const FEATURED_ENABLED = FEATURED_DEMO || process.env.NEXT_PUBLIC_FEATURED_ENABLED !== "0";
-// The /advertise pricing page is NOT live yet (owner, 2026-11-21: "don't make the advertise page live, keep a preview"). It only
-// exists on the preview build. To publish it later, build with NEXT_PUBLIC_ADVERTISE_PUBLIC=1.
-export const ADVERTISE_PUBLIC = FEATURED_DEMO || process.env.NEXT_PUBLIC_ADVERTISE_PUBLIC === "1";
+// The /advertise pricing page is LIVE since 2026-11-22 (owner: "make the advertise live, but don't put the link on the website
+// anywhere, e.g. footer, menu"). It is reachable only by its direct URL: no nav, footer or sitemap link, and it stays noindex.
+// Kill switch: build with NEXT_PUBLIC_ADVERTISE_PUBLIC=0 to hide it (404) again.
+export const ADVERTISE_PUBLIC = FEATURED_DEMO || process.env.NEXT_PUBLIC_ADVERTISE_PUBLIC !== "0";
 
 type DemoPlan = { developerSlug: string; tier: FeaturedTier; foundingPartner?: boolean };
 
