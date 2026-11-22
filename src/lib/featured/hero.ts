@@ -24,9 +24,14 @@ export async function getHeroSlides(now = new Date()): Promise<HeroSlide[]> {
     const project = booking.projectSlug ? bySlug.get(booking.projectSlug) : undefined;
     add(booking.id, booking.developerSlug, project?.developerName ?? booking.developerSlug, booking.projectSlug, booking.creative?.image || project?.heroImage || "", booking.creative?.headline || project?.name || "", booking.creative?.ctaHref || (project ? `/projects/${project.slug}` : "/projects"));
   }
-  for (const pkg of eliteHeroPackages(state, now)) {
-    const project = bySlug.get(pkg.projectSlugs[0]);
-    if (project) add(`elite-${pkg.id}`, pkg.developerSlug, project.developerName, project.slug, project.heroImage, project.name, `/projects/${project.slug}`);
+  // Elite hero week: the hero slides through the package's projects (owner, 2026-11-22: "it needs more projects, it needs to slide").
+  // Round-robin across the Elite packages on the hero this week, so two developers share the slides fairly; capped by MAX_HERO_SLIDES.
+  const elite = eliteHeroPackages(state, now);
+  for (let index = 0; index < Math.max(0, ...elite.map((pkg) => pkg.projectSlugs.length)); index += 1) {
+    for (const pkg of elite) {
+      const project = bySlug.get(pkg.projectSlugs[index] ?? "");
+      if (project) add(`elite-${pkg.id}-${project.slug}`, pkg.developerSlug, project.developerName, project.slug, project.heroImage, project.name, `/projects/${project.slug}`);
+    }
   }
   // No paid slide booked: return nothing, so the homepage keeps loading its own hero ads exactly as it did before the launch.
   if (!slides.length) return [];
