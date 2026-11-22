@@ -18,6 +18,7 @@ export type WeeklyReport = { slug: string; to: string | null; subject: string; i
 
 type Ev = { project_slug: string; developer_slug: string; event_type: string; viewed_at: string }
 type Feat = { developer_slug: string | null; event: string; placement: string }
+type Pkg = { developer_slug: string; start_date: string; end_date: string; note: string | null; data: { free?: boolean } | null }
 type Lead = { project_slug: string; developer_slug: string; status: string; created_at: string }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- the Supabase query builder type changes with every chained call
@@ -40,13 +41,15 @@ export async function buildDeveloperWeeklyReports(payload: Payload, now = new Da
   const prevStart = new Date(end.getTime() - 14 * DAY)
   const [startIso, endIso] = [start.toISOString(), end.toISOString()]
 
-  const [events, leads, projects, developers, featured] = await Promise.all([
+  const [events, leads, projects, developers, featured, packages] = await Promise.all([
     all<Ev>('project_views', 'project_slug,developer_slug,event_type,viewed_at', (q) => q.eq('event_type', 'view').gte('viewed_at', fromAnalyticsStart(prevStart.toISOString())).lt('viewed_at', endIso).order('id')),
     all<Lead>('leads', 'project_slug,developer_slug,status,created_at', (q) => q.gte('created_at', ANALYTICS_START).lt('created_at', endIso).order('created_at')),
     all<{ slug: string; name: string }>('projects', 'slug,name', (q) => q.order('slug')),
     payload.find({ collection: 'developers', limit: 1000, depth: 0, overrideAccess: true }),
     // Featured placements (paid packages): times shown, clicks and leads this week. Empty for developers without a package.
     all<Feat>('featured_events', 'developer_slug,event,placement', (q) => q.gte('at', startIso).lt('at', endIso).order('id')).catch(() => [] as Feat[]),
+    // Packages running during the week. A package is a free trial when its note says "free" or data.free is true (Maison Ceylon, 2026-11-21).
+    all<Pkg>('featured_packages', 'developer_slug,start_date,end_date,note,data', (q) => q.lte('start_date', endIso.slice(0, 10)).gte('end_date', startIso.slice(0, 10)).order('id')).catch(() => [] as Pkg[]),
   ])
   const nameOf = new Map(projects.map((p) => [p.slug, p.name]))
   const thisWeek = (iso: string) => iso >= startIso
@@ -73,6 +76,7 @@ export async function buildDeveloperWeeklyReports(payload: Payload, now = new Da
       else if (f.event === 'lead') row.leads += 1
       byPlacement.set(f.placement, row)
     }
+    const trial = packages.find((p) => p.developer_slug === slug && (p.data?.free === true || /\bfree\b/i.test(p.note ?? '')))
     const input: DeveloperWeeklyReportInput = {
       developerName: dev.name,
       developerSlug: slug,
@@ -87,6 +91,7 @@ export async function buildDeveloperWeeklyReports(payload: Payload, now = new Da
       waitingForReply: mine.filter((l) => l.status === 'New').length,
       listings,
       featured: [...byPlacement].map(([placement, c]) => ({ label: PLACEMENT_LABEL[placement as Placement] ?? placement, ...c })).sort((a, b) => b.impressions - a.impressions),
+      featuredTrial: trial ? { from: new Date(`${trial.start_date}T06:00:00Z`), to: new Date(`${trial.end_date}T06:00:00Z`) } : null,
       dashboardUrl: `${SITE}/developers/dashboard`,
     }
     const to = String(dev.lead_alerts?.email || dev.contact_email || '').trim() || null
