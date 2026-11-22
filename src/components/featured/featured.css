@@ -4,7 +4,8 @@
 .fp-demo-flag { display: inline-block; margin-left: 6px; padding: 1px 5px; border-radius: 3px; background: #1a1a1a; color: #fff; font-size: 9px; font-weight: 700; letter-spacing: .08em; vertical-align: middle; }
 
 .fp-section { max-width: 1290px; margin: 0 auto; padding: 28px 16px 8px; }
-.fp-section--tight { padding-top: 12px; }
+/* 14px + the page shell's 10px margin = 24px above, the same as the 8px + 16px gap below (the 760px rule used to push the top to 36px) */
+.fp-section.fp-section--tight { padding-top: 14px; }
 .fp-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
 .fp-head h2 { font-size: 22px; line-height: 28px; font-weight: 600; color: var(--fp-ink); margin: 0; }
 .fp-head p { font-size: 13px; color: var(--fp-grey); margin: 2px 0 0; }
@@ -93,10 +94,9 @@
 @media (min-width: 760px) {
   .fp-banner { grid-template-columns: 150px 1fr; min-height: 76px; }
   .fp-banner-media { min-height: 76px; }
-  .fp-banner-body { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "dev cta" "name cta" "meta cta"; align-items: center; column-gap: 20px; row-gap: 0; padding: 10px 16px 10px 20px; }
-  .fp-banner-body small:first-child { grid-area: dev; }
+  .fp-banner-body { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "name cta" "dev cta"; align-content: center; align-items: center; column-gap: 20px; row-gap: 0; padding: 10px 16px 10px 20px; }
+  .fp-banner-body small { grid-area: dev; }
   .fp-banner-body strong { grid-area: name; font-size: 18px; line-height: 24px; }
-  .fp-banner-body small:nth-of-type(2) { grid-area: meta; }
   .fp-banner-view { display: inline-flex; grid-area: cta; }
 }
 

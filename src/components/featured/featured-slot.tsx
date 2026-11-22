@@ -251,9 +251,8 @@ export async function FeaturedSlot({ placement, context = {}, fallbackContexts =
                 <span className="fp-sponsored">Sponsored{FEATURED_DEMO ? " · demo" : ""}</span>
               </div>
               <div className="fp-banner-body">
-                <small>{project.developerName}</small>
                 <strong>{project.name}</strong>
-                <small>{[project.location, project.type, project.priceRange].filter(Boolean).join(" · ")}</small>
+                <small>{project.developerName}</small>
                 <span className="fp-banner-view"><ArrowUpRight size={16} strokeWidth={1.5} aria-hidden="true" />View project</span>
               </div>
             </Link>
