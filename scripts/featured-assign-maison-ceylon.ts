@@ -1,4 +1,4 @@
-// Gives Maison Ceylon a free Premium package as a live test of the Featured placements (owner, 2026-11-21: "i want to test it how
+// Gives Maison Ceylon a free Elite package (first Premium, then owner 2026-11-22: "make it elite") as a live test of the Featured placements (owner, 2026-11-21: "i want to test it how
 // it performs. they dont need to pay now... do the premium"). One row in featured_packages; safe to re-run (same id, upsert).
 // Change the projects or the end date later in /dashboard/featured, or edit the values here and run it again:
 //   npx tsx scripts/featured-assign-maison-ceylon.ts
@@ -11,11 +11,11 @@ config({ path: path.join(process.cwd(), ".env.local") });
 const PACKAGE = {
   id: "pkg-maison-ceylon-test-2026-11",
   developerSlug: "maison-ceylon",
-  tier: "premium",
+  tier: "elite",
   startDate: "2026-11-21",
   endDate: "2026-12-21", // 30-day test
-  slots: 3, // Premium = 3 project slots
-  projectSlugs: ["villa-sahana", "villa-samagi", "bungalow-ithiri"], // first three on their developer page; villa-senehasa is the fourth
+  slots: 6, // Elite = 6 project slots; they have 4 projects, so all four are in
+  projectSlugs: ["villa-sahana", "villa-samagi", "bungalow-ithiri", "villa-senehasa"],
   note: "Free live test, not paid (owner, 2026-11-21)",
 };
 

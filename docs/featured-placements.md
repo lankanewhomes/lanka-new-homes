@@ -43,7 +43,7 @@ nothing, and the homepage hero is unchanged until a hero slide or Elite package 
 | `NEXT_PUBLIC_ADVERTISE_PUBLIC=1` | Publishes the `/advertise` pricing page (owner, 2026-11-21: keep it preview-only for now). |
 | `NEXT_PUBLIC_FEATURED_DEMO=1` | Preview only: demo data in every slot, whole site noindex, saving disabled, `/advertise` visible. Build with this, then `wrangler versions upload --preview-alias featured-placements`. Never set it on the live build. |
 
-First live package: Maison Ceylon, Premium, free test 2026-11-21 to 2026-12-21 (`scripts/featured-assign-maison-ceylon.ts`).
+First live package: Maison Ceylon, Elite (upgraded from Premium on 2026-11-22), all 4 projects, free test 2026-11-21 to 2026-12-21 (`scripts/featured-assign-maison-ceylon.ts`).
 Results: `/dashboard/featured/report`.
 
 The header mega menu shows at most 2 paid Featured project tiles (orange Featured badge), then tops up with the normal tiles.
