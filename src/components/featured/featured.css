@@ -221,12 +221,13 @@
 .fp-badge { background: #f47b36 !important; border: 1.5px solid #f47b36 !important; color: #000 !important; font-weight: 700; }
 .listing-grid-card-featured.fp-badge { padding: 3px 9px; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; border-radius: 3px; }
 
-/* Featured Projects panel: butter yellow with gold grid lines (New Launches is lavender) */
-.new-listings-section.fp-listings:not(.land-listings-section):not(.fp-launch) { background: #fbefc3; }
+/* Featured Projects panel: the same cream and faint grey grid lines as the Featured box on /developers (.fdv-box--cream);
+   owner, 2026-11-22. New Launches stays lavender. */
+.new-listings-section.fp-listings:not(.land-listings-section):not(.fp-launch) { background: #f7f1e6; }
 .new-listings-section.fp-listings:not(.land-listings-section):not(.fp-launch)::before {
   background-image:
-    repeating-linear-gradient(0deg, transparent 0 calc(var(--nl-cell) - 1px), rgba(176, 130, 15, 0.34) calc(var(--nl-cell) - 1px) var(--nl-cell)),
-    repeating-linear-gradient(90deg, transparent 0 calc(var(--nl-cell) - 1px), rgba(176, 130, 15, 0.34) calc(var(--nl-cell) - 1px) var(--nl-cell));
+    repeating-linear-gradient(0deg, transparent 0 calc(var(--nl-cell) - 1px), rgba(21, 20, 26, 0.07) calc(var(--nl-cell) - 1px) var(--nl-cell)),
+    repeating-linear-gradient(90deg, transparent 0 calc(var(--nl-cell) - 1px), rgba(21, 20, 26, 0.07) calc(var(--nl-cell) - 1px) var(--nl-cell));
 }
 
 /* Paid Featured tile in the header mega menu: same orange badge as the cards, top-left of the photo. */
