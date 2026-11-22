@@ -79,15 +79,26 @@
 .fp-city .fp-sponsored { position: absolute; top: 10px; left: 10px; z-index: 1; }
 
 /* Banner at the top of location / category pages */
-.fp-banner { position: relative; display: grid; grid-template-columns: 1fr; min-height: 168px; border: 1px solid var(--fp-line); background: #1a1a1a; color: #fff; overflow: hidden; text-decoration: none; }
-.fp-banner-media { position: relative; height: 150px; }
-.fp-banner-media img { width: 100%; height: 100%; object-fit: cover; }
-.fp-banner-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 6px; justify-content: center; }
-.fp-banner-body strong { font-size: 20px; line-height: 26px; font-weight: 600; }
-.fp-banner-body small { font-size: 13px; opacity: .85; }
-.fp-banner .fp-sponsored { position: absolute; top: 10px; left: 10px; z-index: 1; }
-.fp-banner .fp-cta { background: var(--fp-orange); margin-top: 6px; }
-@media (min-width: 760px) { .fp-banner { grid-template-columns: 340px 1fr; min-height: 150px; } .fp-banner-media { height: auto; } .fp-banner-body { padding: 20px 28px; } .fp-banner-body strong { font-size: 24px; line-height: 30px; } }
+/* Sponsored results banner: a slim strip (owner, 2026-11-21: "too big"). Small photo, one line of text, button on the right. */
+.fp-banner { position: relative; display: grid; grid-template-columns: 96px 1fr; align-items: stretch; min-height: 72px; border: 1px solid var(--fp-line); background: #1a1a1a; color: #fff; overflow: hidden; text-decoration: none; }
+.fp-banner-media { position: relative; min-height: 72px; }
+.fp-banner-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.fp-banner-body { padding: 10px 14px; display: flex; flex-direction: column; gap: 2px; justify-content: center; min-width: 0; }
+.fp-banner-body strong { font-size: 16px; line-height: 22px; font-weight: 400; }
+.fp-banner-body small { font-size: 12px; line-height: 18px; opacity: .85; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fp-banner .fp-sponsored { position: absolute; top: 6px; left: 6px; z-index: 1; font-size: 9px; padding: 1px 5px; }
+/* Same white pill as the homepage hero's "View project" (.luxury-hero-two-view-project), so the button is the same everywhere */
+.fp-banner-view { display: none; align-items: center; gap: 6px; min-height: 38px; padding: 0 14px; background: #fff; border: 1px solid rgba(0, 0, 0, 0.08); border-radius: 999px; color: #f47b36; font-size: 13px; line-height: 1; white-space: nowrap; }
+.fp-banner:hover .fp-banner-view { background: #f47b36; border-color: #f47b36; color: #fff; }
+@media (min-width: 760px) {
+  .fp-banner { grid-template-columns: 150px 1fr; min-height: 76px; }
+  .fp-banner-media { min-height: 76px; }
+  .fp-banner-body { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "dev cta" "name cta" "meta cta"; align-items: center; column-gap: 20px; row-gap: 0; padding: 10px 16px 10px 20px; }
+  .fp-banner-body small:first-child { grid-area: dev; }
+  .fp-banner-body strong { grid-area: name; font-size: 18px; line-height: 24px; }
+  .fp-banner-body small:nth-of-type(2) { grid-area: meta; }
+  .fp-banner-view { display: inline-flex; grid-area: cta; }
+}
 
 /* Announcement bar at the very top of the site: black, white text, no borders or lines */
 .fp-announce { position: relative; display: flex; align-items: center; justify-content: center; height: 40px; padding: 0 16px; background: #000; color: #fff; font-size: 13px; }
@@ -225,5 +236,6 @@
 /* Featured box on the directory pages (developers, construction companies): a normal contained box with the site's 4-up card grid */
 .fp-box-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px 16px; }
 .fp-box-grid .listing-grid-card { background: #fff; border: 0; border-radius: 0; padding: 10px; box-sizing: border-box; }
+@media (min-width: 1101px) { .fp-box-grid--3 { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 1100px) { .fp-box-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 640px) { .fp-box-grid { grid-template-columns: 1fr; } }

@@ -13,11 +13,15 @@ import type { Developer, Project } from "@/types";
 import { TIERS, type AddOnType, type FeaturedTier } from "./config";
 import type { AddOnBooking, FeaturedPackage, FeaturedState } from "./types";
 
-// Master switches, both set at BUILD time (NEXT_PUBLIC_ values are inlined). Both are OFF on a normal build, so the live site is
-// untouched: no slots, no demo data, no /advertise page, no database reads, no noindex. The preview build sets NEXT_PUBLIC_FEATURED_DEMO=1.
-export const FEATURED_DEMO = process.env.NEXT_PUBLIC_FEATURED_DEMO === "1";
-// Set NEXT_PUBLIC_FEATURED_ENABLED=1 at launch (after running the migration) to switch on real, paid placements.
-export const FEATURED_ENABLED = FEATURED_DEMO || process.env.NEXT_PUBLIC_FEATURED_ENABLED === "1";
+// Master switches, set at BUILD time (NEXT_PUBLIC_ values are inlined).
+// LIVE since 2026-11-21 (owner: "make it live"): real, paid placements are ON by default. The tables exist (migration applied) and are
+// empty until a package or add-on is booked in /dashboard/featured, so a slot with no booking renders nothing.
+// Kill switch: build with NEXT_PUBLIC_FEATURED_ENABLED=0 to turn every slot off again.
+export const FEATURED_DEMO = process.env.NEXT_PUBLIC_FEATURED_DEMO === "1"; // preview build only: demo data + noindex. Never on the live build.
+export const FEATURED_ENABLED = FEATURED_DEMO || process.env.NEXT_PUBLIC_FEATURED_ENABLED !== "0";
+// The /advertise pricing page is NOT live yet (owner, 2026-11-21: "don't make the advertise page live, keep a preview"). It only
+// exists on the preview build. To publish it later, build with NEXT_PUBLIC_ADVERTISE_PUBLIC=1.
+export const ADVERTISE_PUBLIC = FEATURED_DEMO || process.env.NEXT_PUBLIC_ADVERTISE_PUBLIC === "1";
 
 type DemoPlan = { developerSlug: string; tier: FeaturedTier; foundingPartner?: boolean };
 

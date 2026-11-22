@@ -9,7 +9,7 @@ import { isActive } from "@/lib/featured/engine";
 import { manageableDeveloperSlugs } from "@/lib/featured/admin";
 import { getFeaturedData } from "@/lib/featured/store";
 import { assignPackageAction, saveProjectsAction } from "./actions";
-import { FEATURED_ENABLED } from "@/lib/featured/demo";
+import { ADVERTISE_PUBLIC, FEATURED_ENABLED } from "@/lib/featured/demo";
 import { notFound } from "next/navigation";
 
 export const metadata: Metadata = { title: "Featured placements" };
@@ -47,7 +47,7 @@ export default async function FeaturedAdminPage({ searchParams }: { searchParams
       <nav className="flex flex-wrap gap-3 text-sm">
         {isAdmin ? <Link className="underline" href="/dashboard/featured/addons">Add-on bookings</Link> : null}
         <Link className="underline" href="/dashboard/featured/report">Monthly report</Link>
-        <Link className="underline" href="/advertise" target="_blank">Public pricing page</Link>
+        {ADVERTISE_PUBLIC ? <Link className="underline" href="/advertise" target="_blank">Public pricing page</Link> : null}
       </nav>
 
       <section className="space-y-4" aria-label="Packages">

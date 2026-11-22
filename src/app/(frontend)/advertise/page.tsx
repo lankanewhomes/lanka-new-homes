@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ADD_ONS, CONTACT, FOUNDING_PARTNER, LEAD_NOTE, LEAD_PRICE_USD, LEAD_TYPES, TERM_DISCOUNTS, TIERS, TIER_ORDER, priceWithDiscount, type AddOnType, type FeaturedTier } from "@/lib/featured/config";
 import { FEATURED_DEMO } from "@/lib/featured/demo";
 import "@/components/featured/featured.css";
-import { FEATURED_ENABLED } from "@/lib/featured/demo";
+import { ADVERTISE_PUBLIC } from "@/lib/featured/demo";
 import { notFound } from "next/navigation";
 
 // Developer pricing page for the paid Featured placements. Not in the nav and not indexed for now (owner). All prices come from
@@ -31,7 +31,7 @@ function Cta({ subject }: { subject: string }) {
 // Same page system as /for-developers, /about and the pricing page (docs/design.md "Page section style: contained boxes"):
 // dark split hero, then left-aligned contained boxes, each with its own soft background. No eyebrow labels, no bold, square corners.
 export default function AdvertisePage() {
-  if (!FEATURED_ENABLED) notFound();
+  if (!ADVERTISE_PUBLIC) notFound();
   return (
     <div className="fdv-page adv-page">
       <section className="fdv-hero fdv-hero--split" aria-label="Advertise your project">

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import type { ReactNode } from "react";
 import { FeaturedCard, DemoFlag } from "@/components/featured/featured-card";
 import { ListingGridCard } from "@/components/marketplace/listing-page";
@@ -26,8 +27,8 @@ const CARD_HEADINGS: Partial<Record<Placement, { title: string; sub?: string }>>
   "project-nearby": { title: "Featured projects nearby" },
   "thankyou-also-like": { title: "You may also like.", sub: "Featured projects that match what you asked about." },
   "saved-recommended": { title: "Recommended for you" },
-  "guide-inline": { title: "Featured projects for this topic" },
-  "guide-end": { title: "Featured projects to explore next" },
+  "guide-inline": { title: "Featured projects for this topic." },
+  "guide-end": { title: "Featured projects to explore next." },
   "results-empty": { title: "No exact matches, but these featured projects may suit you" },
   "directory-developers": { title: "Featured projects.", sub: "From developers on a Featured package." },
   "directory-construction": { title: "Featured projects", sub: "Sponsored picks" },
@@ -100,14 +101,15 @@ export async function FeaturedSlot({ placement, context = {}, fallbackContexts =
       return <section className="fp-section fp-section--tight"><div className="listing-grid fp-grid--top">{cards}</div></section>;
     }
     // Directory pages (developers, construction companies) are built from the site's contained boxes, so the slot is one of those boxes.
-    if (placement === "directory-developers" || placement === "directory-construction" || placement === "thankyou-also-like") {
+    // Guide pages use the same boxes (the old full-width section overflowed sideways on phones there).
+    if (placement === "directory-developers" || placement === "directory-construction" || placement === "thankyou-also-like" || placement === "guide-inline" || placement === "guide-end") {
       return (
         <section className="fdv-box fdv-box--cream fp-box" aria-label={heading ?? text.title}>
           <div className="wdx-section-head">
             <h2>{heading ?? text.title}</h2>
             {subheading ?? text.sub ? <p>{subheading ?? text.sub}</p> : null}
           </div>
-          <div className="fp-box-grid">{cards}</div>
+          <div className={`fp-box-grid${items.length === 3 ? " fp-box-grid--3" : ""}`}>{cards}</div>
         </section>
       );
     }
@@ -252,7 +254,7 @@ export async function FeaturedSlot({ placement, context = {}, fallbackContexts =
                 <small>{project.developerName}</small>
                 <strong>{project.name}</strong>
                 <small>{[project.location, project.type, project.priceRange].filter(Boolean).join(" · ")}</small>
-                <span className="fp-cta">View project</span>
+                <span className="fp-banner-view"><ArrowUpRight size={16} strokeWidth={1.5} aria-hidden="true" />View project</span>
               </div>
             </Link>
           </FeaturedTrack>

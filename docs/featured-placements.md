@@ -31,15 +31,19 @@ Homepage: hero (3), Featured Projects carousel, New Launches, Developer of the M
 ## Rules implemented
 Only projects matching the page's place/type; order elite → premium → featured, fair rotation inside a tier (hourly); max 3 pinned per page; organic order untouched; "Featured" label on project cards, "Sponsored" on banners/articles; empty slot renders nothing; server-rendered with fixed sizes.
 
-## Switches (2026-11-20: code merged into cloudflare-migration, switched OFF)
+## Switches (LIVE since 2026-11-21, owner: "make it live")
 
-The code is in `cloudflare-migration` but does nothing on the live site until a build-time variable is set
-(`src/lib/featured/demo.ts`):
+The migration is applied and real paid placements are ON by default (`src/lib/featured/demo.ts`). A slot with no booking renders
+nothing, and the homepage hero is unchanged until a hero slide or Elite package is booked.
 
 | Variable (build time) | Effect |
 |---|---|
-| none (live today) | Everything off: no slots, no demo data, `/advertise` and `/thank-you` return 404, no dashboard menu item, no reads of the `featured_*` tables, hero and indexing unchanged. |
-| `NEXT_PUBLIC_FEATURED_DEMO=1` | Preview only: demo data in every slot, whole site noindex, saving disabled. Build with this, then `wrangler versions upload --preview-alias featured-placements`. Never set it on the live build. |
-| `NEXT_PUBLIC_FEATURED_ENABLED=1` | Launch: real paid placements. Run the migration first, then add this under Cloudflare build variables. |
+| none (live today) | Featured ON: slots read `featured_packages` / `featured_addons`, events go to `featured_events`, dashboard menu item shown. `/advertise` is 404 (preview only). |
+| `NEXT_PUBLIC_FEATURED_ENABLED=0` | Kill switch: every slot off again, no reads of the `featured_*` tables. |
+| `NEXT_PUBLIC_ADVERTISE_PUBLIC=1` | Publishes the `/advertise` pricing page (owner, 2026-11-21: keep it preview-only for now). |
+| `NEXT_PUBLIC_FEATURED_DEMO=1` | Preview only: demo data in every slot, whole site noindex, saving disabled, `/advertise` visible. Build with this, then `wrangler versions upload --preview-alias featured-placements`. Never set it on the live build. |
+
+First live package: Maison Ceylon, Premium, free test 2026-11-21 to 2026-12-21 (`scripts/featured-assign-maison-ceylon.ts`).
+Results: `/dashboard/featured/report`.
 
 The header mega menu shows at most 2 paid Featured project tiles (orange Featured badge), then tops up with the normal tiles.

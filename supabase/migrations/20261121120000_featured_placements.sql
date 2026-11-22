@@ -1,4 +1,4 @@
--- Paid "Featured" placements (feature/featured-placements). WRITTEN BUT NOT RUN: review, then apply by hand when you are ready to launch.
+-- Paid "Featured" placements. APPLIED to the live database on 2026-11-21 (owner: "make it live").
 -- Nothing in the app creates or alters these tables on its own (Payload's dev schema push is off unless PAYLOAD_DB_PUSH=true).
 -- Until the tables exist the app treats them as empty, so every Featured slot renders nothing. Additive only: no drops, no deletes.
 

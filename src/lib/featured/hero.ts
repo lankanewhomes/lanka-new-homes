@@ -28,6 +28,8 @@ export async function getHeroSlides(now = new Date()): Promise<HeroSlide[]> {
     const project = bySlug.get(pkg.projectSlugs[0]);
     if (project) add(`elite-${pkg.id}`, pkg.developerSlug, project.developerName, project.slug, project.heroImage, project.name, `/projects/${project.slug}`);
   }
+  // No paid slide booked: return nothing, so the homepage keeps loading its own hero ads exactly as it did before the launch.
+  if (!slides.length) return [];
   if (!FEATURED_DEMO) {
     try {
       for (const ad of await getActiveHeroAds(now)) slides.push({ ...ad, sponsored: true });
