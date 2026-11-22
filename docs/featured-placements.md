@@ -54,3 +54,10 @@ Dark split hero, then contained boxes in this order: packages (months switch 1/3
 three cards; `src/components/featured/advertise-packages.tsx`), compare table "Where your project appears" (built from
 `PLACEMENT_MIN_TIER`), add-ons as two price lists ("On the site", "Content and social"), pay per lead, three numbered steps, FAQ, dark
 closing contact box. All numbers still come from `src/lib/featured/config.ts`. Styles: `.adv-*` in `featured.css`.
+
+## Internal traffic is not counted (2026-11-22)
+
+Featured views, clicks and leads from the owner's own devices are never recorded: `featured-track.tsx` skips the beacon when
+`isInternalBrowser()` is true, and `/api/featured/track` checks `isInternalRequest()` again on the server (opt-out cookie
+`lnh_internal=1`, CMS login cookie, `INTERNAL_IPS`, bots). GA4 `featured_*` events were already skipped by `trackEvent`. Rows recorded
+before this date may include internal visits; they cannot be told apart afterwards.

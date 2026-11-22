@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 import { trackEvent } from "@/lib/ga4";
+import { isInternalBrowser } from "@/lib/internal-traffic";
 
 // Measures a Featured placement: one featured_impression when at least half of it has been on screen, one featured_click per click on a link
 // inside it. Both go to GA4 (placement, project_slug, developer) and, outside the demo, to our own table for the monthly developer report.
@@ -12,6 +13,7 @@ export const FEATURED_REF_KEY = "lnh-featured-ref";
 
 function beacon(event: "impression" | "click" | "lead", props: TrackProps) {
   if (props.demo) return; // the demo never writes anywhere
+  if (isInternalBrowser()) return; // the owner's own devices and bots are never counted (the server checks again)
   try {
     const body = JSON.stringify({ event, placement: props.placement, projectSlug: props.projectSlug, developer: props.developer, path: window.location.pathname });
     if (navigator.sendBeacon) navigator.sendBeacon("/api/featured/track", new Blob([body], { type: "application/json" }));
