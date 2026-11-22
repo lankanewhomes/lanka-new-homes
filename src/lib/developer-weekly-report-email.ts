@@ -6,7 +6,7 @@ import { emailButton, emailCompactList, emailHero, emailPanel, emailSectionLabel
 // Views and enquiries only: project_views holds no click, save, brochure or share events yet (checked 2026-11-22), so those sections were
 // left out rather than always showing 0. No automatic schedule yet: render with scripts/preview-developer-weekly-report-email.ts, send by hand with scripts/send-developer-weekly-reports.ts.
 
-export type WeeklyReportListing = { name: string; url: string; views: number; enquiries: number }
+export type WeeklyReportListing = { name: string; url: string; views: number; enquiries: number; /** Land plots are counted too (owner, 2026-11-22) and get a small green "Land" tag. */ kind?: 'project' | 'land' }
 
 export type DeveloperWeeklyReportInput = {
   developerName: string
@@ -68,7 +68,7 @@ function tiles(items: { label: string; value: number; before: number }[]): strin
 function listingTable(listings: WeeklyReportListing[]): string {
   const th = `padding:9px 12px;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:${MUTED};background:#faf7f2;border-bottom:1px solid ${LINE};`
   const td = `padding:11px 12px;font-size:14px;color:${INK};border-bottom:1px solid ${LINE};`
-  const rows = listings.map((l) => `<tr><td style="${td}"><a href="${esc(l.url)}" style="color:${INK};font-weight:700;text-decoration:underline;">${esc(l.name)}</a></td><td align="right" style="${td}">${n(l.views)}</td><td align="right" style="${td}">${n(l.enquiries)}</td></tr>`).join('')
+  const rows = listings.map((l) => `<tr><td style="${td}"><a href="${esc(l.url)}" style="color:${INK};font-weight:700;text-decoration:underline;">${esc(l.name)}</a>${l.kind === 'land' ? ` <span style="display:inline-block;background:#e8ede2;color:#3D5A35;font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:2px 6px;vertical-align:middle;">Land</span>` : ''}</td><td align="right" style="${td}">${n(l.views)}</td><td align="right" style="${td}">${n(l.enquiries)}</td></tr>`).join('')
   return `  <tr><td style="padding:0 32px 6px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid ${LINE};border-bottom:0;"><tr><th align="left" style="${th}">Listing</th><th align="right" style="${th}">Views</th><th align="right" style="${th}">Enquiries</th></tr>${rows}</table></td></tr>`
 }
 
@@ -105,14 +105,17 @@ function featuredSection(i: DeveloperWeeklyReportInput): string {
   const trial = i.featuredTrial
   const tag = trial ? `<span style="display:inline-block;background:#f47b36;color:${INK};font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:3px 8px;">Free trial</span>` : ''
   const intro = trial
-    ? `Your listings are being shown in our Featured placements <strong>free of charge, as a trial</strong> from ${day(trial.from)} to ${day(trial.to, true)}. You have not been charged for this.`
+    ? `Your listings are being shown in our Featured placements <strong style="color:#ffffff;">free of charge, as a trial</strong> from ${day(trial.from)} to ${day(trial.to, true)}. You have not been charged for this.`
     : 'Your Featured package puts your listings in the top spots on LankaNewHomes.'
-  return `  <tr><td style="padding:30px 32px 6px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#fef1e8;border:1px solid ${LINE};border-top:4px solid #f47b36;"><tr><td style="padding:20px 20px 16px;">
+  // Dark ink box with the site's faint grid lines so it stands apart from the normal numbers (owner, 2026-11-22). Mail apps that drop the
+  // gradient (Outlook) still get the solid dark background.
+  const grid = 'background-color:#1c1c20;background-image:linear-gradient(rgba(255,255,255,0.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.07) 1px,transparent 1px);background-size:32px 32px;'
+  return `  <tr><td style="padding:30px 32px 6px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#1c1c20" style="${grid}border-top:4px solid #f47b36;"><tr><td style="padding:22px 20px 18px;">
     ${tag ? `<div style="margin:0 0 10px;">${tag}</div>` : ''}
-    <div style="margin:0 0 8px;font-size:19px;font-weight:700;line-height:1.3;color:${INK};">Your Featured placements this week</div>
-    <div style="margin:0 0 14px;font-size:14px;line-height:1.6;color:#2b2b29;">${intro}</div>
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid ${LINE};border-bottom:0;"><tr><th align="left" style="${th}">Placement</th><th align="right" style="${th}">Shown</th><th align="right" style="${th}">Clicks</th><th align="right" style="${th}">Leads</th></tr>${body}</table>
-    <div style="margin:10px 0 0;font-size:12px;line-height:1.5;color:${MUTED};">Shown is how many times buyers saw your Featured placement. These numbers are counted separately from the listing views above.</div>
+    <div style="margin:0 0 8px;font-size:20px;font-weight:700;line-height:1.3;color:#ffffff;">Your Featured placements this week</div>
+    <div style="margin:0 0 16px;font-size:14px;line-height:1.6;color:#e7e5df;">${intro}</div>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="background:#ffffff;border:1px solid ${LINE};border-bottom:0;"><tr><th align="left" style="${th}">Placement</th><th align="right" style="${th}">Shown</th><th align="right" style="${th}">Clicks</th><th align="right" style="${th}">Leads</th></tr>${body}</table>
+    <div style="margin:12px 0 0;font-size:12px;line-height:1.5;color:#b9b8b2;">Shown is how many times buyers saw your Featured placement. These numbers are counted separately from the listing views above.</div>
   </td></tr></table></td></tr>`
 }
 
@@ -137,7 +140,7 @@ export function renderDeveloperWeeklyReportHTML(i: DeveloperWeeklyReportInput): 
       : '',
     top.length ? emailSectionLabel('Your listings this week') : '',
     top.length ? listingTable(top) : '',
-    hidden > 0 ? `  <tr><td style="padding:4px 32px 0;font-size:12px;color:${MUTED};">Plus ${hidden} more ${hidden === 1 ? 'listing' : 'listings'} in your dashboard.</td></tr>` : '',
+    hidden > 0 ? `  <tr><td style="padding:4px 32px 0;font-size:12px;color:${MUTED};">Plus ${hidden} more ${hidden === 1 ? 'listing' : 'listings'} had views this week.</td></tr>` : '',
     featuredSection(i),
     i.hasAccount ? emailButton('Open your dashboard', i.dashboardUrl) : emailButton('View your page', pageUrl, undefined, { bg: INK, fg: '#ffffff' }),
     `  <tr><td style="padding:14px 32px 0;font-size:15px;line-height:1.65;color:#2b2b29;">Is a price, unit or photo out of date? Reply to this email and we will update your listing.</td></tr>`,

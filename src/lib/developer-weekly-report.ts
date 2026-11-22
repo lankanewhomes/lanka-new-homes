@@ -10,11 +10,15 @@ import { supabaseAdmin } from './supabase'
 // analytics screen (analytics-start.ts). That also applies to "buyers waiting": older enquiries still marked New are not counted.
 // Views come from Supabase project_views, enquiries from Supabase leads, the address and account/verified status from the Payload developer.
 
+/** Sending rule (owner, 2026-11-22): a developer gets the report only in a week with at least this many enquiries. A developer with a
+ *  Featured package (paid or free trial) always gets it, because the package numbers are the point of the report. Change the number here. */
+export const MIN_ENQUIRIES_TO_SEND = 1
+
 const DAY = 86400000
 const FROM = 'developers@lankanewhomes.com'
 const SITE = 'https://www.lankanewhomes.com'
 
-export type WeeklyReport = { slug: string; to: string | null; subject: string; input: DeveloperWeeklyReportInput }
+export type WeeklyReport = { slug: string; to: string | null; subject: string; input: DeveloperWeeklyReportInput; /** Passes the sending rule above. */ qualifies: boolean }
 
 type Ev = { project_slug: string; developer_slug: string; event_type: string; viewed_at: string }
 type Feat = { developer_slug: string | null; event: string; placement: string }
@@ -51,6 +55,29 @@ export async function buildDeveloperWeeklyReports(payload: Payload, now = new Da
     // Packages running during the week. A package is a free trial when its note says "free" or data.free is true (Maison Ceylon, 2026-11-21).
     all<Pkg>('featured_packages', 'developer_slug,start_date,end_date,note,data', (q) => q.lte('start_date', endIso.slice(0, 10)).gte('end_date', startIso.slice(0, 10)).order('id')).catch(() => [] as Pkg[]),
   ])
+  // Land plots (owner, 2026-11-22: "include the lands also"). Land views are not in project_views: they are in the Payload analytics list
+  // with `land` set. Same exclusions as the listing counters (no duplicates, no bots). A land belongs to the developer in its `seller` field.
+  const [lands, landViews] = await Promise.all([
+    payload.find({ collection: 'lands' as never, limit: 2000, depth: 0, overrideAccess: true }),
+    payload.find({
+      collection: 'analytics' as never,
+      where: { and: [{ land: { exists: true } }, { event_type: { equals: 'view' } }, { is_duplicate: { equals: false } }, { is_bot: { equals: false } }, { timestamp: { greater_than_equal: fromAnalyticsStart(prevStart.toISOString()) } }, { timestamp: { less_than: endIso } }] } as never,
+      limit: 20000, depth: 0, pagination: false, overrideAccess: true,
+    }),
+  ])
+  const relId = (v: unknown) => (v && typeof v === 'object' ? (v as { id: number | string }).id : (v as number | string | null | undefined))
+  // `seller` is { relationTo, value }: only a developer seller gets a report (construction companies are not developers here).
+  const sellerDev = (seller: unknown): string => {
+    const s = seller as { relationTo?: string; value?: unknown } | null | undefined
+    return s && s.relationTo === 'developers' ? devSlugById.get(String(relId(s.value))) ?? '' : ''
+  }
+  const devSlugById = new Map((developers.docs as unknown as { id: number | string; slug?: string }[]).map((d) => [String(d.id), d.slug ?? '']))
+  const landById = new Map((lands.docs as unknown as { id: number | string; slug: string; title: string; seller?: unknown }[]).map((l) => [String(l.id), { slug: l.slug, name: l.title, developer: sellerDev(l.seller) }]))
+  const landBySlug = new Map([...landById.values()].map((l) => [l.slug, l]))
+  for (const v of landViews.docs as unknown as { land?: unknown; timestamp: string }[]) {
+    const land = landById.get(String(relId(v.land)))
+    if (land?.developer) events.push({ project_slug: `land:${land.slug}`, developer_slug: land.developer, event_type: 'view', viewed_at: new Date(v.timestamp).toISOString() })
+  }
   const nameOf = new Map(projects.map((p) => [p.slug, p.name]))
   const thisWeek = (iso: string) => iso >= startIso
   const lastWeek = (iso: string) => iso >= prevStart.toISOString() && iso < startIso
@@ -64,9 +91,16 @@ export async function buildDeveloperWeeklyReports(payload: Payload, now = new Da
     const weekViews = views.filter((e) => thisWeek(e.viewed_at))
     const weekLeads = mine.filter((l) => thisWeek(l.created_at))
     if (!weekViews.length && !weekLeads.length && !featured.some((f) => f.developer_slug === slug)) continue
-    const listings = [...new Set([...weekViews.map((e) => e.project_slug), ...weekLeads.map((l) => l.project_slug)])]
-      .filter((s) => nameOf.has(s))
-      .map((s) => ({ name: nameOf.get(s)!, url: `${SITE}/projects/${s}`, views: weekViews.filter((e) => e.project_slug === s).length, enquiries: weekLeads.filter((l) => l.project_slug === s).length }))
+    // A lead on a land page carries the land's slug in project_slug: give it the same "land:" key the land views use.
+    const key = (s: string) => (!nameOf.has(s) && landBySlug.has(s) ? `land:${s}` : s)
+    const listings = [...new Set([...weekViews.map((e) => e.project_slug), ...weekLeads.map((l) => key(l.project_slug))])]
+      .map((k) => {
+        const land = k.startsWith('land:') ? landBySlug.get(k.slice(5)) : undefined
+        const name = land ? land.name : nameOf.get(k)
+        if (!name) return null
+        return { name, url: land ? `${SITE}/land/${land.slug}` : `${SITE}/projects/${k}`, kind: land ? ('land' as const) : ('project' as const), views: weekViews.filter((e) => e.project_slug === k).length, enquiries: weekLeads.filter((l) => key(l.project_slug) === k).length }
+      })
+      .filter((l): l is NonNullable<typeof l> => l !== null)
     const byPlacement = new Map<string, { impressions: number; clicks: number; leads: number }>()
     for (const f of featured) {
       if (f.developer_slug !== slug) continue
@@ -95,17 +129,19 @@ export async function buildDeveloperWeeklyReports(payload: Payload, now = new Da
       dashboardUrl: `${SITE}/developers/dashboard`,
     }
     const to = String(dev.lead_alerts?.email || dev.contact_email || '').trim() || null
-    reports.push({ slug, to, subject: developerWeeklyReportSubject(input), input })
+    const hasPackage = packages.some((p) => p.developer_slug === slug)
+    reports.push({ slug, to, subject: developerWeeklyReportSubject(input), input, qualifies: weekLeads.length >= MIN_ENQUIRIES_TO_SEND || hasPackage })
   }
   return reports.sort((a, b) => b.input.views - a.input.views)
 }
 
-/** Sends this week's report to every developer with activity and an address on file. A developer who already got this week's report is skipped, so a second run sends nothing twice. */
+/** Sends this week's report to every developer who passes the sending rule (MIN_ENQUIRIES_TO_SEND) and has an address on file. A developer who already got this week's report is skipped, so a second run sends nothing twice. */
 export async function sendDeveloperWeeklyReports(payload: Payload, now = new Date()): Promise<{ sent: string[]; skipped: { slug: string; why: string }[]; failed: { slug: string; error: string }[] }> {
   const { sendMail } = await import('./mailer')
   const reports = await buildDeveloperWeeklyReports(payload, now)
   const out = { sent: [] as string[], skipped: [] as { slug: string; why: string }[], failed: [] as { slug: string; error: string }[] }
   for (const r of reports) {
+    if (!r.qualifies) { out.skipped.push({ slug: r.slug, why: `fewer than ${MIN_ENQUIRIES_TO_SEND} enquiry this week` }); continue }
     if (!r.to) { out.skipped.push({ slug: r.slug, why: 'no email on file' }); continue }
     try {
       const already = await payload.count({ collection: 'email-log' as never, where: { and: [{ toEmail: { contains: r.to } }, { subject: { contains: weeklyReportRange(r.input) } }, { subject: { contains: 'Your week on LankaNewHomes' } }] } as never, overrideAccess: true })

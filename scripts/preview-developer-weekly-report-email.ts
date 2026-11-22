@@ -17,6 +17,6 @@ else if (process.env.TOP) reports = reports.slice(0, Number(process.env.TOP))
 fs.mkdirSync(OUT, { recursive: true })
 reports.forEach((r, i) => {
   fs.writeFileSync(`${OUT}/${i + 1}-${r.slug}.html`, renderDeveloperWeeklyReportHTML(r.input))
-  console.log(JSON.stringify({ rank: i + 1, slug: r.slug, to: r.to, subject: r.subject, waiting: r.input.waitingForReply, account: r.input.hasAccount, verified: r.input.verified, listings: r.input.listings.length, featured: r.input.featured }))
+  console.log(JSON.stringify({ rank: i + 1, slug: r.slug, willSend: r.qualifies, views: r.input.views, lands: r.input.listings.filter((l) => l.kind === 'land').map((l) => `${l.name} ${l.views}v ${l.enquiries}e`), to: r.to, subject: r.subject, waiting: r.input.waitingForReply, account: r.input.hasAccount, verified: r.input.verified, listings: r.input.listings.length, featured: r.input.featured }))
 })
 process.exit(0)
