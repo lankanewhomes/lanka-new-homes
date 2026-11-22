@@ -25,6 +25,8 @@ export type DeveloperWeeklyReportInput = {
   /** Enquiries still marked New (no reply recorded), all time. */
   waitingForReply: number
   listings: WeeklyReportListing[]
+  /** Paid Featured placements this week (times shown, clicks, leads), one row per placement. The section is left out when empty (owner, 2026-11-22: "if there is featured data also include that"). */
+  featured?: { label: string; impressions: number; clicks: number; leads: number }[]
   dashboardUrl: string
   siteUrl?: string
 }
@@ -41,7 +43,7 @@ const n = (v: number) => v.toLocaleString('en-US')
 export const weeklyReportRange = (i: Pick<DeveloperWeeklyReportInput, 'from' | 'to'>) => `${day(i.from)} to ${day(i.to, true)}`
 
 export function developerWeeklyReportSubject(i: DeveloperWeeklyReportInput): string {
-  return `Your week on LankaNewHomes: ${n(i.views)} views, ${n(i.enquiries)} ${i.enquiries === 1 ? 'enquiry' : 'enquiries'} (${weeklyReportRange(i)})`
+  return `Your week on LankaNewHomes: ${n(i.views)} ${i.views === 1 ? 'view' : 'views'}, ${n(i.enquiries)} ${i.enquiries === 1 ? 'enquiry' : 'enquiries'} (${weeklyReportRange(i)})`
 }
 
 /** "+12% vs last week" in green, a drop in red, and plain grey words when there is nothing to compare with. */
@@ -91,6 +93,14 @@ function getVerified(i: DeveloperWeeklyReportInput, site: string, utm: string): 
   ].join('\n')
 }
 
+function featuredTable(rows: NonNullable<DeveloperWeeklyReportInput['featured']>): string {
+  const th = `padding:9px 12px;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:${MUTED};background:#fef1e8;border-bottom:1px solid ${LINE};`
+  const td = `padding:11px 12px;font-size:14px;color:${INK};border-bottom:1px solid ${LINE};`
+  const body = rows.map((r) => `<tr><td style="${td}font-weight:700;">${esc(r.label)}</td><td align="right" style="${td}">${n(r.impressions)}</td><td align="right" style="${td}">${n(r.clicks)}</td><td align="right" style="${td}">${n(r.leads)}</td></tr>`).join('')
+  return `  <tr><td style="padding:0 32px 4px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid ${LINE};border-bottom:0;border-left:4px solid #f47b36;"><tr><th align="left" style="${th}">Placement</th><th align="right" style="${th}">Shown</th><th align="right" style="${th}">Clicks</th><th align="right" style="${th}">Leads</th></tr>${body}</table></td></tr>
+  <tr><td style="padding:2px 32px 0;font-size:12px;line-height:1.5;color:${MUTED};">Shown is how many times buyers saw your Featured placement.</td></tr>`
+}
+
 export function renderDeveloperWeeklyReportHTML(i: DeveloperWeeklyReportInput): string {
   const site = i.siteUrl ?? 'https://www.lankanewhomes.com'
   // Tagged so a click shows up in Google Analytics as source "weekly-report" (content = the developer's slug).
@@ -110,6 +120,8 @@ export function renderDeveloperWeeklyReportHTML(i: DeveloperWeeklyReportInput): 
           bodyHtml: `${i.waitingForReply === 1 ? 'This enquiry is' : 'These enquiries are'} still marked New. Buyers usually go with the first developer who answers, and your reply time shows on your profile.${i.hasAccount ? `<div style="margin:12px 0 0;"><a href="${esc(i.dashboardUrl)}" style="font-weight:700;color:${INK};text-decoration:underline;">Open your enquiries &rarr;</a></div>` : ''}`,
         })
       : '',
+    i.featured?.length ? emailSectionLabel('Your Featured placements this week') : '',
+    i.featured?.length ? featuredTable(i.featured) : '',
     top.length ? emailSectionLabel('Your listings this week') : '',
     top.length ? listingTable(top) : '',
     hidden > 0 ? `  <tr><td style="padding:4px 32px 0;font-size:12px;color:${MUTED};">Plus ${hidden} more ${hidden === 1 ? 'listing' : 'listings'} in your dashboard.</td></tr>` : '',
@@ -119,7 +131,7 @@ export function renderDeveloperWeeklyReportHTML(i: DeveloperWeeklyReportInput): 
     emailSignoff(),
   ].filter(Boolean).join('\n')
   return emailShell({
-    preheader: `${n(i.views)} views and ${n(i.enquiries)} ${i.enquiries === 1 ? 'enquiry' : 'enquiries'} on your listings, ${weeklyReportRange(i)}.`,
+    preheader: `${n(i.views)} ${i.views === 1 ? 'view' : 'views'} and ${n(i.enquiries)} ${i.enquiries === 1 ? 'enquiry' : 'enquiries'} on your listings, ${weeklyReportRange(i)}.`,
     title: 'Your week on LankaNewHomes',
     body,
     footerNote: 'You are receiving this weekly report because your company or project is listed on LankaNewHomes.',

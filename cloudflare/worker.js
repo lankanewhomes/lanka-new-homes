@@ -18,6 +18,8 @@ const CRON_ROUTES = {
   "*/10 * * * *": "/api/cron/lead-alert-sweep", // every 10 minutes: email any recent lead whose instant alert never went out
 };
 
+const WEEKLY_REPORT_TICK = "30 3 * * *";
+
 // Hyperdrive's per-request connection string, read by payload.config.ts when it opens its database pool.
 const useHyperdrive = (env) => {
   if (env && env.HYPERDRIVE && env.HYPERDRIVE.connectionString) globalThis.__cfHyperdriveUrl = env.HYPERDRIVE.connectionString;
@@ -33,10 +35,16 @@ export default {
     useHyperdrive(env);
     const path = CRON_ROUTES[controller.cron];
     if (!path) return;
-    const request = new Request(`https://www.lankanewhomes.com${path}`, {
-      headers: { authorization: `Bearer ${env.CRON_SECRET}` },
-    });
-    ctx.waitUntil(openNextWorker.fetch(request, env, ctx).then((res) => console.log(`cron ${path} -> ${res.status}`)));
+    const call = (p) =>
+      openNextWorker
+        .fetch(new Request(`https://www.lankanewhomes.com${p}`, { headers: { authorization: `Bearer ${env.CRON_SECRET}` } }), env, ctx)
+        .then((res) => console.log(`cron ${p} -> ${res.status}`));
+    ctx.waitUntil(call(path));
+    // Developer weekly report: Sundays only, on the daily 03:30 UTC tick (9:00 am in Sri Lanka). Rides an existing trigger instead of
+    // adding a new one (owner, 2026-11-22: "every sunday we need to send").
+    if (controller.cron === WEEKLY_REPORT_TICK && new Date(controller.scheduledTime).getUTCDay() === 0) {
+      ctx.waitUntil(call("/api/cron/developer-weekly-report"));
+    }
   },
 };
 
