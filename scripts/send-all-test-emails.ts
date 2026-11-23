@@ -3,7 +3,7 @@
 // Reads nothing from the database and changes nothing. Every subject starts with [TEST n/N].
 //   npx tsx scripts/send-all-test-emails.ts            send all
 //   ONLY=3,7 npx tsx scripts/send-all-test-emails.ts   send only those numbers
-//   DRY=1 npx tsx scripts/send-all-test-emails.ts      list them, send nothing
+//   DRY=1 npx tsx scripts/send-all-test-emails.ts      list them, send nothing (add OUT=<folder> to save each as HTML)
 import path from 'node:path'
 import { config as loadEnv } from 'dotenv'
 loadEnv({ path: path.join(process.cwd(), '.env.local') })
@@ -97,6 +97,7 @@ for (const [i, m] of mails.entries()) {
   const n = i + 1
   if (only.length && !only.includes(n)) continue
   const subject = `[TEST ${n}/${mails.length}] ${m.subject}`
+  if (process.env.OUT) (await import('node:fs')).writeFileSync(path.join(process.env.OUT, `${n}.html`), m.html) // with DRY=1: save the HTML to look at
   if (process.env.DRY) { console.log(`${n}. ${m.name} | from ${m.from} | ${subject} | ${m.html.length} chars`); continue }
   try {
     const res = await sendMail({ to: TO, from: m.from, replyTo: m.from, subject, html: m.html, text: m.text, headers: m.headers })

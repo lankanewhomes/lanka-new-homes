@@ -1,4 +1,4 @@
-import { emailHero, emailShell, verifiedPill } from './email-layout'
+import { darkBg, emailHero, emailShell, lightOnDark, verifiedPill } from './email-layout'
 // Email templates for the CMS Outreach log (owner, 2026-10-12). Pure rendering: nothing here sends mail.
 // Every link goes through the tracked redirect (/o/<code>?to=/path) so clicks are counted on the Outreach row.
 // Wording rule: no pricing or package talk in these emails.
@@ -32,23 +32,28 @@ export const OUTREACH_SENDERS = [
 ] as const
 
 const esc = (v: string) => v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
-const INK = '#2b2b29'
+const INK = '#1c1c20'
+const TEXT = '#2b2b29'
 const MUTED = '#6b6a66'
 const LINE = '#e4e2db'
 const PAPER = '#faf7f2'
-const ACCENT = '#c2410c'
-const P = `margin:0 0 16px; font-size:15px; line-height:1.65; color:${INK};`
+const ORANGE = '#f47b36'
+const P = `margin:0 0 16px; font-size:15px; line-height:1.65; color:${TEXT};`
 
-const a = (href: string, text: string) => `<a href="${href}" style="color:${ACCENT}; text-decoration:underline;">${esc(text)}</a>`
+// Same pieces as the shared layout (src/lib/email-layout.ts), so these emails match every other one (owner, 2026-11-23: "be consistent
+// with the design ... for all of them"): dark ink links, the square orange button with dark text, the dark square number tile.
+const a = (href: string, text: string) => `<a href="${href}" style="color:${INK}; font-weight:700; text-decoration:underline;">${esc(text)}</a>`
 const button = (href: string, text: string) =>
-  `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:14px 0 4px;"><tr><td style="background:${ACCENT}; border-radius:4px;"><a href="${href}" style="display:inline-block; padding:11px 22px; font-size:14px; font-weight:700; color:#ffffff; text-decoration:none;">${esc(text)}</a></td></tr></table>`
+  `<div style="margin:16px 0 4px;"><a href="${href}" style="display:inline-block; background:${ORANGE}; color:${INK}; text-decoration:none; font-size:15px; font-weight:700; padding:13px 24px;">${esc(text)}</a></div>`
 
-// A numbered card: a step the developer can act on, with an optional button.
+// A numbered card: a step the developer can act on, with an optional button. The number tile sits beside the title only and the text runs
+// the full width of the card underneath, so it stays readable on a phone (a number column down the whole card squeezed the text).
 function stepCard(n: number, title: string, lines: string[], cta?: { href: string; text: string }) {
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 14px; background:${PAPER}; border:1px solid ${LINE};"><tr>
-<td width="52" valign="top" style="padding:18px 0 18px 18px;"><div style="width:30px; height:30px; line-height:30px; border-radius:15px; background:${INK}; color:#ffffff; text-align:center; font-size:14px; font-weight:700;">${n}</div></td>
-<td valign="top" style="padding:16px 18px 16px 10px;"><div style="font-size:16px; font-weight:700; color:${INK}; margin:0 0 6px;">${esc(title)}</div>${lines.map((l) => `<div style="font-size:14px; line-height:1.6; color:${INK}; margin:0 0 6px;">${l}</div>`).join('')}${cta ? button(cta.href, cta.text) : ''}</td>
-</tr></table>`
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 14px; background:#ffffff; border:1px solid ${LINE};">
+<tr><td width="44" valign="middle" style="${darkBg()} width:44px; color:#ffffff; text-align:center; font-size:17px; font-weight:700; padding:12px 0;">${lightOnDark(String(n))}</td>
+<td valign="middle" style="padding:10px 16px; font-size:16px; font-weight:700; line-height:1.3; color:${INK}; border-bottom:1px solid ${LINE};">${esc(title)}</td></tr>
+<tr><td colspan="2" style="padding:14px 16px 16px;">${lines.map((l) => `<div style="font-size:14px; line-height:1.6; color:${TEXT}; margin:0 0 8px;">${l}</div>`).join('')}${cta ? button(cta.href, cta.text) : ''}</td></tr>
+</table>`
 }
 
 function verifyStep(ctx: OutreachContext, n: number) {
@@ -56,7 +61,7 @@ function verifyStep(ctx: OutreachContext, n: number) {
     verifiedPill(),
     `Takes about a minute. ${a(ctx.link('/developers/login'), 'Sign in')} (or ${a(ctx.link('/developers/register'), 'create an account')}), open your company profile and confirm an email address on your company domain.`,
     'We email you a one-time link. Click it and the "✓ Verified Developer" badge appears on your profile and on every listing.',
-  ], { href: ctx.link('/cms'), text: 'Open my dashboard' })
+  ], { href: ctx.link('/developers/dashboard'), text: 'Open my dashboard' })
 }
 
 function completeStep(ctx: OutreachContext, n: number) {
@@ -69,9 +74,9 @@ function completeStep(ctx: OutreachContext, n: number) {
 
 function projectList(ctx: OutreachContext) {
   if (!ctx.projects.length) return ''
-  return `<p style="${P} margin-bottom:8px;"><strong>Your listings</strong></p><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 20px; border-top:1px solid ${LINE};">${ctx.projects
-    .map((p) => `<tr><td style="padding:10px 0; border-bottom:1px solid ${LINE}; font-size:15px; color:${INK};">${esc(p.name)}<div style="margin-top:4px; font-size:14px;">${a(ctx.link(`/projects/${p.slug}`), 'View listing →')}</div></td></tr>`)
-    .join('')}</table>`
+  return `<div style="margin:6px 0 8px; font-size:12px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:${ORANGE};">Your listings</div>${ctx.projects
+    .map((p) => `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 10px; border:1px solid ${LINE}; border-left:4px solid ${ORANGE}; background:#ffffff;"><tr><td style="padding:14px 16px;"><span style="font-size:16px; font-weight:700; line-height:1.3; color:${INK};">${esc(p.name)}</span><div style="margin:8px 0 0; font-size:13px;">${a(ctx.link(`/projects/${p.slug}`), 'View listing →')}</div></td></tr></table>`)
+    .join('')}<div style="height:10px; line-height:10px; font-size:0;">&nbsp;</div>`
 }
 
 function leadBlock(ctx: OutreachContext) {
@@ -81,14 +86,14 @@ function leadBlock(ctx: OutreachContext) {
   const rows: [string, string][] = [
     ['Name', `<strong>${esc(l.name)}</strong>`],
     ...(l.phone ? [['Phone', esc(l.phone)] as [string, string]] : []),
-    ...(l.email ? [['Email', `<a href="mailto:${esc(l.email)}" style="color:${ACCENT};">${esc(l.email)}</a>`] as [string, string]] : []),
+    ...(l.email ? [['Email', `<a href="mailto:${esc(l.email)}" style="color:${INK};">${esc(l.email)}</a>`] as [string, string]] : []),
     ...(l.preferred ? [['Prefers', esc(l.preferred)] as [string, string]] : []),
     ...(l.message ? [['Message', `“${esc(l.message)}”`] as [string, string]] : []),
     ...(l.place ? [['From', esc(l.place)] as [string, string]] : []),
     ...(when ? [['Received', esc(when)] as [string, string]] : []),
   ]
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 20px; background:${PAPER}; border:1px solid ${LINE}; border-left:4px solid ${ACCENT};"><tr><td style="padding:16px 18px;">
-<div style="font-size:12px; letter-spacing:0.04em; color:${MUTED}; margin:0 0 8px;">BUYER ENQUIRY${l.projectName ? ` · ${esc(l.projectName.toUpperCase())}` : ''}${l.planName ? ` · ${esc(l.planName.toUpperCase())}` : ''}</div>
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 20px; background:${PAPER}; border:1px solid ${LINE}; border-left:4px solid ${ORANGE};"><tr><td style="padding:16px 18px;">
+<div style="font-size:12px; font-weight:700; letter-spacing:0.08em; color:${MUTED}; margin:0 0 8px;">BUYER ENQUIRY${l.projectName ? ` · ${esc(l.projectName.toUpperCase())}` : ''}${l.planName ? ` · ${esc(l.planName.toUpperCase())}` : ''}</div>
 <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:14px; line-height:1.6; color:${INK};">${rows.map(([k, v]) => `<tr><td valign="top" style="padding:2px 14px 2px 0; color:${MUTED}; white-space:nowrap;">${k}</td><td style="padding:2px 0;">${v}</td></tr>`).join('')}</table>
 </td></tr></table>`
 }
@@ -114,7 +119,7 @@ export function renderOutreachEmail(id: OutreachTemplateId, ctx: OutreachContext
     body = `${note}<p style="${P}">Your listings on LankaNewHomes have been updated. Two quick things will help buyers trust and find them.</p>${projectList(ctx)}${verifyStep(ctx, 1)}${completeStep(ctx, 2)}`
   } else if (id === 'lead-followup') {
     heading = 'A buyer is waiting for your reply'
-    body = `${note}<p style="${P}">A buyer asked about <strong>${esc(l?.projectName ?? 'your listing')}</strong>${l?.planName ? ` (${esc(l.planName)})` : ''} on LankaNewHomes, and we do not see a reply yet. We emailed you this enquiry when it came in. Here it is again:</p>${leadBlock(ctx)}<p style="${P}">Buyers usually contact several developers, so a quick reply helps. You can answer straight from the lead email, or open it in your ${a(ctx.link('/cms'), 'dashboard')} and change its status once you have been in touch.</p><p style="${P} margin-bottom:12px;">While you are there, two quick things help you win more enquiries:</p>${verifyStep(ctx, 1)}${completeStep(ctx, 2)}`
+    body = `${note}<p style="${P}">A buyer asked about <strong>${esc(l?.projectName ?? 'your listing')}</strong>${l?.planName ? ` (${esc(l.planName)})` : ''} on LankaNewHomes, and we do not see a reply yet. We emailed you this enquiry when it came in. Here it is again:</p>${leadBlock(ctx)}<p style="${P}">Buyers usually contact several developers, so a quick reply helps. You can answer straight from the lead email, or open it in your ${a(ctx.link('/developers/dashboard'), 'dashboard')} and change its status once you have been in touch.</p><p style="${P} margin-bottom:12px;">While you are there, two quick things help you win more enquiries:</p>${verifyStep(ctx, 1)}${completeStep(ctx, 2)}`
   } else if (id === 'verify-company') {
     heading = 'Get the Verified Developer badge'
     body = `${note}<p style="${P}">${company} is listed on LankaNewHomes. Confirming your company is free and shows buyers they are dealing with the real developer.</p>${projectList(ctx)}${verifyStep(ctx, 1)}`

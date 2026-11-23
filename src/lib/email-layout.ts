@@ -51,13 +51,15 @@ export const emailPara = (html: string, muted = false) => `  <tr><td style="padd
 export const verifiedPill = () =>
   `<span style="display:inline-block;background:#ecfeff;border:1px solid #67e8f9;color:#0e7490;font-size:11px;font-weight:700;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;padding:3px 7px;border-radius:3px;">&#10003; Verified Developer</span>`
 
-/** Numbered cards: a dark number tile on the left, a bold title and a short explanation. */
+/** Numbered cards: a dark number tile beside a bold title, then a short explanation across the full width of the card underneath
+ *  (owner, 2026-11-23: fix on mobile; a number column down the whole card squeezed the text on a phone). */
 export function emailNumbered(items: { title: string; body: string }[]): string {
   const rows = items.map((it, i) => `
-      <tr><td style="padding:0 0 10px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid ${LINE};background:#ffffff;"><tr>
-        <td width="48" valign="top" style="background:${INK};color:#ffffff;text-align:center;font-size:17px;font-weight:700;padding:16px 0;">${i + 1}</td>
-        <td style="padding:14px 18px;font-size:14px;line-height:1.6;color:${TEXT};"><strong style="font-size:15px;color:${INK};">${it.title}</strong><br>${it.body}</td>
-      </tr></table></td></tr>`).join('')
+      <tr><td style="padding:0 0 10px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid ${LINE};background:#ffffff;">
+        <tr><td width="44" valign="middle" style="${darkBg()}width:44px;color:#ffffff;text-align:center;font-size:17px;font-weight:700;padding:12px 0;">${lightOnDark(String(i + 1))}</td>
+        <td valign="middle" style="padding:10px 16px;font-size:16px;font-weight:700;line-height:1.3;color:${INK};border-bottom:1px solid ${LINE};">${it.title}</td></tr>
+        <tr><td colspan="2" style="padding:12px 16px 14px;font-size:14px;line-height:1.6;color:${TEXT};">${it.body}</td></tr>
+      </table></td></tr>`).join('')
   return `  <tr><td style="padding:14px 32px 6px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0">${rows}</table></td></tr>`
 }
 
