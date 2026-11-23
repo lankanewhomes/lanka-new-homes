@@ -51,22 +51,16 @@ export const emailPara = (html: string, muted = false) => `  <tr><td style="padd
 export const verifiedPill = () =>
   `<span style="display:inline-block;background:#ecfeff;border:1px solid #67e8f9;color:#0e7490;font-size:11px;font-weight:700;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;padding:3px 7px;border-radius:3px;">&#10003; Verified Developer</span>`
 
-/** Numbered cards: a dark number tile beside a bold title, then a short explanation across the full width of the card underneath
- *  (owner, 2026-11-23: fix on mobile; a number column down the whole card squeezed the text on a phone). */
+/** Numbered steps. Same look as emailCompactList (owner, 2026-11-23: "I like this design. Can you implement it"): one bordered box,
+ *  small orange numbers, a bold lead-in and a short line each. Kept as its own name so older callers do not change. */
 export function emailNumbered(items: { title: string; body: string }[]): string {
-  const rows = items.map((it, i) => `
-      <tr><td style="padding:0 0 10px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid ${LINE};background:#ffffff;">
-        <tr><td width="44" valign="middle" style="${darkBg()}width:44px;color:#ffffff;text-align:center;font-size:17px;font-weight:700;padding:12px 0;">${lightOnDark(String(i + 1))}</td>
-        <td valign="middle" style="padding:10px 16px;font-size:16px;font-weight:700;line-height:1.3;color:${INK};border-bottom:1px solid ${LINE};">${it.title}</td></tr>
-        <tr><td colspan="2" style="padding:12px 16px 14px;font-size:14px;line-height:1.6;color:${TEXT};">${it.body}</td></tr>
-      </table></td></tr>`).join('')
-  return `  <tr><td style="padding:14px 32px 6px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0">${rows}</table></td></tr>`
+  return emailCompactList(items)
 }
 
 /** A compact numbered list in one bordered box: small orange numbers, a bold lead-in and one short line each. */
 export function emailCompactList(items: { title: string; body: string }[]): string {
   const rows = items.map((it, i) => `
-      <tr><td width="34" valign="top" style="padding:11px 0 11px 16px;font-size:14px;font-weight:700;color:${ORANGE};${i ? `border-top:1px solid ${LINE};` : ''}">${i + 1}</td><td style="padding:11px 16px 11px 4px;font-size:14px;line-height:1.55;color:${TEXT};${i ? `border-top:1px solid ${LINE};` : ''}"><strong style="color:${INK};">${it.title}.</strong> ${it.body}</td></tr>`).join('')
+      <tr><td width="34" valign="top" style="padding:11px 0 11px 16px;font-size:14px;font-weight:700;color:${ORANGE};${i ? `border-top:1px solid ${LINE};` : ''}">${i + 1}</td><td style="padding:11px 16px 11px 4px;font-size:14px;line-height:1.55;color:${TEXT};${i ? `border-top:1px solid ${LINE};` : ''}"><strong style="color:${INK};">${it.title}${/[.!?:]$/.test(it.title) ? '' : '.'}</strong> ${it.body}</td></tr>`).join('')
   return `  <tr><td style="padding:10px 32px 6px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid ${LINE};">${rows}</table></td></tr>`
 }
 
@@ -101,10 +95,11 @@ export function emailFacts(rows: [string, string][]): string {
   return `  <tr><td style="padding:14px 32px 6px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid ${LINE};border-left:4px solid ${ORANGE};background:#faf7f2;"><tr><td style="padding:10px 20px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0">${body}</table></td></tr></table></td></tr>`
 }
 
-/** Several buttons side by side (they wrap on a phone). Each can have its own colour. */
+/** Several buttons stacked, one on top of the other, each the full width (owner, 2026-11-23: "put one on top and other on bottom. Be
+ *  constant"; side by side they wrapped onto two lines and came out different sizes on a phone). Each can have its own colour. */
 export function emailButtonRow(buttons: { label: string; href: string; bg?: string; fg?: string }[]): string {
-  const cells = buttons.map((b) => `<td style="padding:0 6px 8px;"><a href="${esc(b.href)}" style="display:inline-block;background:${b.bg ?? ORANGE};color:${b.fg ?? INK};text-decoration:none;font-size:15px;font-weight:700;padding:13px 22px;">${b.label}</a></td>`).join('')
-  return `  <tr><td align="center" style="padding:20px 26px 6px;"><table role="presentation" cellpadding="0" cellspacing="0"><tr>${cells}</tr></table></td></tr>`
+  const rows = buttons.map((b) => `<tr><td style="padding:0 0 10px;"><a href="${esc(b.href)}" style="display:block;background:${b.bg ?? ORANGE};color:${b.fg ?? INK};text-decoration:none;text-align:center;white-space:nowrap;font-size:16px;font-weight:700;padding:15px 20px;">${b.label}</a></td></tr>`).join('')
+  return `  <tr><td style="padding:20px 32px 0;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0">${rows}</table></td></tr>`
 }
 
 /** A section label (orange caps) above a group of listing cards, e.g. the saved search name or the developer name. */

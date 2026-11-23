@@ -1,4 +1,4 @@
-import { darkBg, emailButton, emailHero, emailPanel, emailPara, emailShell, emailSignoff, esc, lightOnDark } from './email-layout'
+import { emailButton, emailHero, emailPanel, emailPara, emailShell, emailSignoff, esc } from './email-layout'
 
 // "Missing details" email for a developer with SEVERAL projects (owner, 2026-10-16: three or more projects = ONE combined email; one or
 // two = a separate email each). Approved layout: a card per project (numbered tile, linked name, short bullets split into two columns),
@@ -17,8 +17,8 @@ const bullet = (t: string) => `<div style="padding:3px 0;font-size:14px;line-hei
 function card(p: MissingInfoProject, i: number): string {
   const half = Math.ceil(p.items.length / 2)
   return `<tr><td style="padding:0 0 10px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid ${LINE};background:#ffffff;">
-<tr><td width="44" valign="middle" style="${darkBg()}width:44px;color:#fff;text-align:center;font-size:17px;font-weight:700;padding:12px 0;">${lightOnDark(String(i + 1))}</td>
-<td valign="middle" style="padding:10px 16px;border-bottom:1px solid ${LINE};"><a href="${SITE}/projects/${esc(p.slug)}" style="font-size:16px;font-weight:700;line-height:1.3;color:${INK};text-decoration:none;">${esc(p.name)}</a></td></tr>
+<tr><td width="34" valign="middle" style="width:34px;padding:11px 0 11px 16px;font-size:14px;font-weight:700;color:${OR};border-bottom:1px solid ${LINE};">${i + 1}</td>
+<td valign="middle" style="padding:11px 16px 11px 4px;border-bottom:1px solid ${LINE};"><a href="${SITE}/projects/${esc(p.slug)}" style="font-size:16px;font-weight:700;line-height:1.3;color:${INK};text-decoration:none;">${esc(p.name)}</a></td></tr>
 <tr><td colspan="2" style="padding:6px 16px 12px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td width="50%" valign="top" style="padding:4px 8px 0 0;">${p.items.slice(0, half).map(bullet).join('')}</td><td width="50%" valign="top" style="padding:4px 0 0 12px;border-left:1px solid ${LINE};">${p.items.slice(half).map(bullet).join('')}</td></tr></table></td></tr>
 </table></td></tr>`
 }

@@ -1,4 +1,4 @@
-import { darkBg, emailHero, emailShell, lightOnDark, verifiedPill } from './email-layout'
+import { emailHero, emailShell, verifiedPill } from './email-layout'
 // Email templates for the CMS Outreach log (owner, 2026-10-12). Pure rendering: nothing here sends mail.
 // Every link goes through the tracked redirect (/o/<code>?to=/path) so clicks are counted on the Outreach row.
 // Wording rule: no pricing or package talk in these emails.
@@ -41,19 +41,18 @@ const ORANGE = '#f47b36'
 const P = `margin:0 0 16px; font-size:15px; line-height:1.65; color:${TEXT};`
 
 // Same pieces as the shared layout (src/lib/email-layout.ts), so these emails match every other one (owner, 2026-11-23: "be consistent
-// with the design ... for all of them"): dark ink links, the square orange button with dark text, the dark square number tile.
+// with the design ... for all of them"): dark ink links, the square orange button with dark text, the small orange step numbers.
 const a = (href: string, text: string) => `<a href="${href}" style="color:${INK}; font-weight:700; text-decoration:underline;">${esc(text)}</a>`
 const button = (href: string, text: string) =>
-  `<div style="margin:16px 0 4px;"><a href="${href}" style="display:inline-block; background:${ORANGE}; color:${INK}; text-decoration:none; font-size:15px; font-weight:700; padding:13px 24px;">${esc(text)}</a></div>`
+  `<div style="margin:16px 0 4px; text-align:center;"><a href="${href}" style="display:inline-block; background:${ORANGE}; color:${INK}; text-decoration:none; white-space:nowrap; font-size:16px; font-weight:700; padding:15px 30px;">${esc(text)}</a></div>`
 
-// A numbered card: a step the developer can act on, with an optional button. The number tile sits beside the title only and the text runs
-// the full width of the card underneath, so it stays readable on a phone (a number column down the whole card squeezed the text).
+// A numbered step the developer can act on, with an optional button. Same look as emailCompactList in the shared layout (owner,
+// 2026-11-23: "I like this design"): a bordered box, a small orange number, a bold title and short lines.
 function stepCard(n: number, title: string, lines: string[], cta?: { href: string; text: string }) {
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 14px; background:#ffffff; border:1px solid ${LINE};">
-<tr><td width="44" valign="middle" style="${darkBg()} width:44px; color:#ffffff; text-align:center; font-size:17px; font-weight:700; padding:12px 0;">${lightOnDark(String(n))}</td>
-<td valign="middle" style="padding:10px 16px; font-size:16px; font-weight:700; line-height:1.3; color:${INK}; border-bottom:1px solid ${LINE};">${esc(title)}</td></tr>
-<tr><td colspan="2" style="padding:14px 16px 16px;">${lines.map((l) => `<div style="font-size:14px; line-height:1.6; color:${TEXT}; margin:0 0 8px;">${l}</div>`).join('')}${cta ? button(cta.href, cta.text) : ''}</td></tr>
-</table>`
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 12px; background:#ffffff; border:1px solid ${LINE};"><tr>
+<td width="34" valign="top" style="width:34px; padding:14px 0 14px 16px; font-size:14px; font-weight:700; line-height:1.55; color:${ORANGE};">${n}</td>
+<td valign="top" style="padding:14px 16px 14px 4px;"><div style="font-size:15px; font-weight:700; line-height:1.45; color:${INK}; margin:0 0 6px;">${esc(title)}</div>${lines.map((l) => `<div style="font-size:14px; line-height:1.55; color:${TEXT}; margin:0 0 8px;">${l}</div>`).join('')}${cta ? button(cta.href, cta.text) : ''}</td>
+</tr></table>`
 }
 
 function verifyStep(ctx: OutreachContext, n: number) {
