@@ -32,7 +32,7 @@ function renderAccountEmail({
     emailPanel({ heading: noteTitle, bodyHtml: noteLines.map((line) => `&bull; ${line}`).join('<br>') }),
     `  <tr><td style="padding:18px 32px 32px;font-size:13px;line-height:1.65;color:#6b6a66;">Button not working? Paste this link into your browser:<br><a href="${url}" style="color:#6b6a66;word-break:break-all;">${url}</a>${after ?? ''}</td></tr>`,
   ].join('\n')
-  return emailShell({ preheader, title, body, footerNote: 'This inbox is not monitored. Reply to a message from us or write to <a href="mailto:support@lankanewhomes.com" style="color:#ffffff;">support@lankanewhomes.com</a> if you need help.' })
+  return emailShell({ preheader, title, body, footerNote: 'This inbox is not monitored. Reply to a message from us or write to <a href="mailto:support@lankanewhomes.com" style="color:#6b6b6b;text-decoration:underline;">support@lankanewhomes.com</a> if you need help.' })
 }
 
 export function renderVerificationEmailHTML({
@@ -65,5 +65,19 @@ export function renderPasswordResetEmailHTML({ resetURL }: { resetURL: string })
     url: resetURL,
     noteTitle: 'Good to know',
     noteLines: ['The link works for one hour and only once.', "If you didn't ask for this, you can safely ignore this email. Your password stays the same."],
+  })
+}
+
+// The one-tap sign-in link (src/collections/auth/magic-link.ts). Same design as the other account emails (owner: one design for every email).
+export function renderSignInLinkEmailHTML({ signInURL }: { signInURL: string }): string {
+  return renderAccountEmail({
+    title: 'Your sign-in link',
+    preheader: 'Your LankaNewHomes sign-in link.',
+    heading: 'Sign in to LankaNewHomes',
+    intro: 'Press the button to sign in. No password needed.',
+    buttonLabel: 'Sign in',
+    url: signInURL,
+    noteTitle: 'Good to know',
+    noteLines: ['The link works for 15 minutes.', "If you didn't ask for this, you can safely ignore this email."],
   })
 }

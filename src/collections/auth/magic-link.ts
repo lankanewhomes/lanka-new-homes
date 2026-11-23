@@ -1,6 +1,7 @@
 import { createHmac, timingSafeEqual } from 'node:crypto'
 import type { Endpoint, PayloadRequest } from 'payload'
 import { mintPayloadSessionCookie } from './mint-session'
+import { renderSignInLinkEmailHTML } from './verification-email'
 
 const MAGIC_LINK_TTL_MS = 15 * 60 * 1000
 
@@ -62,7 +63,7 @@ const requestMagicLink: Endpoint = {
           to: email,
           from: process.env.EMAIL_FROM,
           subject: 'Your LankaNewHomes sign-in link',
-          html: `<p>Click below to sign in. This link expires in 15 minutes.</p><p><a href="${link}">${link}</a></p>`,
+          html: renderSignInLinkEmailHTML({ signInURL: link }),
           text: `Sign in to LankaNewHomes: ${link}\n\nThis link expires in 15 minutes.`,
         })
       }

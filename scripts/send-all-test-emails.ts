@@ -31,7 +31,7 @@ const { renderDeveloperListingConfirmationEmailHTML } = await import('../src/lib
 const { renderDeveloperVerifiedHTML, developerVerifiedSubject } = await import('../src/lib/developer-verified-email')
 const { renderDeveloperMissingInfoHTML, developerMissingInfoSubject } = await import('../src/lib/developer-missing-info-email')
 const { renderOutreachEmail } = await import('../src/lib/outreach-templates')
-const { renderVerificationEmailHTML, renderPasswordResetEmailHTML } = await import('../src/collections/auth/verification-email')
+const { renderVerificationEmailHTML, renderPasswordResetEmailHTML, renderSignInLinkEmailHTML } = await import('../src/collections/auth/verification-email')
 
 // Sample data only. The listing links open real pages on the site so the buttons can be tried.
 const PROJECT = 'Sample Residences'
@@ -88,6 +88,7 @@ for (const id of ['listing-update', 'verify-company', 'complete-profile', 'lead-
 // "Sample" stands in for the one-time token, so these two buttons open the site but do not confirm or reset anything.
 mails.push({ name: 'Account: confirm your email', from: NOREPLY, subject: 'Confirm your email (sample)', html: renderVerificationEmailHTML({ verificationURL: `${SITE}/login`, loginURL: `${SITE}/login` }) })
 mails.push({ name: 'Account: reset your password', from: NOREPLY, subject: 'Reset your password (sample)', html: renderPasswordResetEmailHTML({ resetURL: `${SITE}/login` }) })
+mails.push({ name: 'Account: sign-in link', from: NOREPLY, subject: 'Your LankaNewHomes sign-in link (sample)', html: renderSignInLinkEmailHTML({ signInURL: `${SITE}/login` }) })
 
 const only = (process.env.ONLY ?? '').split(',').map((s) => Number(s.trim())).filter(Boolean)
 let sent = 0
