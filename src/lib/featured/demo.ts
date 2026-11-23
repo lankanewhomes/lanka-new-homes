@@ -21,7 +21,8 @@ export const FEATURED_DEMO = process.env.NEXT_PUBLIC_FEATURED_DEMO === "1"; // p
 export const FEATURED_ENABLED = FEATURED_DEMO || process.env.NEXT_PUBLIC_FEATURED_ENABLED !== "0";
 // The /advertise pricing page is NOT live yet (owner, 2026-11-21: "don't make the advertise page live, keep a preview"). It only
 // exists on the preview build. To publish it later, build with NEXT_PUBLIC_ADVERTISE_PUBLIC=1.
-export const ADVERTISE_PUBLIC = FEATURED_DEMO || process.env.NEXT_PUBLIC_ADVERTISE_PUBLIC === "1";
+// Also visible on the local dev server (never in a production build), so the page can be checked without a preview build.
+export const ADVERTISE_PUBLIC = FEATURED_DEMO || process.env.NEXT_PUBLIC_ADVERTISE_PUBLIC === "1" || process.env.NODE_ENV === "development";
 
 type DemoPlan = { developerSlug: string; tier: FeaturedTier; foundingPartner?: boolean };
 

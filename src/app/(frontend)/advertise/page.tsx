@@ -73,18 +73,27 @@ export default function AdvertisePage() {
             <p className="fdv-hero-fineprint">{FEATURED_DEMO ? "Preview. This page is not public yet." : CONTACT.email}</p>
           </div>
 
-          <div className="wdx-hero-checklist">
-            <p className="wdx-hero-checklist-title">Packages at a glance</p>
-            <ul aria-label="Package prices">
-              {TIERS_ASC.map((tier) => (
-                <li key={tier} className="pricing-glance-row">
-                  <span>{TIERS[tier].name}</span>
-                  <span>{rs(TIERS[tier].priceLkrPerMonth)} / month</span>
-                </li>
-              ))}
-              <li className="pricing-glance-row"><span>Pay per lead</span><span>US${LEAD_PRICE_USD} per lead</span></li>
-            </ul>
-          </div>
+          {/* Packages at a glance: one small card per package plus pay per lead (owner, 2026-11-22: "redesign this into cards") */}
+          <ul className="adv-glance" aria-label="Packages at a glance">
+            {TIERS_ASC.map((tier) => (
+              <li key={tier}>
+                <a className="adv-glance-card" href="#packages">
+                  <span className="adv-glance-name">{TIERS[tier].name}</span>
+                  <span className="adv-glance-price">{rs(TIERS[tier].priceLkrPerMonth)}</span>
+                  <span className="adv-glance-unit">per month</span>
+                  <span className="adv-glance-note">{TIERS[tier].projectSlots} {TIERS[tier].projectSlots === 1 ? "project" : "projects"}</span>
+                </a>
+              </li>
+            ))}
+            <li>
+              <a className="adv-glance-card" href="#leads">
+                <span className="adv-glance-name">Pay per lead</span>
+                <span className="adv-glance-price">US${LEAD_PRICE_USD}</span>
+                <span className="adv-glance-unit">per lead</span>
+                <span className="adv-glance-note">No monthly fee</span>
+              </a>
+            </li>
+          </ul>
         </div>
       </section>
 

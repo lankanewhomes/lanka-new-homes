@@ -152,12 +152,15 @@
 .fp-top-slot .fp-head h2 { font-size: 18px; line-height: 24px; }
 
 /* /advertise: uses the site's contained-box page system (.fdv-page / .fdv-box, globals.css). Only the page's own details are here. */
-/* "Packages at a glance" card in the hero: name left, price right, hairline between rows (same as /pricing-preview) */
-.adv-page .wdx-hero-checklist ul { display: grid; grid-template-columns: 1fr; gap: 10px; }
-.adv-page .pricing-glance-row { justify-content: space-between; gap: 16px; border-bottom: 1px solid #e6e2d8; padding-bottom: 10px; }
-.adv-page .pricing-glance-row:last-child { border-bottom: 0; padding-bottom: 0; }
-.adv-page .pricing-glance-row span:first-child { color: #1f1f1f; }
-.adv-page .pricing-glance-row span:last-child { text-align: right; white-space: nowrap; }
+/* "Packages at a glance" in the hero: four small white cards, two by two (owner, 2026-11-22: "redesign this into cards") */
+.adv-page .adv-glance { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; margin: 0; padding: 0; list-style: none; align-self: center; }
+.adv-page .adv-glance-card { display: flex; flex-direction: column; gap: 2px; height: 100%; padding: 18px 18px 16px; background: #fff; border: 1px solid #e6e2d8; border-top: 3px solid #f47b36; color: #1f1f1f; text-decoration: none; font-weight: 400; transition: transform 0.15s ease; }
+.adv-page .adv-glance-card:hover { transform: translateY(-2px); }
+.adv-page .adv-glance-name { font-size: 14px; line-height: 20px; color: #6b6355; }
+.adv-page .adv-glance-price { font-size: 24px; line-height: 30px; color: #1f1f1f; white-space: nowrap; margin-top: 6px; }
+.adv-page .adv-glance-unit { font-size: 13px; line-height: 18px; color: #6b6355; }
+.adv-page .adv-glance-note { font-size: 13px; line-height: 18px; color: #1f1f1f; margin-top: 12px; padding-top: 10px; border-top: 1px solid #e6e2d8; }
+@media (max-width: 380px) { .adv-page .adv-glance-price { font-size: 20px; line-height: 26px; } .adv-page .adv-glance-card { padding: 14px 12px; } }
 .adv-page .adv-cta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
 .adv-page .adv-tier { display: flex; flex-direction: column; }
 .adv-page .adv-tier--popular { border-color: #f47b36; }
