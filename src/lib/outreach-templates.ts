@@ -44,16 +44,20 @@ const P = `margin:0 0 16px; font-size:15px; line-height:1.65; color:${TEXT};`
 // with the design ... for all of them"): dark ink links, the square orange button with dark text, the small orange step numbers.
 const a = (href: string, text: string) => `<a href="${href}" style="color:${INK}; font-weight:700; text-decoration:underline;">${esc(text)}</a>`
 const button = (href: string, text: string) =>
-  `<div style="margin:16px 0 4px; text-align:center;"><a href="${href}" style="display:inline-block; background:${ORANGE}; color:${INK}; text-decoration:none; white-space:nowrap; font-size:16px; font-weight:700; padding:15px 30px;">${esc(text)}</a></div>`
+  `<div style="margin:16px 0 4px; text-align:center;"><a href="${href}" style="display:inline-block; background:${ORANGE}; color:${INK}; text-decoration:none; font-size:16px; font-weight:700; padding:15px 24px;">${esc(text)}</a></div>`
 
-// A numbered step the developer can act on, with an optional button. Same look as emailCompactList in the shared layout (owner,
-// 2026-11-23: "I like this design"): a bordered box, a small orange number, a bold title and short lines.
+// Numbered steps the developer can act on, each with an optional button. Same look as emailCompactList in the shared layout (owner,
+// 2026-11-23: "I like this design"): ONE bordered box, a small orange number, a bold title and short lines, a thin divider between steps.
+// All steps share one fixed-layout table so the number column is the same width on every step (as separate boxes, a wide button squeezed
+// the number column of one step on a phone and the steps no longer lined up; owner: "be constant with the design").
 function stepCard(n: number, title: string, lines: string[], cta?: { href: string; text: string }) {
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 12px; background:#ffffff; border:1px solid ${LINE};"><tr>
-<td width="34" valign="top" style="width:34px; padding:14px 0 14px 16px; font-size:14px; font-weight:700; line-height:1.55; color:${ORANGE};">${n}</td>
-<td valign="top" style="padding:14px 16px 14px 4px;"><div style="font-size:15px; font-weight:700; line-height:1.45; color:${INK}; margin:0 0 6px;">${esc(title)}</div>${lines.map((l) => `<div style="font-size:14px; line-height:1.55; color:${TEXT}; margin:0 0 8px;">${l}</div>`).join('')}${cta ? button(cta.href, cta.text) : ''}</td>
-</tr></table>`
+  const top = n > 1 ? ` border-top:1px solid ${LINE};` : ''
+  return `<tr>
+<td width="50" valign="top" style="width:50px; padding:14px 0 14px 16px; font-size:14px; font-weight:700; line-height:1.55; color:${ORANGE};${top}">${n}</td>
+<td valign="top" style="padding:14px 16px 14px 0;${top}"><div style="font-size:15px; font-weight:700; line-height:1.45; color:${INK}; margin:0 0 6px;">${esc(title)}</div>${lines.map((l) => `<div style="font-size:14px; line-height:1.55; color:${TEXT}; margin:0 0 8px;">${l}</div>`).join('')}${cta ? button(cta.href, cta.text) : ''}</td>
+</tr>`
 }
+const stepBox = (rows: string) => `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 14px; width:100%; table-layout:fixed; background:#ffffff; border:1px solid ${LINE};">${rows}</table>`
 
 function verifyStep(ctx: OutreachContext, n: number) {
   return stepCard(n, 'Get the free Verified Developer badge', [
@@ -115,16 +119,16 @@ export function renderOutreachEmail(id: OutreachTemplateId, ctx: OutreachContext
   let body = ''
   if (id === 'listing-update') {
     heading = 'Your listings are updated'
-    body = `${note}<p style="${P}">Your listings on LankaNewHomes have been updated. Two quick things will help buyers trust and find them.</p>${projectList(ctx)}${verifyStep(ctx, 1)}${completeStep(ctx, 2)}`
+    body = `${note}<p style="${P}">Your listings on LankaNewHomes have been updated. Two quick things will help buyers trust and find them.</p>${projectList(ctx)}${stepBox(verifyStep(ctx, 1) + completeStep(ctx, 2))}`
   } else if (id === 'lead-followup') {
     heading = 'A buyer is waiting for your reply'
-    body = `${note}<p style="${P}">A buyer asked about <strong>${esc(l?.projectName ?? 'your listing')}</strong>${l?.planName ? ` (${esc(l.planName)})` : ''} on LankaNewHomes, and we do not see a reply yet. We emailed you this enquiry when it came in. Here it is again:</p>${leadBlock(ctx)}<p style="${P}">Buyers usually contact several developers, so a quick reply helps. You can answer straight from the lead email, or open it in your ${a(ctx.link('/developers/dashboard'), 'dashboard')} and change its status once you have been in touch.</p><p style="${P} margin-bottom:12px;">While you are there, two quick things help you win more enquiries:</p>${verifyStep(ctx, 1)}${completeStep(ctx, 2)}`
+    body = `${note}<p style="${P}">A buyer asked about <strong>${esc(l?.projectName ?? 'your listing')}</strong>${l?.planName ? ` (${esc(l.planName)})` : ''} on LankaNewHomes, and we do not see a reply yet. We emailed you this enquiry when it came in. Here it is again:</p>${leadBlock(ctx)}<p style="${P}">Buyers usually contact several developers, so a quick reply helps. You can answer straight from the lead email, or open it in your ${a(ctx.link('/developers/dashboard'), 'dashboard')} and change its status once you have been in touch.</p><p style="${P} margin-bottom:12px;">While you are there, two quick things help you win more enquiries:</p>${stepBox(verifyStep(ctx, 1) + completeStep(ctx, 2))}`
   } else if (id === 'verify-company') {
     heading = 'Get the Verified Developer badge'
-    body = `${note}<p style="${P}">${company} is listed on LankaNewHomes. Confirming your company is free and shows buyers they are dealing with the real developer.</p>${projectList(ctx)}${verifyStep(ctx, 1)}`
+    body = `${note}<p style="${P}">${company} is listed on LankaNewHomes. Confirming your company is free and shows buyers they are dealing with the real developer.</p>${projectList(ctx)}${stepBox(verifyStep(ctx, 1))}`
   } else {
     heading = 'Complete your listings'
-    body = `${note}<p style="${P}">${company} is listed on LankaNewHomes. A few details are still missing, and filling them in helps your listings show up higher in search.</p>${projectList(ctx)}${completeStep(ctx, 1)}`
+    body = `${note}<p style="${P}">${company} is listed on LankaNewHomes. A few details are still missing, and filling them in helps your listings show up higher in search.</p>${projectList(ctx)}${stepBox(completeStep(ctx, 1))}`
   }
 
   const title = emailHero(esc(heading))

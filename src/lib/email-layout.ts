@@ -60,8 +60,8 @@ export function emailNumbered(items: { title: string; body: string }[]): string 
 /** A compact numbered list in one bordered box: small orange numbers, a bold lead-in and one short line each. */
 export function emailCompactList(items: { title: string; body: string }[]): string {
   const rows = items.map((it, i) => `
-      <tr><td width="34" valign="top" style="padding:11px 0 11px 16px;font-size:14px;font-weight:700;color:${ORANGE};${i ? `border-top:1px solid ${LINE};` : ''}">${i + 1}</td><td style="padding:11px 16px 11px 4px;font-size:14px;line-height:1.55;color:${TEXT};${i ? `border-top:1px solid ${LINE};` : ''}"><strong style="color:${INK};">${it.title}${/[.!?:]$/.test(it.title) ? '' : '.'}</strong> ${it.body}</td></tr>`).join('')
-  return `  <tr><td style="padding:10px 32px 6px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid ${LINE};">${rows}</table></td></tr>`
+      <tr><td width="50" valign="top" style="width:50px;padding:11px 0 11px 16px;font-size:14px;font-weight:700;color:${ORANGE};${i ? `border-top:1px solid ${LINE};` : ''}">${i + 1}</td><td style="padding:11px 16px 11px 0;font-size:14px;line-height:1.55;color:${TEXT};${i ? `border-top:1px solid ${LINE};` : ''}"><strong style="color:${INK};">${it.title}${/[.!?:]$/.test(it.title) ? '' : '.'}</strong> ${it.body}</td></tr>`).join('')
+  return `  <tr><td style="padding:10px 32px 6px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;table-layout:fixed;border:1px solid ${LINE};">${rows}</table></td></tr>`
 }
 
 /** Topic blocks with bullet points: a bold topic line, then short bullets (what we show, what we need). One box, thin dividers. */
