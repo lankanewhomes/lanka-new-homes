@@ -3,6 +3,8 @@
 // so it renders in Gmail, Outlook and Zoho. The logo is a PNG on the public site (SVG is blocked by most mail clients).
 // The logo PNG has the dark header colour baked in (owner, 2026-11-22: "black background for where the image is"), so the white logo
 // always sits on black even when a mail app's dark mode recolours the header cell.
+// The header cell also paints its colour as a background image (a one-colour gradient): dark mode in the Gmail app flips background
+// colours but leaves background images alone, so the whole header container stays black (owner, 2026-11-22).
 export const esc = (v: unknown) => String(v ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 
 const INK = '#1c1c20'
@@ -23,7 +25,7 @@ export function emailShell(opts: { preheader: string; title: string; body: strin
 <div style="display:none;max-height:0;overflow:hidden;opacity:0;">${esc(opts.preheader)}</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${PAPER};padding:28px 12px;"><tr><td align="center">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:620px;background:#ffffff;border:1px solid ${LINE};">
-  <tr><td bgcolor="${INK}" style="background:${INK};border-top:4px solid ${ORANGE};padding:26px 32px;"><a href="${SITE}" style="text-decoration:none;"><img src="${SITE}/brand/lankanewhomes-logo-white-on-dark.png" width="124" alt="LankaNewHomes" style="display:block;border:0;width:124px;height:auto;background:${INK};font-size:20px;font-weight:700;color:#ffffff;"></a></td></tr>
+  <tr><td bgcolor="${INK}" style="background-color:${INK};background-image:linear-gradient(${INK},${INK});border-top:4px solid ${ORANGE};padding:26px 32px;"><a href="${SITE}" style="text-decoration:none;"><img src="${SITE}/brand/lankanewhomes-logo-white-on-dark.png" width="124" alt="LankaNewHomes" style="display:block;border:0;width:124px;height:auto;background:${INK};font-size:20px;font-weight:700;color:#ffffff;"></a></td></tr>
 ${opts.body}
   <tr><td style="background:${INK};padding:22px 32px;font-size:12px;line-height:1.7;color:#b9b8b2;">Sri Lanka's new homes marketplace: apartments, houses and land, with prices, floor plans and developer details in one place.<br><a href="${SITE}" style="color:#ffffff;text-decoration:underline;">www.lankanewhomes.com</a><br>Follow us: <a href="https://www.instagram.com/lankanewhomes/" style="color:#ffffff;text-decoration:underline;">Instagram</a> &nbsp;·&nbsp; <a href="https://www.facebook.com/lankanewhomes" style="color:#ffffff;text-decoration:underline;">Facebook</a> &nbsp;·&nbsp; <a href="https://www.tiktok.com/@lankanewhomes" style="color:#ffffff;text-decoration:underline;">TikTok</a></td></tr>
 ${opts.footerNote === '' ? '' : (opts.footerNote === undefined ? emailNoteRow('You are receiving this because your company or project is listed on LankaNewHomes.', PAPER) : emailNoteRow(opts.footerNote))}
