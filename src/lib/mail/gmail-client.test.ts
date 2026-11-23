@@ -19,13 +19,13 @@ describe('parseAddressList', () => {
 describe('aliasesFor', () => {
   it('gives the three public addresses (minus the primary) only in live Google mode', async () => {
     const env = { ...process.env }
-    process.env.MAIL_PROVIDER = 'google'; process.env.MAIL_MOCK_MODE = 'false'; process.env.GOOGLE_MAIL_SA_EMAIL = 'x@y'; process.env.GOOGLE_MAIL_SA_KEY = 'k'
+    process.env.MAIL_MOCK_MODE = 'false'; process.env.GOOGLE_MAIL_SA_EMAIL = 'x@y'; process.env.GOOGLE_MAIL_SA_KEY = 'k'
     delete process.env.MAIL_ACCOUNT_SUPPORT; delete process.env.MAIL_ACCOUNT_DEVELOPERS; delete process.env.MAIL_ACCOUNT_NOREPLY; delete process.env.GOOGLE_MAIL_PRIMARY
     const { aliasesFor, configuredMailboxes } = await import('./index')
     expect(configuredMailboxes()).toEqual(['rupan@lankanewhomes.com'])
     expect(aliasesFor('rupan@lankanewhomes.com').sort()).toEqual(['developers@lankanewhomes.com', 'no-reply@lankanewhomes.com', 'support@lankanewhomes.com'])
     expect(aliasesFor('support@lankanewhomes.com')).toEqual([])
-    process.env.MAIL_PROVIDER = ''
+    process.env.MAIL_MOCK_MODE = 'true'
     expect(configuredMailboxes()).toHaveLength(3)
     Object.assign(process.env, env)
   })

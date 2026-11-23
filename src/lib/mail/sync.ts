@@ -3,10 +3,10 @@ import type { Payload } from 'payload'
 import { configuredMailboxes } from './index'
 import type { MailProvider, ProviderFolder, ProviderMessageSummary } from './types'
 
-// Full import + incremental sync between the mail provider (Zoho or the mock) and the Payload cache.
+// Full import + incremental sync between the mail provider (Google or the mock) and the Payload cache.
 //  - Import: every folder, newest first, in resumable batches (state in mail-sync-state), so it never times out; metadata only.
 //  - Incremental: newest page + a rotating "reconcile" window per folder, so new mail, read/star changes, moves and deletions made
-//    in Zoho show up. Zoho always wins: cached rows are overwritten from the provider.
+//    in the mailbox show up. The mailbox always wins: cached rows are overwritten from the provider.
 // Bulk writes use SQL (one statement per batch) because one Payload create per message would be far too slow for a full history.
 
 const PAGE = 200
@@ -22,7 +22,7 @@ export type FolderRow = { id: number; zohoFolderId: string; name: string; type: 
 
 export type SyncReport = {
   mode: 'import' | 'incremental' | 'auto'
-  provider: 'mock' | 'zoho' | 'google'
+  provider: 'mock' | 'google'
   done: boolean
   startedAt: string
   durationMs: number
@@ -45,7 +45,7 @@ export async function ensureAccounts(payload: Payload, provider: MailProvider): 
   const rows: AccountRow[] = []
   for (const [index, email] of configuredMailboxes().entries()) {
     const remote = providerAccounts.find((a) => a.email.toLowerCase() === email)
-    if (!remote) { warnings.push(`${email} was not found in the connected Zoho organisation.`); continue }
+    if (!remote) { warnings.push(`${email} was not found in the connected Google Workspace.`); continue }
     const found = (await payload.find({ collection: 'mail-accounts', where: { email: { equals: email } }, limit: 1, depth: 0, overrideAccess: true })).docs[0] as any
     if (found) {
       if (found.source && found.source !== provider.mode) await purgeAccount(payload, found.id)
@@ -59,7 +59,7 @@ export async function ensureAccounts(payload: Payload, provider: MailProvider): 
       rows.push({ id: created.id, email, zohoAccountId: remote.zohoAccountId, displayName: created.displayName, color: created.color, signature: '', source: provider.mode })
     }
   }
-  // Mailboxes that are no longer configured (the three old Zoho-style addresses once Google runs one mailbox with aliases) are hidden, not deleted.
+  // Mailboxes that are no longer configured (the three separate addresses now that Google runs one mailbox with aliases) are hidden, not deleted.
   const wanted = new Set(configuredMailboxes())
   const stale = (await payload.find({ collection: 'mail-accounts', where: { active: { not_equals: false } }, limit: 50, depth: 0, pagination: false, overrideAccess: true })).docs as any[]
   for (const old of stale) if (!wanted.has(String(old.email).toLowerCase())) await payload.update({ collection: 'mail-accounts', id: old.id, overrideAccess: true, data: { active: false } as never })
@@ -80,7 +80,7 @@ export async function syncFolders(payload: Payload, provider: MailProvider, acco
       : await payload.create({ collection: 'mail-folders', data: data as never, overrideAccess: true })
     out.push({ id: (doc as any).id, zohoFolderId: f.zohoFolderId, name: f.name, type: f.type, unreadCount: f.unreadCount, totalCount: f.totalCount })
   }
-  // Folders deleted in Zoho disappear here too (with their cached messages).
+  // Folders deleted in the mailbox disappear here too (with their cached messages).
   const gone = existing.filter((e) => !remote.some((f) => f.zohoFolderId === e.zohoFolderId))
   const pool = poolOf(payload)
   for (const g of gone) {
@@ -158,7 +158,7 @@ export async function upsertMessages(payload: Payload, account: AccountRow, fold
   return { upserted, inserted }
 }
 
-/** Drop cached messages inside a window that Zoho no longer lists (deleted, or moved out). Boundaries are exclusive so ties are never removed. Rows with a `local-` id (outreach emails sent before the Zoho connection) only exist here, so they are kept. */
+/** Drop cached messages inside a window that the mailbox no longer lists (deleted, or moved out). Boundaries are exclusive so ties are never removed. Rows with a `local-` id (outreach emails sent before the mailbox was connected) only exist here, so they are kept. */
 export async function removeMissingInWindow(payload: Payload, accountId: number, folderId: number, keepIds: string[], after: string | null, before: string | null): Promise<number> {
   const res = await poolOf(payload).query(
     `delete from payload.mail_messages where account_id = $1 and folder_id = $2
@@ -230,7 +230,7 @@ async function incrementalFolder(payload: Payload, provider: MailProvider, accou
 }
 
 /**
- * After the CMS changes something in Zoho (send, draft…), re-read just the affected folders so the cache matches Zoho.
+ * After the CMS changes something in the mailbox (send, draft…), re-read just the affected folders so the cache matches the mailbox.
  * Deliberately lean (a few queries, no full folder/account sync) because the user is waiting on it.
  */
 export async function quickRefresh(payload: Payload, provider: MailProvider, accountId: number, folderTypes: string[]) {
@@ -317,7 +317,7 @@ export async function getSyncStatus(payload: Payload): Promise<SyncStatus> {
       const lock = mine.find((s) => !s.zohoFolderId)
       return {
         id: a.id, email: a.email, zohoAccountId: a.zohoAccountId ?? '',
-        // A finished folder counts as fully imported (its stored count keeps tracking Zoho's total through the incremental sync).
+        // A finished folder counts as fully imported (its stored count keeps tracking the mailbox's total through the incremental sync).
         imported: folderStates.reduce((n, s) => n + (s.importStatus === 'complete' ? (s.totalCount ?? 0) : (s.importedCount ?? 0)), 0), total: folderStates.reduce((n, s) => n + (s.totalCount ?? 0), 0),
         foldersComplete: folderStates.filter((s) => s.importStatus === 'complete').length, foldersTotal: folderStates.length,
         lastSyncedAt: lock?.lastSyncedAt ?? null, lastError: lock?.lastError ?? folderStates.find((s) => s.lastError)?.lastError ?? null,

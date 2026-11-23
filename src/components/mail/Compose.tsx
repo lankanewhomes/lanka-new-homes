@@ -9,7 +9,7 @@ import type { Account, ComposeInit, MailAddress } from "./types";
 import { fileSize, isEmail } from "./utils";
 
 // Floating compose window (bottom right) like Gmail: minimise / maximise / close, From picker, To/Cc/Bcc chips, subject, rich text
-// body with the selected mailbox's signature, attachments, and drafts autosaved to Zoho's Drafts folder.
+// body with the selected mailbox's signature, attachments, and drafts autosaved to the mailbox's Drafts folder.
 
 type Attached = { filename: string; contentType: string; contentBase64: string; size: number };
 const MAX_TOTAL = 20 * 1024 * 1024;

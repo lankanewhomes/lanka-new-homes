@@ -1,27 +1,15 @@
 import { MockMailProvider } from './mock-client'
 import type { MailProvider } from './types'
 
-// Provider factory. MAIL_MOCK_MODE=true (the default) or missing credentials gives the mock client; otherwise the real client: Google
-// Workspace (Gmail API) when MAIL_PROVIDER=google (owner, 2026-11-17: moving away from Zoho), else Zoho. Both implement MailProvider, so the rest of the app never knows which one it is talking to.
+// Provider factory. MAIL_MOCK_MODE=true (the default) or missing Google keys gives the mock client; otherwise Google Workspace (Gmail API).
+// Google is the only live provider (owner, 2026-11-23; the old provider's client was deleted). Both clients implement MailProvider, so the
+// rest of the app never knows which one it is talking to.
 
 export const MAILBOX_ENV = [
-  { env: 'MAIL_ACCOUNT_NOREPLY', fallback: 'no-reply@lankanewhomes.com', suffix: 'NOREPLY' },
-  { env: 'MAIL_ACCOUNT_SUPPORT', fallback: 'support@lankanewhomes.com', suffix: 'SUPPORT' },
-  { env: 'MAIL_ACCOUNT_DEVELOPERS', fallback: 'developers@lankanewhomes.com', suffix: 'DEVELOPERS' },
+  { env: 'MAIL_ACCOUNT_NOREPLY', fallback: 'no-reply@lankanewhomes.com' },
+  { env: 'MAIL_ACCOUNT_SUPPORT', fallback: 'support@lankanewhomes.com' },
+  { env: 'MAIL_ACCOUNT_DEVELOPERS', fallback: 'developers@lankanewhomes.com' },
 ] as const
-
-export type ZohoCreds = { clientId: string; clientSecret: string; refreshToken: string }
-
-/**
- * Zoho keys for one mailbox. Each mailbox may have its own Self Client (ZOHO_CLIENT_ID_SUPPORT, ZOHO_CLIENT_SECRET_SUPPORT,
- * ZOHO_REFRESH_TOKEN_SUPPORT, …) because a Zoho login only sees its own mailbox; any key left out falls back to the shared ZOHO_* one.
- */
-export function zohoCredsFor(email: string): ZohoCreds | null {
-  const box = MAILBOX_ENV.find((m) => (process.env[m.env] || m.fallback).trim().toLowerCase() === email.toLowerCase())
-  const pick = (name: string) => (box ? process.env[`${name}_${box.suffix}`] : '') || process.env[name] || ''
-  const creds = { clientId: pick('ZOHO_CLIENT_ID'), clientSecret: pick('ZOHO_CLIENT_SECRET'), refreshToken: pick('ZOHO_REFRESH_TOKEN') }
-  return creds.clientId && creds.clientSecret && creds.refreshToken ? creds : null
-}
 
 /** The three public addresses (support, developers, no-reply). */
 export function publicAddresses(): string[] {
@@ -33,28 +21,19 @@ export function googlePrimaryMailbox(): string {
   return (process.env.GOOGLE_MAIL_PRIMARY || 'rupan@lankanewhomes.com').trim().toLowerCase()
 }
 
-/** Mailboxes the app syncs: Zoho and the mock keep three; Google is one mailbox with aliases. */
+/** Mailboxes the app syncs: the mock keeps three sample ones; Google is one mailbox with aliases. */
 export function configuredMailboxes(): string[] {
-  return !isMockMode() && isGoogleMail() ? [googlePrimaryMailbox()] : publicAddresses()
+  return !isMockMode() ? [googlePrimaryMailbox()] : publicAddresses()
 }
 
 /** Addresses mail can be sent as from a mailbox: its aliases (Google only). */
 export function aliasesFor(email: string): string[] {
-  if (isMockMode() || !isGoogleMail() || email.toLowerCase() !== googlePrimaryMailbox()) return []
+  if (isMockMode() || email.toLowerCase() !== googlePrimaryMailbox()) return []
   return publicAddresses().filter((a) => a !== googlePrimaryMailbox())
 }
 
-export function zohoCredentialsPresent(): boolean {
-  return publicAddresses().some((email) => zohoCredsFor(email) !== null)
-}
-
-/** True when the mail provider is Google Workspace (MAIL_PROVIDER=google). */
-export function isGoogleMail(): boolean {
-  return (process.env.MAIL_PROVIDER ?? '').toLowerCase() === 'google'
-}
-
 export function liveCredentialsPresent(): boolean {
-  return isGoogleMail() ? Boolean(process.env.GOOGLE_MAIL_SA_EMAIL && process.env.GOOGLE_MAIL_SA_KEY) : zohoCredentialsPresent()
+  return Boolean(process.env.GOOGLE_MAIL_SA_EMAIL && process.env.GOOGLE_MAIL_SA_KEY)
 }
 
 export function isMockMode(): boolean {
@@ -65,20 +44,16 @@ export function isMockMode(): boolean {
 const KEY = Symbol.for('lnh.mail.provider')
 
 export async function getMailProvider(): Promise<MailProvider> {
-  const g = globalThis as unknown as Record<symbol, { mock: boolean; google: boolean; provider: MailProvider } | undefined>
+  const g = globalThis as unknown as Record<symbol, { mock: boolean; provider: MailProvider } | undefined>
   const mock = isMockMode()
-  const google = !mock && isGoogleMail()
-  if (g[KEY]?.mock === mock && g[KEY]?.google === google) return g[KEY]!.provider
+  if (g[KEY]?.mock === mock) return g[KEY]!.provider
   let provider: MailProvider
   if (mock) provider = new MockMailProvider()
-  else if (google) {
+  else {
     const { GmailMailProvider } = await import('./gmail-client')
     provider = new GmailMailProvider()
-  } else {
-    const { ZohoMailProvider } = await import('./zoho-client')
-    provider = new (ZohoMailProvider as unknown as new () => MailProvider)()
   }
-  g[KEY] = { mock, google, provider }
+  g[KEY] = { mock, provider }
   return provider
 }
 

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { mailApi, type StatusResponse } from "./api";
 
-// /cms/mail/settings: connection status. Shows which env keys are set (never the values), tests the Zoho connection, lists the
+// /cms/mail/settings: connection status. Shows which env keys are set (never the values), tests the Google connection, lists the
 // detected account ids and the import / sync progress per mailbox, and can run the import and a sync by hand.
 
 export function MailSettings() {
@@ -72,7 +72,7 @@ export function MailSettings() {
     <div className="lnh-mail-settings">
       <h1 style={{ margin: "0 0 4px" }}>Mail connection status</h1>
       <p style={{ margin: 0, color: "var(--theme-elevation-600, #6b7280)" }}>
-        Mode: {status.mock ? <span className="lnh-pill mock">Mock mode, sample data (not connected to Zoho)</span> : <span className="lnh-pill ok">Live, connected to Zoho</span>}
+        Mode: {status.mock ? <span className="lnh-pill mock">Mock mode, sample data (not connected to Google)</span> : <span className="lnh-pill ok">Live, connected to Google Workspace</span>}
         {" "}<Link href="/cms/mail" style={{ marginLeft: 12 }}><Inbox size={14} style={{ verticalAlign: "-2px" }} /> Open the inbox</Link>
       </p>
 
@@ -84,9 +84,9 @@ export function MailSettings() {
           ))}
         </tbody>
       </table>
-      <p style={{ fontSize: 13, color: "var(--theme-elevation-600, #6b7280)" }}>Values are never shown here. {status.credentialsPresent ? "Zoho credentials are present." : "Zoho credentials are missing, so the mock client is used."}</p>
+      <p style={{ fontSize: 13, color: "var(--theme-elevation-600, #6b7280)" }}>Values are never shown here. {status.credentialsPresent ? "Google keys are present." : "Google keys are missing, so the mock client is used."}</p>
 
-      <h2>Zoho connection</h2>
+      <h2>Google connection</h2>
       <p>
         <button type="button" className="lnh-mail-btn" disabled={testing} onClick={async () => { setTesting(true); await load(true); setTesting(false); }}>
           <PlugZap size={15} /> {testing ? "Testing…" : "Test connection"}
@@ -97,7 +97,7 @@ export function MailSettings() {
           <p>{connection.ok ? <CheckCircle2 size={16} style={{ color: "#16a34a", verticalAlign: "-3px" }} /> : null} {connection.message}</p>
           {connection.accounts.length ? (
             <table>
-              <thead><tr><th>Detected mailbox</th><th>Zoho accountId</th></tr></thead>
+              <thead><tr><th>Detected mailbox</th><th>Account id</th></tr></thead>
               <tbody>{connection.accounts.map((a) => <tr key={a.email}><td>{a.email}</td><td><code>{a.zohoAccountId}</code></td></tr>)}</tbody>
             </table>
           ) : null}
@@ -130,7 +130,7 @@ export function MailSettings() {
         <small>{log}</small>
       </p>
       <p style={{ fontSize: 13, color: "var(--theme-elevation-600, #6b7280)" }}>
-        The import is resumable: it saves progress per folder and carries on where it stopped. A cron calls <code>/api/mail/sync</code> every few minutes to pick up changes made in Zoho.
+        The import is resumable: it saves progress per folder and carries on where it stopped. A cron calls <code>/api/mail/sync</code> every few minutes to pick up changes made in the mailbox.
       </p>
     </div>
   );

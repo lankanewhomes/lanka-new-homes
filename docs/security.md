@@ -23,7 +23,7 @@ Note: the in-code rate limit counts inside one running Worker instance, so it st
 4. **WAF → Custom rule** to challenge `/payload-api/*` and `/admin*` from outside Sri Lanka and Canada (the owner's countries), or add Cloudflare Access in front of `/admin`.
 5. **Turnstile** (free CAPTCHA replacement) on the enquiry and contact forms if spam still gets through. Needs a site key and secret key.
 6. **SSL/TLS → Always Use HTTPS: on; Minimum TLS 1.2.**
-7. Turn on **2-step verification** for the Cloudflare, GitHub, Supabase, Google and Zoho accounts.
+7. Turn on **2-step verification** for the Cloudflare, GitHub, Supabase and Google accounts.
 
 ## Bots
 

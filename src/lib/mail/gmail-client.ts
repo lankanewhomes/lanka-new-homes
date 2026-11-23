@@ -1,4 +1,4 @@
-// Google Workspace mail provider (Gmail API), the replacement for the Zoho client (owner, 2026-11-17: "I'm moving away from Zoho mail,
+// Google Workspace mail provider (Gmail API), the site's mail provider (owner, 2026-11-17: "I'm moving away from the mailbox mail,
 // I'm going to use Google Workspace"). It implements the same MailProvider interface, so the inbox, sync and send code do not change.
 //
 // Auth: ONE Google service account with domain-wide delegation. For each mailbox it signs a short-lived JWT with `sub` = that mailbox, so
@@ -10,7 +10,7 @@
 //   One real mailbox (GOOGLE_MAIL_PRIMARY, default rupan@lankanewhomes.com); support@, developers@ and no-reply@ are its aliases. To keep an
 //   alias in From, register them once with scripts/google-register-aliases.mts (needs the gmail.settings.sharing scope).
 //
-// Mapping onto the Zoho-shaped interface (the field names keep "zoho" so sync.ts and the collections stay untouched):
+// Mapping onto the provider interface (field names still say "zoho" because the database columns are named that way; renaming them needs a data migration):
 //   zohoAccountId = the mailbox address   zohoFolderId = Gmail label id (INBOX, SENT, DRAFT, SPAM, TRASH, or a user label id)
 //   zohoMessageId = Gmail message id      "ARCHIVE" is a virtual folder: mail with no inbox, sent, draft, spam or trash label ("All Mail").
 

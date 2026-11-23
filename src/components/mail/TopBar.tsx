@@ -68,7 +68,7 @@ export function TopBar({ accounts, scope, onScope, filters, onFilters, onRefresh
         <option value="">All mailboxes</option>
         {accounts.map((a) => <option key={a.id} value={a.id}>{a.email}</option>)}
       </select>
-      <button type="button" className="lnh-mail-iconbtn" title="Refresh (sync with Zoho)" aria-label="Refresh" onClick={onRefresh}><RefreshCw size={18} className={refreshing ? "lnh-spin" : ""} style={refreshing ? { animation: "lnh-spin 0.9s linear infinite" } : undefined} /></button>
+      <button type="button" className="lnh-mail-iconbtn" title="Refresh (sync with the mailbox)" aria-label="Refresh" onClick={onRefresh}><RefreshCw size={18} className={refreshing ? "lnh-spin" : ""} style={refreshing ? { animation: "lnh-spin 0.9s linear infinite" } : undefined} /></button>
       <style>{`@keyframes lnh-spin{to{transform:rotate(360deg)}}`}</style>
     </header>
   );

@@ -113,8 +113,8 @@ export async function folderCounts(payload: Payload) {
 }
 
 /**
- * Apply an action in Zoho FIRST (Zoho is the source of truth), then mirror it in the local cache.
- * Rows are grouped per mailbox + folder because Zoho updates are scoped that way.
+ * Apply an action in the mailbox FIRST (the mailbox is the source of truth), then mirror it in the local cache.
+ * Rows are grouped per mailbox + folder because provider updates are scoped that way.
  */
 export async function applyAction(payload: Payload, provider: MailProvider, ids: number[], action: MessageAction | { type: 'delete' }) {
   const rows = await loadMessageRows(payload, ids)

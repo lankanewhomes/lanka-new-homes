@@ -6,7 +6,7 @@ import config from "../../../../../../payload.config";
 
 export const dynamic = "force-dynamic";
 
-// POST /api/mail/webhook?secret=$MAIL_SYNC_SECRET: optional Zoho Mail outgoing webhook (new incoming mail) that triggers an
+// POST /api/mail/webhook?secret=$MAIL_SYNC_SECRET: optional the mailbox outgoing webhook (new incoming mail) that triggers an
 // instant incremental sync instead of waiting for the next cron run. Answers right away and syncs after the response.
 export async function POST(request: Request) {
   const secret = process.env.MAIL_SYNC_SECRET;

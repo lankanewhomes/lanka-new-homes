@@ -11,7 +11,7 @@ export const MailSyncState: CollectionConfig = {
   fields: [
     { name: 'account', type: 'relationship', relationTo: 'mail-accounts', required: true, index: true },
     { name: 'folder', type: 'relationship', relationTo: 'mail-folders', index: true },
-    { name: 'zohoFolderId', type: 'text', index: true, admin: { description: 'Empty on the account-level row.' } },
+    { name: 'zohoFolderId', label: 'Folder id', type: 'text', index: true, admin: { description: 'Empty on the account-level row.' } },
     { name: 'importStatus', type: 'select', defaultValue: 'pending', options: ['pending', 'running', 'complete', 'error'] },
     { name: 'importOffset', type: 'number', defaultValue: 0, admin: { description: 'Where the full import resumes (messages already imported, newest first).' } },
     { name: 'importedCount', type: 'number', defaultValue: 0 },

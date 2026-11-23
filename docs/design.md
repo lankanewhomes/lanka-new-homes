@@ -1350,7 +1350,7 @@ updates both automatically.
   `/search?q=land under 10M` etc. Land with only a per-perch price has no total and is left out of the bands; bands with no plots are hidden.
 - `/dashboard` developer page, "Emails & contact" tab (`DeveloperEmailLog.tsx`; owner, 2026-11-18): one timeline of everything sent to or heard from the
   developer, newest first, with filters All / Emails / WhatsApp / Instagram, phone, other. It merges the email log (automatic site emails, with opens and
-  clicks), the Outreach log (emails typed by hand in Zoho or Google, and replies), WhatsApp messages and the manual "Other contact" notes.
+  clicks), the Outreach log (emails typed by hand in the mailbox, and replies), WhatsApp messages and the manual "Other contact" notes.
 - Mail (`/dashboard/inbox`, Google Workspace since 2026-11-18): ONE mailbox (`rupan@`, env `GOOGLE_MAIL_PRIMARY`) with support@, developers@ and no-reply@ as aliases
   (owner chose the cheapest option). The compose "From" menu lists the mailbox and its aliases; `aliasesFor()` in `src/lib/mail/index.ts` is the list.
 - `DashboardSidebar` (in `src/components/dashboard/components.tsx`) renders

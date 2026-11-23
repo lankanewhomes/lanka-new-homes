@@ -12,7 +12,7 @@ import {
   type ProviderMessageFull,
 } from './types'
 
-// In-memory Zoho stand-in. State lives on globalThis so it survives hot reloads, and every action (send, move, delete, star…)
+// In-memory mailbox stand-in. State lives on globalThis so it survives hot reloads, and every action (send, move, delete, star…)
 // really changes it, so the whole UI and the two-way sync can be exercised without any API credentials.
 
 type StoredMessage = ProviderMessageFull & { attachmentBytes: Record<string, string> }
@@ -59,7 +59,7 @@ export class MockMailProvider implements MailProvider {
   readonly mode = 'mock' as const
 
   async testConnection() {
-    return { ok: true, message: 'Mock mode: sample data, not connected to Zoho.', accounts: await this.listAccounts() }
+    return { ok: true, message: 'Mock mode: sample data, not connected to Google.', accounts: await this.listAccounts() }
   }
 
   async listAccounts(): Promise<ProviderAccount[]> {
@@ -151,7 +151,7 @@ export class MockMailProvider implements MailProvider {
     return { filename: meta.filename, contentType: meta.contentType, bytes: new TextEncoder().encode(m.attachmentBytes[attachmentId] ?? '') }
   }
 
-  /** Test helper: pretend a new mail arrived in Zoho (used to exercise the Zoho → CMS sync). */
+  /** Test helper: pretend a new mail arrived in the mailbox (used to exercise the mailbox → CMS sync). */
   simulateIncoming(accountId: string, subject: string, fromEmail = 'someone@example.com') {
     const s = store()
     const id = `${accountId}-m${s.counter++}`

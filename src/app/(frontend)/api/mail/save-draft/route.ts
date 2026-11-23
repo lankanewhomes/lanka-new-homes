@@ -3,7 +3,7 @@ import { requireMailAdmin } from "@/lib/mail/server";
 
 export const dynamic = "force-dynamic";
 
-// POST: save (or update) a draft in Zoho's Drafts folder.
+// POST: save (or update) a draft in the mailbox's Drafts folder.
 export async function POST(request: Request) {
   const auth = await requireMailAdmin(request);
   if ("error" in auth) return auth.error;

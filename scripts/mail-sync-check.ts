@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- check script */
-// Exercises the mail import + two-way sync logic against the MOCK provider (no Zoho credentials needed).
+// Exercises the mail import + two-way sync logic against the MOCK provider (no the mailbox credentials needed).
 //   PAYLOAD_DB_PUSH=true NODE_ENV=development npx tsx scripts/mail-sync-check.ts   (first run: also pushes the new tables)
 import path from 'node:path'
 import { config as loadEnv } from 'dotenv'
@@ -24,7 +24,7 @@ for (;;) {
 }
 console.log('messages in cache:', await count(), '| status:', JSON.stringify((await getSyncStatus(payload)).accounts.map((a) => `${a.email.split('@')[0]} ${a.imported}/${a.total}`)))
 
-// 2) Zoho -> CMS: new mail, read in Zoho, deleted in Zoho
+// 2) the mailbox -> CMS: new mail, read in the mailbox, deleted in the mailbox
 const newId = mock.simulateIncoming('100000002', 'Sync check: brand new mail')
 const inbox = (await mock.listMessages('100000002', '100000002-inbox', { offset: 0, limit: 50 })).messages
 const unread = inbox.find((m) => !m.isRead && m.zohoMessageId !== newId)!
@@ -35,5 +35,5 @@ await mock.deleteMessages('100000002', '100000002-trash', [victim.zohoMessageId]
 const inc = await runSync(payload, mock, { mode: 'incremental', budgetMs: 20000, force: true })
 console.log('incremental:', inc.accounts.find((a) => a.email.startsWith('support'))!.folders.map((f) => `${f.name}: +${f.inserted} ~${f.upserted} -${f.removed}`).join(' | '))
 const row = (await pool.query(`select is_read, folder_id from payload.mail_messages where message_key = $1`, [`100000002:${unread.zohoMessageId}`])).rows[0]
-console.log('new mail cached:', (await count(`message_key = '100000002:${newId}'`)) === 1, '| read in Zoho -> cache:', row?.is_read === true, '| deleted in Zoho -> removed:', (await count(`message_key = '100000002:${victim.zohoMessageId}'`)) === 0)
+console.log('new mail cached:', (await count(`message_key = '100000002:${newId}'`)) === 1, '| read in the mailbox -> cache:', row?.is_read === true, '| deleted in the mailbox -> removed:', (await count(`message_key = '100000002:${victim.zohoMessageId}'`)) === 0)
 process.exit(0)

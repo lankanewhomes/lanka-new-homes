@@ -1,5 +1,5 @@
 // Shared types and the provider interface for the CMS mail client (/cms/mail).
-// The mock client (mock-client.ts) and the real Zoho client (zoho-client.ts) both implement MailProvider, so switching from
+// The mock client (mock-client.ts) and the real Google client (gmail-client.ts) both implement MailProvider, so switching from
 // mock to live is only MAIL_MOCK_MODE=false. Everything uses HTTP/fetch, so it runs on Vercel and on Cloudflare Workers.
 
 export type MailFolderType = 'inbox' | 'sent' | 'drafts' | 'spam' | 'trash' | 'archive' | 'custom'
@@ -80,7 +80,7 @@ export type MessageAction =
 export type ProviderAttachmentFile = { filename: string; contentType: string; bytes: Uint8Array }
 
 export interface MailProvider {
-  readonly mode: 'mock' | 'zoho' | 'google'
+  readonly mode: 'mock' | 'google'
   testConnection(): Promise<{ ok: boolean; message: string; accounts: ProviderAccount[] }>
   listAccounts(): Promise<ProviderAccount[]>
   listFolders(zohoAccountId: string): Promise<ProviderFolder[]>

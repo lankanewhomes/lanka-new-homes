@@ -146,7 +146,7 @@ export default buildConfig({
           Component: '@/components/payload/BillingOverview#BillingOverview',
           path: '/billing',
         },
-        // Gmail-style inbox for the Zoho mailboxes (admin only) — see src/components/mail/MailApp.tsx and src/lib/mail/.
+        // Gmail-style inbox for the Google mailbox (admin only) — see src/components/mail/MailApp.tsx and src/lib/mail/.
         mail: {
           Component: '@/components/payload/MailView#MailView',
           path: '/mail',

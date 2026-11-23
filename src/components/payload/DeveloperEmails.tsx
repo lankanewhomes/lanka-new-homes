@@ -6,7 +6,7 @@ import { useDocumentInfo } from '@payloadcms/ui'
 import { HtmlBody } from '@/components/mail/HtmlBody'
 
 // "Emails" tab on a developer: every email we sent them and every reply they sent back, from all our mailboxes (read from the
-// synced Zoho cache) plus every automatic email the platform sent them (lead alerts, Verified Developer, invites, reports; the Email
+// synced mailbox cache) plus every automatic email the platform sent them (lead alerts, Verified Developer, invites, reports; the Email
 // log). Click a row to read it here.
 
 type Row = { id: number; subject: string; snippet: string; receivedAt: string | null; direction: 'sent' | 'received'; accountEmail: string; from: { name?: string; email: string }; to: { name?: string; email: string }[] }

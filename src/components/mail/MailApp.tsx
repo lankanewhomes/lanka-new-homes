@@ -13,7 +13,7 @@ import { TopBar } from "./TopBar";
 import { EMPTY_FILTERS, type Account, type ComposeInit, type Filters, type MailAction, type MailAddress, type MailMessage, type View } from "./types";
 import { escapeHtml, fullDate, label } from "./utils";
 
-// The Gmail-style inbox at /cms/mail. All data comes from /api/mail/* (admin only); nothing here talks to Zoho directly.
+// The Gmail-style inbox at /cms/mail. All data comes from /api/mail/* (admin only); nothing here talks to the mailbox directly.
 
 type Toast = { id: number; text: string; kind: "ok" | "err" };
 type ComposeWin = { key: number; init: ComposeInit };
@@ -186,13 +186,13 @@ export function MailApp() {
       if (!openRef.current) await loadList(viewRef.current, filtersRef.current, 1, true);
       if (!quiet) toast("Mail is up to date.");
     } catch (error) {
-      if (!quiet) toast(error instanceof Error ? error.message : "Could not sync with Zoho.", "err");
+      if (!quiet) toast(error instanceof Error ? error.message : "Could not sync with the mailbox.", "err");
     } finally {
       setRefreshing(false);
     }
   }, [loadAccounts, loadList, toast]);
 
-  // Pick up changes made in Zoho every 2 minutes.
+  // Pick up changes made in the mailbox every 2 minutes.
   useEffect(() => {
     if (booting) return;
     const t = setInterval(() => { if (document.visibilityState === "visible") void refresh(true); }, 120_000);
@@ -200,7 +200,7 @@ export function MailApp() {
   }, [booting, refresh]);
 
 
-  // ---- actions (Zoho first on the server; here we update the screen right away and undo it if the server refuses)
+  // ---- actions (the mailbox first on the server; here we update the screen right away and undo it if the server refuses)
   const act = useCallback(async (ids: number[], action: MailAction) => {
     const before = list;
     const removing = action.type === "archive" || action.type === "spam" || action.type === "move";
@@ -214,7 +214,7 @@ export function MailApp() {
       void loadAccounts();
     } catch (error) {
       setList(before);
-      toast(error instanceof Error ? error.message : "Zoho did not accept that change.", "err");
+      toast(error instanceof Error ? error.message : "The mailbox did not accept that change.", "err");
     }
   }, [list, loadAccounts, toast]);
 
@@ -306,11 +306,11 @@ export function MailApp() {
   return (
     <div className={`lnh-mail${navOpen ? " nav-open" : ""}`} onClick={() => navOpen && setNavOpen(false)}>
       <div style={{ gridColumn: "1 / -1", gridRow: 1 }}>
-        {mock ? <div className="lnh-mail-banner">Mock mode — not connected to Zoho. You are looking at sample mail; every action works on the sample data only.</div> : null}
+        {mock ? <div className="lnh-mail-banner">Mock mode — not connected to Google. You are looking at sample mail; every action works on the sample data only.</div> : null}
         {warnings.map((w) => <div key={w} className="lnh-mail-banner">{w}</div>)}
         {importing ? (
           <div className="lnh-mail-banner is-import">
-            Importing your mail from Zoho{importing.total ? `: ${importing.imported.toLocaleString()} / ${importing.total.toLocaleString()} messages` : "…"}
+            Importing your mail from Google{importing.total ? `: ${importing.imported.toLocaleString()} / ${importing.total.toLocaleString()} messages` : "…"}
             <span className="lnh-mail-bar"><span style={{ width: `${progress}%` }} /></span>
             <span style={{ opacity: 0.7 }}>You can keep using the inbox while this runs.</span>
           </div>

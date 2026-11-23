@@ -13,7 +13,7 @@ const BASE_LINKS: { label: string; path: string }[] = [
   { label: 'Dashboard (Verified Developer panel + project fields)', path: '/cms' },
 ]
 
-// Owner's log of emails sent to developers (owner, 2026-10-12). Emails typed in Zoho Mail are invisible to Resend, so each one is
+// Owner's log of emails sent to developers (owner, 2026-10-12). Emails typed in the mailbox are invisible to Resend, so each one is
 // logged here by hand (developer, subject, date); the tracked links this row generates are pasted into the email, and every click
 // on them is recorded automatically by the /o/<code> route. Payload-only: internal, never read by the public site.
 export const Outreach: CollectionConfig = {
@@ -110,14 +110,14 @@ export const Outreach: CollectionConfig = {
               type: 'select',
               defaultValue: 'zoho',
               options: [
-                { label: 'Zoho Mail (typed by hand)', value: 'zoho' },
+                { label: 'Typed by hand in the mailbox', value: 'zoho' } /* stored value kept: existing rows use it */,
                 { label: 'Resend (sent from here)', value: 'resend' },
               ],
-              admin: { description: 'Emails sent from this screen are marked Resend. Pick Zoho for emails you typed in Zoho Mail and logged here by hand.' },
+              admin: { description: 'Emails sent from this screen are marked Resend. Pick Typed by hand for emails you wrote in the mailbox and logged here.' },
             },
-            { name: 'subject', type: 'text', admin: { description: 'Filled in from the template when you send. Type one yourself for emails you send from Zoho.' } },
-            { name: 'recipient', type: 'text', label: 'Sent to', admin: { description: 'Filled in automatically when you send from here. For Zoho emails type e.g. "Erwan (contact@maisonceylon.com)".' } },
-            { name: 'trackedLinks', type: 'textarea', label: 'Tracked links (use these in emails you type in Zoho)', admin: { readOnly: true, rows: 8, description: 'Save the row first. Use these instead of plain links so clicks are counted.' } },
+            { name: 'subject', type: 'text', admin: { description: 'Filled in from the template when you send. Type one yourself for emails you send from the mailbox.' } },
+            { name: 'recipient', type: 'text', label: 'Sent to', admin: { description: 'Filled in automatically when you send from here. For hand-typed emails type e.g. "Erwan (contact@maisonceylon.com)".' } },
+            { name: 'trackedLinks', type: 'textarea', label: 'Tracked links (use these in emails you type by hand)', admin: { readOnly: true, rows: 8, description: 'Save the row first. Use these instead of plain links so clicks are counted.' } },
             {
               type: 'row',
               fields: [

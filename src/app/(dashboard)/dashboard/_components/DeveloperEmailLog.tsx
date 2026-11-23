@@ -7,7 +7,7 @@ import { apiFind, apiGet, type Doc } from "../_data/api";
 
 // Everything we have sent to, or heard from, one developer, on one timeline (owner, 2026-11-18: "for each developer I want to see what email
 // I have sent, and also messages, WhatsApp, etc. on the phone"). Sources: the automatic emails the site sent (email log), emails typed by
-// hand in Zoho Mail or Google and logged in Outreach, WhatsApp messages, and the manual "Other contact" notes (Instagram, phone, in person…).
+// hand in the mailbox and logged in Outreach, WhatsApp messages, and the manual "Other contact" notes (Instagram, phone, in person…).
 
 type Kind = "email" | "whatsapp" | "other";
 type Item = {

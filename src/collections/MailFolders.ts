@@ -8,7 +8,7 @@ export const MailFolders: CollectionConfig = {
   access: { read: adminOnly, create: adminOnly, update: adminOnly, delete: adminOnly },
   fields: [
     { name: 'account', type: 'relationship', relationTo: 'mail-accounts', required: true, index: true },
-    { name: 'zohoFolderId', type: 'text', required: true, index: true },
+    { name: 'zohoFolderId', label: 'Folder id', type: 'text', required: true, index: true },
     { name: 'name', type: 'text', required: true },
     { name: 'type', type: 'select', required: true, defaultValue: 'custom', options: ['inbox', 'sent', 'drafts', 'spam', 'trash', 'archive', 'custom'] },
     { name: 'unreadCount', type: 'number', defaultValue: 0 },

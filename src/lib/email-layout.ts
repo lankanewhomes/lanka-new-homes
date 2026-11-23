@@ -1,6 +1,6 @@
 // Shared look for the developer-facing emails (owner, 2026-10-16: "the email design needs a better design, update the logo"): dark header with
 // the white logo, orange top rule, big heading, numbered cards, an orange button and a quiet footer. Table layout and inline styles only,
-// so it renders in Gmail, Outlook and Zoho. The logo is a PNG on the public site (SVG is blocked by most mail clients).
+// so it renders in Gmail and Outlook. The logo is a PNG on the public site (SVG is blocked by most mail clients).
 // The logo PNG has the dark header colour baked in (owner, 2026-11-22: "black background for where the image is"), so the white logo
 // always sits on black even when a mail app's dark mode recolours the header cell.
 // The header cell also paints its colour as a background image (a one-colour gradient): dark mode in the Gmail app flips background

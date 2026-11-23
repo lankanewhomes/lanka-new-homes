@@ -4,7 +4,7 @@ import { adminOnly } from './access'
 // Every email the platform sends to a developer (lead alerts, Verified Developer, invites, digests, password and confirmation emails),
 // kept with the developer so their profile shows the full history (owner, 2026-10-15: "keep a track of all the emails in the
 // developers profile"). Written automatically by src/lib/email-log.ts from the one place all mail leaves (src/lib/mailer.ts).
-// Emails typed in Zoho Mail are not here: they show on the developer's Emails tab from the mail sync. Payload-only, never public.
+// Emails typed in the mailbox are not here: they show on the developer's Emails tab from the mail sync. Payload-only, never public.
 export const EmailLog: CollectionConfig = {
   slug: 'email-log',
   labels: { singular: 'Sent email', plural: 'Email log' },

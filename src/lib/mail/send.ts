@@ -2,9 +2,9 @@ import { isMockMode, getMailProvider } from './index'
 import { sendMail } from '../mailer'
 import { senderHeader } from '../sender-names'
 
-// Sends an email that a person wrote (outreach to developers, follow-ups, replies) through the Zoho mailbox it comes from, so it
-// shows in Zoho's Sent folder and in /cms/mail. Automatic site emails (lead alerts, password resets, digests) keep using Resend directly.
-// Until the Zoho keys are set (mock mode) or when Zoho refuses the send, it falls back to Resend, so nothing is ever lost.
+// Sends an email that a person wrote (outreach to developers, follow-ups, replies) through the Google mailbox it comes from, so it
+// shows in the mailbox's Sent folder and in /cms/mail. Automatic site emails (lead alerts, password resets, digests) keep using Resend directly.
+// Until the Google keys are set (mock mode) or when the mailbox refuses the send, it falls back to Resend, so nothing is ever lost.
 
 export type HumanEmail = {
   /** The mailbox address it is sent from, e.g. developers@lankanewhomes.com. */
@@ -19,13 +19,13 @@ export type HumanEmail = {
   text?: string
   /** Test sends (local / preview): always use Resend, never a real mailbox. */
   forceResend?: boolean
-  /** When it goes out through Resend, also BCC the sending mailbox so a copy lands in Zoho. */
+  /** When it goes out through Resend, also BCC the sending mailbox so a copy lands in the mailbox. */
   copyToSender?: boolean
 }
 
 const list = (v?: string | string[]) => (v === undefined ? [] : Array.isArray(v) ? v : [v])
 
-export async function sendHumanEmail(email: HumanEmail): Promise<{ via: 'zoho' | 'resend'; id?: string }> {
+export async function sendHumanEmail(email: HumanEmail): Promise<{ via: 'mailbox' | 'resend'; id?: string }> {
   if (!email.forceResend && !isMockMode()) {
     try {
       const provider = await getMailProvider()
@@ -40,10 +40,10 @@ export async function sendHumanEmail(email: HumanEmail): Promise<{ via: 'zoho' |
           subject: email.subject,
           htmlBody: email.html,
         })
-        return { via: 'zoho', id: sent.zohoMessageId }
+        return { via: 'mailbox', id: sent.zohoMessageId }
       }
     } catch (error) {
-      console.warn('Zoho send failed, falling back to Resend:', error instanceof Error ? error.message : error)
+      console.warn('Mailbox send failed, falling back to Resend:', error instanceof Error ? error.message : error)
     }
   }
   const sent = await sendMail({

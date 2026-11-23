@@ -86,9 +86,9 @@ for (const id of ['listing-update', 'verify-company', 'complete-profile', 'lead-
   mails.push({ name: outreachNames[id], from: DEVELOPERS, subject: o.subject, html: o.html, text: o.text })
 }
 // "Sample" stands in for the one-time token, so these two buttons open the site but do not confirm or reset anything.
-mails.push({ name: 'Account: confirm your email', from: NOREPLY, subject: 'Confirm your email (sample)', html: renderVerificationEmailHTML({ verificationURL: `${SITE}/login`, loginURL: `${SITE}/login` }) })
-mails.push({ name: 'Account: reset your password', from: NOREPLY, subject: 'Reset your password (sample)', html: renderPasswordResetEmailHTML({ resetURL: `${SITE}/login` }) })
-mails.push({ name: 'Account: sign-in link', from: NOREPLY, subject: 'Your LankaNewHomes sign-in link (sample)', html: renderSignInLinkEmailHTML({ signInURL: `${SITE}/login` }) })
+mails.push({ name: 'Account: confirm your email', from: NOREPLY, subject: 'Confirm your email (sample)', html: renderVerificationEmailHTML({ verificationURL: `${SITE}/developers/login`, loginURL: `${SITE}/developers/login` }) })
+mails.push({ name: 'Account: reset your password', from: NOREPLY, subject: 'Reset your password (sample)', html: renderPasswordResetEmailHTML({ resetURL: `${SITE}/developers/login` }) })
+mails.push({ name: 'Account: sign-in link', from: NOREPLY, subject: 'Your LankaNewHomes sign-in link (sample)', html: renderSignInLinkEmailHTML({ signInURL: `${SITE}/developers/login` }) })
 
 const only = (process.env.ONLY ?? '').split(',').map((s) => Number(s.trim())).filter(Boolean)
 let sent = 0

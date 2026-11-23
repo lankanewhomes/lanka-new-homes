@@ -6,7 +6,7 @@ import config from "../../../../../../payload.config";
 
 export const dynamic = "force-dynamic";
 
-// POST: incremental Zoho -> CMS sync. Called every few minutes by cron with the secret header (x-mail-sync-secret: $MAIL_SYNC_SECRET,
+// POST: incremental the mailbox -> CMS sync. Called every few minutes by cron with the secret header (x-mail-sync-secret: $MAIL_SYNC_SECRET,
 // or the existing Authorization: Bearer $CRON_SECRET that Vercel Cron sends), and by the Refresh button with an admin session.
 // A mailbox whose full import is not finished continues importing instead (resumable batches), so the same cron also finishes it.
 export async function POST(request: Request) {
