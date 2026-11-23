@@ -2896,7 +2896,7 @@ floor-plan and preview pages do not carry it yet.
 - The link is `/unsubscribe?e=<email>&t=<signed token>` (HMAC of the email with `PAYLOAD_SECRET`, or `UNSUBSCRIBE_SECRET` if set). The page asks for one click, then `/api/unsubscribe` marks the person `unsubscribed` in Contacts & subscribers, creating the row if they were never in it. Unsubscribed means every list: never email them marketing. Ticking a box on /contact again subscribes them.
 
 ### Newsletter template and preview (2026-11-18)
-- `renderNewsletter()` (src/lib/newsletter-email.ts) builds every marketing email: the unsubscribe line is a row after the footer, so it is always the very last thing, and the mail app's own Unsubscribe header is returned too. Send only to Contacts & subscribers with status `subscribed`.
+- `renderNewsletter()` (src/lib/newsletter-email.ts) builds every marketing email: the unsubscribe line is a note row just above the dark footer (owner, 2026-11-23: the dark footer with the site blurb, www link and Follow us is ALWAYS the last thing in every email; all notes go above it), and the mail app's own Unsubscribe header is returned too. Send only to Contacts & subscribers with status `subscribed`.
 - /dashboard/newsletter (admin): subscriber counts, a sample newsletter in a frame with the unsubscribe line at the end, and the list of people who unsubscribed.
 
 ## Header mega menu (desktop)

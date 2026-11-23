@@ -24,10 +24,10 @@ export const darkBg = (color = INK) => `background-color:${color};background-ima
  *  turn it back to light. The classes only do anything inside Gmail (the `u + .body` rule in emailShell); elsewhere they are plain divs. */
 export const lightOnDark = (html: string) => `<div class="gm-screen"><div class="gm-diff">${html}</div></div>`
 
-/** One style for every note under the dark footer (questions, why you got this, unsubscribe): white, divider line, small grey centred text. */
+/** One style for every note (questions, why you got this, unsubscribe): white, divider line, small grey centred text. Notes sit ABOVE the dark footer; the dark footer is always the last thing in the email (owner, 2026-11-23). */
 export const emailNoteRow = (html: string, bg = '#ffffff') => `  <tr><td style="padding:18px 32px;background:${bg};border-top:1px solid ${LINE};font-size:12px;line-height:1.6;color:#8a8a8a;text-align:center;">${html}</td></tr>`
 
-export function emailShell(opts: { preheader: string; title: string; body: string; footerNote?: string; /** Second section under the footer note: how to get help (always the last note, after "why you got this"). */ helpNote?: string; /** Full table row placed after the footer, i.e. the very last thing in the email (the unsubscribe line of a newsletter). */ lastRow?: string }): string {
+export function emailShell(opts: { preheader: string; title: string; body: string; footerNote?: string; /** Second note: how to get help (after "why you got this"). */ helpNote?: string; /** Full table row placed after the notes, just above the dark footer (the unsubscribe line of a newsletter). */ lastRow?: string }): string {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>${esc(opts.title)}</title><style>u + .body .gm-screen{background:#000;mix-blend-mode:screen;}u + .body .gm-diff{background:#000;mix-blend-mode:difference;}</style></head>
 <body class="body" style="margin:0;background:${PAPER};font-family:${FONT};color:${TEXT};">
 <div style="display:none;max-height:0;overflow:hidden;opacity:0;">${esc(opts.preheader)}</div>
@@ -35,10 +35,10 @@ export function emailShell(opts: { preheader: string; title: string; body: strin
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:620px;background:#ffffff;border:1px solid ${LINE};">
   <tr><td bgcolor="${INK}" style="${darkBg()}border-top:4px solid ${ORANGE};padding:26px 32px;"><a href="${SITE}" style="text-decoration:none;"><img src="${SITE}/brand/lankanewhomes-logo-white-on-dark.png" width="124" alt="LankaNewHomes" style="display:block;border:0;width:124px;height:auto;background:${INK};font-size:20px;font-weight:700;color:#ffffff;"></a></td></tr>
 ${opts.body}
-  <tr><td bgcolor="${INK}" style="${darkBg()}padding:22px 32px;font-size:12px;line-height:1.7;color:#b9b8b2;">${lightOnDark(`Sri Lanka's new homes marketplace: apartments, houses and land, with prices, floor plans and developer details in one place.<br><a href="${SITE}" style="color:#ffffff;text-decoration:underline;">www.lankanewhomes.com</a><br>Follow us: <a href="https://www.instagram.com/lankanewhomes/" style="color:#ffffff;text-decoration:underline;">Instagram</a> &nbsp;·&nbsp; <a href="https://www.facebook.com/lankanewhomes" style="color:#ffffff;text-decoration:underline;">Facebook</a> &nbsp;·&nbsp; <a href="https://www.tiktok.com/@lankanewhomes" style="color:#ffffff;text-decoration:underline;">TikTok</a>`)}</td></tr>
 ${opts.footerNote === '' ? '' : (opts.footerNote === undefined ? emailNoteRow('You are receiving this because your company or project is listed on LankaNewHomes.', PAPER) : emailNoteRow(opts.footerNote))}
 ${opts.helpNote ? emailNoteRow(opts.helpNote) : ''}
 ${opts.lastRow ?? ''}
+  <tr><td bgcolor="${INK}" style="${darkBg()}padding:22px 32px;font-size:12px;line-height:1.7;color:#b9b8b2;">${lightOnDark(`Sri Lanka's new homes marketplace: apartments, houses and land, with prices, floor plans and developer details in one place.<br><a href="${SITE}" style="color:#ffffff;text-decoration:underline;">www.lankanewhomes.com</a><br>Follow us: <a href="https://www.instagram.com/lankanewhomes/" style="color:#ffffff;text-decoration:underline;">Instagram</a> &nbsp;·&nbsp; <a href="https://www.facebook.com/lankanewhomes" style="color:#ffffff;text-decoration:underline;">Facebook</a> &nbsp;·&nbsp; <a href="https://www.tiktok.com/@lankanewhomes" style="color:#ffffff;text-decoration:underline;">TikTok</a>`)}</td></tr>
 </table></td></tr></table></body></html>`
 }
 
