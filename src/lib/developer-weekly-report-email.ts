@@ -1,4 +1,4 @@
-import { emailButton, emailCompactList, emailHero, emailPanel, emailSectionLabel, emailShell, emailSignoff, esc, verifiedPill } from './email-layout'
+import { emailButton, emailCompactList, emailHero, emailPanel, emailSectionLabel, emailShell, emailSignoff, esc, lightOnDark, verifiedPill } from './email-layout'
 
 // Sender (owner, 2026-11-22): send from developers@lankanewhomes.com, not no-reply@, because the email invites replies.
 // Weekly report for a developer: how their listings did on LankaNewHomes in the last 7 days (owner, 2026-11-22: "weekly report email i want to
@@ -107,15 +107,16 @@ function featuredSection(i: DeveloperWeeklyReportInput): string {
   const intro = trial
     ? `Your listings are being shown in our Featured placements <strong style="color:#ffffff;">free of charge, as a trial</strong> from ${day(trial.from)} to ${day(trial.to, true)}. You have not been charged for this.`
     : 'Your Featured package puts your listings in the top spots on LankaNewHomes.'
-  // Dark ink box with the site's faint grid lines so it stands apart from the normal numbers (owner, 2026-11-22). Mail apps that drop the
+  // Dark ink box with the site's faint grid lines so it stands apart from the normal numbers (owner, 2026-11-22). The last gradient layer
+  // is the solid colour again, so the box stays dark in the Gmail app's dark mode (see darkBg / lightOnDark in email-layout.ts). Mail apps that drop the
   // gradient (Outlook) still get the solid dark background.
-  const grid = 'background-color:#1c1c20;background-image:linear-gradient(rgba(255,255,255,0.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.07) 1px,transparent 1px);background-size:32px 32px;'
+  const grid = 'background-color:#1c1c20;background-image:linear-gradient(rgba(255,255,255,0.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.07) 1px,transparent 1px),linear-gradient(#1c1c20,#1c1c20);background-size:32px 32px,32px 32px,auto;'
   return `  <tr><td style="padding:30px 32px 6px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#1c1c20" style="${grid}border-top:4px solid #f47b36;"><tr><td style="padding:22px 20px 18px;">
     ${tag ? `<div style="margin:0 0 10px;">${tag}</div>` : ''}
-    <div style="margin:0 0 8px;font-size:20px;font-weight:700;line-height:1.3;color:#ffffff;">Your Featured placements this week</div>
-    <div style="margin:0 0 16px;font-size:14px;line-height:1.6;color:#e7e5df;">${intro}</div>
+    ${lightOnDark(`<div style="margin:0 0 8px;font-size:20px;font-weight:700;line-height:1.3;color:#ffffff;">Your Featured placements this week</div>
+    <div style="margin:0 0 16px;font-size:14px;line-height:1.6;color:#e7e5df;">${intro}</div>`)}
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="background:#ffffff;border:1px solid ${LINE};border-bottom:0;"><tr><th align="left" style="${th}">Placement</th><th align="right" style="${th}">Shown</th><th align="right" style="${th}">Clicks</th><th align="right" style="${th}">Leads</th></tr>${body}</table>
-    <div style="margin:12px 0 0;font-size:12px;line-height:1.5;color:#b9b8b2;">Shown is how many times buyers saw your Featured placement. These numbers are counted separately from the listing views above.</div>
+    ${lightOnDark(`<div style="margin:12px 0 0;font-size:12px;line-height:1.5;color:#b9b8b2;">Shown is how many times buyers saw your Featured placement. These numbers are counted separately from the listing views above.</div>`)}
   </td></tr></table></td></tr>`
 }
 
