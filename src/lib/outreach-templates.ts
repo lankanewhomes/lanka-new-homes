@@ -53,7 +53,7 @@ const button = (href: string, text: string) =>
 function stepCard(n: number, title: string, lines: string[], cta?: { href: string; text: string }) {
   const top = n > 1 ? ` border-top:1px solid ${LINE};` : ''
   return `<tr>
-<td width="50" valign="top" style="width:50px; padding:14px 0 14px 16px; font-size:14px; font-weight:700; line-height:1.55; color:${ORANGE};${top}">${n}</td>
+<td width="44" valign="top" style="width:28px; padding:14px 0 14px 16px; font-size:15px; font-weight:700; line-height:1.45; color:${ORANGE};${top}">${n}</td>
 <td valign="top" style="padding:14px 16px 14px 0;${top}"><div style="font-size:15px; font-weight:700; line-height:1.45; color:${INK}; margin:0 0 6px;">${esc(title)}</div>${lines.map((l) => `<div style="font-size:14px; line-height:1.55; color:${TEXT}; margin:0 0 8px;">${l}</div>`).join('')}${cta ? button(cta.href, cta.text) : ''}</td>
 </tr>`
 }
