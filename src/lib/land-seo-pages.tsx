@@ -164,6 +164,16 @@ export const LAND_TOWNS = [
   { slug: "horana", name: "Horana", district: "Kalutara" },
   { slug: "kaduwela", name: "Kaduwela", district: "Colombo" },
   { slug: "kahathuduwa", name: "Kahathuduwa", district: "Colombo" },
+  // Added 2026-11-24 (Ubersuggest, Sri Lanka: Panadura 590, Negombo 590, Kottawa 480, Wattala 480, Boralesgamuwa 390, Thalawathugoda 390,
+  // Bandaragama 320, Kiribathgoda 260 searches a month, difficulty 9-11).
+  { slug: "panadura", name: "Panadura", district: "Kalutara" },
+  { slug: "negombo", name: "Negombo", district: "Gampaha" },
+  { slug: "kottawa", name: "Kottawa", district: "Colombo" },
+  { slug: "wattala", name: "Wattala", district: "Gampaha" },
+  { slug: "boralesgamuwa", name: "Boralesgamuwa", district: "Colombo" },
+  { slug: "thalawathugoda", name: "Thalawathugoda", district: "Colombo" },
+  { slug: "bandaragama", name: "Bandaragama", district: "Kalutara" },
+  { slug: "kiribathgoda", name: "Kiribathgoda", district: "Gampaha" },
 ];
 
 function townPageDef({ slug, name, district }: (typeof LAND_TOWNS)[number]): PageDef {

@@ -42,6 +42,9 @@ Update this file whenever a new keyword group or page is added.
 | `/projects/apartments-for-sale-in-rajagiriya` | "apartments for sale in rajagiriya" (390/mo, difficulty 31) — Rajagiriya apartments; only 1 listing so far (added 2026-11-13) | new |
 | `/projects/apartments-for-sale-in-dehiwala` | "apartments for sale in dehiwala" (590/mo, difficulty 10) — Dehiwala apartment/condominium listings only; houses page keeps all types (added 2026-11-16, owner request) | new |
 | `/projects/apartments-for-sale-in-mount-lavinia` | "apartments for sale in mount lavinia" (210/mo, difficulty 10) — Mount Lavinia apartments only (added 2026-11-16, owner request) | new |
+| `/projects/apartments-for-sale-in-wellawatte` | "apartment for sale in wellawatte" (480/mo Sri Lanka, difficulty 11; "apartment for sale wellawatte" 90) — apartments in Wellawatte and the rest of Colombo 06 (4 listings at build); the postcode page `/projects/colombo/colombo-6` keeps "colombo 6" (added 2026-11-24) | new |
+| `/projects/low-price-houses-for-sale-in-sri-lanka` | "low price house for sale in sri lanka" (590/mo Sri Lanka, difficulty 17) — houses, villas and townhouses with a published starting price of Rs. 50M or less, not sold out or completed (6 listings at build) (added 2026-11-24) | new |
+| `/projects/luxury-houses-for-sale-in-sri-lanka` | "luxury house for sale in sri lanka" (170/mo Sri Lanka, difficulty 16) — type Luxury Villas, or house types from Rs. 80M, not sold out (about 14 listings at build) (added 2026-11-24) | new |
 | `/projects/houses-for-sale-in-thalawathugoda` | "houses for sale in thalawathugoda" (590/mo, difficulty 2) — all Thalawathugoda listings (added 2026-11-13, owner request) | new |
 | `/projects/houses-for-sale-in-kadawatha` | "houses for sale in kadawatha" (1,900/mo, difficulty 4) — all Kadawatha listings (added 2026-11-13) | new |
 | `/projects/houses-for-sale-in-piliyandala` | "houses for sale in piliyandala" (2,400/mo, difficulty 5) — all Piliyandala listings (added 2026-11-13) | new |
@@ -56,6 +59,7 @@ Update this file whenever a new keyword group or page is added.
 | `/guides/buy-land-in-sri-lanka` | "buy land in sri lanka" (UK 170/mo), overseas buyers | new 2026-11-19 |
 | `/guides/apartment-prices-in-colombo` | "apartment prices in colombo" (170/mo); starting prices by area from live listings, Nov 2026 | new 2026-11-17 |
 | `/land/land-for-sale-in-<town>` (8 towns) | Land by town: homagama, kadawatha, malabe, piliyandala, athurugiriya, horana, kaduwela, kahathuduwa; config `LAND_TOWNS` in `src/lib/land-seo-pages.tsx` | new 2026-11-16 |
+| `/land/land-for-sale-in-<town>` (8 more towns) | panadura (590/mo), negombo (590), kottawa (480), wattala (480), boralesgamuwa (390), thalawathugoda (390), bandaragama (320), kiribathgoda (260); Ubersuggest Sri Lanka, difficulty 9-11; same `LAND_TOWNS` config, empty pages stay noindex | new 2026-11-24 |
 | `/blog` | Blog index (list of posts) | rebuilt (was a "check back soon" stub) 2026-09-29, now indexed — real content exists |
 | `/blog/{slug}` | Individual blog post | new 2026-09-29 — config in `src/lib/blog.ts`, same "add a record, add a route" pattern as `guides.ts`. First post: "7 Ways Sri Lankan Developers Can Make Their Project Websites Sell More Units" (targets developers researching web design, not buyer-side keywords) |
 | `/blog/before-buying-land-in-sri-lanka` | "buying land in sri lanka", "how to buy land in sri lanka", "land buying guide sri lanka", "land perch acre sri lanka" — buyer-side guide; title tag "Buying Land in Sri Lanka: A Simple Guide" (+ site suffix), answer-first intro, 10 internal links out into /land pages and 1 in from every /land SEO page (CHECKS text), visible breadcrumb + BreadcrumbList and BlogPosting JSON-LD, descriptive image alt text, 7 illustrations on R2 `blog/before-buying-land-in-sri-lanka/`, listed in /llms.txt; NO FAQ block (owner removed FAQs 2026-10-16) (added 2026-10-23, owner request, trimmed 2026-10-24) | new |
@@ -444,3 +448,16 @@ Ubersuggest volumes: land for sale in kandy 1,900; galle 880; negombo 880; gampa
 2026-11-13 round: also found land for sale in kurunegala 1,000 (page exists), panadura 590 and kalutara 260 (both under `/land/district/kalutara`, whose description lists Horana, Aluthgama, Bandaragama, so "Panadura" is not named), apartments for sale in kandy 260, malabe 110, battaramulla 70 (no pages: 0-1 listings), sri lanka property investment 140 (`/guides/investment-property`).
 
 2026-11-13 later round: houses for sale in homagama 1,600, gampaha 1,300, moratuwa 1,000, panadura 880, ja ela 590, battaramulla 260 and beachfront land for sale sri lanka 140 have no pages because we hold 0 to 2 listings in each; add listings there first. Thalawathugoda, Kadawatha and Piliyandala pages built (9, 4 and 3 listings).
+
+## 2026-11-24 keyword round (Ubersuggest, Sri Lanka, seeds "house for sale", "land for sale", "apartment for sale")
+
+Built: the 3 project pages and 8 land town pages marked 2026-11-24 above. Checked and NOT built:
+
+| Keyword | Volume | Why not |
+|---|---|---|
+| apartment for sale in kandy / nugegoda / negombo | 210 / 210 / 70 | The "Houses & Apartments for Sale in {town}" pages already target them; only 2 to 4 apartments each |
+| coconut land / tea land for sale in sri lanka | 480 / 320 | No such plots listed |
+| small house for sale in colombo | 260 | No house-size data to filter on |
+| land for sale kandy / galle / gampaha / kurunegala / nuwara eliya | 1,600 / 720 / 590 / 880 / 590 | Covered by the district land pages |
+| house for sale in gampaha, piliyandala etc. | 1,300+ | Built already or no listings (see seo-todo) |
+| trizen / havelock city / cinnamon life apartment for sale | 390 / 260 / 170 | Project pages exist for TRI-ZEN and Cinnamon Life; Havelock City is not listed |

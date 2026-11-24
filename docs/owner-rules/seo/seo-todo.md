@@ -1,10 +1,11 @@
-# SEO to-do (state at 2026-11-15; update after every SEO round)
+# SEO to-do (state at 2026-11-24; update after every SEO round)
 
 Show this as a table first when the owner asks about SEO.
 
 | Status | Item | Detail |
 |---|---|---|
 | 🟢 | New keyword pages live | Colombo postcode pages 1-15 (empty ones noindex), Colombo luxury / cheap / brand-new / 2-bedroom, houses-for-sale pages for Colombo, Kandy, Negombo, Nugegoda, Galle, Dehiwala, Mount Lavinia, Kottawa, Thalawathugoda, Kadawatha, Piliyandala, Rajagiriya apartments, villas, land district pages |
+| 🟢 | Keyword round 2026-11-24 | Apartments Wellawatte (480/mo), low price houses Sri Lanka (590), luxury houses Sri Lanka (170); land town pages Panadura, Negombo, Kottawa, Wattala, Boralesgamuwa, Thalawathugoda, Bandaragama, Kiribathgoda (260-590 each). Not built list in `docs/seo-strategy.md` |
 | 🟢 | `/projects` and `/land` retitled | Titles use live counts |
 | 🟢 | Site audit fixes | Popular-searches links now clean pages; shorter /neighborhoods title; more text on /neighborhoods and /developers |
 | 🟡 | Re-run Ubersuggest `site_audit` | Do it a day or two after the last deploy; last score 75 (24 pages) |
