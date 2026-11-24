@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Building2, Compass, Home, LandPlot, Map as MapIcon, MapPin, Route } from "lucide-react";
+import { Building2, Compass, Home, LandPlot, Mail, Map as MapIcon, MapPin, Route } from "lucide-react";
+import { formatCodes, postalTownForArea } from "@/lib/postal-codes";
 import { getAllNeighborhoods, getNeighborhoodBySlug, getNeighborhoodBySlugRaw } from "@/lib/neighborhood-store";
 import { getAllProjects } from "@/lib/project-store";
 import { getAllLands } from "@/lib/land-store";
@@ -93,9 +94,12 @@ export async function NeighborhoodView({ slug, preview = false }: { slug: string
 
   // Quick facts — chips, no heading. A fact that has no data is left out.
   const propertyTypes = propertyTypeLabels(neighborhoodProjects);
+  const postalTown = postalTownForArea(neighborhood);
   const stats: { icon: React.ComponentType<{ className?: string }>; label: string; value: string }[] = [
     ...(neighborhood.district ? [{ icon: MapIcon, label: "District", value: neighborhood.district }] : []),
     ...(neighborhood.city ? [{ icon: MapPin, label: "City", value: neighborhood.city }] : []),
+    // From the Sri Lanka Post town list; left out when the area has no post office of its own ("<area> postal code" searches).
+    ...(postalTown ? [{ icon: Mail, label: "Postal code", value: formatCodes(postalTown) }] : []),
     ...(neighborhood.approxLocation ? [{ icon: Compass, label: "Approx. location", value: neighborhood.approxLocation }] : []),
     ...(nearbyAreas.length > 0 ? [{ icon: Route, label: "Nearby major areas", value: nearbyAreas.slice(0, 3).map((areaItem) => areaItem.name).join(", ") }] : []),
     ...(propertyTypes.length > 0 ? [{ icon: Home, label: "Typical property types", value: propertyTypes.join(", ") }] : []),

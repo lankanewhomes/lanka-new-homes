@@ -6,6 +6,7 @@
 | Colombo postcodes | `/projects/colombo/colombo-{1..15}` | `src/lib/colombo-postcode-pages.ts` |
 | Town / modifier pages | `/projects/houses-for-sale-in-{town}`, `/projects/apartments-for-sale-in-{town}`, `/projects/{modifier}-apartments-for-sale-in-colombo` | `listing-categories.ts` |
 | Land pages | `/land`, `/land/{slug}`, `/land/district/{district}`, `/land/{keyword-slug}` | `src/lib/land-seo-pages.tsx` |
+| Postal codes | `/postal-codes`, `/postal-codes/{district}`, `/postal-codes/{district}/{town}` | `src/lib/postal-codes.ts` (static data from `src/data/cities.json`) |
 | Neighbourhoods | `/neighborhoods`, `/neighborhoods/{slug}` | Neighborhoods collection |
 | Guides | `/guides`, `/guides/{slug}` | `src/lib/guides.ts` |
 | Blog | `/blog`, `/blog/{slug}` | `src/lib/blog.ts` |

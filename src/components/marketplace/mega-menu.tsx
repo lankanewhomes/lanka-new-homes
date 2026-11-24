@@ -122,6 +122,7 @@ export const MEGA_MENUS: Record<MegaKey, { columns: MegaColumn[]; tilesHeading: 
         links: [
           { label: "Developers", href: "/developers" },
           { label: "Neighborhoods", href: "/neighborhoods" },
+          { label: "Postal codes", href: "/postal-codes" },
           { label: "Guides", href: "/guides" },
           { label: "Construction companies", href: "/construction-companies" },
           { label: "Architects", href: "/architects" },

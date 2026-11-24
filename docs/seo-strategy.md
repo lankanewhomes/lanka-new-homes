@@ -461,3 +461,25 @@ Built: the 3 project pages and 8 land town pages marked 2026-11-24 above. Checke
 | land for sale kandy / galle / gampaha / kurunegala / nuwara eliya | 1,600 / 720 / 590 / 880 / 590 | Covered by the district land pages |
 | house for sale in gampaha, piliyandala etc. | 1,300+ | Built already or no listings (see seo-todo) |
 | trizen / havelock city / cinnamon life apartment for sale | 390 / 260 / 170 | Project pages exist for TRI-ZEN and Cinnamon Life; Havelock City is not listed |
+
+## Postal code pages (2026-11-24)
+
+| URL | Target | Detail |
+|---|---|---|
+| `/postal-codes` | "postal code for sri lanka" (6,600/mo), "postal code" (4,400) | Hub: 25 districts, most searched towns, Colombo 1 to 15 |
+| `/postal-codes/{district}` | "{district} postal codes" | Every town and code in the district, A to Z (25 pages) |
+| `/postal-codes/{district}/{town}` | "{town} postal code": Colombo 8,100, Kandy 5,400, Dehiwala / Gampaha / Wattala 4,400, Kurunegala / Piliyandala / Nugegoda / Galle / Pannipitiya 3,600, and 1,300 to 2,900 for about 30 more towns; difficulty 9 to 14 | 2,062 towns. Code, district, province, Sinhala and Tamil name, the 12 nearest towns, live count of homes and land with a link to the area guide. `Place` + `PostalAddress` JSON-LD |
+
+Why: with domain authority 1 the "for sale" keywords are slow to win, but these are very low difficulty and the site already showed for
+"nawala zip code" and "bokundara postal code" with no code on the page. Data: `src/data/cities.json` (Sri Lanka Post town list, the same
+one the listing forms use), read through `src/lib/postal-codes.ts`; nothing is typed by hand. Area guides now show a "Postal code" chip.
+Town pages are built on first visit and cached for an hour. All are in the sitemap. Linked from the footer and the menu.
+
+Also 2026-11-24: `/construction-companies` title is now "Construction Companies & Building Contractors in Sri Lanka" ("building contractors
+sri lanka" 1,900/mo, page was at position 10; "construction company sri lanka" 2,400).
+
+Biggest gap still open (needs listings, not code): project-name searches at difficulty 6 to 20 for projects we do not list: Oval View
+Residencies 9,900, Trillium Residencies 4,400, Metro Homes Residencies 3,600, OnThree20 3,600, Lake Crest 2,900, Green Valley Residencies
+2,900, Mount Clifford Homagama 2,400, Iceland / Vishnu / Emperor / Clearpoint / Empire / Cinnamon Garden / Fairway / Crescat / Hedges Court
+Residencies 1,600 each, Capitol Residencies 880, Odiliya Residencies 880. Builders not listed: Vajira House Builders 880, ICC 880, RR
+Construction 210.

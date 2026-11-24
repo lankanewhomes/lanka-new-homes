@@ -4513,6 +4513,7 @@ export function Footer() {
               <Link href="/projects">New homes for sale</Link>
               <Link href="/land">Land for sale</Link>
               <Link href="/neighborhoods">Neighborhoods</Link>
+              <Link href="/postal-codes">Postal codes</Link>
               <Link href="/developers">Developers</Link>
               <Link href="/construction-companies">Construction companies</Link>
               <Link href="/architects">Architects</Link>

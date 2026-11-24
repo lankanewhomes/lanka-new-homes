@@ -12,6 +12,7 @@ import { toAbsoluteUrl } from "@/lib/seo";
 import { allProjectCategories } from "@/lib/listing-categories";
 import { colomboPostcodes, postcodePath } from "@/lib/colombo-postcode-pages";
 import { LAND_SEO_PAGES, landDistricts } from "@/lib/land-seo-pages";
+import { postalDistrictPath, postalDistricts, postalTownPath, postalTowns } from "@/lib/postal-codes";
 import { guides } from "@/lib/guides";
 import { blogPosts } from "@/lib/blog";
 import { constructionCompanyPages } from "@/lib/construction-company-categories";
@@ -249,5 +250,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const postcodeRoutes: MetadataRoute.Sitemap = colomboPostcodes(projects).map((n) => ({ url: toAbsoluteUrl(postcodePath(n)), lastModified: now, changeFrequency: "daily" as const, priority: 0.7 }));
 
-  return [...staticRoutes, ...postcodeRoutes, ...landSeoRoutes, ...landDistrictRoutes, ...projectCategoryRoutes, ...guideRoutes, ...blogRoutes, ...constructionCompanyRoutes, ...projectRoutes, ...developerRoutes, ...landRoutes, ...neighborhoodRoutes, ...partnerDirectoryRoutes];
+  // Postal code pages: the hub, one page per district and one per town (static data, src/lib/postal-codes.ts).
+  const postalCodeRoutes: MetadataRoute.Sitemap = [
+    { url: toAbsoluteUrl("/postal-codes"), lastModified: now, changeFrequency: "monthly" as const, priority: 0.6 },
+    ...postalDistricts.map((district) => ({ url: toAbsoluteUrl(postalDistrictPath(district.slug)), lastModified: now, changeFrequency: "monthly" as const, priority: 0.5 })),
+    ...postalTowns.map((town) => ({ url: toAbsoluteUrl(postalTownPath(town)), lastModified: now, changeFrequency: "monthly" as const, priority: 0.4 })),
+  ];
+
+  return [...staticRoutes, ...postcodeRoutes, ...postalCodeRoutes, ...landSeoRoutes, ...landDistrictRoutes, ...projectCategoryRoutes, ...guideRoutes, ...blogRoutes, ...constructionCompanyRoutes, ...projectRoutes, ...developerRoutes, ...landRoutes, ...neighborhoodRoutes, ...partnerDirectoryRoutes];
 }
