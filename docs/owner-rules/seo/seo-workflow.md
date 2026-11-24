@@ -2,6 +2,7 @@
 
 | Step | Do |
 |---|---|
+| 0. After new listings | Run `node scripts/seo-page-gaps.mjs` to see which towns now qualify for a page (owner, 2026-11-24) |
 | 1. Read | `seo-todo.md`, then the relevant row in `docs/seo-strategy.md` |
 | 2. Research with tools | Ubersuggest `keyword_suggestions`, `keyword_metrics` (volume, difficulty), `serp_analysis` (who ranks), `domain_keywords` on lankanewhomes.com (what we already hold), `page_overview`; AI SEO Crew `find_keyword_ideas`, `check_page_seo`. If a tool needs sign-in or is down, say so; never skip silently |
 | 3. Decide | Build a page only if there is real volume AND at least 1-2 real listings; otherwise note it as "not built" with the reason |

@@ -1,6 +1,10 @@
 # SEO: index (read this first for any SEO task)
 
 Standing instruction (owner, 2026-11-15): **when the owner asks about SEO, first show `seo-todo.md` as a short table ("what we need to do"), then continue.**
+Standing instruction (owner, 2026-11-24): **"when I add listings, go and check and find more pages we can rank for."** After the owner
+adds or publishes listings (or says so), run `node scripts/seo-page-gaps.mjs` (reads the live site, changes nothing; in a cloud session
+prefix `NODE_USE_ENV_PROXY=1`). It lists the towns that now have enough open listings for a town page that does not exist yet. Check each
+one's volume in Ubersuggest (Sri Lanka), build the ones with real volume, push, and report in a table what was built and what was not.
 Always use the SEO tools (Ubersuggest, AI SEO Crew) before building and after (owner, 2026-11-13: "you always check ubersuggest and some seo tools you use to do it right"). Never guess volumes.
 
 | File | Read it when |
