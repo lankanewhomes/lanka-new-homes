@@ -1,16 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getAllNeighborhoods } from "@/lib/neighborhood-store";
-import { getAllProjects } from "@/lib/project-store";
-import { getAllLands } from "@/lib/land-store";
-import { landsInArea } from "@/lib/area-lands";
-import { formatCodes, getPostalTown, nearestTowns, postalDistrictPath, postalTownForArea, postalTownPath } from "@/lib/postal-codes";
+import { formatCodes, getPostalTown, nearestTowns, postalDistrictPath, postalTownPath } from "@/lib/postal-codes";
 import { buildBreadcrumbJsonLd, jsonLdScriptProps, withSocial } from "@/lib/seo";
 
-// "<Town> postal code" (2026-11-24). The code, district, province and nearby towns come from the static Sri Lanka Post town
-// list (src/lib/postal-codes.ts); the homes and land counts are live. Pages are built the first time they are visited.
-export const revalidate = 3600;
+// "<Town> postal code" (2026-11-24). Everything on the page comes from the static Sri Lanka Post town list
+// (src/lib/postal-codes.ts). The page itself reads NOTHING from the database, on purpose: there are about 2,000 of these, and a
+// crawler walking them must not add database reads (2026-11-24: live database reads were timing out the same day these went up).
+// Pages are built the first time they are visited and then kept.
 
 type Props = { params: Promise<{ district: string; town: string }> };
 
@@ -39,15 +36,6 @@ export default async function PostalTownPage({ params }: Props) {
   const codes = formatCodes(town);
   const plural = town.codes.length > 1;
   const nearby = nearestTowns(town, 12);
-  // The code itself needs no database, so a failed listings read must not take the page down: it just shows no counts.
-  const [neighborhoods, projects, lands] = await Promise.all([
-    getAllNeighborhoods().catch(() => []),
-    getAllProjects().catch(() => []),
-    getAllLands().catch(() => []),
-  ]);
-  const area = neighborhoods.find((candidate) => postalTownForArea(candidate) === town);
-  const homes = area ? projects.filter((project) => project.neighborhoodSlug === area.slug).length : 0;
-  const plots = landsInArea(lands, area ?? { name: town.name, slug: town.slug }).length;
   const hasMap = Boolean(town.latitude && town.longitude);
   const mapUrl = `https://www.google.com/maps/search/?api=1&query=${town.latitude},${town.longitude}`;
 
@@ -88,7 +76,7 @@ export default async function PostalTownPage({ params }: Props) {
             </p>
             <div className="fdv-hero-ctas">
               <Link href={postalDistrictPath(town.districtSlug)} className="fdv-cta-final-button">All {town.district} postal codes</Link>
-              {area ? <Link href={`/neighborhoods/${area.slug}`} className="fdv-cta-secondary fdv-hero-explore-link">{area.name} area guide</Link> : null}
+              <Link href="/neighborhoods" className="fdv-cta-secondary fdv-hero-explore-link">Area guides</Link>
             </div>
           </div>
         </div>
@@ -136,12 +124,9 @@ export default async function PostalTownPage({ params }: Props) {
           <h2>Homes and land for sale in {town.name}.</h2>
         </div>
         <p data-reveal>
-          {homes + plots > 0
-            ? `LankaNewHomes lists ${homes} new ${homes === 1 ? "home" : "homes"} and ${plots} land ${plots === 1 ? "plot" : "plots"} in ${town.name} right now, direct from developers and builders. `
-            : `No new homes or land plots are listed in ${town.name} right now. `}
-          {area ? <>See the <Link href={`/neighborhoods/${area.slug}`}>{area.name} area guide</Link> for the listings, landmarks and what the area is like. </> : null}
-          You can also browse <Link href="/projects">new homes for sale in Sri Lanka</Link>, <Link href="/land">land for sale</Link> or{" "}
-          <Link href="/neighborhoods">all areas</Link>.
+          LankaNewHomes lists new homes and land for sale across Sri Lanka, direct from developers and builders. Browse{" "}
+          <Link href="/projects">new homes for sale</Link>, <Link href="/land">land for sale</Link> or the{" "}
+          <Link href="/neighborhoods">area guides</Link> to see what is listed in and around {town.name}, in {town.district} district.
         </p>
       </section>
     </div>
