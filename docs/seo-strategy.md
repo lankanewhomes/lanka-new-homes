@@ -483,3 +483,29 @@ Residencies 9,900, Trillium Residencies 4,400, Metro Homes Residencies 3,600, On
 2,900, Mount Clifford Homagama 2,400, Iceland / Vishnu / Emperor / Clearpoint / Empire / Cinnamon Garden / Fairway / Crescat / Hedges Court
 Residencies 1,600 each, Capitol Residencies 880, Odiliya Residencies 880. Builders not listed: Vajira House Builders 880, ICC 880, RR
 Construction 210.
+
+## 2026-11-24 second round (after `scripts/seo-page-gaps.mjs`: 38 towns with 2+ open listings and no town page)
+
+| Built | Volume (Ubersuggest, Sri Lanka) | Open listings at build |
+|---|---|---|
+| `/projects/houses-for-sale-in-nuwara-eliya` | house for sale in nuwara eliya 590 (+590 "town") | 3 |
+| `/projects/houses-for-sale-in-ja-ela` | house for sale in ja ela 480 / 390 | 2 |
+| `/projects/houses-for-sale-in-jaffna` | house for sale in jaffna 210 (+210 "town") | 2 |
+| `/projects/houses-for-sale-in-wadduwa` | house for sale in wadduwa 110 | 2 |
+| `/land/land-for-sale-in-pannipitiya` | 260 / 210 | 2 |
+| `/land/land-for-sale-in-dambulla` | 140 / 140 / 110 | 4 |
+| `/land/land-for-sale-in-kuliyapitiya` | 140 / 140 | 4 |
+| `/land/land-for-sale-in-minuwangoda` | 110 | 3 |
+| `/land/land-for-sale-in-hikkaduwa` | 110 | 2 |
+| `/land/land-for-sale-in-katunayake` | 90 / 50 | 2 |
+| `/land/land-for-sale-in-meegoda` | 70 / 50 (Search Console: "meegoda" shown 983 times) | 4 |
+| `/land/land-for-sale-in-ahangama` | 70 / 40 / 40 | 2 |
+
+| Not built | Why |
+|---|---|
+| Land: Gampaha, Kalutara, Galle, Kurunegala, Kandy, Anuradhapura, Nuwara Eliya, Matara | The district land pages already target "land for sale in {name}" |
+| Land: Kiriwattuduwa, Narammala, Panagoda, Udugampola, Divulapitiya, Veyangoda, Ambalangoda | No volume or 40 a month or less |
+| Land: Yakkala (140) | No area guide for Yakkala yet, and the town page links to one; add the guide first |
+| Land: Wadduwa (70), Nagoda, Malwana, Habaraduwa, Dodangoda, Uhumiya, Dankotuwa | Low or unchecked volume, 2 plots each |
+| Homes: Hikkaduwa (50), Kalkudah | Low volume |
+| Homes: Dematagoda (210) | Same two listings as `/projects/colombo/colombo-9` |

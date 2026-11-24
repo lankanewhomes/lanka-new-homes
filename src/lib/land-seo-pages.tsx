@@ -174,6 +174,16 @@ export const LAND_TOWNS = [
   { slug: "thalawathugoda", name: "Thalawathugoda", district: "Colombo" },
   { slug: "bandaragama", name: "Bandaragama", district: "Kalutara" },
   { slug: "kiribathgoda", name: "Kiribathgoda", district: "Gampaha" },
+  // Added 2026-11-24, second round, after scripts/seo-page-gaps.mjs (Ubersuggest, Sri Lanka: Pannipitiya 260, Dambulla 140,
+  // Kuliyapitiya 140, Minuwangoda 110, Hikkaduwa 110, Katunayake 90, Meegoda 70, Ahangama 70 searches a month, difficulty 7-12).
+  { slug: "pannipitiya", name: "Pannipitiya", district: "Colombo" },
+  { slug: "dambulla", name: "Dambulla", district: "Matale" },
+  { slug: "kuliyapitiya", name: "Kuliyapitiya", district: "Kurunegala" },
+  { slug: "minuwangoda", name: "Minuwangoda", district: "Gampaha" },
+  { slug: "hikkaduwa", name: "Hikkaduwa", district: "Galle" },
+  { slug: "katunayake", name: "Katunayake", district: "Gampaha" },
+  { slug: "meegoda", name: "Meegoda", district: "Colombo" },
+  { slug: "ahangama", name: "Ahangama", district: "Galle" },
 ];
 
 function townPageDef({ slug, name, district }: (typeof LAND_TOWNS)[number]): PageDef {
