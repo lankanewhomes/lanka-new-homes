@@ -10,6 +10,7 @@ these files are the short rules.
 | `brand-colors.md` | Any colour choice, on the site, graphics, covers or reels |
 | `typography.md` | Any text size, weight or font |
 | `ui-design-rules.md` | Any new or changed page, section, box, icon, badge or button |
+| `email-design.md` | Any email the site sends: shared layout, numbered-steps box, stacked buttons, notes then dark footer last, Gmail dark mode, the 22 designs and test sends |
 | `key-features-and-ownership.md` | Key Features, Ownership & Services, amenities, categories |
 | `listing-data-rules.md` | Adding or editing projects, lands, developers, neighbourhoods |
 | `social-media-rules.md` | Instagram, TikTok, Facebook posts, carousels, reels, covers |
