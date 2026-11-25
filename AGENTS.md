@@ -40,11 +40,15 @@ Always push finished work straight to the `cloudflare-migration` branch
 type-check and tests. GitHub CI does not run on this branch, so say so
 instead of claiming a green build; deploys are Cloudflare only.
 
-Every session (all chats and worktrees) must write its changes into the
-local folder `/Volumes/MyStorage/LNH/lankanewhomes` first, commit only its
-own files there, then push to `cloudflare-migration` (owner, 2026-11-15:
-"always update the local folder and push it after"). Scripts that change
-Supabase data are saved in that folder's `scripts/` and pushed too.
+Every session must write its changes into the one local folder first,
+commit only its own files there, then push to `cloudflare-migration` so
+Cloudflare builds it (owner, 2026-11-15: "always update the local folder and
+push it after"). Since 2026-11-25 that folder is
+`c:\Users\rupan\OneDrive\Desktop\lnh\lankanewhomes` on the owner's Windows
+PC (owner: "i dont use mac anymore"); the old Mac folder is retired. No git
+worktrees and no copies of the repo; several chats share this one working
+tree, so never `git add -A`. Scripts that change Supabase data are saved in
+that folder's `scripts/` and pushed too.
 
 ## How to reply to the owner
 
