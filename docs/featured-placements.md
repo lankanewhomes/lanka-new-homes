@@ -65,10 +65,19 @@ heading "Featured projects", photo, orange Featured badge, name, place. One matc
 The plain "Sponsored" row is dropped from the phone list when cards show; desktop keeps the single Sponsored row. Each card counts one
 view (half on screen) and its clicks under `search-autocomplete`; the phone pop-up did not count either before this date.
 
+## Featured cards before typing, and on desktop (2026-11-26)
+
+Owner: "before even I type something, the featured listing should be there", on click, pointer or touch. As soon as a search opens
+(phone pop-up, header search box, home page search box) the "Featured projects" box shows with nothing typed: `/api/search/suggest?q=`
+returns the default cards (every `search-autocomplete` project, best tier first, hourly fair rotation, up to 4), loaded once per page
+by `useDefaultFeatured` and kept five minutes. From the second letter on, only the matching ones show (no match: no box). Desktop
+drop-downs use `layout="grid"`: the first two cards side by side above the quick links or the suggestions (`.fp-search--grid`), and
+the plain "Sponsored" row is dropped whenever cards show. The phone keeps the swipeable row of up to 4.
+
 ## Website link add-on (2026-11-26)
 
 Owner: a developer who wants their own website on the Featured search cards pays extra, as an add-on. Add-on type `website-link`
-("Website link in search", Rs 10,000 per month in `config.ts`: Claude's suggested price, owner to confirm). Booked by an admin in
+("Website link in search", Rs 10,000 per month in `config.ts`, price confirmed by the owner 2026-11-26). Booked by an admin in
 `/dashboard/featured/addons`: developer, dates, the website (https://…) in the CTA link box; Project on (none) covers all the
 developer's Featured projects, a chosen project covers that one only (`websiteLinkFor` in `engine.ts`, tested). The card then shows a
 thin "Visit <domain>" row under the photo (new tab, `rel="sponsored noopener"`); it only appears on cards the developer already has

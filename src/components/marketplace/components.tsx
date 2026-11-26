@@ -13,6 +13,7 @@ import { useSavedListing } from "@/lib/use-saved-listing";
 import { useSavedDeveloper } from "@/lib/use-saved-developer";
 import { parseNaturalSearch } from "@/lib/natural-search";
 import { MobileSearchOverlay, SearchQuickChips } from "@/components/marketplace/mobile-search-overlay";
+import { SearchFeaturedStrip, readFeaturedSuggestions, useDefaultFeatured, type FeaturedSuggestion } from "@/components/featured/search-featured";
 import { MEGA_MENUS, NavMegaPanel, type MegaTile } from "@/components/marketplace/mega-menu";
 import { getLandingPage, getStoredUtmParams, getTrafficSource, trackEvent } from "@/lib/ga4";
 import { hasPremiumStyleBadge, isPaidPackageTier } from "@/lib/packages";
@@ -4278,17 +4279,20 @@ export function Header({ menuCard }: { menuCard?: React.ReactNode } = {}) {
   const [navQuery, setNavQuery] = useState("");
   const [navSuggestions, setNavSuggestions] = useState<{ label: string; detail: string; href: string; sponsored?: boolean; developer?: string }[]>([]);
   const [navSearchOpen, setNavSearchOpen] = useState(false);
+  // Paid Featured photo cards in the header search drop-down: the matches while typing, the default ones before anything is typed.
+  const [navFeatured, setNavFeatured] = useState<FeaturedSuggestion[]>([]);
   useEffect(() => {
     const q = navQuery.trim();
     if (q.length < 2) return;
     const timer = setTimeout(() => {
       fetch(`/api/search/suggest?q=${encodeURIComponent(q)}`)
         .then((response) => response.json())
-        .then((data) => setNavSuggestions(Array.isArray(data?.suggestions) ? data.suggestions : []))
-        .catch(() => setNavSuggestions([]));
+        .then((data) => { setNavSuggestions(Array.isArray(data?.suggestions) ? data.suggestions : []); setNavFeatured(readFeaturedSuggestions(data)); })
+        .catch(() => { setNavSuggestions([]); setNavFeatured([]); });
     }, 150);
     return () => clearTimeout(timer);
   }, [navQuery]);
+  const navDefaultFeatured = useDefaultFeatured(navSearchOpen);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   // Desktop mega menu: photo tiles load once, the first time the pointer reaches the nav. A click on any link closes the panel
   // (it would otherwise stay open under the pointer after the page changes) until the pointer leaves that nav item.
@@ -4370,12 +4374,14 @@ export function Header({ menuCard }: { menuCard?: React.ReactNode } = {}) {
             <button type="submit" className="header-search-button" aria-label={text.search}><IconSearch size={18} stroke={1.75} aria-hidden="true" /></button>
             {navSearchOpen && navQuery.trim().length < 2 ? (
               <div className="header-search-chips" onMouseDown={(event) => event.preventDefault()}>
+                <SearchFeaturedStrip layout="grid" items={navDefaultFeatured} onPick={() => setNavSearchOpen(false)} />
                 <SearchQuickChips onPick={() => setNavSearchOpen(false)} />
               </div>
             ) : null}
-            {navSearchOpen && navQuery.trim().length >= 2 && navSuggestions.length > 0 ? (
-              <div className="header-search-suggestions" role="listbox" aria-label="Search suggestions">
-                {navSuggestions.map((suggestion) => (
+            {navSearchOpen && navQuery.trim().length >= 2 && (navSuggestions.length > 0 || navFeatured.length > 0) ? (
+              <div className="header-search-suggestions" role="listbox" aria-label="Search suggestions" onMouseDown={(event) => event.preventDefault()}>
+                <SearchFeaturedStrip layout="grid" items={navFeatured} onPick={() => setNavSearchOpen(false)} />
+                {(navFeatured.length ? navSuggestions.filter((suggestion) => !suggestion.sponsored) : navSuggestions).map((suggestion) => (
                   <button key={`${suggestion.detail}-${suggestion.label}`} type="button" role="option" aria-selected={false} onMouseDown={(event) => event.preventDefault()} onClick={() => { if (suggestion.sponsored) trackFeatured("click", { placement: "search-autocomplete", projectSlug: suggestion.href.split("/").pop(), developer: suggestion.developer }); setNavSearchOpen(false); setNavQuery(suggestion.label); router.push(suggestion.href); }}>
                     <IconSearch size={16} aria-hidden="true" /><span>{suggestion.label}</span><small>{suggestion.sponsored ? <em className="fp-sponsored" style={{ fontStyle: "normal" }}>Sponsored</em> : suggestion.detail}</small>
                   </button>

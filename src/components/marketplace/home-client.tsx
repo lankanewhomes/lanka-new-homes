@@ -20,7 +20,7 @@ import { isInNewListingsWindow } from "@/lib/new-listings";
 import type { PopularGroup } from "@/lib/popular-searches";
 import type { Developer, HeroAd, Project } from "@/types";
 import { trackFeatured } from "@/components/featured/featured-track";
-import { SearchFeaturedStrip, readFeaturedSuggestions, type FeaturedSuggestion } from "@/components/featured/search-featured";
+import { SearchFeaturedStrip, readFeaturedSuggestions, useDefaultFeatured, type FeaturedSuggestion } from "@/components/featured/search-featured";
 
 // Real photos of each city (Wikimedia Commons), replacing generic Unsplash
 // stock photos that weren't actually of these places. Kandy's original
@@ -367,6 +367,7 @@ export function HomeClient({
   const [searchSuggestions, setSearchSuggestions] = useState<{ label: string; detail: string; href: string; sponsored?: boolean }[]>([]);
   // Paid Featured matches for the phone search pop-up (photo cards above the list; see SearchFeaturedStrip).
   const [searchFeatured, setSearchFeatured] = useState<FeaturedSuggestion[]>([]);
+  const defaultFeatured = useDefaultFeatured(mobileSearchOpen || desktopSearchOpen); // shown as soon as the search opens, before anything is typed
   useEffect(() => {
     const q = searchTerm.trim();
     if (q.length < 2) {
@@ -421,12 +422,14 @@ export function HomeClient({
           </form>
           {desktopSearchOpen && searchTerm.trim().length < 2 ? (
             <div className="hero-search-suggestions hero-search-chips" onMouseDown={(event) => event.preventDefault()}>
+              <SearchFeaturedStrip layout="grid" items={defaultFeatured} onPick={() => setDesktopSearchOpen(false)} />
               <SearchQuickChips onPick={() => setDesktopSearchOpen(false)} />
             </div>
           ) : null}
-          {desktopSearchOpen && searchSuggestions.length > 0 ? (
-            <div className="hero-search-suggestions" role="listbox" aria-label="Search suggestions">
-              {searchSuggestions.map((suggestion) => (
+          {desktopSearchOpen && searchTerm.trim().length >= 2 && (searchSuggestions.length > 0 || searchFeatured.length > 0) ? (
+            <div className="hero-search-suggestions" role="listbox" aria-label="Search suggestions" onMouseDown={(event) => event.preventDefault()}>
+              <SearchFeaturedStrip layout="grid" items={searchFeatured} onPick={() => setDesktopSearchOpen(false)} />
+              {(searchFeatured.length ? searchSuggestions.filter((suggestion) => !suggestion.sponsored) : searchSuggestions).map((suggestion) => (
                 <button key={`${suggestion.detail}-${suggestion.label}`} type="button" role="option" onMouseDown={(event) => event.preventDefault()} onClick={() => selectSearchSuggestion(suggestion)}>
                   <Search size={16} aria-hidden="true" /><span>{suggestion.label}</span><small>{suggestion.detail}</small>
                 </button>
@@ -462,7 +465,7 @@ export function HomeClient({
               <Search size={20} aria-hidden="true" />
               <input autoFocus aria-label="Search location" value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} placeholder="Enter a location, address, or project" />
             </label>
-            <SearchFeaturedStrip items={searchFeatured} onPick={() => setMobileSearchOpen(false)} />
+            <SearchFeaturedStrip items={searchTerm.trim().length < 2 ? defaultFeatured : searchFeatured} onPick={() => setMobileSearchOpen(false)} />
             {searchSuggestions.length > 0 ? (
               <div className="mobile-location-search-suggestions" role="listbox" aria-label="Search suggestions">
                 {(searchFeatured.length ? searchSuggestions.filter((suggestion) => !suggestion.sponsored) : searchSuggestions).map((suggestion) => (

@@ -5,6 +5,7 @@ import { getAllDevelopers } from "@/lib/developer-store";
 import { searchablePages } from "@/lib/listing-categories";
 import { getFeaturedData } from "@/lib/featured/store";
 import { selectFeatured, websiteLinkFor } from "@/lib/featured/engine";
+import type { FeaturedItem, FeaturedState } from "@/lib/featured/types";
 import type { FeaturedSuggestion } from "@/components/featured/search-featured";
 
 // Header search dropdown: projects, land, developers and cities matching what was typed. A small in-memory index
@@ -59,9 +60,33 @@ async function loadIndex(): Promise<Suggestion[]> {
   return items;
 }
 
+/** Featured projects as photo cards for the search drop-downs: the order they arrive in (best tier first, fair rotation), at most MAX_FEATURED_CARDS. */
+function toCards(state: FeaturedState, items: FeaturedItem[]): FeaturedSuggestion[] {
+  return items.filter((item) => item.project.heroImage).slice(0, MAX_FEATURED_CARDS).map((item) => ({
+    slug: item.project.slug,
+    name: item.project.name,
+    place: item.project.location || item.project.city || "",
+    href: `/projects/${item.project.slug}`,
+    image: item.project.heroImage,
+    developer: item.developerSlug,
+    tier: item.tier,
+    website: websiteLinkFor(state, item.developerSlug, item.project.slug), // paid "website-link" add-on only
+  }));
+}
+
 export async function GET(request: Request) {
   const q = (new URL(request.url).searchParams.get("q") ?? "").trim().toLowerCase();
-  if (q.length < 2) return NextResponse.json({ suggestions: [] });
+  // Nothing typed yet: no suggestions, but the Featured cards still show as soon as the search opens (owner, 2026-11-26).
+  if (q.length < 2) {
+    let featured: FeaturedSuggestion[] = [];
+    try {
+      const { state, projects } = await getFeaturedData();
+      featured = toCards(state, selectFeatured(state, projects, "search-autocomplete", { limit: 40 }));
+    } catch {
+      // never let an ad lookup break search
+    }
+    return NextResponse.json({ suggestions: [], featured });
+  }
   const items = await loadIndex();
   const starts = items.filter((item) => item.label?.toLowerCase().startsWith(q));
   const contains = items.filter((item) => item.label?.toLowerCase().includes(q) && !item.label.toLowerCase().startsWith(q));
@@ -82,16 +107,7 @@ export async function GET(request: Request) {
     });
     const [hit] = hits;
     if (hit) sponsored = { label: hit.project.name, detail: "Sponsored", href: `/projects/${hit.project.slug}`, sponsored: true, developer: hit.developerSlug };
-    featured = hits.filter((item) => item.project.heroImage).slice(0, MAX_FEATURED_CARDS).map((item) => ({
-      slug: item.project.slug,
-      name: item.project.name,
-      place: item.project.location || item.project.city || "",
-      href: `/projects/${item.project.slug}`,
-      image: item.project.heroImage,
-      developer: item.developerSlug,
-      tier: item.tier,
-      website: websiteLinkFor(state, item.developerSlug, item.project.slug), // paid "website-link" add-on only
-    }));
+    featured = toCards(state, hits);
   } catch {
     // never let an ad lookup break search
   }

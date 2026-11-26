@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { FeaturedTrack } from "@/components/featured/featured-track";
@@ -22,10 +23,37 @@ const hostOf = (url: string) => {
   try { return new URL(url).hostname.replace(/^www\./, ""); } catch { return "Website"; }
 };
 
-export function SearchFeaturedStrip({ items, onPick }: { items: FeaturedSuggestion[]; onPick: () => void }) {
+// The cards shown before anything is typed (owner, 2026-11-26: "before even I type something, the featured listing should be there").
+// Asked for once, the first time a search opens on the page, then kept for five minutes.
+let defaultRequest: { at: number; promise: Promise<FeaturedSuggestion[]> } | null = null;
+function loadDefaultFeatured(): Promise<FeaturedSuggestion[]> {
+  if (!defaultRequest || Date.now() - defaultRequest.at > 300_000) {
+    defaultRequest = {
+      at: Date.now(),
+      promise: fetch("/api/search/suggest?q=").then((response) => response.json()).then(readFeaturedSuggestions).catch(() => { defaultRequest = null; return []; }),
+    };
+  }
+  return defaultRequest.promise;
+}
+
+/** Featured cards for a search that is open with nothing typed yet. Empty until `active` (the search has been opened). */
+export function useDefaultFeatured(active: boolean): FeaturedSuggestion[] {
+  const [items, setItems] = useState<FeaturedSuggestion[]>([]);
+  useEffect(() => {
+    if (!active) return;
+    let alive = true;
+    loadDefaultFeatured().then((list) => { if (alive) setItems(list); });
+    return () => { alive = false; };
+  }, [active]);
+  return items;
+}
+
+/** `layout="row"` (phones): one swipeable row. `layout="grid"` (desktop drop-downs): the first two cards side by side, no sideways scroll. */
+export function SearchFeaturedStrip({ items: all, onPick, layout = "row" }: { items: FeaturedSuggestion[]; onPick: () => void; layout?: "row" | "grid" }) {
+  const items = layout === "grid" ? all.slice(0, 2) : all;
   if (!items.length) return null;
   return (
-    <section className="fp-search" aria-label="Featured projects">
+    <section className={`fp-search${layout === "grid" ? " fp-search--grid" : ""}`} aria-label="Featured projects">
       <p className="fp-search-head">Featured projects</p>
       <div className={`fp-search-row${items.length === 1 ? " fp-search-row--one" : ""}`}>
         {items.map((item) => (

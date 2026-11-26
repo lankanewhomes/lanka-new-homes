@@ -127,6 +127,13 @@
 .fp-search-main { display: flex; flex: 1 1 auto; align-items: center; gap: 10px; min-height: 88px; padding: 8px; box-sizing: border-box; color: var(--fp-ink); text-decoration: none; }
 .fp-search-card img { flex: none; width: 96px; height: 72px; object-fit: cover; background: #eee; }
 .fp-search-main > span { display: block; min-width: 0; }
+/* Desktop search drop-downs (layout="grid"): at most two cards side by side, no sideways scroll, a gap before the chips or the list. */
+.fp-search--grid { padding: 10px 12px 12px; margin-bottom: 12px; }
+.fp-search--grid .fp-search-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); overflow: visible; padding-right: 0; }
+.fp-search--grid .fp-search-item { max-width: none; }
+.fp-search--grid .fp-search-main { min-height: 72px; }
+.fp-search--grid .fp-search-card img { width: 72px; height: 54px; }
+.header-search-suggestions .fp-search--grid, .hero-search-suggestions:not(.hero-search-chips) .fp-search--grid { margin: 10px; }
 /* The developer's own website: paid "website-link" add-on only. A thin row under the card, grey hairline, plain line icon. */
 .fp-search-site { display: flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 10px; border-top: 1px solid var(--fp-line); color: var(--fp-ink); font-size: 13px; line-height: 18px; text-decoration: none; }
 .fp-search-site span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-decoration: underline; text-underline-offset: 2px; }
