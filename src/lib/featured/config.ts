@@ -69,7 +69,8 @@ export type AddOnType =
   | "sponsored-article"
   | "social-post"
   | "reel"
-  | "newsletter";
+  | "newsletter"
+  | "website-link";
 
 export const ADD_ONS: Record<
   AddOnType,
@@ -84,6 +85,8 @@ export const ADD_ONS: Record<
   "social-post": { name: "Social post", priceLkr: 10_000, unit: "each", description: "A post about your project on our Instagram, TikTok and Facebook." },
   reel: { name: "Reel", priceLkr: 20_000, unit: "each", description: "A short video reel about your project." },
   newsletter: { name: "Newsletter slot", priceLkr: 7_500, unit: "each", description: "A feature in our email newsletter." },
+  // Owner, 2026-11-26: a developer who wants their own website on the Featured search cards pays extra. The price is Claude's suggestion until the owner confirms it.
+  "website-link": { name: "Website link in search", priceLkr: 10_000, unit: "per month", description: "A link to your own website on your Featured cards in search as buyers type.", max: "Needs a Premium or Elite package", durationDays: 30 },
 };
 
 export const MAX_HERO_SLIDES = 3;

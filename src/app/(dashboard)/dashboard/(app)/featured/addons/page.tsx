@@ -30,7 +30,7 @@ export default async function AddonsPage({ searchParams }: { searchParams: Promi
 
   return (
     <div className="space-y-6">
-      <PageHero title="Add-on bookings" description="Hero slides, announcement bar, Developer of the Month, new launches, city tiles, sponsored articles, social posts, reels and newsletter slots." stat={{ label: "Bookings", value: String(state.bookings.length) }} />
+      <PageHero title="Add-on bookings" description="Hero slides, announcement bar, Developer of the Month, new launches, city tiles, sponsored articles, social posts, reels, newsletter slots and website links in search." stat={{ label: "Bookings", value: String(state.bookings.length) }} />
       {FEATURED_DEMO ? <p className="border border-[#f47b36] bg-[#fff4ec] px-4 py-3 text-sm"><strong>DEMO DATA.</strong> Saving is switched off in the preview.</p> : null}
       {notice ? <p className={`border px-4 py-3 text-sm ${ok === "1" ? "border-green-600 bg-green-50" : "border-[#d8d2c4] bg-[#f7f4ec]"}`}>{notice}</p> : null}
       <p className="text-sm"><Link className="underline" href="/dashboard/featured">Back to packages</Link></p>
@@ -50,6 +50,7 @@ export default async function AddonsPage({ searchParams }: { searchParams: Promi
           <label className="text-sm">Sub-line<input name="subline" className={input} /></label>
           <label className="text-sm">CTA label<input name="cta_label" className={input} placeholder="View project" /></label>
           <label className="text-sm">CTA link<input name="cta_href" className={input} placeholder="/projects/…" /></label>
+          <p className="text-sm text-[#6b6b6b] sm:col-span-2 lg:col-span-3">Website link in search: pick the developer, leave Project on (none) to cover all their Featured projects (or pick one project), set the dates, and put their website (https://…) in the CTA link box. Nothing else is needed. It shows on their Featured cards in the phone search and needs an active Premium or Elite package.</p>
           <div><button type="submit" className="inline-flex items-center rounded-full bg-[#17171b] px-5 py-2 text-sm font-medium text-white">Book add-on</button></div>
         </form>
       </section>
@@ -61,7 +62,7 @@ export default async function AddonsPage({ searchParams }: { searchParams: Promi
             <tr key={booking.id} className="border-t border-[#eee8da]">
               <td className="p-3">{ADD_ONS[booking.type]?.name}</td><td className="p-3">{name(booking.developerSlug)}</td>
               <td className="p-3">{booking.city ?? booking.projectSlug ?? ""}</td><td className="p-3">{booking.startDate} to {booking.endDate}</td>
-              <td className="p-3">{booking.creative?.headline ?? ""}</td>
+              <td className="p-3">{booking.type === "website-link" ? booking.creative?.ctaHref ?? "" : booking.creative?.headline ?? ""}</td>
             </tr>))}</tbody>
         </table>
       </section>

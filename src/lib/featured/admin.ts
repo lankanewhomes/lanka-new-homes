@@ -6,7 +6,7 @@ import { supabaseAdmin } from "@/lib/supabase";
 import type { Session } from "@/app/(dashboard)/dashboard/_data/session";
 import { ADD_ONS, TIERS, type AddOnType, type FeaturedTier } from "./config";
 import { FEATURED_DEMO } from "./demo";
-import { toDay } from "./engine";
+import { toDay, websiteUrl } from "./engine";
 import { getFeaturedData } from "./store";
 
 export type WriteResult = { ok: boolean; message: string; demo?: boolean };
@@ -59,6 +59,8 @@ export async function bookAddon(session: Session, input: { type: AddOnType; deve
   if (!info) return { ok: false, message: "Unknown add-on." };
   if (!isDay(input.startDate) || !isDay(input.endDate) || input.endDate < input.startDate) return { ok: false, message: "Check the start and end dates." };
   if (input.type === "city-tile" && !input.city) return { ok: false, message: "Pick the city for the city tile." };
+  // The website link is the developer's own site, opened from their Featured search cards: it must be a full web address.
+  if (input.type === "website-link" && !websiteUrl(input.ctaHref)) return { ok: false, message: "Put the developer's website in the CTA link box, starting with https://" };
   if (FEATURED_DEMO) return DEMO_RESULT;
   const { error } = await supabaseAdmin.from("featured_addons").insert({
     id: id("add"), type: input.type, developer_slug: input.developerSlug, project_slug: input.projectSlug || null, city: input.city || null,

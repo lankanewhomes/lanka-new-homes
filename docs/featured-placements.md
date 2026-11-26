@@ -65,6 +65,17 @@ heading "Featured projects", photo, orange Featured badge, name, place. One matc
 The plain "Sponsored" row is dropped from the phone list when cards show; desktop keeps the single Sponsored row. Each card counts one
 view (half on screen) and its clicks under `search-autocomplete`; the phone pop-up did not count either before this date.
 
+## Website link add-on (2026-11-26)
+
+Owner: a developer who wants their own website on the Featured search cards pays extra, as an add-on. Add-on type `website-link`
+("Website link in search", Rs 10,000 per month in `config.ts`: Claude's suggested price, owner to confirm). Booked by an admin in
+`/dashboard/featured/addons`: developer, dates, the website (https://…) in the CTA link box; Project on (none) covers all the
+developer's Featured projects, a chosen project covers that one only (`websiteLinkFor` in `engine.ts`, tested). The card then shows a
+thin "Visit <domain>" row under the photo (new tab, `rel="sponsored noopener"`); it only appears on cards the developer already has
+through a Premium or Elite package. A tap counts as a click of `search-autocomplete` plus the GA4 event `featured_website_click`.
+Database: `featured_addons.type` accepts `website-link` (migration `20261126120000_featured_addons_website_link.sql`, applied
+2026-11-26; `scripts/featured-addons-type-check.ts` reads the rule back). Phone search cards only; the desktop row has no website link.
+
 ## Internal traffic is not counted (2026-11-22)
 
 Featured views, clicks and leads from the owner's own devices are never recorded: `featured-track.tsx` skips the beacon when

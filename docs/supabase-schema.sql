@@ -677,7 +677,7 @@ create index if not exists idx_featured_packages_active on featured_packages (st
 -- A hero-slide booking may point at the existing hero_ads row that renders it (hero_ad_id): hero_ads is reused for the homepage hero.
 create table if not exists featured_addons (
   id text primary key,
-  type text not null check (type in ('hero-slide', 'announcement-bar', 'developer-of-month', 'new-launch', 'city-tile', 'sponsored-article', 'social-post', 'reel', 'newsletter')),
+  type text not null check (type in ('hero-slide', 'announcement-bar', 'developer-of-month', 'new-launch', 'city-tile', 'sponsored-article', 'social-post', 'reel', 'newsletter', 'website-link')), -- 'website-link' added 2026-11-26 (migration 20261126120000)
   developer_slug text not null,
   project_slug text,
   city text,

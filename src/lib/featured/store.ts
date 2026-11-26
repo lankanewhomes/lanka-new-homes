@@ -30,7 +30,7 @@ async function loadFromDatabase(): Promise<FeaturedState> {
       bookings: ((addons.data ?? []) as AddonRow[]).map((row) => ({
         id: row.id, type: row.type, developerSlug: row.developer_slug, projectSlug: row.project_slug ?? undefined, city: row.city ?? undefined,
         startDate: row.start_date, endDate: row.end_date,
-        creative: row.creative_headline || row.creative_image ? { image: row.creative_image ?? "", headline: row.creative_headline ?? "", subline: row.creative_subline ?? undefined, ctaLabel: row.creative_cta_label ?? undefined, ctaHref: row.creative_cta_href ?? "/" } : undefined,
+        creative: row.creative_headline || row.creative_image || (row.type === "website-link" && row.creative_cta_href) ? { image: row.creative_image ?? "", headline: row.creative_headline ?? "", subline: row.creative_subline ?? undefined, ctaLabel: row.creative_cta_label ?? undefined, ctaHref: row.creative_cta_href ?? "/" } : undefined,
       })),
     };
   } catch {

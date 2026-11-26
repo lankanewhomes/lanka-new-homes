@@ -4,7 +4,7 @@ import { getAllLands } from "@/lib/land-store";
 import { getAllDevelopers } from "@/lib/developer-store";
 import { searchablePages } from "@/lib/listing-categories";
 import { getFeaturedData } from "@/lib/featured/store";
-import { selectFeatured } from "@/lib/featured/engine";
+import { selectFeatured, websiteLinkFor } from "@/lib/featured/engine";
 import type { FeaturedSuggestion } from "@/components/featured/search-featured";
 
 // Header search dropdown: projects, land, developers and cities matching what was typed. A small in-memory index
@@ -90,6 +90,7 @@ export async function GET(request: Request) {
       image: item.project.heroImage,
       developer: item.developerSlug,
       tier: item.tier,
+      website: websiteLinkFor(state, item.developerSlug, item.project.slug), // paid "website-link" add-on only
     }));
   } catch {
     // never let an ad lookup break search

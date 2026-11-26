@@ -148,6 +148,26 @@ export function featuredDevelopers(state: FeaturedState, placement: Placement, n
   return orderFeatured(pseudo, now, placement).slice(0, limit).map(({ developerSlug, tier }) => ({ developerSlug, tier }));
 }
 
+/** A full http(s) web address, or undefined: the only kind of link a "website-link" booking may carry. */
+export function websiteUrl(value: string | undefined): string | undefined {
+  try {
+    const url = new URL((value ?? "").trim());
+    return url.protocol === "https:" || url.protocol === "http:" ? url.toString() : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * The developer's own website for a Featured search card ("website-link" add-on), if they have an active booking. A booking with a
+ * project applies to that project only; one without a project covers every project of the developer (the project one wins).
+ */
+export function websiteLinkFor(state: FeaturedState, developerSlug: string, projectSlug: string, now = new Date()): string | undefined {
+  const bookings = activeBookings(state, now, "website-link").filter((booking) => booking.developerSlug === developerSlug);
+  const pick = bookings.find((booking) => booking.projectSlug === projectSlug) ?? bookings.find((booking) => !booking.projectSlug);
+  return websiteUrl(pick?.creative?.ctaHref);
+}
+
 /** Which week of the month it is (0-3); the 29th-31st count as week 3. */
 export const weekOfMonth = (now: Date) => Math.min(3, Math.floor((now.getUTCDate() - 1) / 7));
 

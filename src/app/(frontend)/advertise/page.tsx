@@ -36,7 +36,7 @@ const COMPARE_ROWS = ([
 ] as { label: string; min: FeaturedTier }[]).sort((a, b) => TIER_RANK[a.min] - TIER_RANK[b.min]);
 
 const ADD_ON_GROUPS: { title: string; items: AddOnType[] }[] = [
-  { title: "On the site", items: ["hero-slide", "announcement-bar", "developer-of-month", "new-launch", "city-tile"] },
+  { title: "On the site", items: ["hero-slide", "announcement-bar", "developer-of-month", "new-launch", "city-tile", "website-link"] },
   { title: "Content and social", items: ["sponsored-article", "social-post", "reel", "newsletter"] },
 ];
 

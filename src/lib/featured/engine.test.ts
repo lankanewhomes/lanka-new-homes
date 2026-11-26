@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Project } from "@/types";
 import { MAX_PINNED_PER_PAGE } from "./config";
-import { eliteHeroPackages, matchesLocation, matchesType, orderFeatured, rotateFairly, selectFeatured } from "./engine";
+import { eliteHeroPackages, matchesLocation, matchesType, orderFeatured, rotateFairly, selectFeatured, websiteLinkFor, websiteUrl } from "./engine";
 import type { FeaturedItem, FeaturedState } from "./types";
 
 const NOW = new Date("2026-11-20T10:00:00Z");
@@ -95,5 +95,32 @@ describe("elite hero week", () => {
     const s = state([pkg("elite-1", "a", "elite", ["a1"])]);
     const weeks = [1, 8, 15, 22].filter((day) => eliteHeroPackages(s, new Date(Date.UTC(2026, 10, day))).length === 1);
     expect(weeks.length).toBe(1);
+  });
+});
+
+describe("website link add-on", () => {
+  const now = new Date(Date.UTC(2026, 10, 15));
+  const link = (developerSlug: string, href: string, over: Partial<FeaturedState["bookings"][number]> = {}): FeaturedState["bookings"][number] =>
+    ({ id: `add-${developerSlug}-${href}`, type: "website-link", developerSlug, startDate: "2026-11-01", endDate: "2026-11-30", creative: { image: "", headline: "", ctaHref: href }, ...over });
+  const withBookings = (bookings: FeaturedState["bookings"]): FeaturedState => ({ packages: [], bookings, demo: false });
+
+  it("no booking, no website", () => {
+    expect(websiteLinkFor(withBookings([]), "a", "a1", now)).toBeUndefined();
+  });
+  it("a booking without a project covers every project of that developer only", () => {
+    const s = withBookings([link("a", "https://a.example/")]);
+    expect(websiteLinkFor(s, "a", "a1", now)).toBe("https://a.example/");
+    expect(websiteLinkFor(s, "a", "a2", now)).toBe("https://a.example/");
+    expect(websiteLinkFor(s, "b", "b1", now)).toBeUndefined();
+  });
+  it("a booking for one project wins for that project and does not cover the others", () => {
+    const s = withBookings([link("a", "https://a.example/one", { projectSlug: "a1" })]);
+    expect(websiteLinkFor(s, "a", "a1", now)).toBe("https://a.example/one");
+    expect(websiteLinkFor(s, "a", "a2", now)).toBeUndefined();
+  });
+  it("an ended booking and a link that is not a web address give nothing", () => {
+    expect(websiteLinkFor(withBookings([link("a", "https://a.example/", { endDate: "2026-11-10" })]), "a", "a1", now)).toBeUndefined();
+    expect(websiteLinkFor(withBookings([link("a", "javascript:alert(1)")]), "a", "a1", now)).toBeUndefined();
+    expect(websiteUrl("/projects/x")).toBeUndefined();
   });
 });

@@ -123,9 +123,14 @@
 .fp-search-row::-webkit-scrollbar { display: none; }
 .fp-search-item { flex: 0 0 78%; max-width: 300px; min-width: 0; scroll-snap-align: start; }
 .fp-search-row--one .fp-search-item { flex: 1 1 100%; max-width: none; }
-.fp-search-card { display: flex; align-items: center; gap: 10px; height: 100%; min-height: 88px; padding: 8px; box-sizing: border-box; border: 1px solid var(--fp-line); background: #fff; color: var(--fp-ink); text-decoration: none; }
+.fp-search-card { display: flex; flex-direction: column; height: 100%; box-sizing: border-box; border: 1px solid var(--fp-line); background: #fff; }
+.fp-search-main { display: flex; flex: 1 1 auto; align-items: center; gap: 10px; min-height: 88px; padding: 8px; box-sizing: border-box; color: var(--fp-ink); text-decoration: none; }
 .fp-search-card img { flex: none; width: 96px; height: 72px; object-fit: cover; background: #eee; }
-.fp-search-card > span { display: block; min-width: 0; }
+.fp-search-main > span { display: block; min-width: 0; }
+/* The developer's own website: paid "website-link" add-on only. A thin row under the card, grey hairline, plain line icon. */
+.fp-search-site { display: flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 10px; border-top: 1px solid var(--fp-line); color: var(--fp-ink); font-size: 13px; line-height: 18px; text-decoration: none; }
+.fp-search-site span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-decoration: underline; text-underline-offset: 2px; }
+.fp-search-site svg { flex: none; }
 .fp-search-card em { display: inline-block; margin-bottom: 4px; padding: 2px 7px; border-radius: 3px; font-style: normal; font-size: 10px; line-height: 1.2; letter-spacing: .06em; text-transform: uppercase; }
 .fp-search-card strong { display: block; font-size: 14px; line-height: 18px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .fp-search-card small { display: block; margin-top: 2px; font-size: 12px; line-height: 16px; color: var(--fp-grey); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
