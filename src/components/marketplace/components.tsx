@@ -41,7 +41,7 @@ import {
   ShieldIcon,
   StatusHouseIcon,
 } from "@/components/icons/stat-icons";
-import { Fragment, FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, FormEvent, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import {
   Activity,
@@ -131,6 +131,7 @@ import {
   CookingPot,
   Snowflake,
   Eye,
+  BadgePercent,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteLanguage, useLanguage } from "@/components/layout/language-provider";
@@ -858,6 +859,14 @@ export function ProjectHero({
   };
   const titlePanelRef = useRef<HTMLDivElement>(null);
   const [scrolledPastTitle, setScrolledPastTitle] = useState(false);
+  // Test switch (owner, 2026-11-25): the new "See 1 special offer available"
+  // box shows only when the URL has ?offerbox=1; everyone else still sees the
+  // existing Hot Deal banner until the owner approves the new design.
+  const offerBoxTest = useSyncExternalStore(
+    () => () => {},
+    () => new URLSearchParams(window.location.search).get("offerbox") === "1",
+    () => false,
+  );
 
   useEffect(() => {
     if (activeMedia && !availableMedia.includes(activeMedia)) {
@@ -1767,6 +1776,8 @@ export function ProjectHero({
         </div>
       </div>
 
+      {offerBoxTest && isHotDealActive(project) ? <SpecialOfferBox hotDeal={project.hotDeal!} /> : null}
+
       {(hasDisplayValue(project.status) || isUpcomingMoveIn(project) || project.isFeatured || paidFeatured || project.isMoveInNow || hasQuickMoveIn(project) || Boolean(project.paymentPlanBadge) || extraBadges.length > 0) ? (
         <div className="listing-hero-tags" aria-label="Listing status tags">
           {hasDisplayValue(project.status) ? <span className={`listing-hero-tag-status${(statusLabelOverride ?? project.status) === "Sold Out" ? " listing-hero-tag-sold-out" : ""}`}>{t(statusLabelOverride ?? project.status)}</span> : null}
@@ -1799,7 +1810,7 @@ export function ProjectHero({
         </div>
       ) : null}
 
-      {isHotDealActive(project) ? <HotDealCard hotDeal={project.hotDeal!} /> : null}
+      {!offerBoxTest && isHotDealActive(project) ? <HotDealCard hotDeal={project.hotDeal!} /> : null}
 
         <div className={`listing-hero-mobile-ctas${scrolledPastTitle ? " is-visible" : ""}${whatsappHref ? " has-whatsapp" : ""}`} aria-label="Mobile quick actions">
           {whatsappHref ? (
@@ -1871,6 +1882,23 @@ export function ProjectHero({
 
     <RequestInfoDialog open={requestInfoOpen} onClose={() => setRequestInfoOpen(false)} project={project} floorPlan={floorPlan} variant={requestInfoDialogVariant} whatsappHref={whatsappHref} />
     </>
+  );
+}
+
+function SpecialOfferBox({ hotDeal }: { hotDeal: NonNullable<Project["hotDeal"]> }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="special-offer-box">
+      <BadgePercent className="special-offer-box-icon" aria-hidden="true" />
+      <div className="special-offer-box-body">
+        <button type="button" className="special-offer-box-toggle" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+          See 1 special offer available
+          <ChevronRight className={`special-offer-box-chevron${open ? " is-open" : ""}`} aria-hidden="true" />
+        </button>
+        <p className="special-offer-box-title">{hotDeal.title}</p>
+        {open && hasDisplayValue(hotDeal.description) ? <p className="special-offer-box-desc">{hotDeal.description}</p> : null}
+      </div>
+    </div>
   );
 }
 

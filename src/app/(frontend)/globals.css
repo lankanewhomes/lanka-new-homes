@@ -21533,3 +21533,67 @@ body:has(.request-info-overlay) .listing-hero-quickjump-bar { display: none; }
 /* Price guide pages, "Keep exploring" (owner, 2026-11-20): the link chips sat right against the subheading. Same 22px gap
    under the heading block as every other section on the page. */
 .featured-listings-head + .about-areas { margin-top: 22px; }
+
+/* "See 1 special offer available" box under the listing title (test, ?offerbox=1, 2026-11-25) */
+.special-offer-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  max-width: 520px;
+  margin: 12px 0 4px 40px;
+  padding: 14px 18px;
+  border: 1px solid #e4e0d6;
+  background: #fff;
+}
+.special-offer-box-icon {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  margin-top: 1px;
+  color: #1f1f1f;
+  stroke-width: 1.75;
+}
+.special-offer-box-body {
+  min-width: 0;
+}
+.special-offer-box-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-ref-sans);
+  font-size: 16px;
+  font-weight: 700;
+  color: #1f1f1f;
+  cursor: pointer;
+}
+.special-offer-box-toggle:hover {
+  text-decoration: underline;
+}
+.special-offer-box-chevron {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.15s ease;
+}
+.special-offer-box-chevron.is-open {
+  transform: rotate(90deg);
+}
+.special-offer-box-title,
+.special-offer-box-desc {
+  margin: 4px 0 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #1f1f1f;
+}
+.special-offer-box-desc {
+  color: #6b6355;
+}
+@media (max-width: 760px) {
+  .special-offer-box {
+    max-width: none;
+    margin: 12px 14px 4px;
+    padding: 12px 14px;
+  }
+}
