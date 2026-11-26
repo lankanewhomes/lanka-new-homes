@@ -8,7 +8,7 @@ const [dir, post, mode] = process.argv.slice(2)
 const flat = (s) => s.replace(/\s+/g, ' ').trim()
 ;(async () => {
   const loc = fs.readFileSync(dir + '/location.txt', 'utf8').trim(), cap = fs.readFileSync(dir + '/caption.txt', 'utf8').trim()
-  const b = await chromium.connectOverCDP('http://localhost:9333'); const p = b.contexts()[0].pages().find((x) => x.url().includes('tiktok.com'))
+  const b = await chromium.connectOverCDP('http://127.0.0.1:9333'); const p = b.contexts()[0].pages().find((x) => x.url().includes('tiktok.com'))
   p.on('dialog', (d) => d.accept().catch(() => {}))
   await p.setViewportSize({ width: 1500, height: 1250 })
   const problems = []
@@ -44,7 +44,7 @@ const flat = (s) => s.replace(/\s+/g, ' ').trim()
   const locShown = lv || (new RegExp('Location ' + loc, 'i').test(body) ? loc : '')
   if (!locShown) problems.push('location empty')
   console.log('location:', JSON.stringify(locShown), '| caption', got.length, 'of', flat(cap).length, '| problems:', problems.length ? problems.join('; ') : 'none')
-  await p.evaluate(() => window.scrollTo(0, 0)); await p.screenshot({ path: 'tt-form.png', fullPage: true })
+  await p.evaluate(() => window.scrollTo(0, 0)); await p.screenshot({timeout:8000, path: 'tt-form.png', fullPage: true }).catch(()=>{})
   if (post === '1' && !problems.length) {
     const bt = p.getByRole('button', { name: 'Post', exact: true }).first(); await bt.scrollIntoViewIfNeeded(); await bt.click(); await p.waitForTimeout(4000)
     const pn = p.getByRole('button', { name: /post now/i }); if (await pn.count()) await pn.first().click()

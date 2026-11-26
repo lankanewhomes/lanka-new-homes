@@ -14,7 +14,7 @@ const SH=__dirname+'/'
  const [fc]=await Promise.all([p.waitForEvent('filechooser',{timeout:15000}), p.getByText('Add video').first().click()]); await fc.setFiles(dir+'/reel.mp4',{timeout:420000})
  for(let i=0;i<40;i++){ await p.waitForTimeout(4000); const t=await p.innerText('body'); if(i>2&&!/Uploading|Processing/.test(t)) break }
  const bt=await p.innerText('body'); const hasVideo=(/Replace media/.test(bt)&&/0:\d\d/.test(bt))?1:0; if(!hasVideo) problems.push('NO VIDEO ATTACHED')
- await p.screenshot({path:SH+'ffreel1.png'})
+ await p.screenshot({timeout:8000,path:SH+'ffreel1.png'}).catch(()=>{})
  // next through the editing steps until the description/caption box appears
  for(let i=0;i<3;i++){ if(await p.getByRole('textbox').count()) break; const nx=p.getByRole('button',{name:'Next'}).first(); if(await nx.count()){ await nx.click({force:true}); await p.waitForTimeout(3500) } }
  const ed=p.getByRole('textbox').first(); await ed.click(); await p.waitForTimeout(500)
@@ -33,7 +33,7 @@ const SH=__dirname+'/'
  for(let i=0;i<12;i++){ const dis=await p.evaluate(()=>{const e=[...document.querySelectorAll('[role=button]')].find(x=>/^Location$/.test((x.innerText||'').trim())); return e?e.getAttribute('aria-disabled'):'none'}); if(dis!=='true') break; await p.waitForTimeout(5000) }
  console.log('location chip disabled state:',await p.evaluate(()=>{const e=[...document.querySelectorAll('[role=button]')].find(x=>/^Location$/.test((x.innerText||'').trim())); return e?e.getAttribute('aria-disabled'):'none'}))
  const chip=['(no location: Facebook greys it out for reels)']
- await p.screenshot({path:SH+'ffreel2.png'})
+ await p.screenshot({timeout:8000,path:SH+'ffreel2.png'}).catch(()=>{})
  console.log('video attached:',!!hasVideo,'| caption',got.length,'of',flat(cap).length,'| chip',JSON.stringify(chip.slice(0,1)),'| problems:',problems.length?problems.join('; '):'none')
  if(post==='1'&&!problems.length){
   await p.getByRole('button',{name:'Next',exact:true}).first().click({force:true}); await p.waitForTimeout(4000)
