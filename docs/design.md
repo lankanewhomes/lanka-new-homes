@@ -254,7 +254,8 @@ management but does not say owners can let the unit themselves). Fractional Owne
 marketing badges (`src/lib/marketing-badges.ts`); every other marketing badge stays hidden on the front end;
 `locationBadges` (multi-select) —
 Beachfront, Ocean View, City View, Mountain View, Nature View, Prime
-Location. All three feed into `ProjectHero`'s existing `extraBadges` prop
+Location, Gated Community, Waterfront (2026-11-26: on a lagoon, lake or
+river, not the sea; Bayfonte Marina on the Negombo Lagoon). All three feed into `ProjectHero`'s existing `extraBadges` prop
 (`src/app/projects/[slug]/page.tsx`) rather than new rendering — they render
 identically to Featured/Move-In Now, just with different label text.
 

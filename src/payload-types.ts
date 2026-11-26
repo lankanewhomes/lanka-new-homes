@@ -2913,6 +2913,7 @@ export interface Project {
         | 'Nature View'
         | 'Prime Location'
         | 'Gated Community'
+        | 'Waterfront'
       )[]
     | null;
   hotDeal?: {

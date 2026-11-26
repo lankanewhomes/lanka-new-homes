@@ -97,7 +97,9 @@ const MARKETING_BADGE_OPTIONS = [
   'Fractional Ownership',
 ]
 
-const LOCATION_BADGE_OPTIONS = ['Beachfront', 'Ocean View', 'City View', 'Mountain View', 'Nature View', 'Prime Location', 'Gated Community']
+// 'Waterfront' added 2026-11-26 for Bayfonte Marina (owner: "if you need to add a badge please also do"): the project sits on a lagoon, lake or river
+// (not the sea: that is Beachfront / Ocean View).
+const LOCATION_BADGE_OPTIONS = ['Beachfront', 'Ocean View', 'City View', 'Mountain View', 'Nature View', 'Prime Location', 'Gated Community', 'Waterfront']
 
 // Values match ProjectStatLabel in src/types/index.ts verbatim (they are a
 // Postgres enum — never rename a value, only its label). Labels are the
