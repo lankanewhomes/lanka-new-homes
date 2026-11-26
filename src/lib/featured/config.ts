@@ -35,7 +35,7 @@ export const TIERS: Record<
       "Everything in Featured",
       "Top 3 pinned on matching location and category pages",
       "Homepage Featured Projects carousel",
-      "Photo card in search as buyers type (phone), sponsored suggestion on desktop",
+      "Photo card in the search bar: shown the moment a buyer opens search, on phone and desktop", // owner, 2026-11-26
       "Project cards inside matching guides",
       "Pinned on the /developers directory",
       "Developer logo + video on your cards",
@@ -172,7 +172,7 @@ export const PLACEMENT_LABEL: Record<Placement, string> = {
   "results-inline": "Sponsored card in results",
   "results-map-pin": "Premium map pin",
   "results-banner": "Location / category banner",
-  "search-autocomplete": "Search as buyers type",
+  "search-autocomplete": "Search bar photo card",
   "results-empty": "No-results page",
   "project-similar": "Similar projects",
   "project-nearby": "Nearby projects",
