@@ -2899,6 +2899,7 @@ export interface Project {
         | 'Rent Out or Hotel-Managed'
         | 'Hotel Management Option'
         | 'Fractional Ownership'
+        | 'Resort Apartments'
       )[]
     | null;
   /**

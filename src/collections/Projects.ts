@@ -95,6 +95,9 @@ const MARKETING_BADGE_OPTIONS = [
   'Hotel Management Option',
   // Added 2026-11-22 for Maison Ceylon's Villa Senehasa (owner: "if you need to add a badge please do"): the villa is also sold in shares.
   'Fractional Ownership',
+  // Added 2026-11-26 for Bayfonte Marina (owner: a new badge worded as a fact): the developer sells the project as resort apartments
+  // (resort facilities on site: restaurant, bar, spa, pool, water sports). A fact about the product, not a rental or return promise.
+  'Resort Apartments',
 ]
 
 // 'Waterfront' added 2026-11-26 for Bayfonte Marina (owner: "if you need to add a badge please also do"): the project sits on a lagoon, lake or river

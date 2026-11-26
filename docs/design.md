@@ -250,7 +250,7 @@ Rental Potential, BOI Approved Project, Hospitality (added 2026-09-20 for
 hospitality-use projects such as a wellness retreat or coastal retreat),
 Profit-Share Model (2026-10-04, ICON V), Rent Out or Hotel-Managed (2026-10-24,
 Ocean Breeze Hikkaduwa: units can be rented out individually or put into the developer's hotel management). Hotel Management Option (2026-10-24: the developer offers hotel
-management but does not say owners can let the unit themselves). Fractional Ownership (2026-11-22: the developer sells the property in shares; Maison Ceylon's Villa Senehasa). The project page AND the listing cards show only those four
+management but does not say owners can let the unit themselves). Fractional Ownership (2026-11-22: the developer sells the property in shares; Maison Ceylon's Villa Senehasa). Resort Apartments (2026-11-26: the developer sells the project as resort apartments with resort facilities on site; a fact about the product, no rental or return promise; Bayfonte Marina). The project page AND the listing cards show only those five
 marketing badges (`src/lib/marketing-badges.ts`); every other marketing badge stays hidden on the front end;
 `locationBadges` (multi-select) —
 Beachfront, Ocean View, City View, Mountain View, Nature View, Prime
