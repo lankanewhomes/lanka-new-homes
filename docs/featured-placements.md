@@ -55,6 +55,16 @@ three cards; `src/components/featured/advertise-packages.tsx`), compare table "W
 `PLACEMENT_MIN_TIER`), add-ons as two price lists ("On the site", "Content and social"), pay per lead, three numbered steps, FAQ, dark
 closing contact box. All numbers still come from `src/lib/featured/config.ts`. Styles: `.adv-*` in `featured.css`.
 
+## Featured cards in the phone search pop-up (2026-11-26)
+
+Placement `search-autocomplete` (Premium and Elite, unchanged tier). `/api/search/suggest` now also returns `featured`: up to 4 paid
+projects whose name, place, type or developer matches what was typed, best tier first with the usual fair rotation. On phones the
+search pop-up (header search icon: `mobile-search-overlay.tsx`; home hero: `home-client.tsx`) shows them as one swipeable row of photo
+cards above the suggestions (`SearchFeaturedStrip` in `src/components/featured/search-featured.tsx`, styles `.fp-search*`): cream box,
+heading "Featured projects", photo, orange Featured badge, name, place. One match fills the width. Nothing typed or no match: no box.
+The plain "Sponsored" row is dropped from the phone list when cards show; desktop keeps the single Sponsored row. Each card counts one
+view (half on screen) and its clicks under `search-autocomplete`; the phone pop-up did not count either before this date.
+
 ## Internal traffic is not counted (2026-11-22)
 
 Featured views, clicks and leads from the owner's own devices are never recorded: `featured-track.tsx` skips the beacon when

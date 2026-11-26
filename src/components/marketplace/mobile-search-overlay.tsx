@@ -7,6 +7,7 @@ import { ChevronDown, Search, X } from "lucide-react";
 import { parseNaturalSearch } from "@/lib/natural-search";
 import { trackEvent } from "@/lib/ga4";
 import { SEARCH_QUICK_CHIPS, type QuickChip } from "@/lib/search-chips";
+import { SearchFeaturedStrip, readFeaturedSuggestions, type FeaturedSuggestion } from "@/components/featured/search-featured";
 
 /** Quick links under the Search button and in the desktop search dropdowns (owner, 2026-11-09). Starts with the fixed list, then switches to the
  *  live order from /api/search/chips: the chips with the most listings first, empty ones hidden. */
@@ -74,20 +75,27 @@ export function SearchQuickChips({ onPick }: { onPick: () => void }) {
 export function MobileSearchOverlay({ open, onClose, location }: { open: boolean; onClose: () => void; location: string }) {
   const router = useRouter();
   const [term, setTerm] = useState("");
-  const [suggestions, setSuggestions] = useState<{ label: string; detail: string; href: string }[]>([]);
+  const [suggestions, setSuggestions] = useState<{ label: string; detail: string; href: string; sponsored?: boolean }[]>([]);
+  const [featured, setFeatured] = useState<FeaturedSuggestion[]>([]);
 
   useEffect(() => {
     if (!open) return;
     const q = term.trim();
     if (q.length < 2) {
-      const clear = setTimeout(() => setSuggestions([]), 0);
+      const clear = setTimeout(() => { setSuggestions([]); setFeatured([]); }, 0);
       return () => clearTimeout(clear);
     }
     const timer = setTimeout(() => {
       fetch(`/api/search/suggest?q=${encodeURIComponent(q)}`)
         .then((response) => response.json())
-        .then((data) => setSuggestions(Array.isArray(data?.suggestions) ? data.suggestions : []))
-        .catch(() => setSuggestions([]));
+        .then((data) => {
+          // The paid matches show as photo cards above the list, so the plain "Sponsored" row is dropped here (it stays on desktop).
+          const cards = readFeaturedSuggestions(data);
+          const rows = Array.isArray(data?.suggestions) ? (data.suggestions as typeof suggestions) : [];
+          setFeatured(cards);
+          setSuggestions(cards.length ? rows.filter((row) => !row.sponsored) : rows);
+        })
+        .catch(() => { setSuggestions([]); setFeatured([]); });
     }, 150);
     return () => clearTimeout(timer);
   }, [term, open]);
@@ -123,6 +131,7 @@ export function MobileSearchOverlay({ open, onClose, location }: { open: boolean
             <Search size={20} aria-hidden="true" />
             <input autoFocus aria-label="Search location" value={term} onChange={(event) => setTerm(event.target.value)} placeholder="Enter a location, address, or project" />
           </label>
+          <SearchFeaturedStrip items={featured} onPick={onClose} />
           {suggestions.length > 0 ? (
             <div className="mobile-location-search-suggestions" role="listbox" aria-label="Search suggestions">
               {suggestions.map((suggestion) => (

@@ -20,6 +20,7 @@ import { isInNewListingsWindow } from "@/lib/new-listings";
 import type { PopularGroup } from "@/lib/popular-searches";
 import type { Developer, HeroAd, Project } from "@/types";
 import { trackFeatured } from "@/components/featured/featured-track";
+import { SearchFeaturedStrip, readFeaturedSuggestions, type FeaturedSuggestion } from "@/components/featured/search-featured";
 
 // Real photos of each city (Wikimedia Commons), replacing generic Unsplash
 // stock photos that weren't actually of these places. Kandy's original
@@ -363,18 +364,20 @@ export function HomeClient({
     return rotationSeed ? dailyPick(newestFirst, 8, `land-${rotationSeed}`, { groupOf: (land) => land.developerSlug || land.developerName || land.slug, maxPerGroup: 2 }) : newestFirst.slice(0, 8);
   }, [lands, rotationSeed]);
   // Same suggestions as the header search: projects, land, developers, cities and collection pages (Luxury, Beachfront...).
-  const [searchSuggestions, setSearchSuggestions] = useState<{ label: string; detail: string; href: string }[]>([]);
+  const [searchSuggestions, setSearchSuggestions] = useState<{ label: string; detail: string; href: string; sponsored?: boolean }[]>([]);
+  // Paid Featured matches for the phone search pop-up (photo cards above the list; see SearchFeaturedStrip).
+  const [searchFeatured, setSearchFeatured] = useState<FeaturedSuggestion[]>([]);
   useEffect(() => {
     const q = searchTerm.trim();
     if (q.length < 2) {
-      const clear = setTimeout(() => setSearchSuggestions([]), 0);
+      const clear = setTimeout(() => { setSearchSuggestions([]); setSearchFeatured([]); }, 0);
       return () => clearTimeout(clear);
     }
     const timer = setTimeout(() => {
       fetch(`/api/search/suggest?q=${encodeURIComponent(q)}`)
         .then((response) => response.json())
-        .then((data) => setSearchSuggestions(Array.isArray(data?.suggestions) ? data.suggestions : []))
-        .catch(() => setSearchSuggestions([]));
+        .then((data) => { setSearchSuggestions(Array.isArray(data?.suggestions) ? data.suggestions : []); setSearchFeatured(readFeaturedSuggestions(data)); })
+        .catch(() => { setSearchSuggestions([]); setSearchFeatured([]); });
     }, 150);
     return () => clearTimeout(timer);
   }, [searchTerm]);
@@ -459,9 +462,10 @@ export function HomeClient({
               <Search size={20} aria-hidden="true" />
               <input autoFocus aria-label="Search location" value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} placeholder="Enter a location, address, or project" />
             </label>
+            <SearchFeaturedStrip items={searchFeatured} onPick={() => setMobileSearchOpen(false)} />
             {searchSuggestions.length > 0 ? (
               <div className="mobile-location-search-suggestions" role="listbox" aria-label="Search suggestions">
-                {searchSuggestions.map((suggestion) => (
+                {(searchFeatured.length ? searchSuggestions.filter((suggestion) => !suggestion.sponsored) : searchSuggestions).map((suggestion) => (
                   <button key={`${suggestion.detail}-${suggestion.label}`} type="button" role="option" onClick={() => selectSearchSuggestion(suggestion)}>
                     <Search size={16} aria-hidden="true" /><span>{suggestion.label}</span><small>{suggestion.detail}</small>
                   </button>
