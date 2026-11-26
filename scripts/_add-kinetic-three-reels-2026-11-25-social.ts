@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- one-off script */
 // Logs the 3 Kinetic Type reels posted 2026-11-25 from the Windows PC: Vauxhall DSTRCT (Colombo 02), Crystal Sands Sky Villas (Hikkaduwa)
-// and Lakefront Residencies (Nuwara Eliya), on Instagram and TikTok. Facebook was not posted that day (the posting Chrome was not logged in
-// to Facebook); fill in `fb` below and re-run when those reels exist.
+// and Lakefront Residencies (Nuwara Eliya), on Instagram and TikTok that day; the Facebook Page reels were posted on 2026-11-26 once the posting Chrome was logged in to Facebook.
 // Media is read from the owner's Desktop: Social Queue/2026-11-25 - 3 Bomb Drop reels (preview)/<dir>/{reel.mp4,cover.png,caption.txt,caption-fb.txt}.
 // Safe to re-run: skips rows whose permalink is already logged.
 //   PowerShell:  $env:NODE_ENV='production'; npx tsx scripts/_add-kinetic-three-reels-2026-11-25-social.ts
@@ -16,9 +15,9 @@ const { mirrorToR2 } = await import('../src/lib/listing-import/mirror')
 const payload = await getPayload({ config: cfg })
 const ROOT = process.env.SOCIAL_QUEUE_DIR || path.join(os.homedir(), 'OneDrive', 'Desktop', 'Social Queue', '2026-11-25 - 3 Bomb Drop reels (preview)')
 const jobs = [
-  { dir: '1 - Vauxhall DSTRCT Kinetic reel', slug: 'vauxhall-dstrct', secs: '32.6', location: 'Colombo, Sri Lanka', ids: { ig: 'DgMMP3sIx_S', tt: '7712326925083036980', fb: '' } },
-  { dir: '2 - Crystal Sands Sky Villas Kinetic reel', slug: 'crystal-sands-sky-villas', secs: '31.6', location: 'Hikkaduwa, Sri Lanka', ids: { ig: 'DgMMiA0I92t', tt: '7712327485379218709', fb: '' } },
-  { dir: '3 - Lakefront Residencies Kinetic reel', slug: 'lakefront-residencies', secs: '35.5', location: 'Nuwara Eliya, Sri Lanka', ids: { ig: 'DgMM0aaIL7d', tt: '7712328150839037204', fb: '' } },
+  { dir: '1 - Vauxhall DSTRCT Kinetic reel', slug: 'vauxhall-dstrct', secs: '32.6', location: 'Colombo, Sri Lanka', ids: { ig: 'DgMMP3sIx_S', tt: '7712326925083036980', fb: '1298362439149726' } },
+  { dir: '2 - Crystal Sands Sky Villas Kinetic reel', slug: 'crystal-sands-sky-villas', secs: '31.6', location: 'Hikkaduwa, Sri Lanka', ids: { ig: 'DgMMiA0I92t', tt: '7712327485379218709', fb: '1521394053185051' } },
+  { dir: '3 - Lakefront Residencies Kinetic reel', slug: 'lakefront-residencies', secs: '35.5', location: 'Nuwara Eliya, Sri Lanka', ids: { ig: 'DgMM0aaIL7d', tt: '7712328150839037204', fb: '1210254481564062' } },
 ]
 for (const j of jobs) {
   const D = path.join(ROOT, j.dir)
