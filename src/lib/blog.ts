@@ -62,7 +62,8 @@ export const blogPosts: Record<string, BlogPost> = {
     publishDate: "2026-09-29",
     updatedDate: "2026-10-24",
     readMinutes: 4,
-    heroImage: unsplash("1487958449943-2429e8be8625", 2200),
+    heroImage: "https://media.lankanewhomes.com/projects/crystal-sands-sky-villas/gallery/crystal-sands-sky-villas_building-exterior.jpg",
+    heroImageAlt: "A new beachfront apartment building in Hikkaduwa, Sri Lanka",
     intro:
       "A listing gets your project found. What happens next, after a Facebook ad click, a signboard QR code or a referral, usually happens on your own website. Seven fixes decide whether that visitor enquires. Counts below are from the 107 projects on LankaNewHomes in October 2026.",
     sections: [
@@ -135,8 +136,8 @@ export const blogPosts: Record<string, BlogPost> = {
     updatedDate: "2026-10-24",
     readMinutes: 2,
     draft: true,
-    heroImage: unsplash("1560448204-e02f11c3d0e2", 2200),
-    heroImageAlt: "Exterior of a modern home with a lit entrance at dusk",
+    heroImage: "https://media.lankanewhomes.com/projects/villa-sahana/gallery/villa-sahana_image-01.webp",
+    heroImageAlt: "A new villa with a private pool on Sri Lanka's south coast",
     intro:
       "Listing on LankaNewHomes is free, permanently. A paid package only buys reach: your project shown in more places, to more buyers, more often. Choose by how many projects you are actively selling right now.",
     sections: [
@@ -196,7 +197,8 @@ export const blogPosts: Record<string, BlogPost> = {
     updatedDate: "2026-10-24",
     readMinutes: 3,
     featured: true,
-    heroImage: unsplash("1600585154526-990dced4db0d", 2200),
+    heroImage: "https://media.lankanewhomes.com/projects/crystal-sands-sky-villas/gallery/crystal-sands-sky-villas_suite-living-room-ocean-view.jpg",
+    heroImageAlt: "Living room of a new apartment with an ocean view in Hikkaduwa",
     intro:
       "Before you choose a new home in Sri Lanka, check five things: the real commute, the floor plan, how far construction has got, the full payment plan, and whether the developer replies. The counts below come from the 107 projects on LankaNewHomes in October 2026.",
     sections: [
@@ -439,8 +441,8 @@ export const blogPosts: Record<string, BlogPost> = {
     author: "LankaNewHomes",
     publishDate: "2026-11-02",
     readMinutes: 4,
-    heroImage: unsplash("1600585154526-990dced4db0d", 2200),
-    heroImageAlt: "A new house in Sri Lanka seen from the street",
+    heroImage: "https://media.lankanewhomes.com/projects/lakefront-residencies/gallery/lakefront-residencies_exterior-gardens-lake-view.jpg",
+    heroImageAlt: "A new residential building with gardens near Gregory Lake, Nuwara Eliya",
     intro:
       "Before you pay a deposit on a new home in Sri Lanka, ask the developer five things in writing: when you receive the deed, what you pay and when, how far the build has got, what the finishes are, and what happens if handover is late. These are the worries buyers raise most often when they ask each other for advice online. This is general guidance, not legal advice.",
     sections: [
@@ -520,8 +522,8 @@ export const blogPosts: Record<string, BlogPost> = {
     author: "LankaNewHomes",
     publishDate: "2026-11-02",
     readMinutes: 4,
-    heroImage: unsplash("1487958449943-2429e8be8625", 2200),
-    heroImageAlt: "Apartment buildings and houses in a Sri Lankan city",
+    heroImage: "https://media.lankanewhomes.com/lands/callisto-kadawatha/gallery/callisto-kadawatha_photo-03.jpg",
+    heroImageAlt: "Tarred road and residential plots in a land development in Kadawatha",
     intro:
       "With one budget you can often choose between buying land and building, buying a new apartment, or buying a house. Land gives you the most control and the most work. An apartment gives you a finished home with shared upkeep. A house sits between the two. This guide compares them so you can match the choice to your plans. It is general guidance, not financial or legal advice.",
     sections: [
@@ -582,10 +584,11 @@ export const blogPosts: Record<string, BlogPost> = {
       ],
     },
   },
-  // Published 2026-11-26 (owner: "Make it live and push it"). Written the same day (owner: "create me an article, the new rules of getting citizenship in Sri Lanka", then "write something, what is it
-  // for the home buyers"). Facts from the Department of Immigration and Emigration pages and the London and Canberra High Commission pages,
-  // read 2026-11-26. Two lines are our reading, not official wording: an unfinished apartment counts only once the deed is in the buyer's name,
-  // and the online system lets a visitor apply before travelling.
+  // Published 2026-11-26 (owner: "Make it live and push it"). Rewritten the same day as a short, visual article (owner: "boxes, keep it
+  // simple... keep lower text... create some images"): one illustration card per section, made by lnh-reels/blog/make-cards.cjs in the land
+  // guide style and stored on R2 (scripts/_upload-citizenship-blog-images.ts). Facts from the Department of Immigration and Emigration pages
+  // and the London and Canberra High Commission pages, read 2026-11-26. Our reading, not official wording: an unfinished apartment counts only
+  // once the deed is in the buyer's name.
   "sri-lanka-dual-citizenship-new-rules-2026": {
     slug: "sri-lanka-dual-citizenship-new-rules-2026",
     path: "/blog/sri-lanka-dual-citizenship-new-rules-2026",
@@ -598,109 +601,56 @@ export const blogPosts: Record<string, BlogPost> = {
     category: "Buying guide",
     author: "LankaNewHomes",
     publishDate: "2026-11-26",
-    readMinutes: 6,
-    heroImage: unsplash("1600585154526-990dced4db0d", 2200),
-    heroImageAlt: "Exterior of a modern home with a lit entrance at dusk",
+    readMinutes: 3,
+    heroImage: "https://media.lankanewhomes.com/projects/villa-samagi/gallery/villa-samagi_image-01.webp",
+    heroImageAlt: "A new villa among palm trees on Sri Lanka's south coast",
     intro:
-      "Two things changed in late 2026. Since 29 October you can apply for dual citizenship online if you apply through the head office of the Department of Immigration and Emigration, and since 1 October unmarried children must apply before they turn 21. The fee, the qualifying routes and the documents stay the same. This is general information, not legal advice.",
+      "Two things changed in late 2026: you can now apply online, and children must apply before they turn 21. Everything else stays the same. This is general information, not legal advice.",
     sections: [
       {
         heading: "What is new in 2026?",
         tone: "gray",
-        body: "There are two changes, and both are about how and when you apply rather than who qualifies.",
-        bullets: [
-          "Online application, from 29 October 2026: applicants using the Department's head office in Battaramulla can submit the application online and book an appointment to hand in the original documents.",
-          "Children's age limit, from 1 October 2026: applications for unmarried children must be made before the age of 21, according to the Sri Lanka High Commission in London. The earlier cut-off was 21 years and 6 months.",
-          "The online system covers head office applicants only. If you apply from abroad, you still go through your nearest Sri Lankan embassy or high commission.",
-        ],
+        body: "The online system is for people applying through the head office in Battaramulla. From abroad, you still apply through your nearest Sri Lankan mission.",
+        image: { src: "https://media.lankanewhomes.com/blog/sri-lanka-dual-citizenship-new-rules-2026/citizenship-changes-v2.png", alt: "Two changes in 2026: apply online through the head office from 29 October, and children must apply before they turn 21" },
       },
       {
         heading: "What does this mean for home buyers?",
         tone: "sage",
-        body: "If you are a Sri Lankan living abroad and thinking about [buying a home in Sri Lanka](/projects), these rules touch your purchase in six practical ways.",
-        bullets: [
-          "Your home can also be your qualifying asset. Property in Sri Lanka worth Rs. 2.5 million or more is one of the seven ways to qualify, so you do not need a separate bank deposit.",
-          "You do not have to wait until 55. The age route needs you to be 55. The property route has no age requirement.",
-          "The deed must be in your name. An apartment that is still being built can support your application only once the deed has been transferred to you, so [ask the seller when you will receive the deed](/blog/questions-to-ask-before-buying-a-home-in-sri-lanka).",
-          "A gifted property has a ten-year wait. A house or land given to you by family counts only if the gift deed was registered at least ten years ago. A property you buy yourself has no such wait.",
-          "Apply for your children before they turn 21. Your spouse and unmarried children can apply alongside you.",
-          "Add the fees to your budget. A couple with two children pays USD 3,500 in government fees, due only after approval.",
-        ],
-        callout: "Visiting for a short time? Submit the application online before you travel and book the appointment for the days you are in Colombo.",
+        body: "A [home in Sri Lanka](/projects) worth Rs. 2.5 million or more can be the asset behind your application, at any age.",
+        image: { src: "https://media.lankanewhomes.com/blog/sri-lanka-dual-citizenship-new-rules-2026/citizenship-home-buyers-v2.png", alt: "For home buyers: a home worth Rs. 2.5 million or more can qualify, at any age, and the deed must be in your name" },
+        callout: "Buying off-plan? The home counts only once the deed is in your name, so [ask when you will receive the deed](/blog/questions-to-ask-before-buying-a-home-in-sri-lanka).",
       },
       {
         heading: "Who can apply?",
         tone: "cream",
-        body: "Dual citizenship is for people who were Sri Lankan citizens and took, or are about to take, citizenship of another country. The Citizenship Act gives two routes.",
-        bullets: [
-          "Resumption: you already hold another country's citizenship, lost your Sri Lankan citizenship as a result, and want it back.",
-          "Retention: you are still a Sri Lankan citizen, hold permanent residence abroad, and want to keep your Sri Lankan citizenship when you take the new one.",
-          "One other country only: the High Commission in Canberra says people who are citizens of two or more other countries are not eligible.",
-        ],
-        callout: "Not a Sri Lankan by origin? See our guide for [foreigners buying property in Sri Lanka](/guides/foreigners-buying-property) and the [golden visa guide](/guides/golden-visa).",
+        body: "Sri Lankans who took, or are about to take, citizenship of another country.",
+        image: { src: "https://media.lankanewhomes.com/blog/sri-lanka-dual-citizenship-new-rules-2026/citizenship-routes-v2.png", alt: "Two routes: resume Sri Lankan citizenship you lost, or retain it before taking another citizenship; one other country only" },
+        callout: "Not Sri Lankan by origin? See [foreigners buying property](/guides/foreigners-buying-property) and the [golden visa guide](/guides/golden-visa).",
       },
       {
         heading: "What are the seven ways to qualify?",
         tone: "gray",
-        body: "You need to fit one of the categories on the application form.",
-        bullets: [
-          "Age: you have completed 55 years.",
-          "Qualifications: a diploma of at least one year, a degree, or a professional qualification.",
-          "Property: land or other immovable property in Sri Lanka worth Rs. 2.5 million or more.",
-          "Rupee deposit: a fixed deposit of Rs. 2.5 million or more, held for three years in an approved commercial bank.",
-          "Dollar deposit: a fixed deposit of USD 25,000 or more for three years in an NRFC, RFC or SFIDA account.",
-          "Treasury bonds: USD 25,000 or more in Treasury bonds or a Securities Investment Account for at least three years.",
-          "Family: the spouse or unmarried child of an applicant.",
-        ],
+        body: "You need one of these. For buyers, the property route is the simplest: most new [apartments](/guides/apartment-prices-in-colombo), [houses](/guides/house-prices-in-sri-lanka) and [land plots](/land) cost well above Rs. 2.5 million.",
+        image: { src: "https://media.lankanewhomes.com/blog/sri-lanka-dual-citizenship-new-rules-2026/citizenship-seven-ways-v2.png", alt: "Seven ways to qualify: age 55, a diploma or degree, property worth Rs. 2.5 million, a rupee or dollar deposit, Treasury bonds, or being the spouse or child of an applicant" },
+        callout: "Buying land? [Check the title before you pay](/blog/before-buying-land-in-sri-lanka). The same deed and title report support your application.",
       },
       {
-        heading: "How does property count towards dual citizenship?",
+        heading: "What does it cost?",
         tone: "sage",
-        body: "For the property route you need the original deed in your name, a valuation report and a title report, both issued within the last three months. Most new [apartments](/guides/apartment-prices-in-colombo), [houses](/guides/house-prices-in-sri-lanka) and [land plots](/land) sold today are priced well above Rs. 2.5 million, so a home you buy for yourself or your family can also be the asset behind your application.",
-        callout: "Buying land? [Check the title before you pay](/blog/before-buying-land-in-sri-lanka), because the same deed and title report support your application.",
+        body: "The fee is in US dollars. The day you pay is the day your dual citizenship starts.",
+        image: { src: "https://media.lankanewhomes.com/blog/sri-lanka-dual-citizenship-new-rules-2026/citizenship-fees-v2.png", alt: "Fees: USD 2,000 for the main applicant, USD 500 for a spouse and USD 500 for each child, paid only after approval" },
       },
       {
-        heading: "What does dual citizenship cost?",
+        heading: "How do you apply?",
         tone: "cream",
-        body: "The government fee is set in US dollars and is paid only after the Minister approves the application. The Department emails a payment link, and the day you pay becomes the day your dual citizenship takes effect.",
-        bullets: [
-          "Main applicant: USD 2,000.",
-          "Spouse: USD 500.",
-          "Each unmarried child: USD 500.",
-          "Embassies and high commissions charge their own smaller fees for attesting documents.",
-        ],
-      },
-      {
-        heading: "Which documents do you need?",
-        tone: "gray",
-        body: "Each family member files a separate application.",
-        bullets: [
-          "Your Sri Lankan birth certificate, and your marriage certificate if you are married.",
-          "For resumption: your foreign citizenship certificate and foreign passport.",
-          "For retention: your current Sri Lankan passport and your permanent residence visa.",
-          "A police clearance certificate for every applicant over 16. How recent it must be differs between offices, from three to twelve months.",
-          "Proof for your category, such as certificates, a deed with valuation, or a bank letter.",
-          "The affidavit on the application form, three passport photos, and your previous Sri Lankan passport if you have it.",
-        ],
-      },
-      {
-        heading: "How do you apply, step by step?",
-        tone: "sage",
-        body: "None of the official pages gives a processing time, so start early if your purchase or your children's ages depend on it.",
-        bullets: [
-          "Choose your route (resumption or retention) and your category.",
-          "Collect the documents and have copies certified.",
-          "Apply online and book an appointment if you use the head office in Battaramulla, or submit through your nearest Sri Lankan mission abroad.",
-          "Hand in the original documents at your appointment.",
-          "Track the application online with your reference number.",
-          "Pay the fee when the Department emails you, then collect your certificate in Colombo or nominate someone to collect it.",
-        ],
-        callout: "Rules and fees can change, and the offices do not all describe them the same way. Confirm the current requirements with the Department of Immigration and Emigration or your nearest Sri Lankan mission before you apply.",
+        body: "Bring your birth certificate, passport, proof for your category and a police clearance for everyone over 16. Each family member applies separately.",
+        image: { src: "https://media.lankanewhomes.com/blog/sri-lanka-dual-citizenship-new-rules-2026/citizenship-steps-v2.png", alt: "Six steps: choose your route, collect documents, apply online or at a mission, hand in originals, track online, pay and collect the certificate" },
+        callout: "Rules and fees can change. Confirm them with the Department of Immigration and Emigration or your nearest Sri Lankan mission before you apply.",
       },
       {
         heading: "What should you do next?",
-        tone: "cream",
-        body: "Decide which category fits you. If it is property, compare [land, an apartment and a house](/blog/land-apartment-or-house-in-sri-lanka) for your budget, look at the [area guides](/neighborhoods) for the places you are considering, and read our guide to [investment property in Sri Lanka](/guides/investment-property) if you plan to rent the home out while you live abroad.",
+        tone: "gray",
+        body: "If property is your route, compare [land, an apartment and a house](/blog/land-apartment-or-house-in-sri-lanka), look at the [area guides](/neighborhoods), and read about [investment property](/guides/investment-property) if you plan to rent the home out while you live abroad.",
       },
     ],
     cta: {
