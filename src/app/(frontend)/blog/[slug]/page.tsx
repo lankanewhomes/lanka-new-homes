@@ -126,6 +126,23 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 ))}
               </ul>
             ) : null}
+            {section.examples?.length ? (
+              <div className={`blog-examples blog-examples--${section.examples.length > 1 ? "row" : "wide"}`}>
+                {section.examples.map((example) => (
+                  <Link key={example.href + example.src} href={example.href} className="blog-example">
+                    <span className="blog-example-media">
+                      <Image src={example.src} alt={example.alt} fill sizes="(min-width: 860px) 320px, 100vw" className="blog-example-img" />
+                    </span>
+                    <span className="blog-example-text">
+                      <span className="blog-example-eyebrow">On LankaNewHomes</span>
+                      <span className="blog-example-name">{example.name}</span>
+                      <span className="blog-example-note">{example.note}</span>
+                      <span className="blog-example-more">View listing <span aria-hidden="true">→</span></span>
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            ) : null}
             {section.widget === "citizenship-picker" ? <CitizenshipPicker /> : null}
             {section.callout ? <aside className="blog-article-callout">{renderCopy(section.callout)}</aside> : null}
           </section>
