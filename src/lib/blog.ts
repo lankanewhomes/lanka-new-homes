@@ -73,6 +73,16 @@ export const blogPosts: Record<string, BlogPost> = {
       "A listing gets your project found. What happens next, after a Facebook ad click, a signboard QR code or a referral, usually happens on your own website. Seven fixes decide whether that visitor enquires. Counts below are from the 107 projects on LankaNewHomes in October 2026.",
     sections: [
       {
+        heading: "Quick answer",
+        tone: "cream",
+        body: "Seven fixes turn a visitor into an enquiry.",
+        bullets: [
+          "Use your own images, and show prices and floor plans.",
+          "Make contact one tap: WhatsApp and a call button.",
+          "Show dated progress, build for phones and keep the site fast.",
+        ],
+      },
+      {
         heading: "Should the site use your own images?",
         examples: [
           { name: "Central Park Boulevard, Port City Colombo", href: "/projects/central-park-boulevard-port-city-colombo", src: "https://media.lankanewhomes.com/projects/central-park-boulevard-port-city-colombo/gallery/central-park-boulevard-port-city-colombo_aerial-dusk.jpg", alt: "Aerial view of the Central Park Boulevard towers, canal and parks at dusk", note: "The developer's own aerial render of the towers, canal and parks" },
@@ -216,6 +226,16 @@ export const blogPosts: Record<string, BlogPost> = {
     intro:
       "Before you choose a new home in Sri Lanka, check five things: the real commute, the floor plan, how far construction has got, the full payment plan, and whether the developer replies. The counts below come from the 107 projects on LankaNewHomes in October 2026.",
     sections: [
+      {
+        heading: "Quick answer",
+        tone: "cream",
+        body: "Check five things before you choose a new home.",
+        bullets: [
+          "The real commute and whether your furniture fits the floor plan.",
+          "How far construction has got, and the full payment plan.",
+          "Whether the developer replies the same day.",
+        ],
+      },
       {
         heading: "How far is it from the places you go every day?",
         examples: [
@@ -394,6 +414,16 @@ export const blogPosts: Record<string, BlogPost> = {
       "Before you pay for land in Sri Lanka, have an attorney-at-law check the title, read the deed and survey plan, and confirm what you may build. This short guide shows how. It is general guidance, not legal advice.",
     sections: [
       {
+        heading: "Quick answer",
+        tone: "cream",
+        body: "Before you pay for land, have an attorney-at-law check it.",
+        bullets: [
+          "Check the title, the deed and the survey plan.",
+          "Confirm what you are allowed to build.",
+          "Visit more than once, and avoid the five costly mistakes.",
+        ],
+      },
+      {
         heading: "What should you decide before buying land in Sri Lanka?",
         examples: [
           { name: "Atigala Floralia", href: "/land/atigala-floralia", src: "https://media.lankanewhomes.com/lands/atigala-floralia/gallery/atigala-floralia_plots-marked-out.webp", alt: "Marked-out residential plots at Atigala Floralia", note: "Plots marked out on the ground, ready to view" },
@@ -482,12 +512,23 @@ export const blogPosts: Record<string, BlogPost> = {
       "Before you pay a deposit on a new home in Sri Lanka, ask the developer five things in writing: when you receive the deed, what you pay and when, how far the build has got, what the finishes are, and what happens if handover is late. These are the worries buyers raise most often when they ask each other for advice online. This is general guidance, not legal advice.",
     sections: [
       {
+        heading: "Quick answer",
+        tone: "cream",
+        body: "Ask these five questions in writing before you pay a deposit.",
+        bullets: [
+          "When you get the deed, and what you pay and when.",
+          "How far the build has got, and what the finishes are.",
+          "What happens if handover is late. Have your own attorney read the agreement.",
+        ],
+      },
+      {
         heading: "When will I receive the deed?",
         examples: [
           { name: "Marina Square, Uptown Colombo", href: "/projects/marina-square-uptown-colombo", src: "https://media.lankanewhomes.com/projects/marina-square-colombo-15/gallery/marina-square-colombo-15_tower-entrance-signage.jpg", alt: "Tower entrance and signage at Marina Square, Uptown Colombo", note: "Ask for the deed date in writing, whichever tower you choose" },
         ],
         tone: "gray",
         body: "Buyers most often worry about the deed arriving late or not at all. Ask for the date and put it in the sales agreement, not only in a brochure or a message.",
+        image: { src: "https://media.lankanewhomes.com/blog/questions-to-ask-before-buying-a-home-in-sri-lanka/q-deed.png", alt: "Question 1: ask for the deed date in the agreement, have your own attorney read it, and ask what happens to your payments if it is delayed" },
         bullets: [
           "Ask when the deed is signed and registered, and who pays the stamp duty and legal fees.",
           "Ask your own attorney-at-law to read the sales agreement before you sign. A developer's lawyer works for the developer.",
@@ -502,6 +543,7 @@ export const blogPosts: Record<string, BlogPost> = {
         ],
         tone: "sage",
         body: "A price is only the start. Ask for the deposit, each stage payment and the amount due at handover, as a schedule you can keep.",
+        image: { src: "https://media.lankanewhomes.com/blog/questions-to-ask-before-buying-a-home-in-sri-lanka/q-payments.png", alt: "Question 2: ask about the deposit, whether stage payments follow the build or a date, and what is refundable" },
         bullets: [
           "Ask which payments are tied to a building stage, such as foundations or roof, and which are tied to a date.",
           "Ask whether the price can rise after you reserve, and what the reservation fee covers.",
@@ -516,6 +558,7 @@ export const blogPosts: Record<string, BlogPost> = {
         ],
         tone: "cream",
         body: "\"Under construction\" can mean a cleared site or a finished frame. Ask for dated photos, and visit the site yourself.",
+        image: { src: "https://media.lankanewhomes.com/blog/questions-to-ask-before-buying-a-home-in-sri-lanka/q-build.png", alt: "Question 3: ask for dated progress photos, the approved plans and building approval, and visit the site or a finished project" },
         bullets: [
           "Ask for the approved plans and the building approval, and ask your attorney or an engineer to confirm they match what is being built.",
           "Ask to see a show unit or a finished building by the same developer. Many projects have no show unit, so a finished earlier project is the next best proof.",
@@ -529,6 +572,7 @@ export const blogPosts: Record<string, BlogPost> = {
         ],
         tone: "gray",
         body: "Buyers say the brochure can look better than the finished home. Ask for a written list of finishes, brands and fittings, and ask that the agreement says the home will match it.",
+        image: { src: "https://media.lankanewhomes.com/blog/questions-to-ask-before-buying-a-home-in-sri-lanka/q-finishes.png", alt: "Question 4: ask for the finishes and brands in writing, the floor areas in the agreement, and who fixes faults" },
         bullets: [
           "Ask for floor areas in the agreement, and whether they include shared walls and balconies.",
           "Ask who is responsible for fixing faults after handover, and for how long.",
@@ -539,12 +583,20 @@ export const blogPosts: Record<string, BlogPost> = {
         heading: "What happens if handover is late?",
         tone: "sage",
         body: "Delays happen. What matters is what the agreement says about them.",
+        image: { src: "https://media.lankanewhomes.com/blog/questions-to-ask-before-buying-a-home-in-sri-lanka/q-late.png", alt: "Question 5: ask for the handover date in writing, a penalty or refund if it is missed, and what happens if the project stops" },
         bullets: [
           "Ask for the handover date in writing, and for any penalty or refund if it is missed.",
           "Ask what the developer will do if the project stops.",
           "Compare the answers from two developers. The clearer and faster reply is usually the safer choice.",
         ],
         callout: "Look for the \"Responds within 24 hours\" badge on a [project page](/projects), and ask the question before you pay anything.",
+      },
+      {
+        heading: "What should you take to the meeting?",
+        tone: "sage",
+        body: "Screenshot this and take it with you.",
+        image: { src: "https://media.lankanewhomes.com/blog/questions-to-ask-before-buying-a-home-in-sri-lanka/q-checklist.png", alt: "Checklist for the meeting: deed date, payment schedule, dated progress photos, a written list of finishes and late handover terms" },
+        callout: "Ask in writing, and ask your own attorney to read the agreement before you sign.",
       },
     ],
     cta: {
@@ -575,6 +627,16 @@ export const blogPosts: Record<string, BlogPost> = {
       "With one budget you can often choose between buying land and building, buying a new apartment, or buying a house. Land gives you the most control and the most work. An apartment gives you a finished home with shared upkeep. A house sits between the two. This guide compares them so you can match the choice to your plans. It is general guidance, not financial or legal advice.",
     sections: [
       {
+        heading: "Quick answer",
+        tone: "cream",
+        body: "Land gives the most control and the most work. An apartment is finished, with shared upkeep. A house sits between the two.",
+        bullets: [
+          "Add the costs after purchase to every price.",
+          "Land needs a title check, an apartment a look at the developer.",
+          "Match the choice to how you plan to live.",
+        ],
+      },
+      {
         heading: "What do you get with each choice?",
         examples: [
           { name: "Land: Kahathuduwa Lush", href: "/land/kahathuduwa-lush", src: "https://media.lankanewhomes.com/lands/kahathuduwa-lush/gallery/kahathuduwa-lush_aerial-plots-with-internal-road.webp", alt: "Residential plots with an internal road at Kahathuduwa Lush", note: "A plot you build on yourself" },
@@ -583,6 +645,7 @@ export const blogPosts: Record<string, BlogPost> = {
         ],
         tone: "gray",
         body: "Start with what you want to own at the end.",
+        image: { src: "https://media.lankanewhomes.com/blog/land-apartment-or-house-in-sri-lanka/land-get.png", alt: "Land is a plot you own, an apartment is a finished unit with shared areas, and a house is a home on its own plot" },
         bullets: [
           "Land: a plot you own outright. You decide what to build and when, within the approvals.",
           "Apartment: a finished unit in a building. You own your unit and share the common areas, such as the lift, the roof and the grounds.",
@@ -593,6 +656,7 @@ export const blogPosts: Record<string, BlogPost> = {
         heading: "What does each one cost you?",
         tone: "sage",
         body: "The price you see is not the whole cost. On LankaNewHomes, 259 of the 349 [land listings](/land) publish a price per perch, from Rs. 65,000 to Rs. 6,950,000 (October 2026), so the same budget buys very different land depending on the area.",
+        image: { src: "https://media.lankanewhomes.com/blog/land-apartment-or-house-in-sri-lanka/land-cost.png", alt: "Land adds building, approvals, a boundary wall and utilities; an apartment adds a service charge and legal fees; a house adds legal fees and repairs" },
         bullets: [
           "Land: add the cost of building, approvals, a boundary wall and utilities. Building costs come after the purchase, often over years.",
           "Apartment: add a monthly service charge for the shared areas, and legal fees at purchase.",
@@ -604,6 +668,7 @@ export const blogPosts: Record<string, BlogPost> = {
         heading: "How much work and risk do you take on?",
         tone: "cream",
         body: "Each choice moves the work to a different person.",
+        image: { src: "https://media.lankanewhomes.com/blog/land-apartment-or-house-in-sri-lanka/land-work.png", alt: "Land is the most work with title risk, an apartment is the least work with a late-build risk, and a house needs little work if it is in good repair" },
         bullets: [
           "Land: the most work. You manage the builder and the approvals. The main risk is the title, so [check it before you pay](/blog/before-buying-land-in-sri-lanka).",
           "Apartment: the least work once handed over. The main risk is a late or unfinished building, so [ask the developer the right questions](/blog/questions-to-ask-before-buying-a-home-in-sri-lanka).",
@@ -614,6 +679,7 @@ export const blogPosts: Record<string, BlogPost> = {
         heading: "Which one suits you?",
         tone: "gray",
         body: "Match the choice to how you plan to live and how long you will stay.",
+        image: { src: "https://media.lankanewhomes.com/blog/land-apartment-or-house-in-sri-lanka/land-suits.png", alt: "Land suits people who want to build and can wait, an apartment suits people who want to be close to work, a house suits people who want a garden and a finished home" },
         bullets: [
           "Choose land if you want to build your own home, can wait, and have a trusted builder and attorney.",
           "Choose an apartment if you want to be close to work and services, want shared security and want to move in without managing a build.",
@@ -659,6 +725,16 @@ export const blogPosts: Record<string, BlogPost> = {
     intro:
       "Two things changed in late 2026: you can now apply online, and children must apply before they turn 21. Everything else stays the same. This is general information, not legal advice.",
     sections: [
+      {
+        heading: "Quick answer",
+        tone: "cream",
+        body: "You can now apply online, and children must apply before they turn 21.",
+        bullets: [
+          "A home worth Rs. 2.5 million or more can be the asset behind your application, at any age.",
+          "Government fee: USD 2,000, then USD 500 for a spouse and for each child.",
+          "The fee is paid only after approval.",
+        ],
+      },
       {
         heading: "What is new in 2026?",
         tone: "gray",
