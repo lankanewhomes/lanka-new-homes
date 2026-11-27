@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase-browser";
 import { trackEvent } from "@/lib/ga4";
+import { trackEvent as trackPixelEvent } from "@/lib/metaPixel";
 
 // Mirrors use-saved-listing.ts exactly, for developer follows instead of
 // project bookmarks — a distinct saved_developers table/concept from the
@@ -41,6 +42,7 @@ export function useSavedDeveloper(developerSlug: string) {
 
   const toggle = async () => {
     trackEvent(saved ? "unfollow_developer" : "follow_developer", { developer_slug: developerSlug, logged_in: Boolean(userId) });
+    if (!saved) trackPixelEvent("FollowDeveloper", { content_name: developerSlug, content_category: "developer" });
     if (!userId) {
       router.push(`/login?next=${encodeURIComponent(window.location.pathname)}`);
       return;

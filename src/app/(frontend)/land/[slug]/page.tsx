@@ -11,6 +11,7 @@ import { SimilarListingsSection } from "@/components/marketplace/similar-listing
 import { formatLkr } from "@/lib/format";
 import { getDeveloperBySlug } from "@/lib/developer-store";
 import { LandPlotsGridSection } from "@/components/marketplace/land-plots-grid";
+import { MetaViewContent } from "@/components/analytics/meta-view-content";
 import { PLOT_GRID_THRESHOLD } from "@/lib/plot-grid";
 import { listingWhatsAppHref, toWhatsAppNumber } from "@/lib/whatsapp";
 import { VERIFIED_DEVELOPER_TOOLTIP } from "@/lib/developer-badges";
@@ -178,6 +179,7 @@ export default async function LandDetailPage({ params }: LandPageProps) {
   return (
     <div className="space-y-8">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <MetaViewContent contentName={land.slug} contentCategory="land" />
       <ProjectHero
         project={project}
         backHref="/land"

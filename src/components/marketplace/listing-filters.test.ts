@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { matchesFilters } from "./listing-page";
+import { describeListingSearch, matchesFilters } from "./listing-page";
 import type { Project } from "@/types";
 
 const land = (over: Partial<Project>) =>
@@ -24,5 +24,26 @@ describe("land filters", () => {
     expect(matchesFilters(perPerch, { "Any price": "Under Rs. 10M" })).toBe(false);
     const total = land({ startingPriceLkr: 8_000_000, priceRange: "8,000,000" });
     expect(matchesFilters(total, { "Any price": "Under Rs. 10M" })).toBe(true);
+  });
+});
+
+describe("Meta Pixel search string", () => {
+  const groups = [
+    { label: "For sale", options: ["For sale", "Any"] },
+    { label: "Home type", options: ["Any", "Condominium", "Villas"] },
+    { label: "0+ beds", options: ["0+ beds", "1+", "2+"] },
+  ];
+  const base = { query: "", areaCity: "", regionFilter: "All of Sri Lanka", filterGroups: groups, selections: {} };
+
+  it("is empty until the visitor narrows the list", () => {
+    expect(describeListingSearch(base)).toBe("");
+    expect(describeListingSearch({ ...base, query: "co" })).toBe("");
+    expect(describeListingSearch({ ...base, selections: { "Home type": "Any", "For sale": "For sale" } })).toBe("");
+  });
+
+  it("joins the typed words, city and non-default filters", () => {
+    expect(describeListingSearch({ ...base, query: " 2 bed in Colombo ", regionFilter: "Negombo", selections: { "Home type": "Villas", "0+ beds": "2+", "For sale": "Any" } }))
+      .toBe("2 bed in Colombo | City: Negombo | For sale: Any | Home type: Villas | 0+ beds: 2+");
+    expect(describeListingSearch({ ...base, areaCity: "Kandy" })).toBe("City: Kandy");
   });
 });

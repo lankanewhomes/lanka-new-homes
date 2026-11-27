@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { trackEvent as trackPixelEvent } from "@/lib/metaPixel";
 
 // Second half of a Facebook-started developer signup — the only field
 // Facebook doesn't already give us. See
@@ -23,7 +24,11 @@ export function FacebookFinishSignupForm({ name }: { name: string }) {
       });
       const body = await response.json();
       if (!response.ok) throw new Error(body?.error ?? "Couldn't finish signing up. Please try again.");
-      window.location.href = "/dashboard/overview";
+      trackPixelEvent("CompleteRegistration", { content_name: "developer" });
+      // The dashboard has no pixel and this is a full page load: give the event a moment to leave first.
+      window.setTimeout(() => {
+        window.location.href = "/dashboard/overview";
+      }, 300);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
       setLoading(false);

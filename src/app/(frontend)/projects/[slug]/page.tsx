@@ -26,6 +26,7 @@ import {
   StatsContactCard,
 } from "@/components/marketplace/components";
 import { ProjectViewTracker } from "@/components/marketplace/view-tracker";
+import { MetaViewContent } from "@/components/analytics/meta-view-content";
 import { buildBreadcrumbJsonLd, jsonLdScriptProps, toAbsoluteUrl, withSocial } from "@/lib/seo";
 
 // Regenerate at most once a minute so admin edits (e.g. status changes)
@@ -160,6 +161,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
       />
       <script {...jsonLdScriptProps(breadcrumbJsonLd)} />
       <ProjectViewTracker projectSlug={project.slug} projectName={project.name} developerSlug={project.developerSlug} />
+      <MetaViewContent contentName={project.slug} contentCategory="project" value={project.startingPriceLkr} />
       <ProjectHero
         project={project}
         backHref="/projects"

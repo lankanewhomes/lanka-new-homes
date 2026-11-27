@@ -209,9 +209,10 @@ Open any page with `?internal=1` (or `?no-track=1`) once per browser; `?internal
 Owner: "sync Google Analytics and my dashboard". They cannot match exactly (ad blockers and declined cookies hide visitors from
 Google, never from our server), so both now count with the **same rules** and the Analytics page shows them **next to each other**.
 
-- **Same repeat rule**: the browser sends `view_listing` (GA4) and `ViewContent` (Meta Pixel) once per listing per 30 minutes per
+- **Same repeat rule**: the browser sends `view_listing` (GA4) once per listing per 30 minutes per
   browser (`claimBrowserView` in `src/components/marketplace/view-tracker.tsx`, localStorage `lnh-view-sent:<slug>`), the same
   30-minute rule our own count uses (`src/collections/hooks/analytics-dedup.ts`). Before this, GA4 counted every reload.
+  (Meta's `ViewContent` followed this rule too until 2026-11-26; it is now sent on every page view, see "Meta Pixel events" below.)
   GA4 data from before 2026-11-03 still has reloads in it, so the gap on older ranges is smaller than it should be.
 - **Visitors**: `visitors` in `/analytics-summary` = distinct browsers (session_id) with a listing view, compared with GA4
   `totalUsers` on `view_listing`. Shown as a tile on the Analytics page.
@@ -241,3 +242,48 @@ scoped views stay project-only.
 Country picker (2026-11-04): `keyword_volumes` is keyed by (`keyword`, `country`, ISO alpha-2; migration `20261104140000_keyword_volumes_country.sql`, old rows are `LK`). The Keywords page has a
 "Search volume country" picker (shown once more than one country is stored) that switches the Search words column, plus a "Keywords checked for {country}" table. Refresh a country with
 `keyword_overview` and its Google location id (LK 2144, AU 2036, GB 2826, US 2840, AE 2784, IN 2356, CA 2124). First overseas load: 3 keywords x 6 countries.
+
+## Meta Pixel events (2026-11-26)
+
+So Facebook/Instagram ads can optimise for, and report on, the leads developers are charged for. The pixel itself loads once, in
+`src/components/analytics/deferred-meta-pixel.tsx` (production only; never for an internal browser, `?internal=1`). Every event goes
+through `trackEvent` in `src/lib/metaPixel.ts`, which:
+
+- gives each event a UUID `eventID`, for deduplication with a Conversions API copy later. Where the action is also logged on our
+  server, the same id is sent in that request's body as `eventId` (`/api/events/whatsapp-click`, `/api/events/brochure-download`,
+  `/api/leads`). The server ignores it for now; a Conversions API route would send it as `event_id`;
+- sends no personal data: slugs, page types and fixed labels only. `search_string` (typed by the visitor) has emails and phone-like
+  numbers replaced by `[email]` / `[number]`;
+- does nothing when the pixel is missing or blocked, never throws, and logs every event to the browser console in development.
+
+| Event | Sent when | Parameters | Code |
+|---|---|---|---|
+| `PageView` | First load (with `init`), then every App Router navigation to a new path or query | — | `deferred-meta-pixel.tsx` |
+| `ViewContent` | Every page view of a project (main page, floor-plans list, a floor plan) | `content_name` (slug), `content_category: project`, `value` = `startingPriceLkr`, `currency: LKR` (no value when the price is 0) | `MetaViewContent` in each page |
+| `ViewContent` | Every page view of a land listing or one of its plots | `content_name` (land slug), `content_category: land` | same |
+| `ViewContent` | Every page view of a developer / construction company profile | `content_name` (slug), `content_category: developer` / `construction_company` | same |
+| `Contact` | WhatsApp tap: hero button, mobile bar, contact card row and button, "Get price on WhatsApp" in the form, sidebar card, profile WhatsApp icon | `method: whatsapp`, `content_name` (listing or profile slug), `content_category` | `logWhatsAppClick` (components.tsx), `logProfileWhatsAppClick` (profile-view.tsx) |
+| `Lead` | Brochure form sent successfully (the download that follows is not a second Lead) | `lead_type: brochure`, `content_name`, `content_category` | `RequestInfoDialog` |
+| `Lead` | Contact / inquiry form sent successfully (listing pages, land plots grid, developer spotlight) | `lead_type: form`, `content_name`, `content_category` | `RequestInfoDialog`, `LeadForm` |
+| `Search` | Listing pages (`/projects…`, `/land…`, `/search`): 1.5 s after the visitor stops typing or changing filters | `search_string` (words, city, non-default filters), `content_category: project` / `land` | `ListingPageBody` |
+| `CompleteRegistration` | Buyer email sign-up, developer sign-up, Facebook developer sign-up; Google sign-up via a one-time `lnh_new_signup` cookie set in `/auth/callback` | `content_name: user` / `developer` | `auth-form.tsx`, `payload-login-form.tsx`, `facebook-finish-signup-form.tsx`, `src/lib/meta-pixel-signup.ts` |
+| `AddToWishlist` | Save tapped on a listing | `content_name`, `content_category` | `use-saved-listing.ts` |
+| `FollowDeveloper` (custom) | Follow / Get updates tapped | `content_name`, `content_category: developer` | `use-saved-developer.ts` |
+
+- `content_category` is the page type: `project`, `land`, `developer` or `construction_company`. Land pages reuse the project
+  components; `project.isLand` decides.
+- **PageView**: Meta's own PageView on browser-history changes is turned off (`fbq.disablePushState = true`) and replaced by one
+  PageView per navigation, so a navigation is never counted twice and is queued even before `fbevents.js` has loaded.
+- `Contact` with `method: call` is ready in the helper, but the public site has no phone (`tel:`) links today.
+- Not sent to Meta on purpose: email-link taps (`click_email`, not a charged lead; it was a `Contact` before 2026-11-26), WhatsApp taps
+  on architect / interior designer / marketing / sales company profiles, and the general `/contact` form (it is not about a listing).
+- Until 2026-11-26 the pixel events were mirrored from GA4 events inside `src/lib/ga4.ts`; that mirror is gone, so GA4 and Meta can
+  change independently and nothing is counted twice. GA4 events and the Supabase / Payload lead logging are unchanged.
+
+### Checking events in Meta Events Manager
+
+1. Use a browser that is not marked internal: a private window, or open the site once with `?internal=0` (put it back afterwards
+   with `?internal=1`). The pixel never loads in an internal browser, or on localhost / previews outside production.
+2. Events Manager → the pixel (1121255190765288) → **Test events** → enter `https://www.lankanewhomes.com` → **Open website**.
+3. The pixel script loads after the first scroll or tap, or 4 s; events from before that are queued, then appear together.
+4. Each event appears with its parameters and event ID. A Lead / Contact should appear once per action, PageView once per page.

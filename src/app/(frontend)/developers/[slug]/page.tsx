@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { SeoAboutBlock } from "@/components/marketplace/seo-about-block";
 import { notFound } from "next/navigation";
 import { DeveloperProfileView } from "@/components/marketplace/developer-profile-view";
+import { MetaViewContent } from "@/components/analytics/meta-view-content";
 import { getAllDevelopers, getDeveloperBySlug } from "@/lib/developer-store";
 import { landToProjectShape } from "@/lib/land-to-project";
 import { getAllLands } from "@/lib/land-store";
@@ -117,6 +118,7 @@ export default async function DeveloperProfilePage({ params }: DeveloperProfileP
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
+      <MetaViewContent contentName={developer.slug} contentCategory="developer" />
       <DeveloperProfileView developer={developer} projects={developerProjects} reviews={reviews} />
       <SeoAboutBlock
         title={`About ${developer.name} on LankaNewHomes`}

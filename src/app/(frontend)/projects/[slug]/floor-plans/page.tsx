@@ -9,6 +9,7 @@ import { FEATURED_TOOLTIP, VERIFIED_DEVELOPER_TOOLTIP } from "@/lib/developer-ba
 import { pickSimilarListings } from "@/lib/similar-listings";
 import { SimilarListingsSection } from "@/components/marketplace/similar-listings";
 import { PlansAndHomesSection, ProjectHero, ProjectStatsChips, StatsContactCard } from "@/components/marketplace/components";
+import { MetaViewContent } from "@/components/analytics/meta-view-content";
 import { withSocial } from "@/lib/seo";
 
 // Regenerate at most once a minute so admin edits (e.g. status changes)
@@ -43,6 +44,7 @@ export default async function FloorPlansPage({ params }: FloorPlansPageProps) {
 
   return (
     <div className="space-y-8">
+      <MetaViewContent contentName={project.slug} contentCategory="project" value={project.startingPriceLkr} />
       <ProjectHero
         project={project}
         backHref={`/projects/${project.slug}`}

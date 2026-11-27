@@ -12,6 +12,7 @@ import { hasPremiumStyleBadge, planRotationWeight } from "@/lib/packages";
 import { useListingT } from "@/lib/i18n/use-listing-t";
 import { useSavedListing } from "@/lib/use-saved-listing";
 import { trackEvent } from "@/lib/ga4";
+import { trackEvent as trackPixelEvent, type MetaContentCategory } from "@/lib/metaPixel";
 import { useCompareListings, MAX_COMPARE } from "@/lib/use-compare-listings";
 import { MapSidebar } from "@/components/marketplace/map-sidebar";
 import { searchablePages } from "@/lib/listing-categories";
@@ -70,6 +71,29 @@ function upcomingMoveInYears(projects: Project[]): string[] {
     if (project.completionYear >= currentYear) years.add(project.completionYear);
   }
   return Array.from(years).sort((a, b) => a - b).map(String);
+}
+
+/**
+ * The Meta Pixel search_string for a listing page: the typed words (3+ letters), the city and every filter not left on
+ * its default (a group's first option), e.g. "2 bed in Colombo | Home type: Villas". Empty when nothing is narrowed.
+ */
+export function describeListingSearch({ query, areaCity, regionFilter, filterGroups, selections }: {
+  query: string;
+  areaCity: string;
+  regionFilter: string;
+  filterGroups: { label: string; options: string[] }[];
+  selections: Record<string, string>;
+}): string {
+  const parts: string[] = [];
+  const term = query.trim();
+  if (term.length >= 3) parts.push(term);
+  if (areaCity) parts.push(`City: ${areaCity}`);
+  if (regionFilter && regionFilter !== "All of Sri Lanka") parts.push(`City: ${regionFilter}`);
+  for (const group of filterGroups) {
+    const value = selections[group.label];
+    if (value && value !== group.options[0]) parts.push(`${group.label}: ${value}`);
+  }
+  return parts.join(" | ").slice(0, 200);
 }
 
 export function matchesFilters(project: Project, selections: Record<string, string>): boolean {
@@ -199,9 +223,9 @@ function FilterPill({ label, options, value, onChange }: { label: string; option
 }
 
 export function ListingGridCard({ project, basePath = "/projects" }: { project: Project; basePath?: string }) {
-  const { saved, toggle } = useSavedListing(project.slug);
-  const { t, tPrice } = useListingT();
   const isLand = basePath === "/land";
+  const { saved, toggle } = useSavedListing(project.slug, isLand ? "land" : "project");
+  const { t, tPrice } = useListingT();
   const { isComparing, toggle: toggleCompare, atMax } = useCompareListings();
   const comparing = isComparing(project.slug);
   const hasPrice = project.startingPriceLkr > 0;
@@ -454,6 +478,20 @@ export function ListingPageBody({
     )),
     [filterGroups, projects],
   );
+
+  // Meta Pixel Search: once the visitor pauses for 1.5 s (as the GA4 search above), one event describing everything the list is
+  // narrowed to: typed words, city and any filter not left on its default. Several filters picked in a row are one search.
+  const pixelSearchCategory: MetaContentCategory = basePath === "/land" ? "land" : "project";
+  const lastPixelSearch = useRef("");
+  useEffect(() => {
+    const searchString = describeListingSearch({ query: searchQuery, areaCity, regionFilter, filterGroups: resolvedFilterGroups, selections: filterSelections });
+    if (!searchString || searchString === lastPixelSearch.current) return;
+    const timer = window.setTimeout(() => {
+      lastPixelSearch.current = searchString;
+      trackPixelEvent("Search", { search_string: searchString, content_category: pixelSearchCategory });
+    }, 1500);
+    return () => window.clearTimeout(timer);
+  }, [searchQuery, areaCity, regionFilter, filterSelections, resolvedFilterGroups, pixelSearchCategory]);
 
   const activeSelection = selectedArea;
   const trimmedQuery = searchQuery.trim().toLowerCase();

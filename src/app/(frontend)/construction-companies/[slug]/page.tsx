@@ -6,6 +6,7 @@ import { getAllLands } from "@/lib/land-store";
 import { getAllProjects } from "@/lib/project-store";
 import { getApprovedReviewsByEntity } from "@/lib/review-store";
 import { CompanyProfileDetailView } from "@/components/marketplace/company-profile-views";
+import { MetaViewContent } from "@/components/analytics/meta-view-content";
 import { withSocial } from "@/lib/seo";
 
 // Regenerate at most once a minute so admin edits (e.g. status changes)
@@ -51,6 +52,7 @@ export default async function ConstructionCompanyPage({ params }: ConstructionCo
 
   return (
     <div className="developer-page">
+      <MetaViewContent contentName={company.slug} contentCategory="construction_company" />
       <CompanyProfileDetailView company={company} entityType="construction-company" entityLabel="Construction Company" projects={projects} reviews={reviews} />
     </div>
   );

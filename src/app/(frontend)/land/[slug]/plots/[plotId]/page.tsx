@@ -17,6 +17,7 @@ import {
   StatsContactCard,
 } from "@/components/marketplace/components";
 import { withSocial } from "@/lib/seo";
+import { MetaViewContent } from "@/components/analytics/meta-view-content";
 
 // Regenerate at most once a minute so admin edits (e.g. status changes)
 // show up without waiting for the next deploy.
@@ -74,6 +75,7 @@ export default async function LandPlotDetailPage({ params }: PlotPageProps) {
 
   return (
     <div className="space-y-8">
+      <MetaViewContent contentName={land.slug} contentCategory="land" />
       <ProjectHero
         project={project}
         titleOverride={plot.planName}

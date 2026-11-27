@@ -14,6 +14,7 @@ import { ListingGridCard } from "@/components/marketplace/listing-page";
 import { useSavedProfile } from "@/lib/use-saved-profile";
 import { isInternalBrowser } from "@/lib/internal-traffic";
 import { getStoredUtmParams, getTrafficSource, trackEvent } from "@/lib/ga4";
+import { createEventId, trackEvent as trackPixelEvent, type MetaContentCategory } from "@/lib/metaPixel";
 import { getSessionId } from "@/components/marketplace/view-tracker";
 import { useListingT } from "@/lib/i18n/use-listing-t";
 import { Button } from "@/components/ui/button";
@@ -26,16 +27,26 @@ function awardYear(year: string | null | undefined): number {
   return years.length ? Math.max(...years) : 0;
 }
 
+// Profiles reported to the Meta Pixel. The other directories (architects, interior designers, marketing and sales
+// companies) are not leads the site charges for, so their WhatsApp taps stay GA4-only.
+const PROFILE_CONTENT_CATEGORY: Partial<Record<ProfileEntityType, MetaContentCategory>> = {
+  developer: "developer",
+  "construction-company": "construction_company",
+};
+
 // Counts a tap on the WhatsApp icon of a developer's profile page (owner, 2026-11-04): a profile-page click on the developer's first listing
-// (source page "developer-profile") plus a GA4 event. The owner's own clicks are never counted.
+// (source page "developer-profile") plus a GA4 event, and a Meta Pixel Contact with the same event id. The owner's own clicks are never counted.
 function logProfileWhatsAppClick(slug: string, entityType: ProfileEntityType) {
   if (isInternalBrowser()) return;
+  const eventId = createEventId();
   trackEvent("click_whatsapp_profile", { profile_slug: slug, profile_type: entityType, ...(entityType === "developer" ? { developer_slug: slug } : {}) });
+  const contentCategory = PROFILE_CONTENT_CATEGORY[entityType];
+  if (contentCategory) trackPixelEvent("Contact", { method: "whatsapp", content_name: slug, content_category: contentCategory }, eventId);
   if (entityType !== "developer") return;
   fetch("/api/events/whatsapp-click", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ developerSlug: slug, sessionId: getSessionId(), trafficSource: getTrafficSource(), utm: getStoredUtmParams() }),
+    body: JSON.stringify({ developerSlug: slug, sessionId: getSessionId(), trafficSource: getTrafficSource(), utm: getStoredUtmParams(), eventId }),
     keepalive: true,
   }).catch(() => {});
 }

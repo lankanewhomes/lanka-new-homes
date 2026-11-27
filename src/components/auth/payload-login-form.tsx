@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { trackEvent as trackPixelEvent } from "@/lib/metaPixel";
 
 // Same order as auth-form.tsx's buyer-facing PROVIDERS (Facebook, LinkedIn,
 // Google) — the two were inconsistent before (this list only had Google and
@@ -136,6 +137,7 @@ function PayloadLoginFormInner({ mode = "login" }: { mode?: "login" | "signup" }
     try {
       if (mode === "signup") {
         await onSubmitSignup();
+        trackPixelEvent("CompleteRegistration", { content_name: "developer" });
         setCheckEmail(true);
         setLoading(false);
         return;

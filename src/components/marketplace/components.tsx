@@ -10,6 +10,7 @@ import { IconBrandFacebook, IconBrandInstagram, IconBrandTiktok, IconChevronRigh
 import { useSavedListing } from "@/lib/use-saved-listing";
 import { useSavedDeveloper } from "@/lib/use-saved-developer";
 import { getLandingPage, getStoredUtmParams, getTrafficSource, trackEvent } from "@/lib/ga4";
+import { createEventId, trackEvent as trackPixelEvent, type MetaContentCategory } from "@/lib/metaPixel";
 import { hasPremiumStyleBadge, isPaidPackageTier } from "@/lib/packages";
 import { FEATURED_LABEL, FEATURED_TOOLTIP, VERIFIED_DEVELOPER_LABEL, VERIFIED_DEVELOPER_TOOLTIP } from "@/lib/developer-badges";
 import { getSessionId } from "@/components/marketplace/view-tracker";
@@ -354,10 +355,6 @@ function hasQuickMoveIn(project: Project) {
   return project.floorPlans.some((plan) => plan.quickMoveIn);
 }
 
-// Fire-and-forget: logs a raw Analytics event server-side (Payload) and
-// mirrors it to GA4 client-side. Used by the brochure-download button and
-// the tel: phone links — never awaited, never blocks the actual action
-// (opening the brochure, dialing the number).
 // "Unit A · 3 bed · 1,300 SqFt" — how a plan is named on a lead and in the
 // developer's alert. Only facts the plan carries; missing ones drop out.
 function describeFloorPlanForLead(plan: FloorPlan): string {
@@ -368,17 +365,37 @@ function describeFloorPlanForLead(plan: FloorPlan): string {
   ].filter(Boolean).join(" · ");
 }
 
-function logListingEvent(endpoint: string, ga4EventName: string, projectSlug: string, listingName: string, developerSlug?: string) {
+type ListingRef = Pick<Project, "slug" | "name" | "developerSlug" | "isLand">;
+
+/** Meta Pixel content_category of a listing: land pages reuse these components (landToProjectShape sets isLand). */
+function listingContentCategory(project: Pick<Project, "isLand">): MetaContentCategory {
+  return project.isLand ? "land" : "project";
+}
+
+// Fire-and-forget: logs a raw Analytics event server-side (Payload) and
+// mirrors it to GA4 client-side. Used by the WhatsApp, brochure-download and
+// email links — never awaited, never blocks the actual action (opening the
+// chat, the brochure, the mail app). `eventId` travels with the logged event:
+// the Meta Pixel event for the same action uses the same id, so a Conversions
+// API copy sent from the server later is counted once, not twice.
+function logListingEvent(endpoint: string, ga4EventName: string, project: ListingRef, eventId: string = createEventId()) {
   if (isInternalBrowser()) return; // the owner's own clicks are never counted
   const sessionId = getSessionId();
   const trafficSource = getTrafficSource();
   fetch(endpoint, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ projectSlug, sessionId, trafficSource, utm: getStoredUtmParams() }),
+    body: JSON.stringify({ projectSlug: project.slug, sessionId, trafficSource, utm: getStoredUtmParams(), eventId }),
     keepalive: true,
   }).catch(() => {});
-  trackEvent(ga4EventName, { listing_id: projectSlug, listing_name: listingName, ...(developerSlug ? { developer_slug: developerSlug } : {}) });
+  trackEvent(ga4EventName, { listing_id: project.slug, listing_name: project.name, ...(project.developerSlug ? { developer_slug: project.developerSlug } : {}) });
+}
+
+/** A tap on a listing's WhatsApp button — a lead the developer pays for: logged, sent to GA4, and sent to Meta as Contact. */
+function logWhatsAppClick(project: ListingRef) {
+  const eventId = createEventId();
+  logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project, eventId);
+  trackPixelEvent("Contact", { method: "whatsapp", content_name: project.slug, content_category: listingContentCategory(project) }, eventId);
 }
 
 export function StatusBadge({ status }: { status: string }) {
@@ -650,7 +667,7 @@ export function ProjectHero({
    * "Request info" on desktop and in the mobile bar. Null = no button. */
   whatsappHref?: string | null;
 }) {
-  const { saved: savedListing, toggle: toggleSaved } = useSavedListing(project.slug);
+  const { saved: savedListing, toggle: toggleSaved } = useSavedListing(project.slug, listingContentCategory(project));
   // "Get updates" follows the project's developer (saved_developers), not
   // the listing itself — that's the table the weekly follower-digest cron
   // (src/lib/follower-digest.ts) actually reads to email price/floor-plan/
@@ -1247,7 +1264,7 @@ export function ProjectHero({
               target="_blank"
               rel="noopener noreferrer"
               className="request-info-btn whatsapp-btn"
-              onClick={() => logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project.slug, project.name, project.developerSlug)}
+              onClick={() => logWhatsAppClick(project)}
             >
               <MessageCircle className="h-4 w-4" aria-hidden="true" />
               WhatsApp
@@ -1772,7 +1789,7 @@ export function ProjectHero({
               rel="noopener noreferrer"
               className="listing-hero-mobile-btn listing-hero-mobile-btn-whatsapp"
               aria-label="Chat on WhatsApp"
-              onClick={() => logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project.slug, project.name, project.developerSlug)}
+              onClick={() => logWhatsAppClick(project)}
             >
               <MessageCircle className="h-4 w-4" aria-hidden="true" />
               WhatsApp
@@ -2084,7 +2101,7 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
         ) : null}
 
         {hasDisplayValue(email) ? (
-          <a href={`mailto:${email}`} className="stats-contact-card-row" onClick={() => logListingEvent("/api/events/email-click", "click_email", project.slug, project.name, project.developerSlug)}>
+          <a href={`mailto:${email}`} className="stats-contact-card-row" onClick={() => logListingEvent("/api/events/email-click", "click_email", project)}>
             <Mail className="h-4 w-4" aria-hidden="true" /> {email}
           </a>
         ) : null}
@@ -2106,7 +2123,7 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
             target="_blank"
             rel="noopener noreferrer"
             className="stats-contact-card-row stats-contact-card-row-whatsapp"
-            onClick={() => logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project.slug, project.name, project.developerSlug)}
+            onClick={() => logWhatsAppClick(project)}
           >
             <MessageCircle className="h-4 w-4" aria-hidden="true" /> Chat on WhatsApp
           </a>
@@ -2134,7 +2151,7 @@ export function StatsContactCard({ project, developer, requestInfoVariant = "sta
             target="_blank"
             rel="noopener noreferrer"
             className="stats-contact-card-btn stats-contact-card-btn-whatsapp"
-            onClick={() => logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project.slug, project.name, project.developerSlug)}
+            onClick={() => logWhatsAppClick(project)}
           >
             <MessageCircle className="h-4 w-4" aria-hidden="true" /> WhatsApp
           </a>
@@ -2193,6 +2210,8 @@ export function RequestInfoDialog({
   const [fieldErrors, setFieldErrors] = useState<{ name?: string; phone?: string; email?: string }>({});
   const formRef = useRef<HTMLFormElement>(null);
   const focusedFields = useRef(new Set<string>());
+  // Event id of the last enquiry sent from this dialog (its Meta Lead); the brochure download that follows reuses it.
+  const leadEventId = useRef<string | undefined>(undefined);
   const MESSAGE_MAX = 900;
   const isInquiry = variant === "inquiry";
   const isBrochure = variant === "brochure";
@@ -2243,6 +2262,8 @@ export function RequestInfoDialog({
     try {
       const planLabel = floorPlan ? describeFloorPlanForLead(floorPlan) : "";
       const subject = planLabel ? `${planLabel} at ${project.name}` : project.name;
+      // Sent with the lead and used for the Meta Lead below, so a Conversions API copy can be matched to it later.
+      const eventId = createEventId();
       const response = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -2260,6 +2281,7 @@ export function RequestInfoDialog({
           utm: getStoredUtmParams(),
           isBrochureRequest: isBrochure,
           floorPlanName: planLabel || undefined,
+          eventId,
         }),
       });
 
@@ -2270,6 +2292,10 @@ export function RequestInfoDialog({
       }
 
       setSubmitted(true);
+      leadEventId.current = eventId;
+      // Meta: only a saved enquiry is a Lead. A brochure request is the brochure lead (one Lead, not a second one when the
+      // file opens below); every other variant of this form is the form lead.
+      trackPixelEvent("Lead", { lead_type: isBrochure ? "brochure" : "form", content_name: project.slug, content_category: listingContentCategory(project) }, eventId);
       const { utm_campaign } = getStoredUtmParams();
       trackEvent("generate_lead", {
         listing_id: project.slug,
@@ -2286,7 +2312,7 @@ export function RequestInfoDialog({
       // since a window.open() this far into an async handler can still get
       // blocked by the browser's popup blocker in some cases.
       if (isBrochure && project.brochureUrl) {
-        logListingEvent("/api/events/brochure-download", "download_brochure", project.slug, project.name, project.developerSlug);
+        logListingEvent("/api/events/brochure-download", "download_brochure", project, eventId);
         window.open(project.brochureUrl, "_blank", "noopener,noreferrer");
       }
     } catch {
@@ -2350,7 +2376,8 @@ export function RequestInfoDialog({
               <Button
                 type="button"
                 onClick={() => {
-                  logListingEvent("/api/events/brochure-download", "download_brochure", project.slug, project.name, project.developerSlug);
+                  // Same lead as the request just sent: same event id, no second Meta Lead.
+                  logListingEvent("/api/events/brochure-download", "download_brochure", project, leadEventId.current);
                   window.open(project.brochureUrl, "_blank", "noopener,noreferrer");
                 }}
               >
@@ -2453,7 +2480,7 @@ export function RequestInfoDialog({
                     target="_blank"
                     rel="noopener noreferrer"
                     className="request-info-whatsapp-price"
-                    onClick={() => logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project.slug, project.name, project.developerSlug)}
+                    onClick={() => logWhatsAppClick(project)}
                   >
                     <WhatsappIcon className="h-4 w-4" /> Get price on WhatsApp
                   </a>
@@ -3565,7 +3592,7 @@ export function ListingSidebarCard({ project, developer }: { project: Project; d
           target="_blank"
           rel="noopener noreferrer"
           className="listing-sidebar-call-line listing-sidebar-whatsapp-line"
-          onClick={() => logListingEvent("/api/events/whatsapp-click", "click_whatsapp", project.slug, project.name, project.developerSlug)}
+          onClick={() => logWhatsAppClick(project)}
         >
           <MessageCircle className="h-4 w-4" aria-hidden="true" /> Chat on WhatsApp
         </a>
@@ -4056,6 +4083,7 @@ export function LeadForm({ projectSlug, developerSlug }: { projectSlug: string; 
         event.preventDefault();
         setState("loading");
         try {
+          const eventId = createEventId();
           const payload = {
             name: form.name,
             email: form.email,
@@ -4064,6 +4092,7 @@ export function LeadForm({ projectSlug, developerSlug }: { projectSlug: string; 
             message: form.message,
             projectSlug,
             developerSlug,
+            eventId,
           };
 
           const response = await fetch("/api/leads", {
@@ -4077,6 +4106,7 @@ export function LeadForm({ projectSlug, developerSlug }: { projectSlug: string; 
           }
 
           setState("success");
+          trackPixelEvent("Lead", { lead_type: "form", content_name: projectSlug, content_category: "project" }, eventId);
           setForm({ name: "", email: "", phone: "", preferredContactMethod: "Email", message: "" });
         } catch {
           setState("error");

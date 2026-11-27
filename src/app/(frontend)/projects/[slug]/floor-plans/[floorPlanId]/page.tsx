@@ -10,6 +10,7 @@ import { pickSimilarListings } from "@/lib/similar-listings";
 import { splitBalconyFeature } from "@/lib/balcony-features";
 import { planTitleWithFloor } from "@/lib/floor-plan-title";
 import { FloorPlanViewTracker } from "@/components/marketplace/view-tracker";
+import { MetaViewContent } from "@/components/analytics/meta-view-content";
 import { SimilarListingsSection } from "@/components/marketplace/similar-listings";
 import { FloorPlanFactSheet, FloorPlanStatsChips } from "@/components/marketplace/floor-plan-facts";
 import { withProjectParking } from "@/lib/floor-plan-parking";
@@ -88,6 +89,7 @@ export default async function FloorPlanDetailPage({ params }: FloorPlanPageProps
   return (
     <div className="space-y-8">
       <FloorPlanViewTracker projectSlug={project.slug} floorPlanId={floorPlan.id} floorPlanName={floorPlan.planName} developerSlug={project.developerSlug} />
+      <MetaViewContent contentName={project.slug} contentCategory="project" value={project.startingPriceLkr} />
       <ProjectHero
         project={project}
         titleOverride={planTitleWithFloor(floorPlan.planName, floorPlan.floorRange)}

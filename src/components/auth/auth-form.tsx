@@ -3,6 +3,7 @@
 import { useState, type FormEvent, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase-browser";
+import { trackEvent as trackPixelEvent } from "@/lib/metaPixel";
 
 type Provider = "google" | "facebook" | "linkedin_oidc";
 
@@ -217,6 +218,11 @@ export function AuthForm({
       if (signUpError) {
         setError(signUpError.message);
         return;
+      }
+      // Meta Pixel: a new account. Supabase answers an already-registered email with an empty identities list (no error,
+      // so the address isn't revealed): that is not a sign-up. Google sign-ups are sent after /auth/callback instead.
+      if (data.user && data.user.identities?.length !== 0) {
+        trackPixelEvent("CompleteRegistration", { content_name: intent === "developer" ? "developer" : "user" });
       }
       if (!data.session) {
         setCheckEmail(true);
