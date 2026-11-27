@@ -5,6 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { blogPosts, buildBlogMetadata, formatBlogDate } from "@/lib/blog";
 import { BlogViewTracker } from "@/components/marketplace/blog-view-tracker";
+import { CitizenshipPicker } from "@/components/blog/citizenship-picker";
 import { buildBreadcrumbJsonLd, jsonLdScriptProps, toAbsoluteUrl } from "@/lib/seo";
 
 
@@ -125,6 +126,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 ))}
               </ul>
             ) : null}
+            {section.widget === "citizenship-picker" ? <CitizenshipPicker /> : null}
             {section.callout ? <aside className="blog-article-callout">{renderCopy(section.callout)}</aside> : null}
           </section>
           );

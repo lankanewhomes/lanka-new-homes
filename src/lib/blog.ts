@@ -13,6 +13,8 @@ export type BlogSection = {
   /** Real listings that show the point (owner, 2026-11-27: "update with visuals… i want the user engaging… use the images from the website").
    * Shown as photo cards that open the listing; one card is wide, two or three sit in a row. */
   examples?: BlogExample[];
+  /** An interactive widget shown under the paragraph (owner, 2026-11-27: engaging articles). Only the citizenship route picker exists. */
+  widget?: "citizenship-picker";
   /** One highlighted takeaway at the end of the section. */
   callout?: string;
   /** Puts the whole section in one of the site's soft contained boxes (owner, 2026-10-23: "apply a container bg"). */
@@ -761,6 +763,12 @@ export const blogPosts: Record<string, BlogPost> = {
         body: "You need one of these. For buyers, the property route is the simplest: most new [apartments](/guides/apartment-prices-in-colombo), [houses](/guides/house-prices-in-sri-lanka) and [land plots](/land) cost well above Rs. 2.5 million.",
         image: { src: "https://media.lankanewhomes.com/blog/sri-lanka-dual-citizenship-new-rules-2026/citizenship-seven-ways-v2.png", alt: "Seven ways to qualify: age 55, a diploma or degree, property worth Rs. 2.5 million, a rupee or dollar deposit, Treasury bonds, or being the spouse or child of an applicant" },
         callout: "Buying land? [Check the title before you pay](/blog/before-buying-land-in-sri-lanka). The same deed and title report support your application.",
+      },
+      {
+        heading: "Which route are you?",
+        tone: "cream",
+        body: "Answer two questions to see your route and what to prepare.",
+        widget: "citizenship-picker",
       },
       {
         heading: "What does it cost?",
