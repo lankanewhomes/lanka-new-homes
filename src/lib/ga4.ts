@@ -78,7 +78,8 @@ export function getTrafficSource(): string {
     if (isAiAssistantUtmSource(source)) return "ai_assistant";
     if (medium.includes("cpc") || medium.includes("ppc") || medium.includes("paid")) {
       if (source.includes("google")) return "paid_search";
-      if (source.includes("facebook") || source.includes("instagram") || source.includes("meta")) return "paid_social";
+      // Also Meta's own short names, used when an ad link is tagged utm_source={{site_source_name}}: fb, ig, an (Audience Network), msg (Messenger).
+      if (source.includes("facebook") || source.includes("instagram") || source.includes("meta") || /^(fb|ig|an|msg)$/.test(source)) return "paid_social";
       return "paid_search";
     }
     if (source.includes("facebook") || source.includes("instagram") || source.includes("meta")) return "organic_social";

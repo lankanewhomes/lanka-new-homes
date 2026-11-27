@@ -17,6 +17,13 @@ const th = "whitespace-nowrap px-4 py-2.5 text-xs font-semibold uppercase tracki
 const td = "px-4 py-2.5 align-top";
 const SOURCE: Record<string, string> = { request_info: "Enquiry form", brochure_request: "Brochure request", manual: "Added by hand", whatsapp: "WhatsApp" };
 
+// Leads that came from a paid Facebook / Instagram ad are kept apart from all other leads (owner, 2026-11-27). A lead is an ad
+// lead when the visitor arrived on an ad link tagged utm_source=facebook (or instagram) and utm_medium=paid; that is saved on
+// the lead as origin.traffic_source "paid_social" (getTrafficSource in src/lib/ga4.ts).
+export const isFacebookAdLead = (r: LeadActivityRow) => r.origin.trafficSource === "paid_social";
+type LeadFilter = "all" | "ads" | "other";
+const LEAD_FILTERS: { key: LeadFilter; label: string }[] = [{ key: "all", label: "All leads" }, { key: "ads", label: "Facebook & Instagram ads" }, { key: "other", label: "Other leads" }];
+
 const when = (iso: string | null) => (iso ? new Date(iso).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }) : "");
 
 function minutes(m: number | null): string {
@@ -93,6 +100,7 @@ function LeadRow({ r }: { r: LeadActivityRow }) {
       <td className={`${td} whitespace-nowrap text-muted`}>{when(r.createdAt)}</td>
       <td className={td}>
         <Link className="font-medium hover:underline" href={`/dashboard/leads/${r.id}`}>{r.buyer.name || "No name"}</Link>
+        {isFacebookAdLead(r) ? <span className="mt-0.5 block"><StatusChip value="ok" label="Facebook ad" /></span> : null}
         <span className="block text-xs text-muted">{SOURCE[r.source] ?? r.source}{r.origin.country ? ` · ${[r.origin.city, r.origin.country].filter(Boolean).join(", ")}` : ""}</span>
       </td>
       <td className={td}>{r.project.name}<span className="block text-xs text-muted">{r.developer.name}</span></td>
@@ -119,6 +127,7 @@ function LeadRow({ r }: { r: LeadActivityRow }) {
 
 export function LeadActivityPage() {
   const [days, setDays] = useState(30);
+  const [leadFilter, setLeadFilter] = useState<LeadFilter>("all");
   const [state, setState] = useState<{ days: number; data: LeadActivityResponse | null; error: string }>({ days: 0, data: null, error: "" });
 
   useEffect(() => {
@@ -147,6 +156,8 @@ export function LeadActivityPage() {
   }
   const waTried = [...waBy.values()].reduce((n, e) => n + e.tried, 0);
   const waSent = [...waBy.values()].reduce((n, e) => n + e.sent, 0);
+  const adLeads = (data?.leads ?? []).filter(isFacebookAdLead);
+  const shownLeads = leadFilter === "ads" ? adLeads : leadFilter === "other" ? (data?.leads ?? []).filter((l) => !isFacebookAdLead(l)) : data?.leads ?? [];
 
   return (
     <div>
@@ -163,6 +174,11 @@ export function LeadActivityPage() {
         {data ? (
           <>
             {waTried > waSent ? <p className="border border-line bg-panel px-4 py-3 text-sm text-muted"><b className="font-semibold text-fg">WhatsApp alerts are blocked by Meta.</b> The developers still received every enquiry by email. WhatsApp starts sending once the business number is registered, the payment method is fixed and business verification is submitted in Meta.</p> : null}
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
+              <Tile label="Leads from Facebook & Instagram ads" value={String(adLeads.length)} note={data.leads.length ? `${Math.round((adLeads.length / data.leads.length) * 100)}% of all leads` : undefined} />
+              <Tile label="Other leads" value={String(data.leads.length - adLeads.length)} note="Google, direct, social posts, email and the rest" />
+              <Tile label="All leads" value={String(data.leads.length)} />
+            </div>
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
               <Tile label="Emails to developers" value={String(sent)} note="alerts, brochure requests, reminders" />
               <Tile label="Emails opened" value={sent ? `${opened} of ${sent}` : "0"} note={sent ? `${Math.round((opened / sent) * 100)}% of tracked emails` : undefined} />
@@ -181,10 +197,17 @@ export function LeadActivityPage() {
             </Card>
 
             <Card title="Every lead" note="Newest first. Each enquiry goes to the developer by email and, when they have a number on file, by WhatsApp. Reminders go by email 12 and 48 hours after an unanswered enquiry, in Sri Lanka working hours.">
-              {data.leads.length === 0 ? <p className="px-4 py-8 text-sm text-muted">No leads in this period.</p> : (
+              <div className="flex flex-wrap gap-2 border-b border-line px-4 py-3">
+                {LEAD_FILTERS.map((f) => (
+                  <button key={f.key} type="button" aria-pressed={leadFilter === f.key} onClick={() => setLeadFilter(f.key)} className={`border px-3 py-1.5 text-xs transition ${leadFilter === f.key ? "border-ink bg-ink font-medium text-white" : "border-line bg-panel hover:border-fg/40"}`}>
+                    {f.label} ({f.key === "ads" ? adLeads.length : f.key === "other" ? data.leads.length - adLeads.length : data.leads.length})
+                  </button>
+                ))}
+              </div>
+              {shownLeads.length === 0 ? <p className="px-4 py-8 text-sm text-muted">{leadFilter === "ads" ? "No leads from Facebook or Instagram ads in this period. Ad links must carry utm_source=facebook and utm_medium=paid to be counted here." : "No leads in this period."}</p> : (
                 <table className="w-full min-w-[1120px] text-sm">
                   <thead><tr className="border-b border-line text-left"><th className={th}>Received</th><th className={th}>Buyer</th><th className={th}>Listing</th><th className={th}>Email to developer</th><th className={th}>WhatsApp to developer</th><th className={th}>Email opened</th><th className={th}>Reminders</th><th className={th}>Reply</th></tr></thead>
-                  <tbody>{data.leads.map((r) => <LeadRow key={String(r.id)} r={r} />)}</tbody>
+                  <tbody>{shownLeads.map((r) => <LeadRow key={String(r.id)} r={r} />)}</tbody>
                 </table>
               )}
             </Card>

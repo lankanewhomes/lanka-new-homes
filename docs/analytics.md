@@ -285,3 +285,12 @@ Conversions API route can read it there and send the same event with the same id
 
 Not tracked: sign-ups through Google (the browser cannot tell a new account from a returning one after the redirect), and the general
 `/contact` form and its phone link (messages to LankaNewHomes itself, not developer leads).
+
+## Facebook ad leads kept apart from other leads (2026-11-27)
+
+Owner: "I want separate Facebook ads leads, different from other leads". `/dashboard/lead-activity` shows three tiles (leads from Facebook
+and Instagram ads, other leads, all leads), a "Facebook ad" label on each ad lead and three buttons above "Every lead" (All / Facebook &
+Instagram ads / Other). An ad lead is a lead whose `origin.traffic_source` is `paid_social`. That is only set when the ad's link carries
+`utm_source=facebook` (or `instagram`, `meta`, `fb`, `ig`, `an`, `msg`) and a `utm_medium` containing `paid`, `cpc` or `ppc`. In Ads Manager,
+URL parameters of every ad: `utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}`. An ad without these is filed as an
+ordinary social or direct visit, because Facebook's own click id (`fbclid`) is on unpaid post links too and cannot tell them apart.
