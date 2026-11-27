@@ -136,9 +136,9 @@ function trackMetaEvent(name: string, params: Record<string, string | number | b
       trackMetaPixel("ViewContent", { content_name: slug, content_category: category, floor_plan: String(params.floor_plan_name ?? "") });
       break;
     case "generate_lead":
-      // A WhatsApp lead is counted once, as Contact (click_whatsapp below, fired in the same place), not also as Lead.
-      if (params.form_type === "whatsapp") break;
-      trackMetaPixel("Lead", { lead_type: params.form_type === "brochure" ? "brochure" : "form", content_name: slug, content_category: category }, eventId);
+      // A WhatsApp lead is a Lead too (owner, 2026-11-27), so one ad goal, "Leads", covers every enquiry. It is also sent
+      // as Contact (click_whatsapp below, fired in the same place).
+      trackMetaPixel("Lead", { lead_type: params.form_type === "brochure" ? "brochure" : params.form_type === "whatsapp" ? "whatsapp" : "form", content_name: slug, content_category: category }, eventId);
       break;
     case "click_whatsapp":
       trackMetaPixel("Contact", { method: "whatsapp", content_name: slug, content_category: category }, eventId);

@@ -22,7 +22,7 @@ export type MetaEventParams = {
     floor_plan?: string;
   };
   Contact: { method: "whatsapp" | "call" | "email"; content_name: string; content_category: MetaContentCategory };
-  Lead: { lead_type: "brochure" | "form"; content_name: string; content_category: MetaContentCategory };
+  Lead: { lead_type: "brochure" | "form" | "whatsapp"; content_name: string; content_category: MetaContentCategory };
   Search: { search_string: string; content_category: MetaContentCategory };
   CompleteRegistration: { content_name: "user" | "developer" };
   AddToWishlist: { content_name: string; content_category: MetaContentCategory };

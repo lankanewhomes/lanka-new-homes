@@ -141,7 +141,7 @@ function WhatsAppCaptureDialog({ detail, onClose }: { detail: WhatsAppCaptureDet
       traffic_source: trafficSource,
       landing_page: getLandingPage(),
       form_type: "whatsapp",
-    });
+    }, metaEventId); // also the Meta Pixel "Lead" event (lead_type whatsapp)
     // Also the Meta Pixel "Contact" event (method whatsapp) for this lead, see trackMetaEvent in lib/ga4.ts.
     trackEvent("click_whatsapp", { listing_id: detail.projectSlug, listing_name: detail.projectName, ...(detail.developerSlug ? { developer_slug: detail.developerSlug } : {}) }, metaEventId);
     // 3. A moment later this tab moves on to the thank-you page (owner, 2026-11-21); WhatsApp has already opened in its own tab/app.

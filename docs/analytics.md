@@ -259,7 +259,7 @@ so GA4, our own tables and Meta are fired from the same place.
 
 | Action | Meta event | Parameters | Fired from |
 |---|---|---|---|
-| WhatsApp lead (name and number given, WhatsApp opened) | `Contact` | `method: whatsapp`, `content_name` (listing slug), `content_category` | `whatsapp-capture.tsx` (`click_whatsapp`) |
+| WhatsApp lead (name and number given, WhatsApp opened) | `Contact` and `Lead` | `method: whatsapp` / `lead_type: whatsapp`, `content_name` (listing slug), `content_category` | `whatsapp-capture.tsx` (`click_whatsapp`, `generate_lead`) |
 | WhatsApp icon on a developer / construction company profile | `Contact` | `method: whatsapp`, `content_name` (profile slug), `content_category` | `profile-view.tsx` (`click_whatsapp_profile`) |
 | Call button | `Contact` | `method: call` | mapped (`call_click`, `click_phone_profile`); the site has no call buttons on listings today |
 | Brochure form sent | `Lead` | `lead_type: brochure`, `content_name`, `content_category` | `RequestInfoDialog` (`generate_lead`), after `/api/leads` answers OK |
@@ -278,7 +278,7 @@ and the custom events `DownloadBrochure` (the file opening) and `FollowDeveloper
 `/construction-companies/...` = construction_company, everything else = project.
 
 Rules that differ from GA4: `ViewContent` is sent on every page open (GA4's `view_listing` keeps the 30-minute rule). A WhatsApp lead
-is one `Contact`, not also a `Lead`. Meta's own automatic PageView on history changes is switched off (`fbq.disablePushState`), ours replaces it.
+is sent as `Contact` and as `Lead` with the same event id (owner, 2026-11-27: one ad goal, "Leads", covers every enquiry). Meta's own automatic PageView on history changes is switched off (`fbq.disablePushState`), ours replaces it.
 
 Lead forms create the event id before posting and send it to `/api/leads` as `metaEventId` (not stored or used by the server yet). A
 Conversions API route can read it there and send the same event with the same id.
