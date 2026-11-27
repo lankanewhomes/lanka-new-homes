@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { withSocial } from "@/lib/seo";
 
+export type BlogExample = { name: string; href: string; src: string; alt: string; note: string };
+
 export type BlogSection = {
   heading: string;
   body: string;
@@ -8,6 +10,9 @@ export type BlogSection = {
   bullets?: string[];
   /** Illustration shown between the paragraph and the list. */
   image?: { src: string; alt: string };
+  /** Real listings that show the point (owner, 2026-11-27: "update with visuals… i want the user engaging… use the images from the website").
+   * Shown as photo cards that open the listing; one card is wide, two or three sit in a row. */
+  examples?: BlogExample[];
   /** One highlighted takeaway at the end of the section. */
   callout?: string;
   /** Puts the whole section in one of the site's soft contained boxes (owner, 2026-10-23: "apply a container bg"). */
@@ -69,6 +74,9 @@ export const blogPosts: Record<string, BlogPost> = {
     sections: [
       {
         heading: "Should the site use your own images?",
+        examples: [
+          { name: "Central Park Boulevard, Port City Colombo", href: "/projects/central-park-boulevard-port-city-colombo", src: "https://media.lankanewhomes.com/projects/central-park-boulevard-port-city-colombo/gallery/central-park-boulevard-port-city-colombo_aerial-dusk.jpg", alt: "Aerial view of the Central Park Boulevard towers, canal and parks at dusk", note: "The developer's own aerial render of the towers, canal and parks" },
+        ],
         tone: "gray",
         body: "Yes. Buyers can tell a site built around your development from a template with your logo on it. Lead with your own renders, floor plans and site photos, not stock images of a villa that is not yours.",
         image: { src: "https://media.lankanewhomes.com/blog/7-ways-to-make-your-project-website-sell-more-units/site-own-t.png", alt: "Lead with your own renders, floor plans and site photos" },
@@ -76,6 +84,9 @@ export const blogPosts: Record<string, BlogPost> = {
       },
       {
         heading: "Should you show prices and floor plans?",
+        examples: [
+          { name: "BayFonte Marina Villas", href: "/projects/bayfonte-marina-villas", src: "https://media.lankanewhomes.com/projects/bayfonte-marina-villas/floor-plans/bayfonte-marina-villas_type-a-3br-2950.jpg", alt: "Floor plan of a Type A three-bedroom villa at BayFonte Marina Villas", note: "Type A 3-bedroom villa, 2,950 sq ft: the floor plan is open to every visitor" },
+        ],
         tone: "sage",
         body: "Yes. \"From Rs. X\" keeps a serious buyer on the page. \"Contact us for pricing\" sends them to a developer who showed a number. A floor plan locked behind a form is one more step most visitors will not take.",
         image: { src: "https://media.lankanewhomes.com/blog/7-ways-to-make-your-project-website-sell-more-units/site-numbers-t.png", alt: "72 of 107 LankaNewHomes projects publish a starting price, 92 show floor plans and 10 publish a price for individual floor plans" },
@@ -93,6 +104,9 @@ export const blogPosts: Record<string, BlogPost> = {
       },
       {
         heading: "Should you show construction progress?",
+        examples: [
+          { name: "Grand Lavinia, Mount Lavinia", href: "/projects/grand-lavinia-mount-lavinia", src: "https://media.lankanewhomes.com/projects/grand-lavinia-mount-lavinia/construction/grand-lavinia-mount-lavinia_construction/2026-10-11-2.jpg", alt: "Construction of the 9th residential floor slab at Grand Lavinia", note: "Dated update, 11 October 2026: 9th residential floor slab concreting started" },
+        ],
         tone: "gray",
         body: "Yes, with dated photos. An off-plan buyer hands over a deposit before there is a building to walk through. A project that shows them stands out.",
         image: { src: "https://media.lankanewhomes.com/blog/7-ways-to-make-your-project-website-sell-more-units/site-progress-t.png", alt: "Dated photos of foundations, structure and finishing" },
@@ -204,6 +218,9 @@ export const blogPosts: Record<string, BlogPost> = {
     sections: [
       {
         heading: "How far is it from the places you go every day?",
+        examples: [
+          { name: "Bay One Residences, Port City Colombo", href: "/projects/bay-one-residences-colombo", src: "https://media.lankanewhomes.com/projects/bay-one-residences-colombo/road-map/bay-one-residences-colombo_road-map-brochure.jpg", alt: "Road map showing how to reach Bay One Residences in Port City Colombo", note: "The listing's road map: check your own drive against it" },
+        ],
         tone: "gray",
         body: "Look past the address. \"Colombo 5\" tells you less than it used to. What matters is the drive to your office, your child's school and the nearest hospital, and how the road feels at rush hour.",
         image: { src: "https://media.lankanewhomes.com/blog/what-buyers-actually-look-for-in-a-new-home-in-sri-lanka/buy-commute-t.png", alt: "Check the commute to your office, the distance to schools and hospitals, and the nearest expressway entrance" },
@@ -211,12 +228,18 @@ export const blogPosts: Record<string, BlogPost> = {
       },
       {
         heading: "Will your furniture fit the floor plan?",
+        examples: [
+          { name: "Bayfonte Marina Resort Apartments", href: "/projects/bayfonte-marina", src: "https://media.lankanewhomes.com/projects/bayfonte-marina/floor-plans/bayfonte-marina_2br-01-04.jpg", alt: "Floor plan of a two-bedroom apartment at Bayfonte Marina", note: "2-bedroom unit 01/04, 1,095 sq ft, with room sizes on the plan" },
+        ],
         tone: "sage",
         body: "Compare the plan with what you own now. Room sizes and a clear floor plan help more than a render of the finished living room.",
         image: { src: "https://media.lankanewhomes.com/blog/what-buyers-actually-look-for-in-a-new-home-in-sri-lanka/buy-plan-t.png", alt: "Place your furniture in the plan and check room sizes" },
       },
       {
         heading: "How far along is construction?",
+        examples: [
+          { name: "Havelock Signature, Colombo 5", href: "/projects/havelock-signature-colombo-05", src: "https://media.lankanewhomes.com/projects/havelock-signature-colombo-05/construction/havelock-signature-colombo-05_construction/2026-09-29.jpg", alt: "Construction of the 13th floor slab at Havelock Signature", note: "Dated update, 29 September 2026: 13th floor slab concreting started" },
+        ],
         tone: "cream",
         body: "\"Under construction\" can mean foundations poured last month or handover in six weeks. It changes the price you should expect and the risk you take on.",
         image: { src: "https://media.lankanewhomes.com/blog/what-buyers-actually-look-for-in-a-new-home-in-sri-lanka/buy-progress-t.png", alt: "Ask whether the building is at foundations or finishing, ask for dated photos and ask for the handover date in writing" },
@@ -224,6 +247,9 @@ export const blogPosts: Record<string, BlogPost> = {
       },
       {
         heading: "What is the full payment plan?",
+        examples: [
+          { name: "Courtyard by Prime, Thalawathugoda", href: "/projects/courtyard-by-prime-samagi-mawatha-thalawathugoda", src: "https://media.lankanewhomes.com/projects/courtyard-by-prime-samagi-mawatha-thalawathugoda/gallery/courtyard-by-prime-samagi-mawatha-thalawathugoda_photo-3.webp", alt: "Courtyard by Prime homes in Thalawathugoda", note: "The full plan on the listing, until 31 December 2026: LKR 15M down payment, LKR 850K a month, balance at handover" },
+        ],
         tone: "gray",
         body: "A price means little without the deposit, the stage payments and the amount due at handover. When two similar homes cost about the same, the one with the clearer plan is the safer choice.",
         image: { src: "https://media.lankanewhomes.com/blog/what-buyers-actually-look-for-in-a-new-home-in-sri-lanka/buy-payment-t.png", alt: "Ask for the deposit, the stage payments and the amount due at handover" },
@@ -369,6 +395,9 @@ export const blogPosts: Record<string, BlogPost> = {
     sections: [
       {
         heading: "What should you decide before buying land in Sri Lanka?",
+        examples: [
+          { name: "Atigala Floralia", href: "/land/atigala-floralia", src: "https://media.lankanewhomes.com/lands/atigala-floralia/gallery/atigala-floralia_plots-marked-out.webp", alt: "Marked-out residential plots at Atigala Floralia", note: "Plots marked out on the ground, ready to view" },
+        ],
         tone: "gray",
         body: "Decide what the land is for first. It shapes every other choice. Still choosing between a plot and a finished home? Read [what buyers look for in a new home](/blog/what-buyers-actually-look-for-in-a-new-home-in-sri-lanka).",
         image: { src: "https://media.lankanewhomes.com/blog/before-buying-land-in-sri-lanka/land-purpose-t.png", alt: "Three common reasons to buy land: a home to live in, an investment, or farming and a retreat" },
@@ -383,6 +412,9 @@ export const blogPosts: Record<string, BlogPost> = {
       },
       {
         heading: "What documents should you check when buying land?",
+        examples: [
+          { name: "Lion Gate, Sinharagama", href: "/land/lion-gate-sinharagama", src: "https://media.lankanewhomes.com/lands/lion-gate-sinharagama/block-plan/lion-gate-sinharagama_block-plan-01.jpg", alt: "Block plan of the Lion Gate land project in Sinharagama", note: "The block plan on the listing: match each plot to the survey plan" },
+        ],
         tone: "cream",
         body: "Check two documents: the deed and the survey plan. Ask to see both.",
         image: { src: "https://media.lankanewhomes.com/blog/before-buying-land-in-sri-lanka/land-documents-v2-t.png", alt: "Read the deed and the survey plan, then match them to the land" },
@@ -403,6 +435,9 @@ export const blogPosts: Record<string, BlogPost> = {
       },
       {
         heading: "What should you check when you visit the land?",
+        examples: [
+          { name: "Kahathuduwa Lush", href: "/land/kahathuduwa-lush", src: "https://media.lankanewhomes.com/lands/kahathuduwa-lush/gallery/kahathuduwa-lush_aerial-plots-with-internal-road.webp", alt: "Aerial view of plots and the internal road at Kahathuduwa Lush", note: "Plots and the internal road from above: walk the road, then check drainage" },
+        ],
         tone: "cream",
         body: "Visit more than once, at different times of day, and after rain if you can.",
         image: { src: "https://media.lankanewhomes.com/blog/before-buying-land-in-sri-lanka/land-site-visit-t.png", alt: "What to check on site: road, utilities, drainage and boundaries" },
@@ -448,6 +483,9 @@ export const blogPosts: Record<string, BlogPost> = {
     sections: [
       {
         heading: "When will I receive the deed?",
+        examples: [
+          { name: "Marina Square, Uptown Colombo", href: "/projects/marina-square-uptown-colombo", src: "https://media.lankanewhomes.com/projects/marina-square-colombo-15/gallery/marina-square-colombo-15_tower-entrance-signage.jpg", alt: "Tower entrance and signage at Marina Square, Uptown Colombo", note: "Ask for the deed date in writing, whichever tower you choose" },
+        ],
         tone: "gray",
         body: "Buyers most often worry about the deed arriving late or not at all. Ask for the date and put it in the sales agreement, not only in a brochure or a message.",
         bullets: [
@@ -459,6 +497,9 @@ export const blogPosts: Record<string, BlogPost> = {
       },
       {
         heading: "What do I pay, and when?",
+        examples: [
+          { name: "Courtyard by Prime, Thalawathugoda", href: "/projects/courtyard-by-prime-samagi-mawatha-thalawathugoda", src: "https://media.lankanewhomes.com/projects/courtyard-by-prime-samagi-mawatha-thalawathugoda/gallery/courtyard-by-prime-samagi-mawatha-thalawathugoda_photo-4.jpg", alt: "Courtyard by Prime homes in Thalawathugoda", note: "Until 31 December 2026: LKR 15M down payment, LKR 850K a month, balance at handover" },
+        ],
         tone: "sage",
         body: "A price is only the start. Ask for the deposit, each stage payment and the amount due at handover, as a schedule you can keep.",
         bullets: [
@@ -470,6 +511,9 @@ export const blogPosts: Record<string, BlogPost> = {
       },
       {
         heading: "How far has the building got, and can I see it?",
+        examples: [
+          { name: "Royal Edge, Colombo 6", href: "/projects/royal-edge-colombo-06", src: "https://media.lankanewhomes.com/projects/royal-edge-colombo-06/construction/royal-edge-colombo-06_construction/2026-10-23-2.jpg", alt: "Construction at Royal Edge, Colombo 6, in October 2026", note: "Dated update, 23 October 2026: rooftop water tank, pool wall and staircase concreting done" },
+        ],
         tone: "cream",
         body: "\"Under construction\" can mean a cleared site or a finished frame. Ask for dated photos, and visit the site yourself.",
         bullets: [
@@ -480,6 +524,9 @@ export const blogPosts: Record<string, BlogPost> = {
       },
       {
         heading: "What exactly will the finishes be?",
+        examples: [
+          { name: "Marina Square, Uptown Colombo", href: "/projects/marina-square-uptown-colombo", src: "https://media.lankanewhomes.com/projects/marina-square-colombo-15/gallery/marina-square-colombo-15_kitchen.jpg", alt: "Kitchen with a built-in oven and hob at Marina Square", note: "Kitchen with built-in oven and hob: ask for the brands in writing" },
+        ],
         tone: "gray",
         body: "Buyers say the brochure can look better than the finished home. Ask for a written list of finishes, brands and fittings, and ask that the agreement says the home will match it.",
         bullets: [
@@ -529,6 +576,11 @@ export const blogPosts: Record<string, BlogPost> = {
     sections: [
       {
         heading: "What do you get with each choice?",
+        examples: [
+          { name: "Land: Kahathuduwa Lush", href: "/land/kahathuduwa-lush", src: "https://media.lankanewhomes.com/lands/kahathuduwa-lush/gallery/kahathuduwa-lush_aerial-plots-with-internal-road.webp", alt: "Residential plots with an internal road at Kahathuduwa Lush", note: "A plot you build on yourself" },
+          { name: "Apartment: Crystal Sands Sky Villas", href: "/projects/crystal-sands-sky-villas", src: "https://media.lankanewhomes.com/projects/crystal-sands-sky-villas/gallery/crystal-sands-sky-villas_building-exterior.jpg", alt: "Crystal Sands Sky Villas beachfront apartment building in Hikkaduwa", note: "A finished home with shared upkeep" },
+          { name: "House: BayFonte Marina Villas", href: "/projects/bayfonte-marina-villas", src: "https://media.lankanewhomes.com/projects/bayfonte-marina-villas/gallery/bayfonte-marina-villas_exterior-villa-row.jpg", alt: "A row of villas at BayFonte Marina Villas", note: "Your own house and garden" },
+        ],
         tone: "gray",
         body: "Start with what you want to own at the end.",
         bullets: [
@@ -592,10 +644,10 @@ export const blogPosts: Record<string, BlogPost> = {
   "sri-lanka-dual-citizenship-new-rules-2026": {
     slug: "sri-lanka-dual-citizenship-new-rules-2026",
     path: "/blog/sri-lanka-dual-citizenship-new-rules-2026",
-    metaTitle: "Sri Lanka Dual Citizenship 2026: New Rules and How to Apply",
+    metaTitle: "Sri Lanka Dual Citizenship: How to Apply, Cost, 2026 Rules",
     metaDescription:
       "Sri Lanka dual citizenship in 2026: online applications from 29 October, the new age limit for children, the fees, the seven ways to qualify and what it means for home buyers.",
-    title: "Sri Lanka Dual Citizenship in 2026: The New Rules and How to Apply",
+    title: "Sri Lanka Dual Citizenship: How to Apply, Cost and the 2026 Rules",
     excerpt:
       "Online applications, a new age limit for children, and how a home in Sri Lanka can be the asset behind your application.",
     category: "Buying guide",
