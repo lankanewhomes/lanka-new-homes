@@ -36,6 +36,7 @@ export async function GET() {
     `- [Before buying land in Sri Lanka](${site}/blog/before-buying-land-in-sri-lanka): short guide to perches, deeds, survey plans, title checks and building approvals`,
     `- [Questions to ask a developer before you buy](${site}/blog/questions-to-ask-before-buying-a-home-in-sri-lanka): deeds, payment schedules, build progress, finishes and late handover`,
     `- [Land, apartment or house in Sri Lanka](${site}/blog/land-apartment-or-house-in-sri-lanka): cost, work and risk of each choice`,
+    `- [Sri Lanka dual citizenship in 2026](${site}/blog/sri-lanka-dual-citizenship-new-rules-2026): online applications, the age limit for children, fees, the seven ways to qualify and what it means for home buyers`,
     `- [For developers](${site}/for-developers): how developers list projects`,
     `- [About](${site}/about)`,
     `- [Contact](${site}/contact)`,

@@ -582,10 +582,10 @@ export const blogPosts: Record<string, BlogPost> = {
       ],
     },
   },
-  // Draft (owner, 2026-11-26: "create me an article, the new rules of getting citizenship in Sri Lanka", then "write something, what is it
+  // Published 2026-11-26 (owner: "Make it live and push it"). Written the same day (owner: "create me an article, the new rules of getting citizenship in Sri Lanka", then "write something, what is it
   // for the home buyers"). Facts from the Department of Immigration and Emigration pages and the London and Canberra High Commission pages,
   // read 2026-11-26. Two lines are our reading, not official wording: an unfinished apartment counts only once the deed is in the buyer's name,
-  // and the online system lets a visitor apply before travelling. Remove `draft` only when the owner says to publish.
+  // and the online system lets a visitor apply before travelling.
   "sri-lanka-dual-citizenship-new-rules-2026": {
     slug: "sri-lanka-dual-citizenship-new-rules-2026",
     path: "/blog/sri-lanka-dual-citizenship-new-rules-2026",
@@ -599,7 +599,6 @@ export const blogPosts: Record<string, BlogPost> = {
     author: "LankaNewHomes",
     publishDate: "2026-11-26",
     readMinutes: 6,
-    draft: true,
     heroImage: unsplash("1600585154526-990dced4db0d", 2200),
     heroImageAlt: "Exterior of a modern home with a lit entrance at dusk",
     intro:
