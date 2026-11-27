@@ -210,8 +210,8 @@ Open any page with `?internal=1` (or `?no-track=1`) once per browser; `?internal
 Owner: "sync Google Analytics and my dashboard". They cannot match exactly (ad blockers and declined cookies hide visitors from
 Google, never from our server), so both now count with the **same rules** and the Analytics page shows them **next to each other**.
 
-- **Same repeat rule**: the browser sends `view_listing` (GA4) and `ViewContent` (Meta Pixel) once per listing per 30 minutes per
-  browser (`claimBrowserView` in `src/components/marketplace/view-tracker.tsx`, localStorage `lnh-view-sent:<slug>`), the same
+- **Same repeat rule**: the browser sends `view_listing` (GA4) once per listing per 30 minutes per
+  browser (Meta's `ViewContent` is sent on every page open since 2026-11-26, see "Meta Pixel events" below) (`claimBrowserView` in `src/components/marketplace/view-tracker.tsx`, localStorage `lnh-view-sent:<slug>`), the same
   30-minute rule our own count uses (`src/collections/hooks/analytics-dedup.ts`). Before this, GA4 counted every reload.
   GA4 data from before 2026-11-03 still has reloads in it, so the gap on older ranges is smaller than it should be.
 - **Visitors**: `visitors` in `/analytics-summary` = distinct browsers (session_id) with a listing view, compared with GA4
@@ -246,3 +246,42 @@ Country picker (2026-11-04): `keyword_volumes` is keyed by (`keyword`, `country`
 **WhatsApp leads vs form leads (2026-11-09):** a buyer who taps WhatsApp leaves a name and number first. That creates a Leads row with source `whatsapp` (shown in the CMS and
 dashboard Leads lists, with "Opened WhatsApp" when they went on). It does **not** create a `lead_submitted` event. The WhatsApp lead is counted by the `whatsapp_click` event,
 logged when they continue to WhatsApp. Form leads = `lead_submitted` events (and Leads rows whose source is not `whatsapp`); Total leads = form + WhatsApp.
+
+## Meta Pixel events (2026-11-26)
+
+The pixel is loaded once, by `src/components/analytics/deferred-meta-pixel.tsx` (production only, never for the owner's own browser).
+Events go through one helper, `src/lib/metaPixel.ts` (`trackEvent(eventName, params, eventId?)`). Every event carries its own event id
+(`eventID`), so a server-side copy sent later through the Conversions API with the same id is counted once. No name, email or phone
+is ever put in the parameters; search text is cleaned of emails and phone numbers.
+
+Lead actions already go through `trackEvent` in `src/lib/ga4.ts`; `trackMetaEvent` there turns the same call into the Meta event,
+so GA4, our own tables and Meta are fired from the same place.
+
+| Action | Meta event | Parameters | Fired from |
+|---|---|---|---|
+| WhatsApp lead (name and number given, WhatsApp opened) | `Contact` | `method: whatsapp`, `content_name` (listing slug), `content_category` | `whatsapp-capture.tsx` (`click_whatsapp`) |
+| WhatsApp icon on a developer / construction company profile | `Contact` | `method: whatsapp`, `content_name` (profile slug), `content_category` | `profile-view.tsx` (`click_whatsapp_profile`) |
+| Call button | `Contact` | `method: call` | mapped (`call_click`, `click_phone_profile`); the site has no call buttons on listings today |
+| Brochure form sent | `Lead` | `lead_type: brochure`, `content_name`, `content_category` | `RequestInfoDialog` (`generate_lead`), after `/api/leads` answers OK |
+| Contact / inquiry form sent | `Lead` | `lead_type: form`, `content_name`, `content_category` | same |
+| Project page opened | `ViewContent` | `content_name`, `content_category: project`, `value` + `currency: LKR` when there is a price | `ProjectViewTracker` |
+| Land page opened | `ViewContent` | `content_name`, `content_category: land` | `ProjectViewTracker` (`kind="land"`) |
+| Developer / construction company page opened | `ViewContent` | `content_name`, `content_category: developer` or `construction_company` | `ProfileView` |
+| Search or filter | `Search` | `search_string`, `content_category: project` or `land` | `search`, `filter_listings` |
+| Account created | `CompleteRegistration` | `content_name: user` or `developer` | `auth-form.tsx`, `payload-login-form.tsx`, `facebook-finish-signup-form.tsx` |
+| Any page opened | `PageView` | none | first page: pixel init; later pages: pathname change in `deferred-meta-pixel.tsx` |
+
+Also sent, as before: `ViewContent` for blog articles (`content_category: article`) and floor plan / plot pages, `AddToWishlist` (save),
+and the custom events `DownloadBrochure` (the file opening) and `FollowDeveloper`.
+
+`content_category` is the kind of page the visitor is on (`pageContentCategory`): `/land...` = land, `/developers/...` = developer,
+`/construction-companies/...` = construction_company, everything else = project.
+
+Rules that differ from GA4: `ViewContent` is sent on every page open (GA4's `view_listing` keeps the 30-minute rule). A WhatsApp lead
+is one `Contact`, not also a `Lead`. Meta's own automatic PageView on history changes is switched off (`fbq.disablePushState`), ours replaces it.
+
+Lead forms create the event id before posting and send it to `/api/leads` as `metaEventId` (not stored or used by the server yet). A
+Conversions API route can read it there and send the same event with the same id.
+
+Not tracked: sign-ups through Google (the browser cannot tell a new account from a returning one after the redirect), and the general
+`/contact` form and its phone link (messages to LankaNewHomes itself, not developer leads).

@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { trackEvent as trackMetaEvent } from "@/lib/metaPixel";
 
 // Same order as auth-form.tsx's buyer-facing PROVIDERS (Facebook, LinkedIn,
 // Google) — the two were inconsistent before (this list only had Google and
@@ -135,7 +136,8 @@ function PayloadLoginFormInner({ mode = "login" }: { mode?: "login" | "signup" }
 
     try {
       if (mode === "signup") {
-        await onSubmitSignup();
+        await onSubmitSignup(); // throws when the account was not created
+        trackMetaEvent("CompleteRegistration", { content_name: "developer" }); // Meta Pixel: a developer account was created
         setCheckEmail(true);
         setLoading(false);
         return;

@@ -3,6 +3,7 @@
 import { useState, type FormEvent, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase-browser";
+import { trackEvent as trackMetaEvent } from "@/lib/metaPixel";
 
 type Provider = "google" | "facebook" | "linkedin_oidc";
 
@@ -217,6 +218,11 @@ export function AuthForm({
       if (signUpError) {
         setError(signUpError.message);
         return;
+      }
+      // Meta Pixel: a new account was created. Supabase answers a sign-up for an email that already has an account with
+      // a user that has no identities, so that case is not counted. No personal data is sent, only the account type.
+      if (data.user && (data.user.identities?.length ?? 0) > 0) {
+        trackMetaEvent("CompleteRegistration", { content_name: intent === "developer" ? "developer" : "user" });
       }
       if (!data.session) {
         setCheckEmail(true);

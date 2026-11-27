@@ -9,6 +9,7 @@ import { PhoneField, type PhoneValue } from "@/components/marketplace/phone-fiel
 import { toWhatsAppNumber, whatsappChatHref } from "@/lib/whatsapp";
 import { captureUtmParams, getLandingPage, getStoredUtmParams, getTrafficSource, trackEvent } from "@/lib/ga4";
 import { getSessionId } from "@/components/marketplace/view-tracker";
+import { newMetaEventId } from "@/lib/metaPixel";
 import { UpdatesOptIn } from "@/components/marketplace/updates-optin";
 
 // "Capture their number before opening WhatsApp" (owner, 2026-11-09). Every WhatsApp button on a listing calls openWhatsAppCapture();
@@ -109,6 +110,8 @@ function WhatsAppCaptureDialog({ detail, onClose }: { detail: WhatsAppCaptureDet
     //    stop the buyer reaching the developer. The server marks the lead as continued and counts the WhatsApp lead.
     const sessionId = getSessionId();
     const trafficSource = getTrafficSource();
+    // One id for this lead's Meta Pixel event, also sent with the lead so a server-side copy of the event can use the same id.
+    const metaEventId = newMetaEventId();
     fetch("/api/leads", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -127,6 +130,7 @@ function WhatsAppCaptureDialog({ detail, onClose }: { detail: WhatsAppCaptureDet
         sessionId,
         trafficSource,
         utm: getStoredUtmParams(),
+        metaEventId,
       }),
       keepalive: true,
     }).catch(() => {});
@@ -138,7 +142,8 @@ function WhatsAppCaptureDialog({ detail, onClose }: { detail: WhatsAppCaptureDet
       landing_page: getLandingPage(),
       form_type: "whatsapp",
     });
-    trackEvent("click_whatsapp", { listing_id: detail.projectSlug, listing_name: detail.projectName, ...(detail.developerSlug ? { developer_slug: detail.developerSlug } : {}) });
+    // Also the Meta Pixel "Contact" event (method whatsapp) for this lead, see trackMetaEvent in lib/ga4.ts.
+    trackEvent("click_whatsapp", { listing_id: detail.projectSlug, listing_name: detail.projectName, ...(detail.developerSlug ? { developer_slug: detail.developerSlug } : {}) }, metaEventId);
     // 3. A moment later this tab moves on to the thank-you page (owner, 2026-11-21); WhatsApp has already opened in its own tab/app.
     const thanksKind = window.location.pathname.startsWith("/land") ? "&kind=land" : "";
     window.setTimeout(() => { onClose(); router.push(`/thank-you?project=${encodeURIComponent(detail.projectSlug)}&type=whatsapp${thanksKind}`); }, 1500);

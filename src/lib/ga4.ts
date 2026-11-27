@@ -1,6 +1,7 @@
 "use client";
 import { isInternalBrowser } from "@/lib/internal-traffic";
 import { isAiAssistantHost, isAiAssistantUtmSource } from "@/lib/ai-traffic";
+import { cleanSearchString, pageContentCategory, trackCustomEvent as trackMetaCustom, trackEvent as trackMetaPixel } from "@/lib/metaPixel";
 
 import { sendGAEvent } from "@next/third-parties/google";
 
@@ -103,7 +104,9 @@ export function getTrafficSource(): string {
 // Thin wrapper: no-ops quietly when GA hasn't loaded (no measurement ID
 // configured, or the script hasn't finished loading yet) rather than
 // throwing and breaking the calling feature (e.g. a lead submission).
-export function trackEvent(name: string, params: Record<string, string | number | boolean> = {}): void {
+// `metaEventId`: the id for the matching Meta Pixel event, when the caller already has one (a lead form sends the same id
+// to /api/leads, so a server-side copy of the event can be matched to this one). Left out, the pixel helper makes its own.
+export function trackEvent(name: string, params: Record<string, string | number | boolean> = {}, metaEventId?: string): void {
   if (typeof window === "undefined") return;
   if (isInternalBrowser()) return; // the owner's own browser is never counted
   try {
@@ -111,50 +114,68 @@ export function trackEvent(name: string, params: Record<string, string | number 
   } catch {
     // GA not loaded — ignore.
   }
-  trackMetaEvent(name, params);
+  trackMetaEvent(name, params, metaEventId);
 }
 
 // The same actions, sent to the Meta Pixel as Meta's standard events so Facebook/Instagram ads can optimise for them
 // (Lead, Contact, ViewContent, Search, AddToWishlist). Actions with no standard equivalent go as custom events.
+// Every lead action on the site already goes through trackEvent above, so mapping the names here covers every button
+// and form that fires them. No personal data: only the listing slug, the kind of page and the kind of lead.
+// A listing page view (ViewContent with the price) is sent straight from ProjectViewTracker, not from here.
 // No-ops when the pixel is not on the page (non-production, owner's browser, or switched off).
-function trackMetaEvent(name: string, params: Record<string, string | number | boolean>): void {
-  const fbq = (window as unknown as { fbq?: (...args: unknown[]) => void }).fbq;
-  if (!fbq) return;
-  const listing = typeof params.listing_id === "string" ? { content_ids: [params.listing_id], content_name: params.listing_name, content_type: "home_listing" } : {};
-  try {
-    switch (name) {
-      case "view_listing":
-        fbq("track", "ViewContent", listing);
-        break;
-      case "view_blog_post":
-        fbq("track", "ViewContent", { content_ids: [params.blog_slug], content_name: params.blog_title, content_type: "article" });
-        break;
-      case "view_floor_plan":
-        fbq("track", "ViewContent", { ...listing, content_category: "floor_plan", content_name: params.floor_plan_name });
-        break;
-      case "generate_lead":
-        fbq("track", "Lead", { ...listing, content_category: params.form_type });
-        break;
-      case "click_whatsapp":
-      case "click_email":
-        fbq("track", "Contact", { ...listing, content_category: name });
-        break;
-      case "download_brochure":
-        fbq("trackCustom", "DownloadBrochure", listing);
-        break;
-      case "search":
-        fbq("track", "Search", { search_string: params.search_term });
-        break;
-      case "save_listing":
-        fbq("track", "AddToWishlist", listing);
-        break;
-      case "follow_developer":
-        fbq("trackCustom", "FollowDeveloper", { developer_slug: params.developer_slug });
-        break;
-      default:
-        break;
+function trackMetaEvent(name: string, params: Record<string, string | number | boolean>, eventId?: string): void {
+  const slug = typeof params.listing_id === "string" ? params.listing_id : "";
+  const category = pageContentCategory();
+  // Searches are for homes or for land, whatever page the search box is on.
+  const searchCategory = params.wants_land === true || category === "land" ? "land" : "project";
+  switch (name) {
+    case "view_blog_post":
+      trackMetaPixel("ViewContent", { content_name: String(params.blog_slug ?? ""), content_category: "article" });
+      break;
+    case "view_floor_plan":
+      trackMetaPixel("ViewContent", { content_name: slug, content_category: category, floor_plan: String(params.floor_plan_name ?? "") });
+      break;
+    case "generate_lead":
+      // A WhatsApp lead is counted once, as Contact (click_whatsapp below, fired in the same place), not also as Lead.
+      if (params.form_type === "whatsapp") break;
+      trackMetaPixel("Lead", { lead_type: params.form_type === "brochure" ? "brochure" : "form", content_name: slug, content_category: category }, eventId);
+      break;
+    case "click_whatsapp":
+      trackMetaPixel("Contact", { method: "whatsapp", content_name: slug, content_category: category }, eventId);
+      break;
+    case "call_click":
+      trackMetaPixel("Contact", { method: "call", content_name: slug, content_category: category }, eventId);
+      break;
+    case "click_email":
+      trackMetaPixel("Contact", { method: "email", content_name: slug, content_category: category }, eventId);
+      break;
+    case "click_whatsapp_profile":
+    case "click_phone_profile": {
+      // Developer and construction company profile pages. The other directories are not lead types we charge for.
+      const profileCategory = params.profile_type === "developer" ? "developer" : params.profile_type === "construction-company" ? "construction_company" : null;
+      if (!profileCategory) break;
+      trackMetaPixel("Contact", { method: name === "click_phone_profile" ? "call" : "whatsapp", content_name: String(params.profile_slug ?? ""), content_category: profileCategory }, eventId);
+      break;
     }
-  } catch {
-    // Pixel blocked or not ready — ignore.
+    case "download_brochure":
+      // The brochure request itself is the Lead (generate_lead, form_type "brochure"); this is the file actually opening.
+      trackMetaCustom("DownloadBrochure", { content_name: slug, content_category: category });
+      break;
+    case "search": {
+      const text = cleanSearchString(String(params.search_term ?? ""));
+      if (text) trackMetaPixel("Search", { search_string: text, content_category: searchCategory });
+      break;
+    }
+    case "filter_listings":
+      trackMetaPixel("Search", { search_string: cleanSearchString(`${params.filter_group}: ${params.filter_value}`), content_category: searchCategory });
+      break;
+    case "save_listing":
+      trackMetaPixel("AddToWishlist", { content_name: slug, content_category: category });
+      break;
+    case "follow_developer":
+      trackMetaCustom("FollowDeveloper", { developer_slug: String(params.developer_slug ?? "") });
+      break;
+    default:
+      break;
   }
 }

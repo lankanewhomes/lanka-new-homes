@@ -173,7 +173,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       <script {...jsonLdScriptProps(breadcrumbJsonLd)} />
-      <ProjectViewTracker projectSlug={project.slug} projectName={project.name} developerSlug={project.developerSlug} />
+      <ProjectViewTracker projectSlug={project.slug} projectName={project.name} developerSlug={project.developerSlug} startingPriceLkr={project.startingPriceLkr} />
       <ProjectHero
         project={project}
         paidFeatured={activeItems(featuredData.state, featuredData.projects, new Date()).some((item) => item.project.slug === project.slug)}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -15,6 +15,7 @@ import { useSavedProfile } from "@/lib/use-saved-profile";
 import { isInternalBrowser } from "@/lib/internal-traffic";
 import { getStoredUtmParams, getTrafficSource, trackEvent } from "@/lib/ga4";
 import { getSessionId } from "@/components/marketplace/view-tracker";
+import { trackEvent as trackMetaEvent } from "@/lib/metaPixel";
 import { useListingT } from "@/lib/i18n/use-listing-t";
 import { Button } from "@/components/ui/button";
 
@@ -71,6 +72,12 @@ export function ProfileView({
   reviews?: Review[];
 }) {
   // A developer with only land parcels (e.g. Gangani Land Sales) opens on the Lands tab.
+  // Meta Pixel: a developer or construction company page was opened (once per page load or move inside the site).
+  // The owner's own browser has no pixel, so nothing is sent for it.
+  useEffect(() => {
+    const category = entityType === "developer" ? "developer" : entityType === "construction-company" ? "construction_company" : null;
+    if (category) trackMetaEvent("ViewContent", { content_name: entity.slug, content_category: category });
+  }, [entity.slug, entityType]);
   const [tab, setTab] = useState<Tab>(projects.length > 0 && projects.every((project) => project.isLand) ? "lands" : "projects");
   const { saved: following, toggle: toggleFollow } = useSavedProfile(entityType, entity.slug);
   const { t } = useListingT();

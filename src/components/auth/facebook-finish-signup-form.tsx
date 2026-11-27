@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { trackEvent as trackMetaEvent } from "@/lib/metaPixel";
 
 // Second half of a Facebook-started developer signup — the only field
 // Facebook doesn't already give us. See
@@ -23,6 +24,7 @@ export function FacebookFinishSignupForm({ name }: { name: string }) {
       });
       const body = await response.json();
       if (!response.ok) throw new Error(body?.error ?? "Couldn't finish signing up. Please try again.");
+      trackMetaEvent("CompleteRegistration", { content_name: "developer" }); // Meta Pixel: a developer account was created
       window.location.href = "/dashboard/overview";
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");

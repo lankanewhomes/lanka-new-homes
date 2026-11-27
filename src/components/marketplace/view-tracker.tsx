@@ -5,11 +5,12 @@ import { captureUtmParams, getStoredUtmParams, getTrafficSource, trackEvent } fr
 import { isInternalBrowser } from "@/lib/internal-traffic";
 import { shouldSendBrowserView } from "@/lib/analytics-compare";
 import { logListingInteraction } from "@/lib/log-interaction";
+import { trackEvent as trackMetaEvent } from "@/lib/metaPixel";
 
 export const SESSION_KEY = "newhomessrilanka-session-id";
 const BROWSER_VIEW_KEY = "lnh-view-sent:";
 
-/** Google / Meta get a listing view once per 30 minutes per browser, the same rule our own count uses, so the numbers line up. */
+/** Google gets a listing view once per 30 minutes per browser, the same rule our own count uses, so the numbers line up. */
 function claimBrowserView(projectSlug: string): boolean {
   try {
     const key = BROWSER_VIEW_KEY + projectSlug;
@@ -36,15 +37,26 @@ export function ProjectViewTracker({
   projectName,
   developerSlug,
   kind = "project",
+  startingPriceLkr,
 }: {
   projectSlug: string;
   projectName: string;
   developerSlug: string;
   /** "land" for a land plot page: logged in the analytics list only (the project_views table is projects-only). */
   kind?: "project" | "land";
+  /** Project pages: the starting price in rupees, sent to Meta as the value of the view. Left out when there is no published price. */
+  startingPriceLkr?: number;
 }) {
   useEffect(() => {
     if (isInternalBrowser()) return; // the owner's own visits are never counted
+    // Meta Pixel: one ViewContent every time the page is opened (a full load or a move inside the site), so ads can
+    // build audiences from listing views. Not held back by the 30-minute rule below, which only keeps Google's count
+    // in line with our own.
+    trackMetaEvent("ViewContent", {
+      content_name: projectSlug,
+      content_category: kind,
+      ...(kind === "project" && startingPriceLkr && startingPriceLkr > 0 ? { value: startingPriceLkr, currency: "LKR" as const } : {}),
+    });
     const sessionId = getSessionId();
     captureUtmParams(); // first touch of the session: make sure the landing link's utm_* are stored before this view is sent
 
@@ -61,7 +73,7 @@ export function ProjectViewTracker({
     // docs/analytics.md for the GA4-side custom dimension setup this needs.
     if (!claimBrowserView(projectSlug)) return;
     trackEvent("view_listing", { listing_id: projectSlug, listing_name: projectName, ...(developerSlug ? { developer_slug: developerSlug } : {}) });
-  }, [projectSlug, projectName, developerSlug, kind]);
+  }, [projectSlug, projectName, developerSlug, kind, startingPriceLkr]);
 
   return null;
 }

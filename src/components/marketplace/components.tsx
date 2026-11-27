@@ -16,6 +16,7 @@ import { MobileSearchOverlay, SearchQuickChips } from "@/components/marketplace/
 import { SearchFeaturedStrip, readFeaturedSuggestions, useDefaultFeatured, type FeaturedSuggestion } from "@/components/featured/search-featured";
 import { MEGA_MENUS, NavMegaPanel, type MegaTile } from "@/components/marketplace/mega-menu";
 import { getLandingPage, getStoredUtmParams, getTrafficSource, trackEvent } from "@/lib/ga4";
+import { newMetaEventId } from "@/lib/metaPixel";
 import { hasPremiumStyleBadge, isPaidPackageTier } from "@/lib/packages";
 import { FEATURED_LABEL, FEATURED_TOOLTIP, VERIFIED_DEVELOPER_LABEL, VERIFIED_DEVELOPER_TOOLTIP } from "@/lib/developer-badges";
 import { getSessionId } from "@/components/marketplace/view-tracker";
@@ -2298,6 +2299,8 @@ export function RequestInfoDialog({
     try {
       const planLabel = floorPlan ? describeFloorPlanForLead(floorPlan) : "";
       const subject = planLabel ? `${planLabel} at ${project.name}` : project.name;
+      // One id for this lead's Meta Pixel event, also sent with the lead so a server-side copy of the event can use the same id.
+      const metaEventId = newMetaEventId();
       const response = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -2316,6 +2319,7 @@ export function RequestInfoDialog({
           utm: getStoredUtmParams(),
           isBrochureRequest: isBrochure,
           floorPlanName: planLabel || undefined,
+          metaEventId,
         }),
       });
 
@@ -2336,7 +2340,7 @@ export function RequestInfoDialog({
         landing_page: getLandingPage(),
         form_type: formType,
         ...(utm_campaign ? { utm_campaign } : {}),
-      });
+      }, metaEventId); // also the Meta Pixel "Lead" event (brochure or form), only reached after the lead was saved
 
       // Best-effort: start the download right away instead of making them
       // click "Download Brochure" again below — kept as a visible fallback
