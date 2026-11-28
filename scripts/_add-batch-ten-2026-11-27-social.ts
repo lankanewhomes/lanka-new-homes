@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- one-off script */
 // Logs the 10 posts made 2026-11-27 from the Windows PC: 5 Kinetic Type reels (Prime Marina 2, Oceanfront Marine Drive, Courtyard by Prime, Zenza, Prime Express Five)
-// on Instagram, TikTok and the Facebook Page, and 5 carousels (Elemint Suites, Layards Breeze, Kaloora Kalutara, Harbour View Residencies, City Link) on Instagram only.
+// on Instagram, TikTok and the Facebook Page, and 5 carousels (Elemint Suites, Layards Breeze, Kaloora Kalutara, Harbour View Residencies, City Link) on Instagram, TikTok and the Facebook Page (carousel Facebook permalinks cannot be read, so they use the Page URL; TikTok locations: Gampaha, Colombo, Kalutara, Colombo, Homagama).
 // Developers are not named in the posts. Media is read from the owner's Desktop: Social Queue/2026-11-27 - 10 new posts (5 reels + 5 carousels)/<dir>/.
 // Safe to re-run: skips rows whose permalink is already logged.
 //   PowerShell:  $env:NODE_ENV='production'; npx tsx scripts/_add-batch-ten-2026-11-27-social.ts
@@ -13,19 +13,20 @@ const cfg = ((await import('../payload.config')) as any).default
 const { getPayload } = await import('payload')
 const { mirrorToR2 } = await import('../src/lib/listing-import/mirror')
 const payload = await getPayload({ config: cfg })
+const FBPAGE = 'https://www.facebook.com/lankanewhomes'
 const ROOT = process.env.SOCIAL_QUEUE_DIR || path.join(os.homedir(), 'OneDrive', 'Desktop', 'Social Queue', '2026-11-27 - 10 new posts (5 reels + 5 carousels)')
-type Job = { kind: 'reel' | 'carousel'; col: 'projects' | 'lands'; dir: string; slug: string; secs?: string; location: string; ig: string; tt?: string; fb?: string }
+type Job = { kind: 'reel' | 'carousel'; col: 'projects' | 'lands'; dir: string; slug: string; secs?: string; location: string; ig: string; tt?: string; fb?: string; fbPage?: boolean }
 const jobs: Job[] = [
   { kind: 'reel', col: 'projects', dir: '01 - Prime Marina 2 reel', slug: 'prime-marina-2-port-city-colombo', secs: '35.6', location: 'Colombo, Sri Lanka', ig: 'DgQ1bnBI8Gr', tt: '7712998377780235541', fb: '1195102710027676' },
   { kind: 'reel', col: 'projects', dir: '02 - Oceanfront Marine Drive reel', slug: 'oceanfront-marine-drive-colombo-06', secs: '32.8', location: 'Colombo, Sri Lanka', ig: 'DgQ12IvIsEV', tt: '7712999157614644500', fb: '1865067321583383' },
   { kind: 'reel', col: 'projects', dir: '03 - Courtyard by Prime reel', slug: 'courtyard-by-prime-samagi-mawatha-thalawathugoda', secs: '36.2', location: 'Thalawathugoda, Sri Lanka', ig: 'DgQ2PFxoWz0', tt: '7713007058534026516', fb: '1165098562657670' },
   { kind: 'reel', col: 'lands', dir: '04 - Zenza Ganemulla land reel', slug: 'zenza-ganemulla', secs: '36', location: 'Ganemulla, Sri Lanka', ig: 'DgQ2rBNIlqd', tt: '7713007865472093460', fb: '1676520133857232' },
   { kind: 'reel', col: 'lands', dir: '05 - Prime Express Five Mattegoda land reel', slug: 'prime-express-five-mattegoda', secs: '37', location: 'Mattegoda, Sri Lanka', ig: 'DgQ3G_AIeDX', tt: '7713008683294264597', fb: '1659440812308058' },
-  { kind: 'carousel', col: 'projects', dir: '06 - Elemint Suites carousel', slug: 'elemint-suites-gampaha', location: 'Gampaha, Sri Lanka', ig: 'DgQ8gGaFXZ2' },
-  { kind: 'carousel', col: 'projects', dir: '07 - Layards Breeze carousel', slug: 'layards-breeze-colombo-04', location: 'Colombo, Sri Lanka', ig: 'DgQ8x4pFXy6' },
-  { kind: 'carousel', col: 'projects', dir: '08 - Kaloora Kalutara carousel', slug: 'kaloora-kalutara', location: 'Kalutara', ig: 'DgQ9EAsFaK7' },
-  { kind: 'carousel', col: 'projects', dir: '09 - Harbour View Residencies carousel', slug: 'harbour-view-residencies-colombo-13', location: 'Colombo, Sri Lanka', ig: 'DgQ9VdRlThC' },
-  { kind: 'carousel', col: 'lands', dir: '10 - City Link Kiriwaththuduwa land carousel', slug: 'city-link-kiriwaththuduwa', location: 'Kiriwaththuduwa Homagama', ig: 'DgQ9nfFFSgy' },
+  { kind: 'carousel', col: 'projects', dir: '06 - Elemint Suites carousel', slug: 'elemint-suites-gampaha', location: 'Gampaha, Sri Lanka', ig: 'DgQ8gGaFXZ2', tt: '7713117343429217556', fbPage: true },
+  { kind: 'carousel', col: 'projects', dir: '07 - Layards Breeze carousel', slug: 'layards-breeze-colombo-04', location: 'Colombo, Sri Lanka', ig: 'DgQ8x4pFXy6', tt: '7713117859895004436', fbPage: true },
+  { kind: 'carousel', col: 'projects', dir: '08 - Kaloora Kalutara carousel', slug: 'kaloora-kalutara', location: 'Kalutara', ig: 'DgQ9EAsFaK7', tt: '7713118378214411540', fbPage: true },
+  { kind: 'carousel', col: 'projects', dir: '09 - Harbour View Residencies carousel', slug: 'harbour-view-residencies-colombo-13', location: 'Colombo, Sri Lanka', ig: 'DgQ9VdRlThC', tt: '7713118866137763092', fbPage: true },
+  { kind: 'carousel', col: 'lands', dir: '10 - City Link Kiriwaththuduwa land carousel', slug: 'city-link-kiriwaththuduwa', location: 'Kiriwaththuduwa Homagama', ig: 'DgQ9nfFFSgy', tt: '7713119413322452244', fbPage: true },
 ]
 for (const j of jobs) {
   const D = path.join(ROOT, j.dir)
@@ -48,8 +49,11 @@ for (const j of jobs) {
   const rows: any[] = [{ platform: 'instagram', externalId: j.ig, permalink: `https://www.instagram.com/lankanewhomes/${j.kind === 'reel' ? 'reel' : 'p'}/${j.ig}/`, caption }]
   if (j.tt) rows.push({ platform: 'tiktok', externalId: j.tt, permalink: `https://www.tiktok.com/@lankanewhomes/video/${j.tt}`, caption })
   if (j.fb) rows.push({ platform: 'facebook', externalId: j.fb, permalink: `https://www.facebook.com/reel/${j.fb}`, caption: fbCaption })
+  if (j.fbPage) rows.push({ platform: 'facebook', externalId: '', permalink: FBPAGE, caption: fbCaption })
   for (const r of rows) {
-    const ex = await payload.find({ collection: 'social-posts', where: { permalink: { equals: r.permalink } }, limit: 1, depth: 0, overrideAccess: true })
+    const ex = r.permalink === FBPAGE
+      ? await payload.find({ collection: 'social-posts', where: { and: [{ platform: { equals: 'facebook' } }, { permalink: { equals: FBPAGE } }, { caption: { equals: r.caption } }] }, limit: 1, depth: 0, overrideAccess: true } as any)
+      : await payload.find({ collection: 'social-posts', where: { permalink: { equals: r.permalink } }, limit: 1, depth: 0, overrideAccess: true })
     if (ex.docs.length) { console.log(r.platform, 'already logged', ex.docs[0].id); continue }
     const doc = await payload.create({ collection: 'social-posts', overrideAccess: true, data: { ...(land ? { land: rec.id } : { project: rec.id }), kind: j.kind, status: 'published', source: 'manual', matchedBy: 'link', triggeredBy: 'manual', mediaUrl, thumbnailUrl: thumb, postedAt: new Date().toISOString(), details, ...r } as any })
     console.log('created', j.slug, r.platform, doc.id)
